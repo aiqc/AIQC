@@ -11,7 +11,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "You'll need to reload the module so that the ORM can find the database path during initialization."
+    "## Prerequisites\n",
+    "If you've already completed the instructions on the **Installation** page, then let's get started."
    ]
   },
   {
@@ -31,34 +32,6 @@
    "source": [
     "import aiqc\n",
     "from aiqc import examples"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "\n",
-      "=> Success - deleted database file at path:\n",
-      "/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3\n",
-      "\n",
-      "\n",
-      "=> Success - created database file for machine learning metrics at path:\n",
-      "/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3\n",
-      "\n",
-      "\n",
-      "=> Success - created the following tables within database:\n",
-      "['algorithm', 'batch', 'datapipeline', 'dataset', 'experiment', 'featureset', 'fold', 'foldset', 'hyperparamcombo', 'hyperparamset', 'job', 'label', 'preprocess', 'result', 'splitset']\n",
-      "\n"
-     ]
-    }
-   ],
-   "source": [
-    "aiqc.delete_db(True); from importlib import reload; reload(aiqc); aiqc.create_db()"
    ]
   },
   {
@@ -2180,7 +2153,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "For more information of visualization of performance metrics, reference the *[Visualization & Metrics](https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html)* documentation."
+    "For more information of visualization of performance metrics, reference the **Visualization & Metrics** documentation."
    ]
   }
  ],

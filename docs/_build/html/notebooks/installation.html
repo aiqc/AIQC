@@ -111,7 +111,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#Python-Package">Python Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Create-Config-File">Create Config File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Create-Database-File">Create Database File</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Config-&amp;-Database-Location-Based-on-OS">Config &amp; Database Location Based on OS</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Optional---Deleting-the-Database">Optional - Deleting the Database</a></li>
@@ -739,6 +742,8 @@ IDE like Jupyter or VS Code.</p>
 <blockquote>
 <div><p>We have attempted to support both Windows (<code class="docutils literal notranslate"><span class="pre">icacls</span></code> permissions and backslashes <code class="docutils literal notranslate"><span class="pre">C:\\</span></code>) as well as POSIX including Mac and Linux including containers &amp; Google Colab (<code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">letters</span></code> permissions and slashes <code class="docutils literal notranslate"><span class="pre">/</span></code>). Note: due to variations in the ordering of appdirs author and app directories in different OS’, we do not make use of the appdirs <code class="docutils literal notranslate"><span class="pre">appauthor</span></code> directory, only the <code class="docutils literal notranslate"><span class="pre">appname</span></code> directory.</p>
 </div></blockquote>
+<div class="section" id="Config-&amp;-Database-Location-Based-on-OS">
+<h4>Config &amp; Database Location Based on OS<a class="headerlink" href="#Config-&-Database-Location-Based-on-OS" title="Permalink to this headline">¶</a></h4>
 <p>Test it for yourself: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">appdirs;</span> <span class="pre">appdirs.user_data_dir('aiqc');</span></code></p>
 <ul class="simple">
 <li><p>Mac: <code class="docutils literal notranslate"><span class="pre">/Users/Username/Library/Application</span> <span class="pre">Support/aiqc</span></code></p></li>
@@ -746,6 +751,7 @@ IDE like Jupyter or VS Code.</p>
 <li><p>Windows: <code class="docutils literal notranslate"><span class="pre">C:\Users\Username\AppData\Local\aiqc</span></code></p></li>
 </ul>
 <hr class="docutils" />
+</div>
 </div>
 </div>
 <div class="section" id="Optional---Deleting-the-Database">

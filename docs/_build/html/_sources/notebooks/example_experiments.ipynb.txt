@@ -11,7 +11,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Just to be clear, the following examples are for demonstration and testing purposes only. Users are not supposed to make their own dummy batches using their own data. Refer to the sections *[High-Level API](api_high_level.ipynb)* and/ or *[Low-Level API](api_low_level.ipnyb)* if you actually want to use the library. "
+    "Just to be clear, the following examples are for demonstration and testing purposes only. Users are not supposed to make their own dummy batches using their own data. Refer to the pages **High-Level API** and/ or **Low-Level API** if you actually want to use the library. "
    ]
   },
   {
@@ -19,8 +19,8 @@
    "metadata": {},
    "source": [
     "## Prerequisites\n",
-    "* If you've already completed the *[Installation](installation.ipynb)* section, then let's get started.\n",
-    "* This section makes use of the data in the *[Example Datasets](example_datasets.ipynb)* section."
+    "* If you've already completed the instructions on the **Installation** page, then let's get started.\n",
+    "* This section makes use of the data in the **Example Datasets** page."
    ]
   },
   {
@@ -1207,7 +1207,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "For more detailed information reference the *[Low-Level API](api_low_level.ipynb)* documentation."
+    "For more detailed information reference the **Low-Level API** documentation."
    ]
   },
   {
@@ -1221,7 +1221,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "For more information of visualization of performance metrics, reference the *[Visualization & Metrics](api_low_level.ipynb)* documentation."
+    "For more information of visualization of performance metrics, reference the **Visualization & Metrics** documentation."
    ]
   }
  ],

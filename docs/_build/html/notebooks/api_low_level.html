@@ -99,6 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Low-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Usage">Usage</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Pandas-DataFrame">Pandas DataFrame</a></li>
@@ -496,7 +497,9 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline">¶</a></h1>
-<p>You’ll need to reload the module so that the ORM can find the database path during initialization.</p>
+<div class="section" id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>If you’ve already completed the instructions on the <strong>Installation</strong> page, then let’s get started.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -516,33 +519,6 @@ div.rendered_html tbody tr:hover {
   warnings.warn(msg)
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">delete_db</span><span class="p">(</span><span class="kc">True</span><span class="p">);</span> <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span><span class="p">;</span> <span class="n">reload</span><span class="p">(</span><span class="n">aiqc</span><span class="p">);</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Success - deleted database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-=&gt; Success - created database file for machine learning metrics at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-=&gt; Success - created the following tables within database:
-[&#39;algorithm&#39;, &#39;batch&#39;, &#39;datapipeline&#39;, &#39;dataset&#39;, &#39;experiment&#39;, &#39;featureset&#39;, &#39;fold&#39;, &#39;foldset&#39;, &#39;hyperparamcombo&#39;, &#39;hyperparamset&#39;, &#39;job&#39;, &#39;label&#39;, &#39;preprocess&#39;, &#39;result&#39;, &#39;splitset&#39;]
-
-</pre></div></div>
 </div>
 <div class="section" id="Usage">
 <h2>Usage<a class="headerlink" href="#Usage" title="Permalink to this headline">¶</a></h2>
@@ -2101,7 +2077,7 @@ Resuming jobs...
 </div>
 <div class="section" id="Metrics-&amp;-Visualization">
 <h3>Metrics &amp; Visualization<a class="headerlink" href="#Metrics-&-Visualization" title="Permalink to this headline">¶</a></h3>
-<p>For more information of visualization of performance metrics, reference the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html">Visualization &amp; Metrics</a> documentation.</p>
+<p>For more information of visualization of performance metrics, reference the <strong>Visualization &amp; Metrics</strong> documentation.</p>
 </div>
 </div>
 </div>
