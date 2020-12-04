@@ -1,0 +1,19 @@
+/* sidebar captions aka sections*/
+.wy-menu > .caption > span.caption-text {
+  color: #ffd249;
+  font-size: 11.5px;
+}
+
+/* the '.simple' points to body lists, and avoids the sidebar lists */
+ul.simple li ul li {
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+
+img {
+	border-radius: 15px;
+}
+
+iframe {
+	border-radius: 15px;
+}

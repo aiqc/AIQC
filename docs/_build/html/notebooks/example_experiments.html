@@ -1,0 +1,1518 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Experiments &mdash; AIQC  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Datasets" href="example_datasets.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/aiqc_logo_wide_white_docs.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Highlights</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Built-In Examples</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Datasets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Experiments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Dummy-Experiments">Dummy Experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Example:-supervised-regression">Example: supervised regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ORM-in-action">ORM in action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Hyperparameter-tuning-in-action">Hyperparameter tuning in action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Inspecting-the-Result-of-an-Individual-Job">Inspecting the Result of an Individual Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Inspecting-the-metrics-of-the-entire-Batch">Inspecting the metrics of the entire Batch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Example:-supervised-multi-classification-with-cross-fold-validation">Example: supervised multi-classification with cross-fold validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#API-Details">API Details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Metrics-&amp;-Visualization">Metrics &amp; Visualization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AIQC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Experiments</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/example_experiments.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Experiments">
+<h1>Experiments<a class="headerlink" href="#Experiments" title="Permalink to this headline">¶</a></h1>
+<p>Just to be clear, the following examples are for demonstration and testing purposes only. Users are not supposed to make their own dummy batches using their own data. Refer to the sections <a class="reference internal" href="api_high_level.html"><span class="doc">High-Level API</span></a> and/ or <a class="reference external" href="api_low_level.ipnyb">Low-Level API</a> if you actually want to use the library.</p>
+<div class="section" id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>If you’ve already completed the <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> section, then let’s get started.</p></li>
+<li><p>This section makes use of the data in the <a class="reference internal" href="example_datasets.html"><span class="doc">Example Datasets</span></a> section.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">examples</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/compat/__init__.py:120: UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+  warnings.warn(msg)
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Dummy-Experiments">
+<h2>Dummy Experiments<a class="headerlink" href="#Dummy-Experiments" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">list_demo_batches()</span></code> method describes the predefined experiments that are available.</p>
+<blockquote>
+<div><p>By default it returns a Pandas DataFrame, but you can <code class="docutils literal notranslate"><span class="pre">list_demo_files(format='list')</span></code> to change that.</p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">examples</span><span class="o">.</span><span class="n">list_demo_batches</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>batch_name</th>
+      <th>supervision</th>
+      <th>analysis</th>
+      <th>sub_analysis</th>
+      <th>validation</th>
+      <th>dataset</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multiclass</td>
+      <td>supervised</td>
+      <td>classification</td>
+      <td>multi label</td>
+      <td>validation split</td>
+      <td>iris.tsv</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>binary</td>
+      <td>supervised</td>
+      <td>classification</td>
+      <td>binary</td>
+      <td>validation split</td>
+      <td>sonar.csv</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>regression</td>
+      <td>supervised</td>
+      <td>regression</td>
+      <td>None</td>
+      <td>validation split</td>
+      <td>houses.csv</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>multiclass_folded</td>
+      <td>supervised</td>
+      <td>classification</td>
+      <td>multi label</td>
+      <td>cross-folds</td>
+      <td>iris_10x.tsv</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<ul class="simple">
+<li><p>Each <code class="docutils literal notranslate"><span class="pre">Batch</span></code> contains predefined training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> and a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</p>
+<ul>
+<li><p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> is comprised of:</p>
+<ul>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> and a unique <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p></li>
+<li><p>They gets fit to a <code class="docutils literal notranslate"><span class="pre">Datasets</span></code> made from a dummy data file seen above.</p>
+<ul>
+<li><p>More specifically, its <code class="docutils literal notranslate"><span class="pre">Labels,</span> <span class="pre">Featuresets</span></code> are sliced into <code class="docutils literal notranslate"><span class="pre">Splitsets,</span> <span class="pre">Foldsets</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="Example:-supervised-regression">
+<h2>Example: supervised regression<a class="headerlink" href="#Example:-supervised-regression" title="Permalink to this headline">¶</a></h2>
+<p>The entries from the <code class="docutils literal notranslate"><span class="pre">name</span></code> column above, can be fed into the <code class="docutils literal notranslate"><span class="pre">make_demo_batch()</span></code> method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">make_demo_batch</span><span class="p">(</span><span class="s1">&#39;regression&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ORM-in-action">
+<h3>ORM in action<a class="headerlink" href="#ORM-in-action" title="Permalink to this headline">¶</a></h3>
+<p>It’s easy to dig into the Batches using the ORM to see how they are constructed.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">job_count</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+4
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;neuron_count&#39;: 48, &#39;epochs&#39;: 75}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">splitset</span><span class="o">.</span><span class="n">featureset</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;rows&#39;: 506, &#39;columns&#39;: 13}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_train</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;function aiqc.examples.regression_model_train(model, samples_train, samples_evaluate, **hyperparameters)&gt;
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Hyperparameter-tuning-in-action">
+<h3>Hyperparameter tuning in action<a class="headerlink" href="#Hyperparameter-tuning-in-action" title="Permalink to this headline">¶</a></h3>
+<p>When you execute a Batch of Jobs, it will run the jobs on a background process, so you can continue to work in your Python shell.</p>
+<blockquote>
+<div><p>It does this by spawning a <code class="docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code> that lives until each Job is completed or the process is killed.</p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  50%|█████████████████████                     | 2/4 [00:13&lt;00:12,  6.29s/it]
+</pre></div></div>
+</div>
+<p>The execution of the Jobs can easily be stopped, and then resumed at the Job that was previously running.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">stop_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Killed `multiprocessing.Process` &#39;aiqc_batch_9&#39; spawned from Batch &lt;id:9&gt;
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Resuming jobs...
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:13&lt;00:00,  3.37s/it]
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Inspecting-the-Result-of-an-Individual-Job">
+<h3>Inspecting the Result of an Individual Job<a class="headerlink" href="#Inspecting-the-Result-of-an-Individual-Job" title="Permalink to this headline">¶</a></h3>
+<p>When each Job completes, it will create a <code class="docutils literal notranslate"><span class="pre">Result</span></code> that contains <code class="docutils literal notranslate"><span class="pre">predictions</span></code> and <code class="docutils literal notranslate"><span class="pre">metrics</span></code> attributes for each split/ fold.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;test&#39;: {&#39;r2&#39;: 0.6963792716428294,
+  &#39;mse&#39;: 0.2951804864898259,
+  &#39;explained_variance&#39;: 0.7063090130204511,
+  &#39;loss&#39;: 0.29518043994903564},
+ &#39;validation&#39;: {&#39;r2&#39;: 0.7381085765314983,
+  &#39;mse&#39;: 0.2410270741642624,
+  &#39;explained_variance&#39;: 0.7466099877263364,
+  &#39;loss&#39;: 0.2410270869731903},
+ &#39;train&#39;: {&#39;r2&#39;: 0.734697880657778,
+  &#39;mse&#39;: 0.26530211934222203,
+  &#39;explained_variance&#39;: 0.7404845093871112,
+  &#39;loss&#39;: 0.2653021216392517}}
+</pre></div></div>
+</div>
+<p>The JSON values of these attributes are interoperable with Python dictionaries.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[-0.15168118],
+       [ 1.6077876 ],
+       [ 0.3561042 ],
+       [ 0.08792061],
+       [ 2.1205187 ],
+       [-0.22818494],
+       [-0.27557564],
+       [-0.44030523],
+       [-0.07237878],
+       [ 0.310706  ],
+       [ 0.28391394],
+       [ 0.0256266 ],
+       [ 0.9612344 ],
+       [ 1.6431339 ],
+       [-0.4306181 ],
+       [-0.31357193],
+       [ 0.3742989 ],
+       [ 0.19994563],
+       [-0.622221  ],
+       [-0.6667788 ],
+       [-0.43117243],
+       [ 0.25616717],
+       [-0.11828876],
+       [-0.24248827],
+       [-0.43472743],
+       [ 0.4519846 ],
+       [-0.3030482 ],
+       [ 0.78143   ],
+       [ 0.07700422],
+       [-0.11437604],
+       [-0.68678147],
+       [ 0.10900812],
+       [-0.22920918],
+       [-0.42426032],
+       [-0.39213717],
+       [ 2.0510547 ],
+       [ 0.8801753 ],
+       [ 0.8849825 ],
+       [ 0.26650494],
+       [-0.10267839],
+       [ 0.07201514],
+       [-0.20041507],
+       [ 0.16122897],
+       [ 0.16937049],
+       [ 0.05018368],
+       [-0.11809018],
+       [-0.6085579 ],
+       [-0.11699814],
+       [-1.2536042 ],
+       [-0.7915618 ],
+       [ 0.5479494 ],
+       [-1.2893813 ],
+       [ 0.10414179],
+       [-0.08231622],
+       [ 0.68587244],
+       [-0.17288744],
+       [-0.63224846],
+       [ 0.36024013],
+       [-0.17809182],
+       [ 0.32666472],
+       [-0.05707991],
+       [-0.09271279],
+       [-0.12722445],
+       [ 0.8241014 ],
+       [-0.05341268],
+       [-0.44490927],
+       [ 0.14057632],
+       [ 0.20208912],
+       [ 0.38894013],
+       [ 1.7808566 ],
+       [-0.44742465]], dtype=float32)
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Inspecting-the-metrics-of-the-entire-Batch">
+<h3>Inspecting the metrics of the entire Batch<a class="headerlink" href="#Inspecting-the-metrics-of-the-entire-Batch" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>job_id</th>
+      <th>split</th>
+      <th>r2</th>
+      <th>mse</th>
+      <th>explained_variance</th>
+      <th>loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>33</td>
+      <td>test</td>
+      <td>0.664181</td>
+      <td>0.326484</td>
+      <td>0.766747</td>
+      <td>0.326484</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>33</td>
+      <td>validation</td>
+      <td>0.694890</td>
+      <td>0.280802</td>
+      <td>0.801747</td>
+      <td>0.280802</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>33</td>
+      <td>train</td>
+      <td>0.721822</td>
+      <td>0.278178</td>
+      <td>0.793746</td>
+      <td>0.278178</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>34</td>
+      <td>test</td>
+      <td>0.703963</td>
+      <td>0.287808</td>
+      <td>0.709323</td>
+      <td>0.287808</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>34</td>
+      <td>validation</td>
+      <td>0.719353</td>
+      <td>0.258289</td>
+      <td>0.729316</td>
+      <td>0.258289</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>34</td>
+      <td>train</td>
+      <td>0.722841</td>
+      <td>0.277159</td>
+      <td>0.738167</td>
+      <td>0.277159</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>35</td>
+      <td>test</td>
+      <td>0.734238</td>
+      <td>0.258374</td>
+      <td>0.734808</td>
+      <td>0.258374</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>35</td>
+      <td>validation</td>
+      <td>0.743797</td>
+      <td>0.235792</td>
+      <td>0.748372</td>
+      <td>0.235792</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>35</td>
+      <td>train</td>
+      <td>0.779638</td>
+      <td>0.220362</td>
+      <td>0.785239</td>
+      <td>0.220362</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>36</td>
+      <td>test</td>
+      <td>0.696379</td>
+      <td>0.295180</td>
+      <td>0.706309</td>
+      <td>0.295180</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>36</td>
+      <td>validation</td>
+      <td>0.738109</td>
+      <td>0.241027</td>
+      <td>0.746610</td>
+      <td>0.241027</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>36</td>
+      <td>train</td>
+      <td>0.734698</td>
+      <td>0.265302</td>
+      <td>0.740485</td>
+      <td>0.265302</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Example:-supervised-multi-classification-with-cross-fold-validation">
+<h2>Example: supervised multi-classification with cross-fold validation<a class="headerlink" href="#Example:-supervised-multi-classification-with-cross-fold-validation" title="Permalink to this headline">¶</a></h2>
+<p>The following method uses <em>demo_file</em> ‘iris_10x.tsv’, so if you see duplicate samples that is why.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">make_demo_batch</span><span class="p">(</span><span class="s1">&#39;multiclass_folded&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮: 100%|████████████████████████████████████████| 10/10 [00:51&lt;00:00,  5.18s/it]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">job_count</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+10
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>job_id</th>
+      <th>split</th>
+      <th>roc_auc</th>
+      <th>accuracy</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>37</td>
+      <td>test</td>
+      <td>0.999822</td>
+      <td>0.995556</td>
+      <td>0.995614</td>
+      <td>0.995556</td>
+      <td>0.995555</td>
+      <td>0.027901</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>37</td>
+      <td>folds_train_combined</td>
+      <td>0.999638</td>
+      <td>0.994048</td>
+      <td>0.994151</td>
+      <td>0.994048</td>
+      <td>0.994047</td>
+      <td>0.034026</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>37</td>
+      <td>fold_validation</td>
+      <td>0.999460</td>
+      <td>0.990476</td>
+      <td>0.990752</td>
+      <td>0.990476</td>
+      <td>0.990478</td>
+      <td>0.037803</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>38</td>
+      <td>test</td>
+      <td>1.000000</td>
+      <td>0.997778</td>
+      <td>0.997792</td>
+      <td>0.997778</td>
+      <td>0.997778</td>
+      <td>0.015914</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>38</td>
+      <td>folds_train_combined</td>
+      <td>1.000000</td>
+      <td>0.992857</td>
+      <td>0.993008</td>
+      <td>0.992857</td>
+      <td>0.992857</td>
+      <td>0.021590</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>38</td>
+      <td>fold_validation</td>
+      <td>1.000000</td>
+      <td>0.995238</td>
+      <td>0.995304</td>
+      <td>0.995238</td>
+      <td>0.995237</td>
+      <td>0.023279</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>39</td>
+      <td>test</td>
+      <td>0.999793</td>
+      <td>0.940000</td>
+      <td>0.949153</td>
+      <td>0.940000</td>
+      <td>0.939510</td>
+      <td>0.089607</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>39</td>
+      <td>folds_train_combined</td>
+      <td>0.999669</td>
+      <td>0.938095</td>
+      <td>0.947880</td>
+      <td>0.938095</td>
+      <td>0.937595</td>
+      <td>0.100268</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>39</td>
+      <td>fold_validation</td>
+      <td>0.998013</td>
+      <td>0.947619</td>
+      <td>0.954478</td>
+      <td>0.947619</td>
+      <td>0.947186</td>
+      <td>0.123960</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>40</td>
+      <td>test</td>
+      <td>0.999837</td>
+      <td>0.957778</td>
+      <td>0.962525</td>
+      <td>0.957778</td>
+      <td>0.957608</td>
+      <td>0.063986</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>40</td>
+      <td>folds_train_combined</td>
+      <td>0.999733</td>
+      <td>0.952381</td>
+      <td>0.958390</td>
+      <td>0.952381</td>
+      <td>0.952160</td>
+      <td>0.072892</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>40</td>
+      <td>fold_validation</td>
+      <td>0.998561</td>
+      <td>0.957143</td>
+      <td>0.961847</td>
+      <td>0.957143</td>
+      <td>0.956892</td>
+      <td>0.089163</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>41</td>
+      <td>test</td>
+      <td>0.999926</td>
+      <td>0.991111</td>
+      <td>0.991342</td>
+      <td>0.991111</td>
+      <td>0.991110</td>
+      <td>0.035634</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>41</td>
+      <td>folds_train_combined</td>
+      <td>0.999761</td>
+      <td>0.984524</td>
+      <td>0.985201</td>
+      <td>0.984524</td>
+      <td>0.984513</td>
+      <td>0.045547</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>41</td>
+      <td>fold_validation</td>
+      <td>1.000000</td>
+      <td>0.995238</td>
+      <td>0.995309</td>
+      <td>0.995238</td>
+      <td>0.995239</td>
+      <td>0.038224</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>42</td>
+      <td>test</td>
+      <td>0.999970</td>
+      <td>0.997778</td>
+      <td>0.997792</td>
+      <td>0.997778</td>
+      <td>0.997778</td>
+      <td>0.020623</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>42</td>
+      <td>folds_train_combined</td>
+      <td>0.999821</td>
+      <td>0.991667</td>
+      <td>0.991867</td>
+      <td>0.991667</td>
+      <td>0.991665</td>
+      <td>0.027902</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>42</td>
+      <td>fold_validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.013354</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>43</td>
+      <td>test</td>
+      <td>0.999970</td>
+      <td>0.995556</td>
+      <td>0.995614</td>
+      <td>0.995556</td>
+      <td>0.995555</td>
+      <td>0.014256</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>43</td>
+      <td>folds_train_combined</td>
+      <td>0.999873</td>
+      <td>0.992857</td>
+      <td>0.993006</td>
+      <td>0.992857</td>
+      <td>0.992856</td>
+      <td>0.020527</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>43</td>
+      <td>fold_validation</td>
+      <td>0.999862</td>
+      <td>0.995238</td>
+      <td>0.995306</td>
+      <td>0.995238</td>
+      <td>0.995239</td>
+      <td>0.019056</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>44</td>
+      <td>test</td>
+      <td>0.999881</td>
+      <td>0.993333</td>
+      <td>0.993348</td>
+      <td>0.993333</td>
+      <td>0.993333</td>
+      <td>0.019518</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>44</td>
+      <td>folds_train_combined</td>
+      <td>0.999593</td>
+      <td>0.986905</td>
+      <td>0.986908</td>
+      <td>0.986905</td>
+      <td>0.986905</td>
+      <td>0.028145</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>44</td>
+      <td>fold_validation</td>
+      <td>0.999656</td>
+      <td>0.985714</td>
+      <td>0.985771</td>
+      <td>0.985714</td>
+      <td>0.985710</td>
+      <td>0.027292</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>45</td>
+      <td>test</td>
+      <td>0.999733</td>
+      <td>0.984444</td>
+      <td>0.985138</td>
+      <td>0.984444</td>
+      <td>0.984436</td>
+      <td>0.032462</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>45</td>
+      <td>folds_train_combined</td>
+      <td>0.999639</td>
+      <td>0.979762</td>
+      <td>0.980940</td>
+      <td>0.979762</td>
+      <td>0.979753</td>
+      <td>0.040531</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>45</td>
+      <td>fold_validation</td>
+      <td>0.999453</td>
+      <td>0.980952</td>
+      <td>0.981917</td>
+      <td>0.980952</td>
+      <td>0.980902</td>
+      <td>0.044747</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>46</td>
+      <td>test</td>
+      <td>0.999970</td>
+      <td>0.997778</td>
+      <td>0.997792</td>
+      <td>0.997778</td>
+      <td>0.997778</td>
+      <td>0.017208</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>46</td>
+      <td>folds_train_combined</td>
+      <td>0.999851</td>
+      <td>0.991667</td>
+      <td>0.991867</td>
+      <td>0.991667</td>
+      <td>0.991664</td>
+      <td>0.028999</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>46</td>
+      <td>fold_validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.017045</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="section" id="API-Details">
+<h3>API Details<a class="headerlink" href="#API-Details" title="Permalink to this headline">¶</a></h3>
+<p>For more detailed information reference the <a class="reference internal" href="api_low_level.html"><span class="doc">Low-Level API</span></a> documentation.</p>
+</div>
+<div class="section" id="Metrics-&amp;-Visualization">
+<h3>Metrics &amp; Visualization<a class="headerlink" href="#Metrics-&-Visualization" title="Permalink to this headline">¶</a></h3>
+<p>For more information of visualization of performance metrics, reference the <a class="reference internal" href="api_low_level.html"><span class="doc">Visualization &amp; Metrics</span></a> documentation.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="example_datasets.html" class="btn btn-neutral float-left" title="Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Team AIQC
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

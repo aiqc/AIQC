@@ -1,0 +1,719 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# High-Level API"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "These are the main objects used in the high-level API to create models, intelligently feed samples into them, and experiment with hyperparameters."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* An `Algorithm` groups together:\n",
+    "  * Functions to build, train, predict, and evaluate a machine learning model."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* A `DataPipeline` groups together:\n",
+    "  * Dataset, Label, Featureset, Splitset, Foldset, Folds, Preprocess.\n",
+    "  * Splitsets and Folds are stratified by either categorical label class or continuous bins."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* An `Experiment` groups together:\n",
+    "  * Algorithm, Hyperparamset, Hyperparamcombos, DataPipeline, Batch, Job."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In this way, the high-level API abstracts the lower-level API to make things easier for the user."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Prerequisites\n",
+    "* If you've already completed the *[Installation](installation.ipynb)* section, then let's get started."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/compat/__init__.py:120: UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.\n",
+      "  warnings.warn(msg)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import aiqc\n",
+    "from aiqc import examples"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Usage"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1. Algorithm"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "An `Algorithm` is the ORM's codename for a machine learning model since *Model* is the most important *reserved word* for ORMs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import keras\n",
+    "from keras import metrics\n",
+    "from keras.models import Sequential\n",
+    "from keras.callbacks import History\n",
+    "from keras.layers import Dense, Dropout"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "You can name the functions below whatever you want, but do not change the predetermined `*args` (e.g. `**hyperparameters`, `model`, etc.).\n",
+    "\n",
+    "Put a placeholder anywhere you want to try out different hyperparameters: `hyperparameters['<some_variable_name>']`. You'll get a chance to define the hyperparameters in a minute."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def function_model_build(**hyperparameters):\n",
+    "    model = Sequential()\n",
+    "    model.add(Dense(13, input_shape=(4,), activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dropout(0.2))\n",
+    "    model.add(Dense(hyperparameters['l2_neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dense(3, activation='softmax', name='output'))\n",
+    "\n",
+    "    model.compile(optimizer=hyperparameters['optimizer'], loss='categorical_crossentropy', metrics=['accuracy'])\n",
+    "    \n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def function_model_train(model, samples_train, samples_evaluate, **hyperparameters):\n",
+    "    model.fit(\n",
+    "        samples_train[\"features\"]\n",
+    "        , samples_train[\"labels\"]\n",
+    "        , validation_data = (\n",
+    "            samples_evaluate[\"features\"]\n",
+    "            , samples_evaluate[\"labels\"]\n",
+    "        )\n",
+    "        , verbose = 0\n",
+    "        , batch_size = 3\n",
+    "        , epochs = hyperparameters['epochs']\n",
+    "        , callbacks=[History()]\n",
+    "    )\n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Then pass these functions into the `Algorithm`.\n",
+    "\n",
+    "The `library` and `analysis_type` help handle the model and its output behind the scenes. Current analysis types include: 'classification_multi', 'classification_binary', and 'regression'."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "algorithm = aiqc.Algorithm.make(\n",
+    "\tlibrary = \"keras\"\n",
+    "\t, analysis_type = \"classification_multi\"\n",
+    "\t, function_model_build = function_model_build\n",
+    "\t, function_model_train = function_model_train\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Hyperparameters"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `hyperparameters` below will be automatically fed into the functions above as `**kwargs` via the `**hyperparameters` argument we saw earlier.\n",
+    "\n",
+    "For example, wherever you see `hyperparameters['neuron_count']`, it will pull from the *key:value* pair `\"neuron_count\": [9, 12]` seen below. Where model A will have 9 neurons and model B will have 12 neurons."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparameters = {\n",
+    "\t\"neuron_count\": [9, 12]\n",
+    "\t, \"learning_rate\": [0.03, 0.05]\n",
+    "    , \"epoch_count\": [25, 50]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2. DataPipeline"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import *"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "file_path = examples.demo_file_to_pandas('iris.tsv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "datapipeline = aiqc.DataPipeline.make(\n",
+    "\tdataFrame_or_filePath = file_path\n",
+    "\t, label_column = 'species'\n",
+    "\t, size_test = 0.24\n",
+    "\t, size_validation = 0.16\n",
+    "\t, fold_count = None\n",
+    "\t, encoder_features = StandardScaler()\n",
+    "\t, encoder_labels = OneHotEncoder(sparse=False)\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Don't use `fold_count` unless your (total sample count / fold_count) still gives you an accurate representation of your sample population. You can try it with the 'iris_10x.tsv' demo_file.\n",
+    ">\n",
+    "> In the future, we'll turn the `encoder_*` attributes into customizable functions."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3. Experiment"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now it's time to bring together the data and logic into an `Experiment`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "experiment = algorithm.make_experiment(\n",
+    "\tdatapipeline_id = datapipeline.id\n",
+    "\t, hyperparameters = hyperparameters\n",
+    "\t, description = \"primarily comparing epochs and lr\"\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "batch = experiment.batch"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:22<00:00,  2.76s/it]\n"
+     ]
+    }
+   ],
+   "source": [
+    "batch.run_jobs()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>job_id</th>\n",
+       "      <th>split</th>\n",
+       "      <th>roc_auc</th>\n",
+       "      <th>accuracy</th>\n",
+       "      <th>precision</th>\n",
+       "      <th>recall</th>\n",
+       "      <th>f1</th>\n",
+       "      <th>loss</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>69</td>\n",
+       "      <td>test</td>\n",
+       "      <td>0.990741</td>\n",
+       "      <td>0.972222</td>\n",
+       "      <td>0.974359</td>\n",
+       "      <td>0.972222</td>\n",
+       "      <td>0.972174</td>\n",
+       "      <td>0.144671</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>69</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>0.995294</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.964444</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.959843</td>\n",
+       "      <td>0.110496</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>69</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.035898</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>70</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.023039</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>70</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.964444</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.959843</td>\n",
+       "      <td>0.122498</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>70</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.988764</td>\n",
+       "      <td>0.989126</td>\n",
+       "      <td>0.988764</td>\n",
+       "      <td>0.988761</td>\n",
+       "      <td>0.042143</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>71</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.021097</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>71</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>0.936000</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>0.918730</td>\n",
+       "      <td>0.132168</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>71</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.977528</td>\n",
+       "      <td>0.978933</td>\n",
+       "      <td>0.977528</td>\n",
+       "      <td>0.977503</td>\n",
+       "      <td>0.053429</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>72</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.972222</td>\n",
+       "      <td>0.974359</td>\n",
+       "      <td>0.972222</td>\n",
+       "      <td>0.972174</td>\n",
+       "      <td>0.065750</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>72</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>0.990588</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>0.936000</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>0.918730</td>\n",
+       "      <td>0.267570</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>72</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.009216</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>73</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.025736</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>73</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>0.995294</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.964444</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.959843</td>\n",
+       "      <td>0.139106</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>73</td>\n",
+       "      <td>train</td>\n",
+       "      <td>0.999238</td>\n",
+       "      <td>0.977528</td>\n",
+       "      <td>0.978933</td>\n",
+       "      <td>0.977528</td>\n",
+       "      <td>0.977503</td>\n",
+       "      <td>0.048967</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>74</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.013279</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>74</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>0.995294</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>0.936000</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>0.918730</td>\n",
+       "      <td>0.239182</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>74</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.988764</td>\n",
+       "      <td>0.989126</td>\n",
+       "      <td>0.988764</td>\n",
+       "      <td>0.988761</td>\n",
+       "      <td>0.029774</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>75</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.005115</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>75</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.964444</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.959843</td>\n",
+       "      <td>0.170973</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>20</th>\n",
+       "      <td>75</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.988764</td>\n",
+       "      <td>0.989126</td>\n",
+       "      <td>0.988764</td>\n",
+       "      <td>0.988761</td>\n",
+       "      <td>0.026200</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>21</th>\n",
+       "      <td>76</td>\n",
+       "      <td>test</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.008066</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>22</th>\n",
+       "      <td>76</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>0.995294</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.964444</td>\n",
+       "      <td>0.960000</td>\n",
+       "      <td>0.959843</td>\n",
+       "      <td>0.165211</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>23</th>\n",
+       "      <td>76</td>\n",
+       "      <td>train</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.024327</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    job_id       split   roc_auc  accuracy  precision    recall        f1  \\\n",
+       "0       69        test  0.990741  0.972222   0.974359  0.972222  0.972174   \n",
+       "1       69  validation  0.995294  0.960000   0.964444  0.960000  0.959843   \n",
+       "2       69       train  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "3       70        test  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "4       70  validation  1.000000  0.960000   0.964444  0.960000  0.959843   \n",
+       "5       70       train  1.000000  0.988764   0.989126  0.988764  0.988761   \n",
+       "6       71        test  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "7       71  validation  1.000000  0.920000   0.936000  0.920000  0.918730   \n",
+       "8       71       train  1.000000  0.977528   0.978933  0.977528  0.977503   \n",
+       "9       72        test  1.000000  0.972222   0.974359  0.972222  0.972174   \n",
+       "10      72  validation  0.990588  0.920000   0.936000  0.920000  0.918730   \n",
+       "11      72       train  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "12      73        test  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "13      73  validation  0.995294  0.960000   0.964444  0.960000  0.959843   \n",
+       "14      73       train  0.999238  0.977528   0.978933  0.977528  0.977503   \n",
+       "15      74        test  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "16      74  validation  0.995294  0.920000   0.936000  0.920000  0.918730   \n",
+       "17      74       train  1.000000  0.988764   0.989126  0.988764  0.988761   \n",
+       "18      75        test  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "19      75  validation  1.000000  0.960000   0.964444  0.960000  0.959843   \n",
+       "20      75       train  1.000000  0.988764   0.989126  0.988764  0.988761   \n",
+       "21      76        test  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "22      76  validation  0.995294  0.960000   0.964444  0.960000  0.959843   \n",
+       "23      76       train  1.000000  1.000000   1.000000  1.000000  1.000000   \n",
+       "\n",
+       "        loss  \n",
+       "0   0.144671  \n",
+       "1   0.110496  \n",
+       "2   0.035898  \n",
+       "3   0.023039  \n",
+       "4   0.122498  \n",
+       "5   0.042143  \n",
+       "6   0.021097  \n",
+       "7   0.132168  \n",
+       "8   0.053429  \n",
+       "9   0.065750  \n",
+       "10  0.267570  \n",
+       "11  0.009216  \n",
+       "12  0.025736  \n",
+       "13  0.139106  \n",
+       "14  0.048967  \n",
+       "15  0.013279  \n",
+       "16  0.239182  \n",
+       "17  0.029774  \n",
+       "18  0.005115  \n",
+       "19  0.170973  \n",
+       "20  0.026200  \n",
+       "21  0.008066  \n",
+       "22  0.165211  \n",
+       "23  0.024327  "
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "batch.metrics_to_pandas()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Metrics & Visualization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For more information of visualization of performance metrics, reference the *[Visualization & Metrics](api_low_level.ipynb)* documentation."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

@@ -1,0 +1,2161 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Low-Level API &mdash; AIQC  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualization &amp; Metrics" href="visualization.html" />
+    <link rel="prev" title="High-Level API" href="api_high_level.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/aiqc_logo_wide_white_docs.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Highlights</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Low-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Pandas-DataFrame">Pandas DataFrame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#NumPy-Array">NumPy Array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#File">File</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Fetch-a-Dataset-with-either-Pandas-or-NumPy.">Fetch a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> with either <strong>Pandas</strong> or <strong>NumPy</strong>.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#2.-Select-the-Label-column(s).">2. Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Fetch-a-Label-with-either-Pandas-or-NumPy.">Fetch a <code class="docutils literal notranslate"><span class="pre">Label</span></code> with either <strong>Pandas</strong> or <strong>NumPy</strong>.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#3.-Select-the-Featureset-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Fetch-a-Featureset-with-either-Pandas-or-NumPy.">Fetch a <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> with either <strong>Pandas</strong> or <strong>NumPy</strong>.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Ways-to-split-a-Dataset">Ways to split a Dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Fetching-a-Splitset-into-memory">Fetching a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> into memory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#5.-Optionally,-create-a-Foldset-for-cross-fold-validation.">5. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-fold validation.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Fetching-a-Foldset-into-memory">Fetching a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> into memory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#6.-Optionally,-create-a-Preprocess-for-features-&amp;-labels.">6. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Preprocess</span></code> for features &amp; labels.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7.-Create-an-Algorithm-aka-model.">7. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Function-to-build-model">Function to build model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Function-to-train-model">Function to train model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Optional,-functions-to-predict-samples">Optional, functions to predict samples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Optional,-functions-to-calculate-loss">Optional, functions to calculate loss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#8.-Optional,-associate-hyperparameters-with-your-model.">8. Optional, associate <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> with your model.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#9.-Create-a-Batch-of-Jobs-to-keep-track-of-training.">9. Create a <code class="docutils literal notranslate"><span class="pre">Batch</span></code> of <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> to keep track of training.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Execute-the-Batch.">Execute the <code class="docutils literal notranslate"><span class="pre">Batch</span></code>.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#10.-Assess-the-Results.">10. Assess the <code class="docutils literal notranslate"><span class="pre">Results</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Fetching-metrics.">Fetching metrics.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Metrics-&amp;-Visualization">Metrics &amp; Visualization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Built-In Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_experiments.html">Experiments</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AIQC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Low-Level API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/api_low_level.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Low-Level-API">
+<h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline">¶</a></h1>
+<p>You’ll need to reload the module so that the ORM can find the database path during initialization.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">examples</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/compat/__init__.py:120: UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+  warnings.warn(msg)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">delete_db</span><span class="p">(</span><span class="kc">True</span><span class="p">);</span> <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span><span class="p">;</span> <span class="n">reload</span><span class="p">(</span><span class="n">aiqc</span><span class="p">);</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Success - deleted database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+=&gt; Success - created database file for machine learning metrics at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+=&gt; Success - created the following tables within database:
+[&#39;algorithm&#39;, &#39;batch&#39;, &#39;datapipeline&#39;, &#39;dataset&#39;, &#39;experiment&#39;, &#39;featureset&#39;, &#39;fold&#39;, &#39;foldset&#39;, &#39;hyperparamcombo&#39;, &#39;hyperparamset&#39;, &#39;job&#39;, &#39;label&#39;, &#39;preprocess&#39;, &#39;result&#39;, &#39;splitset&#39;]
+
+</pre></div></div>
+</div>
+<div class="section" id="Usage">
+<h2>Usage<a class="headerlink" href="#Usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="1.-Ingest-a-Dataset">
+<h3>1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code><a class="headerlink" href="#1.-Ingest-a-Dataset" title="Permalink to this headline">¶</a></h3>
+<p>You can make a dataset from either an in-memory data structure (pandas dataframe, numpy array), or a file (csv, tsv, parquet).</p>
+<p><code class="docutils literal notranslate"><span class="pre">perform_gzip=True</span></code> will compress it: anywhere from ~25% to 90% size reduction.</p>
+<div class="section" id="Pandas-DataFrame">
+<h4>Pandas DataFrame<a class="headerlink" href="#Pandas-DataFrame" title="Permalink to this headline">¶</a></h4>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">demo_file_to_pandas</span><span class="p">(</span><span class="s1">&#39;iris.tsv&#39;</span><span class="p">)</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span>
+    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">df</span>
+    <span class="p">,</span> <span class="n">file_format</span> <span class="o">=</span> <span class="s1">&#39;csv&#39;</span>
+    <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># feeds pd.Dataframe(dtype)</span>
+    <span class="p">,</span> <span class="n">perform_gzip</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># feeds pd.Dataframe(columns)</span>
+    <span class="p">,</span> <span class="n">rename_columns</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="NumPy-Array">
+<h4>NumPy Array<a class="headerlink" href="#NumPy-Array" title="Permalink to this headline">¶</a></h4>
+<p>Regular <em>ndarrays</em> don’t have column names, and I didn’t like the API for <em>structured arrays</em> so you have to pass in columns names as a list. If you don’t then column names will be numerically assigned in ascending order (zero-based index).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">arr</span> <span class="o">=</span>  <span class="n">df</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+    <span class="n">ndarray</span> <span class="o">=</span> <span class="n">arr</span>
+    <span class="p">,</span> <span class="n">file_format</span> <span class="o">=</span> <span class="s1">&#39;parquet&#39;</span>
+    <span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;chunking plants&#39;</span>
+    <span class="p">,</span> <span class="n">perform_gzip</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">,</span> <span class="n">column_names</span> <span class="o">=</span> <span class="n">cols</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="File">
+<h4>File<a class="headerlink" href="#File" title="Permalink to this headline">¶</a></h4>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">demo_file_path</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">get_demo_file_path</span><span class="p">(</span><span class="s1">&#39;iris_10x.tsv&#39;</span><span class="p">)</span>
+
+<span class="c1"># we&#39;ll keep this one handy for later.</span>
+<span class="n">big_dataset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">demo_file_path</span> <span class="c1"># files must have column names as their first row</span>
+    <span class="p">,</span> <span class="n">file_format</span> <span class="o">=</span> <span class="s1">&#39;tsv&#39;</span>
+    <span class="p">,</span> <span class="n">perform_gzip</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<blockquote>
+<div><p>The bytes of the data will be stored as a BlobField in the SQLite database file. Storing the data in the database not only (a) provides an entity that we can use to keep track of experiments and link relational data to but also (b) makes the data less mutable than keeping it in the open filesystem.</p>
+</div></blockquote>
+<blockquote>
+<div><p>You can choose whether or not you want to gzip compress the file when importing it with the <code class="docutils literal notranslate"><span class="pre">perform_gzip=bool</span></code> parameter. This compression not only enables you to store up to 90% more data on your local machine, but also helps overcome the maximum BlobField size of 2.147 GB. We handle the zipping and unzipping on the fly for you, so you don’t even notice it.</p>
+<p>Optionally, <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, as seen in <code class="docutils literal notranslate"><span class="pre">`pandas.DataFrame.astype(dtype)</span></code> &lt;<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.astype.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.astype.html</a>&gt;`__, can be specified as either a single type for all columns, or as a dict that maps a specific type to each column name. This encodes features for analysis. We read NumPy into Pandas before persisting it, so <code class="docutils literal notranslate"><span class="pre">columns</span></code> and <code class="docutils literal notranslate"><span class="pre">dtype</span></code> are read directly by <code class="docutils literal notranslate"><span class="pre">pd.DataFrame()</span></code>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>At this point, the project’s support for Parquet is extremely minimal.</p>
+<p>If you leave <code class="docutils literal notranslate"><span class="pre">name</span></code> blank, it will default to a human-readble timestamp with the appropriate file extension (e.g. ‘2020_10_13-01_28_13_PM.tsv’).</p>
+</div></blockquote>
+</div>
+<div class="section" id="Fetch-a-Dataset-with-either-Pandas-or-NumPy.">
+<h4>Fetch a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> with either <strong>Pandas</strong> or <strong>NumPy</strong>.<a class="headerlink" href="#Fetch-a-Dataset-with-either-Pandas-or-NumPy." title="Permalink to this headline">¶</a></h4>
+<p>All of the <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> methods accept a <code class="docutils literal notranslate"><span class="pre">samples</span></code> argument. This is a list of sample indeces that is handy for fetching specific splits and folds. It returns all samples if left blank.</p>
+<p>Implicit IDs</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sepal_length</th>
+      <th>sepal_width</th>
+      <th>petal_length</th>
+      <th>petal_width</th>
+      <th>species</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.1</td>
+      <td>3.5</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4.9</td>
+      <td>3.0</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4.7</td>
+      <td>3.2</td>
+      <td>1.3</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4.6</td>
+      <td>3.1</td>
+      <td>1.5</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5.0</td>
+      <td>3.6</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">arr</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">79</span><span class="p">])</span>
+<span class="n">arr</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[5.1, 3.5, 1.4, 0.2, 0. ],
+       [4.3, 3. , 1.1, 0.1, 0. ],
+       [4.7, 3.2, 1.6, 0.2, 0. ],
+       [5.7, 2.6, 3.5, 1. , 1. ]])
+</pre></div></div>
+</div>
+<p>Explicit IDs</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">79</span><span class="p">])</span>
+<span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sepal_length</th>
+      <th>sepal_width</th>
+      <th>petal_length</th>
+      <th>petal_width</th>
+      <th>species</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.1</td>
+      <td>3.5</td>
+      <td>1.4</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>4.3</td>
+      <td>3.0</td>
+      <td>1.1</td>
+      <td>0.1</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>4.7</td>
+      <td>3.2</td>
+      <td>1.6</td>
+      <td>0.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>79</th>
+      <td>5.7</td>
+      <td>2.6</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">arr</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="n">arr</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[5.1, 3.5, 1.4, 0.2, 0. ],
+       [4.9, 3. , 1.4, 0.2, 0. ],
+       [4.7, 3.2, 1.3, 0.2, 0. ],
+       [4.6, 3.1, 1.5, 0.2, 0. ]])
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="2.-Select-the-Label-column(s).">
+<h3>2. Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).<a class="headerlink" href="#2.-Select-the-Label-column(s)." title="Permalink to this headline">¶</a></h3>
+<p>From a Dataset, pick the column(s) that you want to train against/ predict. If you are planning on training an unsupervised model, then you don’t need to do this.</p>
+<p>Creating a <code class="docutils literal notranslate"><span class="pre">Label</span></code> won’t duplicate your data! It simply records the <code class="docutils literal notranslate"><span class="pre">columns</span></code> to be used for supervised learning.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;species&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>Implicit IDs</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_label</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Explicit IDs</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">dataset_id</span><span class="o">=</span><span class="mi">1</span> <span class="c1"># cannot duplicate labels on the same dataset</span>
+    <span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">columns=[label_column]</span></code> is a list in case we want to do something with raw OHE/ tensors in the future.</p>
+</div></blockquote>
+<div class="section" id="Fetch-a-Label-with-either-Pandas-or-NumPy.">
+<h4>Fetch a <code class="docutils literal notranslate"><span class="pre">Label</span></code> with either <strong>Pandas</strong> or <strong>NumPy</strong>.<a class="headerlink" href="#Fetch-a-Label-with-either-Pandas-or-NumPy." title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">Label</span></code> comes in handy when we need to fetch <em>Y</em> splits. It accepts a <code class="docutils literal notranslate"><span class="pre">samples</span></code> argument.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>species</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>145</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>146</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>147</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>148</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>149</th>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">66</span><span class="p">,</span><span class="mi">99</span><span class="p">,</span><span class="mi">132</span><span class="p">])[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[0],
+       [0],
+       [1],
+       [1],
+       [2]])
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="3.-Select-the-Featureset-column(s).">
+<h3>3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).<a class="headerlink" href="#3.-Select-the-Featureset-column(s)." title="Permalink to this headline">¶</a></h3>
+<p>Creating a Featureset won’t duplicate your data! It simply records the <code class="docutils literal notranslate"><span class="pre">columns</span></code> to be used in training.</p>
+<p>There are three ways to define which columns you want to use as features:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_columns=[]</span></code> e.g. use all columns except the label column.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">include_columns=[]</span></code> e.g. only use these columns that I think are informative.</p></li>
+<li><p>Leave both of the above blank and all columns will be used e.g. unsupervised leanring.</p></li>
+</ul>
+<p>Implicit IDs w <code class="docutils literal notranslate"><span class="pre">exclude_columns=[]</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featureset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Explicit IDs w <code class="docutils literal notranslate"><span class="pre">include_columns=[]</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">include_columns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;sepal_length&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;petal_length&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;petal_width&#39;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featureset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Featureset</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">dataset_id</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># cannot duplicate featureset on a dataset</span>
+    <span class="p">,</span> <span class="n">include_columns</span> <span class="o">=</span> <span class="n">include_columns</span>
+    <span class="p">,</span> <span class="n">exclude_columns</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;sepal_length&#39;, &#39;petal_length&#39;, &#39;petal_width&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">columns_excluded</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;sepal_width&#39;, &#39;species&#39;]
+</pre></div></div>
+</div>
+<div class="section" id="Fetch-a-Featureset-with-either-Pandas-or-NumPy.">
+<h4>Fetch a <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> with either <strong>Pandas</strong> or <strong>NumPy</strong>.<a class="headerlink" href="#Fetch-a-Featureset-with-either-Pandas-or-NumPy." title="Permalink to this headline">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[5.1, 1.4, 0.2],
+       [4.9, 1.4, 0.2],
+       [4.7, 1.3, 0.2],
+       [4.6, 1.5, 0.2]])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sepal_length</th>
+      <th>petal_length</th>
+      <th>petal_width</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.1</td>
+      <td>1.4</td>
+      <td>0.2</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>5.4</td>
+      <td>1.3</td>
+      <td>0.4</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>5.2</td>
+      <td>1.5</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>5.6</td>
+      <td>3.6</td>
+      <td>1.3</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="4.-Slice-samples-with-a-Splitset.">
+<h3>4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#4.-Slice-samples-with-a-Splitset." title="Permalink to this headline">¶</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides a the samples of the Dataset into the following <em>splits</em>:</p>
+<ul class="simple">
+<li><p><em>train</em> - the samples that the model will be trained upon.</p>
+<ul>
+<li><p>Later, we’ll see how we can make cross-folds from our training split.</p></li>
+<li><p>Unsupervised learning will only have a training split.</p></li>
+</ul>
+</li>
+<li><p><em>validation (optional)</em> - samples used for training evaluation.</p>
+<ul>
+<li><p>Ensures that the test set is not revealed to the model during training.</p></li>
+</ul>
+</li>
+<li><p><em>test (optional)</em> - samples the model has never seen during training.</p>
+<ul>
+<li><p>Used to assess how well the model will perform on unobserved, natural data when it is applied in the real world aka how generalizable it is.</p></li>
+</ul>
+</li>
+</ul>
+<p>Again, creating a Splitset won’t duplicate your data. It simply records the sample indeces (aka rows) to be used in the splits that you specify.</p>
+<div class="section" id="Ways-to-split-a-Dataset">
+<h4>Ways to split a Dataset<a class="headerlink" href="#Ways-to-split-a-Dataset" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="a)-Default-supervised-70-30-split.">
+<h5>a) Default supervised 70-30 split.<a class="headerlink" href="#a)-Default-supervised-70-30-split." title="Permalink to this headline">¶</a></h5>
+<p>If you only provide a Label, then 70:30 train:test splits will be generated.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span><span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="b)-Specifying-test-size.">
+<h5>b) Specifying test size.<a class="headerlink" href="#b)-Specifying-test-size." title="Permalink to this headline">¶</a></h5>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+    <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.30</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="c)-Specifying-validation-size.">
+<h5>c) Specifying validation size.<a class="headerlink" href="#c)-Specifying-validation-size." title="Permalink to this headline">¶</a></h5>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+    <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.20</span>
+    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="d)-Taking-the-whole-dataset-as-a-training-split.">
+<h5>d) Taking the whole dataset as a training split.<a class="headerlink" href="#d)-Taking-the-whole-dataset-as-a-training-split." title="Permalink to this headline">¶</a></h5>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset_unsupervised</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<blockquote>
+<div><p>Label-based stratification is used to ensure equally distributed label classes for both categorical and continuous data.</p>
+<p>If you want more control over stratification of continuous splits, specify the number of <code class="docutils literal notranslate"><span class="pre">continuous_bin_count</span></code> for grouping.</p>
+</div></blockquote>
+</div>
+<div class="section" id="Sizes">
+<h5>Sizes<a class="headerlink" href="#Sizes" title="Permalink to this headline">¶</a></h5>
+<p>You can verify the actual size of your splits.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span><span class="o">.</span><span class="n">sizes</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;validation&#39;: {&#39;percent&#39;: 0.12, &#39;count&#39;: 18},
+ &#39;test&#39;: {&#39;percent&#39;: 0.2, &#39;count&#39;: 30},
+ &#39;train&#39;: {&#39;percent&#39;: 0.68, &#39;count&#39;: 102}}
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Fetching-a-Splitset-into-memory">
+<h4>Fetching a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> into memory<a class="headerlink" href="#Fetching-a-Splitset-into-memory" title="Permalink to this headline">¶</a></h4>
+<p>This is where things start to get interesting.</p>
+<ul class="simple">
+<li><p>Given that there are potentially multiple splits, <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> methods return dictionaries where each entry corresponds with a split.</p>
+<ul>
+<li><p>Additionally, each split will contain <em>features</em> and, potentially, <em>labels</em>.</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[4.9, 4.5, 1.7],
+       [6.4, 5.3, 1.9],
+       [5.8, 5.1, 1.9],
+       [4.8, 1.6, 0.2]])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>species</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>76</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>70</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>116</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>67</th>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="5.-Optionally,-create-a-Foldset-for-cross-fold-validation.">
+<h3>5. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-fold validation.<a class="headerlink" href="#5.-Optionally,-create-a-Foldset-for-cross-fold-validation." title="Permalink to this headline">¶</a></h3>
+<p><em>Reference the</em><a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a><em>to learn more about folding.</em></p>
+<p><img alt="Cross Folds" src="../_images/cross_fold.png" /></p>
+<p>We refer to the left out fold as the <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> and the remaining training data as the <code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code>. The sample indeces of the validation fold are still recorded.</p>
+<blockquote>
+<div><p>Don’t use <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> unless your (total sample count / fold_count) still gives you an accurate representation of your sample population.</p>
+</div></blockquote>
+<blockquote>
+<div><p>In a scenario where a validation split was specified in the original Splitset, the validation split is not included in the Folds. Only the training data is folded. The implication is that you can have 2 validations in the form of the validation split and the validation fold.</p>
+</div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># cross-folding takes many samples, especially when stratified.</span>
+<span class="c1"># which is why we set aside the &#39;big_dataset&#39; made from &#39;iris_10x.tsv&#39; earlier.</span>
+<span class="n">big_label</span> <span class="o">=</span> <span class="n">big_dataset</span><span class="o">.</span><span class="n">make_label</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+<span class="n">big_fset</span> <span class="o">=</span> <span class="n">big_dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+<span class="n">big_splits</span> <span class="o">=</span> <span class="n">big_fset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+    <span class="n">label_id</span> <span class="o">=</span> <span class="n">big_label</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.30</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This generates 5 <code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects that belong to the <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">foldset</span> <span class="o">=</span> <span class="n">big_splits</span><span class="o">.</span><span class="n">make_foldset</span><span class="p">(</span><span class="n">fold_count</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Fold-objects">
+<h4><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects<a class="headerlink" href="#Fold-objects" title="Permalink to this headline">¶</a></h4>
+<p>For the sake of determining which samples get trained upon, the only thing that matters is the slice of data that gets left out.</p>
+<p>We took a slightly simplified approach in that each <code class="docutils literal notranslate"><span class="pre">Fold</span></code> has a dictionary that contains: * <code class="docutils literal notranslate"><span class="pre">samples['folds_train_combined']</span></code> - all the included folds. * <code class="docutils literal notranslate"><span class="pre">samples['fold_validation']</span></code> - the fold that got left out.</p>
+<p><img alt="cross fold objects" src="../_images/cross_fold_objects.png" /></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">list</span><span class="p">(</span><span class="n">foldset</span><span class="o">.</span><span class="n">folds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;Fold: 1&gt;, &lt;Fold: 2&gt;, &lt;Fold: 3&gt;, &lt;Fold: 4&gt;, &lt;Fold: 5&gt;]
+</pre></div></div>
+</div>
+<div class="section" id="Sample-indeces-of-each-Fold:">
+<h5>Sample indeces of each Fold:<a class="headerlink" href="#Sample-indeces-of-each-Fold:" title="Permalink to this headline">¶</a></h5>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">folds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;folds_train_combined&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0, 1, 2, 4, 5, 7, 9, 11, 12, 13]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">folds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[3, 6, 8, 10, 21, 29, 32, 33, 38, 46]
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Fetching-a-Foldset-into-memory">
+<h4>Fetching a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> into memory<a class="headerlink" href="#Fetching-a-Foldset-into-memory" title="Permalink to this headline">¶</a></h4>
+<p>In order to reduce memory footprint the <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> methods introduce the <code class="docutils literal notranslate"><span class="pre">fold_index</span></code> argument.</p>
+<p>If no fold_index is specified, then it will fetch all folds and give each fold a numeric key according to its index.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([0, 1, 2, 3, 4])
+</pre></div></div>
+</div>
+<p>So you need to specify the <code class="docutils literal notranslate"><span class="pre">fold_index</span></code> as the first key when accessing the dictionary.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">fold_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[4.6, 3.1, 1.5, 0.2],
+       [4.6, 3.4, 1.4, 0.3],
+       [4.4, 2.9, 1.4, 0.2],
+       [5.4, 3.7, 1.5, 0.2]])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">fold_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;folds_train_combined&#39;</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>species</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1044</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1046</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1047</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1048</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1049</th>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="6.-Optionally,-create-a-Preprocess-for-features-&amp;-labels.">
+<h3>6. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Preprocess</span></code> for features &amp; labels.<a class="headerlink" href="#6.-Optionally,-create-a-Preprocess-for-features-&-labels." title="Permalink to this headline">¶</a></h3>
+<p>Certain algorithms need features and/ or labels formatted a certain way. For example, converting categorical data <code class="docutils literal notranslate"><span class="pre">[dog,</span> <span class="pre">cat,</span> <span class="pre">fish]</span></code> to one-hot encoded format <code class="docutils literal notranslate"><span class="pre">[[1,0,0][0,1,0][0,0,1]]</span></code>.</p>
+<p>The tricky thing about preprocessing is that you are supposed to <code class="docutils literal notranslate"><span class="pre">fit</span></code> it to the training data (train, folds_train_combined), and then <code class="docutils literal notranslate"><span class="pre">transform</span></code> each of the other splits (fold_validation, validation, test) in order to avoid bias. So the dataset itself should not be stored in preprocessed format.</p>
+<p>So you simply defined the encoders that you want to use and then they will automatically be applied to the appropriate splits/ folds during training.</p>
+<blockquote>
+<div><p>For now, only <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> methods are supported. That may change as we add support for more low-level tensor-based frameworks. And if people want to be able to run multiple encoders on their features of different data types.</p>
+</div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">encoder_features</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">encoder_labels</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Preprocess</span><span class="o">.</span><span class="n">from_splitset</span><span class="p">(</span>
+    <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;standard scaling on features&quot;</span>
+    <span class="p">,</span> <span class="n">encoder_features</span> <span class="o">=</span> <span class="n">encoder_features</span>
+    <span class="p">,</span> <span class="n">encoder_labels</span> <span class="o">=</span> <span class="n">encoder_labels</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="7.-Create-an-Algorithm-aka-model.">
+<h3>7. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.<a class="headerlink" href="#7.-Create-an-Algorithm-aka-model." title="Permalink to this headline">¶</a></h3>
+<p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is the ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> for ORMs.</p>
+<p>Let’s define functions to <strong>build</strong> and <strong>train</strong> our model.</p>
+<p>You can name the functions whatever you want, but do not change the predetermined <code class="docutils literal notranslate"><span class="pre">*args</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">**hyperparameters</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, etc.).</p>
+<p>Put a placeholder anywhere you want to try out different hyperparameters: <code class="docutils literal notranslate"><span class="pre">hyperparameters['&lt;some_variable_name&gt;']</span></code>. You’ll get a chance to define the hyperparameters in a minute.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">keras</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span>
+</pre></div>
+</div>
+</div>
+<p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is the ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> for ORMs.</p>
+<div class="section" id="Function-to-build-model">
+<h4>Function to build model<a class="headerlink" href="#Function-to-build-model" title="Permalink to this headline">¶</a></h4>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_build</span><span class="p">(</span><span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="s1">&#39;categorical_crossentropy&#39;</span>
+            <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">opt</span>
+            <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Function-to-train-model">
+<h4>Function to train model<a class="headerlink" href="#Function-to-train-model" title="Permalink to this headline">¶</a></h4>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[63]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+            <span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+            <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+                    <span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
+            <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">History</span><span class="p">()]</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Optional,-functions-to-predict-samples">
+<h4>Optional, functions to predict samples<a class="headerlink" href="#Optional,-functions-to-predict-samples" title="Permalink to this headline">¶</a></h4>
+<p>When creating an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>, the predict function will be generated for you automatically if set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> and <code class="docutils literal notranslate"><span class="pre">library</span></code> of the Algorithm help determine how to handle the predictions.</p>
+</div></blockquote>
+<div class="section" id="a)-Regression">
+<h5>a) Regression<a class="headerlink" href="#a)-Regression" title="Permalink to this headline">¶</a></h5>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[64]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_predict</span><span class="p">):</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples_predict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">predictions</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="b)-Classification-binary">
+<h5>b) Classification binary<a class="headerlink" href="#b)-Classification-binary" title="Permalink to this headline">¶</a></h5>
+<p>All classification <code class="docutils literal notranslate"><span class="pre">predictions</span></code>, both mutliclass and binary, must be returned in ordinal format.</p>
+<blockquote>
+<div><p>For most libraries, classification algorithms output probabilities as opposed to actual predictions when running <code class="docutils literal notranslate"><span class="pre">model.predict()</span></code>. We want to return both of these object <code class="docutils literal notranslate"><span class="pre">predictions,</span> <span class="pre">probabilities</span></code> (the order matters) to generate performance metrics behind the scenes.</p>
+</div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[65]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_predict</span><span class="p">):</span>
+    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples_predict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
+    <span class="c1"># This is the official keras replacement for binary classes `.predict_classes()`</span>
+    <span class="c1"># It returns one array per sample: `[[0][1][0][1]]`</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="c)-Classification-multiclass">
+<h5>c) Classification multiclass<a class="headerlink" href="#c)-Classification-multiclass" title="Permalink to this headline">¶</a></h5>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[78]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[66]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_predict</span><span class="p">):</span>
+    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples_predict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
+    <span class="c1"># This is the official keras replacement for multiclass `.predict_classes()`</span>
+    <span class="c1"># It returns one ordinal array per sample: `[[0][2][1][2]]`</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="Optional,-functions-to-calculate-loss">
+<h4>Optional, functions to calculate loss<a class="headerlink" href="#Optional,-functions-to-calculate-loss" title="Permalink to this headline">¶</a></h4>
+<p>When creating an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>, the evaluate function will be generated for you automatically if set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> and <code class="docutils literal notranslate"><span class="pre">library</span></code> of the Algorithm help determine how to handle the predictions.</p>
+</div></blockquote>
+<p>The only trick thing here is when <code class="docutils literal notranslate"><span class="pre">keras.metrics</span></code> returns multiple metrics, like <em>accuracy</em> or <em>R^2</em>. All we are after in this case is the loss for the split/ fold in question.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[67]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">):</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">metrics</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Yikes - The &#39;metrics&#39; returned are neither a list nor a float:</span><span class="se">\n</span><span class="si">{</span><span class="n">metrics</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss</span>
+</pre></div>
+</div>
+</div>
+<blockquote>
+<div><p>In contrast to openly specifying a loss function, for example <code class="docutils literal notranslate"><span class="pre">keras.losses.&lt;loss_fn&gt;()</span></code>, the use of <code class="docutils literal notranslate"><span class="pre">.evaluate()</span></code> is consistent because it comes from the compiled model. Also, although <code class="docutils literal notranslate"><span class="pre">model.compiled_loss</span></code> would be more efficient, it requires making encoded <code class="docutils literal notranslate"><span class="pre">y_true</span></code> and <code class="docutils literal notranslate"><span class="pre">y_pred</span></code> available to the user, whereas <code class="docutils literal notranslate"><span class="pre">.evaluate()</span></code> can be called with the same arugments as the other <code class="docutils literal notranslate"><span class="pre">function_model_*</span></code> and many deep learning libraries support this approach.</p>
+</div></blockquote>
+</div>
+<div class="section" id="Group-the-functions-together-in-an-Algorithm!">
+<h4>Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!<a class="headerlink" href="#Group-the-functions-together-in-an-Algorithm!" title="Permalink to this headline">¶</a></h4>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[68]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
+    <span class="p">,</span> <span class="n">function_model_build</span> <span class="o">=</span> <span class="n">function_model_build</span>
+    <span class="p">,</span> <span class="n">function_model_train</span> <span class="o">=</span> <span class="n">function_model_train</span>
+    <span class="p">,</span> <span class="n">function_model_predict</span> <span class="o">=</span> <span class="n">function_model_predict</span>
+    <span class="p">,</span> <span class="n">function_model_loss</span> <span class="o">=</span> <span class="n">function_model_loss</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="8.-Optional,-associate-hyperparameters-with-your-model.">
+<h3>8. Optional, associate <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> with your model.<a class="headerlink" href="#8.-Optional,-associate-hyperparameters-with-your-model." title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hyperparameters</span></code> argument we saw earlier.</p>
+<p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hyperparameters['neuron_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;neuron_count&quot;:</span> <span class="pre">[9,</span> <span class="pre">12]</span></code> seen below. Where model A will have 9 neurons and model B will have 12 neurons.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;neuron_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+    <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;experimenting with neuron count, layers, and epoch count&quot;</span>
+    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<blockquote>
+<div><p>In the future, we will provide different strategies for generating and selecting parameters to experiment with.</p>
+</div></blockquote>
+<div class="section" id="Hyperparamcombo-objects.">
+<h4><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.<a class="headerlink" href="#Hyperparamcombo-objects." title="Permalink to this headline">¶</a></h4>
+<p>Each unique combination of hyperparameters is recorded. A separate training <code class="docutils literal notranslate"><span class="pre">Job</span></code> will be made for each.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">hyperparamset</span><span class="o">.</span><span class="n">hyperparamcombo_count</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+8
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[71]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">hyperparamcombos</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">hyperparamcombos</span>
+
+<span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hyperparamcombos</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;neuron_count&#39;: 9, &#39;epoch_count&#39;: 30, &#39;learning_rate&#39;: 0.03}
+{&#39;neuron_count&#39;: 9, &#39;epoch_count&#39;: 30, &#39;learning_rate&#39;: 0.05}
+{&#39;neuron_count&#39;: 9, &#39;epoch_count&#39;: 60, &#39;learning_rate&#39;: 0.03}
+{&#39;neuron_count&#39;: 9, &#39;epoch_count&#39;: 60, &#39;learning_rate&#39;: 0.05}
+{&#39;neuron_count&#39;: 12, &#39;epoch_count&#39;: 30, &#39;learning_rate&#39;: 0.03}
+{&#39;neuron_count&#39;: 12, &#39;epoch_count&#39;: 30, &#39;learning_rate&#39;: 0.05}
+{&#39;neuron_count&#39;: 12, &#39;epoch_count&#39;: 60, &#39;learning_rate&#39;: 0.03}
+{&#39;neuron_count&#39;: 12, &#39;epoch_count&#39;: 60, &#39;learning_rate&#39;: 0.05}
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="9.-Create-a-Batch-of-Jobs-to-keep-track-of-training.">
+<h3>9. Create a <code class="docutils literal notranslate"><span class="pre">Batch</span></code> of <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> to keep track of training.<a class="headerlink" href="#9.-Create-a-Batch-of-Jobs-to-keep-track-of-training." title="Permalink to this headline">¶</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">Batch</span></code> ties together everything you need for hypertuning.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[79]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Batch</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+    <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">preprocess_id</span> <span class="o">=</span> <span class="n">preprocess</span><span class="o">.</span><span class="n">id</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Job-objects.">
+<h4><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#Job-objects." title="Permalink to this headline">¶</a></h4>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Batch represents a training run. It contains the information needed to execute the training run. Its <code class="docutils literal notranslate"><span class="pre">status</span></code> keeps track of its phase of execution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[80]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">status</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[80]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;Not yet started&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[81]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">get_statuses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[81]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{17: &#39;Not yet started&#39;,
+ 18: &#39;Not yet started&#39;,
+ 19: &#39;Not yet started&#39;,
+ 20: &#39;Not yet started&#39;,
+ 21: &#39;Not yet started&#39;,
+ 22: &#39;Not yet started&#39;,
+ 23: &#39;Not yet started&#39;,
+ 24: &#39;Not yet started&#39;}
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Execute-the-Batch.">
+<h4>Execute the <code class="docutils literal notranslate"><span class="pre">Batch</span></code>.<a class="headerlink" href="#Execute-the-Batch." title="Permalink to this headline">¶</a></h4>
+<p>The Jobs will be asynchronously executed on a background process, so that you can continue to code on the main process. You can poll the Job status.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  25%|██████████▌                               | 2/8 [00:04&lt;00:12,  2.14s/it]
+</pre></div></div>
+</div>
+<p>You can stop the execution of a batch if you need to, and later resume it. If your kernel crashes then you can likewise resume the execution.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[86]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="n">sleep</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">stop_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Killed `multiprocessing.Process` &#39;aiqc_batch_3&#39; spawned from Batch &lt;id:3&gt;
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[84]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">get_statuses</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[84]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{17: &#39;Succeeded&#39;,
+ 18: &#39;Succeeded&#39;,
+ 19: &#39;Queued&#39;,
+ 20: &#39;Queued&#39;,
+ 21: &#39;Queued&#39;,
+ 22: &#39;Queued&#39;,
+ 23: &#39;Queued&#39;,
+ 24: &#39;Queued&#39;}
+</pre></div></div>
+</div>
+<p>Before resuming them again. In this way, if your system crashes for any reason, you can pick up right back where you left off.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[85]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Resuming jobs...
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:16&lt;00:00,  2.12s/it]
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="10.-Assess-the-Results.">
+<h3>10. Assess the <code class="docutils literal notranslate"><span class="pre">Results</span></code>.<a class="headerlink" href="#10.-Assess-the-Results." title="Permalink to this headline">¶</a></h3>
+<p>Each Job has a <code class="docutils literal notranslate"><span class="pre">Result</span></code>. The following artifacts are automatically written to the Result after training.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model_file</span></code>: hdf5 bytes of the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">history</span></code>: per epoch metrics recorded during training.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predictions</span></code>: dictionary of predictions per split/ fold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">probabilities</span></code>: dictionary of prediction probabilities per split/ fold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics</span></code>: dictionary of single-value metrics depending on the analysis_type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_data</span></code>: metrics readily formatted for plotting.</p></li>
+</ul>
+<p>All of the dictionaries have split/ fold based keys.</p>
+<div class="section" id="Fetching-the-trained-model.">
+<h4>Fetching the trained model.<a class="headerlink" href="#Fetching-the-trained-model." title="Permalink to this headline">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[90]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">compiled_model</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span class="n">compiled_model</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[90]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;tensorflow.python.keras.engine.sequential.Sequential at 0x14e639250&gt;
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Fetching-metrics.">
+<h4>Fetching metrics.<a class="headerlink" href="#Fetching-metrics." title="Permalink to this headline">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[92]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[92]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;test&#39;: {&#39;roc_auc&#39;: 0.9933333333333333,
+  &#39;accuracy&#39;: 0.9666666666666667,
+  &#39;precision&#39;: 0.9696969696969696,
+  &#39;recall&#39;: 0.9666666666666667,
+  &#39;f1&#39;: 0.9665831244778613,
+  &#39;loss&#39;: 0.10969173908233643},
+ &#39;validation&#39;: {&#39;roc_auc&#39;: 1.0,
+  &#39;accuracy&#39;: 0.9444444444444444,
+  &#39;precision&#39;: 0.9523809523809523,
+  &#39;recall&#39;: 0.9444444444444444,
+  &#39;f1&#39;: 0.9440559440559441,
+  &#39;loss&#39;: 0.09142466634511948},
+ &#39;train&#39;: {&#39;roc_auc&#39;: 0.9988465974625144,
+  &#39;accuracy&#39;: 0.9705882352941176,
+  &#39;precision&#39;: 0.9708513708513707,
+  &#39;recall&#39;: 0.9705882352941176,
+  &#39;f1&#39;: 0.9705818732424834,
+  &#39;loss&#39;: 0.06465762108564377}}
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Metrics-&amp;-Visualization">
+<h3>Metrics &amp; Visualization<a class="headerlink" href="#Metrics-&-Visualization" title="Permalink to this headline">¶</a></h3>
+<p>For more information of visualization of performance metrics, reference the <a class="reference internal" href="#"><span class="doc">Visualization &amp; Metrics</span></a> documentation.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="visualization.html" class="btn btn-neutral float-right" title="Visualization &amp; Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="api_high_level.html" class="btn btn-neutral float-left" title="High-Level API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Team AIQC
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
