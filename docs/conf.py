@@ -20,7 +20,6 @@ extensions = [
 	'nbsphinx'
 	, 'sphinx_copybutton'
 	, 'sphinx_rtd_theme'
-	, 'sphinxcontrib.yt'
 ]
 # https://nbsphinx.readthedocs.io/en/0.8.0/
 
