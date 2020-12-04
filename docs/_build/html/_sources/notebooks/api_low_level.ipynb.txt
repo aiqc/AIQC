@@ -853,18 +853,24 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "A `Splitset` divides a the samples of the Dataset into the following *splits*:\n",
-    "\n",
-    "* *train* - the samples that the model will be trained upon.\n",
-    "  * Later, we'll see how we can make cross-folds from our training split.\n",
-    "  * Unsupervised learning will only have a training split.\n",
-    "  \n",
-    "* *validation (optional)* - samples used for training evaluation.\n",
-    "  * Ensures that the test set is not revealed to the model during training.\n",
-    "  \n",
-    "* *test (optional)* - samples the model has never seen during training.\n",
-    "  * Used to assess how well the model will perform on unobserved, natural data when it is applied in the real world aka how generalizable it is.\n",
-    "\n",
+    "A `Splitset` divides a the samples of the Dataset into the following *splits*:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "| Split                 | Description                                                                                                                                                                                             |\n",
+    "|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n",
+    "| train                 | The samples that the model will be trained upon. <br/>Later, we’ll see how we can make cross-folds from our training split. <br/>Unsupervised learning will only have a training split.                 |\n",
+    "| validation (optional) | The samples used for training evaluation. <br/>Ensures that the test set is not revealed to the model during training.                                                                                  |\n",
+    "| test (optional)       | The samples the model has never seen during training. <br/>Used to assess how well the model will perform on unobserved, natural data when it is applied in the real world aka how generalizable it is. |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "Again, creating a Splitset won't duplicate your data. It simply records the sample indeces (aka rows) to be used in the splits that you specify."
    ]
   },
@@ -2174,7 +2180,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "For more information of visualization of performance metrics, reference the *[Visualization & Metrics](api_low_level.ipynb)* documentation."
+    "For more information of visualization of performance metrics, reference the *[Visualization & Metrics](https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html)* documentation."
    ]
   }
  ],

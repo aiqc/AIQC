@@ -68,7 +68,3 @@ Value Proposition
   * It is a Python package that records experiments in a lightweight, file-based database that requires no configuration. By tracking the input (samples and settings) as well as output (models and metrics) of each experiment, it makes machine learning reproducible; less of a black box.
 
   * Users can either (a) queue many experiments on their desktop/ server, or (b), in the near future, delegate them to run in the *AIQC Cloud* if they outgrow their local resources. From there, model performance metrics can be visually compared in interactive charts. It is designed for use within Jupyter notebooks, but runs in any Python shell.
-
-|
-
-.. youtube:: bmbnPvSHcu4

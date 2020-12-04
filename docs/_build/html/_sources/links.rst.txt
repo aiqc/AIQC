@@ -10,13 +10,13 @@ Links
    * - Website
      - Description
 
-   * - `ReadTheDocs <https://aiqc.readthedocs.com>`__
+   * - `ReadTheDocs <https://aiqc.readthedocs.io/>`__
      - Hosts the documentation.
 
-   * - `PyPI <https://pypi.org/project/aiqc>`__
+   * - `PyPI <https://pypi.org/project/aiqc/>`__
      - Hosts the Python package.
 
-   * - `GitHub <https://github.com/aiqc>`__
+   * - `GitHub <https://github.com/aiqc/aiqc/>`__
      - Hosts the source code. File issues.
 
    * - `Slack <https://aiqc.slack.com>`__
@@ -27,5 +27,3 @@ Links
 
 ..
    External links must include 'https://' or 'http://' otherwise it will be treated as an internal page.
-
-

@@ -16,12 +16,14 @@ author = 'Team AIQC'
 # ones.
 import sphinx_rtd_theme
 
+# https://nbsphinx.readthedocs.io/en/0.8.0/
+# These are pip packages. See `docs/requirements.txt` 
+# Which is called by `.readthedocs.yml`
 extensions = [
 	'nbsphinx'
 	, 'sphinx_copybutton'
 	, 'sphinx_rtd_theme'
 ]
-# https://nbsphinx.readthedocs.io/en/0.8.0/
 
 # https://nbsphinx.readthedocs.io/en/0.7.0/usage.html#suppress_warnings
 suppress_warnings = [
