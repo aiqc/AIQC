@@ -1,0 +1,17 @@
+MANIFEST.in
+README.md
+setup.py
+aiqc/__init__.py
+aiqc.egg-info/PKG-INFO
+aiqc.egg-info/SOURCES.txt
+aiqc.egg-info/dependency_links.txt
+aiqc.egg-info/requires.txt
+aiqc.egg-info/top_level.txt
+aiqc/data/.DS_Store
+aiqc/data/houses.csv
+aiqc/data/iris.tsv
+aiqc/data/iris_10x.tsv
+aiqc/data/iris_noHeaders.csv
+aiqc/data/sonar.csv
+aiqc/data/.ipynb_checkpoints/sonar-checkpoint.csv
+aiqc/examples/__init__.py

@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="0.0.80",
+    version="0.0.81",
     author="Layne Sadler",
     author_email="layne@protonmail.com",
     description="End-to-end machine learning on your desktop or server.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/aiqc",
+    url="https://aiqc.readthedocs.io/",
     packages=setuptools.find_packages(),
     include_package_data=True,#triggers MANIFEST.in
     python_requires='>=3.7.6',

@@ -16,6 +16,8 @@
 pip3 install --upgrade wheel twine
 python3 setup.py sdist bdist_wheel
 python3 -m twine upload --repository pypi dist/*
+# username: __token__
+# password: <paste in the token>
 rm -r build dist aiqc.egg-info
 # proactively update the version number in setup.py next time
 ```
