@@ -479,47 +479,39 @@ class File(BaseModel): # should really do subclasses for validation.
 			sep=','
 
 		# a raw None would be overwritten by defaults.
+		"""
 		if (skip_header_rows == False):
 			skip_header_rows = None
+		"""
+		df = pd.read_csv(
+			filepath_or_buffer = path
+			, sep = sep
+			, names = column_names
+			, header = skip_header_rows
+		)
 
-		# Read the file into memory once.
-		with open(path, "rb") as f:
-			bytesio = io.BytesIO(f.read())
+		# get metadata about the file. 
+		columns = df.columns.tolist()
+		shape = {}
+		shape['rows'], shape['columns'] = df.shape[0], df.shape[1]
 
-			# read file as bytes rather than path.
-			df = pd.read_csv(
-				filepath_or_buffer = bytesio
-				, sep = sep
-				, names = column_names
-				, header = skip_header_rows
-			)
+		blob = df.to_csv(index=False).encode()
+		# Get the bytes ready for SQLite blobfield.
+		# Use Python's gzip instead of Pandas.
+		if perform_gzip:
+			blob = gzip.compress(blob)
 
-			# change it back.
-			if (skip_header_rows == None):
-				skip_header_rows = False
-
-			# get metadata about the file. 
-			columns = df.columns.tolist()
-			shape = {}
-			shape['rows'], shape['columns'] = df.shape[0], df.shape[1]
-
-			blob = df.to_csv(index=False).encode()
-			# Get the bytes ready for SQLite blobfield.
-			# Use Python's gzip instead of Pandas.
-			if perform_gzip:
-				blob = gzip.compress(blob)
-
-			file = File.create(
-				source_path = path
-				, blob = blob
-				, shape = shape
-				, dtype = dtype
-				, file_format = file_format
-				, is_compressed = perform_gzip
-				, columns = columns
-				, fileset = fileset
-			)
-			return file
+		file = File.create(
+			source_path = path
+			, blob = blob
+			, shape = shape
+			, dtype = dtype
+			, file_format = file_format
+			, is_compressed = perform_gzip
+			, columns = columns
+			, fileset = fileset
+		)
+		return file
 
 
 	def from_pandas(
