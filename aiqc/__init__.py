@@ -290,9 +290,10 @@ def create_db():
 		print(f"\n=> Info - skipping table creation as the following tables already exist:\n{tables}\n")
 	else:
 		db.create_tables([
-			Dataset, Label, Featureset, 
-			Splitset, Foldset, Fold, 
-			Algorithm, Hyperparamset, Hyperparamcombo, Preprocess, 
+			File, Fileset, 
+			Label, Featureset, 
+			Splitset, Foldset, Fold, Preprocess,
+			Algorithm, Hyperparamset, Hyperparamcombo,
 			Batch, Job, Result,
 			Experiment, DataPipeline
 		])
@@ -338,70 +339,187 @@ class BaseModel(Model):
 
 
 
-class Dataset(BaseModel):
+class Fileset(BaseModel):
+	source_path = CharField()
 	name = CharField()
-	data = BlobField()
-	shape = JSONField()
-	dtype = JSONField(null=True)
-	file_format = CharField()
-	is_compressed = BooleanField()
-	columns = JSONField()
-	#is_shuffled/ perform_shuffle= BooleanField()#False
+	file_count = IntegerField()
 
-	def from_file(
-		path:str
-		, file_format:str = None
+	#file_type = tabular, image, sequence, graph, audio.
+	
+
+	# all of the foldery operations.
+
+	def make_label(id:int, columns:list):
+		l = Label.from_fileset(fileset_id=id, columns=columns)
+		return l
+
+
+	def make_featureset(
+		id:int
+		, include_columns:list = None
+		, exclude_columns:list = None
+	):
+
+		f = Featureset.from_fileset(
+			fileset_id = id
+			, include_columns = include_columns
+			, exclude_columns = exclude_columns
+		)
+		return f
+
+
+	def from_path(
+		filePath_or_dirPath:str
+		, file_type:str
+		, file_format:str
 		, name:str = None
 		, perform_gzip:bool = True
 		, dtype:dict = None
+		, column_names:list = None
+		, skip_header_rows:int = 'infer'
+	):
+		# I want data ingestion to be 1 step for the user. 
+		# So most of the arguments are passthrough for File creation.
+
+		Fileset.check_file_type(file_type)
+		Fileset.check_file_format(file_format)
+
+		if name is None:
+			name=filePath_or_dirPath
+		if perform_gzip is None:
+			perform_gzip=True
+
+		p = os.path.abspath(filePath_or_dirPath)
+
+		# get a list of files from the path.
+		if os.path.isfile(p):
+			file_paths = [p]
+		elif os.path.isdir(p):
+			file_paths = []
+			for dirpath,_,filenames in os.walk(p):
+				for f in filenames:
+					file_paths.append(
+						os.path.abspath(os.path.join(dirpath, f))
+					)
+		file_count = len(file_paths)
+
+		fileset = Fileset.create(
+			source_path = p
+			, name = name
+			, file_count = file_count
+		)
+
+		# delete that fileset if File creation fails......
+		for f in file_paths:
+			File.from_file(
+				path = f
+				, file_format = file_format
+				, perform_gzip = perform_gzip
+				, dtype = dtype
+				, fileset_id = fileset.id
+				, column_names = column_names
+				, skip_header_rows = skip_header_rows
+			)
+
+		return fileset
+
+
+
+
+	def check_file_format(file_format):
+		accepted_formats = ['csv', 'tsv', 'parquet', None]
+		if file_format not in accepted_formats:
+			raise ValueError(f"\nYikes - Available file formats include uncompressed csv, tsv, and parquet.\nYour file format: {file_format}\n")
+
+
+	def check_file_type(file_type):
+		accepted_types = ['tabular', 'sequence', 'image']
+		if file_type not in accepted_types:
+			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour file_type: {file_type}\n")
+
+
+
+
+class File(BaseModel): # should really do subclasses for validation.
+	blob = BlobField()
+	file_format = CharField()
+	is_compressed = BooleanField()
+	columns = JSONField(null=True)#hmm images None
+	source_path = CharField(null=True)
+	shape = JSONField(null=True)# images
+	dtype = JSONField(null=True)
+
+	fileset = ForeignKeyField(Fileset, backref='files')
+
+
+	def from_file(
+		path:str
+		, fileset_id:int
+		, file_format:str = None
+		, perform_gzip:bool = True
+		, dtype:dict = None
+		, column_names:list = None
+		, skip_header_rows:int = 'infer'
 	):
 		"""
 		- File is read in with pyarrow, converted to bytes, compressed by default, and stored as a SQLite blob field.
-		- Note: If you do not remove your file's index columns before importing them, then they will be included in your Dataset. The ordered nature of this column represents potential bias during analysis. You can drop these and other columns in memory when creating a Featureset from your Dataset.
+		- Note: If you do not remove your file's index columns before importing them, then they will be included in your File. The ordered nature of this column represents potential bias during analysis. You can drop these and other columns in memory when creating a Featureset from your File.
 		- Note: If no column names are provided, then they will be inserted automatically.
 		- `path`: Local or absolute path
 		- `file_format`: Accepts uncompressed formats including parquet, csv, and tsv (a csv with `delimiter='\t'`). This tag is used to tell pyarrow how to handle the file. We do not infer the path because (a) we don't want to force file extensions, (b) we want to make sure users know what file formats we support.
 		- `name`: if none specified, then `path` string will be used.
 		- `perform_gzip`: Whether or not to perform gzip compression on the file. We have observed up to 90% compression rates during testing.
 		"""
-		Dataset.check_file_format(file_format)
+		fileset = Fileset.get_by_id(fileset_id)
 
-		if name is None:
-			name=path
-		if perform_gzip is None:
-			perform_gzip=True
-
-		# File formats.
 		if (file_format == 'tsv') or (file_format is None):
-			parse_opt = pc.ParseOptions(delimiter='\t')
-			tbl = pc.read_csv(path, parse_options=parse_opt)
-			file_format = 'tsv'
+			sep='\t'
+			file_format = 'tsv' #Null condition
 		elif (file_format == 'csv'):
-			parse_opt = pc.ParseOptions(delimiter=',')
-			tbl = pc.read_csv(path)
-		elif (file_format == 'parquet'):
-			tbl = pq.read_table(path)
+			sep=','
 
-		#ToDo - handle columns with no name.
-		columns = tbl.column_names
-		shape = {}
-		shape['rows'], shape['columns'],  = tbl.num_rows, tbl.num_columns
+		# a raw None would be overwritten by defaults.
+		if (skip_header_rows == False):
+			skip_header_rows = None
 
+		# Read the file into memory once.
 		with open(path, "rb") as f:
 			bytesio = io.BytesIO(f.read())
-			data = bytesio.getvalue()
-			data, is_compressed = Dataset.compress_or_not(data, perform_gzip)
 
-		d = Dataset.create(
-			name = name
-			, data = data
-			, shape = shape
-			, dtype = dtype
-			, file_format = file_format
-			, is_compressed = is_compressed
-			, columns = columns
-		)
-		return d
+			# read file as bytes rather than path.
+			df = pd.read_csv(
+				filepath_or_buffer = bytesio
+				, sep = sep
+				, names = column_names
+				, header = skip_header_rows
+			)
+
+			# change it back.
+			if (skip_header_rows == None):
+				skip_header_rows = False
+
+			# get metadata about the file. 
+			columns = df.columns.tolist()
+			shape = {}
+			shape['rows'], shape['columns'] = df.shape[0], df.shape[1]
+
+			blob = df.to_csv(index=False).encode()
+			# Get the bytes ready for SQLite blobfield.
+			# Use Python's gzip instead of Pandas.
+			if perform_gzip:
+				blob = gzip.compress(blob)
+
+			file = File.create(
+				source_path = path
+				, blob = blob
+				, shape = shape
+				, dtype = dtype
+				, file_format = file_format
+				, is_compressed = perform_gzip
+				, columns = columns
+				, fileset = fileset
+			)
+			return file
 
 
 	def from_pandas(
@@ -411,13 +529,14 @@ class Dataset(BaseModel):
 		, perform_gzip:bool = True
 		, dtype:dict = None
 		, rename_columns:list = None
+		#, fileset_id:int
 	):
 		if dataframe.empty:
 			raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
-		Dataset.check_file_format(file_format)
+		File.check_file_format(file_format)
 		if rename_columns is not None:
-			Dataset.check_column_count(user_columns=rename_columns, structure=dataframe)
+			File.check_column_count(user_columns=rename_columns, structure=dataframe)
 
 		shape = {}
 		shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
@@ -429,32 +548,33 @@ class Dataset(BaseModel):
 			dtype = {k: str(v) for k, v in keys_values}
 		
 		# Passes in user-defined columns in case they are specified
-		dataframe, columns = Dataset.pandas_stringify_columns(df=dataframe, columns=rename_columns)
+		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=rename_columns)
 
 		# https://stackoverflow.com/a/25632711
 		buff = io.StringIO()
 		if (file_format == 'tsv') or (file_format is None):
 			dataframe.to_csv(buff, index=False, sep='\t')
 			buff_string = buff.getvalue()
-			data = bytes(buff_string, 'utf-8')
+			blob = bytes(buff_string, 'utf-8')
 			file_format = 'tsv'
 		elif (file_format == 'csv'):
 			dataframe.to_csv(buff, index=False, sep=',')
 			buff_string = buff.getvalue()
-			data = bytes(buff_string, 'utf-8')
+			blob = bytes(buff_string, 'utf-8')
+		"""
 		elif (file_format == 'parquet'):
 			buff = io.BytesIO()
 			dataframe.to_parquet(buff) 
-			data = buff.getvalue()
-
-		data, is_compressed = Dataset.compress_or_not(data, perform_gzip)
+			blob = buff.getvalue()
+		"""
+		blob, is_compressed = File.compress_or_not(blob, perform_gzip)
 
 		if name is None:
 			name = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p") + "." + file_format
 
-		d = Dataset.create(
+		d = File.create(
 			name = name
-			, data = data
+			, blob = blob
 			, shape = shape
 			, dtype = dtype
 			, file_format = file_format
@@ -471,10 +591,11 @@ class Dataset(BaseModel):
 		, perform_gzip:bool = True
 		, column_names:list = None #pd.Dataframe param
 		, dtype:str = None #pd.Dataframe param
+		#, fileset_id:int
 	):
-		Dataset.check_file_format(file_format)
+		File.check_file_format(file_format)
 		if column_names is not None:
-			Dataset.check_column_count(user_columns=column_names, structure=ndarray)
+			File.check_column_count(user_columns=column_names, structure=ndarray)
 
 		if ndarray.size == 0:
 			raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
@@ -504,7 +625,7 @@ class Dataset(BaseModel):
 		)
 		del ndarray
 		
-		d = Dataset.from_pandas(
+		d = File.from_pandas(
 			dataframe = df
 			, name = name
 			, file_format = file_format
@@ -524,12 +645,12 @@ class Dataset(BaseModel):
 		- All methods return all columns by default if they receive None: 
 		  `pc.read_csv(read_options.column_names)`, `pa.read_table()`, `pd.read_csv(uscols)`, `pd.read_parquet(columns)`
 		"""
-		d = Dataset.get_by_id(id)
+		d = File.get_by_id(id)
 		is_compressed = d.is_compressed
 		ff = d.file_format
 
-		data = d.data
-		bytesio_data = io.BytesIO(data)
+		blob = d.blob
+		bytesio_data = io.BytesIO(blob)
 		if (ff == 'csv') or (ff == 'tsv'):
 			# `pc.ReadOptions.column_names` verifies the existence of the names, does not filter for them.
 			if is_compressed:
@@ -547,9 +668,13 @@ class Dataset(BaseModel):
 					df = pd.read_csv(
 						bytesio_data
 						, sep = '\t'
-						, usecols = columns)
+						, usecols = columns
+					)
 				else:
-					df = pd.read_csv(bytesio_data, usecols=columns)
+					df = pd.read_csv(
+						bytesio_data
+						, usecols = columns
+					)
 		elif ff == 'parquet':
 			if is_compressed:
 				bytesio_parquet = gzip.open(bytesio_data)
@@ -583,9 +708,9 @@ class Dataset(BaseModel):
 		,columns:list = None
 		,samples:list = None
 	):
-		d = Dataset.get_by_id(id)
+		d = File.get_by_id(id)
 		# dtype is applied within `to_pandas()` function.
-		df = Dataset.to_pandas(id=id, columns=columns, samples=samples)
+		df = File.to_pandas(id=id, columns=columns, samples=samples)
 		arr = df.to_numpy()
 		return arr
 
@@ -593,25 +718,6 @@ class Dataset(BaseModel):
 	Future:
 	- Read to_tensor (pytorch and tf)? Or will numpy suffice?
 	"""
-
-	def make_label(id:int, columns:list):
-		l = Label.from_dataset(dataset_id=id, columns=columns)
-		return l
-
-
-	def make_featureset(
-		id:int
-		, include_columns:list = None
-		, exclude_columns:list = None
-	):
-
-		f = Featureset.from_dataset(
-			dataset_id = id
-			, include_columns = include_columns
-			, exclude_columns = exclude_columns
-		)
-		return f
-
 
 	def pandas_stringify_columns(df, columns):
 		cols_raw = df.columns.to_list()
@@ -628,12 +734,6 @@ class Dataset(BaseModel):
 		return df, columns
 
 
-	def check_file_format(file_format):
-		accepted_formats = ['csv', 'tsv', 'parquet', None]
-		if file_format not in accepted_formats:
-			raise ValueError(f"\nYikes - Available file formats include uncompressed csv, tsv, and parquet.\nYour file format: {file_format}\n")
-
-
 	def check_column_count(user_columns, structure):
 		col_count = len(user_columns)
 		structure_col_count = structure.shape[1]
@@ -641,35 +741,25 @@ class Dataset(BaseModel):
 			raise ValueError(f"\nYikes - The dataframe you provided has <{structure_col_count}> columns, but you provided <{col_count}> columns.\n")
 
 
-	def compress_or_not(data, perform_gzip):
-		if perform_gzip:
-			data = gzip.compress(data)
-			is_compressed=True
-		else:
-			is_compressed=False
-		return data, perform_gzip
-
-
-
 
 class Label(BaseModel):
 	"""
-	- Label needs to accept multiple columns for datasets that are already One Hot Encoded.
+	- Label needs to accept multiple columns for filesets that are already One Hot Encoded.
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
 	#probabilities = JSONField() #result of semi-supervised learning.
 	
-	dataset = ForeignKeyField(Dataset, backref='labels')
+	fileset = ForeignKeyField(Fileset, backref='labels')
 	
-	def from_dataset(dataset_id:int, columns:list):
-		d = Dataset.get_by_id(dataset_id)
+	def from_fileset(fileset_id:int, columns:list):
+		d = Fileset.get_by_id(fileset_id)
 		d_cols = d.columns
 
 		# check columns exist
 		all_cols_found = all(col in d_cols for col in columns)
 		if not all_cols_found:
-			raise ValueError("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
+			raise ValueError("\nYikes - You specified `columns` that do not exist in the Fileset.\n")
 
 		# check for duplicates	
 		cols_aplha = sorted(columns)
@@ -681,12 +771,12 @@ class Label(BaseModel):
 				l_cols = l.columns
 				l_cols_alpha = sorted(l_cols)
 				if cols_aplha == l_cols_alpha:
-					raise ValueError(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
+					raise ValueError(f"\nYikes - This Fileset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
 
 		column_count = len(columns)
 
 		l = Label.create(
-			dataset = d
+			fileset = d
 			, columns = columns
 			, column_count = column_count
 		)
@@ -696,10 +786,10 @@ class Label(BaseModel):
 	def to_pandas(id:int, samples:list=None):
 		l = Label.get_by_id(id)
 		l_cols = l.columns
-		dataset_id = l.dataset.id
+		fileset_id = l.fileset.id
 
-		lf = Dataset.to_pandas(
-			id = dataset_id
+		lf = Fileset.to_pandas(
+			id = fileset_id
 			, columns = l_cols
 			, samples = samples
 		)
@@ -725,17 +815,17 @@ class Featureset(BaseModel):
 	"""
 	columns = JSONField()
 	columns_excluded = JSONField(null=True)
-	dataset = ForeignKeyField(Dataset, backref='featuresets')
+	fileset = ForeignKeyField(Fileset, backref='featuresets')
 
 
-	def from_dataset(
-		dataset_id:int
+	def from_fileset(
+		fileset_id:int
 		, include_columns:list=None
 		, exclude_columns:list=None
 		#Future: runPCA #,run_pca:boolean=False # triggers PCA analysis of all columns
 	):
 
-		d = Dataset.get_by_id(dataset_id)
+		d = Fileset.get_by_id(fileset_id)
 		d_cols = d.columns
 
 		if (include_columns is not None) and (exclude_columns is not None):
@@ -745,7 +835,7 @@ class Featureset(BaseModel):
 			# check columns exist
 			all_cols_found = all(col in d_cols for col in include_columns)
 			if not all_cols_found:
-				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
+				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Fileset.\n")
 			# inclusion
 			columns = include_columns
 			# exclusion
@@ -756,7 +846,7 @@ class Featureset(BaseModel):
 		elif (exclude_columns is not None):
 			all_cols_found = all(col in d_cols for col in exclude_columns)
 			if not all_cols_found:
-				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
+				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Fileset.\n")
 			# exclusion
 			columns_excluded = exclude_columns
 			# inclusion
@@ -764,13 +854,13 @@ class Featureset(BaseModel):
 			for col in exclude_columns:
 				columns.remove(col)
 			if not columns:
-				raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
+				raise ValueError("\nYikes - You cannot exclude every column in the Fileset. For there will be nothing to analyze.\n")
 		else:
 			columns = d_cols
 			columns_excluded = None
 
 		"""
-		Check that this Dataset does not already have a Featureset that is exactly the same.
+		Check that this Fileset does not already have a Featureset that is exactly the same.
 		There are less entries in `excluded_columns` so maybe it's faster to compare that.
 		"""
 		if columns_excluded is not None:
@@ -788,10 +878,10 @@ class Featureset(BaseModel):
 				else:
 					f_cols_alpha = None
 				if cols_aplha == f_cols_alpha:
-					raise ValueError(f"\nYikes - This Dataset already has Featureset <id:{f_id}> with the same columns.\nCannot create duplicate.\n")
+					raise ValueError(f"\nYikes - This Fileset already has Featureset <id:{f_id}> with the same columns.\nCannot create duplicate.\n")
 
 		f = Featureset.create(
-			dataset = d
+			fileset = d
 			, columns = columns
 			, columns_excluded = columns_excluded
 		)
@@ -801,10 +891,10 @@ class Featureset(BaseModel):
 	def to_pandas(id:int, samples:list=None):
 		f = Featureset.get_by_id(id)
 		f_cols = f.columns
-		dataset_id = f.dataset.id
+		fileset_id = f.fileset.id
 		
-		ff = Dataset.to_pandas(
-			id = dataset_id
+		ff = Fileset.to_pandas(
+			id = fileset_id
 			,columns = f_cols
 			,samples = samples
 		)
@@ -836,8 +926,8 @@ class Featureset(BaseModel):
 
 class Splitset(BaseModel):
 	"""
-	- Belongs to a Featureset, not a Dataset, because the samples selected vary based on the stratification of the features during the split,
-	  and a Featureset already has a Dataset anyways.
+	- Belongs to a Featureset, not a Fileset, because the samples selected vary based on the stratification of the features during the split,
+	  and a Featureset already has a Fileset anyways.
 	- Here the `samples_` attributes contain indices.
 
 	-ToDo: store and visualize distributions of each column in training split, including label.
@@ -891,9 +981,9 @@ class Splitset(BaseModel):
 		f_cols = f.columns
 
 		# Feature data to be split.
-		d = f.dataset
+		d = f.fileset
 		d_id = d.id
-		arr_f = Dataset.to_numpy(id=d_id, columns=f_cols)
+		arr_f = Fileset.to_numpy(id=d_id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
@@ -1114,7 +1204,7 @@ class Foldset(BaseModel):
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
 		if remainder != 0:
-			print(f"\nAdvice - The length <{train_count}> of your training Split is not evenly divisible by the number of folds <{fold_count}> you specified.\nThere's a chance that this could lead to misleadingly low accuracy for the last Fold with small datasets.\n")
+			print(f"\nAdvice - The length <{train_count}> of your training Split is not evenly divisible by the number of folds <{fold_count}> you specified.\nThere's a chance that this could lead to misleadingly low accuracy for the last Fold with small filesets.\n")
 
 		foldset = Foldset.create(
 			fold_count = fold_count
@@ -1215,7 +1305,7 @@ class Fold(BaseModel):
 
 class Preprocess(BaseModel):
 	"""
-	- Should not be happening prior to Dataset persistence because you need to do it after the split to avoid bias.
+	- Should not be happening prior to Fileset persistence because you need to do it after the split to avoid bias.
 	- For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	
 	- ToDo: Need a standard way to reference the features and labels of various splits.
@@ -2278,7 +2368,7 @@ class Environment(BaseModel)?
 #==================================================
 
 class DataPipeline(BaseModel):
-	dataset = ForeignKeyField(Dataset, backref='datapipelines')
+	fileset = ForeignKeyField(Fileset, backref='datapipelines')
 	featureset = ForeignKeyField(Featureset, backref='datapipelines')
 	splitset = ForeignKeyField(Splitset, backref='datapipelines')
 
@@ -2295,11 +2385,11 @@ class DataPipeline(BaseModel):
 		, encoder_features:object = None
 		, encoder_labels:object = None
 	):
-		# Create the dataset from either df or file.
+		# Create the fileset from either df or file.
 		d = dataFrame_or_filePath
 		data_type = str(type(d))
 		if (data_type == "<class 'pandas.core.frame.DataFrame'>"):
-			dataset = Dataset.from_pandas(dataframe=d)
+			fileset = Fileset.from_pandas(dataframe=d)
 		elif (data_type == "<class 'str'>"):
 			if '.csv' in d:
 				file_format='csv'
@@ -2309,17 +2399,17 @@ class DataPipeline(BaseModel):
 				file_format='parquet'
 			else:
 				raise ValueError("\nYikes - None of the following file extensions were found in the path you provided:\n'.csv', '.tsv', '.parquet'\n")
-			dataset = Dataset.from_file(path=d, file_format=file_format)
+			fileset = Fileset.from_file(path=d, file_format=file_format)
 		else:
 			raise ValueError("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
 
 		# Not allowing user specify columns to keep/ include.
 		if label_column is not None:
-			label = dataset.make_label(columns=[label_column])
-			featureset = dataset.make_featureset(exclude_columns=[label_column])
+			label = fileset.make_label(columns=[label_column])
+			featureset = fileset.make_featureset(exclude_columns=[label_column])
 			label_id = label.id
 		elif label_column is None:
-			featureset = dataset.make_featureset()
+			featureset = fileset.make_featureset()
 			label_id = None
 			label = None
 
@@ -2344,7 +2434,7 @@ class DataPipeline(BaseModel):
 			preprocess = None
 
 		datapipeline = DataPipeline.create(
-			dataset = dataset
+			fileset = fileset
 			, featureset = featureset
 			, splitset = splitset
 			, label = label

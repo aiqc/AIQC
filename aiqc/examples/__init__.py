@@ -100,7 +100,7 @@ def get_demo_batches():
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'multi label'
 			, 'validation': 'validation split'
-			, 'dataset': 'iris.tsv'
+			, 'fileset': 'iris.tsv'
 		},
 		{
 			'batch_name': 'binary'
@@ -108,7 +108,7 @@ def get_demo_batches():
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'binary'
 			, 'validation': 'validation split'
-			, 'dataset': 'sonar.csv'
+			, 'fileset': 'sonar.csv'
 		},
 		{
 			'batch_name': 'regression'
@@ -116,7 +116,7 @@ def get_demo_batches():
 			, 'analysis': 'regression'
 			, 'sub_analysis': None
 			, 'validation': 'validation split'
-			, 'dataset': 'houses.csv'	
+			, 'fileset': 'houses.csv'	
 		},
 		{
 			'batch_name': 'multiclass_folded'
@@ -124,7 +124,7 @@ def get_demo_batches():
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'multi label'
 			, 'validation': 'cross-folds'
-			, 'dataset': 'iris_10x.tsv'
+			, 'fileset': 'iris_10x.tsv'
 		}
 	]
 	return batches
@@ -192,7 +192,7 @@ def make_demo_batch_multiclass():
 
 	file_path = get_demo_file_path('iris.tsv')
 
-	dataset = Dataset.from_file(
+	fileset = Fileset.from_file(
 		path = file_path
 		, file_format = 'tsv'
 		, name = 'tab-separated plants duplicated 10 times.'
@@ -201,9 +201,9 @@ def make_demo_batch_multiclass():
 	)
 	
 	label_column = 'species'
-	label = dataset.make_label(columns=[label_column])
+	label = fileset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
 	splitset = featureset.make_splitset(
 		label_id = label.id
@@ -251,7 +251,7 @@ def make_demo_batch_multiclass_folded():
 
 	file_path = get_demo_file_path('iris_10x.tsv')
 
-	dataset = Dataset.from_file(
+	fileset = Fileset.from_file(
 		path = file_path
 		, file_format = 'tsv'
 		, name = 'tab-separated plants duplicated 10 times.'
@@ -260,9 +260,9 @@ def make_demo_batch_multiclass_folded():
 	)
 	
 	label_column = 'species'
-	label = dataset.make_label(columns=[label_column])
+	label = fileset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
 	splitset = featureset.make_splitset(
 		label_id = label.id
@@ -332,7 +332,7 @@ def make_demo_batch_binary():
 
 	file_path = get_demo_file_path('sonar.csv')
 
-	dataset = Dataset.from_file(
+	fileset = Fileset.from_file(
 		path = file_path
 		, file_format = 'csv'
 		, name = 'rocks n radio'
@@ -341,9 +341,9 @@ def make_demo_batch_binary():
 	)
 	
 	label_column = 'object'
-	label = dataset.make_label(columns=[label_column])
+	label = fileset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
 	splitset = featureset.make_splitset(
 		label_id = label.id
@@ -414,7 +414,7 @@ def make_demo_batch_regression():
 
 	file_path = get_demo_file_path('houses.csv')
 
-	dataset = Dataset.from_file(
+	fileset = Fileset.from_file(
 		path = file_path
 		, file_format = 'csv'
 		, name = 'real estate stats'
@@ -423,9 +423,9 @@ def make_demo_batch_regression():
 	)
 	
 	label_column = 'price'
-	label = dataset.make_label(columns=[label_column])
+	label = fileset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
 	splitset = featureset.make_splitset(
 		label_id = label.id
