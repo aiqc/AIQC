@@ -378,16 +378,16 @@ class Fileset(BaseModel):
 		, column_names:list = None
 		, skip_header_rows:int = 'infer'
 	):
-		# I want data ingestion to be 1 step for the user. 
-		# So most of the arguments are passthrough for File creation.
-
+		"""
+		I want data ingestion to be 1 step for the user. 
+		So most arguments are passed through for the creation of Files.
+		"""
 		Fileset.check_file_type(file_type)
 		Fileset.check_file_format(file_format)
 
+		# use the raw, not absolute path for the name.
 		if name is None:
 			name=filePath_or_dirPath
-		if perform_gzip is None:
-			perform_gzip=True
 
 		p = os.path.abspath(filePath_or_dirPath)
 
@@ -398,9 +398,10 @@ class Fileset(BaseModel):
 			file_paths = []
 			for dirpath,_,filenames in os.walk(p):
 				for f in filenames:
-					file_paths.append(
-						os.path.abspath(os.path.join(dirpath, f))
-					)
+					if not f.startswith('.'): #skip hidden files.
+						file_paths.append(
+							os.path.abspath(os.path.join(dirpath, f))
+						)
 		file_count = len(file_paths)
 
 		fileset = Fileset.create(
@@ -409,21 +410,22 @@ class Fileset(BaseModel):
 			, file_count = file_count
 		)
 
-		# delete that fileset if File creation fails......
-		for f in file_paths:
-			File.from_file(
-				path = f
-				, file_format = file_format
-				, perform_gzip = perform_gzip
-				, dtype = dtype
-				, fileset_id = fileset.id
-				, column_names = column_names
-				, skip_header_rows = skip_header_rows
-			)
-
+		try:
+			for f in file_paths:
+				File.from_file(
+					path = f
+					, file_format = file_format
+					, perform_gzip = perform_gzip
+					, dtype = dtype
+					, fileset_id = fileset.id
+					, column_names = column_names
+					, skip_header_rows = skip_header_rows
+				)
+		except:
+			# Delete orphaned Fileset if the Files fail.
+			fileset.delete_instance()
+			raise
 		return fileset
-
-
 
 
 	def check_file_format(file_format):
@@ -452,81 +454,21 @@ class File(BaseModel): # should really do subclasses for validation.
 	fileset = ForeignKeyField(Fileset, backref='files')
 
 
-	def from_file(
-		path:str
+	def from_pandas(
+		dataframe:object
 		, fileset_id:int
 		, file_format:str = None
 		, perform_gzip:bool = True
 		, dtype:dict = None
-		, column_names:list = None
-		, skip_header_rows:int = 'infer'
-	):
-		"""
-		- File is read in with pyarrow, converted to bytes, compressed by default, and stored as a SQLite blob field.
-		- Note: If you do not remove your file's index columns before importing them, then they will be included in your File. The ordered nature of this column represents potential bias during analysis. You can drop these and other columns in memory when creating a Featureset from your File.
-		- Note: If no column names are provided, then they will be inserted automatically.
-		- `path`: Local or absolute path
-		- `file_format`: Accepts uncompressed formats including parquet, csv, and tsv (a csv with `delimiter='\t'`). This tag is used to tell pyarrow how to handle the file. We do not infer the path because (a) we don't want to force file extensions, (b) we want to make sure users know what file formats we support.
-		- `name`: if none specified, then `path` string will be used.
-		- `perform_gzip`: Whether or not to perform gzip compression on the file. We have observed up to 90% compression rates during testing.
-		"""
-		fileset = Fileset.get_by_id(fileset_id)
-
-		if (file_format == 'tsv') or (file_format is None):
-			sep='\t'
-			file_format = 'tsv' #Null condition
-		elif (file_format == 'csv'):
-			sep=','
-
-		# a raw None would be overwritten by defaults.
-		"""
-		if (skip_header_rows == False):
-			skip_header_rows = None
-		"""
-		df = pd.read_csv(
-			filepath_or_buffer = path
-			, sep = sep
-			, names = column_names
-			, header = skip_header_rows
-		)
-
-		# get metadata about the file. 
-		columns = df.columns.tolist()
-		shape = {}
-		shape['rows'], shape['columns'] = df.shape[0], df.shape[1]
-
-		blob = df.to_csv(index=False).encode()
-		# Get the bytes ready for SQLite blobfield.
-		# Use Python's gzip instead of Pandas.
-		if perform_gzip:
-			blob = gzip.compress(blob)
-
-		file = File.create(
-			source_path = path
-			, blob = blob
-			, shape = shape
-			, dtype = dtype
-			, file_format = file_format
-			, is_compressed = perform_gzip
-			, columns = columns
-			, fileset = fileset
-		)
-		return file
-
-
-	def from_pandas(
-		dataframe:object
-		, name:str = None
-		, file_format:str = None
-		, perform_gzip:bool = True
-		, dtype:dict = None
 		, rename_columns:list = None
-		#, fileset_id:int
+		, source_path:str = None # from_file calls from_pandas
 	):
+		"""
+		- Note: If you do not remove your file's index columns before importing them, then they will be included in your File. The ordered nature of this column represents potential bias during analysis. You can drop these and other columns in memory when creating a Featureset from your File.
+		"""
 		if dataframe.empty:
 			raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
-		File.check_file_format(file_format)
 		if rename_columns is not None:
 			File.check_column_count(user_columns=rename_columns, structure=dataframe)
 
@@ -540,45 +482,67 @@ class File(BaseModel): # should really do subclasses for validation.
 			dtype = {k: str(v) for k, v in keys_values}
 		
 		# Passes in user-defined columns in case they are specified
+		# Auto-assigned int based columns return a range when `df.columns` called so convert to str.
 		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=rename_columns)
 
-		# https://stackoverflow.com/a/25632711
-		buff = io.StringIO()
-		if (file_format == 'tsv') or (file_format is None):
-			dataframe.to_csv(buff, index=False, sep='\t')
-			buff_string = buff.getvalue()
-			blob = bytes(buff_string, 'utf-8')
-			file_format = 'tsv'
-		elif (file_format == 'csv'):
-			dataframe.to_csv(buff, index=False, sep=',')
-			buff_string = buff.getvalue()
-			blob = bytes(buff_string, 'utf-8')
-		"""
-		elif (file_format == 'parquet'):
-			buff = io.BytesIO()
-			dataframe.to_parquet(buff) 
-			blob = buff.getvalue()
-		"""
-		blob, is_compressed = File.compress_or_not(blob, perform_gzip)
+		# Get the bytes ready for SQLite blobfield.
+		blob = dataframe.to_csv(index=False).encode()
+		# Use Python's gzip instead of the `to_csv()` option.
+		if perform_gzip:
+			blob = gzip.compress(blob)
 
-		if name is None:
-			name = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p") + "." + file_format
-
+		fileset = Fileset.get_by_id(fileset_id)
 		d = File.create(
-			name = name
+			source_path = source_path
 			, blob = blob
 			, shape = shape
 			, dtype = dtype
 			, file_format = file_format
-			, is_compressed = is_compressed
+			, is_compressed = perform_gzip
 			, columns = columns
+			, fileset = fileset
 		)
 		return d
 
 
+	def from_file(
+		path:str
+		, fileset_id:int
+		, file_format:str = None
+		, perform_gzip:bool = True
+		, dtype:dict = None
+		, column_names:list = None
+		, skip_header_rows:int = 'infer'
+	):
+
+		if (file_format == 'tsv') or (file_format is None):
+			sep='\t'
+			file_format = 'tsv' #Null condition
+		elif (file_format == 'csv'):
+			sep=','
+
+		df = pd.read_csv(
+			filepath_or_buffer = path
+			, sep = sep
+			, names = column_names
+			, header = skip_header_rows
+		)
+
+		source_path = path
+
+		file = File.from_pandas(
+			dataframe = df
+			, fileset_id = fileset_id
+			, file_format = file_format
+			, perform_gzip = perform_gzip
+			, dtype = dtype
+			, rename_columns = None
+		)
+		return file
+
+
 	def from_numpy(
 		ndarray
-		, name:str = None
 		, file_format:str = None
 		, perform_gzip:bool = True
 		, column_names:list = None #pd.Dataframe param
@@ -615,7 +579,6 @@ class File(BaseModel): # should really do subclasses for validation.
 			, columns = column_names
 			, dtype = dtype # pandas only accepts a single str. pandas infers if None.
 		)
-		del ndarray
 		
 		d = File.from_pandas(
 			dataframe = df
