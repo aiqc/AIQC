@@ -10,8 +10,7 @@ from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.fields import PickleField
 #etl.
 import pyarrow
-from pyarrow import parquet as pq
-from pyarrow import csv as pc
+from pyarrow import parquet
 import pandas as pd
 import numpy as np
 #sample prep. regression. unsupervised learning.
@@ -395,13 +394,12 @@ class Fileset(BaseModel):
 		if os.path.isfile(p):
 			file_paths = [p]
 		elif os.path.isdir(p):
-			file_paths = []
-			for dirpath,_,filenames in os.walk(p):
-				for f in filenames:
-					if not f.startswith('.'): #skip hidden files.
-						file_paths.append(
-							os.path.abspath(os.path.join(dirpath, f))
-						)
+			file_paths = os.listdir(p)
+			# prune hidden files and directories.
+			file_paths = [f for f in file_paths if not f.startswith('.')]
+			file_paths = [f for f in file_paths if not os.path.isdir(f)]
+			# folder path is already absolute
+			file_paths = [os.path.join(p, f) for f in file_paths]
 		file_count = len(file_paths)
 
 		fileset = Fileset.create(
@@ -431,7 +429,7 @@ class Fileset(BaseModel):
 	def check_file_format(file_format):
 		accepted_formats = ['csv', 'tsv', 'parquet', None]
 		if file_format not in accepted_formats:
-			raise ValueError(f"\nYikes - Available file formats include uncompressed csv, tsv, and parquet.\nYour file format: {file_format}\n")
+			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
 
 
 	def check_file_type(file_type):
@@ -444,7 +442,6 @@ class Fileset(BaseModel):
 
 class File(BaseModel): # should really do subclasses for validation.
 	blob = BlobField()
-	file_format = CharField()
 	is_compressed = BooleanField()
 	columns = JSONField(null=True)#hmm images None
 	source_path = CharField(null=True)
@@ -485,50 +482,69 @@ class File(BaseModel): # should really do subclasses for validation.
 		# Auto-assigned int based columns return a range when `df.columns` called so convert to str.
 		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=rename_columns)
 
-		# Get the bytes ready for SQLite blobfield.
-		blob = dataframe.to_csv(index=False).encode()
-		# Use Python's gzip instead of the `to_csv()` option.
-		if perform_gzip:
-			blob = gzip.compress(blob)
+		if (not perform_gzip):
+			compression = None
+		elif (perform_gzip):
+			compression = 'gzip'
+		"""
+		Get the bytes ready for SQLite blobfield.
+		parquet naturally preserves pandas/numpy dtypes.
+		fastparquet parquet engine preserves timedelta dtype, but does not work with bytes.
+		https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+		"""
+		blob = io.BytesIO()
+		dataframe.to_parquet(
+			blob
+			, engine = 'pyarrow'
+			, compression = compression
+			, index = False
+		)
+		blob = blob.getvalue()
 
 		fileset = Fileset.get_by_id(fileset_id)
-		d = File.create(
+		file = File.create(
 			source_path = source_path
 			, blob = blob
 			, shape = shape
 			, dtype = dtype
-			, file_format = file_format
 			, is_compressed = perform_gzip
 			, columns = columns
 			, fileset = fileset
 		)
-		return d
+		return file
 
 
 	def from_file(
 		path:str
 		, fileset_id:int
-		, file_format:str = None
+		, file_format:str
 		, perform_gzip:bool = True
 		, dtype:dict = None
 		, column_names:list = None
 		, skip_header_rows:int = 'infer'
 	):
 
-		if (file_format == 'tsv') or (file_format is None):
-			sep='\t'
-			file_format = 'tsv' #Null condition
-		elif (file_format == 'csv'):
-			sep=','
+		if (file_format == 'tsv') or (file_format == 'csv'):
+			if (file_format == 'tsv') or (file_format is None):
+				sep='\t'
+				file_format = 'tsv' #Null condition
+			elif (file_format == 'csv'):
+				sep=','
 
-		df = pd.read_csv(
-			filepath_or_buffer = path
-			, sep = sep
-			, names = column_names
-			, header = skip_header_rows
-		)
-
-		source_path = path
+			df = pd.read_csv(
+				filepath_or_buffer = path
+				, sep = sep
+				, names = column_names
+				, header = skip_header_rows
+			)
+		elif (file_format == 'parquet'):
+			if (skip_header_rows != 'infer'):
+				raise ValueError("Yikes - The argument `skip_header_rows` is not supported for `file_format='parquet'` because Parquet stores column names as metadata.")
+			tbl = pyarrow.parquet.read_table(path)
+			if (column_names is not None):
+				tbl = tbl.rename_columns(column_names)
+			# At this point, still need to work with metadata in df.
+			df = tbl.to_pandas()
 
 		file = File.from_pandas(
 			dataframe = df
@@ -537,6 +553,7 @@ class File(BaseModel): # should really do subclasses for validation.
 			, perform_gzip = perform_gzip
 			, dtype = dtype
 			, rename_columns = None
+			, source_path = path
 		)
 		return file
 
@@ -580,14 +597,14 @@ class File(BaseModel): # should really do subclasses for validation.
 			, dtype = dtype # pandas only accepts a single str. pandas infers if None.
 		)
 		
-		d = File.from_pandas(
+		file = File.from_pandas(
 			dataframe = df
 			, name = name
 			, file_format = file_format
 			, perform_gzip = perform_gzip
 			, dtype = None # numpy dtype handled when making df above.
 		)
-		return d
+		return file
 
 
 	def to_pandas(
