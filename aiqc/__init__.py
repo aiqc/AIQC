@@ -342,7 +342,6 @@ class Fileset(BaseModel):
 	source_path = CharField()
 	name = CharField()
 	file_count = IntegerField()
-
 	#file_type = tabular, image, sequence, graph, audio.
 	
 
@@ -372,7 +371,6 @@ class Fileset(BaseModel):
 		, file_type:str
 		, file_format:str
 		, name:str = None
-		, perform_gzip:bool = True
 		, dtype:dict = None
 		, column_names:list = None
 		, skip_header_rows:int = 'infer'
@@ -381,39 +379,46 @@ class Fileset(BaseModel):
 		I want data ingestion to be 1 step for the user. 
 		So most arguments are passed through for the creation of Files.
 		"""
-		Fileset.check_file_type(file_type)
-		Fileset.check_file_format(file_format)
+		accepted_formats = ['csv', 'tsv', 'parquet', None]
+		if file_format not in accepted_formats:
+			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
+
+		accepted_types = ['tabular', 'sequence', 'image']
+		if file_type not in accepted_types:
+			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour file_type: {file_type}\n")
 
 		# use the raw, not absolute path for the name.
 		if name is None:
 			name=filePath_or_dirPath
 
-		p = os.path.abspath(filePath_or_dirPath)
+		path = os.path.abspath(filePath_or_dirPath)
 
 		# get a list of files from the path.
-		if os.path.isfile(p):
-			file_paths = [p]
-		elif os.path.isdir(p):
-			file_paths = os.listdir(p)
+		if os.path.isfile(path):
+			file_paths = [path]
+		elif os.path.isdir(path):
+			if (file_type == 'tabular'):
+				raise ValueError(f"\nYikes - The path you provided is a directory:\n{path}\nBut `file_type=='tabular'` does not support directories.\nTry creating `file_type=='sequence'` instead.`\n")
+
+			file_paths = os.listdir(path)
 			# prune hidden files and directories.
 			file_paths = [f for f in file_paths if not f.startswith('.')]
 			file_paths = [f for f in file_paths if not os.path.isdir(f)]
 			# folder path is already absolute
-			file_paths = [os.path.join(p, f) for f in file_paths]
+			file_paths = [os.path.join(path, f) for f in file_paths]
 		file_count = len(file_paths)
 
 		fileset = Fileset.create(
-			source_path = p
+			source_path = path
 			, name = name
 			, file_count = file_count
 		)
 
 		try:
-			for f in file_paths:
+			for p in file_paths:
 				File.from_file(
-					path = f
+					path = p
 					, file_format = file_format
-					, perform_gzip = perform_gzip
 					, dtype = dtype
 					, fileset_id = fileset.id
 					, column_names = column_names
@@ -426,23 +431,14 @@ class Fileset(BaseModel):
 		return fileset
 
 
-	def check_file_format(file_format):
-		accepted_formats = ['csv', 'tsv', 'parquet', None]
-		if file_format not in accepted_formats:
-			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
 
 
-	def check_file_type(file_type):
-		accepted_types = ['tabular', 'sequence', 'image']
-		if file_type not in accepted_types:
-			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour file_type: {file_type}\n")
-
-
-
-
-class File(BaseModel): # should really do subclasses for validation.
+class File(BaseModel):
+	"""
+	Make sure to remove any index columns. The ordered nature of 
+	such a column will bias the analysis.
+	"""
 	blob = BlobField()
-	is_compressed = BooleanField()
 	columns = JSONField(null=True)#hmm images None
 	source_path = CharField(null=True)
 	shape = JSONField(null=True)# images
@@ -454,41 +450,31 @@ class File(BaseModel): # should really do subclasses for validation.
 	def from_pandas(
 		dataframe:object
 		, fileset_id:int
-		, file_format:str = None
-		, perform_gzip:bool = True
 		, dtype:dict = None
-		, rename_columns:list = None
-		, source_path:str = None # from_file calls from_pandas
+		, column_names:list = None
+		, source_path:str = None # passed in via from_file
 	):
-		"""
-		- Note: If you do not remove your file's index columns before importing them, then they will be included in your File. The ordered nature of this column represents potential bias during analysis. You can drop these and other columns in memory when creating a Featureset from your File.
-		"""
 		if dataframe.empty:
 			raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
-		if rename_columns is not None:
-			File.check_column_count(user_columns=rename_columns, structure=dataframe)
+		if column_names is not None:
+			File.check_column_count(user_columns=column_names, structure=dataframe)
 
 		shape = {}
 		shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 
 		if dtype is None:
 			dct_types = dataframe.dtypes.to_dict()
-			# convert the `dtype('float64')` to strings
+			# convert the e.g. `dtype('float64')` to strings.
 			keys_values = dct_types.items()
 			dtype = {k: str(v) for k, v in keys_values}
 		
-		# Passes in user-defined columns in case they are specified
+		# Passes in user-defined columns in case they are specified.
 		# Auto-assigned int based columns return a range when `df.columns` called so convert to str.
-		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=rename_columns)
+		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=column_names)
 
-		if (not perform_gzip):
-			compression = None
-		elif (perform_gzip):
-			compression = 'gzip'
 		"""
-		Get the bytes ready for SQLite blobfield.
-		parquet naturally preserves pandas/numpy dtypes.
+		Parquet naturally preserves pandas/numpy dtypes.
 		fastparquet parquet engine preserves timedelta dtype, but does not work with bytes.
 		https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
 		"""
@@ -496,7 +482,7 @@ class File(BaseModel): # should really do subclasses for validation.
 		dataframe.to_parquet(
 			blob
 			, engine = 'pyarrow'
-			, compression = compression
+			, compression = 'gzip'
 			, index = False
 		)
 		blob = blob.getvalue()
@@ -507,7 +493,6 @@ class File(BaseModel): # should really do subclasses for validation.
 			, blob = blob
 			, shape = shape
 			, dtype = dtype
-			, is_compressed = perform_gzip
 			, columns = columns
 			, fileset = fileset
 		)
@@ -518,12 +503,16 @@ class File(BaseModel): # should really do subclasses for validation.
 		path:str
 		, fileset_id:int
 		, file_format:str
-		, perform_gzip:bool = True
 		, dtype:dict = None
 		, column_names:list = None
 		, skip_header_rows:int = 'infer'
 	):
-
+		"""
+		Previously, I was using pyarrow for all tabular/ sequence file formats. 
+		However, it had worse support for missing column names and header skipping.
+		So I switched to pandas for handling csv/tsv, but read_parquet()
+		doesn't let you change column names easily, so using pyarrow for parquet.
+		"""	
 		if (file_format == 'tsv') or (file_format == 'csv'):
 			if (file_format == 'tsv') or (file_format is None):
 				sep='\t'
@@ -549,10 +538,8 @@ class File(BaseModel): # should really do subclasses for validation.
 		file = File.from_pandas(
 			dataframe = df
 			, fileset_id = fileset_id
-			, file_format = file_format
-			, perform_gzip = perform_gzip
 			, dtype = dtype
-			, rename_columns = None
+			, column_names = None
 			, source_path = path
 		)
 		return file
@@ -560,52 +547,46 @@ class File(BaseModel): # should really do subclasses for validation.
 
 	def from_numpy(
 		ndarray
-		, file_format:str = None
-		, perform_gzip:bool = True
-		, column_names:list = None #pd.Dataframe param
-		, dtype:str = None #pd.Dataframe param
-		#, fileset_id:int
+		, fileset_id:int
+		, column_names:list = None
+		, dtype:dict = None
 	):
-		File.check_file_format(file_format)
-		if column_names is not None:
-			File.check_column_count(user_columns=column_names, structure=ndarray)
+		"""
+		Only supporting homogenous arrays because structured arrays are a pain
+		when it comes time to convert them to dataframes.
+		
+		Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
+		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
+		Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
+		"""
+		if (ndarray.dtype.names is not None):
+			raise ValueError("\nYikes - Sorry, we don't support structured arrays.\n")
 
-		if ndarray.size == 0:
+		if (ndarray.size == 0):
 			raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
 
-		# check if it is an ndarray as opposed to structuredArray
-		if (ndarray.dtype.names is None):
-			if False in np.isnan(ndarray[0]):
-			    pass
-			else:
-				ndarray = np.delete(ndarray, 0, axis=0)
-				print("\nInfo - The entire first row of your array is 'nan', so we deleted this row during ingestion.\n")
-			
-			col_names = ndarray.dtype.names
-			if (col_names is None) and (column_names is None):
-				# generate string-based column names to feed to pandas
-				col_count = ndarray.shape[1]
-				column_names = [str(i) for i in range(col_count)]
-				print(f"\nInfo - You didn't provide any column names for your array, so we generated numeric columns names for you.\ncolumn_names: {column_names}\n")
-			
-		shape = {}
-		shape['rows'], shape['columns'] = ndarray.shape[0], ndarray.shape[1]
-
+		if (all(np.isnan(ndarray[0]))):
+			# sometimes when coverting headered structures numpy will NaN them out.
+			ndarray = np.delete(ndarray, 0, axis=0)
+			print("\nInfo - The entire first row of your array is 'NaN', so we deleted this row during ingestion.\n")
+		
+		if (column_names is not None):
+			File.check_column_count(user_columns=column_names, structure=ndarray)
+		"""
+		DataFrame method only accepts a single dtype str, or infers if None.
+		So deferring the dict-based dtype to our `from_pandas()` method.
+		Also deferring column_names since it runs there anyways.
+		"""
 		df = pd.DataFrame(
 			data = ndarray
-			, columns = column_names
-			, dtype = dtype # pandas only accepts a single str. pandas infers if None.
 		)
-		
 		file = File.from_pandas(
 			dataframe = df
-			, name = name
-			, file_format = file_format
-			, perform_gzip = perform_gzip
-			, dtype = None # numpy dtype handled when making df above.
+			, fileset_id = fileset_id
+			, dtype = dtype
+			, column_names = column_names # Doesn't overwrite first row of homogenous array.
 		)
 		return file
-
 
 	def to_pandas(
 		id:int
@@ -677,8 +658,8 @@ class File(BaseModel): # should really do subclasses for validation.
 
 	def to_numpy(
 		id:int
-		,columns:list = None
-		,samples:list = None
+		, columns:list = None
+		, samples:list = None
 	):
 		d = File.get_by_id(id)
 		# dtype is applied within `to_pandas()` function.
