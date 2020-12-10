@@ -343,7 +343,7 @@ class Fileset(BaseModel):
 	name = CharField(null=True)
 	source_path = CharField(null=True)
 	#fileset_type = tabular, image, sequence, graph, audio.
-	
+
 
 	def from_path(
 		filePath_or_dirPath:str
@@ -358,7 +358,7 @@ class Fileset(BaseModel):
 		I want data ingestion to be 1 step for the user. 
 		So most arguments are passed through for the creation of Files.
 		"""
-		check_fileset_type(fileset_type)
+		Fileset.check_fileset_type(fileset_type)
 		accepted_formats = ['csv', 'tsv', 'parquet', None]
 		if file_format not in accepted_formats:
 			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
@@ -382,7 +382,8 @@ class Fileset(BaseModel):
 			file_paths = [f for f in file_paths if not os.path.isdir(f)]
 			# folder path is already absolute
 			file_paths = [os.path.join(path, f) for f in file_paths]
-		file_count = len(file_paths)
+			file_paths.reverse()
+		file_count = len(file_paths)		
 
 		fileset = Fileset.create(
 			source_path = path
@@ -391,12 +392,13 @@ class Fileset(BaseModel):
 		)
 
 		try:
-			for p in file_paths:
+			for i, p in enumerate(file_paths):
 				File.from_file(
 					path = p
 					, file_format = file_format
-					, dtype = dtype
 					, fileset_id = fileset.id
+					, file_index = i
+					, dtype = dtype
 					, column_names = column_names
 					, skip_header_rows = skip_header_rows
 				)
@@ -413,7 +415,7 @@ class Fileset(BaseModel):
 		, dtype:dict = None
 		, column_names:list = None
 	):
-		check_fileset_type(fileset_type)
+		Fileset.check_fileset_type(fileset_type)
 		# Check if it is a single df, not a list.
 		if (type(df_or_dfList).__name__ == 'DataFrame'):
 			df_or_dfList = [df_or_dfList]
@@ -431,10 +433,11 @@ class Fileset(BaseModel):
 			, source_path = None
 		)
 		try:
-			for df in df_or_dfList:
+			for i, df in enumerate(df_or_dfList):
 				File.from_pandas(
 					dataframe = df
 					, fileset_id = fileset.id
+					, file_index = i
 					, dtype = dtype
 					, column_names = column_names
 				)
@@ -455,7 +458,7 @@ class Fileset(BaseModel):
 		Originally scripted support for 1D, 2D, and 3D arrays, but it was too confusing to document,
 		so just sticking to 2D for tabular and 3D for sequence.
 		"""
-		check_fileset_type(fileset_type)
+		Fileset.check_fileset_type(fileset_type)
 
 		if (type(ndarray).__name__ != 'ndarray'):
 			raise ValueError("\nYikes - The `arr2Dor3D` you provided is not of the type 'ndarray'.\n")
@@ -482,10 +485,11 @@ class Fileset(BaseModel):
 			, source_path = None
 		)
 		try:
-			for arr in ndarray:
+			for i, arr in enumerate(ndarray):
 				File.from_numpy(
 					ndarray = arr
 					, fileset_id = fileset.id
+					, file_index = i
 					, dtype = dtype
 					, column_names = column_names
 				)
@@ -494,11 +498,53 @@ class Fileset(BaseModel):
 			raise 
 		return fileset
 
-	
-	def check_fileset_type(fileset_type:str)
+
+	def to_pandas(
+		id:int
+		, columns:list = None
+		, samples:list = None
+		, files:list = None
+	):
+		fileset = Fileset.get_by_id(id)
+		
+		# Filter out the file_indeces that are not in the `files` argument.
+		if (files is not None):
+			filez = [f for f in fileset.files if f.file_index in files]
+		elif (files is None):
+			filez = list(fileset.files)
+
+		dfs = [f.to_pandas(samples=samples, columns=columns) for f in filez]
+		# Tabular expects a single dataframe.
+		if len(dfs) == 1:
+			dfs = dfs[0]
+		return dfs
+
+
+	def to_numpy(
+		id:int
+		, columns:list = None
+		, samples:list = None
+		, files:list = None
+	):
+		fileset = Fileset.get_by_id(id)
+
+		ndarrays = fileset.to_pandas(columns=columns, samples=samples, files=files)
+		# Returns either a single df or a list of dfs.
+		if (isinstance(ndarrays, list) == False):
+			ndarrays = [ndarrays]
+		ndarrays = [a.to_numpy() for a in ndarrays]
+		# For file_type=sequences, return a multidimensional array.
+		if (len(ndarrays) > 1):
+			ndarrays = np.array(ndarrays) 
+		else:
+			ndarrays = ndarrays[0]
+		return ndarrays
+
+
+	def check_fileset_type(fileset_type:str):
 		accepted_types = ['tabular', 'sequence', 'image']
 		if fileset_type not in accepted_types:
-			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour fileset_type: {fileset_type}\n")
+			raise ValueError(f"\nYikes - Available fileset_types include tabular, sequence, image.\nYour fileset_type: {fileset_type}\n")
 
 
 	def make_label(id:int, columns:list):
@@ -528,9 +574,10 @@ class File(BaseModel):
 	such a column will bias the analysis.
 	"""
 	blob = BlobField()
-	columns = JSONField(null=True)#hmm images None
+	file_index = IntegerField()
+	columns = JSONField(null=True)# images don't have columns.
 	source_path = CharField(null=True)
-	shape = JSONField(null=True)# images
+	shape = JSONField(null=True)# images?
 	dtype = JSONField(null=True)
 
 	fileset = ForeignKeyField(Fileset, backref='files')
@@ -539,6 +586,7 @@ class File(BaseModel):
 	def from_pandas(
 		dataframe:object
 		, fileset_id:int
+		, file_index:int
 		, dtype:dict = None
 		, column_names:list = None
 		, source_path:str = None # passed in via from_file
@@ -586,11 +634,12 @@ class File(BaseModel):
 
 		fileset = Fileset.get_by_id(fileset_id)
 		file = File.create(
-			source_path = source_path
-			, blob = blob
+			blob = blob
+			, file_index = file_index
 			, shape = shape
 			, dtype = dtype
 			, columns = columns
+			, source_path = source_path
 			, fileset = fileset
 		)
 		return file
@@ -599,6 +648,7 @@ class File(BaseModel):
 	def from_file(
 		path:str
 		, fileset_id:int
+		, file_index:int
 		, file_format:str
 		, dtype:dict = None
 		, column_names:list = None
@@ -635,6 +685,7 @@ class File(BaseModel):
 		file = File.from_pandas(
 			dataframe = df
 			, fileset_id = fileset_id
+			, file_index = file_index
 			, dtype = dtype
 			, column_names = None # See docstring above.
 			, source_path = path
@@ -645,6 +696,7 @@ class File(BaseModel):
 	def from_numpy(
 		ndarray
 		, fileset_id:int
+		, file_index:int
 		, column_names:list = None
 		, dtype:dict = None #Or single string.
 	):
@@ -679,6 +731,7 @@ class File(BaseModel):
 		file = File.from_pandas(
 			dataframe = df
 			, fileset_id = fileset_id
+			, file_index = file_index
 			, dtype = dtype
 			, column_names = column_names # Doesn't overwrite first row of homogenous array.
 		)
