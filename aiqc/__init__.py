@@ -339,10 +339,10 @@ class BaseModel(Model):
 
 
 class Fileset(BaseModel):
-	source_path = CharField()
-	name = CharField()
 	file_count = IntegerField()
-	#file_type = tabular, image, sequence, graph, audio.
+	name = CharField(null=True)
+	source_path = CharField(null=True)
+	#fileset_type = tabular, image, sequence, graph, audio.
 	
 
 	# all of the foldery operations.
@@ -368,7 +368,7 @@ class Fileset(BaseModel):
 
 	def from_path(
 		filePath_or_dirPath:str
-		, file_type:str
+		, fileset_type:str
 		, file_format:str
 		, name:str = None
 		, dtype:dict = None
@@ -384,21 +384,21 @@ class Fileset(BaseModel):
 			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
 
 		accepted_types = ['tabular', 'sequence', 'image']
-		if file_type not in accepted_types:
-			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour file_type: {file_type}\n")
+		if fileset_type not in accepted_types:
+			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour fileset_type: {fileset_type}\n")
 
-		# use the raw, not absolute path for the name.
+		# Use the raw, not absolute path for the name.
 		if name is None:
-			name=filePath_or_dirPath
+			name = filePath_or_dirPath
 
 		path = os.path.abspath(filePath_or_dirPath)
 
-		# get a list of files from the path.
+		# Get a list of files from the path.
 		if os.path.isfile(path):
 			file_paths = [path]
 		elif os.path.isdir(path):
-			if (file_type == 'tabular'):
-				raise ValueError(f"\nYikes - The path you provided is a directory:\n{path}\nBut `file_type=='tabular'` does not support directories.\nTry creating `file_type=='sequence'` instead.`\n")
+			if (fileset_type == 'tabular'):
+				raise ValueError(f"\nYikes - The path you provided is a directory:\n{path}\nBut `fileset_type=='tabular'` does not support directories.\nTry creating `fileset_type=='sequence'` instead.`\n")
 
 			file_paths = os.listdir(path)
 			# prune hidden files and directories.
@@ -425,9 +425,99 @@ class Fileset(BaseModel):
 					, skip_header_rows = skip_header_rows
 				)
 		except:
-			# Delete orphaned Fileset if the Files fail.
-			fileset.delete_instance()
+			fileset.delete_instance() # Orphaned.
 			raise
+		return fileset
+
+
+	def from_pandas(
+		df_or_dfList:list
+		, fileset_type:str
+		, name:str = None
+		, dtype:dict = None
+		, column_names:list = None
+	):
+		# Check if it is a single df, not a list.
+		if (type(df_or_dfList).__name__ == 'DataFrame'):
+			df_or_dfList = [df_or_dfList]
+
+		file_count = len(df_or_dfList)
+		if (file_count == 0):
+			raise ValueError("\nYikes - The list you provided is empty.\n")
+		if (file_count > 1) and (fileset_type=='tabular'):
+			raise ValueError("\nYikes - `fileset_type='tabular'` cannot have more than 1 DataFrame.\n")
+
+		fileset = Fileset.create(
+			file_count = file_count
+			, name = name
+			, source_path = None
+		)
+		try:
+			for df in df_or_dfList:
+				File.from_pandas(
+					dataframe = df
+					, fileset_id = fileset.id
+					, dtype = dtype
+					, column_names = column_names
+				)
+		except:
+			fileset.delete_instance() # Orphaned.
+			raise 
+		return fileset
+
+	def from_numpy(
+		arr_or_arrOfArr:object
+		, fileset_type:bool
+		, single_file_seq:bool = False
+		, name:str = None
+		, dtype:dict = None
+		, column_names:list = None
+	):
+		if (type(arr_or_arrOfArr).__name__ != 'ndarray'):
+			raise ValueError("\nYikes - The `arr_or_arrOfArr` you provided is not of the type 'ndarray'.\n")
+		
+		dimensions = len(arr_or_arrOfArr.shape)
+		
+		if (dimensions > 2) and (fileset_type == 'tabular'):
+			raise ValueError("\nYikes - `fileset_type='tabular'` cannot have more than 2 dimensions.\n")
+		"""
+		single_file_seq is used by `fileset_type='sequence'` to determine if it wants 
+		to turn a 2D array into many files or 1 file.
+		"""
+		if (single_file_seq) and (fileset_type != 'sequence'):
+			raise ValueError("\nYikes - The argument `single_file_seq` can only be set to `True` if `fileset_type='sequence'`.\n")
+		elif (single_file_seq) and (dimensions > 2):
+			raise ValueError("\nYikes - The argument `single_file_seq` can only be set to `True` if `len(arr.shape) < 3`.\n")
+
+
+		if (dimensions==2) and (fileset_type=='sequence') and (single_file_seq==False):
+			# Each inner 1D array will each become a sequence file.
+			pass
+		elif (dimensions==1) and (fileset_type=='sequence') and (single_file_seq==False):
+			# Turn the single 1D array into a 2D array.
+			arr_or_arrOfArr = np.reshape(arr_or_arrOfArr,(arr_or_arrOfArr.size, 1))
+		elif (dimensions < 3):
+			# Wrap the arrays so they can be iterated over and made into files.
+			arr_or_arrOfArr = [arr_or_arrOfArr]
+
+		file_count = len(arr_or_arrOfArr)
+
+		fileset = Fileset.create(
+			file_count = file_count
+			, name = name
+			, source_path = None
+		)
+		try:
+			for arr in arr_or_arrOfArr:
+				File.from_numpy(
+					ndarray = arr
+					, fileset_id = fileset.id
+					, dtype = dtype
+					, column_names = column_names
+				)
+		except:
+			fileset.delete_instance() # Orphaned.
+			raise 
 		return fileset
 
 
@@ -458,24 +548,32 @@ class File(BaseModel):
 			raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
 		if column_names is not None:
-			File.check_column_count(user_columns=column_names, structure=dataframe)
+			col_count = len(column_names)
+			structure_col_count = dataframe.shape[1]
+			if col_count != structure_col_count:
+				raise ValueError(f"\nYikes - The dataframe you provided has <{structure_col_count}> columns, but you provided <{col_count}> columns.\n")
 
 		shape = {}
 		shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 
+		# Passes in user-defined columns in case they are specified.
+		# Auto-assigned int based columns return a range when `df.columns` called so convert them to str.
+		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=column_names)
+
+		# Must be done after column_names are set.
 		if dtype is None:
 			dct_types = dataframe.dtypes.to_dict()
 			# convert the e.g. `dtype('float64')` to strings.
 			keys_values = dct_types.items()
 			dtype = {k: str(v) for k, v in keys_values}
-		
-		# Passes in user-defined columns in case they are specified.
-		# Auto-assigned int based columns return a range when `df.columns` called so convert to str.
-		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=column_names)
+
+		if dtype is not None:
+			# Accepts dict{'column_name':'dtype_str'} or a single str.
+			dataframe = dataframe.astype(dtype)
 
 		"""
 		Parquet naturally preserves pandas/numpy dtypes.
-		fastparquet parquet engine preserves timedelta dtype, but does not work with bytes.
+		fastparquet engine preserves timedelta dtype, alas it does not work with bytes!
 		https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
 		"""
 		blob = io.BytesIO()
@@ -516,7 +614,7 @@ class File(BaseModel):
 		if (file_format == 'tsv') or (file_format == 'csv'):
 			if (file_format == 'tsv') or (file_format is None):
 				sep='\t'
-				file_format = 'tsv' #Null condition
+				file_format = 'tsv' # Null condition.
 			elif (file_format == 'csv'):
 				sep=','
 
@@ -539,7 +637,7 @@ class File(BaseModel):
 			dataframe = df
 			, fileset_id = fileset_id
 			, dtype = dtype
-			, column_names = None
+			, column_names = None # See docstring above.
 			, source_path = path
 		)
 		return file
@@ -549,11 +647,12 @@ class File(BaseModel):
 		ndarray
 		, fileset_id:int
 		, column_names:list = None
-		, dtype:dict = None
+		, dtype:dict = None #Or single string.
 	):
 		"""
 		Only supporting homogenous arrays because structured arrays are a pain
-		when it comes time to convert them to dataframes.
+		when it comes time to convert them to dataframes. It complained about
+		setting an index, scalar types, and dimensionality... yikes.
 		
 		Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
 		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
@@ -565,21 +664,19 @@ class File(BaseModel):
 		if (ndarray.size == 0):
 			raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
 
-		if (all(np.isnan(ndarray[0]))):
-			# sometimes when coverting headered structures numpy will NaN them out.
+		dimensions = len(ndarray.shape)
+		if (dimensions == 1) and (all(np.isnan(ndarray))):
+			raise ValueError("\nYikes - Your entire 1D array consists of `NaN` values.\n")
+		elif (dimensions > 1) and (all(np.isnan(ndarray[0]))):
+			# Sometimes when coverting headered structures numpy will NaN them out.
 			ndarray = np.delete(ndarray, 0, axis=0)
-			print("\nInfo - The entire first row of your array is 'NaN', so we deleted this row during ingestion.\n")
-		
-		if (column_names is not None):
-			File.check_column_count(user_columns=column_names, structure=ndarray)
+			print("\nWarning - The entire first row of your array is 'NaN',\nwhich commonly happens in NumPy when headers are read into a numeric array, so we deleted this row during ingestion.\nInspect your data.")
 		"""
 		DataFrame method only accepts a single dtype str, or infers if None.
 		So deferring the dict-based dtype to our `from_pandas()` method.
 		Also deferring column_names since it runs there anyways.
 		"""
-		df = pd.DataFrame(
-			data = ndarray
-		)
+		df = pd.DataFrame(data=ndarray)
 		file = File.from_pandas(
 			dataframe = df
 			, fileset_id = fileset_id
@@ -588,71 +685,37 @@ class File(BaseModel):
 		)
 		return file
 
+
 	def to_pandas(
 		id:int
 		, columns:list = None
 		, samples:list = None
 	):
-		"""
-		- After unzipping `gzip.open()`, bytesio still needed to be read into PyArrow before being read into Pandas.
-		- All methods return all columns by default if they receive None: 
-		  `pc.read_csv(read_options.column_names)`, `pa.read_table()`, `pd.read_csv(uscols)`, `pd.read_parquet(columns)`
-		"""
-		d = File.get_by_id(id)
-		is_compressed = d.is_compressed
-		ff = d.file_format
+		f = File.get_by_id(id)
+		blob = io.BytesIO(f.blob)
 
-		blob = d.blob
-		bytesio_data = io.BytesIO(blob)
-		if (ff == 'csv') or (ff == 'tsv'):
-			# `pc.ReadOptions.column_names` verifies the existence of the names, does not filter for them.
-			if is_compressed:
-				bytesio_csv = gzip.open(bytesio_data)
-				if ff == 'tsv':
-					parse_opt = pc.ParseOptions(delimiter='\t')
-					tbl = pc.read_csv(bytesio_csv, parse_options=parse_opt)
-				else:
-					tbl = pc.read_csv(bytesio_csv)
-				df = tbl.to_pandas()
-				if columns is not None:
-					df = df.filter(columns)
-			else:
-				if ff == 'tsv':
-					df = pd.read_csv(
-						bytesio_data
-						, sep = '\t'
-						, usecols = columns
-					)
-				else:
-					df = pd.read_csv(
-						bytesio_data
-						, usecols = columns
-					)
-		elif ff == 'parquet':
-			if is_compressed:
-				bytesio_parquet = gzip.open(bytesio_data)
-				tbl = pq.read_table(bytesio_parquet, columns=columns)
-				df = tbl.to_pandas()
-			else:
-				df = pd.read_parquet(
-					bytesio_data
-					,columns = columns)
-		
+		# Filters.
+		df = pd.read_parquet(blob, columns=columns)
 		if samples is not None:
 			df = df.iloc[samples]
 
-		d_dtype = d.dtype
-		if d_dtype is not None:
-			if (type(d_dtype) == dict):
+		"""
+		Performed on both read and write in case user wants to update `File.dtype`.
+		Accepts dict{'column_name':'dtype_str'} or a single str.
+		"""
+		df_dtype = f.dtype
+		if df_dtype is not None:
+			if (isinstance(df_dtype, dict)):
 				if columns is None:
-					columns = d.columns
-				# need to prune out the excluded columns from the dtype dict
-				d_dtype_cols = list(d_dtype.keys())
-				for col in d_dtype_cols:
+					columns = f.columns
+				# Prunes out the excluded columns from the dtype dict.
+				df_dtype_cols = list(df_dtype.keys())
+				for col in df_dtype_cols:
 					if col not in columns:
-						del d_dtype[col]
-			df = df.astype(d_dtype)
-
+						del df_dtype[col]
+			elif (isinstance(df_dtype, str)):
+				pass #It just gets applied as-is.
+			df = df.astype(df_dtype)
 		return df
 
 
@@ -661,16 +724,12 @@ class File(BaseModel):
 		, columns:list = None
 		, samples:list = None
 	):
-		d = File.get_by_id(id)
 		# dtype is applied within `to_pandas()` function.
 		df = File.to_pandas(id=id, columns=columns, samples=samples)
 		arr = df.to_numpy()
 		return arr
 
-	"""
-	Future:
-	- Read to_tensor (pytorch and tf)? Or will numpy suffice?
-	"""
+	#Future: Add to_tensor and from_tensor? Or will numpy suffice?	
 
 	def pandas_stringify_columns(df, columns):
 		cols_raw = df.columns.to_list()
@@ -685,13 +744,6 @@ class File(BaseModel):
 		df = df.rename(columns=cols_dct)
 		columns = df.columns.to_list()
 		return df, columns
-
-
-	def check_column_count(user_columns, structure):
-		col_count = len(user_columns)
-		structure_col_count = structure.shape[1]
-		if col_count != structure_col_count:
-			raise ValueError(f"\nYikes - The dataframe you provided has <{structure_col_count}> columns, but you provided <{col_count}> columns.\n")
 
 
 
