@@ -345,27 +345,6 @@ class Fileset(BaseModel):
 	#fileset_type = tabular, image, sequence, graph, audio.
 	
 
-	# all of the foldery operations.
-
-	def make_label(id:int, columns:list):
-		l = Label.from_fileset(fileset_id=id, columns=columns)
-		return l
-
-
-	def make_featureset(
-		id:int
-		, include_columns:list = None
-		, exclude_columns:list = None
-	):
-
-		f = Featureset.from_fileset(
-			fileset_id = id
-			, include_columns = include_columns
-			, exclude_columns = exclude_columns
-		)
-		return f
-
-
 	def from_path(
 		filePath_or_dirPath:str
 		, fileset_type:str
@@ -379,13 +358,10 @@ class Fileset(BaseModel):
 		I want data ingestion to be 1 step for the user. 
 		So most arguments are passed through for the creation of Files.
 		"""
+		check_fileset_type(fileset_type)
 		accepted_formats = ['csv', 'tsv', 'parquet', None]
 		if file_format not in accepted_formats:
 			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
-
-		accepted_types = ['tabular', 'sequence', 'image']
-		if fileset_type not in accepted_types:
-			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour fileset_type: {fileset_type}\n")
 
 		# Use the raw, not absolute path for the name.
 		if name is None:
@@ -398,7 +374,7 @@ class Fileset(BaseModel):
 			file_paths = [path]
 		elif os.path.isdir(path):
 			if (fileset_type == 'tabular'):
-				raise ValueError(f"\nYikes - The path you provided is a directory:\n{path}\nBut `fileset_type=='tabular'` does not support directories.\nTry creating `fileset_type=='sequence'` instead.`\n")
+				raise ValueError(f"\nYikes - The path you provided is a directory:\n{path}\nBut `fileset_type=='tabular'` only supports a single file, not an entire directory.`\n")
 
 			file_paths = os.listdir(path)
 			# prune hidden files and directories.
@@ -437,11 +413,13 @@ class Fileset(BaseModel):
 		, dtype:dict = None
 		, column_names:list = None
 	):
+		check_fileset_type(fileset_type)
 		# Check if it is a single df, not a list.
 		if (type(df_or_dfList).__name__ == 'DataFrame'):
 			df_or_dfList = [df_or_dfList]
 
 		file_count = len(df_or_dfList)
+		print(file_count)
 		if (file_count == 0):
 			raise ValueError("\nYikes - The list you provided is empty.\n")
 		if (file_count > 1) and (fileset_type=='tabular'):
@@ -465,42 +443,38 @@ class Fileset(BaseModel):
 			raise 
 		return fileset
 
+
 	def from_numpy(
-		arr_or_arrOfArr:object
+		ndarray:object
 		, fileset_type:bool
-		, single_file_seq:bool = False
 		, name:str = None
 		, dtype:dict = None
 		, column_names:list = None
 	):
-		if (type(arr_or_arrOfArr).__name__ != 'ndarray'):
-			raise ValueError("\nYikes - The `arr_or_arrOfArr` you provided is not of the type 'ndarray'.\n")
-		
-		dimensions = len(arr_or_arrOfArr.shape)
-		
-		if (dimensions > 2) and (fileset_type == 'tabular'):
-			raise ValueError("\nYikes - `fileset_type='tabular'` cannot have more than 2 dimensions.\n")
 		"""
-		single_file_seq is used by `fileset_type='sequence'` to determine if it wants 
-		to turn a 2D array into many files or 1 file.
+		Originally scripted support for 1D, 2D, and 3D arrays, but it was too confusing to document,
+		so just sticking to 2D for tabular and 3D for sequence.
 		"""
-		if (single_file_seq) and (fileset_type != 'sequence'):
-			raise ValueError("\nYikes - The argument `single_file_seq` can only be set to `True` if `fileset_type='sequence'`.\n")
-		elif (single_file_seq) and (dimensions > 2):
-			raise ValueError("\nYikes - The argument `single_file_seq` can only be set to `True` if `len(arr.shape) < 3`.\n")
+		check_fileset_type(fileset_type)
 
+		if (type(ndarray).__name__ != 'ndarray'):
+			raise ValueError("\nYikes - The `arr2Dor3D` you provided is not of the type 'ndarray'.\n")
+		elif (ndarray.dtype.names is not None):
+			raise ValueError("\nYikes - Sorry, we do not support numpy structured arrays.\nBut you can use the `dtype` dict and `columns_names` to handle each column specifically.")
+		
+		dimensions = len(ndarray.shape)
 
-		if (dimensions==2) and (fileset_type=='sequence') and (single_file_seq==False):
-			# Each inner 1D array will each become a sequence file.
-			pass
-		elif (dimensions==1) and (fileset_type=='sequence') and (single_file_seq==False):
-			# Turn the single 1D array into a 2D array.
-			arr_or_arrOfArr = np.reshape(arr_or_arrOfArr,(arr_or_arrOfArr.size, 1))
-		elif (dimensions < 3):
-			# Wrap the arrays so they can be iterated over and made into files.
-			arr_or_arrOfArr = [arr_or_arrOfArr]
+		if (dimensions > 3) or (dimensions < 2):
+			raise ValueError("\nYikes - ndarray must be either 2D or 3D.\nThe array you provided has <{dimensions}> dimensions.\n")
 
-		file_count = len(arr_or_arrOfArr)
+		if (fileset_type == 'tabular') and (dimensions != 2):
+			raise ValueError("\nYikes - Tabular Filesets only support 2D arrays.\n")
+		elif (fileset_type == 'tabular'):
+			ndarray = [ndarray]
+		elif (fileset_type == 'sequence') and (dimensions != 3):
+			raise ValueError("\nYikes - Sequential Filesets only support 3D arrays.\nIf you want to create a single-file sequence, just wrap your 2D array in another `numpy.array()`.")
+
+		file_count = len(ndarray)
 
 		fileset = Fileset.create(
 			file_count = file_count
@@ -508,7 +482,7 @@ class Fileset(BaseModel):
 			, source_path = None
 		)
 		try:
-			for arr in arr_or_arrOfArr:
+			for arr in ndarray:
 				File.from_numpy(
 					ndarray = arr
 					, fileset_id = fileset.id
@@ -519,6 +493,31 @@ class Fileset(BaseModel):
 			fileset.delete_instance() # Orphaned.
 			raise 
 		return fileset
+
+	
+	def check_fileset_type(fileset_type:str)
+		accepted_types = ['tabular', 'sequence', 'image']
+		if fileset_type not in accepted_types:
+			raise ValueError(f"\nYikes - Available file types include tabular, sequence, image.\nYour fileset_type: {fileset_type}\n")
+
+
+	def make_label(id:int, columns:list):
+		l = Label.from_fileset(fileset_id=id, columns=columns)
+		return l
+
+
+	def make_featureset(
+		id:int
+		, include_columns:list = None
+		, exclude_columns:list = None
+	):
+
+		f = Featureset.from_fileset(
+			fileset_id = id
+			, include_columns = include_columns
+			, exclude_columns = exclude_columns
+		)
+		return f
 
 
 
