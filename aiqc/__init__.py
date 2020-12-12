@@ -289,7 +289,7 @@ def create_db():
 		print(f"\n=> Info - skipping table creation as the following tables already exist:\n{tables}\n")
 	else:
 		db.create_tables([
-			File, Fileset, 
+			File, Dataset, 
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
@@ -338,217 +338,19 @@ class BaseModel(Model):
 
 
 
-class Fileset(BaseModel):
-	file_count = IntegerField()
-	name = CharField(null=True)
+class Dataset(BaseModel):
+	dataset_type = CharField() #tabular, image, sequence, graph, audio.
+	file_count = IntegerField() # only include Tabular in the Tabular file_count, not Image. 
 	source_path = CharField(null=True)
-	#fileset_type = tabular, image, sequence, graph, audio.
 
 
-	def from_path(
-		filePath_or_dirPath:str
-		, fileset_type:str
-		, file_format:str
-		, name:str = None
-		, dtype:dict = None
-		, column_names:list = None
-		, skip_header_rows:int = 'infer'
-	):
-		"""
-		I want data ingestion to be 1 step for the user. 
-		So most arguments are passed through for the creation of Files.
-		"""
-		Fileset.check_fileset_type(fileset_type)
-		accepted_formats = ['csv', 'tsv', 'parquet', None]
-		if file_format not in accepted_formats:
-			raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
-
-		# Use the raw, not absolute path for the name.
-		if name is None:
-			name = filePath_or_dirPath
-
-		path = os.path.abspath(filePath_or_dirPath)
-
-		# Get a list of files from the path.
-		if os.path.isfile(path):
-			file_paths = [path]
-		elif os.path.isdir(path):
-			if (fileset_type == 'tabular'):
-				raise ValueError(f"\nYikes - The path you provided is a directory:\n{path}\nBut `fileset_type=='tabular'` only supports a single file, not an entire directory.`\n")
-
-			file_paths = os.listdir(path)
-			# prune hidden files and directories.
-			file_paths = [f for f in file_paths if not f.startswith('.')]
-			file_paths = [f for f in file_paths if not os.path.isdir(f)]
-			# folder path is already absolute
-			file_paths = [os.path.join(path, f) for f in file_paths]
-			file_paths.reverse()
-		file_count = len(file_paths)		
-
-		fileset = Fileset.create(
-			source_path = path
-			, name = name
-			, file_count = file_count
-		)
-
-		try:
-			for i, p in enumerate(file_paths):
-				File.from_file(
-					path = p
-					, file_format = file_format
-					, fileset_id = fileset.id
-					, file_index = i
-					, dtype = dtype
-					, column_names = column_names
-					, skip_header_rows = skip_header_rows
-				)
-		except:
-			fileset.delete_instance() # Orphaned.
-			raise
-		return fileset
-
-
-	def from_pandas(
-		df_or_dfList:list
-		, fileset_type:str
-		, name:str = None
-		, dtype:dict = None
-		, column_names:list = None
-	):
-		Fileset.check_fileset_type(fileset_type)
-		# Check if it is a single df, not a list.
-		if (type(df_or_dfList).__name__ == 'DataFrame'):
-			df_or_dfList = [df_or_dfList]
-
-		file_count = len(df_or_dfList)
-		print(file_count)
-		if (file_count == 0):
-			raise ValueError("\nYikes - The list you provided is empty.\n")
-		if (file_count > 1) and (fileset_type=='tabular'):
-			raise ValueError("\nYikes - `fileset_type='tabular'` cannot have more than 1 DataFrame.\n")
-
-		fileset = Fileset.create(
-			file_count = file_count
-			, name = name
-			, source_path = None
-		)
-		try:
-			for i, df in enumerate(df_or_dfList):
-				File.from_pandas(
-					dataframe = df
-					, fileset_id = fileset.id
-					, file_index = i
-					, dtype = dtype
-					, column_names = column_names
-				)
-		except:
-			fileset.delete_instance() # Orphaned.
-			raise 
-		return fileset
-
-
-	def from_numpy(
-		ndarray:object
-		, fileset_type:bool
-		, name:str = None
-		, dtype:dict = None
-		, column_names:list = None
-	):
-		"""
-		Originally scripted support for 1D, 2D, and 3D arrays, but it was too confusing to document,
-		so just sticking to 2D for tabular and 3D for sequence.
-		"""
-		Fileset.check_fileset_type(fileset_type)
-
-		if (type(ndarray).__name__ != 'ndarray'):
-			raise ValueError("\nYikes - The `arr2Dor3D` you provided is not of the type 'ndarray'.\n")
-		elif (ndarray.dtype.names is not None):
-			raise ValueError("\nYikes - Sorry, we do not support numpy structured arrays.\nBut you can use the `dtype` dict and `columns_names` to handle each column specifically.")
-		
-		dimensions = len(ndarray.shape)
-
-		if (dimensions > 3) or (dimensions < 2):
-			raise ValueError("\nYikes - ndarray must be either 2D or 3D.\nThe array you provided has <{dimensions}> dimensions.\n")
-
-		if (fileset_type == 'tabular') and (dimensions != 2):
-			raise ValueError("\nYikes - Tabular Filesets only support 2D arrays.\n")
-		elif (fileset_type == 'tabular'):
-			ndarray = [ndarray]
-		elif (fileset_type == 'sequence') and (dimensions != 3):
-			raise ValueError("\nYikes - Sequential Filesets only support 3D arrays.\nIf you want to create a single-file sequence, just wrap your 2D array in another `numpy.array()`.")
-
-		file_count = len(ndarray)
-
-		fileset = Fileset.create(
-			file_count = file_count
-			, name = name
-			, source_path = None
-		)
-		try:
-			for i, arr in enumerate(ndarray):
-				File.from_numpy(
-					ndarray = arr
-					, fileset_id = fileset.id
-					, file_index = i
-					, dtype = dtype
-					, column_names = column_names
-				)
-		except:
-			fileset.delete_instance() # Orphaned.
-			raise 
-		return fileset
-
-
-	def to_pandas(
-		id:int
-		, columns:list = None
-		, samples:list = None
-		, files:list = None
-	):
-		fileset = Fileset.get_by_id(id)
-		
-		# Filter out the file_indeces that are not in the `files` argument.
-		if (files is not None):
-			filez = [f for f in fileset.files if f.file_index in files]
-		elif (files is None):
-			filez = list(fileset.files)
-
-		dfs = [f.to_pandas(samples=samples, columns=columns) for f in filez]
-		# Tabular expects a single dataframe.
-		if len(dfs) == 1:
-			dfs = dfs[0]
-		return dfs
-
-
-	def to_numpy(
-		id:int
-		, columns:list = None
-		, samples:list = None
-		, files:list = None
-	):
-		fileset = Fileset.get_by_id(id)
-
-		ndarrays = fileset.to_pandas(columns=columns, samples=samples, files=files)
-		# Returns either a single df or a list of dfs.
-		if (isinstance(ndarrays, list) == False):
-			ndarrays = [ndarrays]
-		ndarrays = [a.to_numpy() for a in ndarrays]
-		# For file_type=sequences, return a multidimensional array.
-		if (len(ndarrays) > 1):
-			ndarrays = np.array(ndarrays) 
-		else:
-			ndarrays = ndarrays[0]
-		return ndarrays
-
-
-	def check_fileset_type(fileset_type:str):
-		accepted_types = ['tabular', 'sequence', 'image']
-		if fileset_type not in accepted_types:
-			raise ValueError(f"\nYikes - Available fileset_types include tabular, sequence, image.\nYour fileset_type: {fileset_type}\n")
+	def check_dataset_type(dataset_type:str, required_type:str):
+		if dataset_type != required_type: 
+			raise ValueError(f"\nYikes - `dataset_type != '{required_type}'`\n")
 
 
 	def make_label(id:int, columns:list):
-		l = Label.from_fileset(fileset_id=id, columns=columns)
+		l = Label.from_dataset(dataset_id=id, columns=columns)
 		return l
 
 
@@ -557,40 +359,233 @@ class Fileset(BaseModel):
 		, include_columns:list = None
 		, exclude_columns:list = None
 	):
-
-		f = Featureset.from_fileset(
-			fileset_id = id
+		f = Featureset.from_dataset(
+			dataset_id = id
 			, include_columns = include_columns
 			, exclude_columns = exclude_columns
 		)
 		return f
 
 
+	def to_pandas(id:int, columns:list=None, samples:list=None):
+		dataset = Dataset.get_by_id(id)
+		clazz = Dataset.get_dataset_type_class(dataset)
+		df = clazz.to_pandas(id=id, columns=columns, samples=samples)
+		return df
+
+
+	def to_numpy(id:int, columns:list=None, samples:list=None):
+		dataset = Dataset.get_by_id(id)
+		clazz = Dataset.get_dataset_type_class(dataset)
+		arr = clazz.to_numpy(id=id, columns=columns, samples=samples)
+		return arr
+
+
+	def get_dataset_type_class(dataset:object):
+		clazz = dataset.dataset_type.capitalize()
+		clazz = f"Dataset.{clazz}"
+		clazz = eval(clazz)
+		return clazz
+
+
+	class Tabular():
+		dataset_type = 'tabular'
+
+		def from_path(
+			file_path:str
+			, file_format:str
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
+			, skip_header_rows:int = 'infer'
+			, dataset_type:str = dataset_type
+		):
+			Dataset.check_dataset_type(dataset_type=dataset_type, required_type='tabular')
+
+			accepted_formats = ['csv', 'tsv', 'parquet']
+			if file_format not in accepted_formats:
+				raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
+
+			if (os.path.isfile(file_path) == False):
+				raise ValueError(f"\nYikes - The path you provided is a directory:\n{file_path}\nBut `dataset_type=='tabular'` only supports a single file, not an entire directory.`\n")
+
+			# Use the raw, not absolute path for the name.
+			if name is None:
+				name = file_path
+
+			source_path = os.path.abspath(file_path)
+
+			dataset = Dataset.create(
+				dataset_type = dataset_type
+				, file_count = 1
+				, source_path = source_path
+				, name = name
+			)
+
+			try:
+				File.from_file(
+					path = file_path
+					, file_format = file_format
+					, file_type = 'tabular'
+					, file_index = 0
+					, dtype = dtype
+					, column_names = column_names
+					, skip_header_rows = skip_header_rows
+					, dataset_id = dataset.id
+				)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise
+			return dataset
+
+		
+		def from_pandas(
+			dataframe:object
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
+			, dataset_type:str = dataset_type
+		):
+			Dataset.check_dataset_type(dataset_type, 'tabular')
+
+			if (type(dataframe).__name__ != 'DataFrame'):
+				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ != 'DataFrame'` \n")
+
+			dataset = Dataset.create(
+				file_count = 1
+				, dataset_type = dataset_type
+				, name = name
+				, source_path = None
+			)
+
+			try:
+				File.from_pandas(
+					dataframe = dataframe
+					, file_type = 'tabular'
+					, file_index = 0
+					, dtype = dtype
+					, column_names = column_names
+					, dataset_id = dataset.id
+				)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise 
+			return dataset
+
+
+		def from_numpy(
+			ndarray:object
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
+			, dataset_type:bool = dataset_type
+		):
+			Dataset.check_dataset_type(dataset_type, 'tabular')
+
+			if (type(ndarray).__name__ != 'ndarray'):
+				raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
+			elif (ndarray.dtype.names is not None):
+				raise ValueError("\nYikes - Sorry, we do not support NumPy Structured Arrays.\nHowever, you can use the `dtype` dict and `columns_names` to handle each column specifically.")
+
+			dimensions = len(ndarray.shape)
+			if (dimensions != 2):
+				raise ValueError("\nYikes - Tabular Datasets only support 2D arrays.\n")
+			
+			dataset = Dataset.create(
+				file_count = 1
+				, name = name
+				, source_path = None
+				, dataset_type = dataset_type
+			)
+			try:
+				File.from_numpy(
+					ndarray = ndarray
+					, file_type = 'tabular'
+					, file_index = 0
+					, dtype = dtype
+					, column_names = column_names
+					, dataset_id = dataset.id
+				)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise 
+			return dataset
+
+
+		def to_pandas(
+			id:int
+			, columns:list = None
+			, samples:list = None
+		):
+			dataset = Dataset.get_by_id(id)
+			f = dataset.files[0]
+			df = f.to_pandas(samples=samples, columns=columns)
+			return df
+
+
+		def to_numpy(
+			id:int
+			, columns:list = None
+			, samples:list = None
+		):
+			dataset = Dataset.get_by_id(id)
+			df = dataset.to_pandas(columns=columns, samples=samples)
+			ndarray = df.to_numpy()
+			return ndarray
+
+
 
 
 class File(BaseModel):
 	"""
-	Make sure to remove any index columns. The ordered nature of 
-	such a column will bias the analysis.
+	- Many of these methods are also used by Dataset for managing the master frame.
+	- Make sure to remove index columns. The ordered nature will bias analysis.
 	"""
 	blob = BlobField()
 	file_index = IntegerField()
+	file_type = CharField()
 	columns = JSONField(null=True)# images don't have columns.
 	source_path = CharField(null=True)
-	shape = JSONField(null=True)# images?
+	shape = JSONField(null=True)# images? could still get shape... graphs node_count and connection_count?
 	dtype = JSONField(null=True)
+	#is_persisted = BooleanField() #if False read it from path.
+	#file_type = data vs metadata #think about graph connection file.
+	#file_format = png, jpg, parquet 
 
-	fileset = ForeignKeyField(Fileset, backref='files')
-
+	dataset = ForeignKeyField(Dataset, backref='files')
 
 	def from_pandas(
 		dataframe:object
-		, fileset_id:int
+		, file_type:str
+		, dataset_id:int
 		, file_index:int
 		, dtype:dict = None
 		, column_names:list = None
 		, source_path:str = None # passed in via from_file
 	):
+		File.df_validate(dataframe, column_names)
+
+		dataframe, columns, shape, dtype = File.df_set_metadata(
+			dataframe=dataframe, column_names=column_names, dtype=dtype
+		)
+
+		blob = File.df_to_compressed_parquet_bytes(dataframe)
+
+		dataset = Dataset.get_by_id(dataset_id)
+		file = File.create(
+			blob = blob
+			, file_type = file_type
+			, file_index = file_index
+			, shape = shape
+			, dtype = dtype
+			, columns = columns
+			, source_path = source_path
+			, dataset = dataset
+		)
+		return file
+
+
+	def df_validate(dataframe:object, column_names:list):
 		if dataframe.empty:
 			raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
@@ -600,6 +595,12 @@ class File(BaseModel):
 			if col_count != structure_col_count:
 				raise ValueError(f"\nYikes - The dataframe you provided has <{structure_col_count}> columns, but you provided <{col_count}> columns.\n")
 
+
+	def df_set_metadata(
+		dataframe:object
+		, column_names:list = None
+		, dtype:dict = None
+	):
 		shape = {}
 		shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 
@@ -610,14 +611,18 @@ class File(BaseModel):
 		# Must be done after column_names are set.
 		if dtype is None:
 			dct_types = dataframe.dtypes.to_dict()
-			# convert the e.g. `dtype('float64')` to strings.
+			# Convert the `dtype('float64')` to strings.
 			keys_values = dct_types.items()
 			dtype = {k: str(v) for k, v in keys_values}
-
-		if dtype is not None:
+		elif dtype is not None:
 			# Accepts dict{'column_name':'dtype_str'} or a single str.
 			dataframe = dataframe.astype(dtype)
 
+		# Each object gets transformed so each object must be returned.
+		return dataframe, columns, shape, dtype
+
+
+	def df_to_compressed_parquet_bytes(dataframe:object):
 		"""
 		Parquet naturally preserves pandas/numpy dtypes.
 		fastparquet engine preserves timedelta dtype, alas it does not work with bytes!
@@ -631,28 +636,43 @@ class File(BaseModel):
 			, index = False
 		)
 		blob = blob.getvalue()
-
-		fileset = Fileset.get_by_id(fileset_id)
-		file = File.create(
-			blob = blob
-			, file_index = file_index
-			, shape = shape
-			, dtype = dtype
-			, columns = columns
-			, source_path = source_path
-			, fileset = fileset
-		)
-		return file
+		return blob
 
 
 	def from_file(
 		path:str
-		, fileset_id:int
+		, dataset_id:int
 		, file_index:int
 		, file_format:str
+		, file_type:str
 		, dtype:dict = None
 		, column_names:list = None
 		, skip_header_rows:int = 'infer'
+	):
+		df = File.path_to_df(
+			path = path
+			, file_format = file_format
+			, column_names = column_names
+			, skip_header_rows = skip_header_rows
+		)
+
+		file = File.from_pandas(
+			dataframe = df
+			, file_type = file_type
+			, dataset_id = dataset_id
+			, file_index = file_index
+			, dtype = dtype
+			, column_names = None # See docstring above.
+			, source_path = path
+		)
+		return file
+
+
+	def path_to_df(
+		path:str
+		, file_format:str
+		, column_names:list
+		, skip_header_rows:int
 	):
 		"""
 		Previously, I was using pyarrow for all tabular/ sequence file formats. 
@@ -660,6 +680,9 @@ class File(BaseModel):
 		So I switched to pandas for handling csv/tsv, but read_parquet()
 		doesn't let you change column names easily, so using pyarrow for parquet.
 		"""	
+		if (os.path.isfile(path) == False):
+			raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
+
 		if (file_format == 'tsv') or (file_format == 'csv'):
 			if (file_format == 'tsv') or (file_format is None):
 				sep='\t'
@@ -681,21 +704,13 @@ class File(BaseModel):
 				tbl = tbl.rename_columns(column_names)
 			# At this point, still need to work with metadata in df.
 			df = tbl.to_pandas()
-
-		file = File.from_pandas(
-			dataframe = df
-			, fileset_id = fileset_id
-			, file_index = file_index
-			, dtype = dtype
-			, column_names = None # See docstring above.
-			, source_path = path
-		)
-		return file
+		return df
 
 
 	def from_numpy(
-		ndarray
-		, fileset_id:int
+		ndarray:object
+		, file_type:str
+		, dataset_id:int
 		, file_index:int
 		, column_names:list = None
 		, dtype:dict = None #Or single string.
@@ -709,6 +724,25 @@ class File(BaseModel):
 		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
 		Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
 		"""
+		File.arr_validate(ndarray)
+		"""
+		DataFrame method only accepts a single dtype str, or infers if None.
+		So deferring the dict-based dtype to our `from_pandas()` method.
+		Also deferring column_names since it runs there anyways.
+		"""
+		df = pd.DataFrame(data=ndarray)
+		file = File.from_pandas(
+			dataframe = df
+			, dataset_id = dataset_id
+			, file_index = file_index
+			, file_type = file_type
+			, dtype = dtype
+			, column_names = column_names # Doesn't overwrite first row of homogenous array.
+		)
+		return file
+
+
+	def arr_validate(ndarray):
 		if (ndarray.dtype.names is not None):
 			raise ValueError("\nYikes - Sorry, we don't support structured arrays.\n")
 
@@ -722,20 +756,6 @@ class File(BaseModel):
 			# Sometimes when coverting headered structures numpy will NaN them out.
 			ndarray = np.delete(ndarray, 0, axis=0)
 			print("\nWarning - The entire first row of your array is 'NaN',\nwhich commonly happens in NumPy when headers are read into a numeric array, so we deleted this row during ingestion.\nInspect your data.")
-		"""
-		DataFrame method only accepts a single dtype str, or infers if None.
-		So deferring the dict-based dtype to our `from_pandas()` method.
-		Also deferring column_names since it runs there anyways.
-		"""
-		df = pd.DataFrame(data=ndarray)
-		file = File.from_pandas(
-			dataframe = df
-			, fileset_id = fileset_id
-			, file_index = file_index
-			, dtype = dtype
-			, column_names = column_names # Doesn't overwrite first row of homogenous array.
-		)
-		return file
 
 
 	def to_pandas(
@@ -750,7 +770,6 @@ class File(BaseModel):
 		df = pd.read_parquet(blob, columns=columns)
 		if samples is not None:
 			df = df.iloc[samples]
-
 		"""
 		Performed on both read and write in case user wants to update `File.dtype`.
 		Accepts dict{'column_name':'dtype_str'} or a single str.
@@ -798,25 +817,25 @@ class File(BaseModel):
 		return df, columns
 
 
-
 class Label(BaseModel):
 	"""
-	- Label needs to accept multiple columns for filesets that are already One Hot Encoded.
+	- Label needs to accept multiple columns for datasets that are already One Hot Encoded.
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
 	#probabilities = JSONField() #result of semi-supervised learning.
 	
-	fileset = ForeignKeyField(Fileset, backref='labels')
+	dataset = ForeignKeyField(Dataset, backref='labels')
 	
-	def from_fileset(fileset_id:int, columns:list):
-		d = Fileset.get_by_id(fileset_id)
-		d_cols = d.columns
+	def from_dataset(dataset_id:int, columns:list):
+		d = Dataset.get_by_id(dataset_id)
+		if (d.dataset_type == 'tabular'):
+			d_cols = d.files[0].columns
 
 		# check columns exist
 		all_cols_found = all(col in d_cols for col in columns)
 		if not all_cols_found:
-			raise ValueError("\nYikes - You specified `columns` that do not exist in the Fileset.\n")
+			raise ValueError("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
 
 		# check for duplicates	
 		cols_aplha = sorted(columns)
@@ -828,12 +847,12 @@ class Label(BaseModel):
 				l_cols = l.columns
 				l_cols_alpha = sorted(l_cols)
 				if cols_aplha == l_cols_alpha:
-					raise ValueError(f"\nYikes - This Fileset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
+					raise ValueError(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
 
 		column_count = len(columns)
 
 		l = Label.create(
-			fileset = d
+			dataset = d
 			, columns = columns
 			, column_count = column_count
 		)
@@ -843,10 +862,10 @@ class Label(BaseModel):
 	def to_pandas(id:int, samples:list=None):
 		l = Label.get_by_id(id)
 		l_cols = l.columns
-		fileset_id = l.fileset.id
+		dataset_id = l.dataset.id
 
-		lf = Fileset.to_pandas(
-			id = fileset_id
+		lf = Dataset.to_pandas(
+			id = dataset_id
 			, columns = l_cols
 			, samples = samples
 		)
@@ -872,18 +891,19 @@ class Featureset(BaseModel):
 	"""
 	columns = JSONField()
 	columns_excluded = JSONField(null=True)
-	fileset = ForeignKeyField(Fileset, backref='featuresets')
+	dataset = ForeignKeyField(Dataset, backref='featuresets')
 
 
-	def from_fileset(
-		fileset_id:int
+	def from_dataset(
+		dataset_id:int
 		, include_columns:list=None
 		, exclude_columns:list=None
 		#Future: runPCA #,run_pca:boolean=False # triggers PCA analysis of all columns
 	):
 
-		d = Fileset.get_by_id(fileset_id)
-		d_cols = d.columns
+		d = Dataset.get_by_id(dataset_id)
+		if (d.dataset_type == 'tabular'):
+			d_cols = d.files[0].columns
 
 		if (include_columns is not None) and (exclude_columns is not None):
 			raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
@@ -892,7 +912,7 @@ class Featureset(BaseModel):
 			# check columns exist
 			all_cols_found = all(col in d_cols for col in include_columns)
 			if not all_cols_found:
-				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Fileset.\n")
+				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
 			# inclusion
 			columns = include_columns
 			# exclusion
@@ -903,7 +923,7 @@ class Featureset(BaseModel):
 		elif (exclude_columns is not None):
 			all_cols_found = all(col in d_cols for col in exclude_columns)
 			if not all_cols_found:
-				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Fileset.\n")
+				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
 			# exclusion
 			columns_excluded = exclude_columns
 			# inclusion
@@ -911,13 +931,13 @@ class Featureset(BaseModel):
 			for col in exclude_columns:
 				columns.remove(col)
 			if not columns:
-				raise ValueError("\nYikes - You cannot exclude every column in the Fileset. For there will be nothing to analyze.\n")
+				raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
 		else:
 			columns = d_cols
 			columns_excluded = None
 
 		"""
-		Check that this Fileset does not already have a Featureset that is exactly the same.
+		Check that this Dataset does not already have a Featureset that is exactly the same.
 		There are less entries in `excluded_columns` so maybe it's faster to compare that.
 		"""
 		if columns_excluded is not None:
@@ -935,10 +955,10 @@ class Featureset(BaseModel):
 				else:
 					f_cols_alpha = None
 				if cols_aplha == f_cols_alpha:
-					raise ValueError(f"\nYikes - This Fileset already has Featureset <id:{f_id}> with the same columns.\nCannot create duplicate.\n")
+					raise ValueError(f"\nYikes - This Dataset already has Featureset <id:{f_id}> with the same columns.\nCannot create duplicate.\n")
 
 		f = Featureset.create(
-			fileset = d
+			dataset = d
 			, columns = columns
 			, columns_excluded = columns_excluded
 		)
@@ -948,10 +968,10 @@ class Featureset(BaseModel):
 	def to_pandas(id:int, samples:list=None):
 		f = Featureset.get_by_id(id)
 		f_cols = f.columns
-		fileset_id = f.fileset.id
+		dataset_id = f.dataset.id
 		
-		ff = Fileset.to_pandas(
-			id = fileset_id
+		ff = Dataset.to_pandas(
+			id = dataset_id
 			,columns = f_cols
 			,samples = samples
 		)
@@ -983,8 +1003,8 @@ class Featureset(BaseModel):
 
 class Splitset(BaseModel):
 	"""
-	- Belongs to a Featureset, not a Fileset, because the samples selected vary based on the stratification of the features during the split,
-	  and a Featureset already has a Fileset anyways.
+	- Belongs to a Featureset, not a Dataset, because the samples selected vary based on the stratification of the features during the split,
+	  and a Featureset already has a Dataset anyways.
 	- Here the `samples_` attributes contain indices.
 
 	-ToDo: store and visualize distributions of each column in training split, including label.
@@ -1038,9 +1058,9 @@ class Splitset(BaseModel):
 		f_cols = f.columns
 
 		# Feature data to be split.
-		d = f.fileset
+		d = f.dataset
 		d_id = d.id
-		arr_f = Fileset.to_numpy(id=d_id, columns=f_cols)
+		arr_f = Dataset.to_numpy(id=d_id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
@@ -1261,7 +1281,7 @@ class Foldset(BaseModel):
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
 		if remainder != 0:
-			print(f"\nAdvice - The length <{train_count}> of your training Split is not evenly divisible by the number of folds <{fold_count}> you specified.\nThere's a chance that this could lead to misleadingly low accuracy for the last Fold with small filesets.\n")
+			print(f"\nAdvice - The length <{train_count}> of your training Split is not evenly divisible by the number of folds <{fold_count}> you specified.\nThere's a chance that this could lead to misleadingly low accuracy for the last Fold with small datasets.\n")
 
 		foldset = Foldset.create(
 			fold_count = fold_count
@@ -1362,7 +1382,7 @@ class Fold(BaseModel):
 
 class Preprocess(BaseModel):
 	"""
-	- Should not be happening prior to Fileset persistence because you need to do it after the split to avoid bias.
+	- Should not be happening prior to Dataset persistence because you need to do it after the split to avoid bias.
 	- For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	
 	- ToDo: Need a standard way to reference the features and labels of various splits.
@@ -2425,7 +2445,7 @@ class Environment(BaseModel)?
 #==================================================
 
 class DataPipeline(BaseModel):
-	fileset = ForeignKeyField(Fileset, backref='datapipelines')
+	dataset = ForeignKeyField(Dataset, backref='datapipelines')
 	featureset = ForeignKeyField(Featureset, backref='datapipelines')
 	splitset = ForeignKeyField(Splitset, backref='datapipelines')
 
@@ -2442,12 +2462,12 @@ class DataPipeline(BaseModel):
 		, encoder_features:object = None
 		, encoder_labels:object = None
 	):
-		# Create the fileset from either df or file.
+		# Create the dataset from either df or file.
 		d = dataFrame_or_filePath
-		data_type = str(type(d))
-		if (data_type == "<class 'pandas.core.frame.DataFrame'>"):
-			fileset = Fileset.from_pandas(dataframe=d)
-		elif (data_type == "<class 'str'>"):
+		dataset_type = str(type(d))
+		if (dataset_type == "<class 'pandas.core.frame.DataFrame'>"):
+			dataset = Dataset.from_pandas(dataframe=d)
+		elif (dataset_type == "<class 'str'>"):
 			if '.csv' in d:
 				file_format='csv'
 			elif '.tsv' in d:
@@ -2456,17 +2476,17 @@ class DataPipeline(BaseModel):
 				file_format='parquet'
 			else:
 				raise ValueError("\nYikes - None of the following file extensions were found in the path you provided:\n'.csv', '.tsv', '.parquet'\n")
-			fileset = Fileset.from_file(path=d, file_format=file_format)
+			dataset = Dataset.from_file(path=d, file_format=file_format)
 		else:
 			raise ValueError("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
 
 		# Not allowing user specify columns to keep/ include.
 		if label_column is not None:
-			label = fileset.make_label(columns=[label_column])
-			featureset = fileset.make_featureset(exclude_columns=[label_column])
+			label = dataset.make_label(columns=[label_column])
+			featureset = dataset.make_featureset(exclude_columns=[label_column])
 			label_id = label.id
 		elif label_column is None:
-			featureset = fileset.make_featureset()
+			featureset = dataset.make_featureset()
 			label_id = None
 			label = None
 
@@ -2491,7 +2511,7 @@ class DataPipeline(BaseModel):
 			preprocess = None
 
 		datapipeline = DataPipeline.create(
-			fileset = fileset
+			dataset = dataset
 			, featureset = featureset
 			, splitset = splitset
 			, label = label
