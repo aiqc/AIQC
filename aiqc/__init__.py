@@ -26,6 +26,10 @@ from keras.callbacks import History
 from tqdm import tqdm
 #visualization.
 import plotly.express as px
+# images
+from PIL import Image
+#file sorting
+from natsort import natsorted
 
 
 name = "aiqc"
@@ -289,7 +293,8 @@ def create_db():
 		print(f"\n=> Info - skipping table creation as the following tables already exist:\n{tables}\n")
 	else:
 		db.create_tables([
-			File, Dataset, 
+			File, Tabular,
+			Dataset, 
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
@@ -339,14 +344,17 @@ class BaseModel(Model):
 
 
 class Dataset(BaseModel):
+	"""
+	I like that Dataset sub-classes aren't strict 1-1 tables so that their
+	`dataset_type` can be changed on the fly as different types of Files are
+	added to the dataset. Moreover, the attributes of the different dataset_types 
+	are more or less the same.
+	"""
+
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # only include Tabular in the Tabular file_count, not Image. 
 	source_path = CharField(null=True)
-
-
-	def check_dataset_type(dataset_type:str, required_type:str):
-		if dataset_type != required_type: 
-			raise ValueError(f"\nYikes - `dataset_type != '{required_type}'`\n")
+	#s3_path = CharField(null=True) # Write an order to check.
 
 
 	def make_label(id:int, columns:list):
@@ -388,26 +396,48 @@ class Dataset(BaseModel):
 		return clazz
 
 
+	def sorted_file_list_from_dir_path(path:str):
+		if not os.path.exists(path):
+			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
+		path = os.path.abspath(path)
+		if (os.path.isdir(path) == False):
+			raise ValueError(f"\nYikes - The path that you provided is not a directory:{path}\n")
+		file_paths = os.listdir(path)
+		# prune hidden files and directories.
+		file_paths = [f for f in file_paths if not f.startswith('.')]
+		file_paths = [f for f in file_paths if not os.path.isdir(f)]
+		if not file_paths:
+			raise ValueError(f"\nYikes - The directory that you provided has no files in it:{path}\n")
+		# folder path is already absolute
+		file_paths = [os.path.join(path, f) for f in file_paths]
+		file_paths = natsorted(file_paths)
+		return file_paths
+
+
 	class Tabular():
+		# Not using `(Dataset)` class because I don't want a separate table.
 		dataset_type = 'tabular'
+		file_index = 0
+		file_count = 1
 
 		def from_path(
 			file_path:str
-			, file_format:str
+			, source_file_format:str
 			, name:str = None
 			, dtype:dict = None
 			, column_names:list = None
 			, skip_header_rows:int = 'infer'
-			, dataset_type:str = dataset_type
 		):
-			Dataset.check_dataset_type(dataset_type=dataset_type, required_type='tabular')
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
-			if file_format not in accepted_formats:
-				raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
+			if source_file_format not in accepted_formats:
+				raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
 
-			if (os.path.isfile(file_path) == False):
-				raise ValueError(f"\nYikes - The path you provided is a directory:\n{file_path}\nBut `dataset_type=='tabular'` only supports a single file, not an entire directory.`\n")
+			if not os.path.exists(file_path):
+				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
+
+			if not os.path.isfile(file_path):
+				raise ValueError(f"\nYikes - The path you provided is a directory according to `os.path.isfile(file_path)`:\n{file_path}\nBut `dataset_type=='tabular'` only supports a single file, not an entire directory.`\n")
 
 			# Use the raw, not absolute path for the name.
 			if name is None:
@@ -416,18 +446,16 @@ class Dataset(BaseModel):
 			source_path = os.path.abspath(file_path)
 
 			dataset = Dataset.create(
-				dataset_type = dataset_type
-				, file_count = 1
+				dataset_type = Dataset.Tabular.dataset_type
+				, file_count = Dataset.Tabular.file_count
 				, source_path = source_path
 				, name = name
 			)
 
 			try:
-				File.from_file(
+				File.Tabular.from_file(
 					path = file_path
-					, file_format = file_format
-					, file_type = 'tabular'
-					, file_index = 0
+					, source_file_format = source_file_format
 					, dtype = dtype
 					, column_names = column_names
 					, skip_header_rows = skip_header_rows
@@ -444,25 +472,20 @@ class Dataset(BaseModel):
 			, name:str = None
 			, dtype:dict = None
 			, column_names:list = None
-			, dataset_type:str = dataset_type
 		):
-			Dataset.check_dataset_type(dataset_type, 'tabular')
-
 			if (type(dataframe).__name__ != 'DataFrame'):
 				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ != 'DataFrame'` \n")
 
 			dataset = Dataset.create(
-				file_count = 1
-				, dataset_type = dataset_type
+				file_count = Dataset.Tabular.file_count
+				, dataset_type = Dataset.Tabular.dataset_type
 				, name = name
 				, source_path = None
 			)
 
 			try:
-				File.from_pandas(
+				File.Tabular.from_pandas(
 					dataframe = dataframe
-					, file_type = 'tabular'
-					, file_index = 0
 					, dtype = dtype
 					, column_names = column_names
 					, dataset_id = dataset.id
@@ -478,30 +501,25 @@ class Dataset(BaseModel):
 			, name:str = None
 			, dtype:dict = None
 			, column_names:list = None
-			, dataset_type:bool = dataset_type
 		):
-			Dataset.check_dataset_type(dataset_type, 'tabular')
-
 			if (type(ndarray).__name__ != 'ndarray'):
 				raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
 			elif (ndarray.dtype.names is not None):
 				raise ValueError("\nYikes - Sorry, we do not support NumPy Structured Arrays.\nHowever, you can use the `dtype` dict and `columns_names` to handle each column specifically.")
 
 			dimensions = len(ndarray.shape)
-			if (dimensions != 2):
-				raise ValueError("\nYikes - Tabular Datasets only support 2D arrays.\n")
+			if (dimensions > 2) or (dimensions < 1):
+				raise ValueError(f"\nYikes - Tabular Datasets only support 1D and 2D arrays.\nYour array dimensions had <{dimensions}> dimensions.")
 			
 			dataset = Dataset.create(
-				file_count = 1
+				file_count = Dataset.Tabular.file_count
 				, name = name
 				, source_path = None
-				, dataset_type = dataset_type
+				, dataset_type = Dataset.Tabular.dataset_type
 			)
 			try:
-				File.from_numpy(
+				File.Tabular.from_numpy(
 					ndarray = ndarray
-					, file_type = 'tabular'
-					, file_index = 0
 					, dtype = dtype
 					, column_names = column_names
 					, dataset_id = dataset.id
@@ -519,7 +537,7 @@ class Dataset(BaseModel):
 		):
 			dataset = Dataset.get_by_id(id)
 			f = dataset.files[0]
-			df = f.to_pandas(samples=samples, columns=columns)
+			df = f.Tabular.to_pandas(id=f.id, samples=samples, columns=columns)
 			return df
 
 
@@ -529,6 +547,7 @@ class Dataset(BaseModel):
 			, samples:list = None
 		):
 			dataset = Dataset.get_by_id(id)
+			# This calls the method above. It does not need `.Tabular`
 			df = dataset.to_pandas(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
 			return ndarray
@@ -538,283 +557,302 @@ class Dataset(BaseModel):
 
 class File(BaseModel):
 	"""
-	- Many of these methods are also used by Dataset for managing the master frame.
-	- Make sure to remove index columns. The ordered nature will bias analysis.
+	Due to the fact that different types of Files have different attributes
+	(e.g. File.Tabular columns=JSON or File.Graph nodes=Blob, edges=Blob), 
+	I am making each file type its own subclass and 1-1 table. This approach 
+	allows for the creation of custom File types.
+	If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
 	"""
 	blob = BlobField()
-	file_index = IntegerField()
 	file_type = CharField()
-	columns = JSONField(null=True)# images don't have columns.
+	file_format = CharField() # png, jpg, parquet 
+	file_index = IntegerField() # image, sequence, graph
+	shape = JSONField()# images? could still get shape... graphs node_count and connection_count?
 	source_path = CharField(null=True)
-	shape = JSONField(null=True)# images? could still get shape... graphs node_count and connection_count?
-	dtype = JSONField(null=True)
-	#is_persisted = BooleanField() #if False read it from path.
-	#file_type = data vs metadata #think about graph connection file.
-	#file_format = png, jpg, parquet 
-
+	
 	dataset = ForeignKeyField(Dataset, backref='files')
 
-	def from_pandas(
-		dataframe:object
-		, file_type:str
-		, dataset_id:int
-		, file_index:int
-		, dtype:dict = None
-		, column_names:list = None
-		, source_path:str = None # passed in via from_file
-	):
-		File.df_validate(dataframe, column_names)
+	class Tabular():
+		file_type = 'tabular'
+		file_format = 'parquet'
+		file_index = 0 # If Sequence needs this in future, just 'if None then 0'.
 
-		dataframe, columns, shape, dtype = File.df_set_metadata(
-			dataframe=dataframe, column_names=column_names, dtype=dtype
-		)
+		def from_pandas(
+			dataframe:object
+			, dataset_id:int
+			, dtype:dict = None
+			, column_names:list = None
+			, source_path:str = None # passed in via from_file
+		):
+			File.Tabular.df_validate(dataframe, column_names)
 
-		blob = File.df_to_compressed_parquet_bytes(dataframe)
-
-		dataset = Dataset.get_by_id(dataset_id)
-		file = File.create(
-			blob = blob
-			, file_type = file_type
-			, file_index = file_index
-			, shape = shape
-			, dtype = dtype
-			, columns = columns
-			, source_path = source_path
-			, dataset = dataset
-		)
-		return file
-
-
-	def df_validate(dataframe:object, column_names:list):
-		if dataframe.empty:
-			raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
-
-		if column_names is not None:
-			col_count = len(column_names)
-			structure_col_count = dataframe.shape[1]
-			if col_count != structure_col_count:
-				raise ValueError(f"\nYikes - The dataframe you provided has <{structure_col_count}> columns, but you provided <{col_count}> columns.\n")
-
-
-	def df_set_metadata(
-		dataframe:object
-		, column_names:list = None
-		, dtype:dict = None
-	):
-		shape = {}
-		shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
-
-		# Passes in user-defined columns in case they are specified.
-		# Auto-assigned int based columns return a range when `df.columns` called so convert them to str.
-		dataframe, columns = File.pandas_stringify_columns(df=dataframe, columns=column_names)
-
-		# Must be done after column_names are set.
-		if dtype is None:
-			dct_types = dataframe.dtypes.to_dict()
-			# Convert the `dtype('float64')` to strings.
-			keys_values = dct_types.items()
-			dtype = {k: str(v) for k, v in keys_values}
-		elif dtype is not None:
-			# Accepts dict{'column_name':'dtype_str'} or a single str.
-			dataframe = dataframe.astype(dtype)
-
-		# Each object gets transformed so each object must be returned.
-		return dataframe, columns, shape, dtype
-
-
-	def df_to_compressed_parquet_bytes(dataframe:object):
-		"""
-		Parquet naturally preserves pandas/numpy dtypes.
-		fastparquet engine preserves timedelta dtype, alas it does not work with bytes!
-		https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
-		"""
-		blob = io.BytesIO()
-		dataframe.to_parquet(
-			blob
-			, engine = 'pyarrow'
-			, compression = 'gzip'
-			, index = False
-		)
-		blob = blob.getvalue()
-		return blob
-
-
-	def from_file(
-		path:str
-		, dataset_id:int
-		, file_index:int
-		, file_format:str
-		, file_type:str
-		, dtype:dict = None
-		, column_names:list = None
-		, skip_header_rows:int = 'infer'
-	):
-		df = File.path_to_df(
-			path = path
-			, file_format = file_format
-			, column_names = column_names
-			, skip_header_rows = skip_header_rows
-		)
-
-		file = File.from_pandas(
-			dataframe = df
-			, file_type = file_type
-			, dataset_id = dataset_id
-			, file_index = file_index
-			, dtype = dtype
-			, column_names = None # See docstring above.
-			, source_path = path
-		)
-		return file
-
-
-	def path_to_df(
-		path:str
-		, file_format:str
-		, column_names:list
-		, skip_header_rows:int
-	):
-		"""
-		Previously, I was using pyarrow for all tabular/ sequence file formats. 
-		However, it had worse support for missing column names and header skipping.
-		So I switched to pandas for handling csv/tsv, but read_parquet()
-		doesn't let you change column names easily, so using pyarrow for parquet.
-		"""	
-		if (os.path.isfile(path) == False):
-			raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
-
-		if (file_format == 'tsv') or (file_format == 'csv'):
-			if (file_format == 'tsv') or (file_format is None):
-				sep='\t'
-				file_format = 'tsv' # Null condition.
-			elif (file_format == 'csv'):
-				sep=','
-
-			df = pd.read_csv(
-				filepath_or_buffer = path
-				, sep = sep
-				, names = column_names
-				, header = skip_header_rows
+			dataframe, columns, shape, dtype = File.Tabular.df_set_metadata(
+				dataframe=dataframe, column_names=column_names, dtype=dtype
 			)
-		elif (file_format == 'parquet'):
-			if (skip_header_rows != 'infer'):
-				raise ValueError("Yikes - The argument `skip_header_rows` is not supported for `file_format='parquet'` because Parquet stores column names as metadata.")
-			tbl = pyarrow.parquet.read_table(path)
-			if (column_names is not None):
-				tbl = tbl.rename_columns(column_names)
-			# At this point, still need to work with metadata in df.
-			df = tbl.to_pandas()
-		return df
+
+			blob = File.Tabular.df_to_compressed_parquet_bytes(dataframe)
+
+			dataset = Dataset.get_by_id(dataset_id)
+
+			# I could abstract the actions below, but it would take just as many lines to feed in all the params.
+			file = File.create(
+				blob = blob
+				, file_type = File.Tabular.file_type
+				, file_format = File.Tabular.file_format
+				, file_index = File.Tabular.file_index
+				, shape = shape
+				, source_path = source_path
+				, dataset = dataset
+			)
+
+			try:
+				tabular = Tabular.create(
+					columns = columns
+					, dtype = dtype
+					, file_id = file.id
+				)
+			except:
+				file.delete_instance() # Orphaned.
+				raise 
+			return file
 
 
-	def from_numpy(
-		ndarray:object
-		, file_type:str
-		, dataset_id:int
-		, file_index:int
-		, column_names:list = None
-		, dtype:dict = None #Or single string.
-	):
-		"""
-		Only supporting homogenous arrays because structured arrays are a pain
-		when it comes time to convert them to dataframes. It complained about
-		setting an index, scalar types, and dimensionality... yikes.
-		
-		Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
-		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
-		Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
-		"""
-		File.arr_validate(ndarray)
-		"""
-		DataFrame method only accepts a single dtype str, or infers if None.
-		So deferring the dict-based dtype to our `from_pandas()` method.
-		Also deferring column_names since it runs there anyways.
-		"""
-		df = pd.DataFrame(data=ndarray)
-		file = File.from_pandas(
-			dataframe = df
-			, dataset_id = dataset_id
-			, file_index = file_index
-			, file_type = file_type
-			, dtype = dtype
-			, column_names = column_names # Doesn't overwrite first row of homogenous array.
-		)
-		return file
+		def from_numpy(
+			ndarray:object
+			, dataset_id:int
+			, column_names:list = None
+			, dtype:dict = None #Or single string.
+		):
+			"""
+			Only supporting homogenous arrays because structured arrays are a pain
+			when it comes time to convert them to dataframes. It complained about
+			setting an index, scalar types, and dimensionality... yikes.
+			
+			Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
+			Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
+			Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
+			"""
+			File.Tabular.arr_validate(ndarray)
+			"""
+			DataFrame method only accepts a single dtype str, or infers if None.
+			So deferring the dict-based dtype to our `from_pandas()` method.
+			Also deferring column_names since it runs there anyways.
+			"""
+			df = pd.DataFrame(data=ndarray)
+			file = File.Tabular.from_pandas(
+				dataframe = df
+				, dataset_id = dataset_id
+				, dtype = dtype
+				, column_names = column_names # Doesn't overwrite first row of homogenous array.
+			)
+			return file
 
 
-	def arr_validate(ndarray):
-		if (ndarray.dtype.names is not None):
-			raise ValueError("\nYikes - Sorry, we don't support structured arrays.\n")
+		def from_file(
+			path:str
+			, source_file_format:str
+			, dataset_id:int
+			, dtype:dict = None
+			, column_names:list = None
+			, skip_header_rows:int = 'infer'
+		):
+			df = File.Tabular.path_to_df(
+				path = path
+				, source_file_format = source_file_format
+				, column_names = column_names
+				, skip_header_rows = skip_header_rows
+			)
 
-		if (ndarray.size == 0):
-			raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
-
-		dimensions = len(ndarray.shape)
-		if (dimensions == 1) and (all(np.isnan(ndarray))):
-			raise ValueError("\nYikes - Your entire 1D array consists of `NaN` values.\n")
-		elif (dimensions > 1) and (all(np.isnan(ndarray[0]))):
-			# Sometimes when coverting headered structures numpy will NaN them out.
-			ndarray = np.delete(ndarray, 0, axis=0)
-			print("\nWarning - The entire first row of your array is 'NaN',\nwhich commonly happens in NumPy when headers are read into a numeric array, so we deleted this row during ingestion.\nInspect your data.")
-
-
-	def to_pandas(
-		id:int
-		, columns:list = None
-		, samples:list = None
-	):
-		f = File.get_by_id(id)
-		blob = io.BytesIO(f.blob)
-
-		# Filters.
-		df = pd.read_parquet(blob, columns=columns)
-		if samples is not None:
-			df = df.iloc[samples]
-		"""
-		Performed on both read and write in case user wants to update `File.dtype`.
-		Accepts dict{'column_name':'dtype_str'} or a single str.
-		"""
-		df_dtype = f.dtype
-		if df_dtype is not None:
-			if (isinstance(df_dtype, dict)):
-				if columns is None:
-					columns = f.columns
-				# Prunes out the excluded columns from the dtype dict.
-				df_dtype_cols = list(df_dtype.keys())
-				for col in df_dtype_cols:
-					if col not in columns:
-						del df_dtype[col]
-			elif (isinstance(df_dtype, str)):
-				pass #It just gets applied as-is.
-			df = df.astype(df_dtype)
-		return df
+			file = File.Tabular.from_pandas(
+				dataframe = df
+				, dataset_id = dataset_id
+				, dtype = dtype
+				, column_names = None # See docstring above.
+				, source_path = path
+			)
+			return file
 
 
-	def to_numpy(
-		id:int
-		, columns:list = None
-		, samples:list = None
-	):
-		# dtype is applied within `to_pandas()` function.
-		df = File.to_pandas(id=id, columns=columns, samples=samples)
-		arr = df.to_numpy()
-		return arr
+		def to_pandas(
+			id:int
+			, columns:list = None
+			, samples:list = None
+		):
+			f = File.get_by_id(id)
+			blob = io.BytesIO(f.blob)
+			
+			# Filters.
+			df = pd.read_parquet(blob, columns=columns)
+			if samples is not None:
+				df = df.iloc[samples]
+			"""
+			Performed on both read and write in case user wants to update `File.dtype`.
+			Accepts dict{'column_name':'dtype_str'} or a single str.
+			"""
+			tab = f.tabulars[0]
+			df_dtype = tab.dtype
+			if df_dtype is not None:
+				if (isinstance(df_dtype, dict)):
+					if columns is None:
+						columns = tab.columns
+					# Prunes out the excluded columns from the dtype dict.
+					df_dtype_cols = list(df_dtype.keys())
+					for col in df_dtype_cols:
+						if col not in columns:
+							del df_dtype[col]
+				elif (isinstance(df_dtype, str)):
+					pass #It just gets applied as-is.
+				df = df.astype(df_dtype)
+			return df
 
-	#Future: Add to_tensor and from_tensor? Or will numpy suffice?	
 
-	def pandas_stringify_columns(df, columns):
-		cols_raw = df.columns.to_list()
-		if columns is None:
-			# in case the columns were a range of ints.
-			cols_str = [str(c) for c in cols_raw]
-		else:
-			cols_str = columns
-		# dict from 2 lists
-		cols_dct = dict(zip(cols_raw, cols_str))
-		
-		df = df.rename(columns=cols_dct)
-		columns = df.columns.to_list()
-		return df, columns
+		def to_numpy(
+			id:int
+			, columns:list = None
+			, samples:list = None
+		):
+			# dtype is applied within `to_pandas()` function.
+			df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
+			arr = df.to_numpy()
+			return arr
+
+		#Future: Add to_tensor and from_tensor? Or will numpy suffice?	
+
+		def pandas_stringify_columns(df, columns):
+			cols_raw = df.columns.to_list()
+			if columns is None:
+				# in case the columns were a range of ints.
+				cols_str = [str(c) for c in cols_raw]
+			else:
+				cols_str = columns
+			# dict from 2 lists
+			cols_dct = dict(zip(cols_raw, cols_str))
+			
+			df = df.rename(columns=cols_dct)
+			columns = df.columns.to_list()
+			return df, columns
+
+
+		def df_validate(dataframe:object, column_names:list):
+			if dataframe.empty:
+				raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
+
+			if column_names is not None:
+				col_count = len(column_names)
+				structure_col_count = dataframe.shape[1]
+				if col_count != structure_col_count:
+					raise ValueError(f"\nYikes - The dataframe you provided has <{structure_col_count}> columns, but you provided <{col_count}> columns.\n")
+
+
+		def df_set_metadata(
+			dataframe:object
+			, column_names:list = None
+			, dtype:dict = None
+		):
+			shape = {}
+			shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
+
+			# Passes in user-defined columns in case they are specified.
+			# Auto-assigned int based columns return a range when `df.columns` called so convert them to str.
+			dataframe, columns = File.Tabular.pandas_stringify_columns(df=dataframe, columns=column_names)
+
+			# Must be done after column_names are set.
+			if dtype is None:
+				dct_types = dataframe.dtypes.to_dict()
+				# Convert the `dtype('float64')` to strings.
+				keys_values = dct_types.items()
+				dtype = {k: str(v) for k, v in keys_values}
+			elif dtype is not None:
+				# Accepts dict{'column_name':'dtype_str'} or a single str.
+				dataframe = dataframe.astype(dtype)
+
+			# Each object gets transformed so each object must be returned.
+			return dataframe, columns, shape, dtype
+
+
+		def df_to_compressed_parquet_bytes(dataframe:object):
+			"""
+			Parquet naturally preserves pandas/numpy dtypes.
+			fastparquet engine preserves timedelta dtype, alas it does not work with bytes!
+			https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+			"""
+			blob = io.BytesIO()
+			dataframe.to_parquet(
+				blob
+				, engine = 'pyarrow'
+				, compression = 'gzip'
+				, index = False
+			)
+			blob = blob.getvalue()
+			return blob
+
+
+		def path_to_df(
+			path:str
+			, source_file_format:str
+			, column_names:list
+			, skip_header_rows:int
+		):
+			"""
+			Previously, I was using pyarrow for all tabular/ sequence file formats. 
+			However, it had worse support for missing column names and header skipping.
+			So I switched to pandas for handling csv/tsv, but read_parquet()
+			doesn't let you change column names easily, so using pyarrow for parquet.
+			"""	
+			if not os.path.exists(path):
+				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
+
+			if not os.path.isfile(path):
+				raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
+
+			if (source_file_format == 'tsv') or (source_file_format == 'csv'):
+				if (source_file_format == 'tsv') or (source_file_format is None):
+					sep='\t'
+					source_file_format = 'tsv' # Null condition.
+				elif (source_file_format == 'csv'):
+					sep=','
+
+				df = pd.read_csv(
+					filepath_or_buffer = path
+					, sep = sep
+					, names = column_names
+					, header = skip_header_rows
+				)
+			elif (source_file_format == 'parquet'):
+				if (skip_header_rows != 'infer'):
+					raise ValueError("Yikes - The argument `skip_header_rows` is not supported for `source_file_format='parquet'` because Parquet stores column names as metadata.")
+				tbl = pyarrow.parquet.read_table(path)
+				if (column_names is not None):
+					tbl = tbl.rename_columns(column_names)
+				# At this point, still need to work with metadata in df.
+				df = tbl.to_pandas()
+			return df
+
+
+		def arr_validate(ndarray):
+			if (ndarray.dtype.names is not None):
+				raise ValueError("\nYikes - Sorry, we don't support structured arrays.\n")
+
+			if (ndarray.size == 0):
+				raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
+
+			dimensions = len(ndarray.shape)
+			if (dimensions == 1) and (all(np.isnan(ndarray))):
+				raise ValueError("\nYikes - Your entire 1D array consists of `NaN` values.\n")
+			elif (dimensions > 1) and (all(np.isnan(ndarray[0]))):
+				# Sometimes when coverting headered structures numpy will NaN them out.
+				ndarray = np.delete(ndarray, 0, axis=0)
+				print("\nWarning - The entire first row of your array is 'NaN',\nwhich commonly happens in NumPy when headers are read into a numeric array, so we deleted this row during ingestion.\nInspect your data.")
+
+
+
+class Tabular(BaseModel):
+	# Is sequence just a subset of tabular with a file_index?
+	columns = JSONField()
+	dtype = JSONField()
+
+	file = ForeignKeyField(File, backref='tabulars')
+
 
 
 class Label(BaseModel):
