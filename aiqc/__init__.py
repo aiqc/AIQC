@@ -293,7 +293,7 @@ def create_db():
 		print(f"\n=> Info - skipping table creation as the following tables already exist:\n{tables}\n")
 	else:
 		db.create_tables([
-			File, Tabular, #Image,
+			File, Tabular, Image,
 			Dataset, DatasetFile,
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
@@ -396,9 +396,9 @@ class Dataset(BaseModel):
 
 
 	def sorted_file_list(dir_path:str):
-		if not os.path.exists(path):
+		if not os.path.exists(dir_path):
 			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
-		path = os.path.abspath(path)
+		path = os.path.abspath(dir_path)
 		if (os.path.isdir(path) == False):
 			raise ValueError(f"\nYikes - The path that you provided is not a directory:{path}\n")
 		file_paths = os.listdir(path)
@@ -555,20 +555,21 @@ class Dataset(BaseModel):
 			ndarray = df.to_numpy()
 			return ndarray
 
-	"""
+	
 	class Image():
 		dataset_type = 'image'
 
-		def from_dir(
+		def from_folder(
 			dir_path:str
 			, name:str = None
+			, pillow_save:dict = {}
 			#, link_tabular_file_id:int = None
 		):
 			if name is None:
-				name = images_dir_path
-			source_path = os.path.abspath(images_dir_path)
+				name = dir_path
+			source_path = os.path.abspath(dir_path)
 
-			file_paths = sorted_file_list(source_path)
+			file_paths = Dataset.sorted_file_list(source_path)
 			file_count = len(file_paths)
 
 			dataset = Dataset.create(
@@ -593,14 +594,16 @@ class Dataset(BaseModel):
 			# verify that it is tabular.
 			return dataset
 
+
 		def link_tabular_file(file_id, dataset_id):
 			file = File.get_by_id(file_id)
-	"""
+			# join it up.
+	
+
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
 	# the only unique thing is an edge_data for each Graph file.
-
-
+	# attach multiple file types to a file File(id=1).tabular, File(id=1).graph?
 
 
 
@@ -909,16 +912,16 @@ class File(BaseModel):
 		file_type = 'image'
 
 		def from_file(
-			path:str # Already absolute.
-			, pillow_save:dict
+			path:str
 			, file_index:int
 			, dataset_id:int
+			, pillow_save:dict = {}
 		):
 			if not os.path.exists(path):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
-
 			if not os.path.isfile(path):
 				raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
+			path = os.path.abspath(path)
 
 			img = Imaje.open(path)
 
@@ -930,8 +933,7 @@ class File(BaseModel):
 			blob = io.BytesIO()
 			img.save(blob, format=img.format, **pillow_save)
 			blob = blob.getvalue()
-
-			dataset = Dataset.get_by_id(dataset_id)
+	
 			file = File.create(
 				blob = blob
 				, file_type = File.Image.file_type
@@ -939,15 +941,27 @@ class File(BaseModel):
 				, file_index = file_index
 				, shape = shape
 				, source_path = path
-				, dataset = dataset
 			)
 			try:
-				Image.create(
+				image = Image.create(
 					mode = img.mode
+					, file = file
+					, pillow_save = pillow_save
+				)
+			except:
+				file.delete_instance() # Orphaned.
+				raise
+
+			dataset = Dataset.get_by_id(dataset_id)
+
+			try:
+				datasetfile = DatasetFile.create(
+					dataset = dataset
 					, file = file
 				)
 			except:
 				file.delete_instance() # Orphaned.
+				image.delete_instance()
 				raise 
 			return file
 
@@ -963,13 +977,15 @@ class Tabular(BaseModel):
 
 
 
-"""
+
 class Image(BaseModel):
 	#https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
 	mode = CharField()
+	pillow_save = JSONField()
 
 	file = ForeignKeyField(File, backref='images')
-"""
+
+
 
 
 class DatasetFile(BaseModel):
@@ -978,6 +994,8 @@ class DatasetFile(BaseModel):
 	"""
 	dataset = ForeignKeyField(Dataset, backref='datasetfiles')
 	file = ForeignKeyField(File, backref='datasetfiles')
+
+
 
 
 class Label(BaseModel):
