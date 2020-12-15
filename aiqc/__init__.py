@@ -998,6 +998,17 @@ class File(BaseModel):
 			return file
 
 
+		def to_pillow(id:int):
+			#https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.open
+			file = File.get_by_id(id)
+			if (file.file_type != 'image'):
+				raise ValueError(f"\nYikes - Only `file.file_type='image' can be converted to Pillow images.\nBut you provided `file.file_type`: <{file.file_type}>\n")
+			img_bytes = io.BytesIO(file.blob)
+			img = Imaje.open(img_bytes)
+			return img
+
+
+
 
 
 class Tabular(BaseModel):
