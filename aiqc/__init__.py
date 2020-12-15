@@ -351,7 +351,7 @@ class Dataset(BaseModel):
 	are more or less the same.
 	"""
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
-	file_count = IntegerField() # only include Tabular in the Tabular file_count, not Image. 
+	file_count = IntegerField() # only includes file_types that match the dataset_type.
 	source_path = CharField(null=True)
 	#s3_path = CharField(null=True) # Write an order to check.
 
@@ -535,11 +535,7 @@ class Dataset(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
-			dataset = Dataset.get_by_id(id)
-
-			file = File.select().join(DatasetFile).join(Dataset).where(
-				Dataset.id==1, File.file_type=='tabular'
-			)[0]
+			file = Dataset.Tabular.get_main_tabular_file(id)
 			df = file.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
@@ -555,6 +551,13 @@ class Dataset(BaseModel):
 			ndarray = df.to_numpy()
 			return ndarray
 
+
+		def get_main_tabular_file(id:int):
+			file = File.select().join(DatasetFile).join(Dataset).where(
+				Dataset.id==id, File.file_type=='tabular'
+			)[0]
+			return file
+
 	
 	class Image():
 		dataset_type = 'image'
@@ -563,7 +566,7 @@ class Dataset(BaseModel):
 			dir_path:str
 			, name:str = None
 			, pillow_save:dict = {}
-			#, link_tabular_file_id:int = None
+			, tabular_dataset_id:int = None
 		):
 			if name is None:
 				name = dir_path
@@ -578,26 +581,55 @@ class Dataset(BaseModel):
 				, source_path = source_path
 				, dataset_type = Dataset.Image.dataset_type
 			)
+			files = []
 			try:
 				for i, p in enumerate(file_paths):	
-					File.Image.from_file(
+					file = File.Image.from_file(
 						path = p
 						, pillow_save = pillow_save
 						, file_index = i
 						, dataset_id = dataset.id
 					)
+					files.append(file)
 			except:
 				dataset.delete_instance() # Orphaned.
 				raise
-
-			# if (link_tabular_file_id is not None):
-			# verify that it is tabular.
+			# Link a tabular file (label/metadata) to the image dataset.
+			try:
+				if (tabular_dataset_id is not None):
+					datasetfile = Dataset.Image.attach_tabular_file(
+						image_dataset_id = dataset.id
+						, tabular_dataset_id = tabular_dataset_id
+					)
+			except:
+				dataset.delete_instance() # Orphaned.
+				[f.delete_instance() for f in files]
+				raise			
 			return dataset
 
+		# should this be more generic and accept a list of datasets to attach?
+		# or atleast make the first dataset agnostic of type?
+		# attribute under datasets called `secondary_types`?
+		def attach_tabular_file(image_dataset_id, tabular_dataset_id):
+			image_dataset = Dataset.get_by_id(image_dataset_id)
+			tabular_dataset = Dataset.get_by_id(tabular_dataset_id)
 
-		def link_tabular_file(file_id, dataset_id):
-			file = File.get_by_id(file_id)
-			# join it up.
+			if (image_dataset.dataset_type != 'image'):
+				raise ValueError(f"\nYikes - `image_dataset.dataset_type != 'image'`\nThe `image_dataset_id` you provided is of dataset_type: <{image_dataset.dataset_type}>\n")
+			if (tabular_dataset.dataset_type != 'tabular'):
+				raise ValueError(f"\nYikes - `tabular_dataset.dataset_type != 'tabular'`\nThe `tabular_dataset_id` you provided is of dataset_type: <{image_dataset.dataset_type}>\n")
+					
+			file = Dataset.Tabular.get_main_tabular_file(tabular_dataset_id)
+
+			file_sample_count = file.shape['rows']
+			if (file_sample_count != image_dataset.file_count):
+				raise ValueError(f"\nYikes - Cannot merge the tabular file with your image dataset because they do not have the same number of samples.\n`file.shape['rows']`:{file_sample_count}\n`image_dataset.file_count`:{image_dataset.file_count}\n")
+			# Use the many-to-many to link the tabular file to the image dataset.
+			datasetfile = DatasetFile.create(
+				file = file
+				, dataset = image_dataset
+			)
+			return datasetfile
 	
 
 	# Graph
