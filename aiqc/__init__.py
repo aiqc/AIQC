@@ -27,7 +27,7 @@ from tqdm import tqdm
 #visualization.
 import plotly.express as px
 # images
-from PIL import Image
+from PIL import Image as Imaje
 #file sorting
 from natsort import natsorted
 
@@ -293,8 +293,8 @@ def create_db():
 		print(f"\n=> Info - skipping table creation as the following tables already exist:\n{tables}\n")
 	else:
 		db.create_tables([
-			File, Tabular,
-			Dataset, 
+			File, Tabular, #Image,
+			Dataset, DatasetFile,
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
@@ -350,7 +350,6 @@ class Dataset(BaseModel):
 	added to the dataset. Moreover, the attributes of the different dataset_types 
 	are more or less the same.
 	"""
-
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # only include Tabular in the Tabular file_count, not Image. 
 	source_path = CharField(null=True)
@@ -396,7 +395,7 @@ class Dataset(BaseModel):
 		return clazz
 
 
-	def sorted_file_list_from_dir_path(path:str):
+	def sorted_file_list(dir_path:str):
 		if not os.path.exists(path):
 			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
 		path = os.path.abspath(path)
@@ -453,7 +452,7 @@ class Dataset(BaseModel):
 			)
 
 			try:
-				File.Tabular.from_file(
+				file = File.Tabular.from_file(
 					path = file_path
 					, source_file_format = source_file_format
 					, dtype = dtype
@@ -464,6 +463,7 @@ class Dataset(BaseModel):
 			except:
 				dataset.delete_instance() # Orphaned.
 				raise
+
 			return dataset
 
 		
@@ -536,8 +536,11 @@ class Dataset(BaseModel):
 			, samples:list = None
 		):
 			dataset = Dataset.get_by_id(id)
-			f = dataset.files[0]
-			df = f.Tabular.to_pandas(id=f.id, samples=samples, columns=columns)
+
+			file = File.select().join(DatasetFile).join(Dataset).where(
+				Dataset.id==1, File.file_type=='tabular'
+			)[0]
+			df = file.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
 
@@ -552,16 +555,62 @@ class Dataset(BaseModel):
 			ndarray = df.to_numpy()
 			return ndarray
 
+	"""
+	class Image():
+		dataset_type = 'image'
+
+		def from_dir(
+			dir_path:str
+			, name:str = None
+			#, link_tabular_file_id:int = None
+		):
+			if name is None:
+				name = images_dir_path
+			source_path = os.path.abspath(images_dir_path)
+
+			file_paths = sorted_file_list(source_path)
+			file_count = len(file_paths)
+
+			dataset = Dataset.create(
+				file_count = file_count
+				, name = name
+				, source_path = source_path
+				, dataset_type = Dataset.Image.dataset_type
+			)
+			try:
+				for i, p in enumerate(file_paths):	
+					File.Image.from_file(
+						path = p
+						, pillow_save = pillow_save
+						, file_index = i
+						, dataset_id = dataset.id
+					)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise
+
+			# if (link_tabular_file_id is not None):
+			# verify that it is tabular.
+			return dataset
+
+		def link_tabular_file(file_id, dataset_id):
+			file = File.get_by_id(file_id)
+	"""
+	# Graph
+	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
+	# the only unique thing is an edge_data for each Graph file.
+
+
 
 
 
 class File(BaseModel):
 	"""
-	Due to the fact that different types of Files have different attributes
+	- Due to the fact that different types of Files have different attributes
 	(e.g. File.Tabular columns=JSON or File.Graph nodes=Blob, edges=Blob), 
 	I am making each file type its own subclass and 1-1 table. This approach 
 	allows for the creation of custom File types.
-	If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
+	- If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
 	"""
 	blob = BlobField()
 	file_type = CharField()
@@ -570,8 +619,10 @@ class File(BaseModel):
 	shape = JSONField()# images? could still get shape... graphs node_count and connection_count?
 	source_path = CharField(null=True)
 	
-	dataset = ForeignKeyField(Dataset, backref='files')
-
+	"""
+	Classes are much cleaner than a knot of if statements in every method,
+	and `=None` for every parameter.
+	"""
 	class Tabular():
 		file_type = 'tabular'
 		file_format = 'parquet'
@@ -592,9 +643,7 @@ class File(BaseModel):
 
 			blob = File.Tabular.df_to_compressed_parquet_bytes(dataframe)
 
-			dataset = Dataset.get_by_id(dataset_id)
 
-			# I could abstract the actions below, but it would take just as many lines to feed in all the params.
 			file = File.create(
 				blob = blob
 				, file_type = File.Tabular.file_type
@@ -602,7 +651,6 @@ class File(BaseModel):
 				, file_index = File.Tabular.file_index
 				, shape = shape
 				, source_path = source_path
-				, dataset = dataset
 			)
 
 			try:
@@ -613,6 +661,18 @@ class File(BaseModel):
 				)
 			except:
 				file.delete_instance() # Orphaned.
+				raise 
+
+			dataset = Dataset.get_by_id(dataset_id)
+
+			try:
+				datasetfile = DatasetFile.create(
+					dataset = dataset
+					, file = file
+				)
+			except:
+				file.delete_instance() # Orphaned.
+				tabular.delete_instance()
 				raise 
 			return file
 
@@ -845,6 +905,54 @@ class File(BaseModel):
 				print("\nWarning - The entire first row of your array is 'NaN',\nwhich commonly happens in NumPy when headers are read into a numeric array, so we deleted this row during ingestion.\nInspect your data.")
 
 
+	class Image():
+		file_type = 'image'
+
+		def from_file(
+			path:str # Already absolute.
+			, pillow_save:dict
+			, file_index:int
+			, dataset_id:int
+		):
+			if not os.path.exists(path):
+				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
+
+			if not os.path.isfile(path):
+				raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
+
+			img = Imaje.open(path)
+
+			shape = {
+				'width': img.size[0]
+				, 'height':img.size[1]
+			}
+
+			blob = io.BytesIO()
+			img.save(blob, format=img.format, **pillow_save)
+			blob = blob.getvalue()
+
+			dataset = Dataset.get_by_id(dataset_id)
+			file = File.create(
+				blob = blob
+				, file_type = File.Image.file_type
+				, file_format = img.format
+				, file_index = file_index
+				, shape = shape
+				, source_path = path
+				, dataset = dataset
+			)
+			try:
+				Image.create(
+					mode = img.mode
+					, file = file
+				)
+			except:
+				file.delete_instance() # Orphaned.
+				raise 
+			return file
+
+
+
 
 class Tabular(BaseModel):
 	# Is sequence just a subset of tabular with a file_index?
@@ -853,6 +961,23 @@ class Tabular(BaseModel):
 
 	file = ForeignKeyField(File, backref='tabulars')
 
+
+
+"""
+class Image(BaseModel):
+	#https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
+	mode = CharField()
+
+	file = ForeignKeyField(File, backref='images')
+"""
+
+
+class DatasetFile(BaseModel):
+	"""
+	Many-to-many accesses other models as singular: `.file` not `.files[0]`
+	"""
+	dataset = ForeignKeyField(Dataset, backref='datasetfiles')
+	file = ForeignKeyField(File, backref='datasetfiles')
 
 
 class Label(BaseModel):
