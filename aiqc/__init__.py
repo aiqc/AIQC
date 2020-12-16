@@ -294,7 +294,7 @@ def create_db():
 	else:
 		db.create_tables([
 			File, Tabular, Image,
-			Dataset, DatasetFile,
+			Dataset,
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
@@ -376,23 +376,20 @@ class Dataset(BaseModel):
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		clazz = Dataset.get_dataset_type_class(dataset)
-		df = clazz.to_pandas(id=id, columns=columns, samples=samples)
+		if (dataset.dataset_type == 'tabular'):
+			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
+		elif (dataset.dataset_type == 'image'):
+			raise ValueError("\nYikes - `Dataset.Image` class does not have a `to_pandas()` method.\n")
 		return df
 
 
 	def to_numpy(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		clazz = Dataset.get_dataset_type_class(dataset)
-		arr = clazz.to_numpy(id=id, columns=columns, samples=samples)
+		if (dataset.dataset_type == 'tabular'):
+			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
+		elif (dataset.dataset_type == 'image'):
+			arr = Dataset.Image.to_numpy(id=id, samples=samples)
 		return arr
-
-
-	def get_dataset_type_class(dataset:object):
-		clazz = dataset.dataset_type.capitalize()
-		clazz = f"Dataset.{clazz}"
-		clazz = eval(clazz)
-		return clazz
 
 
 	def sorted_file_list(dir_path:str):
@@ -553,8 +550,8 @@ class Dataset(BaseModel):
 
 
 		def get_main_tabular_file(id:int):
-			file = File.select().join(DatasetFile).join(Dataset).where(
-				Dataset.id==id, File.file_type=='tabular'
+			file = File.select().join(Dataset).where(
+				Dataset.id==id, File.file_type=='tabular', File.file_index==0
 			)[0]
 			return file
 
@@ -593,18 +590,7 @@ class Dataset(BaseModel):
 					files.append(file)
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise
-			# Link a tabular file (label/metadata) to the image dataset.
-			try:
-				if (tabular_dataset_id is not None):
-					datasetfile = Dataset.Image.attach_tabular_file(
-						image_dataset_id = dataset.id
-						, tabular_dataset_id = tabular_dataset_id
-					)
-			except:
-				dataset.delete_instance() # Orphaned.
-				[f.delete_instance() for f in files]
-				raise			
+				raise		
 			return dataset
 
 
@@ -624,66 +610,22 @@ class Dataset(BaseModel):
 			"""
 			- Because Pillow works directly with numpy, there's no need for pandas right now.
 			"""
-			arrays = {}
 			images = Dataset.Image.to_pillow(id, samples=samples)
 			images = [np.array(img) for img in images]
 			images = np.array(images)
-			arrays['images'] = images
-			# Check if it has tabular attached.
-			tabular = File.select().join(DatasetFile).join(Dataset).where(
-				Dataset.id==id, File.file_type=='tabular'
-			)
-			if (tabular.count() == 1):
-				tabular = tabular[0]
-				tabular = File.Tabular.to_numpy(
-					id = tabular.id
-					, columns = columns
-					, samples = samples
-				)
-				arrays['tabular'] = tabular
-			return arrays
-			
-
-		# should this be more generic and accept a list of datasets to attach?
-		# or atleast make the first dataset agnostic of type?
-		# attribute under datasets called `secondary_types`?
-		def attach_tabular_file(image_dataset_id, tabular_dataset_id):
-			image_dataset = Dataset.get_by_id(image_dataset_id)
-			tabular_dataset = Dataset.get_by_id(tabular_dataset_id)
-
-			if (image_dataset.dataset_type != 'image'):
-				raise ValueError(f"\nYikes - `image_dataset.dataset_type != 'image'`\nThe `image_dataset_id` you provided is of dataset_type: <{image_dataset.dataset_type}>\n")
-			if (tabular_dataset.dataset_type != 'tabular'):
-				raise ValueError(f"\nYikes - `tabular_dataset.dataset_type != 'tabular'`\nThe `tabular_dataset_id` you provided is of dataset_type: <{image_dataset.dataset_type}>\n")
-					
-			file = Dataset.Tabular.get_main_tabular_file(tabular_dataset_id)
-
-			file_sample_count = file.shape['rows']
-			if (file_sample_count != image_dataset.file_count):
-				raise ValueError(f"\nYikes - Cannot merge the tabular file with your image dataset because they do not have the same number of samples.\n`file.shape['rows']`:{file_sample_count}\n`image_dataset.file_count`:{image_dataset.file_count}\n")
-			# Use the many-to-many to link the tabular file to the image dataset.
-			datasetfile = DatasetFile.create(
-				file = file
-				, dataset = image_dataset
-			)
-			return datasetfile
-
-			# SAMPLES, COLUMNS check type.
-			# add has_tabular to Dataset.Image
+			return images
 
 
 		def get_image_files(id:int, samples:list=None):
 			dataset = Dataset.get_by_id(id)
-			files = File.select().join(DatasetFile).join(Dataset).where(
+			files = File.select().join(Dataset).where(
 				Dataset.id==id, File.file_type=='image'
 			).order_by(File.file_index)# Ascending by default.
-			# Select from list by index
+			# Select from list by index.
 			if (samples is not None):
 				files = [files[i] for i in samples]
 			return files
 
-
-	
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
@@ -706,6 +648,8 @@ class File(BaseModel):
 	file_index = IntegerField() # image, sequence, graph
 	shape = JSONField()# images? could still get shape... graphs node_count and connection_count?
 	source_path = CharField(null=True)
+
+	dataset = ForeignKeyField(Dataset, backref='files')
 	
 	"""
 	Classes are much cleaner than a knot of if statements in every method,
@@ -731,6 +675,7 @@ class File(BaseModel):
 
 			blob = File.Tabular.df_to_compressed_parquet_bytes(dataframe)
 
+			dataset = Dataset.get_by_id(dataset_id)
 
 			file = File.create(
 				blob = blob
@@ -739,6 +684,7 @@ class File(BaseModel):
 				, file_index = File.Tabular.file_index
 				, shape = shape
 				, source_path = source_path
+				, dataset = dataset
 			)
 
 			try:
@@ -749,18 +695,6 @@ class File(BaseModel):
 				)
 			except:
 				file.delete_instance() # Orphaned.
-				raise 
-
-			dataset = Dataset.get_by_id(dataset_id)
-
-			try:
-				datasetfile = DatasetFile.create(
-					dataset = dataset
-					, file = file
-				)
-			except:
-				file.delete_instance() # Orphaned.
-				tabular.delete_instance()
 				raise 
 			return file
 
@@ -1018,7 +952,7 @@ class File(BaseModel):
 			blob = io.BytesIO()
 			img.save(blob, format=img.format, **pillow_save)
 			blob = blob.getvalue()
-	
+			dataset = Dataset.get_by_id(dataset_id)
 			file = File.create(
 				blob = blob
 				, file_type = File.Image.file_type
@@ -1026,6 +960,7 @@ class File(BaseModel):
 				, file_index = file_index
 				, shape = shape
 				, source_path = path
+				, dataset = dataset
 			)
 			try:
 				image = Image.create(
@@ -1036,18 +971,6 @@ class File(BaseModel):
 			except:
 				file.delete_instance() # Orphaned.
 				raise
-
-			dataset = Dataset.get_by_id(dataset_id)
-
-			try:
-				datasetfile = DatasetFile.create(
-					dataset = dataset
-					, file = file
-				)
-			except:
-				file.delete_instance() # Orphaned.
-				image.delete_instance()
-				raise 
 			return file
 
 
@@ -1080,16 +1003,6 @@ class Image(BaseModel):
 	pillow_save = JSONField()
 
 	file = ForeignKeyField(File, backref='images')
-
-
-
-
-class DatasetFile(BaseModel):
-	"""
-	Many-to-many accesses other models as singular: `.file` not `.files[0]`
-	"""
-	dataset = ForeignKeyField(Dataset, backref='datasetfiles')
-	file = ForeignKeyField(File, backref='datasetfiles')
 
 
 
@@ -1545,11 +1458,10 @@ class Foldset(BaseModel):
 			if count_matches == 0:
 				new_random = True
 		if fold_count is None:
-			#ToDo - check the size of test. want like 30 in each fold
 			fold_count = 5
 		else:
 			if fold_count < 2:
-				raise ValueError("\nYikes - Cross validation requires multiple folds and you set `fold_count` < 2.\n")
+				raise ValueError(f"\nYikes - Cross validation requires multiple folds.\nBut you provided `fold_count`: <{fold_count}>.\n")
 
 		# get the training indices. the values of the features don't matter, only labels needed for stratification.
 		arr_train_indices = s.samples["train"]
