@@ -607,6 +607,43 @@ class Dataset(BaseModel):
 				raise			
 			return dataset
 
+
+		def to_pillow(id:int, samples:list=None):
+			"""
+			- This does not have `columns` attrbute because it is only for fetching images.
+			- Have to fetch as image before feeding into numpy `numpy.array(Image.open())`.
+			- Future: could return the tabular data along with it.
+			- Might need this for Preprocess where rotate images and such.
+			"""
+			files = Dataset.Image.get_image_files(id, samples=samples)
+			images = [f.Image.to_pillow(f.id) for f in files]
+			return images
+
+
+		def to_numpy(id:int, samples:list=None, columns:list=None):
+			"""
+			- Because Pillow works directly with numpy, there's no need for pandas right now.
+			"""
+			arrays = {}
+			images = Dataset.Image.to_pillow(id, samples=samples)
+			images = [np.array(img) for img in images]
+			images = np.array(images)
+			arrays['images'] = images
+			# Check if it has tabular attached.
+			tabular = File.select().join(DatasetFile).join(Dataset).where(
+				Dataset.id==id, File.file_type=='tabular'
+			)
+			if (tabular.count() == 1):
+				tabular = tabular[0]
+				tabular = File.Tabular.to_numpy(
+					id = tabular.id
+					, columns = columns
+					, samples = samples
+				)
+				arrays['tabular'] = tabular
+			return arrays
+			
+
 		# should this be more generic and accept a list of datasets to attach?
 		# or atleast make the first dataset agnostic of type?
 		# attribute under datasets called `secondary_types`?
@@ -630,6 +667,22 @@ class Dataset(BaseModel):
 				, dataset = image_dataset
 			)
 			return datasetfile
+
+			# SAMPLES, COLUMNS check type.
+			# add has_tabular to Dataset.Image
+
+
+		def get_image_files(id:int, samples:list=None):
+			dataset = Dataset.get_by_id(id)
+			files = File.select().join(DatasetFile).join(Dataset).where(
+				Dataset.id==id, File.file_type=='image'
+			).order_by(File.file_index)# Ascending by default.
+			# Select from list by index
+			if (samples is not None):
+				files = [files[i] for i in samples]
+			return files
+
+
 	
 
 	# Graph
