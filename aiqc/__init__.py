@@ -388,6 +388,8 @@ class Dataset(BaseModel):
 		if (dataset.dataset_type == 'tabular'):
 			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
+			if (columns is not None):
+				raise ValueError("\nYikes - `Dataset.Image.to_numpy` does not accept a `columns` argument.\n")
 			arr = Dataset.Image.to_numpy(id=id, samples=samples)
 		return arr
 
@@ -563,7 +565,6 @@ class Dataset(BaseModel):
 			dir_path:str
 			, name:str = None
 			, pillow_save:dict = {}
-			, tabular_dataset_id:int = None
 		):
 			if name is None:
 				name = dir_path
@@ -1009,7 +1010,8 @@ class Image(BaseModel):
 
 class Label(BaseModel):
 	"""
-	- Label needs to accept multiple columns for datasets that are already One Hot Encoded.
+	- Label accepts multiple columns in case it is already OneHotEncoded (e.g. tensors).
+	- At this point, we assume that the Label is always a tabular dataset.
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
@@ -1019,8 +1021,12 @@ class Label(BaseModel):
 	
 	def from_dataset(dataset_id:int, columns:list):
 		d = Dataset.get_by_id(dataset_id)
+
 		if (d.dataset_type == 'tabular'):
-			d_cols = d.files[0].columns
+			raise ValueError(f"\nYikes - Labels can only be created from `dataset_type='tabular'`.\nBut you provided `dataset_type`: <{d.dataset_type}>")
+		
+		d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
+		d_cols = d_file.columns
 
 		# check columns exist
 		all_cols_found = all(col in d_cols for col in columns)
@@ -1031,7 +1037,7 @@ class Label(BaseModel):
 		cols_aplha = sorted(columns)
 		d_labels = d.labels
 		count = d_labels.count()
-		if count > 0:
+		if (count > 0):
 			for l in d_labels:
 				l_id = str(l.id)
 				l_cols = l.columns
@@ -1075,8 +1081,6 @@ class Featureset(BaseModel):
 	- Remember, a Featureset is just a record of the columns being used.
 	- Decided not to go w subclasses of Unsupervised and Supervised because that would complicate the SDK for the user,
 	  and it essentially forked every downstream model into two subclasses.
-	- So the ForeignKey on label is optional:
-	  http://docs.peewee-orm.com/en/latest/peewee/api.html?highlight=deferredforeign#DeferredForeignKey
 	- PCA components vary across featuresets. When different columns are used those columns have different component values.
 	"""
 	columns = JSONField()
@@ -1093,7 +1097,8 @@ class Featureset(BaseModel):
 
 		d = Dataset.get_by_id(dataset_id)
 		if (d.dataset_type == 'tabular'):
-			d_cols = d.files[0].columns
+			d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
+			d_cols = d_file.columns
 
 		if (include_columns is not None) and (exclude_columns is not None):
 			raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
