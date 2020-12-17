@@ -1015,18 +1015,18 @@ class Label(BaseModel):
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
-	#probabilities = JSONField() #result of semi-supervised learning.
+	#probabilities = JSONField() #if you were to write back the result of unsupervised for semi-supervised learning.
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
 	
 	def from_dataset(dataset_id:int, columns:list):
 		d = Dataset.get_by_id(dataset_id)
 
-		if (d.dataset_type == 'tabular'):
+		if (d.dataset_type != 'tabular'):
 			raise ValueError(f"\nYikes - Labels can only be created from `dataset_type='tabular'`.\nBut you provided `dataset_type`: <{d.dataset_type}>")
 		
 		d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
-		d_cols = d_file.columns
+		d_cols = d_file.tabulars[0].columns
 
 		# check columns exist
 		all_cols_found = all(col in d_cols for col in columns)
@@ -1083,7 +1083,7 @@ class Featureset(BaseModel):
 	  and it essentially forked every downstream model into two subclasses.
 	- PCA components vary across featuresets. When different columns are used those columns have different component values.
 	"""
-	columns = JSONField()
+	columns = JSONField(null=True)
 	columns_excluded = JSONField(null=True)
 	dataset = ForeignKeyField(Dataset, backref='featuresets')
 
@@ -1094,63 +1094,72 @@ class Featureset(BaseModel):
 		, exclude_columns:list=None
 		#Future: runPCA #,run_pca:boolean=False # triggers PCA analysis of all columns
 	):
-
+		"""
+		As we get further away from the `Dataset.<Types>` they need less isolation.
+		"""
 		d = Dataset.get_by_id(dataset_id)
-		if (d.dataset_type == 'tabular'):
-			d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
-			d_cols = d_file.columns
 
-		if (include_columns is not None) and (exclude_columns is not None):
-			raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
-
-		if (include_columns is not None):
-			# check columns exist
-			all_cols_found = all(col in d_cols for col in include_columns)
-			if not all_cols_found:
-				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
-			# inclusion
-			columns = include_columns
-			# exclusion
-			columns_excluded = d_cols
-			for col in include_columns:
-				columns_excluded.remove(col)
-
-		elif (exclude_columns is not None):
-			all_cols_found = all(col in d_cols for col in exclude_columns)
-			if not all_cols_found:
-				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
-			# exclusion
-			columns_excluded = exclude_columns
-			# inclusion
-			columns = d_cols
-			for col in exclude_columns:
-				columns.remove(col)
-			if not columns:
-				raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
-		else:
-			columns = d_cols
+		if (d.dataset_type == 'image'):
+			# Just passes the Dataset through for now.
+			if (include_columns is not None) or (exclude_columns is not None):
+				raise ValueError("\nYikes - The `Dataset.Image` classes supports neither the `include_columns` nor `exclude_columns` arguemnt.\n")
+			columns = None
 			columns_excluded = None
+		elif (d.dataset_type == 'tabular'):
+			d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
+			d_cols = d_file.tabulars[0].columns
 
-		"""
-		Check that this Dataset does not already have a Featureset that is exactly the same.
-		There are less entries in `excluded_columns` so maybe it's faster to compare that.
-		"""
-		if columns_excluded is not None:
-			cols_aplha = sorted(columns_excluded)
-		else:
-			cols_aplha = None
-		d_featuresets = d.featuresets
-		count = d_featuresets.count()
-		if count > 0:
-			for f in d_featuresets:
-				f_id = str(f.id)
-				f_cols = f.columns_excluded
-				if f_cols is not None:
-					f_cols_alpha = sorted(f_cols)
-				else:
-					f_cols_alpha = None
-				if cols_aplha == f_cols_alpha:
-					raise ValueError(f"\nYikes - This Dataset already has Featureset <id:{f_id}> with the same columns.\nCannot create duplicate.\n")
+			if (include_columns is not None) and (exclude_columns is not None):
+				raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
+
+			if (include_columns is not None):
+				# check columns exist
+				all_cols_found = all(col in d_cols for col in include_columns)
+				if not all_cols_found:
+					raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
+				# inclusion
+				columns = include_columns
+				# exclusion
+				columns_excluded = d_cols
+				for col in include_columns:
+					columns_excluded.remove(col)
+
+			elif (exclude_columns is not None):
+				all_cols_found = all(col in d_cols for col in exclude_columns)
+				if not all_cols_found:
+					raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
+				# exclusion
+				columns_excluded = exclude_columns
+				# inclusion
+				columns = d_cols
+				for col in exclude_columns:
+					columns.remove(col)
+				if not columns:
+					raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
+			else:
+				columns = d_cols
+				columns_excluded = None
+
+			"""
+			Check that this Dataset does not already have a Featureset that is exactly the same.
+			There are less entries in `excluded_columns` so maybe it's faster to compare that.
+			"""
+			if columns_excluded is not None:
+				cols_aplha = sorted(columns_excluded)
+			else:
+				cols_aplha = None
+			d_featuresets = d.featuresets
+			count = d_featuresets.count()
+			if count > 0:
+				for f in d_featuresets:
+					f_id = str(f.id)
+					f_cols = f.columns_excluded
+					if f_cols is not None:
+						f_cols_alpha = sorted(f_cols)
+					else:
+						f_cols_alpha = None
+					if cols_aplha == f_cols_alpha:
+						raise ValueError(f"\nYikes - This Dataset already has Featureset <id:{f_id}> with the same columns.\nCannot create duplicate.\n")
 
 		f = Featureset.create(
 			dataset = d
