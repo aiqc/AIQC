@@ -610,6 +610,7 @@ class Dataset(BaseModel):
 		def to_numpy(id:int, samples:list=None, columns:list=None):
 			"""
 			- Because Pillow works directly with numpy, there's no need for pandas right now.
+			- But downstream methods are using pandas.
 			"""
 			images = Dataset.Image.to_pillow(id, samples=samples)
 			images = [np.array(img) for img in images]
@@ -1176,16 +1177,26 @@ class Featureset(BaseModel):
 		
 		ff = Dataset.to_pandas(
 			id = dataset_id
-			,columns = f_cols
-			,samples = samples
+			, columns = f_cols
+			, samples = samples
 		)
 		return ff
 
 
 	def to_numpy(id:int, samples:list=None):
-		ff = Featureset.to_pandas(id=id, samples=samples)
-		f_arr = ff.to_numpy()
-		return f_arr
+		#ff = Featureset.to_pandas(id=id, samples=samples)
+		#f_arr = ff.to_numpy()
+
+		# Refactored the above to not use to_pandas for the sake of Image datasets.
+		f = Featureset.get_by_id(id)
+		f_cols = f.columns
+		dataset_id = f.dataset.id
+		ff = Dataset.to_numpy(
+			id = dataset_id
+			, columns = f_cols
+			, samples = samples
+		)
+		return ff
 
 
 	def make_splitset(
@@ -1236,7 +1247,6 @@ class Splitset(BaseModel):
 			if (size_test <= 0.0) or (size_test >= 1.0):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			# Don't handle `has_test` here. Need to check label first.
-			
 		
 		if (size_validation is not None) and (size_test is None):
 			raise ValueError("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
@@ -1286,7 +1296,7 @@ class Splitset(BaseModel):
 				indices_lst_train = arr_idx.tolist()
 				samples["train"] = indices_lst_train
 				sizes["train"] = {"percent": 1.00, "count": row_count}
-		else:
+		elif label_id is not None:
 			# Splits generate different samples each time, so we do not need to prevent duplicates that use the same Label.
 			l = Label.get_by_id(label_id)
 
@@ -1370,7 +1380,7 @@ class Splitset(BaseModel):
 
 		if splits is not None:
 			if len(splits) == 0:
-				raise ValueError("\nYikes - `splits:list` is an empty list.\nIt can be None, which defaults to all splits, but it can't not empty.\n")
+				raise ValueError("\nYikes - `splits` argument is an empty list.\nIt can be None, which defaults to all splits, but it can't not empty.\n")
 		else:
 			splits = list(s.samples.keys())
 
@@ -1379,8 +1389,8 @@ class Splitset(BaseModel):
 
 		split_frames = {}
 
-		# Flag:Optimize (switch to generators for memory usage)
-		# split_names = train, test, validation
+		# Future: Optimize (switch to generators for memory usage).
+		# Here, split_names are: train, test, validation.
 		for split_name in splits:
 			
 			# placeholder for the frames/arrays
@@ -1404,14 +1414,35 @@ class Splitset(BaseModel):
 		- Worried it's holding all dataframes and arrays in memory.
 		- Generators to access one [key][set] at a time?
 		"""
-		split_frames = Splitset.to_pandas(id=id, splits=splits)
+		s = Splitset.get_by_id(id)
 
-		for fold_name in split_frames.keys():
-			for set_name in split_frames[fold_name].keys():
-				frame = split_frames[fold_name][set_name]
-				split_frames[fold_name][set_name] = frame.to_numpy()
-				del frame
+		if splits is not None:
+			if len(splits) == 0:
+				raise ValueError("\nYikes - `splits` argument is an empty list.\nIt can be None, which defaults to all splits, but it can't not empty.\n")
+		else:
+			splits = list(s.samples.keys())
 
+		supervision = s.supervision
+		f = s.featureset
+
+		split_frames = {}
+
+		# Future: Optimize (switch to generators for memory usage).
+		# Here, split_names are: train, test, validation.
+		for split_name in splits:
+			
+			# placeholder for the frames/arrays
+			split_frames[split_name] = {}
+			
+			# fetch the sample indices for the split
+			split_samples = s.samples[split_name]
+			ff = f.to_numpy(samples=split_samples)
+			split_frames[split_name]["features"] = ff
+
+			if supervision == "supervised":
+				l = s.label
+				lf = l.to_numpy(samples=split_samples)
+				split_frames[split_name]["labels"] = lf
 		return split_frames
 
 
@@ -2131,8 +2162,8 @@ class Job(BaseModel):
 
 		split_metrics['accuracy'] = accuracy_score(labels_processed, predictions)
 		split_metrics['precision'] = precision_score(labels_processed, predictions, average=average, zero_division=0)
-		split_metrics['recall'] = recall_score(labels_processed, predictions, average=average)
-		split_metrics['f1'] = f1_score(labels_processed, predictions, average=average)
+		split_metrics['recall'] = recall_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['f1'] = f1_score(labels_processed, predictions, average=average, zero_division=0)
 		return split_metrics
 
 
