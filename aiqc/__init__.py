@@ -1045,12 +1045,12 @@ class Label(BaseModel):
 		d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
 		d_cols = d_file.tabulars[0].columns
 
-		# check columns exist
+		# Check that the user-provided columns exist.
 		all_cols_found = all(col in d_cols for col in columns)
 		if not all_cols_found:
 			raise ValueError("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
 
-		# check for duplicates	
+		# Check for duplicates of this label that already exist.
 		cols_aplha = sorted(columns)
 		d_labels = d.labels
 		count = d_labels.count()
@@ -1065,12 +1065,15 @@ class Label(BaseModel):
 		column_count = len(columns)
 
 		label_df = Dataset.to_pandas(id=dataset_id, columns=columns)
+		# Hmm. This cleaning is starting to get into Refinery territory.
 		# When multiple columns are provided, they must be OHE.
 		if (column_count > 1):
 			unique_values = []
 			for c in columns:
 				uniques = label_df[c].unique()
 				unique_values.append(uniques)
+				if (len(uniques) == 1):
+					print(f"\nWarning - There is only 1 unique value for this label column.\nUnique value: <{uniques[0]}>\nLabel column: <{c}>\n")
 			flat_uniques = np.concatenate(unique_values).ravel()
 			all_uniques = np.unique(flat_uniques).tolist()
 
@@ -1084,8 +1087,19 @@ class Label(BaseModel):
 				else:
 					raise ValueError(f"\nYikes - When multiple columns are provided, they must be One Hot Encoded:\nUnique values of your columns were neither (0,1) or (0.,1.) or (0.0,1.0).\nThe columns you provided contained these unique values: {all_uniques}\n")
 			unique_classes = all_uniques
-		else:
-			label_df
+			
+			del label_df
+			# Now check if each row in the labels is truly OHE.
+			label_arr = Dataset.to_numpy(id=dataset_id, columns=columns)
+			for i, arr in enumerate(label_arr):
+				if 1 in arr:
+					arr = list(arr)
+					arr.remove(1)
+					if 1 in arr:
+						raise ValueError(f"\nYikes - Label row <{i}> is supposed to be an OHE row, but it contains multiple hot columns where value is 1.\n")
+				else:
+					raise ValueError(f"\nYikes - Label row <{i}> is supposed to be an OHE row, but it contains no hot columns where value is 1.\n")
+		elif (column_count == 1):
 			# At this point, `label_df` is a single column df that needs to fected as a Series.
 			col = columns[0]
 			label_series = label_df[col]
@@ -1094,6 +1108,9 @@ class Label(BaseModel):
 				unique_classes = None
 			else:
 				unique_classes = label_series.unique().tolist()
+
+		if (unique_classes == 1):
+			print(f"\nWarning - There is only 1 unique class for this label.\nUnique class: <{unique_classes[0]}>")
 
 		l = Label.create(
 			dataset = d
