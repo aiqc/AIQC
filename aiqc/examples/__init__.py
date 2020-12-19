@@ -192,11 +192,10 @@ def make_demo_batch_multiclass():
 
 	file_path = get_demo_file_path('iris.tsv')
 
-	fileset = Fileset.from_file(
-		path = file_path
-		, file_format = 'tsv'
+	fileset = Dataset.from_file(
+		file_path = file_path
+		, source_file_format = 'tsv'
 		, name = 'tab-separated plants duplicated 10 times.'
-		, perform_gzip = True
 		, dtype = None
 	)
 	
@@ -251,11 +250,10 @@ def make_demo_batch_multiclass_folded():
 
 	file_path = get_demo_file_path('iris_10x.tsv')
 
-	fileset = Fileset.from_file(
-		path = file_path
-		, file_format = 'tsv'
+	fileset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'tsv'
 		, name = 'tab-separated plants duplicated 10 times.'
-		, perform_gzip = True
 		, dtype = None
 	)
 	
@@ -332,11 +330,10 @@ def make_demo_batch_binary():
 
 	file_path = get_demo_file_path('sonar.csv')
 
-	fileset = Fileset.from_file(
-		path = file_path
-		, file_format = 'csv'
+	fileset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
 		, name = 'rocks n radio'
-		, perform_gzip = True
 		, dtype = None
 	)
 	
@@ -414,11 +411,10 @@ def make_demo_batch_regression():
 
 	file_path = get_demo_file_path('houses.csv')
 
-	fileset = Fileset.from_file(
-		path = file_path
-		, file_format = 'csv'
+	fileset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
 		, name = 'real estate stats'
-		, perform_gzip = True
 		, dtype = None
 	)
 	

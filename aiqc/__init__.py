@@ -579,7 +579,20 @@ class Dataset(BaseModel):
 				, source_path = source_path
 				, dataset_type = Dataset.Image.dataset_type
 			)
-			files = []
+			
+			#Make sure the shape and mode of each image are the same before writing the Dataset.
+			sizes = []
+			modes = []
+			for path in file_paths:
+				img = Imaje.open(path)
+				sizes.append(img.size)
+				modes.append(img.mode)
+
+			if (len(set(sizes)) > 1):
+				raise ValueError("\nYikes - All images in the Dataset must be of the same width and height. `PIL.Image.size`\n")
+			elif (len(set(modes)) > 1):
+				raise ValueError("\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\n")
+
 			try:
 				for i, p in enumerate(file_paths):	
 					file = File.Image.from_file(
@@ -588,7 +601,6 @@ class Dataset(BaseModel):
 						, file_index = i
 						, dataset_id = dataset.id
 					)
-					files.append(file)
 			except:
 				dataset.delete_instance() # Orphaned.
 				raise		
@@ -795,7 +807,10 @@ class File(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
-			# dtype is applied within `to_pandas()` function.
+			"""
+			This is the only place where to_numpy() relies on to_pandas(). 
+			It does so because pandas is good with the parquet and dtypes.
+			"""
 			df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
 			arr = df.to_numpy()
 			return arr
@@ -1057,22 +1072,33 @@ class Label(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None):
+		l_frame = Label.get_label(id=id, numpy_or_pandas='pandas', samples=samples)
+		return l_frame
+
+
+	def to_numpy(id:int, samples:list=None):
+		l_arr = Label.get_label(id=id, numpy_or_pandas='numpy', samples=samples)
+		return l_arr
+
+
+	def get_label(id:int, numpy_or_pandas:str, samples:list=None):
 		l = Label.get_by_id(id)
 		l_cols = l.columns
 		dataset_id = l.dataset.id
 
-		lf = Dataset.to_pandas(
-			id = dataset_id
-			, columns = l_cols
-			, samples = samples
-		)
+		if (numpy_or_pandas == 'numpy'):
+			lf = Dataset.to_numpy(
+				id = dataset_id
+				, columns = l_cols
+				, samples = samples
+			)
+		elif (numpy_or_pandas == 'pandas'):
+			lf = Dataset.to_pandas(
+				id = dataset_id
+				, columns = l_cols
+				, samples = samples
+			)
 		return lf
-
-
-	def to_numpy(id:int, samples:list=None):
-		lf = Label.to_pandas(id=id, samples=samples)
-		l_arr = lf.to_numpy()
-		return l_arr
 
 
 
@@ -1171,31 +1197,32 @@ class Featureset(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None):
+		f_frame = Featureset.get_featureset(id=id, numpy_or_pandas='pandas', samples=samples)
+		return f_frame
+
+
+	def to_numpy(id:int, samples:list=None):
+		f_arr = Featureset.get_featureset(id=id, numpy_or_pandas='numpy', samples=samples)
+		return f_arr
+
+
+	def get_featureset(id:int, numpy_or_pandas:str, samples:list=None):
 		f = Featureset.get_by_id(id)
 		f_cols = f.columns
 		dataset_id = f.dataset.id
 		
-		ff = Dataset.to_pandas(
-			id = dataset_id
-			, columns = f_cols
-			, samples = samples
-		)
-		return ff
-
-
-	def to_numpy(id:int, samples:list=None):
-		#ff = Featureset.to_pandas(id=id, samples=samples)
-		#f_arr = ff.to_numpy()
-
-		# Refactored the above to not use to_pandas for the sake of Image datasets.
-		f = Featureset.get_by_id(id)
-		f_cols = f.columns
-		dataset_id = f.dataset.id
-		ff = Dataset.to_numpy(
-			id = dataset_id
-			, columns = f_cols
-			, samples = samples
-		)
+		if (numpy_or_pandas == 'numpy'):
+			ff = Dataset.to_numpy(
+				id = dataset_id
+				, columns = f_cols
+				, samples = samples
+			)
+		elif (numpy_or_pandas == 'pandas'):
+			ff = Dataset.to_pandas(
+				id = dataset_id
+				, columns = f_cols
+				, samples = samples
+			)
 		return ff
 
 
@@ -1273,8 +1300,7 @@ class Splitset(BaseModel):
 
 		# Feature data to be split.
 		d = f.dataset
-		d_id = d.id
-		arr_f = Dataset.to_numpy(id=d_id, columns=f_cols)
+		arr_f = Dataset.to_numpy(id=d.id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
@@ -1296,9 +1322,22 @@ class Splitset(BaseModel):
 				indices_lst_train = arr_idx.tolist()
 				samples["train"] = indices_lst_train
 				sizes["train"] = {"percent": 1.00, "count": row_count}
+
 		elif label_id is not None:
 			# Splits generate different samples each time, so we do not need to prevent duplicates that use the same Label.
 			l = Label.get_by_id(label_id)
+
+			# When labels and featuresets come from different datasets, make sure the have the same number of samples.
+			l_dataset_id = l.dataset.id
+			l_length = Dataset.Tabular.get_main_tabular_file(l_dataset_id).shape['rows']
+			if (l_dataset_id != d.id):
+				if (d.dataset_type == 'tabular'):
+					f_length = Dataset.Tabular.get_main_tabular_file(d.id).shape['rows']
+				elif (d.dataset_type == 'image'):
+					f_length = f.dataset.file_count
+				# Separate `if` to compare them.
+				if (l_length != f_length):
+					raise ValueError("\nYikes - The Datasets of your Label and Featureset do not contains the same number of samples.\n")
 
 			if size_test is None:
 				size_test = 0.30
@@ -1324,29 +1363,53 @@ class Splitset(BaseModel):
 			"""
 			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
+			- Don't include the Dataset.Image.featureset pixel arrays in stratification.
 			"""
 
-			features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
-				arr_f, arr_l, arr_idx
-				, test_size = size_test
-				, stratify = stratify1
-				, shuffle = True
-			)
-
-			if size_validation is not None:
-				if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-					stratify2 = Splitset.continuous_bins(labels_train, continuous_bin_count)
-				else:
-					stratify2 = labels_train
-
-				features_train, features_validation, labels_train, labels_validation, indices_train, indices_validation = train_test_split(
-					features_train, labels_train, indices_train
-					, test_size = pct_for_2nd_split
-					, stratify = stratify2
+			if (d.dataset_type == 'tabular'):
+				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
+					arr_f, arr_l, arr_idx
+					, test_size = size_test
+					, stratify = stratify1
 					, shuffle = True
 				)
-				indices_lst_validation = indices_validation.tolist()
-				samples["validation"] = indices_lst_validation
+
+				if size_validation is not None:
+					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
+						stratify2 = Splitset.continuous_bins(labels_train, continuous_bin_count)
+					else:
+						stratify2 = labels_train
+
+					features_train, features_validation, labels_train, labels_validation, indices_train, indices_validation = train_test_split(
+						features_train, labels_train, indices_train
+						, test_size = pct_for_2nd_split
+						, stratify = stratify2
+						, shuffle = True
+					)
+					indices_lst_validation = indices_validation.tolist()
+					samples["validation"] = indices_lst_validation
+			elif (d.dataset_type == 'image'):
+				labels_train, labels_test, indices_train, indices_test = train_test_split(
+					arr_l, arr_idx
+					, test_size = size_test
+					, stratify = stratify1
+					, shuffle = True
+				)
+
+				if size_validation is not None:
+					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
+						stratify2 = Splitset.continuous_bins(labels_train, continuous_bin_count)
+					else:
+						stratify2 = labels_train
+
+					labels_train, labels_validation, indices_train, indices_validation = train_test_split(
+						labels_train, indices_train
+						, test_size = pct_for_2nd_split
+						, stratify = stratify2
+						, shuffle = True
+					)
+					indices_lst_validation = indices_validation.tolist()
+					samples["validation"] = indices_lst_validation
 
 			indices_lst_train, indices_lst_test  = indices_train.tolist(), indices_test.tolist()
 			samples["train"] = indices_lst_train
@@ -1376,41 +1439,18 @@ class Splitset(BaseModel):
 
 
 	def to_pandas(id:int, splits:list=None):
-		s = Splitset.get_by_id(id)
-
-		if splits is not None:
-			if len(splits) == 0:
-				raise ValueError("\nYikes - `splits` argument is an empty list.\nIt can be None, which defaults to all splits, but it can't not empty.\n")
-		else:
-			splits = list(s.samples.keys())
-
-		supervision = s.supervision
-		f = s.featureset
-
-		split_frames = {}
-
-		# Future: Optimize (switch to generators for memory usage).
-		# Here, split_names are: train, test, validation.
-		for split_name in splits:
-			
-			# placeholder for the frames/arrays
-			split_frames[split_name] = {}
-			
-			# fetch the sample indices for the split
-			split_samples = s.samples[split_name]
-			ff = f.to_pandas(samples=split_samples)
-			split_frames[split_name]["features"] = ff
-
-			if supervision == "supervised":
-				l = s.label
-				lf = l.to_pandas(samples=split_samples)
-				split_frames[split_name]["labels"] = lf
+		split_frames = Splitset.get_splits(id=id, numpy_or_pandas='pandas', splits=splits)
 		return split_frames
 
 
 	def to_numpy(id:int, splits:list=None):
+		split_arrs = Splitset.get_splits(id=id, numpy_or_pandas='numpy', splits=splits)
+		return split_arrs
+
+
+	def get_splits(id:int, numpy_or_pandas:str, splits:list=None):
 		"""
-		Flag:Optimize 
+		Future: Optimize!
 		- Worried it's holding all dataframes and arrays in memory.
 		- Generators to access one [key][set] at a time?
 		"""
@@ -1436,14 +1476,21 @@ class Splitset(BaseModel):
 			
 			# fetch the sample indices for the split
 			split_samples = s.samples[split_name]
-			ff = f.to_numpy(samples=split_samples)
+			if (numpy_or_pandas == 'numpy'):
+				ff = f.to_numpy(samples=split_samples)
+			elif (numpy_or_pandas == 'pandas'):
+				ff = f.to_pandas(samples=split_samples)
 			split_frames[split_name]["features"] = ff
 
 			if supervision == "supervised":
 				l = s.label
-				lf = l.to_numpy(samples=split_samples)
+				if (numpy_or_pandas == 'numpy'):
+					lf = l.to_numpy(samples=split_samples)
+				elif (numpy_or_pandas == 'pandas'):
+					lf = l.to_pandas(samples=split_samples)
 				split_frames[split_name]["labels"] = lf
 		return split_frames
+
 
 
 	def continuous_bins(array_to_bin, continuous_bin_count:int):
@@ -1543,6 +1590,16 @@ class Foldset(BaseModel):
 
 
 	def to_pandas(id:int, fold_index:int=None):
+		fold_frames = Foldset.get_folds(id=id, numpy_or_pandas='pandas', fold_index=fold_index)
+		return fold_frames
+
+
+	def to_numpy(id:int, fold_index:int=None):
+		fold_arrs = Foldset.get_folds(id=id, numpy_or_pandas='numpy', fold_index=fold_index)
+		return fold_arrs
+
+
+	def get_folds(id:int, numpy_or_pandas:str, fold_index:int=None):
 		foldset = Foldset.get_by_id(id)
 		fold_count = foldset.fold_count
 		folds = foldset.folds
@@ -1574,26 +1631,19 @@ class Foldset(BaseModel):
 				
 				# fetch the sample indices for the split
 				folds_samples = fold.samples[fold_name]
-				ff = featureset.to_pandas(samples=folds_samples)
+				if (numpy_or_pandas == 'numpy'):
+					ff = featureset.to_numpy(samples=folds_samples)
+				elif (numpy_or_pandas == 'pandas'):
+					ff = featureset.to_pandas(samples=folds_samples)
 				fold_frames[i][fold_name]["features"] = ff
 
 				if supervision == "supervised":
 					l = s.label
-					lf = l.to_pandas(samples=folds_samples)
+					if (numpy_or_pandas == 'numpy'):
+						lf = l.to_numpy(samples=folds_samples)
+					elif (numpy_or_pandas == 'pandas'):
+						lf = l.to_pandas(samples=folds_samples)
 					fold_frames[i][fold_name]["labels"] = lf
-		return fold_frames
-
-
-	def to_numpy(id:int, fold_index:int=None):
-		fold_frames = Foldset.to_pandas(id=id, fold_index=fold_index)
-		
-		for i in fold_frames.keys():
-			for fold_name in fold_frames[i].keys():
-				for set_name in fold_frames[i][fold_name].keys():
-					frame = fold_frames[i][fold_name][set_name]
-					fold_frames[i][fold_name][set_name] = frame.to_numpy()
-					del frame
-
 		return fold_frames
 
 
