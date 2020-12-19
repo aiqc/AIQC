@@ -1031,6 +1031,7 @@ class Label(BaseModel):
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
+	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
 	#probabilities = JSONField() #if you were to write back the result of unsupervised for semi-supervised learning.
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
@@ -1063,10 +1064,42 @@ class Label(BaseModel):
 
 		column_count = len(columns)
 
+		label_df = Dataset.to_pandas(id=dataset_id, columns=columns)
+		# When multiple columns are provided, they must be OHE.
+		if (column_count > 1):
+			unique_values = []
+			for c in columns:
+				uniques = label_df[c].unique()
+				unique_values.append(uniques)
+			flat_uniques = np.concatenate(unique_values).ravel()
+			all_uniques = np.unique(flat_uniques).tolist()
+
+			for i in all_uniques:
+				if (
+					((i == 0) or (i == 1)) 
+					or 
+					((i == 0.) or (i == 1.))
+				):
+					pass
+				else:
+					raise ValueError(f"\nYikes - When multiple columns are provided, they must be One Hot Encoded:\nUnique values of your columns were neither (0,1) or (0.,1.) or (0.0,1.0).\nThe columns you provided contained these unique values: {all_uniques}\n")
+			unique_classes = all_uniques
+		else:
+			label_df
+			# At this point, `label_df` is a single column df that needs to fected as a Series.
+			col = columns[0]
+			label_series = label_df[col]
+			dtype_str = str(label_series.dtype)
+			if (dtype_str == 'float64'):
+				unique_classes = None
+			else:
+				unique_classes = label_series.unique().tolist()
+
 		l = Label.create(
 			dataset = d
 			, columns = columns
 			, column_count = column_count
+			, unique_classes = unique_classes
 		)
 		return l
 
