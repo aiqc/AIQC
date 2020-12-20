@@ -1325,7 +1325,7 @@ class Splitset(BaseModel):
 		, label_id:int = None
 		, size_test:float = None
 		, size_validation:float = None
-		, continuous_bin_count:float = None
+		, bin_count:float = None
 	):
 
 		if size_test is not None:
@@ -1415,10 +1415,10 @@ class Splitset(BaseModel):
 			arr_l_dtype = arr_l.dtype
 
 			if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-				stratify1 = Splitset.bin_label_values(array_to_bin=arr_l, bin_count=continuous_bin_count)
+				stratify1 = Splitset.bin_label_values(array_to_bin=arr_l, bin_count=bin_count)
 			else:
-				if (continuous_bin_count is not None):
-					raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `continuous_bin_count`.\n")
+				if (bin_count is not None):
+					raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `bin_count`.\n")
 				stratify1 = arr_l
 			"""
 			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
@@ -1436,7 +1436,7 @@ class Splitset(BaseModel):
 
 				if size_validation is not None:
 					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=continuous_bin_count)
+						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=bin_count)
 					else:
 						stratify2 = labels_train
 
@@ -1458,7 +1458,7 @@ class Splitset(BaseModel):
 
 				if size_validation is not None:
 					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=continuous_bin_count)
+						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=bin_count)
 					else:
 						stratify2 = labels_train
 
@@ -1573,12 +1573,12 @@ class Splitset(BaseModel):
 	def make_foldset(
 		id:int
 		, fold_count:int = None
-		, continuous_bin_count:int = None
+		, bin_count:int = None
 	):
 		foldset = Foldset.from_splitset(
 			splitset_id = id
 			, fold_count = fold_count
-			, continuous_bin_count = continuous_bin_count
+			, bin_count = bin_count
 		)
 		return foldset
 
@@ -1606,6 +1606,7 @@ class Foldset(BaseModel):
 	"""
 	fold_count = IntegerField()
 	random_state = IntegerField()
+	bin_count = IntegerField(null=True) # For stratifying continuous features.
 	#ToDo: max_samples_per_bin = IntegerField()
 	#ToDo: min_samples_per_bin = IntegerField()
 
@@ -1614,7 +1615,7 @@ class Foldset(BaseModel):
 	def from_splitset(
 		splitset_id:int
 		, fold_count:int = None
-		, continuous_bin_count:int = None
+		, bin_count:int = None
 	):
 		s = Splitset.get_by_id(splitset_id)
 		new_random = False
@@ -1637,15 +1638,15 @@ class Foldset(BaseModel):
 		# If the values of the Label array are continuous, then overwite the values w bin numbers.
 		label_dtype = arr_train_labels.dtype
 		if (label_dtype == 'float32') or (label_dtype == 'float64'):
-			if (continuous_bin_count is None):
-				continuous_bin_count = 4
+			if (bin_count is None):
+				bin_count = 4
 			arr_train_labels = Splitset.bin_label_values(
 				array_to_bin = arr_train_labels
-				, bin_count=continuous_bin_count
+				, bin_count=bin_count
 			)
 		else:
-			if (continuous_bin_count is not None):
-				raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `continuous_bin_count`.\n")
+			if (bin_count is not None):
+				raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `bin_count`.\n")
 
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
@@ -1655,6 +1656,7 @@ class Foldset(BaseModel):
 		foldset = Foldset.create(
 			fold_count = fold_count
 			, random_state = random_state
+			, bin_count = bin_count
 			, splitset = s
 		)
 		# Create the folds. Don't want the end user to run two commands.
@@ -2831,6 +2833,7 @@ class DataPipeline(BaseModel):
 		, size_test:float = None
 		, size_validation:float = None
 		, fold_count:int = None
+		, bin_count
 		, encoder_features:object = None
 		, encoder_labels:object = None
 	):
@@ -2868,9 +2871,9 @@ class DataPipeline(BaseModel):
 			, size_validation = size_validation
 		)
 
-		if fold_count is not None:
+		if (fold_count is not None):
 			foldset = splitset.make_foldset(fold_count=fold_count)
-		elif fold_count is None:
+		elif (fold_count is None):
 			# Low level api sets fold_count=3 when fold_count=None. Skipping foldset creation here.
 			foldset = None
 
