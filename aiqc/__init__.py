@@ -337,6 +337,7 @@ Runs when the package is imported.
 http://docs.peewee-orm.com/en/latest/peewee/models.html
 """
 class BaseModel(Model):
+	"""By inheritting the BaseModel class, each Model class does not have to set Meta."""
 	class Meta:
 		database = get_db()
 
@@ -345,10 +346,8 @@ class BaseModel(Model):
 
 class Dataset(BaseModel):
 	"""
-	I like that Dataset sub-classes aren't strict 1-1 tables so that their
-	`dataset_type` can be changed on the fly as different types of Files are
-	added to the dataset. Moreover, the attributes of the different dataset_types 
-	are more or less the same.
+	The sub-classes are not 1-1 tables. They simply provide namespacing for functions
+	to avoid functions riddled with if statements about dataset_type and null parameters.
 	"""
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # only includes file_types that match the dataset_type.
@@ -1151,6 +1150,15 @@ class Label(BaseModel):
 		return lf
 
 
+	def get_column_dtype(id:int, column_name:str=None):
+		label = aiqc.Label.get_by_id(id)
+		if column_name == None:
+			column_name = label.columns[0]
+		d = label.dataset
+		column_dtype = label.dataset.Tabular.get_main_tabular_file(d.id).tabulars[0].dtype[column_name]
+		return column_dtype
+
+
 
 
 class Featureset(BaseModel):
@@ -1374,10 +1382,10 @@ class Splitset(BaseModel):
 				sizes["train"] = {"percent": 1.00, "count": row_count}
 
 		elif label_id is not None:
-			# Splits generate different samples each time, so we do not need to prevent duplicates that use the same Label.
+			# We don't need to prevent duplicate Label/Featureset combos because Splits generate different samples each time.
 			l = Label.get_by_id(label_id)
 
-			# When labels and featuresets come from different datasets, make sure the have the same number of samples.
+			# Check number of samples in Label vs Featureset, because they can come from different Datasets.
 			l_dataset_id = l.dataset.id
 			l_length = Dataset.Tabular.get_main_tabular_file(l_dataset_id).shape['rows']
 			if (l_dataset_id != d.id):
@@ -1407,8 +1415,10 @@ class Splitset(BaseModel):
 			arr_l_dtype = arr_l.dtype
 
 			if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-				stratify1 = Splitset.continuous_bins(arr_l, continuous_bin_count)
+				stratify1 = Splitset.bin_label_values(array_to_bin=arr_l, bin_count=continuous_bin_count)
 			else:
+				if (continuous_bin_count is not None):
+					raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `continuous_bin_count`.\n")
 				stratify1 = arr_l
 			"""
 			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
@@ -1426,7 +1436,7 @@ class Splitset(BaseModel):
 
 				if size_validation is not None:
 					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-						stratify2 = Splitset.continuous_bins(labels_train, continuous_bin_count)
+						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=continuous_bin_count)
 					else:
 						stratify2 = labels_train
 
@@ -1448,7 +1458,7 @@ class Splitset(BaseModel):
 
 				if size_validation is not None:
 					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-						stratify2 = Splitset.continuous_bins(labels_train, continuous_bin_count)
+						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=continuous_bin_count)
 					else:
 						stratify2 = labels_train
 
@@ -1543,19 +1553,33 @@ class Splitset(BaseModel):
 
 
 
-	def continuous_bins(array_to_bin, continuous_bin_count:int):
-		if continuous_bin_count is None:
-			continuous_bin_count = 4
-
+	def bin_label_values(array_to_bin:object, bin_count:int=None):
+		"""
+		Overwites continuous Label values with bin numbers for statification & folding.
+		"""
+		if bin_count is None:
+			bin_count = 4
+		# From that array, get the max and min continuous value.
 		max = np.amax(array_to_bin)
 		min = np.amin(array_to_bin)
-		bins = np.linspace(start=min, stop=max, num=continuous_bin_count)
-		flts_binned = np.digitize(array_to_bin, bins, right=True)
-		return flts_binned
+		# Define the numeric boundaries between bins. e.g. [0.0, 0.50, 1.0]
+		bin_boundaries = np.linspace(start=min, stop=max, num=bin_count)
+		# https://numpy.org/doc/stable/reference/generated/numpy.digitize.html
+		# Get the bin number that each value falls into.
+		bin_numbers = np.digitize(array_to_bin, bin_boundaries, right=True)
+		return bin_numbers
 
 
-	def make_foldset(id:int, fold_count:int=None):
-		foldset = Foldset.from_splitset(splitset_id=id, fold_count=fold_count)
+	def make_foldset(
+		id:int
+		, fold_count:int = None
+		, continuous_bin_count:int = None
+	):
+		foldset = Foldset.from_splitset(
+			splitset_id = id
+			, fold_count = fold_count
+			, continuous_bin_count = continuous_bin_count
+		)
 		return foldset
 
 
@@ -1590,6 +1614,7 @@ class Foldset(BaseModel):
 	def from_splitset(
 		splitset_id:int
 		, fold_count:int = None
+		, continuous_bin_count:int = None
 	):
 		s = Splitset.get_by_id(splitset_id)
 		new_random = False
@@ -1600,19 +1625,32 @@ class Foldset(BaseModel):
 			if count_matches == 0:
 				new_random = True
 		if fold_count is None:
-			fold_count = 5
+			fold_count = 5 # More likely than 4 to be evenly divisible.
 		else:
 			if fold_count < 2:
 				raise ValueError(f"\nYikes - Cross validation requires multiple folds.\nBut you provided `fold_count`: <{fold_count}>.\n")
 
-		# get the training indices. the values of the features don't matter, only labels needed for stratification.
+		# Get the training indices. The actual values of the features don't matter, only label values needed for stratification.
 		arr_train_indices = s.samples["train"]
 		arr_train_labels = s.label.to_numpy(samples=arr_train_indices)
+
+		# If the values of the Label array are continuous, then overwite the values w bin numbers.
+		label_dtype = arr_train_labels.dtype
+		if (label_dtype == 'float32') or (label_dtype == 'float64'):
+			if (continuous_bin_count is None):
+				continuous_bin_count = 4
+			arr_train_labels = Splitset.bin_label_values(
+				array_to_bin = arr_train_labels
+				, bin_count=continuous_bin_count
+			)
+		else:
+			if (continuous_bin_count is not None):
+				raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `continuous_bin_count`.\n")
 
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
 		if remainder != 0:
-			print(f"\nAdvice - The length <{train_count}> of your training Split is not evenly divisible by the number of folds <{fold_count}> you specified.\nThere's a chance that this could lead to misleadingly low accuracy for the last Fold with small datasets.\n")
+			print(f"\nWarning - The number of samples <{train_count}> in your training Split \nis not evenly divisible by the `fold_count` <{fold_count}> you specified.\nThis can cause misleading performance metrics for the last Fold.\n")
 
 		foldset = Foldset.create(
 			fold_count = fold_count
