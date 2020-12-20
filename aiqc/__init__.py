@@ -1315,6 +1315,8 @@ class Splitset(BaseModel):
 	supervision = CharField()
 	has_test = BooleanField()
 	has_validation = BooleanField()
+	bin_count = IntegerField(null=True)
+
 
 	featureset = ForeignKeyField(Featureset, backref='splitsets')
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
@@ -1494,6 +1496,7 @@ class Splitset(BaseModel):
 			, supervision = supervision
 			, has_test = has_test
 			, has_validation = has_validation
+			, bin_count = bin_count
 		)
 		return s
 
