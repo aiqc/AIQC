@@ -1289,12 +1289,14 @@ class Featureset(BaseModel):
 		, label_id:int = None
 		, size_test:float = None
 		, size_validation:float = None
+		, bin_count:int = None
 	):
 		s = Splitset.from_featureset(
 			featureset_id = id
 			, label_id = label_id
 			, size_test = size_test
 			, size_validation = size_validation
+			, bin_count = bin_count
 		)
 		return s
 
@@ -1417,7 +1419,9 @@ class Splitset(BaseModel):
 			arr_l_dtype = arr_l.dtype
 
 			if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-				stratify1 = Splitset.bin_label_values(array_to_bin=arr_l, bin_count=bin_count)
+				if (bin_count is None):
+					bin_count = 3
+				stratify1 = Splitset.label_values_to_bins(array_to_bin=arr_l, bin_count=bin_count)
 			else:
 				if (bin_count is not None):
 					raise ValueError("\nYikes - Your Label column's dtype is neither 'float32' nor 'float64'.\nTherefore, you cannot provide a value for `bin_count`.\n")
@@ -1438,7 +1442,7 @@ class Splitset(BaseModel):
 
 				if size_validation is not None:
 					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=bin_count)
+						stratify2 = Splitset.label_values_to_bins(array_to_bin=labels_train, bin_count=bin_count)
 					else:
 						stratify2 = labels_train
 
@@ -1450,6 +1454,7 @@ class Splitset(BaseModel):
 					)
 					indices_lst_validation = indices_validation.tolist()
 					samples["validation"] = indices_lst_validation
+
 			elif (d.dataset_type == 'image'):
 				labels_train, labels_test, indices_train, indices_test = train_test_split(
 					arr_l, arr_idx
@@ -1460,7 +1465,7 @@ class Splitset(BaseModel):
 
 				if size_validation is not None:
 					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
-						stratify2 = Splitset.bin_label_values(array_to_bin=labels_train, bin_count=bin_count)
+						stratify2 = Splitset.label_values_to_bins(array_to_bin=labels_train, bin_count=bin_count)
 					else:
 						stratify2 = labels_train
 
@@ -1556,20 +1561,16 @@ class Splitset(BaseModel):
 
 
 
-	def bin_label_values(array_to_bin:object, bin_count:int=None):
+	def label_values_to_bins(array_to_bin:object, bin_count:int):
 		"""
 		Overwites continuous Label values with bin numbers for statification & folding.
+		Switched to `pd.qcut` because `np.digitize` never had enough samples in the up the leftmost/right bin.
 		"""
-		if bin_count is None:
-			bin_count = 4
-		# From that array, get the max and min continuous value.
-		max = np.amax(array_to_bin)
-		min = np.amin(array_to_bin)
-		# Define the numeric boundaries between bins. e.g. [0.0, 0.50, 1.0]
-		bin_boundaries = np.linspace(start=min, stop=max, num=bin_count)
-		# https://numpy.org/doc/stable/reference/generated/numpy.digitize.html
-		# Get the bin number that each value falls into.
-		bin_numbers = np.digitize(array_to_bin, bin_boundaries, right=True)
+		# Flatten the continuous Label values into a 1D array for qcut.
+		array_to_bin = array_to_bin.flatten()
+		bin_numbers = pd.qcut(x=array_to_bin, q=bin_count, labels=False)
+		# Convert 1D array back to 2D for the rest of the program.
+		bin_numbers = np.reshape(bin_numbers, (-1, 1))
 		return bin_numbers
 
 
@@ -1628,11 +1629,13 @@ class Foldset(BaseModel):
 			count_matches = matching_randoms.count()
 			if count_matches == 0:
 				new_random = True
-		if fold_count is None:
+		if (fold_count is None):
 			fold_count = 5 # More likely than 4 to be evenly divisible.
 		else:
-			if fold_count < 2:
+			if (fold_count < 2):
 				raise ValueError(f"\nYikes - Cross validation requires multiple folds.\nBut you provided `fold_count`: <{fold_count}>.\n")
+			elif (fold_count == 2):
+				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
 		# Get the training indices. The actual values of the features don't matter, only label values needed for stratification.
 		arr_train_indices = s.samples["train"]
@@ -1642,10 +1645,10 @@ class Foldset(BaseModel):
 		label_dtype = arr_train_labels.dtype
 		if (label_dtype == 'float32') or (label_dtype == 'float64'):
 			if (bin_count is None):
-				bin_count = 4
-			arr_train_labels = Splitset.bin_label_values(
+				bin_count = 3
+			arr_train_labels = Splitset.label_values_to_bins(
 				array_to_bin = arr_train_labels
-				, bin_count=bin_count
+				, bin_count = bin_count
 			)
 		else:
 			if (bin_count is not None):
@@ -1654,7 +1657,7 @@ class Foldset(BaseModel):
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
 		if remainder != 0:
-			print(f"\nWarning - The number of samples <{train_count}> in your training Split \nis not evenly divisible by the `fold_count` <{fold_count}> you specified.\nThis can cause misleading performance metrics for the last Fold.\n")
+			print(f"\nWarning - The number of samples <{train_count}> in your training Split \nis not evenly divisible by the `fold_count` <{fold_count}> you specified.\nThis can result in misleading performance metrics for the last Fold.\n")
 
 		foldset = Foldset.create(
 			fold_count = fold_count
@@ -2836,7 +2839,7 @@ class DataPipeline(BaseModel):
 		, size_test:float = None
 		, size_validation:float = None
 		, fold_count:int = None
-		, bin_count
+		, bin_count:int = None
 		, encoder_features:object = None
 		, encoder_labels:object = None
 	):
@@ -2875,7 +2878,7 @@ class DataPipeline(BaseModel):
 		)
 
 		if (fold_count is not None):
-			foldset = splitset.make_foldset(fold_count=fold_count)
+			foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 		elif (fold_count is None):
 			# Low level api sets fold_count=3 when fold_count=None. Skipping foldset creation here.
 			foldset = None

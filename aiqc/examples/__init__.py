@@ -96,6 +96,7 @@ def get_demo_batches():
 	batches = [
 		{
 			'batch_name': 'multiclass'
+			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'multi label'
@@ -104,6 +105,7 @@ def get_demo_batches():
 		},
 		{
 			'batch_name': 'binary'
+			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'binary'
@@ -111,7 +113,8 @@ def get_demo_batches():
 			, 'fileset': 'sonar.csv'
 		},
 		{
-			'batch_name': 'regression'
+			'batch_name': 'continuous'
+			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'regression'
 			, 'sub_analysis': None
@@ -120,11 +123,21 @@ def get_demo_batches():
 		},
 		{
 			'batch_name': 'multiclass_folded'
+			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'multi label'
 			, 'validation': 'cross-folds'
 			, 'fileset': 'iris_10x.tsv'
+		},
+		{
+			'batch_name': 'continuous_folded'
+			, 'data_type': 'tabular'
+			, 'supervision': 'supervised'
+			, 'analysis': 'regression'
+			, 'sub_analysis': None
+			, 'validation': 'cross-folds'
+			, 'fileset': 'houses.csv'	
 		}
 	]
 	return batches
@@ -377,7 +390,7 @@ def make_demo_batch_binary():
 	return batch
 
 
-# ------------------------ REGRESSION ------------------------
+# ------------------------ CONTINUOUS ------------------------
 
 def regression_model_build(**hyperparameters):
 	model = Sequential()
@@ -403,7 +416,7 @@ def regression_model_train(model, samples_train, samples_evaluate, **hyperparame
 	)
 	return model
 
-def make_demo_batch_regression():
+def make_demo_batch_continuous():
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -427,6 +440,7 @@ def make_demo_batch_regression():
 		label_id = label.id
 		, size_test = 0.18
 		, size_validation = 0.14
+		, bin_count = 3
 	)
 
 	encoder_features = None
@@ -458,6 +472,67 @@ def make_demo_batch_regression():
 	return batch
 
 
+# ------------------------ CONTINUOUS FOLDED ------------------------
+
+def make_demo_batch_continuous_folded():
+	hyperparameters = {
+		"neuron_count": [24, 48]
+		, "epochs": [50, 75]
+	}
+
+	file_path = get_demo_file_path('houses.csv')
+
+	fileset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
+		, name = 'real estate stats'
+		, dtype = None
+	)
+	
+	label_column = 'price'
+	label = fileset.make_label(columns=[label_column])
+
+	featureset = fileset.make_featureset(exclude_columns=[label_column])
+
+	splitset = featureset.make_splitset(
+		label_id = label.id
+		, size_test = 0.20
+		, bin_count = 3
+	)
+
+	foldset = splitset.make_foldset(
+		fold_count = 4
+		, bin_count = 3
+	)
+
+	encoder_features = None
+	encoder_labels = StandardScaler()
+
+	preprocess = splitset.make_preprocess(
+		encoder_features = encoder_features
+		, encoder_labels = encoder_labels
+	)
+
+	algorithm = Algorithm.make(
+		library = "keras"
+		, analysis_type = "regression"
+		, function_model_build = regression_model_build
+		, function_model_train = regression_model_train
+	)
+
+	hyperparamset = algorithm.make_hyperparamset(
+		hyperparameters = hyperparameters
+	)
+
+	batch = algorithm.make_batch(
+		splitset_id = splitset.id
+		, foldset_id = foldset
+		, hyperparamset_id = hyperparamset.id
+		, preprocess_id  = preprocess.id
+	)
+	return batch
+
+
 # ------------------------ DEMO BATCH CALLER ------------------------
 def make_demo_batch(name:str):
 	if (name == 'multiclass'):
@@ -466,8 +541,10 @@ def make_demo_batch(name:str):
 		batch = make_demo_batch_multiclass_folded()
 	elif (name == 'binary'):
 		batch = make_demo_batch_binary()
-	elif (name == 'regression'):
-		batch = make_demo_batch_regression()
+	elif (name == 'continuous'):
+		batch = make_demo_batch_continuous()
+	elif (name == 'continuous_folded'):
+		batch = make_demo_batch_continuous_folded()
 	else:
 		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'examples.list_demo_batches()'.\n")
 	return batch
