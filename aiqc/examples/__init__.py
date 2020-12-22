@@ -6,51 +6,73 @@ from aiqc import *
 
 
 def get_demo_files():
+	# 'name' value cannot include 'https' because that's how remote datasets are detected.
 	files = [
 		{
 			'name': 'iris.tsv'
+			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi-label'
 			, 'label': 'species'
 			, 'label_classes': 3
 			, 'features': 4
 			, 'samples': 150
 			, 'description': '3 species of flowers. Only 150 rows, so cross-folds not represent population.'
+			, 'location': 'local'
 		},
 		{
 			'name': 'sonar.csv'
+			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification binary label'
 			, 'label': 'object'
 			, 'label_classes': 2
 			, 'features': 60
 			, 'samples': 208
 			, 'description': 'Detecting either a rock "R" or mine "M". Each feature is a sensor reading.'
+			, 'location': 'local'
 		},
 		{
 			'name': 'houses.csv'
+			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'price'
 			, 'label_classes': 1
 			, 'features': 12
 			, 'samples': 506
 			, 'description': 'Predict the price of the house.'
+			, 'location': 'local'
 		},
 		{
 			'name': 'iris_noHeaders.csv' 
+			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi-label'
 			, 'label': 'species'
 			, 'label_classes': 3
 			, 'features': 4
 			, 'samples': 150
 			, 'description': 'For testing; no column names.'
+			, 'location': 'local'
 		},
 		{
 			'name': 'iris_10x.tsv'
+			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi-label'
 			, 'label': 'species'
 			, 'label_classes': 3
 			, 'features': 4
 			, 'samples': 1500
 			, 'description': 'For testing; duplicated 10x so cross-folds represent population.'
+			, 'location': 'local'
+		},
+		{
+			'name': 'brain_tumor'
+			, 'dataset_type': 'image'
+			, 'analysis_type': 'classification binary'
+			, 'label': 'status'
+			, 'label_classes': 2
+			, 'features': 'N/A images'
+			, 'samples': 80
+			, 'description': 'Detect tumor in brain. No guarantee on healthy.'
+			, 'location': 'remote'
 		},
 	]
 	return files	
@@ -73,8 +95,13 @@ def list_demo_files(format:str=None):
 
 
 def get_demo_file_path(file_name:str):
-	short_path = f"data/{file_name}"
-	full_path = pkg_resources.resource_filename('aiqc', short_path)
+	# Explicitly list the remote datasets.
+	if (file_name == 'brain_tumor'):
+		# 2nd aiqc is the repo, not the module.
+		full_path = f"https://github.com/aiqc/aiqc/remote_data/{file_name}"
+	else:
+		short_path = f"data/{file_name}"
+		full_path = pkg_resources.resource_filename('aiqc', short_path)
 	return full_path
 
 

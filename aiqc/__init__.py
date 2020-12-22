@@ -832,10 +832,10 @@ class File(BaseModel):
 
 
 		def df_validate(dataframe:object, column_names:list):
-			if dataframe.empty:
+			if (dataframe.empty):
 				raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
-			if column_names is not None:
+			if (column_names is not None):
 				col_count = len(column_names)
 				structure_col_count = dataframe.shape[1]
 				if col_count != structure_col_count:
@@ -1030,6 +1030,7 @@ class Label(BaseModel):
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
+	label_type = CharField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
 	#probabilities = JSONField() #if you were to write back the result of unsupervised for semi-supervised learning.
 	
@@ -1098,23 +1099,36 @@ class Label(BaseModel):
 						raise ValueError(f"\nYikes - Label row <{i}> is supposed to be an OHE row, but it contains multiple hot columns where value is 1.\n")
 				else:
 					raise ValueError(f"\nYikes - Label row <{i}> is supposed to be an OHE row, but it contains no hot columns where value is 1.\n")
+			
+			if (column_count == 2):
+				label_type = 'classification_binary'
+			elif (class_count > 2):
+				label_type = 'classification_multi'
+
 		elif (column_count == 1):
 			# At this point, `label_df` is a single column df that needs to fected as a Series.
 			col = columns[0]
 			label_series = label_df[col]
 			dtype_str = str(label_series.dtype)
-			if (dtype_str == 'float64'):
+			if ((dtype_str == 'float64') or (dtype_str == 'float32')):
 				unique_classes = None
+				label_type = 'regression'
 			else:
 				unique_classes = label_series.unique().tolist()
+				class_count = len(unique_classes)
 
-		if (unique_classes == 1):
-			print(f"\nWarning - There is only 1 unique class for this label.\nUnique class: <{unique_classes[0]}>")
+				if (class_count == 1):
+					raise ValueError(f"\nYikes - Categorical labels must have 2 or more unique classes.\nYour Label's only class was: <{unique_classes[0]}>.")
+				elif (class_count == 2):
+					label_type = 'classification_binary'
+				elif (class_count > 2):
+					label_type = 'classification_multi'
 
 		l = Label.create(
 			dataset = d
 			, columns = columns
 			, column_count = column_count
+			, label_type = label_type
 			, unique_classes = unique_classes
 		)
 		return l
@@ -1851,10 +1865,10 @@ class Algorithm(BaseModel):
 
 
 	def select_function_model_predict(
-		function_model_predict:object,
 		library:str,
 		analysis_type:str
 	):
+		function_model_predict = None
 		if (library == 'keras'):
 			if (analysis_type == 'classification_multi'):
 				function_model_predict = Algorithm.multiclass_model_predict
@@ -1862,18 +1876,20 @@ class Algorithm(BaseModel):
 				function_model_predict = Algorithm.binary_model_predict
 			elif (analysis_type == 'regression'):
 				function_model_predict = Algorithm.regression_model_predict
+		# After each of the predefined approaches above run, check if it is still undefined.
 		if function_model_predict is None:
 			raise ValueError("\nYikes - You did not provide a `function_model_predict`,\nand we don't have an automated function for your combination of 'library' and 'analysis_type'\n")
 		return function_model_predict
 
 
 	def select_function_model_loss(
-		function_model_loss:object,
 		library:str,
 		analysis_type:str
 	):		
+		function_model_loss = None
 		if (library == 'keras'):
 			function_model_loss = Algorithm.keras_model_loss
+		# After each of the predefined approaches above run, check if it is still undefined.
 		if function_model_loss is None:
 			raise ValueError("\nYikes - You did not provide a `function_model_loss`,\nand we don't have an automated function for your combination of 'library' and 'analysis_type'\n")
 		return function_model_loss
@@ -1899,11 +1915,11 @@ class Algorithm(BaseModel):
 
 		if (function_model_predict is None):
 			function_model_predict = Algorithm.select_function_model_predict(
-				function_model_predict, library, analysis_type
+				library=library, analysis_type=analysis_type
 			)
 		if (function_model_loss is None):
 			function_model_loss = Algorithm.select_function_model_loss(
-				function_model_loss, library, analysis_type
+				library=library, analysis_type=analysis_type
 			)
 
 		funcs = [function_model_build, function_model_train, function_model_predict, function_model_loss]
@@ -2068,7 +2084,14 @@ class Batch(BaseModel):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		splitset = Splitset.get_by_id(splitset_id)
 
-		if foldset_id is not None:
+		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
+		if (splitset.supervision == 'supervised'):
+			label_type = splitset.label.label_type
+			analysis_type = algorithm.analysis_type
+			if (label_type != analysis_type):
+				raise ValueError(f"\nYikes - `splitset.label.label_type` and `algorithm.analysis_type` must be identical.\nYour `splitset.label.label_type`: <{label_type}>\nYour `algorithm.analysis_type`: <{analysis_type}>\n")
+		
+		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
 			foldset_splitset = foldset.splitset
 			if foldset_splitset != splitset:
@@ -2079,7 +2102,7 @@ class Batch(BaseModel):
 			folds = [None]
 			foldset = None
 
-		if hyperparamset_id is not None:
+		if (hyperparamset_id is not None):
 			hyperparamset = Hyperparamset.get_by_id(hyperparamset_id)
 			combos = list(hyperparamset.hyperparamcombos)
 		else:
@@ -2088,12 +2111,12 @@ class Batch(BaseModel):
 			hyperparamset = None
 			
 
-		if preprocess_id is not None:
+		if (preprocess_id is not None):
 			preprocess = Preprocess.get_by_id(preprocess_id)
 		else:
 			preprocess = None
 
-		# Here `[None]` just multiplies by 1.
+		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		job_count = len(combos) * len(folds)
 
 		b = Batch.create(
@@ -2129,26 +2152,25 @@ class Batch(BaseModel):
 	def run_jobs(id:int, verbose:bool=False):
 		batch = Batch.get_by_id(id)
 		job_count = batch.job_count
-		# Want succeeded jobs to appear first so that they get skipped over during a resumed run. Otherwise the % done jumps around.
+		# For the sake of resumed Batches, we want succeeded Jobs to be fetched first so that the % done includes them.
 		jobs = Job.select().join(Batch).where(Batch.id == batch.id).order_by(Job.status.desc())
 
 		statuses = Batch.get_statuses(id=batch.id)
 		all_succeeded = all(i == "Succeeded" for i in statuses.values())
-		if all_succeeded:
-			print("\nAll jobs are already complete.\n")
-		elif not (all_succeeded) and ("Succeeded" in statuses.values()):
+		if (all_succeeded):
+			print("\nAll jobs have been completed.\n")
+		elif (not (all_succeeded) and ("Succeeded" in statuses.values())):
 			print("\nResuming jobs...\n")
-
-		proc_name = "aiqc_batch_" + str(batch.id)
-		proc_names = [p.name for p in multiprocessing.active_children()]
-		if proc_name in proc_names:
-			raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
 
 		statuses = Batch.get_statuses(id)
 		all_not_started = (set(statuses.values()) == {'Not yet started'})
-		if all_not_started:
+		if (all_not_started):
 			Job.update(status="Queued").where(Job.batch == id).execute()
 
+		proc_name = "aiqc_batch_" + str(batch.id)
+		proc_names = [p.name for p in multiprocessing.active_children()]
+		if (proc_name in proc_names):
+			raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
 
 		def background_proc():
 			BaseModel._meta.database.close()
@@ -2169,17 +2191,17 @@ class Batch(BaseModel):
 
 
 	def stop_jobs(id:int):
-		# SQLite is ACID (D = Durable) where if a transaction is interrupted it is rolled back.
+		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
 		batch = Batch.get_by_id(id)
 		
 		proc_name = "aiqc_batch_" + str(batch.id)
 		proc_names = [p.name for p in multiprocessing.active_children()]
-		if proc_name not in proc_names:
+		if (proc_name not in proc_names):
 			raise ValueError(f"\nYikes - Cannot terminate `multiprocessing.Process.name` '{proc_name}' because it is not running.\n")
 
 		processes = multiprocessing.active_children()
 		for p in processes:
-			if p.name == proc_name:
+			if (p.name == proc_name):
 				try:
 					p.terminate()
 				except:
@@ -2189,21 +2211,37 @@ class Batch(BaseModel):
 
 
 	def metrics_to_pandas(id:int):
-		metric_dicts = Result.select(
-			Result.id, Result.metrics
-		).join(Job).join(Batch).where(Batch.id == id).dicts()
+		batch = Batch.get_by_id(id)
+		jobs = list(batch.jobs)
 
-		job_metrics = []
+		# Only return the completed Jobs.
+		results_grouped_by_job = {}
+		for j in jobs:
+			if j.status == 'Succeeded':
+				results_grouped_by_job[j.id] = j.results[0].metrics
+		# If none of the Jobs have finised.
+		if (not results_grouped_by_job):
+			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
+			return None
 		# The metrics of each split are grouped under the job id.
 		# Here we break them out so that each split is labeled with its own job id.
-		for d in metric_dicts:
-			for split, data in d['metrics'].items():
+		job_metrics = []
+		for k,v in results_grouped_by_job.items():
+			job_id = k
+			metrics_by_split = v
+
+			for k,v in metrics_by_split.items():
+				split = k
+				metrics = v
+
 				split_metrics = {}
-				split_metrics['job_id'] = d['id']
+				split_metrics['job_id'] = job_id
 				split_metrics['split'] = split
 
-				for k, v in data.items():
-					split_metrics[k] = v
+				for k,v in metrics.items():
+					metric = k
+					value = v
+					split_metrics[metric] = value
 
 				job_metrics.append(split_metrics)
 
@@ -2211,11 +2249,17 @@ class Batch(BaseModel):
 		return df
 
 
-	def plot_performance(id:int, max_loss:float=3.0, min_metric_2:float=0.0):
+	def plot_performance(id:int, max_loss:float, min_metric_2:float):
+		if ((max_loss < 0.0) or (min_metric_2 < 0)):
+			raise ValueError("\nYikes - Metrics thresholds `max_loss` and `min_metric_2` must be `=< 0.0`.\n")
+
 		batch = Batch.get_by_id(id)
 		analysis_type = batch.algorithm.analysis_type
 		
 		df = batch.metrics_to_pandas()
+		if (df is None):
+			# Warning message handled by `metrics_to_pandas() above`.
+			return None
 		# Now we need to filter the df based on the specified criteria.
 		if (analysis_type == 'classification_multi') or (analysis_type == 'classification_binary'):
 			metric_2 = "accuracy"
@@ -2363,7 +2407,7 @@ class Job(BaseModel):
 			return j
 		else:
 			if verbose:
-				print("\nJob #" + str(j.id) + " starting...")
+				print(f"\nJob #{j.id} starting...")
 			algorithm = j.batch.algorithm
 			analysis_type = algorithm.analysis_type
 			splitset = j.batch.splitset
@@ -2372,25 +2416,25 @@ class Job(BaseModel):
 			fold = j.fold
 
 			"""
-			# 1. Figure out which splits the model needs to be trained and predicted against. 
-			- Unlike a batch, each job can have a different fold.
+			1. Figure out which splits the model needs to be trained and predicted against. 
+			- Unlike a Batch, each Job can have a different fold.
 			- The `key_*` variables dynamically determine which splits to use during model_training.
 			  It is being intentionally overwritten as more complex validations/ training splits are introduced.
 			"""
 			samples = {}
-			if splitset.supervision == "unsupervised":
+			if (splitset.supervision == "unsupervised"):
 				samples['train'] = splitset.to_numpy(splits=['train'])['train']
 				key_train = "train"
 				key_evaluation = None
-			elif splitset.supervision == "supervised":
+			elif (splitset.supervision == "supervised"):
 				samples['test'] = splitset.to_numpy(splits=['test'])['test']
 				key_evaluation = 'test'
 				
-				if splitset.has_validation:
+				if (splitset.has_validation):
 					samples['validation'] = splitset.to_numpy(splits=['validation'])['validation']
 					key_evaluation = 'validation'
 					
-				if fold is not None:
+				if (fold is not None):
 					foldset = fold.foldset
 					fold_index = fold.fold_index
 					fold_samples_np = foldset.to_numpy(fold_index=fold_index)[fold_index]
@@ -2399,23 +2443,23 @@ class Job(BaseModel):
 					
 					key_train = "folds_train_combined"
 					key_evaluation = "fold_validation"
-				elif fold is None:
+				elif (fold is None):
 					samples['train'] = splitset.to_numpy(splits=['train'])['train']
 					key_train = "train"
 
 
 			# 2. Preprocess the features and labels.
 			# Preprocessing happens prior to training the model.
-			if preprocess is not None:
+			if (preprocess is not None):
 				# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
-				if preprocess.encoder_features is not None:
+				if (preprocess.encoder_features is not None):
 					feature_encoder = preprocess.encoder_features
 					feature_encoder.fit(samples[key_train]['features'])
 
 					for split, data in samples.items():
 						samples[split]['features'] = feature_encoder.transform(data['features'])
 				
-				if preprocess.encoder_labels is not None:
+				if (preprocess.encoder_labels is not None):
 					label_encoder = preprocess.encoder_labels
 					label_encoder.fit(samples[key_train]['labels'])
 
@@ -2423,9 +2467,9 @@ class Job(BaseModel):
 						samples[split]['labels'] = label_encoder.transform(data['labels'])
 
 			# 3. Build and Train model.
-			if hyperparamcombo is not None:
+			if (hyperparamcombo is not None):
 				hyperparameters = hyperparamcombo.hyperparameters
-			elif hyperparamcombo is None:
+			elif (hyperparamcombo is None):
 				hyperparameters = None
 			model = algorithm.function_model_build(**hyperparameters)
 
@@ -2483,6 +2527,10 @@ class Job(BaseModel):
 					metrics[split]['loss'] = algorithm.function_model_loss(model, data)
 					plot_data = None
 
+			# Alphabetize metrics dictionary by key.
+			for k,v in metrics.items():
+				metrics[k] = dict(natsorted(v.items()))
+
 			r = Result.create(
 				model_file = model_bytes
 				, history = history
@@ -2537,10 +2585,16 @@ class Result(BaseModel):
 		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
 		df_loss = df_loss.round(3)
 
+		# Spline seems to crash with too many points.
+		if (df.shape[0] > 400):
+			line_shape = 'linear'
+		else:
+			line_shape = 'spline'
+
 		fig_loss = px.line(
 			df_loss
 			, title = '<i>Training History: Loss</i>'
-			, line_shape = 'spline'
+			, line_shape = line_shape
 		)
 		fig_loss.update_layout(
 			xaxis_title = "Epochs"
@@ -2558,9 +2612,9 @@ class Result(BaseModel):
 			)
 			, yaxis = dict(
 				side = "right"
-				, tickmode = 'linear'
-				, tick0 = 0.0
-				, dtick = 0.1
+				, tickmode = 'auto'# When loss is initially high, the 0.1 tickmarks are overwhelming.
+				, tick0 = -1
+				, nticks = 9
 			)
 			, legend = dict(
 				orientation="h"
@@ -2585,7 +2639,7 @@ class Result(BaseModel):
 			fig_acc = px.line(
 			df_acc
 				, title = '<i>Training History: Accuracy</i>'
-				, line_shape = 'spline'
+				, line_shape = line_shape
 			)
 			fig_acc.update_layout(
 				xaxis_title = "epochs"
