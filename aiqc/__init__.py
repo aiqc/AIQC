@@ -1,4 +1,4 @@
-import os, json, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py
+import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
 
@@ -21,7 +21,7 @@ from sklearn.preprocessing import *
 import keras 
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout
-from keras.callbacks import History
+from keras.callbacks import History, Callback
 #progress bar for training.
 from tqdm import tqdm
 #visualization.
@@ -2054,6 +2054,18 @@ class Hyperparamcombo(BaseModel):
 	hyperparamset = ForeignKeyField(Hyperparamset, backref='hyperparamcombos')
 
 
+	def hyperparameters_to_pandas(id:int):
+		hyperparamcombo = Hyperparamcombo.get_by_id(id)
+		hyperparameters = hyperparamcombo.hyperparameters
+		
+		params = []
+		for k,v in hyperparameters.items():
+			param = {"param":k, "value":v}
+			params.append(param)
+		df = pd.DataFrame.from_records(params, columns=['param','value'])
+		return df
+
+
 
 
 class Batch(BaseModel):
@@ -2065,7 +2077,6 @@ class Batch(BaseModel):
 	splitset = ForeignKeyField(Splitset, backref='batches')
 	# repeat_count means you could make a whole batch from one alg w no params.
 
-	# preprocess is obtained through hyperparamset. EDIT: but i can get it through the splitset.
 	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
 	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
 	preprocess = ForeignKeyField(Preprocess, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
@@ -2147,6 +2158,17 @@ class Batch(BaseModel):
 		for j in jobs:
 			statuses[j.id] = j.status
 		return statuses
+
+
+	def statuses_to_pandas(id:int):
+		batch = Batch.get_by_id(id)
+		jobs = list(batch.jobs)
+		statuses = []
+		for j in jobs:
+			status = {"job_id":j.id, "status": j.status}
+			statuses.append(status)
+		df = pd.DataFrame.from_records(statuses, columns=['job_id','status'])
+		return df
 
 
 	def run_jobs(id:int, verbose:bool=False):
@@ -3004,3 +3026,53 @@ class Experiment(BaseModel):
 			, description = description
 		)
 		return experiment
+
+
+
+
+class TrainingCallback():
+	class Keras():
+		class MetricCutoff(keras.callbacks.Callback):
+			def __init__(self, thresholds:list):
+				"""
+				# Tested with keras:2.4.3, tensorflow:2.3.1
+				# `thresholds` is list of dictionaries with 1 dict per metric.
+				metrics_cuttoffs = [
+					{"metric":"val_acc", "cutoff":0.94, "above_or_below":"above"},
+					{"metric":"acc", "cutoff":0.90, "above_or_below":"above"},
+					{"metric":"val_loss", "cutoff":0.26, "above_or_below":"below"},
+					{"metric":"loss", "cutoff":0.30, "above_or_below":"below"},
+				]
+				# Only stops training early if all user-specified metrics are satisfied.
+				# `above_or_below`: where 'above' means `>=` and 'below' means `<=`.
+				"""
+				super(TrainingCallback.Keras.MetricCutoff, self).__init__()
+				self.thresholds = thresholds
+
+			def on_epoch_end(self, epoch, logs=None):
+				logs = logs or {}
+				# Check each user-defined threshold to see if it is satisfied.
+				for threshold in self.thresholds:
+					metric = logs.get(threshold['metric'])
+					if (metric is None):
+						raise ValueError(f"\n\nYikes - The metric named '{threshold['metric']}' not found when running `logs.get('{threshold['metric']}')`.\nDuring `TrainingCallback.Keras.MetricCutoff.on_epoch_end`.\n")
+					cutoff = threshold['cutoff']
+
+					above_or_below = threshold['above_or_below']
+					if (above_or_below == 'above'):
+						statement = operator.ge(metric, cutoff)
+					elif (above_or_below == 'below'):
+						statement = operator.le(metric, cutoff)
+					else:
+						raise ValueError(f"\nYikes - Value for key 'above_or_below' must be either string 'above' or 'below'.\nYou provided:{above_or_below}\n")
+
+					if (statement == False):
+						break # Out of for loop.
+				        
+				if (statement == False):
+					pass # Thresholds not satisfied, so move on to the next epoch.
+				elif (statement == True):
+					# However, if the for loop actually finishes, then all metrics are satisfied.
+					print(f"\n:: Epoch #{epoch} ::\nSatisfied thresholds defined in `MetricCutoff` callback. Stopped training early.\n")
+					self.model.stop_training = True
+					os.system("say bingo")
