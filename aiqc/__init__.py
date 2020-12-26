@@ -2054,7 +2054,7 @@ class Hyperparamcombo(BaseModel):
 	hyperparamset = ForeignKeyField(Hyperparamset, backref='hyperparamcombos')
 
 
-	def hyperparameters_to_pandas(id:int):
+	def hyperparameters_to_pandas(id:int, internal_call=False):
 		hyperparamcombo = Hyperparamcombo.get_by_id(id)
 		hyperparameters = hyperparamcombo.hyperparameters
 		
@@ -2063,7 +2063,10 @@ class Hyperparamcombo(BaseModel):
 			param = {"param":k, "value":v}
 			params.append(param)
 		df = pd.DataFrame.from_records(params, columns=['param','value'])
-		return df
+		if internal_call:
+			return df
+		else:
+			return df.style.hide_index()
 
 
 
@@ -2160,7 +2163,7 @@ class Batch(BaseModel):
 		return statuses
 
 
-	def statuses_to_pandas(id:int):
+	def statuses_to_pandas(id:int, internal_call=False):
 		batch = Batch.get_by_id(id)
 		jobs = list(batch.jobs)
 		statuses = []
@@ -2168,7 +2171,10 @@ class Batch(BaseModel):
 			status = {"job_id":j.id, "status": j.status}
 			statuses.append(status)
 		df = pd.DataFrame.from_records(statuses, columns=['job_id','status'])
-		return df
+		if internal_call:
+			return df
+		else:
+			return df.style.hide_index()
 
 
 	def run_jobs(id:int, verbose:bool=False):
@@ -2232,7 +2238,7 @@ class Batch(BaseModel):
 					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from Batch <id:{batch.id}>\n")
 
 
-	def metrics_to_pandas(id:int):
+	def metrics_to_pandas(id:int, internal_call=False):
 		batch = Batch.get_by_id(id)
 		jobs = list(batch.jobs)
 
@@ -2268,7 +2274,10 @@ class Batch(BaseModel):
 				job_metrics.append(split_metrics)
 
 		df = pd.DataFrame.from_records(job_metrics)
-		return df
+		if internal_call:
+			return df
+		else:
+			return df.style.hide_index()
 
 
 	def plot_performance(id:int, max_loss:float, min_metric_2:float):
@@ -2278,7 +2287,7 @@ class Batch(BaseModel):
 		batch = Batch.get_by_id(id)
 		analysis_type = batch.algorithm.analysis_type
 		
-		df = batch.metrics_to_pandas()
+		df = batch.metrics_to_pandas(internal_call=True)
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
 			return None
@@ -2595,7 +2604,7 @@ class Result(BaseModel):
 		return model
 
 
-	def plot_learning_curve(id:int):
+	def plot_learning_curve(id:int, loss_last_85pct:False):
 		r = Result.get_by_id(id)
 		a = r.job.batch.algorithm
 		analysis_type = a.analysis_type
@@ -2603,15 +2612,18 @@ class Result(BaseModel):
 		history = r.history
 		df = pd.DataFrame.from_dict(history, orient='index').transpose()
 
-		df_loss = df[['loss','val_loss']]
-		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
-		df_loss = df_loss.round(3)
-
 		# Spline seems to crash with too many points.
 		if (df.shape[0] > 400):
 			line_shape = 'linear'
 		else:
 			line_shape = 'spline'
+
+		df_loss = df[['loss','val_loss']]
+		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
+		df_loss = df_loss.round(3)
+
+		if loss_last_85pct:
+			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
 
 		fig_loss = px.line(
 			df_loss
