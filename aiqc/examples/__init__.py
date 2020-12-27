@@ -11,7 +11,7 @@ def get_demo_files():
 		{
 			'name': 'iris.tsv'
 			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi-label'
+			, 'analysis_type': 'classification_multi'
 			, 'label': 'species'
 			, 'label_classes': 3
 			, 'features': 4
@@ -22,7 +22,7 @@ def get_demo_files():
 		{
 			'name': 'sonar.csv'
 			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification binary label'
+			, 'analysis_type': 'classification_binary'
 			, 'label': 'object'
 			, 'label_classes': 2
 			, 'features': 60
@@ -35,16 +35,27 @@ def get_demo_files():
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'price'
-			, 'label_classes': 1
+			, 'label_classes': 'N/A'
 			, 'features': 12
 			, 'samples': 506
 			, 'description': 'Predict the price of the house.'
 			, 'location': 'local'
 		},
 		{
+			'name': 'heart_failure.parquet'
+			, 'dataset_type': 'tabular'
+			, 'analysis_type': 'regression'
+			, 'label': 'died'
+			, 'label_classes': '2'
+			, 'features': 12
+			, 'samples': 299
+			, 'description': "Biometrics to predict loss of life."
+			, 'location': 'local'
+		},
+		{
 			'name': 'iris_noHeaders.csv' 
 			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi-label'
+			, 'analysis_type': 'classification multi'
 			, 'label': 'species'
 			, 'label_classes': 3
 			, 'features': 4
@@ -55,7 +66,7 @@ def get_demo_files():
 		{
 			'name': 'iris_10x.tsv'
 			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi-label'
+			, 'analysis_type': 'classification multi'
 			, 'label': 'species'
 			, 'label_classes': 3
 			, 'features': 4
@@ -66,7 +77,7 @@ def get_demo_files():
 		{
 			'name': 'brain_tumor'
 			, 'dataset_type': 'image'
-			, 'analysis_type': 'classification binary'
+			, 'analysis_type': 'classification_binary'
 			, 'label': 'status'
 			, 'label_classes': 2
 			, 'features': 'N/A images'
@@ -140,7 +151,7 @@ def get_demo_batches():
 			, 'fileset': 'sonar.csv'
 		},
 		{
-			'batch_name': 'continuous'
+			'batch_name': 'regression'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'regression'
@@ -158,7 +169,7 @@ def get_demo_batches():
 			, 'fileset': 'iris_10x.tsv'
 		},
 		{
-			'batch_name': 'continuous_folded'
+			'batch_name': 'regression_folded'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'regression'
@@ -417,7 +428,7 @@ def make_demo_batch_binary():
 	return batch
 
 
-# ------------------------ CONTINUOUS ------------------------
+# ------------------------ REGRESSION ------------------------
 
 def regression_model_build(**hyperparameters):
 	model = Sequential()
@@ -443,7 +454,7 @@ def regression_model_train(model, samples_train, samples_evaluate, **hyperparame
 	)
 	return model
 
-def make_demo_batch_continuous():
+def make_demo_batch_regression():
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -499,9 +510,9 @@ def make_demo_batch_continuous():
 	return batch
 
 
-# ------------------------ CONTINUOUS FOLDED ------------------------
+# ------------------------ REGRESSION FOLDED ------------------------
 
-def make_demo_batch_continuous_folded():
+def make_demo_batch_regression_folded():
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -568,10 +579,10 @@ def make_demo_batch(name:str):
 		batch = make_demo_batch_multiclass_folded()
 	elif (name == 'binary'):
 		batch = make_demo_batch_binary()
-	elif (name == 'continuous'):
-		batch = make_demo_batch_continuous()
-	elif (name == 'continuous_folded'):
-		batch = make_demo_batch_continuous_folded()
+	elif (name == 'regression'):
+		batch = make_demo_batch_regression()
+	elif (name == 'regression_folded'):
+		batch = make_demo_batch_regression_folded()
 	else:
 		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'examples.list_demo_batches()'.\n")
 	return batch

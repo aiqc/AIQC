@@ -2280,26 +2280,33 @@ class Batch(BaseModel):
 			return df.style.hide_index()
 
 
-	def plot_performance(id:int, max_loss:float, min_metric_2:float):
-		if ((max_loss < 0.0) or (min_metric_2 < 0)):
-			raise ValueError("\nYikes - Metrics thresholds `max_loss` and `min_metric_2` must be `=< 0.0`.\n")
-
+	def plot_performance(id:int, max_loss:float, min_acc:float=None, min_r2:float=None):
 		batch = Batch.get_by_id(id)
 		analysis_type = batch.algorithm.analysis_type
-		
+
+		# Now we need to filter the df based on the specified criteria.
+		if ('classification' in analysis_type):
+			if (min_r2 is not None):
+				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in batch.analysis_type`.\n")
+			if (min_acc is None):
+				raise ValueError("\nYikes - Must set argument `min_acc` if `'classification' in batch.analysis_type`.\n")
+			min_metric_2 = min_acc
+			metric_2 = "accuracy"
+			metric_2_display = "Accuracy"
+		elif (analysis_type == 'regression'):
+			if (min_acc is not None):
+				raise ValueError("\nYikes - Cannot use argument `min_acc` if `batch.analysis_type='regression'`.\n")
+			if (min_r2 is None):
+				raise ValueError("\nYikes - Must set argument `min_r2` if `batch.analysis_type='regression'`.\n")
+			min_metric_2 = min_r2
+			metric_2 = "r2"
+			metric_2_display = "R²"
+			
 		df = batch.metrics_to_pandas(internal_call=True)
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
 			return None
-		# Now we need to filter the df based on the specified criteria.
-		if (analysis_type == 'classification_multi') or (analysis_type == 'classification_binary'):
-			metric_2 = "accuracy"
-			metric_2_display = "Accuracy"
-		elif analysis_type == 'regression':
-			metric_2 = "r2"
-			metric_2_display = "R²"
 		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, metric_2, min_metric_2)
-
 		failed = df.query(qry_str)
 		failed_jobs = failed['job_id'].to_list()
 		failed_jobs_unique = list(set(failed_jobs))
