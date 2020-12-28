@@ -298,8 +298,8 @@ def create_db():
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Batch, Job, Result,
-			Experiment, DataPipeline
+			Batch, Job, Result, Resultset,
+			Experiment, DataPipeline,
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -2211,12 +2211,16 @@ class Batch(BaseModel):
 			):
 				j.run(verbose=verbose)
 
+			# Do I need to start making the Resultset here?
+
 		proc = multiprocessing.Process(
 			target = background_proc
 			, name = proc_name
 			, daemon = True
 		)
 		proc.start()
+
+
 
 
 	def stop_jobs(id:int):
@@ -2540,7 +2544,7 @@ class Job(BaseModel):
 			metrics = {}
 			plot_data = {}
 
-			if (analysis_type == "classification_multi") or (analysis_type == "classification_binary"):
+			if ("classification" in analysis_type):
 				for split, data in samples.items():
 					preds, probs = algorithm.function_model_predict(model, data)
 					predictions[split] = preds
@@ -2587,50 +2591,22 @@ class Job(BaseModel):
 
 
 
-class Result(BaseModel):
-	"""
-	- The classes of encoded labels are all based on train labels.
-	"""
-	model_file = BlobField()
-	history = JSONField()
-	predictions = PickleField()
-	metrics = PickleField()
-	plot_data = PickleField(null=True)
-	probabilities = PickleField(null=True) # Not used for regression.
-
-	job = ForeignKeyField(Job, backref='results')
-
-
-	def get_model(id:int):
-		r = Result.get_by_id(id)
-		algorithm = r.job.batch.algorithm
-		model_bytes = r.model_file
-		model_bytesio = io.BytesIO(model_bytes)
-		if (algorithm.library.lower() == "keras"):
-			h5_file = h5py.File(model_bytesio,'r')
-			model = load_model(h5_file, compile=True)
-		return model
-
-
-	def plot_learning_curve(id:int, loss_last_85pct:False):
-		r = Result.get_by_id(id)
-		a = r.job.batch.algorithm
-		analysis_type = a.analysis_type
-
-		history = r.history
-		df = pd.DataFrame.from_dict(history, orient='index').transpose()
+class Plot:
+	"""Used by Result and Resultset."""
+	def learning_curve(dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
+		"""Dataframe rows are epochs and columns are metric names."""
 
 		# Spline seems to crash with too many points.
-		if (df.shape[0] > 400):
+		if (dataframe.shape[0] >= 400):
 			line_shape = 'linear'
-		else:
+		elif (dataframe.shape[0] < 400):
 			line_shape = 'spline'
 
-		df_loss = df[['loss','val_loss']]
+		df_loss = dataframe[['loss','val_loss']]
 		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
 		df_loss = df_loss.round(3)
 
-		if loss_last_85pct:
+		if loss_skip_15pct:
 			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
 
 		fig_loss = px.line(
@@ -2674,7 +2650,7 @@ class Result(BaseModel):
 		fig_loss.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 
 		if (analysis_type == "classification_multi") or (analysis_type == "classification_binary"):
-			df_acc = df[['accuracy', 'val_accuracy']]
+			df_acc = dataframe[['accuracy', 'val_accuracy']]
 			df_acc = df_acc.rename(columns={"accuracy": "train_accuracy", "val_accuracy": "validation_accuracy"})
 			df_acc = df_acc.round(3)
 
@@ -2718,10 +2694,59 @@ class Result(BaseModel):
 			fig_acc.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 			fig_acc.show()
 		fig_loss.show()
+
+
+
+
+class Resultset(BaseModel):
+	#>>> add other mean attributes
+
+	foldset = ForeignKeyField(Foldset, backref='resultsets')
+
+
+
+
+class Result(BaseModel):
+	"""
+	- The classes of encoded labels are all based on train labels.
+	- Only Results part of a cross-fold validation have a Resultset.
+	"""
+	model_file = BlobField()
+	history = JSONField()
+	predictions = PickleField()
+	metrics = PickleField()
+	plot_data = PickleField(null=True)
+	probabilities = PickleField(null=True) # Not used for regression.
+
+	job = ForeignKeyField(Job, backref='results')
+	resultset = ForeignKeyField(Resultset, deferrable='INITIALLY DEFERRED', null=True, backref='results')
+
+
+	def get_model(id:int):
+		r = Result.get_by_id(id)
+		algorithm = r.job.batch.algorithm
+		model_bytes = r.model_file
+		model_bytesio = io.BytesIO(model_bytes)
+		if (algorithm.library.lower() == "keras"):
+			h5_file = h5py.File(model_bytesio,'r')
+			model = load_model(h5_file, compile=True)
+		return model
+
+
+	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
+		r = Result.get_by_id(id)
+		a = r.job.batch.algorithm
+		analysis_type = a.analysis_type
+
+		history = r.history
+		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
+		Plot.learning_curve(
+			dataframe = dataframe
+			, analysis_type = analysis_type
+			, loss_skip_15pct = loss_skip_15pct
+		)
 		
-
-	
-
+		
 	def plot_confusion_matrix(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
@@ -2904,13 +2929,6 @@ class Result(BaseModel):
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
 
-
-
-
-class Resultset(BaseModel):
-	# results, predictions
-	# how to do graphs?
-	# does repeat factor in?
 
 
 
