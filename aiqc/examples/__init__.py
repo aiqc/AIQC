@@ -9,6 +9,28 @@ def get_demo_files():
 	# 'name' value cannot include 'https' because that's how remote datasets are detected.
 	files = [
 		{
+			'name': 'exoplanets.parquet'
+			, 'dataset_type': 'tabular'
+			, 'analysis_type': 'regression'
+			, 'label': 'SurfaceTempK'
+			, 'label_classes': 'N/A'
+			, 'features': 8
+			, 'samples': 433
+			, 'description': 'Predict temperature of exoplanet.'
+			, 'location': 'local'
+		},
+		{
+			'name': 'heart_failure.parquet'
+			, 'dataset_type': 'tabular'
+			, 'analysis_type': 'regression'
+			, 'label': 'died'
+			, 'label_classes': '2'
+			, 'features': 12
+			, 'samples': 299
+			, 'description': "Biometrics to predict loss of life."
+			, 'location': 'local'
+		},
+		{
 			'name': 'iris.tsv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification_multi'
@@ -39,17 +61,6 @@ def get_demo_files():
 			, 'features': 12
 			, 'samples': 506
 			, 'description': 'Predict the price of the house.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'heart_failure.parquet'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'died'
-			, 'label_classes': '2'
-			, 'features': 12
-			, 'samples': 299
-			, 'description': "Biometrics to predict loss of life."
 			, 'location': 'local'
 		},
 		{

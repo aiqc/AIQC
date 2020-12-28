@@ -1574,7 +1574,6 @@ class Splitset(BaseModel):
 		return split_frames
 
 
-
 	def label_values_to_bins(array_to_bin:object, bin_count:int):
 		"""
 		Overwites continuous Label values with bin numbers for statification & folding.
@@ -1582,7 +1581,9 @@ class Splitset(BaseModel):
 		"""
 		# Flatten the continuous Label values into a 1D array for qcut.
 		array_to_bin = array_to_bin.flatten()
-		bin_numbers = pd.qcut(x=array_to_bin, q=bin_count, labels=False)
+		# For really unbalanced labels, I ran into errors where bin boundaries would be duplicates all the way down to 2 bins.
+		# Setting `duplicates='drop'` to address this.
+		bin_numbers = pd.qcut(x=array_to_bin, q=bin_count, labels=False, duplicates='drop')
 		# Convert 1D array back to 2D for the rest of the program.
 		bin_numbers = np.reshape(bin_numbers, (-1, 1))
 		return bin_numbers
@@ -2595,7 +2596,7 @@ class Result(BaseModel):
 	predictions = PickleField()
 	metrics = PickleField()
 	plot_data = PickleField(null=True)
-	probabilities = PickleField(null=True)
+	probabilities = PickleField(null=True) # Not used for regression.
 
 	job = ForeignKeyField(Job, backref='results')
 
@@ -2903,6 +2904,16 @@ class Result(BaseModel):
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
 
+
+
+
+class Resultset(BaseModel):
+	# results, predictions
+	# how to do graphs?
+	# does repeat factor in?
+
+
+
 """
 class Environment(BaseModel)?
 	# Even in local envs, you can have different pyenvs.
@@ -3048,6 +3059,9 @@ class Experiment(BaseModel):
 
 
 
+#==================================================
+# MID-TRAINING CALLBACKS
+#==================================================
 
 class TrainingCallback():
 	class Keras():
