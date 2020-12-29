@@ -169,24 +169,6 @@ def get_demo_batches():
 			, 'sub_analysis': None
 			, 'validation': 'validation split'
 			, 'fileset': 'houses.csv'	
-		},
-		{
-			'batch_name': 'multiclass_folded'
-			, 'data_type': 'tabular'
-			, 'supervision': 'supervised'
-			, 'analysis': 'classification'
-			, 'sub_analysis': 'multi label'
-			, 'validation': 'cross-folds'
-			, 'fileset': 'iris_10x.tsv'
-		},
-		{
-			'batch_name': 'regression_folded'
-			, 'data_type': 'tabular'
-			, 'supervision': 'supervised'
-			, 'analysis': 'regression'
-			, 'sub_analysis': None
-			, 'validation': 'cross-folds'
-			, 'fileset': 'houses.csv'	
 		}
 	]
 	return batches
@@ -229,6 +211,7 @@ def multiclass_function_model_build(**hyperparameters):
 	)
 	return model
 
+
 def multiclass_function_model_train(model, samples_train, samples_evaluate, **hyperparameters):
 	model.fit(
 		samples_train["features"]
@@ -244,7 +227,8 @@ def multiclass_function_model_train(model, samples_train, samples_evaluate, **hy
 	)
 	return model
 
-def make_demo_batch_multiclass():
+
+def make_demo_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [9, 12]
 		, "batch_size": [3]
@@ -252,12 +236,14 @@ def make_demo_batch_multiclass():
 		, "epoch_count": [30, 60]
 	}
 
-	file_path = get_demo_file_path('iris.tsv')
+	if fold_count is not None:
+		file_path = get_demo_file_path('iris_10x.tsv')
+	else:
+		file_path = get_demo_file_path('iris.tsv')
 
-	fileset = Dataset.from_file(
+	fileset = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'tsv'
-		, name = 'tab-separated plants duplicated 10 times.'
 		, dtype = None
 	)
 	
@@ -272,64 +258,13 @@ def make_demo_batch_multiclass():
 		, size_validation = 0.14
 	)
 
-	encoder_features = StandardScaler()
-	encoder_labels = OneHotEncoder(sparse=False)
-
-	preprocess = splitset.make_preprocess(
-		description = "scaling features. ohe labels."
-		, encoder_features = encoder_features
-		, encoder_labels = encoder_labels
-	)
-
-	algorithm = Algorithm.make(
-		library = "keras"
-		, analysis_type = "classification_multi"
-		, function_model_build = multiclass_function_model_build
-		, function_model_train = multiclass_function_model_train
-	)
-
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
-
-	batch = algorithm.make_batch(
-		splitset_id = splitset.id
-		, foldset_id = None
-		, hyperparamset_id = hyperparamset.id
-		, preprocess_id  = preprocess.id
-	)
-	return batch
-
-
-# ------------------------ MULTICLASS_FOLDED ------------------------
-def make_demo_batch_multiclass_folded():
-	hyperparameters = {
-		"neuron_count": [9]
-		, "batch_size": [6]
-		, "learning_rate": [0.05]
-		, "epoch_count": [30, 45]
-	}
-
-	file_path = get_demo_file_path('iris_10x.tsv')
-
-	fileset = Dataset.Tabular.from_path(
-		file_path = file_path
-		, source_file_format = 'tsv'
-		, name = 'tab-separated plants duplicated 10 times.'
-		, dtype = None
-	)
-	
-	label_column = 'species'
-	label = fileset.make_label(columns=[label_column])
-
-	featureset = fileset.make_featureset(exclude_columns=[label_column])
-
-	splitset = featureset.make_splitset(
-		label_id = label.id
-		, size_test = 0.30
-	)
-
-	foldset = splitset.make_foldset(fold_count=5)
+	if fold_count is not None:
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
 
 	encoder_features = StandardScaler()
 	encoder_labels = OneHotEncoder(sparse=False)
@@ -353,9 +288,10 @@ def make_demo_batch_multiclass_folded():
 
 	batch = algorithm.make_batch(
 		splitset_id = splitset.id
-		, foldset_id = foldset.id
+		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, preprocess_id  = preprocess.id
+		, repeat_count = repeat_count
 	)
 	return batch
 
@@ -384,7 +320,7 @@ def binary_model_train(model, samples_train, samples_evaluate, **hyperparameters
 	return model
 
 
-def make_demo_batch_binary():
+def make_demo_batch_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
@@ -410,6 +346,14 @@ def make_demo_batch_binary():
 		, size_validation = 0.14
 	)
 
+	if fold_count is not None:
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+
 	encoder_features = StandardScaler()
 	encoder_labels = LabelBinarizer()
 
@@ -432,9 +376,10 @@ def make_demo_batch_binary():
 
 	batch = algorithm.make_batch(
 		splitset_id = splitset.id
-		, foldset_id = None
+		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, preprocess_id  = preprocess.id
+		, repeat_count = repeat_count
 	)
 	return batch
 
@@ -465,7 +410,7 @@ def regression_model_train(model, samples_train, samples_evaluate, **hyperparame
 	)
 	return model
 
-def make_demo_batch_regression():
+def make_demo_batch_regression(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -491,6 +436,14 @@ def make_demo_batch_regression():
 		, size_validation = 0.14
 		, bin_count = 3
 	)
+	if fold_count is not None:
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+			, bin_count = 3
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
 
 	encoder_features = None
 	encoder_labels = StandardScaler()
@@ -514,86 +467,21 @@ def make_demo_batch_regression():
 
 	batch = algorithm.make_batch(
 		splitset_id = splitset.id
-		, foldset_id = None
+		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, preprocess_id  = preprocess.id
+		, repeat_count = repeat_count
 	)
 	return batch
-
-
-# ------------------------ REGRESSION FOLDED ------------------------
-
-def make_demo_batch_regression_folded():
-	hyperparameters = {
-		"neuron_count": [24, 48]
-		, "epochs": [50, 75]
-	}
-
-	file_path = get_demo_file_path('houses.csv')
-
-	fileset = Dataset.Tabular.from_path(
-		file_path = file_path
-		, source_file_format = 'csv'
-		, name = 'real estate stats'
-		, dtype = None
-	)
-	
-	label_column = 'price'
-	label = fileset.make_label(columns=[label_column])
-
-	featureset = fileset.make_featureset(exclude_columns=[label_column])
-
-	splitset = featureset.make_splitset(
-		label_id = label.id
-		, size_test = 0.20
-		, bin_count = 3
-	)
-
-	foldset = splitset.make_foldset(
-		fold_count = 4
-		, bin_count = 3
-	)
-
-	encoder_features = None
-	encoder_labels = StandardScaler()
-
-	preprocess = splitset.make_preprocess(
-		encoder_features = encoder_features
-		, encoder_labels = encoder_labels
-	)
-
-	algorithm = Algorithm.make(
-		library = "keras"
-		, analysis_type = "regression"
-		, function_model_build = regression_model_build
-		, function_model_train = regression_model_train
-	)
-
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
-
-	batch = algorithm.make_batch(
-		splitset_id = splitset.id
-		, foldset_id = foldset
-		, hyperparamset_id = hyperparamset.id
-		, preprocess_id  = preprocess.id
-	)
-	return batch
-
 
 # ------------------------ DEMO BATCH CALLER ------------------------
-def make_demo_batch(name:str):
+def make_demo_batch(name:str, repeat_count:int=1, fold_count:int=None):
 	if (name == 'multiclass'):
-		batch = make_demo_batch_multiclass()
-	elif (name == 'multiclass_folded'):
-		batch = make_demo_batch_multiclass_folded()
+		batch = make_demo_batch_multiclass(repeat_count, fold_count)
 	elif (name == 'binary'):
-		batch = make_demo_batch_binary()
+		batch = make_demo_batch_binary(repeat_count, fold_count)
 	elif (name == 'regression'):
-		batch = make_demo_batch_regression()
-	elif (name == 'regression_folded'):
-		batch = make_demo_batch_regression_folded()
+		batch = make_demo_batch_regression(repeat_count, fold_count)
 	else:
 		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'examples.list_demo_batches()'.\n")
 	return batch

@@ -1957,6 +1957,7 @@ class Algorithm(BaseModel):
 	def make_batch(
 		id:int
 		, splitset_id:int
+		, repeat_count:int = 1
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, preprocess_id:int = None
@@ -1967,6 +1968,7 @@ class Algorithm(BaseModel):
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
 			, preprocess_id = preprocess_id
+			, repeat_count = repeat_count
 		)
 		return batch
 
@@ -2360,12 +2362,11 @@ class Plot:
 
 class Batch(BaseModel):
 	status = CharField()
-	job_count = IntegerField()
+	repeat_count = IntegerField()
+	run_count = IntegerField()
 
-	
 	algorithm = ForeignKeyField(Algorithm, backref='batches') 
 	splitset = ForeignKeyField(Splitset, backref='batches')
-	# repeat_count means you could make a whole batch from one alg w no params.
 
 	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
 	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
@@ -2378,6 +2379,7 @@ class Batch(BaseModel):
 	def from_algorithm(
 		algorithm_id:int
 		, splitset_id:int
+		, repeat_count:int = 1
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, preprocess_id:int = None
@@ -2418,26 +2420,29 @@ class Batch(BaseModel):
 			preprocess = None
 
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
-		job_count = len(combos) * len(folds)
+		run_count = len(combos) * len(folds) * repeat_count
 
 		b = Batch.create(
 			status = "Not yet started"
-			, job_count = job_count
+			, run_count = run_count
+			, repeat_count = repeat_count
 			, algorithm = algorithm
 			, splitset = splitset
 			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, preprocess = preprocess
 		)
-
-		for f in folds:
-			for c in combos:
+ 
+		for c in combos:
+			for f in folds:
 				Job.create(
 					status = "Not yet started"
 					, batch = b
 					, hyperparamcombo = c
 					, fold = f
+					, repeat_count = repeat_count
 				)
+
 		return b
 
 
@@ -2466,9 +2471,17 @@ class Batch(BaseModel):
 
 	def run_jobs(id:int, verbose:bool=False):
 		batch = Batch.get_by_id(id)
-		job_count = batch.job_count
+		foldset = batch.foldset
 		# For the sake of resumed Batches, we want succeeded Jobs to be fetched first so that the % done includes them.
 		jobs = Job.select().join(Batch).where(Batch.id == batch.id).order_by(Job.status.desc())
+		repeat_count = batch.repeat_count
+
+		repeated_jobs = []
+		for i in range(repeat_count):
+			for j in jobs:
+				# `repeat_index` will be used as an attribute of each Result.
+				job_dict = {"job":j, "repeat_index":i}
+				repeated_jobs.append(job_dict)
 
 		statuses = Batch.get_statuses(id=batch.id)
 		all_succeeded = all(i == "Succeeded" for i in statuses.values())
@@ -2480,7 +2493,7 @@ class Batch(BaseModel):
 		statuses = Batch.get_statuses(id)
 		all_not_started = (set(statuses.values()) == {'Not yet started'})
 		if (all_not_started):
-			Job.update(status="Queued").where(Job.batch == id).execute()
+			Job.update(status="Queued").where(Job.batch==id).execute()
 
 		proc_name = "aiqc_batch_" + str(batch.id)
 		proc_names = [p.name for p in multiprocessing.active_children()]
@@ -2491,13 +2504,34 @@ class Batch(BaseModel):
 			BaseModel._meta.database.close()
 			BaseModel._meta.database = get_db()
 			for j in tqdm(
-				jobs
+				repeated_jobs
 				, desc = "🔮 Training Models 🔮"
 				, ncols = 100
 			):
-				j.run(verbose=verbose)
+				job = j['job']
+				repeat_index = j['repeat_index']
+				job.run(verbose=verbose, repeat_index=repeat_index)
 
-			# Do I need to start making the Resultset here?
+			# Assign cross-folded Results to a Resultset.
+			if (foldset is not None):
+				hyperparamcombos = list(batch.hyperparamset.hyperparamcombos)
+				for combo in hyperparamcombos:
+					for i in range(repeat_count):
+						resultset = Resultset.create(
+							hyperparamcombo = combo
+							, batch = batch
+							, foldset = foldset
+							, repeat_index = i
+						)					
+						try:
+							# This is effectively a join between Result and (Batch, Hyperparamcombo, Foldset).
+							for j in jobs:
+								if (j.hyperparamcombo == combo):
+									r = j.results[i]
+									Result.update(resultset=resultset).where(Result.id==r.id).execute()
+						except:
+							resultset.delete_instance() # Orphaned.
+							raise
 
 		proc = multiprocessing.Process(
 			target = background_proc
@@ -2629,6 +2663,7 @@ class Job(BaseModel):
 	- Saves its Model to a Result.
 	"""
 	status = CharField()
+	repeat_count = IntegerField()
 	#log = CharField() #record failures
 
 	batch = ForeignKeyField(Batch, backref='jobs')
@@ -2637,6 +2672,11 @@ class Job(BaseModel):
 
 
 	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
+		"""
+		Future: if we run into many errors with users attempting cross-validation
+		with too few samples and metrics are failing... wrap them in `try` statements 
+		and return None for that failed metric. Then make the plots handle null conditions.
+		"""
 		if analysis_type == "classification_binary":
 			average = "binary"
 			roc_average = "micro"
@@ -2698,17 +2738,23 @@ class Job(BaseModel):
 		return split_plot_data
 
 
-	def run(id:int, verbose:bool=False):
+	def run(id:int, repeat_index:int, verbose:bool=False):
 		j = Job.get_by_id(id)
+
+		# With the addition of `repeat_count`, the incoming request is for a specific repeat of the Job.
+		matching_results = Result.select().join(Job).where(
+			Job.id==id, Result.repeat_index==repeat_index
+		)
+
 		if (j.status == "Succeeded"):
 			if verbose:
 				print(f"\nSkipping <Job.id{j.id}> as is has already succeeded.\n")
 			return j
-		elif (j.status == "Running"):
+		elif (len(matching_results) > 0):
 			if verbose:
-				print(f"\nSkipping <Job.id{j.id}> as it is already running.\n")
+				print(f"\nSkipping <repeat_index:{repeat_index}> of <Job.id:{j.id}> as it already has a Result.\n")
 			return j
-		else:
+		elif (len(matching_results) == 0):
 			if verbose:
 				print(f"\nJob #{j.id} starting...")
 			algorithm = j.batch.algorithm
@@ -2749,7 +2795,6 @@ class Job(BaseModel):
 				elif (fold is None):
 					samples['train'] = splitset.to_numpy(splits=['train'])['train']
 					key_train = "train"
-
 
 			# 2. Preprocess the features and labels.
 			# Preprocessing happens prior to training the model.
@@ -2842,19 +2887,30 @@ class Job(BaseModel):
 				, metrics = metrics
 				, plot_data = plot_data
 				, job = j
+				, repeat_index = repeat_index
+				, resultset = None #Assigned after jobs complete.
 			)
 
-			j.status = "Succeeded"
-			j.save()
+			# Check if all of the repeats are done.
+			job_results = len(list(j.results))
+			if (job_results == j.repeat_count):
+				Job.update(status="Succeeded").where(Job.id==j.id).execute()
 			return j
 
 
 
 
 class Resultset(BaseModel):
-	#>>> add other mean attributes
+	"""
+	- Used to group cross-fold results.
+	- Needs Batch because the same Foldset and Hyperparamcombo can be used 
+	  with different batches.
+	"""
+	repeat_index = IntegerField()
 
 	foldset = ForeignKeyField(Foldset, backref='resultsets')
+	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='resultsets')
+	batch = ForeignKeyField(Batch, backref='resultsets')
 
 
 
@@ -2864,11 +2920,12 @@ class Result(BaseModel):
 	- The classes of encoded labels are all based on train labels.
 	- Only Results part of a cross-fold validation have a Resultset.
 	"""
+	repeat_index = IntegerField()
 	model_file = BlobField()
 	history = JSONField()
 	predictions = PickleField()
 	metrics = PickleField()
-	plot_data = PickleField(null=True)
+	plot_data = PickleField(null=True) # Regression only uses history.
 	probabilities = PickleField(null=True) # Not used for regression.
 
 	job = ForeignKeyField(Job, backref='results')
@@ -3073,6 +3130,7 @@ class Experiment(BaseModel):
 	def from_algorithm(
 		algorithm_id:int
 		, datapipeline_id:int
+		, repeat_count:int = 1
 		, hyperparameters:dict = None
 		, description:str = None
 	):
@@ -3099,6 +3157,7 @@ class Experiment(BaseModel):
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
 			, preprocess_id = preprocess_id
+			, repeat_count = repeat_count
 		)
 
 		experiment = Experiment.create(
