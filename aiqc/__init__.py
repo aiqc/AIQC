@@ -2072,6 +2072,292 @@ class Hyperparamcombo(BaseModel):
 
 
 
+class Plot:
+	"""
+	Data is prepared in the Batch, Result, and Resultset classes
+	before being fed into the methods below.
+	"""
+	def performance(dataframe:object):
+		# The 2nd metric is the last 
+		name_metric_2 = dataframe.columns.tolist()[-1]
+		if (name_metric_2 == "accuracy"):
+			display_metric_2 = "Accuracy"
+		elif (name_metric_2 == "r2"):
+			display_metric_2 = "R²"
+		else:
+			raise ValueError(f"\nYikes - The name of the 2nd metric to plot was neither 'accuracy' nor 'r2'.\nYou provided: {name_metric_2}.\nThe 2nd metric is supposed to be the last column of the dataframe provided.")
+
+		fig = px.line(
+			dataframe
+			, title = '<i>Models Metrics by Split</i>'
+			, x = 'loss'
+			, y = name_metric_2
+			, color = 'job_id'
+			, height = 600
+			, hover_data = ['job_id', 'split', 'loss', name_metric_2]
+			, line_shape='spline'
+		)
+		fig.update_traces(
+			mode = 'markers+lines'
+			, line = dict(width = 2)
+			, marker = dict(
+				size = 8
+				, line = dict(
+					width = 2
+					, color = 'white'
+				)
+			)
+		)
+		fig.update_layout(
+			xaxis_title = "Loss"
+			, yaxis_title = display_metric_2
+			, font_family = "Avenir"
+			, font_color = "#FAFAFA"
+			, plot_bgcolor = "#181B1E"
+			, paper_bgcolor = "#181B1E"
+			, hoverlabel = dict(
+				bgcolor = "#0F0F0F"
+				, font_size = 15
+				, font_family = "Avenir"
+			)
+		)
+		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.show()
+
+
+	def learning_curve(dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
+		"""Dataframe rows are epochs and columns are metric names."""
+
+		# Spline seems to crash with too many points.
+		if (dataframe.shape[0] >= 400):
+			line_shape = 'linear'
+		elif (dataframe.shape[0] < 400):
+			line_shape = 'spline'
+
+		df_loss = dataframe[['loss','val_loss']]
+		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
+		df_loss = df_loss.round(3)
+
+		if loss_skip_15pct:
+			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
+
+		fig_loss = px.line(
+			df_loss
+			, title = '<i>Training History: Loss</i>'
+			, line_shape = line_shape
+		)
+		fig_loss.update_layout(
+			xaxis_title = "Epochs"
+			, yaxis_title = "Loss"
+			, legend_title = None
+			, font_family = "Avenir"
+			, font_color = "#FAFAFA"
+			, plot_bgcolor = "#181B1E"
+			, paper_bgcolor = "#181B1E"
+			, height = 400
+			, hoverlabel = dict(
+				bgcolor = "#0F0F0F"
+				, font_size = 15
+				, font_family = "Avenir"
+			)
+			, yaxis = dict(
+				side = "right"
+				, tickmode = 'auto'# When loss is initially high, the 0.1 tickmarks are overwhelming.
+				, tick0 = -1
+				, nticks = 9
+			)
+			, legend = dict(
+				orientation="h"
+				, yanchor="bottom"
+				, y=1.02
+				, xanchor="right"
+				, x=1
+			)
+			, margin = dict(
+				t = 5
+				, b = 0
+			),
+		)
+		fig_loss.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig_loss.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+
+		if ("classification" in analysis_type):
+			df_acc = dataframe[['accuracy', 'val_accuracy']]
+			df_acc = df_acc.rename(columns={"accuracy": "train_accuracy", "val_accuracy": "validation_accuracy"})
+			df_acc = df_acc.round(3)
+
+			fig_acc = px.line(
+			df_acc
+				, title = '<i>Training History: Accuracy</i>'
+				, line_shape = line_shape
+			)
+			fig_acc.update_layout(
+				xaxis_title = "epochs"
+				, yaxis_title = "accuracy"
+				, legend_title = None
+				, font_family = "Avenir"
+				, font_color = "#FAFAFA"
+				, plot_bgcolor = "#181B1E"
+				, paper_bgcolor = "#181B1E"
+				, height = 400
+				, hoverlabel = dict(
+					bgcolor = "#0F0F0F"
+					, font_size = 15
+					, font_family = "Avenir"
+				)
+				, yaxis = dict(
+				side = "right"
+				, tickmode = 'linear'
+				, tick0 = 0.0
+				, dtick = 0.05
+				)
+				, legend = dict(
+					orientation="h"
+					, yanchor="bottom"
+					, y=1.02
+					, xanchor="right"
+					, x=1
+				)
+				, margin = dict(
+					t = 5
+				),
+			)
+			fig_acc.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+			fig_acc.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+			fig_acc.show()
+		fig_loss.show()
+
+
+	def confusion_matrix(cm_by_split):
+		for split, cm in cm_by_split.items():
+			fig = px.imshow(
+				cm
+				, color_continuous_scale = px.colors.sequential.BuGn
+				, labels=dict(x="Predicted Label", y="Actual Label")
+			)
+			fig.update_layout(
+				title = "<i>Confusion Matrix: " + split + "</i>"
+				, xaxis_title = "Predicted Label"
+				, yaxis_title = "Actual Label"
+				, legend_title = 'Sample Count'
+				, font_family = "Avenir"
+				, font_color = "#FAFAFA"
+				, plot_bgcolor = "#181B1E"
+				, paper_bgcolor = "#181B1E"
+				, height = 225 # if too small, it won't render in Jupyter.
+				, hoverlabel = dict(
+					bgcolor = "#0F0F0F"
+					, font_size = 15
+					, font_family = "Avenir"
+				)
+				, yaxis = dict(
+					tickmode = 'linear'
+					, tick0 = 0.0
+					, dtick = 1.0
+				)
+				, margin = dict(
+					b = 0
+					, t = 75
+				)
+			)
+			fig.show()
+
+
+	def precision_recall(dataframe:object):
+		fig = px.line(
+			dataframe
+			, x = 'recall'
+			, y = 'precision'
+			, color = 'split'
+			, title = '<i>Precision-Recall Curves</i>'
+		)
+		fig.update_layout(
+			legend_title = None
+			, font_family = "Avenir"
+			, font_color = "#FAFAFA"
+			, plot_bgcolor = "#181B1E"
+			, paper_bgcolor = "#181B1E"
+			, height = 500
+			, hoverlabel = dict(
+				bgcolor = "#0F0F0F"
+				, font_size = 15
+				, font_family = "Avenir"
+			)
+			, yaxis = dict(
+				side = "right"
+				, tickmode = 'linear'
+				, tick0 = 0.0
+				, dtick = 0.05
+			)
+			, legend = dict(
+				orientation="h"
+				, yanchor="bottom"
+				, y=1.02
+				, xanchor="right"
+				, x=1
+			)
+		)
+		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.show()
+
+
+	def roc_curve(dataframe:object):
+		fig = px.line(
+			dataframe
+			, x = 'fpr'
+			, y = 'tpr'
+			, color = 'split'
+			, title = '<i>Receiver Operating Characteristic (ROC) Curves</i>'
+			#, line_shape = 'spline'
+		)
+		fig.update_layout(
+			legend_title = None
+			, font_family = "Avenir"
+			, font_color = "#FAFAFA"
+			, plot_bgcolor = "#181B1E"
+			, paper_bgcolor = "#181B1E"
+			, height = 500
+			, hoverlabel = dict(
+				bgcolor = "#0F0F0F"
+				, font_size = 15
+				, font_family = "Avenir"
+			)
+			, xaxis = dict(
+				title = "False Positive Rate (FPR)"
+				, tick0 = 0.00
+				, range = [-0.025,1]
+			)
+			, yaxis = dict(
+				title = "True Positive Rate (TPR)"
+				, side = "left"
+				, tickmode = 'linear'
+				, tick0 = 0.00
+				, dtick = 0.05
+				, range = [0,1.05]
+			)
+			, legend = dict(
+				orientation="h"
+				, yanchor="bottom"
+				, y=1.02
+				, xanchor="right"
+				, x=1
+			)
+			, shapes=[
+				dict(
+					type = 'line'
+					, y0=0, y1=1
+					, x0=0, x1=1
+					, line = dict(dash='dot', width=2, color='#3b4043')
+			)]
+		)
+		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.show()
+
+
+
 class Batch(BaseModel):
 	status = CharField()
 	job_count = IntegerField()
@@ -2221,8 +2507,6 @@ class Batch(BaseModel):
 		proc.start()
 
 
-
-
 	def stop_jobs(id:int):
 		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
 		batch = Batch.get_by_id(id)
@@ -2285,80 +2569,56 @@ class Batch(BaseModel):
 			return df.style.hide_index()
 
 
-	def plot_performance(id:int, max_loss:float, min_acc:float=None, min_r2:float=None):
+	def plot_performance(
+		id:int
+		, max_loss:float=None
+		, min_accuracy:float=None
+		, min_r2:float=None
+	):
+		"""
+		Originally I had `min_metric_2` not `min_accuracy` and `min_r2`,
+		but that would be confusing for users, so I went with informative 
+		erro messages instead.
+		"""
 		batch = Batch.get_by_id(id)
 		analysis_type = batch.algorithm.analysis_type
 
 		# Now we need to filter the df based on the specified criteria.
-		if ('classification' in analysis_type):
+		if ("classification" in analysis_type):
 			if (min_r2 is not None):
 				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in batch.analysis_type`.\n")
-			if (min_acc is None):
-				raise ValueError("\nYikes - Must set argument `min_acc` if `'classification' in batch.analysis_type`.\n")
-			min_metric_2 = min_acc
-			metric_2 = "accuracy"
-			metric_2_display = "Accuracy"
+			if (min_accuracy is None):
+				min_accuracy = 0.0
+			min_metric_2 = min_accuracy
+			name_metric_2 = "accuracy"
 		elif (analysis_type == 'regression'):
-			if (min_acc is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_acc` if `batch.analysis_type='regression'`.\n")
+			if (min_accuracy is not None):
+				raise ValueError("\nYikes - Cannot use argument `min_accuracy` if `batch.analysis_type='regression'`.\n")
 			if (min_r2 is None):
-				raise ValueError("\nYikes - Must set argument `min_r2` if `batch.analysis_type='regression'`.\n")
+				min_r2 = -1.0
 			min_metric_2 = min_r2
-			metric_2 = "r2"
-			metric_2_display = "R²"
+			name_metric_2 = "r2"
+
+		if (max_loss is None):
+			max_loss = float('inf')
 			
 		df = batch.metrics_to_pandas(internal_call=True)
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
 			return None
-		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, metric_2, min_metric_2)
+		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, name_metric_2, min_metric_2)
 		failed = df.query(qry_str)
 		failed_jobs = failed['job_id'].to_list()
 		failed_jobs_unique = list(set(failed_jobs))
 		# Here the `~` inverts it to mean `.isNotIn()`
 		df_passed = df[~df['job_id'].isin(failed_jobs_unique)]
 		df_passed = df_passed.round(3)
+		dataframe = df_passed[['job_id', 'split', 'loss', name_metric_2]]
 
-		if df_passed.empty:
-			print("There are no models that met the criteria specified.")
+		if dataframe.empty:
+			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			fig = px.line(
-				df_passed
-				, title = '<i>Models Metrics by Split</i>'
-				, x = 'loss'
-				, y = metric_2
-				, color = 'job_id'
-				, height = 600
-				, hover_data = ['job_id', 'split', 'loss', metric_2]
-				, line_shape='spline'
-			)
-			fig.update_traces(
-				mode = 'markers+lines'
-				, line = dict(width = 2)
-				, marker = dict(
-					size = 8
-					, line = dict(
-						width = 2
-						, color = 'white'
-					)
-				)
-			)
-			fig.update_layout(
-				xaxis_title = "Loss"
-				, yaxis_title = metric_2_display
-				, font_family = "Avenir"
-				, font_color = "#FAFAFA"
-				, plot_bgcolor = "#181B1E"
-				, paper_bgcolor = "#181B1E"
-				, hoverlabel = dict(
-					bgcolor = "#0F0F0F"
-					, font_size = 15
-					, font_family = "Avenir"
-				)
-			)
-			fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-			fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-			fig.show()
+			Plot.performance(dataframe=dataframe)
 
 
 
@@ -2591,113 +2851,6 @@ class Job(BaseModel):
 
 
 
-class Plot:
-	"""Used by Result and Resultset."""
-	def learning_curve(dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
-		"""Dataframe rows are epochs and columns are metric names."""
-
-		# Spline seems to crash with too many points.
-		if (dataframe.shape[0] >= 400):
-			line_shape = 'linear'
-		elif (dataframe.shape[0] < 400):
-			line_shape = 'spline'
-
-		df_loss = dataframe[['loss','val_loss']]
-		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
-		df_loss = df_loss.round(3)
-
-		if loss_skip_15pct:
-			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
-
-		fig_loss = px.line(
-			df_loss
-			, title = '<i>Training History: Loss</i>'
-			, line_shape = line_shape
-		)
-		fig_loss.update_layout(
-			xaxis_title = "Epochs"
-			, yaxis_title = "Loss"
-			, legend_title = None
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
-			, height = 400
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
-			, yaxis = dict(
-				side = "right"
-				, tickmode = 'auto'# When loss is initially high, the 0.1 tickmarks are overwhelming.
-				, tick0 = -1
-				, nticks = 9
-			)
-			, legend = dict(
-				orientation="h"
-				, yanchor="bottom"
-				, y=1.02
-				, xanchor="right"
-				, x=1
-			)
-			, margin = dict(
-				t = 5
-				, b = 0
-			),
-		)
-		fig_loss.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig_loss.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-
-		if (analysis_type == "classification_multi") or (analysis_type == "classification_binary"):
-			df_acc = dataframe[['accuracy', 'val_accuracy']]
-			df_acc = df_acc.rename(columns={"accuracy": "train_accuracy", "val_accuracy": "validation_accuracy"})
-			df_acc = df_acc.round(3)
-
-			fig_acc = px.line(
-			df_acc
-				, title = '<i>Training History: Accuracy</i>'
-				, line_shape = line_shape
-			)
-			fig_acc.update_layout(
-				xaxis_title = "epochs"
-				, yaxis_title = "accuracy"
-				, legend_title = None
-				, font_family = "Avenir"
-				, font_color = "#FAFAFA"
-				, plot_bgcolor = "#181B1E"
-				, paper_bgcolor = "#181B1E"
-				, height = 400
-				, hoverlabel = dict(
-					bgcolor = "#0F0F0F"
-					, font_size = 15
-					, font_family = "Avenir"
-				)
-				, yaxis = dict(
-				side = "right"
-				, tickmode = 'linear'
-				, tick0 = 0.0
-				, dtick = 0.05
-				)
-				, legend = dict(
-					orientation="h"
-					, yanchor="bottom"
-					, y=1.02
-					, xanchor="right"
-					, x=1
-				)
-				, margin = dict(
-					t = 5
-				),
-			)
-			fig_acc.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-			fig_acc.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-			fig_acc.show()
-		fig_loss.show()
-
-
-
-
 class Resultset(BaseModel):
 	#>>> add other mean attributes
 
@@ -2754,44 +2907,13 @@ class Result(BaseModel):
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
-		
-
+		# The confusion matrices are already provided in `plot_data`.
 		cm_by_split = {}
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
 		
-		for split, cm in cm_by_split.items():
-			fig = px.imshow(
-				cm
-				, color_continuous_scale = px.colors.sequential.BuGn
-				, labels=dict(x="Predicted Label", y="Actual Label")
-			)
-			fig.update_layout(
-				title = "<i>Confusion Matrix: " + split + "</i>"
-				, xaxis_title = "Predicted Label"
-				, yaxis_title = "Actual Label"
-				, legend_title = 'Sample Count'
-				, font_family = "Avenir"
-				, font_color = "#FAFAFA"
-				, plot_bgcolor = "#181B1E"
-				, paper_bgcolor = "#181B1E"
-				, height = 225 # if too small, it won't render in Jupyter.
-				, hoverlabel = dict(
-					bgcolor = "#0F0F0F"
-					, font_size = 15
-					, font_family = "Avenir"
-				)
-				, yaxis = dict(
-					tickmode = 'linear'
-					, tick0 = 0.0
-					, dtick = 1.0
-				)
-				, margin = dict(
-					b = 0
-					, t = 75
-				)
-			)
-			fig.show()
+		Plot.confusion_matrix(cm_by_split=cm_by_split)
+		
 
 
 	def plot_precision_recall(id:int):
@@ -2813,45 +2935,10 @@ class Result(BaseModel):
 			df['recall'] = pd.Series(pr_by_split[split]['recall'])
 			df['split'] = split
 			dfs.append(df)
-		dfs = pd.concat(dfs, ignore_index=True)
-		dfs = dfs.round(3)
+		dataframe = pd.concat(dfs, ignore_index=True)
+		dataframe = dataframe.round(3)
 
-		fig = px.line(
-			dfs
-			, x = 'recall'
-			, y = 'precision'
-			, color = 'split'
-			, title = '<i>Precision-Recall Curves</i>'
-		)
-		fig.update_layout(
-			legend_title = None
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
-			, height = 500
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
-			, yaxis = dict(
-				side = "right"
-				, tickmode = 'linear'
-				, tick0 = 0.0
-				, dtick = 0.05
-			)
-			, legend = dict(
-				orientation="h"
-				, yanchor="bottom"
-				, y=1.02
-				, xanchor="right"
-				, x=1
-			)
-		)
-		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.show()
+		Plot.precision_recall(dataframe=dataframe)
 
 
 	def plot_roc_curve(id:int):
@@ -2874,62 +2961,10 @@ class Result(BaseModel):
 			df['split'] = split
 			dfs.append(df)
 
-		dfs = pd.concat(dfs, ignore_index=True)
-		dfs = dfs.round(3)
+		dataframe = pd.concat(dfs, ignore_index=True)
+		dataframe = dataframe.round(3)
 
-		fig = px.line(
-			dfs
-			, x = 'fpr'
-			, y = 'tpr'
-			, color = 'split'
-			, title = '<i>Receiver Operating Characteristic (ROC) Curves</i>'
-			#, line_shape = 'spline'
-		)
-		fig.update_layout(
-			legend_title = None
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
-			, height = 500
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
-			, xaxis = dict(
-				title = "False Positive Rate (FPR)"
-				, tick0 = 0.00
-				, range = [-0.025,1]
-			)
-			, yaxis = dict(
-				title = "True Positive Rate (TPR)"
-				, side = "left"
-				, tickmode = 'linear'
-				, tick0 = 0.00
-				, dtick = 0.05
-				, range = [0,1.05]
-			)
-			, legend = dict(
-				orientation="h"
-				, yanchor="bottom"
-				, y=1.02
-				, xanchor="right"
-				, x=1
-			)
-			, shapes=[
-				dict(
-					type = 'line'
-					, y0=0, y1=1
-					, x0=0, x1=1
-					, line = dict(dash='dot', width=2, color='#3b4043')
-			)]
-		)
-		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.show()
-
-
+		Plot.roc_curve(dataframe=dataframe)
 
 
 """
