@@ -252,10 +252,17 @@ def make_demo_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 
 	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.18
+		size_validation = 0.14
+
 	splitset = featureset.make_splitset(
 		label_id = label.id
-		, size_test = 0.18
-		, size_validation = 0.14
+		, size_test = size_test
+		, size_validation = size_validation
 	)
 
 	if fold_count is not None:
@@ -340,13 +347,20 @@ def make_demo_batch_binary(repeat_count:int=1, fold_count:int=None):
 
 	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.18
+		size_validation = 0.14
+
 	splitset = featureset.make_splitset(
 		label_id = label.id
-		, size_test = 0.18
-		, size_validation = 0.14
+		, size_test = size_test
+		, size_validation = size_validation
 	)
 
-	if fold_count is not None:
+	if (fold_count is not None):
 		foldset = splitset.make_foldset(
 			fold_count = fold_count
 		)
@@ -430,12 +444,20 @@ def make_demo_batch_regression(repeat_count:int=1, fold_count:int=None):
 
 	featureset = fileset.make_featureset(exclude_columns=[label_column])
 
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.18
+		size_validation = 0.14
+
 	splitset = featureset.make_splitset(
 		label_id = label.id
-		, size_test = 0.18
-		, size_validation = 0.14
+		, size_test = size_test
+		, size_validation = size_validation
 		, bin_count = 3
 	)
+
 	if fold_count is not None:
 		foldset = splitset.make_foldset(
 			fold_count = fold_count

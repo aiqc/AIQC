@@ -2094,9 +2094,9 @@ class Plot:
 			, title = '<i>Models Metrics by Split</i>'
 			, x = 'loss'
 			, y = name_metric_2
-			, color = 'job_id'
+			, color = 'result_id'
 			, height = 600
-			, hover_data = ['job_id', 'split', 'loss', name_metric_2]
+			, hover_data = ['result_id', 'split', 'loss', name_metric_2]
 			, line_shape='spline'
 		)
 		fig.update_traces(
@@ -2561,46 +2561,61 @@ class Batch(BaseModel):
 					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from Batch <id:{batch.id}>\n")
 
 
-	def metrics_to_pandas(id:int, internal_call=False):
+	def metrics_to_pandas(id:int):
 		batch = Batch.get_by_id(id)
-		jobs = list(batch.jobs)
 
-		# Only return the completed Jobs.
-		results_grouped_by_job = {}
-		for j in jobs:
-			if j.status == 'Succeeded':
-				results_grouped_by_job[j.id] = j.results[0].metrics
-		# If none of the Jobs have finised.
-		if (not results_grouped_by_job):
+		batch_results = Result.select().join(Job).where(
+			Job.batch==id
+		).order_by(Result.id)
+		batch_results = list(batch_results)
+
+		if (not batch_results):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
-		# The metrics of each split are grouped under the job id.
-		# Here we break them out so that each split is labeled with its own job id.
-		job_metrics = []
-		for k,v in results_grouped_by_job.items():
-			job_id = k
-			metrics_by_split = v
 
-			for k,v in metrics_by_split.items():
-				split = k
+		# Unpack the split data from each Result and tag it with relevant Batch metadata.
+		split_metrics = []
+		for r in batch_results:
+			for k,v in r.metrics.items():
+				split_name = k
 				metrics = v
 
-				split_metrics = {}
-				split_metrics['job_id'] = job_id
-				split_metrics['split'] = split
+				split_metric = {}
+				split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+				if (r.resultset is not None):
+					split_metric['fold_index'] = r.job.fold.fold_index
+					if (r.job.repeat_count > 1):
+						split_metric['repeat_index'] = r.resultset.repeat_index
+
+				elif (r.resultset is None):
+					split_metric['job_id'] = r.job.id
+					if (r.job.repeat_count > 1):
+						split_metric['repeat_index'] = r.repeat_index
+
+				split_metric['result_id'] = r.id
+				split_metric['split'] = split_name
 
 				for k,v in metrics.items():
-					metric = k
-					value = v
-					split_metrics[metric] = value
+					metric_name = k
+					metric_value = v
+					split_metric[metric_name] = metric_value
 
-				job_metrics.append(split_metrics)
+				split_metrics.append(split_metric)
 
-		df = pd.DataFrame.from_records(job_metrics)
-		if internal_call:
-			return df
-		else:
-			return df.style.hide_index()
+		# Return relevant columns based on how the Batch was designed.
+		if (r.resultset is not None):
+			if (r.job.repeat_count > 1):
+				sort_list = ['hyperparamcombo_id','repeat_index','fold_index']
+			elif (r.job.repeat_count == 1):
+				sort_list = ['hyperparamcombo_id','fold_index']
+		elif (r.resultset is None):
+			if (r.job.repeat_count > 1):
+				sort_list = ['hyperparamcombo_id','job_id','repeat_index']
+			elif (r.job.repeat_count == 1):
+				sort_list = ['hyperparamcombo_id','job_id']
+
+		df = pd.DataFrame.from_records(split_metrics).sort_values(by=sort_list)
+		return df
 
 
 	def plot_performance(
@@ -2636,18 +2651,18 @@ class Batch(BaseModel):
 		if (max_loss is None):
 			max_loss = float('inf')
 			
-		df = batch.metrics_to_pandas(internal_call=True)
+		df = batch.metrics_to_pandas()
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
 			return None
 		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, name_metric_2, min_metric_2)
 		failed = df.query(qry_str)
-		failed_jobs = failed['job_id'].to_list()
-		failed_jobs_unique = list(set(failed_jobs))
+		failed_runs = failed['result_id'].to_list()
+		failed_runs_unique = list(set(failed_runs))
 		# Here the `~` inverts it to mean `.isNotIn()`
-		df_passed = df[~df['job_id'].isin(failed_jobs_unique)]
+		df_passed = df[~df['result_id'].isin(failed_runs_unique)]
 		df_passed = df_passed.round(3)
-		dataframe = df_passed[['job_id', 'split', 'loss', name_metric_2]]
+		dataframe = df_passed[['result_id', 'split', 'loss', name_metric_2]]
 
 		if dataframe.empty:
 			print("Yikes - There are no models that met the criteria specified.")
