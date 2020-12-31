@@ -1,4 +1,4 @@
-import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py
+import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
 
@@ -2576,9 +2576,7 @@ class Batch(BaseModel):
 		# Unpack the split data from each Result and tag it with relevant Batch metadata.
 		split_metrics = []
 		for r in batch_results:
-			for k,v in r.metrics.items():
-				split_name = k
-				metrics = v
+			for split_name,metrics in r.metrics.items():
 
 				split_metric = {}
 				split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
@@ -2595,9 +2593,7 @@ class Batch(BaseModel):
 				split_metric['result_id'] = r.id
 				split_metric['split'] = split_name
 
-				for k,v in metrics.items():
-					metric_name = k
-					metric_value = v
+				for metric_name,metric_value in metrics.items():
 					split_metric[metric_name] = metric_value
 
 				split_metrics.append(split_metric)
@@ -2615,6 +2611,56 @@ class Batch(BaseModel):
 				sort_list = ['hyperparamcombo_id','job_id']
 
 		df = pd.DataFrame.from_records(split_metrics).sort_values(by=sort_list)
+		return df
+
+
+	def metrics_aggregate_to_pandas(id:int, selected_metrics:list=None, selected_stats:list=None):
+		batch = Batch.get_by_id(id)
+
+		batch_results = Result.select().join(Job).where(
+			Job.batch==id
+		).order_by(Result.id)
+		batch_results = list(batch_results)
+
+		metrics_aggregate = batch_results[0].metrics_aggregate
+		metric_names = list(metrics_aggregate.keys())
+		stat_names = list(list(metrics_aggregate.values())[0].keys())
+
+		if (selected_metrics is not None):
+			for m in selected_metrics:
+				if m not in metric_names:
+					raise ValueError(f"\nYikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.\nNote: the metrics available depend on the `Batch.analysis_type`.")
+
+		if (selected_stats is not None):
+			for s in selected_stats:
+				if s not in stat_names:
+					raise ValueError(f"\nYikes - The statistic '{s}' does not exist in `Result.metrics_aggregate`.\n")
+		elif (selected_stats is None):
+			selected_stats = stat_names
+
+		results_stats = []
+		for r in batch_results:
+			for metric, stats in r.metrics_aggregate.items():
+				# Check whitelist.
+				for stat in stats.keys():
+					if stat not in selected_stats:
+						stats.pop(stat)# Errors if not found.
+				stats['metric'] = metric
+				stats['result_id'] = r.id
+				if (r.job.repeat_count > 1):
+					stats['repeat_index'] = r.repeat_index
+				if (r.job.fold is not None):
+					stats['fold_index'] = r.fold.fold_index
+				else:
+					stats['job_id'] = r.job.id
+				stats['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+
+				results_stats.append(stats)
+
+		#Reverse the order of the dictionary keys.
+		results_stats = [dict(reversed(list(d.items()))) for d in results_stats]
+
+		df = pd.DataFrame.from_records(results_stats)#.sort_values(by=sort_list)
 		return df
 
 
@@ -2893,6 +2939,25 @@ class Job(BaseModel):
 			# Alphabetize metrics dictionary by key.
 			for k,v in metrics.items():
 				metrics[k] = dict(natsorted(v.items()))
+			# Aggregate metrics across splits (e.g. mean, stdev).
+			metric_names = list(list(metrics.values())[0].keys())
+			metrics_aggregate = {}
+			for metric in metric_names:
+				split_values = []
+				for split, split_metrics in metrics.items():
+					value = split_metrics[metric]
+					split_values.append(value)
+
+				mean = statistics.mean(split_values)
+				median = statistics.median(split_values)
+				stdev = statistics.stdev(split_values)
+				minimum = min(split_values)
+				maximum = max(split_values)
+
+				metrics_aggregate[metric] = {
+					"mean":mean, "median":median, "stdev":stdev, 
+					"minimum":minimum, "maximum":maximum 
+				}
 
 			r = Result.create(
 				model_file = model_bytes
@@ -2900,6 +2965,7 @@ class Job(BaseModel):
 				, predictions = predictions
 				, probabilities = probabilities
 				, metrics = metrics
+				, metrics_aggregate = metrics_aggregate
 				, plot_data = plot_data
 				, job = j
 				, repeat_index = repeat_index
@@ -2940,6 +3006,7 @@ class Result(BaseModel):
 	history = JSONField()
 	predictions = PickleField()
 	metrics = PickleField()
+	metrics_aggregate = PickleField()
 	plot_data = PickleField(null=True) # Regression only uses history.
 	probabilities = PickleField(null=True) # Not used for regression.
 
