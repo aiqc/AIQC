@@ -298,7 +298,7 @@ def create_db():
 			Label, Featureset, 
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Batch, Job, Result, Resultset,
+			Batch, Jobset, Job, Result,
 			Experiment, DataPipeline,
 		])
 		tables = db.get_tables()
@@ -2076,7 +2076,7 @@ class Hyperparamcombo(BaseModel):
 
 class Plot:
 	"""
-	Data is prepared in the Batch, Result, and Resultset classes
+	Data is prepared in the Batch and Result classes
 	before being fed into the methods below.
 	"""
 	def performance(dataframe:object):
@@ -2434,15 +2434,30 @@ class Batch(BaseModel):
 		)
  
 		for c in combos:
-			for f in folds:
-				Job.create(
-					status = "Not yet started"
+			if (foldset is not None):
+				jobset = Jobset.create(
+					repeat_count = repeat_count
 					, batch = b
 					, hyperparamcombo = c
-					, fold = f
-					, repeat_count = repeat_count
+					, foldset = foldset
 				)
+			elif (foldset is None):
+				jobset = None
 
+			try:
+				for f in folds:
+					Job.create(
+						status = "Not yet started"
+						, batch = b
+						, hyperparamcombo = c
+						, fold = f
+						, repeat_count = repeat_count
+						, jobset = jobset
+					)
+			except:
+				if (foldset is not None):
+					jobset.delete_instance() # Orphaned.
+					raise
 		return b
 
 
@@ -2512,27 +2527,6 @@ class Batch(BaseModel):
 				repeat_index = j['repeat_index']
 				job.run(verbose=verbose, repeat_index=repeat_index)
 
-			# Assign cross-folded Results to a Resultset.
-			if (foldset is not None):
-				hyperparamcombos = list(batch.hyperparamset.hyperparamcombos)
-				for combo in hyperparamcombos:
-					for i in range(repeat_count):
-						resultset = Resultset.create(
-							hyperparamcombo = combo
-							, batch = batch
-							, foldset = foldset
-							, repeat_index = i
-						)					
-						try:
-							# This is effectively a join between Result and (Batch, Hyperparamcombo, Foldset).
-							for j in jobs:
-								if (j.hyperparamcombo == combo):
-									r = j.results[i]
-									Result.update(resultset=resultset).where(Result.id==r.id).execute()
-						except:
-							resultset.delete_instance() # Orphaned.
-							raise
-
 		proc = multiprocessing.Process(
 			target = background_proc
 			, name = proc_name
@@ -2580,15 +2574,12 @@ class Batch(BaseModel):
 
 				split_metric = {}
 				split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
-				if (r.resultset is not None):
+				if (batch.foldset is not None):
+					split_metric['jobset_id'] = r.job.jobset.id
 					split_metric['fold_index'] = r.job.fold.fold_index
-					if (r.job.repeat_count > 1):
-						split_metric['repeat_index'] = r.resultset.repeat_index
-
-				elif (r.resultset is None):
-					split_metric['job_id'] = r.job.id
-					if (r.job.repeat_count > 1):
-						split_metric['repeat_index'] = r.repeat_index
+				split_metric['job_id'] = r.job.id
+				if (r.job.repeat_count > 1):
+					split_metric['repeat_index'] = r.repeat_index
 
 				split_metric['result_id'] = r.id
 				split_metric['split'] = split_name
@@ -2599,15 +2590,15 @@ class Batch(BaseModel):
 				split_metrics.append(split_metric)
 
 		# Return relevant columns based on how the Batch was designed.
-		if (r.resultset is not None):
-			if (r.job.repeat_count > 1):
-				sort_list = ['hyperparamcombo_id','repeat_index','fold_index']
-			elif (r.job.repeat_count == 1):
-				sort_list = ['hyperparamcombo_id','fold_index']
-		elif (r.resultset is None):
-			if (r.job.repeat_count > 1):
+		if (batch.foldset is not None):
+			if (batch.repeat_count > 1):
+				sort_list = ['hyperparamcombo_id','jobset_id','repeat_index','fold_index']
+			elif (batch.repeat_count == 1):
+				sort_list = ['hyperparamcombo_id','jobset_id','fold_index']
+		elif (batch.foldset is None):
+			if (batch.repeat_count > 1):
 				sort_list = ['hyperparamcombo_id','job_id','repeat_index']
-			elif (r.job.repeat_count == 1):
+			elif (batch.repeat_count == 1):
 				sort_list = ['hyperparamcombo_id','job_id']
 
 		df = pd.DataFrame.from_records(split_metrics).sort_values(by=sort_list)
@@ -2627,6 +2618,10 @@ class Batch(BaseModel):
 		).order_by(Result.id)
 		batch_results = list(batch_results)
 
+		if (not batch_results):
+			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
+			return None
+
 		metrics_aggregate = batch_results[0].metrics_aggregate
 		metric_names = list(metrics_aggregate.keys())
 		stat_names = list(list(metrics_aggregate.values())[0].keys())
@@ -2635,6 +2630,8 @@ class Batch(BaseModel):
 			for m in selected_metrics:
 				if m not in metric_names:
 					raise ValueError(f"\nYikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.\nNote: the metrics available depend on the `Batch.analysis_type`.")
+		elif (selected_metrics is None):
+			selected_metrics = metric_names
 
 		if (selected_stats is not None):
 			for s in selected_stats:
@@ -2653,7 +2650,8 @@ class Batch(BaseModel):
 					if (r.job.repeat_count > 1):
 						stats['repeat_index'] = r.repeat_index
 					if (r.job.fold is not None):
-						stats['fold_index'] = r.fold.fold_index
+						stats['jobset_id'] = r.job.jobset.id
+						stats['fold_index'] = r.job.fold.fold_index
 					else:
 						stats['job_id'] = r.job.id
 					stats['hyperparamcombo_id'] = r.job.hyperparamcombo.id
@@ -2732,6 +2730,20 @@ class Batch(BaseModel):
 
 
 
+class Jobset(BaseModel):
+	"""
+	- Used to group cross-fold Jobs.
+	- Union of Hyperparamcombo, Foldset, and Batch.
+	"""
+	repeat_count = IntegerField
+
+	foldset = ForeignKeyField(Foldset, backref='jobsets')
+	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='jobsets')
+	batch = ForeignKeyField(Batch, backref='jobsets')
+
+
+
+
 class Job(BaseModel):
 	"""
 	- Gets its Algorithm through the Batch.
@@ -2744,6 +2756,7 @@ class Job(BaseModel):
 	batch = ForeignKeyField(Batch, backref='jobs')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	fold = ForeignKeyField(Fold, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
+	jobset = ForeignKeyField(Jobset, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 
 
 	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
@@ -2953,7 +2966,7 @@ class Job(BaseModel):
 			# Alphabetize metrics dictionary by key.
 			for k,v in metrics.items():
 				metrics[k] = dict(natsorted(v.items()))
-			# Aggregate metrics across splits (e.g. mean, stdev).
+			# Aggregate metrics across splits (e.g. mean, pstdev).
 			metric_names = list(list(metrics.values())[0].keys())
 			metrics_aggregate = {}
 			for metric in metric_names:
@@ -2969,7 +2982,7 @@ class Job(BaseModel):
 				maximum = max(split_values)
 
 				metrics_aggregate[metric] = {
-					"mean":mean, "median":median, "stdev":stdev, 
+					"mean":mean, "median":median, "pstdev":pstdev, 
 					"minimum":minimum, "maximum":maximum 
 				}
 
@@ -2983,7 +2996,6 @@ class Job(BaseModel):
 				, plot_data = plot_data
 				, job = j
 				, repeat_index = repeat_index
-				, resultset = None #Assigned after jobs complete.
 			)
 
 			# Check if all of the repeats are done.
@@ -2995,25 +3007,9 @@ class Job(BaseModel):
 
 
 
-class Resultset(BaseModel):
-	"""
-	- Used to group cross-fold results.
-	- Needs Batch because the same Foldset and Hyperparamcombo can be used 
-	  with different batches.
-	"""
-	repeat_index = IntegerField()
-
-	foldset = ForeignKeyField(Foldset, backref='resultsets')
-	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='resultsets')
-	batch = ForeignKeyField(Batch, backref='resultsets')
-
-
-
-
 class Result(BaseModel):
 	"""
-	- The classes of encoded labels are all based on train labels.
-	- Only Results part of a cross-fold validation have a Resultset.
+	- Regarding metrics, the label encoder was fit on training split labels.
 	"""
 	repeat_index = IntegerField()
 	model_file = BlobField()
@@ -3025,7 +3021,6 @@ class Result(BaseModel):
 	probabilities = PickleField(null=True) # Not used for regression.
 
 	job = ForeignKeyField(Job, backref='results')
-	resultset = ForeignKeyField(Resultset, deferrable='INITIALLY DEFERRED', null=True, backref='results')
 
 
 	def get_model(id:int):
