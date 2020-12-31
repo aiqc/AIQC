@@ -2614,7 +2614,12 @@ class Batch(BaseModel):
 		return df
 
 
-	def metrics_aggregate_to_pandas(id:int, selected_metrics:list=None, selected_stats:list=None):
+	def metrics_aggregate_to_pandas(
+		id:int
+		, selected_metrics:list=None
+		, selected_stats:list=None
+		, descend_by:list=None
+	):
 		batch = Batch.get_by_id(id)
 
 		batch_results = Result.select().join(Job).where(
@@ -2664,8 +2669,12 @@ class Batch(BaseModel):
 		results_stats = [dict(reversed(list(d.items()))) for d in results_stats]
 
 
-
-		df = pd.DataFrame.from_records(results_stats)#.sort_values(by=sort_list)
+		if (descend_by is not None):
+			df = pd.DataFrame.from_records(results_stats).sort_values(
+				by=descend_by, ascending=False
+			)
+		elif (descend_by is None):
+			df = pd.DataFrame.from_records(results_stats)
 		return df
 
 
@@ -2955,7 +2964,7 @@ class Job(BaseModel):
 
 				mean = statistics.mean(split_values)
 				median = statistics.median(split_values)
-				stdev = statistics.stdev(split_values)
+				pstdev = statistics.pstdev(split_values)
 				minimum = min(split_values)
 				maximum = max(split_values)
 
