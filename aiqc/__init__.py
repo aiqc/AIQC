@@ -2641,24 +2641,29 @@ class Batch(BaseModel):
 		results_stats = []
 		for r in batch_results:
 			for metric, stats in r.metrics_aggregate.items():
-				# Check whitelist.
-				for stat in stats.keys():
-					if stat not in selected_stats:
-						stats.pop(stat)# Errors if not found.
-				stats['metric'] = metric
-				stats['result_id'] = r.id
-				if (r.job.repeat_count > 1):
-					stats['repeat_index'] = r.repeat_index
-				if (r.job.fold is not None):
-					stats['fold_index'] = r.fold.fold_index
-				else:
-					stats['job_id'] = r.job.id
-				stats['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+				# Check whitelists.
+				if metric in selected_metrics:
+					stats['metric'] = metric
+					stats['result_id'] = r.id
+					if (r.job.repeat_count > 1):
+						stats['repeat_index'] = r.repeat_index
+					if (r.job.fold is not None):
+						stats['fold_index'] = r.fold.fold_index
+					else:
+						stats['job_id'] = r.job.id
+					stats['hyperparamcombo_id'] = r.job.hyperparamcombo.id
 
-				results_stats.append(stats)
+					results_stats.append(stats)
+
+		for stat in stat_names:
+			if stat not in selected_stats:
+				for s in results_stats:
+					s.pop(stat)# Errors if not found.
 
 		#Reverse the order of the dictionary keys.
 		results_stats = [dict(reversed(list(d.items()))) for d in results_stats]
+
+
 
 		df = pd.DataFrame.from_records(results_stats)#.sort_values(by=sort_list)
 		return df
