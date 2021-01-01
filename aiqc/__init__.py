@@ -2555,9 +2555,16 @@ class Batch(BaseModel):
 					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from Batch <id:{batch.id}>\n")
 
 
-	def metrics_to_pandas(id:int):
-		batch = Batch.get_by_id(id)
+	def metrics_to_pandas(
+		id:int
+		, selected_metrics:list=None
+		, sort_by:list=None
+		, ascending:bool=False
+	):
+		if (selected_metrics==[]):
+			raise ValueError("\nYikes - The filter list that you provided for `selected_metrics` was empty.\n")
 
+		batch = Batch.get_by_id(id)
 		batch_results = Result.select().join(Job).where(
 			Job.batch==id
 		).order_by(Result.id)
@@ -2566,6 +2573,14 @@ class Batch(BaseModel):
 		if (not batch_results):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
+
+		metric_names = list(list(batch.jobs[0].results[0].metrics.values())[0].keys())
+		if (selected_metrics is not None):
+			for m in selected_metrics:
+				if m not in metric_names:
+					raise ValueError(f"\nYikes - The metric '{m}' does not exist in `Result.metrics`.\nNote: the metrics available depend on the `Batch.analysis_type`.")
+		elif (selected_metrics is None):
+			selected_metrics = metric_names
 
 		# Unpack the split data from each Result and tag it with relevant Batch metadata.
 		split_metrics = []
@@ -2585,7 +2600,9 @@ class Batch(BaseModel):
 				split_metric['split'] = split_name
 
 				for metric_name,metric_value in metrics.items():
-					split_metric[metric_name] = metric_value
+					# Check whitelist.
+					if metric_name in selected_metrics:
+						split_metric[metric_name] = metric_value
 
 				split_metrics.append(split_metric)
 
@@ -2601,18 +2618,30 @@ class Batch(BaseModel):
 			elif (batch.repeat_count == 1):
 				sort_list = ['hyperparamcombo_id','job_id']
 
-		df = pd.DataFrame.from_records(split_metrics).sort_values(by=sort_list)
+		column_names = list(split_metrics[0].keys())
+		if (sort_by is not None):
+			for name in sort_by:
+				if name not in column_names:
+					raise ValueError(f"\nYikes - Column '{name}' not found in metrics dataframe.\n")
+			df = pd.DataFrame.from_records(split_metrics).sort_values(
+				by=sort_by, ascending=ascending
+			)
+		elif (sort_by is None):
+			df = pd.DataFrame.from_records(split_metrics)
 		return df
 
 
 	def metrics_aggregate_to_pandas(
 		id:int
+		, ascending:bool=False
 		, selected_metrics:list=None
 		, selected_stats:list=None
-		, descend_by:list=None
+		, sort_by:list=None
 	):
-		batch = Batch.get_by_id(id)
+		if ((selected_metrics==[]) or (selected_stats==[])):
+			raise ValueError("\nYikes - The filter list that you provided for either `selected_metrics` or `selected_stats` was empty.\n")
 
+		batch = Batch.get_by_id(id)
 		batch_results = Result.select().join(Job).where(
 			Job.batch==id
 		).order_by(Result.id)
@@ -2643,7 +2672,7 @@ class Batch(BaseModel):
 		results_stats = []
 		for r in batch_results:
 			for metric, stats in r.metrics_aggregate.items():
-				# Check whitelists.
+				# Check whitelist.
 				if metric in selected_metrics:
 					stats['metric'] = metric
 					stats['result_id'] = r.id
@@ -2658,6 +2687,7 @@ class Batch(BaseModel):
 
 					results_stats.append(stats)
 
+		# Cannot edit dictionary while key-values are being accessed.
 		for stat in stat_names:
 			if stat not in selected_stats:
 				for s in results_stats:
@@ -2665,13 +2695,16 @@ class Batch(BaseModel):
 
 		#Reverse the order of the dictionary keys.
 		results_stats = [dict(reversed(list(d.items()))) for d in results_stats]
+		column_names = list(results_stats[0].keys())
 
-
-		if (descend_by is not None):
+		if (sort_by is not None):
+			for name in sort_by:
+				if name not in column_names:
+					raise ValueError(f"\nYikes - Column '{name}' not found in aggregate metrics dataframe.\n")
 			df = pd.DataFrame.from_records(results_stats).sort_values(
-				by=descend_by, ascending=False
+				by=sort_by, ascending=ascending
 			)
-		elif (descend_by is None):
+		elif (sort_by is None):
 			df = pd.DataFrame.from_records(results_stats)
 		return df
 
