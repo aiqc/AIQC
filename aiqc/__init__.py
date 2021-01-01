@@ -1961,6 +1961,7 @@ class Algorithm(BaseModel):
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, preprocess_id:int = None
+		, hide_test = False
 	):
 		batch = Batch.from_algorithm(
 			algorithm_id = id
@@ -1969,6 +1970,7 @@ class Algorithm(BaseModel):
 			, foldset_id = foldset_id
 			, preprocess_id = preprocess_id
 			, repeat_count = repeat_count
+			, hide_test = hide_test
 		)
 		return batch
 
@@ -2364,6 +2366,7 @@ class Batch(BaseModel):
 	status = CharField()
 	repeat_count = IntegerField()
 	run_count = IntegerField()
+	hide_test = BooleanField()
 
 	algorithm = ForeignKeyField(Algorithm, backref='batches') 
 	splitset = ForeignKeyField(Splitset, backref='batches')
@@ -2380,6 +2383,7 @@ class Batch(BaseModel):
 		algorithm_id:int
 		, splitset_id:int
 		, repeat_count:int = 1
+		, hide_test:bool=False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, preprocess_id:int = None
@@ -2393,6 +2397,8 @@ class Batch(BaseModel):
 			analysis_type = algorithm.analysis_type
 			if (label_type != analysis_type):
 				raise ValueError(f"\nYikes - `splitset.label.label_type` and `algorithm.analysis_type` must be identical.\nYour `splitset.label.label_type`: <{label_type}>\nYour `algorithm.analysis_type`: <{analysis_type}>\n")
+		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
+			raise ValueError(f"\nYikes - `splitset.supervision != 'supervised'` but `hide_test==True`.\n")
 		
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
@@ -2431,6 +2437,7 @@ class Batch(BaseModel):
 			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, preprocess = preprocess
+			, hide_test = hide_test
 		)
  
 		for c in combos:
@@ -2880,6 +2887,7 @@ class Job(BaseModel):
 				print(f"\nJob #{j.id} starting...")
 			algorithm = j.batch.algorithm
 			analysis_type = algorithm.analysis_type
+			hide_test = j.batch.hide_test
 			splitset = j.batch.splitset
 			preprocess = j.batch.preprocess
 			hyperparamcombo = j.hyperparamcombo
@@ -2897,8 +2905,11 @@ class Job(BaseModel):
 				key_train = "train"
 				key_evaluation = None
 			elif (splitset.supervision == "supervised"):
-				samples['test'] = splitset.to_numpy(splits=['test'])['test']
-				key_evaluation = 'test'
+				if (hide_test == False):
+					samples['test'] = splitset.to_numpy(splits=['test'])['test']
+					key_evaluation = 'test'
+				elif (hide_test == True):
+					key_evaluation = None
 				
 				if (splitset.has_validation):
 					samples['validation'] = splitset.to_numpy(splits=['validation'])['validation']
@@ -2942,12 +2953,20 @@ class Job(BaseModel):
 				hyperparameters = None
 			model = algorithm.function_model_build(**hyperparameters)
 
-			model = algorithm.function_model_train(
-				model,
-				samples[key_train],
-				samples[key_evaluation],
-				**hyperparameters
-			)
+			if (key_evaluation is not None):
+				model = algorithm.function_model_train(
+					model = model
+					, samples_train = samples[key_train]
+					, samples_evaluate = samples[key_evaluation]
+					, **hyperparameters
+				)
+			elif (key_evaluation is None):
+				model = algorithm.function_model_train(
+					model = model
+					, samples_train = samples[key_train]
+					, samples_evaluate = None
+					, **hyperparameters
+				)
 
 			if (algorithm.library.lower() == "keras"):
 				# If blank this value is `{}` not None.
@@ -2984,7 +3003,7 @@ class Job(BaseModel):
 					plot_data[split] = Job.split_classification_plots(
 						data['labels'], 
 						preds, probs, analysis_type
-					)
+					) 
 			elif analysis_type == "regression":
 				probabilities = None
 				for split, data in samples.items():
@@ -3255,6 +3274,7 @@ class Experiment(BaseModel):
 		algorithm_id:int
 		, datapipeline_id:int
 		, repeat_count:int = 1
+		, hide_test:bool = False 
 		, hyperparameters:dict = None
 		, description:str = None
 	):
@@ -3282,6 +3302,7 @@ class Experiment(BaseModel):
 			, foldset_id = foldset_id
 			, preprocess_id = preprocess_id
 			, repeat_count = repeat_count
+			, hide_test = hide_test
 		)
 
 		experiment = Experiment.create(
