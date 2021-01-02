@@ -299,7 +299,6 @@ def create_db():
 			Splitset, Foldset, Fold, Preprocess,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Batch, Jobset, Job, Result,
-			Experiment, DataPipeline,
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -561,13 +560,13 @@ class Dataset(BaseModel):
 		dataset_type = 'image'
 
 		def from_folder(
-			dir_path:str
+			folder_path:str
 			, name:str = None
 			, pillow_save:dict = {}
 		):
 			if name is None:
-				name = dir_path
-			source_path = os.path.abspath(dir_path)
+				name = folder_path
+			source_path = os.path.abspath(folder_path)
 
 			file_paths = Dataset.sorted_file_list(source_path)
 			file_count = len(file_paths)
@@ -998,7 +997,6 @@ class File(BaseModel):
 			img_bytes = io.BytesIO(file.blob)
 			img = Imaje.open(img_bytes)
 			return img
-
 
 
 
@@ -1777,8 +1775,10 @@ class Fold(BaseModel):
 
 class Preprocess(BaseModel):
 	"""
-	- Should not be happening prior to Dataset persistence because you need to do it after the split to avoid bias.
-	- For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
+	- Preprocessing should not happen prior to Dataset ingestion because you need to do it after the split to avoid bias.
+	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
+	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
+	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Featureset.
 	
 	- ToDo: Need a standard way to reference the features and labels of various splits.
 	- ToDo: Could either specify columns or dtypes to be encoded?
@@ -1973,21 +1973,6 @@ class Algorithm(BaseModel):
 			, hide_test = hide_test
 		)
 		return batch
-
-
-	def make_experiment(
-		id:int
-		, datapipeline_id:int
-		, hyperparameters:dict = None
-		, description:str = None
-	):
-		experiment = Experiment.from_algorithm(
-			algorithm_id = id
-			, datapipeline_id = datapipeline_id
-			, hyperparameters = hyperparameters
-			, description = description
-		)
-		return experiment
 
 
 
@@ -3180,143 +3165,6 @@ class Environment(BaseModel)?
 
 
 #==================================================
-# HIGH LEVEL API 
-#==================================================
-
-class DataPipeline(BaseModel):
-	dataset = ForeignKeyField(Dataset, backref='datapipelines')
-	featureset = ForeignKeyField(Featureset, backref='datapipelines')
-	splitset = ForeignKeyField(Splitset, backref='datapipelines')
-
-	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='datapipelines')
-	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='datapipelines')
-	preprocess = ForeignKeyField(Preprocess, deferrable='INITIALLY DEFERRED', null=True, backref='datapipelines')
-	
-	def make(
-		dataFrame_or_filePath:object
-		, label_column:str = None
-		, size_test:float = None
-		, size_validation:float = None
-		, fold_count:int = None
-		, bin_count:int = None
-		, encoder_features:object = None
-		, encoder_labels:object = None
-	):
-		# Create the dataset from either df or file.
-		d = dataFrame_or_filePath
-		dataset_type = str(type(d))
-		if (dataset_type == "<class 'pandas.core.frame.DataFrame'>"):
-			dataset = Dataset.from_pandas(dataframe=d)
-		elif (dataset_type == "<class 'str'>"):
-			if '.csv' in d:
-				file_format='csv'
-			elif '.tsv' in d:
-				file_format='tsv'
-			elif '.parquet' in d:
-				file_format='parquet'
-			else:
-				raise ValueError("\nYikes - None of the following file extensions were found in the path you provided:\n'.csv', '.tsv', '.parquet'\n")
-			dataset = Dataset.from_file(path=d, file_format=file_format)
-		else:
-			raise ValueError("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
-
-		# Not allowing user specify columns to keep/ include.
-		if label_column is not None:
-			label = dataset.make_label(columns=[label_column])
-			featureset = dataset.make_featureset(exclude_columns=[label_column])
-			label_id = label.id
-		elif label_column is None:
-			featureset = dataset.make_featureset()
-			label_id = None
-			label = None
-
-		splitset = featureset.make_splitset(
-			label_id = label_id
-			, size_test = size_test
-			, size_validation = size_validation
-		)
-
-		if (fold_count is not None):
-			foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
-		elif (fold_count is None):
-			# Low level api sets fold_count=3 when fold_count=None. Skipping foldset creation here.
-			foldset = None
-
-		if (encoder_features is not None) or (encoder_labels is not None):
-			preprocess = splitset.make_preprocess(
-				encoder_features = encoder_features
-				, encoder_labels = encoder_labels
-			)
-		elif (encoder_features is None) and (encoder_labels is None):
-			preprocess = None
-
-		datapipeline = DataPipeline.create(
-			dataset = dataset
-			, featureset = featureset
-			, splitset = splitset
-			, label = label
-			, foldset = foldset
-			, preprocess = preprocess
-		)
-		return datapipeline
-
-
-class Experiment(BaseModel):
-	datapipeline = ForeignKeyField(DataPipeline, backref='experiments')
-	algorithm = ForeignKeyField(Algorithm, backref='experiments')
-	# The batch is created during the .make() function based on user inputs.
-	batch = ForeignKeyField(Batch, backref='experiments')
-
-	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='experiments')
-	description = CharField(null=True)
-	
-	def from_algorithm(
-		algorithm_id:int
-		, datapipeline_id:int
-		, repeat_count:int = 1
-		, hide_test:bool = False 
-		, hyperparameters:dict = None
-		, description:str = None
-	):
-		datapipeline = DataPipeline.get_by_id(datapipeline_id)
-		splitset_id = datapipeline.splitset.id
-
-		try: foldset_id = datapipeline.splitset.foldsets[0].id
-		except: foldset_id = None
-		else: pass
-
-		try: preprocess_id = datapipeline.preprocess.id
-		except: preprocess_id = None
-		else: pass
-
-		if hyperparameters is not None:
-			algorithm = Algorithm.get_by_id(algorithm_id)
-			hyperparamset = algorithm.make_hyperparamset(hyperparameters=hyperparameters)
-			hyperparamset_id = hyperparamset.id
-		elif hyperparameters is None:
-			hyperparamset_id = None
-
-		batch = algorithm.make_batch(
-			splitset_id = splitset_id
-			, hyperparamset_id = hyperparamset_id
-			, foldset_id = foldset_id
-			, preprocess_id = preprocess_id
-			, repeat_count = repeat_count
-			, hide_test = hide_test
-		)
-
-		experiment = Experiment.create(
-			datapipeline = datapipeline
-			, algorithm = algorithm
-			, batch = batch
-			, hyperparamset = hyperparamset
-			, description = description
-		)
-		return experiment
-
-
-
-#==================================================
 # MID-TRAINING CALLBACKS
 #==================================================
 
@@ -3366,3 +3214,175 @@ class TrainingCallback():
 					print(f"\n:: Epoch #{epoch} ::\nSatisfied thresholds defined in `MetricCutoff` callback. Stopped training early.\n")
 					self.model.stop_training = True
 					os.system("say bingo")
+
+
+#==================================================
+# HIGH LEVEL API 
+#==================================================
+
+class Pipeline():
+	"""Create Dataset, Featureset, Label, Splitset, and Foldset."""
+	def parse_tabular_input(dataFrame_or_filePath:object, dtype:dict=None):
+		"""Create the dataset from either df or file."""
+		d = dataFrame_or_filePath
+		data_type = str(type(d))
+		if (data_type == "<class 'pandas.core.frame.DataFrame'>"):
+			dataset = Dataset.Tabular.from_pandas(dataframe=d, dtype=dtype)
+		elif (data_type == "<class 'str'>"):
+			if '.csv' in d:
+				source_file_format='csv'
+			elif '.tsv' in d:
+				source_file_format='tsv'
+			elif '.parquet' in d:
+				source_file_format='parquet'
+			else:
+				raise ValueError("\nYikes - None of the following file extensions were found in the path you provided:\n'.csv', '.tsv', '.parquet'\n")
+			dataset = Dataset.Tabular.from_path(
+				path = d
+				, source_file_format = source_file_format
+				, dtype = dtype
+			)
+		else:
+			raise ValueError("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
+		return dataset
+
+
+	class Tabular():
+		def ingest(
+			dataFrame_or_filePath:object
+			, dtype:dict = None
+			, label_column:str = None
+			, size_test:float = None
+			, size_validation:float = None
+			, fold_count:int = None
+			, bin_count:int = None
+		):
+			dataset = Pipeline.parse_tabular_input(
+				dataFrame_or_filePath = dataFrame_or_filePath
+				, dtype = dtype
+			)
+			# Not allowing user specify columns to keep/ include.
+			if label_column is not None:
+				label = dataset.make_label(columns=[label_column])
+				featureset = dataset.make_featureset(exclude_columns=[label_column])
+				label_id = label.id
+			elif label_column is None:
+				featureset = dataset.make_featureset()
+				label_id = None
+
+			splitset = featureset.make_splitset(
+				label_id = label_id
+				, size_test = size_test
+				, size_validation = size_validation
+				, bin_count = bin_count
+			)
+
+			if (fold_count is not None):
+				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+			return splitset
+
+
+	class Image():
+		def ingest(
+			image_folder_path:str
+			, pillow_save:dict = {}
+			, tabular_df_or_path:object = None
+			, tabular_dtype:dict = None
+			, label_column:str = None
+			, size_test:float = None
+			, size_validation:float = None
+			, fold_count:int = None
+			, bin_count:int = None
+		):
+			# Dataset.Image
+			dataset_image = Dataset.Image.from_folder(
+				folder_path = image_folder_path
+				, pillow_save = pillow_save
+			)
+			# Image Featureset.
+			featureset = dataset_image.make_featureset()
+
+			# Dataset.Tabular
+			if (tabular_df_or_path is not None):
+				dataset_tabular = Pipeline.parse_tabular_input(
+					dataFrame_or_filePath = tabular_df_or_path
+					, dtype = tabular_dtype
+				)
+
+				if label_column is not None:
+					label = dataset_tabular.make_label(columns=[label_column])
+					label_id = label.id
+				elif label_column is None:
+					raise ValueError("\nYikes - `label_column` must be specified if `tabular_df_or_path` is not None.\n")
+			
+			splitset = featureset.make_splitset(
+				label_id = label_id
+				, size_test = size_test
+				, size_validation = size_validation
+				, bin_count = bin_count
+			)
+
+			if (fold_count is not None):
+				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+			return splitset
+
+
+class Experiment():
+	"""
+	- Create Algorithm, Hyperparamset, Preprocess, and Batch.
+	- Put Preprocess here because it's weird to encode labels before you know what your final training layer looks like.
+	  Also, it's optional, so you'd have to access it from splitset before passing it in.
+	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
+	"""
+	def stage(
+		library:str
+		, analysis_type:str
+		, function_model_build:object
+		, function_model_train:object
+		, splitset_id:int
+		, repeat_count:int = 1
+		, hide_test:bool = False
+		, function_model_predict:object = None
+		, function_model_loss:object = None
+		, hyperparameters:dict = None
+		, encoder_features:object = None
+		, encoder_labels:object = None
+		, foldset_id:int = None
+	):
+
+		algorithm = Algorithm.make(
+			library = library
+			, analysis_type = analysis_type
+			, function_model_build = function_model_build
+			, function_model_train = function_model_train
+			, function_model_predict = function_model_predict
+			, function_model_loss = function_model_loss
+		)
+
+		if (hyperparameters is not None):
+			hyperparamset = algorithm.make_hyperparamset(
+				hyperparameters = hyperparameters
+			)
+			hyperparamset_id = hyperparamset.id
+		elif (hyperparameters is None):
+			hyperparamset_id = None
+
+		if ((encoder_features is not None) or (encoder_labels is not None)):
+			splitset = Splitset.get_by_id(splitset_id)
+			preprocess = splitset.make_preprocess(
+				encoder_features = encoder_features
+				, encoder_labels = encoder_labels
+			)
+			preprocess_id = preprocess.id
+		elif (encoder_features is None) and (encoder_labels is None):
+			preprocess_id = None
+
+		batch = algorithm.make_batch(
+			splitset_id = splitset_id
+			, repeat_count = repeat_count
+			, hide_test = hide_test
+			, hyperparamset_id = hyperparamset_id
+			, foldset_id = foldset_id
+			, preprocess_id = preprocess_id
+		)
+		return batch

@@ -1,7 +1,26 @@
+.wy-side-nav-search {
+	background-color: #060606;
+}
+
+.wy-side-nav-search input[type=text] {
+	width: 80%;
+	border-color: #2b1f03;
+	border-width: 2px;
+}
+
+.wy-nav-side {
+	background-color: #060606;
+	background-image: linear-gradient(#060606, #313131);
+}
+
+.wy-menu-vertical {
+	padding-left: 8px;
+}
+
 /* sidebar captions aka sections*/
 .wy-menu > .caption > span.caption-text {
-  color: #ffd249;
-  font-size: 11.5px;
+	color: #cca439;
+	font-size: 11.5px;
 }
 
 /* the '.simple' points to body lists, and avoids the sidebar lists */
