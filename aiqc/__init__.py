@@ -296,7 +296,8 @@ def create_db():
 			File, Tabular, Image,
 			Dataset,
 			Label, Featureset, 
-			Splitset, Foldset, Fold, Preprocess,
+			Splitset, Foldset, Fold, 
+			Encoderset, Labelcoder, #Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Batch, Jobset, Job, Result,
 		])
@@ -653,6 +654,7 @@ class File(BaseModel):
 	I am making each file type its own subclass and 1-1 table. This approach 
 	allows for the creation of custom File types.
 	- If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
+	- Note that `dtype` does not require every column to be included as a key in the dictionary.
 	"""
 	blob = BlobField()
 	file_type = CharField()
@@ -675,7 +677,7 @@ class File(BaseModel):
 		def from_pandas(
 			dataframe:object
 			, dataset_id:int
-			, dtype:dict = None
+			, dtype:dict = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
 			, column_names:list = None
 			, source_path:str = None # passed in via from_file
 		):
@@ -780,23 +782,23 @@ class File(BaseModel):
 			if samples is not None:
 				df = df.iloc[samples]
 			"""
-			Performed on both read and write in case user wants to update `File.dtype`.
-			Accepts dict{'column_name':'dtype_str'} or a single str.
+			- Accepts dict{'column_name':'dtype_str'} or a single str.
 			"""
 			tab = f.tabulars[0]
 			df_dtype = tab.dtype
-			if df_dtype is not None:
+			if (df_dtype is not None):
 				if (isinstance(df_dtype, dict)):
-					if columns is None:
+					if (columns is None):
 						columns = tab.columns
 					# Prunes out the excluded columns from the dtype dict.
 					df_dtype_cols = list(df_dtype.keys())
 					for col in df_dtype_cols:
-						if col not in columns:
+						if (col not in columns):
 							del df_dtype[col]
 				elif (isinstance(df_dtype, str)):
-					pass #It just gets applied as-is.
+					pass #dtype just gets applied as-is.
 				df = df.astype(df_dtype)
+
 			return df
 
 
@@ -816,6 +818,10 @@ class File(BaseModel):
 		#Future: Add to_tensor and from_tensor? Or will numpy suffice?	
 
 		def pandas_stringify_columns(df, columns):
+			"""
+			I don't want both string and int-based column names for when calling columns programmatically, 
+			and more importantly, 'ValueError: parquet must have string column names'
+			"""
 			cols_raw = df.columns.to_list()
 			if columns is None:
 				# in case the columns were a range of ints.
@@ -853,17 +859,50 @@ class File(BaseModel):
 			# Auto-assigned int based columns return a range when `df.columns` called so convert them to str.
 			dataframe, columns = File.Tabular.pandas_stringify_columns(df=dataframe, columns=column_names)
 
-			# Must be done after column_names are set.
-			if dtype is None:
-				dct_types = dataframe.dtypes.to_dict()
-				# Convert the `dtype('float64')` to strings.
-				keys_values = dct_types.items()
-				dtype = {k: str(v) for k, v in keys_values}
-			elif dtype is not None:
+			"""
+			At this point, user-provided `dtype` can be a dict or a singular string/ class.
+			But a Pandas dataframe in-memory only has `dtypes` dict not a singular `dtype` str.
+			"""
+			if (dtype is not None):
 				# Accepts dict{'column_name':'dtype_str'} or a single str.
 				dataframe = dataframe.astype(dtype)
+				"""
+				Check if any user-provided dtype against actual dataframe dtypes to see if conversions failed.
+				Pandas dtype seems robust in comparing dtypes: 
+				Even things like `'double' == dataframe['col_name'].dtype` will pass when `.dtype==np.float64`.
+				Despite looking complex, category dtype converts to simple 'category' string.
+				"""
+				if (not isinstance(dtype, dict)):
+					# Inspect each column:dtype pair and check to see if it is the same as the user-provided dtype.
+					actual_dtypes = dataframe.dtypes.to_dict()
+					for col_nam, typ in actual_dtypes.items():
+						if (typ != dtype):
+							raise ValueError(f"\nYikes - You specified `dtype={dtype},\nbut Pandas did not convert it: `dataframe['{col_name}'].dtype == {typ}`.\nYou can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.\n")
+				elif (isinstance(dtype, dict)):
+					for col_name, typ in dtype.items():
+						if (typ != dataframe[col_name].dtype):
+							raise ValueError(f"\nYikes - You specified `dataframe['{col_name}']:dtype('{typ}'),\nbut Pandas did not convert it: `dataframe['{col_name}'].dtype == {dataframe[col_name].dtype}`.\nYou can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.\n")
+			"""
+			Rare types like np.uint8, np.double, 'bool', and the new 'string' are supported,
+			but not np.complex64 and np.float128 (aka np.longfloat) 
+			because `DataFrame.to_parquet(engine='auto')` fails.
+			"""
+			excluded_types = ['complex', 'longfloat', 'float128']
+			actual_dtypes = dataframe.dtypes.to_dict().items()
 
-			# Each object gets transformed so each object must be returned.
+			for col_name, typ in actual_dtypes:
+				for et in excluded_types:
+					if (et in str(typ)):
+						raise ValueError(f"\n Yikes - You specified `dtype['{col_name}']:'{typ}',\nbut aiqc does not support the following dtypes: {excluded_types}\n")
+
+			"""
+			Now, we take the all of the resulting dataframe dtypes and save them.
+			Regardless of whether or not they were user-provided.
+			Convert the classed `dtype('float64')` to a string so we can use it in `.to_pandas()`
+			"""
+			dtype = {k: str(v) for k, v in actual_dtypes}
+			
+			# Each object has the potential to be transformed so each object must be returned.
 			return dataframe, columns, shape, dtype
 
 
@@ -1164,7 +1203,7 @@ class Label(BaseModel):
 
 	def get_column_dtype(id:int, column_name:str=None):
 		label = aiqc.Label.get_by_id(id)
-		if column_name == None:
+		if (column_name == None):
 			column_name = label.columns[0]
 		d = label.dataset
 		column_dtype = label.dataset.Tabular.get_main_tabular_file(d.id).tabulars[0].dtype[column_name]
@@ -1420,7 +1459,7 @@ class Splitset(BaseModel):
 
 			arr_l = l.to_numpy()
 			# check for OHE cols and reverse them so we can still stratify.
-			if arr_l.shape[1] > 1:
+			if (arr_l.shape[1] > 1):
 				encoder = OneHotEncoder(sparse=False)
 				arr_l = encoder.fit_transform(arr_l)
 				arr_l = np.argmax(arr_l, axis=1)
@@ -1430,7 +1469,7 @@ class Splitset(BaseModel):
 			# OHE dtype returns as int64
 			arr_l_dtype = arr_l.dtype
 
-			if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
+			if ((arr_l_dtype == 'float32') or (arr_l_dtype == 'float64')):
 				if (bin_count is None):
 					bin_count = 3
 				stratify1 = Splitset.label_values_to_bins(array_to_bin=arr_l, bin_count=bin_count)
@@ -1452,8 +1491,8 @@ class Splitset(BaseModel):
 					, shuffle = True
 				)
 
-				if size_validation is not None:
-					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
+				if (size_validation is not None):
+					if ((arr_l_dtype == 'float32') or (arr_l_dtype == 'float64')):
 						stratify2 = Splitset.label_values_to_bins(array_to_bin=labels_train, bin_count=bin_count)
 					else:
 						stratify2 = labels_train
@@ -1475,8 +1514,8 @@ class Splitset(BaseModel):
 					, shuffle = True
 				)
 
-				if size_validation is not None:
-					if (arr_l_dtype == 'float32') or (arr_l_dtype == 'float64'):
+				if (size_validation is not None):
+					if ((arr_l_dtype == 'float32') or (arr_l_dtype == 'float64')):
 						stratify2 = Splitset.label_values_to_bins(array_to_bin=labels_train, bin_count=bin_count)
 					else:
 						stratify2 = labels_train
@@ -1537,7 +1576,9 @@ class Splitset(BaseModel):
 		s = Splitset.get_by_id(id)
 
 		if splits is not None:
-			if len(splits) == 0:
+			if (not isinstance(splits, list)):
+				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
+			if (len(splits) == 0):
 				raise ValueError("\nYikes - `splits` argument is an empty list.\nIt can be None, which defaults to all splits, but it can't not empty.\n")
 		else:
 			splits = list(s.samples.keys())
@@ -1600,20 +1641,17 @@ class Splitset(BaseModel):
 		return foldset
 
 
-	def make_preprocess(
+	def make_encoderset(
 		id:int
+		, encoder_count:int = 0
 		, description:str = None
-		, encoder_features:object = None
-		, encoder_labels:object = None
 	):
-		preprocess = Preprocess.from_splitset(
+		e = Encoderset.from_splitset(
 			splitset_id = id
+			, encoder_count = 0
 			, description = description
-			, encoder_features = encoder_features
-			, encoder_labels = encoder_labels
 		)
-		return preprocess
-
+		return e
 
 
 
@@ -1773,52 +1811,160 @@ class Fold(BaseModel):
 
 
 
-class Preprocess(BaseModel):
+class Encoderset(BaseModel):
 	"""
 	- Preprocessing should not happen prior to Dataset ingestion because you need to do it after the split to avoid bias.
 	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
 	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Featureset.
-	
-	- ToDo: Need a standard way to reference the features and labels of various splits.
-	- ToDo: Could either specify columns or dtypes to be encoded?
-	- ToDo: Specific columns or dtypes in the params? <-- sklearn...encoder.get_params(dtype=numpy.float64)
-	- ToDo: Multiple encoders for multiple dtypes?
 	"""
+	encoder_count = IntegerField()
 	description = CharField(null=True)
-	encoder_features = PickleField(null=True)
-	encoder_labels = PickleField(null=True) 
 
-	splitset = ForeignKeyField(Splitset, backref='preprocesses')
+	splitset = ForeignKeyField(Splitset, backref='encodersets')
 
 	def from_splitset(
 		splitset_id:int
+		, encoder_count:int = 0
 		, description:str = None
-		, encoder_features:object = None
-		, encoder_labels:object = None
 	):
-		if (encoder_features is None) and (encoder_labels is None):
-			raise ValueError("\nYikes - Can't have both `encode_features_function` and `encode_labels_function` set to `None`.\n")
-
 		s = Splitset.get_by_id(splitset_id)
-		s_label = s.label
-
-		if (s_label is None) and (encoder_labels is not None):
-			raise ValueError("\nYikes - An `encode_labels_function` was provided, but this Splitset has no Label.\n")
-
-		type_label_encoder = type(encoder_labels)
-		if (type_label_encoder == 'sklearn.preprocessing._encoders.OneHotEncoder'):
-			s_label_col_count = s_label.column_count
-			if s_label_col_count > 1:
-				raise ValueError("\nYikes - `sklearn.preprocessing.OneHotEncoder` expects 1 column, but your Label already has multiple columns.\n")
-
-		p = Preprocess.create(
-			splitset = s
+		e = Encoderset.create(
+			encoder_count = encoder_count
 			, description = description
-			, encoder_features = encoder_features
-			, encoder_labels = encoder_labels
+			, splitset = s
 		)
-		return p
+		return e
+
+
+	def make_labelcoder(
+		id:int
+		, sklearn_preprocess:object
+		, only_fit_train:bool
+	):
+		lc = Labelcoder.from_encoderset(
+			encoderset_id = id
+			, sklearn_preprocess = sklearn_preprocess
+		)
+		return lc
+
+	#def test_featurecoders():
+		#if len==0: raise ValueError("\nYikes - This Encoderset does not have any labelcoders to test yet.\n")
+
+
+
+class Labelcoder(BaseModel):
+	"""
+	- `is_fit_train` toggles if the encoder is either `.fit(<training_split/fold>)` to 
+	  avoid bias or `.fit(<entire_dataset>)`.
+	- Categorical (ordinal and OHE) encoders are best applied to entire dataset in case 
+	  there are classes missing in the split/folds of validation/ test data.
+	- Whereas numerical encoders are best fit only to the training data.
+	- Because there's only 1 encoder that runs and it uses all columns, Labelcoder 
+	  is much simpler to validate and run in comparison to Featurecoder.
+	"""
+	only_fit_train = BooleanField()
+	sklearn_preprocess = PickleField()
+
+	encoderset = ForeignKeyField(Encoderset, backref='labelcoders')
+
+	def from_encoderset(
+		encoderset_id:int
+		, sklearn_preprocess:object
+		, only_fit_train:bool = False
+	):
+		encoderset = Encoderset.get_by_id(encoderset_id)
+		splitset = encoderset.splitset
+		if (splitset.supervision == 'unsupervised'):
+			raise ValueError("\nYikes - `Splitset.supervision=='unsupervised'` therefore it cannot take on a Labelcoder.\n")
+		coder_type = type(OneHotEncoder()).__module__
+		if ('sklearn.preprocessing._encoders' != coder_type):
+			raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+		# Test Fit. 
+		try:
+			if (only_fit_train==True):
+				"""
+				- Foldset is tied to Batch. So just `fit()` on `train` split
+				  and don't worry about `folds_train_combined` for now.
+				- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
+				  in which case user should be using `only_fit_train=False` anyways.
+				"""
+				fit_samples = splitset.to_numpy(splits=['train'])['train']['labels']
+				communciated_split = "`splitset.to_numpy(splits=['train'])['train']['labels']`"
+			elif (only_fit_train==False):
+				fit_samples = splitset.label.to_numpy()
+				communciated_split = "`splitset.label.to_numpy()`"
+			fitted_encoder = sklearn_preprocess.fit(fit_samples)
+		except:
+			print(f"\nDuring testing, failed to `fit()` encoder on {communciated_split}.\n")
+			raise
+		else:
+			pass
+		# Test Transform/ Encode.
+		try:
+			"""
+			- During `Job.run`, it will touch every split/fold regardless of what it was fit on
+			  so just validate it on whole dataset.
+			"""
+			if (only_fit_train==False):
+				#Already in memory.
+				labels_all_samples = fit_samples
+			elif (only_fit_train==True):
+				labels_all_samples = splitset.label.to_numpy()
+			fitted_encoder.transform(labels_all_samples)
+		except:
+			print("\nDuring testing, encoder `fit()` worked, but later failed to `transform(splitset.label.to_numpy())`.\nTip - for categoricals like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`, it is better to use `only_fit_train=False`.\n")
+			raise
+		else:
+			pass	
+		lc = Labelcoder.create(
+			only_fit_train = only_fit_train
+			, sklearn_preprocess = sklearn_preprocess
+			, encoderset = encoderset
+		)
+		return lc
+
+	"""
+	def run(id:int):
+		labelcoder = Labelcoder.get_by_id(id)
+		if (only_fit_train == False):
+			sample_data = 
+		elif (only_fit_train == True):
+	"""
+
+
+# class Featurecoder(BaseModel):
+# 	"""
+# 	- An Encoderset can have many Featurecoders that are applied sequentially.
+# 	- Encoders are sequential, meaning the columns encoded by `featurecoder_index=0` 
+# 	  are not available to `featurecoder_index=1`.
+# 	- Much validation because real-life encoding errors are cryptic and deep for beginners.
+# 	"""
+# 	featurecoder_index = IntegerField()
+# 	only_fit_train = BooleanField()
+# 	all_columns = BooleanField()
+# 	dtypes_include = JSONField(null=True)
+# 	dtypes_exclude = JSONField(null=True)
+# 	columns_include = JSONField(null=True)
+# 	columns_exclude = JSONField(null=True)
+# 	sklearn_preprocess = PickleField()
+
+# 	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
+
+
+# 	# if ((s.featureset.dataset.dataset_type == "image") and (encoder_featureset is not None)):
+# 	# raise ValueError("\nYikes - `encoder_featureset` is not None, but `Dataset.dataset_type=='image'` does not support preprocessing on Featureset.\n")
+# 	coder_type = type(sklearn_preprocess)
+# 	if ('sklearn.preprocessing._encoders' not in coder_type):
+# 		raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+
+
+# 	# has to be created so that it can be run in sequence?
+# 	# or just run the existing sequence and try this one. 
+# 	# unless len()==0
+
+
+# 	#add make_featurecoder() to Encoderset
 
 
 
@@ -1960,7 +2106,7 @@ class Algorithm(BaseModel):
 		, repeat_count:int = 1
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
-		, preprocess_id:int = None
+		, encoderset_id:int = None
 		, hide_test = False
 	):
 		batch = Batch.from_algorithm(
@@ -1968,7 +2114,7 @@ class Algorithm(BaseModel):
 			, splitset_id = splitset_id
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
-			, preprocess_id = preprocess_id
+			, encoderset_id = encoderset_id
 			, repeat_count = repeat_count
 			, hide_test = hide_test
 		)
@@ -2358,11 +2504,11 @@ class Batch(BaseModel):
 
 	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
 	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
-	preprocess = ForeignKeyField(Preprocess, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
+	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
 
-	def __init__(self, *args, **kwargs):
-		super(Batch, self).__init__(*args, **kwargs)
-
+	# not sure how this got in here. delete it after testing.
+	#def __init__(self, *args, **kwargs):
+	#	super(Batch, self).__init__(*args, **kwargs)
 
 	def from_algorithm(
 		algorithm_id:int
@@ -2371,7 +2517,7 @@ class Batch(BaseModel):
 		, hide_test:bool=False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
-		, preprocess_id:int = None
+		, encoderset_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		splitset = Splitset.get_by_id(splitset_id)
@@ -2405,10 +2551,10 @@ class Batch(BaseModel):
 			hyperparamset = None
 			
 
-		if (preprocess_id is not None):
-			preprocess = Preprocess.get_by_id(preprocess_id)
+		if (encoderset_id is not None):
+			encoderset = Encoderset.get_by_id(encoderset_id)
 		else:
-			preprocess = None
+			encoderset = None
 
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		run_count = len(combos) * len(folds) * repeat_count
@@ -2421,7 +2567,7 @@ class Batch(BaseModel):
 			, splitset = splitset
 			, foldset = foldset
 			, hyperparamset = hyperparamset
-			, preprocess = preprocess
+			, encoderset = encoderset
 			, hide_test = hide_test
 		)
  
@@ -2874,7 +3020,7 @@ class Job(BaseModel):
 			analysis_type = algorithm.analysis_type
 			hide_test = j.batch.hide_test
 			splitset = j.batch.splitset
-			preprocess = j.batch.preprocess
+			encoderset = j.batch.encoderset
 			hyperparamcombo = j.hyperparamcombo
 			fold = j.fold
 
@@ -2915,21 +3061,21 @@ class Job(BaseModel):
 
 			# 2. Preprocess the features and labels.
 			# Preprocessing happens prior to training the model.
-			if (preprocess is not None):
-				# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
-				if (preprocess.encoder_features is not None):
-					feature_encoder = preprocess.encoder_features
-					feature_encoder.fit(samples[key_train]['features'])
+			# if (preprocess is not None):
+			# 	# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
+			# 	if (preprocess.encoder_features is not None):
+			# 		feature_encoder = preprocess.encoder_features
+			# 		feature_encoder.fit(samples[key_train]['features'])
 
-					for split, data in samples.items():
-						samples[split]['features'] = feature_encoder.transform(data['features'])
+			# 		for split, data in samples.items():
+			# 			samples[split]['features'] = feature_encoder.transform(data['features'])
 				
-				if (preprocess.encoder_labels is not None):
-					label_encoder = preprocess.encoder_labels
-					label_encoder.fit(samples[key_train]['labels'])
+			# 	if (preprocess.encoder_labels is not None):
+			# 		label_encoder = preprocess.encoder_labels
+			# 		label_encoder.fit(samples[key_train]['labels'])
 
-					for split, data in samples.items():
-						samples[split]['labels'] = label_encoder.transform(data['labels'])
+			# 		for split, data in samples.items():
+			# 			samples[split]['labels'] = label_encoder.transform(data['labels'])
 
 			# 3. Build and Train model.
 			if (hyperparamcombo is not None):
@@ -3333,6 +3479,10 @@ class Experiment():
 	- Put Preprocess here because it's weird to encode labels before you know what your final training layer looks like.
 	  Also, it's optional, so you'd have to access it from splitset before passing it in.
 	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
+
+
+	`encoder_featureset`: List of dictionaries describing each encoder to run along with filters for different feature columns.
+	`encoder_label`: Single instantiation of an sklearn encoder: e.g. `OneHotEncoder()` that gets applied to the full label array.
 	"""
 	def stage(
 		library:str
@@ -3345,8 +3495,9 @@ class Experiment():
 		, function_model_predict:object = None
 		, function_model_loss:object = None
 		, hyperparameters:dict = None
-		, encoder_features:object = None
-		, encoder_labels:object = None
+		# , encoder_labels:object = None
+		# , encoders_only_train:object = None
+		# , encoder_features:object = None
 		, foldset_id:int = None
 	):
 
@@ -3367,15 +3518,16 @@ class Experiment():
 		elif (hyperparameters is None):
 			hyperparamset_id = None
 
-		if ((encoder_features is not None) or (encoder_labels is not None)):
-			splitset = Splitset.get_by_id(splitset_id)
-			preprocess = splitset.make_preprocess(
-				encoder_features = encoder_features
-				, encoder_labels = encoder_labels
-			)
-			preprocess_id = preprocess.id
-		elif (encoder_features is None) and (encoder_labels is None):
-			preprocess_id = None
+		# if ((encoder_features is not None) or (encoder_labels is not None)):
+		# 	splitset = Splitset.get_by_id(splitset_id)
+		# 	encoderset = splitset.make_encoderset(
+		# 		encoder_features = encoder_features
+		# 		, encoder_labels = encoder_labels
+		# 		# dictionary for each?
+		# 	)
+		# 	encoderset_id = encoderset.id
+		# elif (encoder_features is None) and (encoder_labels is None):
+		# 	encoderset_id = None
 
 		batch = algorithm.make_batch(
 			splitset_id = splitset_id
@@ -3383,6 +3535,6 @@ class Experiment():
 			, hide_test = hide_test
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
-			, preprocess_id = preprocess_id
+			, encoderset_id = None#encoderset_id
 		)
 		return batch

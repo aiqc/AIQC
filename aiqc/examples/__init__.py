@@ -86,6 +86,17 @@ def get_demo_files():
 			, 'location': 'local'
 		},
 		{
+			'name': 'houses_dirty_dtypes'
+			, 'dataset_type': 'tabular'
+			, 'analysis_type': 'N/A'
+			, 'label': 'N/A'
+			, 'label_classes': 'N/A'
+			, 'features': 'N/A'
+			, 'samples': 50
+			, 'description': 'Fake. Testing w extraneous dtypes.'
+			, 'location': 'local'
+		},
+		{
 			'name': 'brain_tumor'
 			, 'dataset_type': 'image'
 			, 'analysis_type': 'classification_binary'
@@ -95,7 +106,7 @@ def get_demo_files():
 			, 'samples': 80
 			, 'description': 'Detect tumor in brain. No guarantee on healthy.'
 			, 'location': 'remote'
-		},
+		}
 	]
 	return files	
 
@@ -130,14 +141,16 @@ def get_demo_file_path(file_name:str):
 def demo_file_to_pandas(file_name:str):
 	file_path = get_demo_file_path(file_name)
 
-	if 'tsv' in file_name:
-		separator = '\t'
-	elif 'csv' in file_name:
-		separator = ','
-	else:
-		separator = None
-
-	df = pd.read_csv(file_path, sep=separator)
+	if ('tsv' in file_name) or ('csv' in file_name):
+		if ('tsv' in file_name):
+			separator = '\t'
+		elif ('csv' in file_name):
+			separator = ','
+		else:
+			separator = None
+		df = pd.read_csv(file_path, sep=separator)
+	elif ('parquet' in file_name):
+		df = pd.read_parquet(file_path)
 	return df
 
 

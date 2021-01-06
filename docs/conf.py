@@ -1,7 +1,7 @@
 """
 # Dependencies. 
 brew install pandoc
-pip install nbsphinx, sphinx_copybutton, sphinx_rtd_theme, sphinxcontrib.yt, ipython
+pip install nbsphinx, sphinx_copybutton, sphinx_rtd_theme, ipython
 
 # Make after changes.
 $ cd aiqc/docs
