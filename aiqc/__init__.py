@@ -1877,9 +1877,11 @@ class Labelcoder(BaseModel):
 		splitset = encoderset.splitset
 		if (splitset.supervision == 'unsupervised'):
 			raise ValueError("\nYikes - `Splitset.supervision=='unsupervised'` therefore it cannot take on a Labelcoder.\n")
-		coder_type = type(OneHotEncoder()).__module__
-		if ('sklearn.preprocessing._encoders' != coder_type):
+		
+		coder_type = str(type(sklearn_preprocess))
+		if ('sklearn.preprocessing._encoders' not in coder_type):
 			raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+
 		# Test Fit. 
 		try:
 			if (only_fit_train==True):
@@ -1923,14 +1925,6 @@ class Labelcoder(BaseModel):
 			, encoderset = encoderset
 		)
 		return lc
-
-	"""
-	def run(id:int):
-		labelcoder = Labelcoder.get_by_id(id)
-		if (only_fit_train == False):
-			sample_data = 
-		elif (only_fit_train == True):
-	"""
 
 
 # class Featurecoder(BaseModel):
@@ -3061,7 +3055,7 @@ class Job(BaseModel):
 
 			# 2. Preprocess the features and labels.
 			# Preprocessing happens prior to training the model.
-			# if (preprocess is not None):
+			if (encoderset is not None):
 			# 	# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
 			# 	if (preprocess.encoder_features is not None):
 			# 		feature_encoder = preprocess.encoder_features
@@ -3070,12 +3064,29 @@ class Job(BaseModel):
 			# 		for split, data in samples.items():
 			# 			samples[split]['features'] = feature_encoder.transform(data['features'])
 				
-			# 	if (preprocess.encoder_labels is not None):
-			# 		label_encoder = preprocess.encoder_labels
-			# 		label_encoder.fit(samples[key_train]['labels'])
+				if (len(encoderset.labelcoders) == 1):
+					labelcoder = encoderset.labelcoders[0]
+					preproc = labelcoder.sklearn_preprocess
+					if (labelcoder.only_fit_train == True):
+						fitted_preproc = preproc.fit(samples[key_train]['labels'])
+					elif (labelcoder.only_fit_train == False):
+						fitted_preproc = preproc.fit(splitset.label.to_numpy())
 
-			# 		for split, data in samples.items():
-			# 			samples[split]['labels'] = label_encoder.transform(data['labels'])
+					sparsity_informed = False
+					for split, split_data in samples.items():
+						encoded_labels = fitted_preproc.transform(split_data['labels'])
+						type_encoded_labels = str(type(encoded_labels))
+						if (
+							('scipy.sparse.csr.csr_matrix' in type_encoded_labels)
+							and
+							(algorithm.library == 'keras')
+						):
+							encoded_labels = encoded_labels.toarray()
+							if (sparsity_informed == False):
+								print("\nWarning - Detected `OneHotEncoder(sparse=True)` which generated 'scipy.sparse.csr.csr_matrix'.\nThis would have caused Keras training to fail, but AIQC intervened to convert sparse matrix back to numpy via `toarray()`.\nIn the future, set `OneHotEncoder(sparse=False)`.\n")
+								sparsity_informed = True
+						samples[split]['labels'] = encoded_labels
+
 
 			# 3. Build and Train model.
 			if (hyperparamcombo is not None):
