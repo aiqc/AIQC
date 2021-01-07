@@ -1875,8 +1875,11 @@ class Labelcoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
+
 		if (splitset.supervision == 'unsupervised'):
 			raise ValueError("\nYikes - `Splitset.supervision=='unsupervised'` therefore it cannot take on a Labelcoder.\n")
+		elif (len(encoderset.labelcoders) == 1):
+			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
 		
 		coder_type = str(type(sklearn_preprocess))
 		if ('sklearn.preprocessing._encoders' not in coder_type):
@@ -3067,25 +3070,21 @@ class Job(BaseModel):
 				if (len(encoderset.labelcoders) == 1):
 					labelcoder = encoderset.labelcoders[0]
 					preproc = labelcoder.sklearn_preprocess
+
+					try:
+						if ((preproc.sparse == True) and (algorithm.library == 'keras')):  
+							preproc.sparse = False
+							print("\nWarning - Detected `OneHotEncoder(sparse=True)`.\nFYI this is the default if `sparse` is left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nbut AIQC intervened to set `sparse=False`.\nIn the future, set `OneHotEncoder(sparse=False)`.\n")
+					except:
+						pass
+
 					if (labelcoder.only_fit_train == True):
 						fitted_preproc = preproc.fit(samples[key_train]['labels'])
 					elif (labelcoder.only_fit_train == False):
 						fitted_preproc = preproc.fit(splitset.label.to_numpy())
 
-					sparsity_informed = False
 					for split, split_data in samples.items():
-						encoded_labels = fitted_preproc.transform(split_data['labels'])
-						type_encoded_labels = str(type(encoded_labels))
-						if (
-							('scipy.sparse.csr.csr_matrix' in type_encoded_labels)
-							and
-							(algorithm.library == 'keras')
-						):
-							encoded_labels = encoded_labels.toarray()
-							if (sparsity_informed == False):
-								print("\nWarning - Detected `OneHotEncoder(sparse=True)` which generated 'scipy.sparse.csr.csr_matrix'.\nThis would have caused Keras training to fail, but AIQC intervened to convert sparse matrix back to numpy via `toarray()`.\nIn the future, set `OneHotEncoder(sparse=False)`.\n")
-								sparsity_informed = True
-						samples[split]['labels'] = encoded_labels
+						samples[split]['labels'] = fitted_preproc.transform(split_data['labels'])
 
 
 			# 3. Build and Train model.
