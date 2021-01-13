@@ -297,7 +297,7 @@ def create_db():
 			Dataset,
 			Label, Featureset, 
 			Splitset, Foldset, Fold, 
-			Encoderset, Labelcoder, #Featurecoder,
+			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Batch, Jobset, Job, Result,
 		])
@@ -1875,6 +1875,9 @@ class Encoderset(BaseModel):
 		)
 		return fc
 
+
+
+
 class Labelcoder(BaseModel):
 	"""
 	- `is_fit_train` toggles if the encoder is either `.fit(<training_split/fold>)` to 
@@ -1995,7 +1998,7 @@ class Labelcoder(BaseModel):
 		if (only_fit_train == True):
 			for c in categorical_encoders:
 				if (c in coder_name):
-					raise ValueError(f"\nYikes - `Labelcoder.only_fit_train` must be set to False if you are using the categorical encoder: {c}.\nPlease try again with `only_fit_train=False`.\n")
+					raise ValueError(f"\nYikes - Encoder attribute `only_fit_train` must be set to False if you are using the categorical encoder: {c}.\nPlease try again with `only_fit_train=False`.\n")
 
 		
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
@@ -2125,6 +2128,7 @@ class Featurecoder(BaseModel):
 	featurecoder_index = IntegerField()
 	only_fit_train = BooleanField()
 	sklearn_preprocess = PickleField()
+	matching_columns = JSONField()
 	leftover_columns = JSONField()
 	leftover_dtypes = JSONField()
 	original_filter = JSONField()
@@ -2135,19 +2139,20 @@ class Featurecoder(BaseModel):
 	def from_encoderset(
 		encoderset_id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool = False
+		, only_fit_train:bool = True
 		, include:bool = True
 		, dtypes:list = None
 		, columns:list = None
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
-		dataset = featureset.dataset
-		dataset_type = dataset.dataset_type
-		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset_id).dtype
 		
 		featureset = encoderset.splitset.featureset
 		featureset_cols = featureset.columns
 		existing_featurecoders = list(encoderset.featurecoders)
+
+		dataset = featureset.dataset
+		dataset_type = dataset.dataset_type
+		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtype
 
 		# 1. Figure out which columns have yet to be encoded.
 		# Order-wise no need to validate filters if there are no columns left to filter.
@@ -2157,9 +2162,11 @@ class Featurecoder(BaseModel):
 			featurecoder_index = 0
 		elif (len(existing_featurecoders) > 0):
 			# Get the leftover columns from the last one.
+			print(existing_featurecoders[-1].leftover_columns)
 			initial_columns = existing_featurecoders[-1].leftover_columns
+
 			featurecoder_index = existing_featurecoders[-1].featurecoder_index + 1
-			if (len(initial_columns == 0)):
+			if (len(initial_columns) == 0):
 				raise ValueError("\nYikes - All features have already been encoded by previous Featurecoders.\n")
 		initial_dtypes = {}
 		for key,value in tabular_dtype.items():
@@ -2169,25 +2176,27 @@ class Featurecoder(BaseModel):
 					# Exit `c` loop early becuase matching `c` found.
 					break
 
-		# 2. Validation.
+		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
-		check_sklearn_type(
-			sklearn_preprocess=sklearn_preprocess
-			, only_fit_train=only_fit_train
+		Labelcoder.check_sklearn_type(
+			sklearn_preprocess = sklearn_preprocess
+			, only_fit_train = only_fit_train
 		)
 
 		criterium = [dtypes, columns]
 		for inex in criterium:
-			if (isinstance(inex, list)):
-				# check if list is empty
-				if (not inex):
-					raise ValueError("\nYikes - Inclusion/ exclusion criteria cannot be empty lists.\n")
-				# Choosing not to check if each item is a string because numpy classes can be `==` against strings.
-			elif (not isinstance(inex, list)):
-				raise ValueError("\nYikes - All inclusion/ exclusion crtieria must be provided as lists.\nFor example: `dtypes=['float64', 'float32']`.\nThis was not a list: {c}.\n")
-		
+			if (inex is not None):
+				if (not isinstance(inex, list)):
+					raise ValueError(f"\nYikes - All inclusion/ exclusion crtieria must be provided as lists.\nFor example: `dtypes=['float64', 'float32']`.\nThis was not a list: {inex}.\n")
+				if (isinstance(inex, list)):
+					# check if list is empty
+					if (not inex):
+						raise ValueError("\nYikes - Inclusion/ exclusion criteria cannot be empty lists.\n")
+					# Choosing not to check if each item is a string because numpy classes can be `==` against strings.
+
+			
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (typ not in set(initial_dtypes.values())):
@@ -2198,17 +2207,16 @@ class Featurecoder(BaseModel):
 				if (col not in initial_columns):
 					raise ValueError(f"\nYikes - Column '{col}' was not found in remaining columns.\nRemove '{col}' from `columns` and try again.\n")
 		
-		if (
-			(include==False)
-			and ((dtypes is None) and (columns is None))
-		):
-			raise ValueError("\nYikes - When `include==False`, either `dtypes` or `columns` must be provided.\n")
 
-		# 3. Filter the remaining columns.
+
+		# 3a. Figure out which columns the filters apply to.
 		if (include==True):
 			# Add to this empty list via inclusion.
 			matching_columns = []
 			
+			if ((dtypes is None) and (columns is None)):
+				raise ValueError("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
+
 			if (dtypes is not None):
 				for typ in dtypes:
 					for key,value in initial_dtypes.items():
@@ -2224,7 +2232,7 @@ class Featurecoder(BaseModel):
 					elif (c in matching_columns):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(f"\nYikes - The column '{c}' was already excluded by `dtypes`, so this column-based filter is not valid.\nRemove '{c}' from `columns` and try again.\n")
+						raise ValueError(f"\nYikes - The column '{c}' was already included by `dtypes`, so this column-based filter is not valid.\nRemove '{c}' from `columns` and try again.\n")
 
 		elif (include==False):
 			# Prune this list via exclusion.
@@ -2246,10 +2254,15 @@ class Featurecoder(BaseModel):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
 						raise ValueError(f"\nYikes - The column '{c}' was already excluded by `dtypes`, so this column-based filter is not valid.\nRemove '{c}' from `dtypes` and try again.\n")
-			
-		# >>>>>>>> issue warning if there is fit_train mismatch where not ohe or ordinal or binarizer
 
-		# 4. Record the output.
+		if (len(matching_columns) == 0):
+			if (include == True):
+				inex_str = "inclusion"
+			elif (include == False):
+				inex_str = "exclusion"
+			raise ValueError(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
+
+		# 3b. Record the  output.
 		leftover_columns =  list(set(initial_columns) - set(matching_columns))
 		# This becomes leftover_dtypes.
 		for c in matching_columns:
@@ -2261,6 +2274,11 @@ class Featurecoder(BaseModel):
 			, 'columns': columns
 		}
 
+		# 4. Test fitting the encoder to matching columns.
+
+
+		# 5. Test encoding the whole dataset using fit encoder on matching columns.
+
 		featurecoder = Featurecoder.create(
 			featurecoder_index = featurecoder_index
 			, only_fit_train = only_fit_train
@@ -2269,6 +2287,7 @@ class Featurecoder(BaseModel):
 			, leftover_columns = leftover_columns
 			, leftover_dtypes = initial_dtypes#pruned
 			, original_filter = original_filter
+			, encoderset = encoderset
 		)
 		return featurecoder
 
