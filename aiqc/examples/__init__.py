@@ -86,14 +86,14 @@ def get_demo_files():
 			, 'location': 'local'
 		},
 		{
-			'name': 'houses_dirty_dtypes'
+			'name': 'dtype_testing'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'N/A'
 			, 'label': 'N/A'
 			, 'label_classes': 'N/A'
 			, 'features': 'N/A'
-			, 'samples': 50
-			, 'description': 'Fake. Testing w extraneous dtypes.'
+			, 'samples': 120
+			, 'description': 'Fake. Testing various dtypes.'
 			, 'location': 'local'
 		},
 		{

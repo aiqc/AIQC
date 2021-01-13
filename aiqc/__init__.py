@@ -216,7 +216,7 @@ def delete_config(confirm:bool=False):
 				print(f"\n=> Yikes - failed to delete config file at path:\n{config_path}")
 				print("===================================\n")
 				raise
-			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")		
+			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")      
 		else:
 			print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
 
@@ -227,7 +227,7 @@ def update_config(kv:dict):
 		print("\n=> Info - there is no config file to update.\n")
 	else:
 		for k, v in kv.items():
-			aiqc_config[k] = v		
+			aiqc_config[k] = v      
 		config_path = aiqc_config['config_path']
 		
 		try:
@@ -259,7 +259,7 @@ def get_path_db():
 
 def get_db():
 	"""
-	The `BaseModel` of the ORM calls this function.	
+	The `BaseModel` of the ORM calls this function. 
 	"""
 	path = get_path_db()
 	if path is None:
@@ -533,7 +533,7 @@ class Dataset(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
-			file = Dataset.Tabular.get_main_tabular_file(id)
+			file = Dataset.Tabular.get_main_file(id)
 			df = file.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
@@ -550,11 +550,17 @@ class Dataset(BaseModel):
 			return ndarray
 
 
-		def get_main_tabular_file(id:int):
+		def get_main_file(id:int):
 			file = File.select().join(Dataset).where(
 				Dataset.id==id, File.file_type=='tabular', File.file_index==0
 			)[0]
 			return file
+
+
+		def get_main_tabular(id:int):
+			file = Dataset.Tabular.get_main_file(id)
+			tabular = file.tabulars[0]
+			return tabular
 
 	
 	class Image():
@@ -593,7 +599,7 @@ class Dataset(BaseModel):
 				raise ValueError("\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\n")
 
 			try:
-				for i, p in enumerate(file_paths):	
+				for i, p in enumerate(file_paths):  
 					file = File.Image.from_file(
 						path = p
 						, pillow_save = pillow_save
@@ -602,7 +608,7 @@ class Dataset(BaseModel):
 					)
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise		
+				raise       
 			return dataset
 
 
@@ -815,7 +821,7 @@ class File(BaseModel):
 			arr = df.to_numpy()
 			return arr
 
-		#Future: Add to_tensor and from_tensor? Or will numpy suffice?	
+		#Future: Add to_tensor and from_tensor? Or will numpy suffice?  
 
 		def pandas_stringify_columns(df, columns):
 			"""
@@ -934,7 +940,7 @@ class File(BaseModel):
 			However, it had worse support for missing column names and header skipping.
 			So I switched to pandas for handling csv/tsv, but read_parquet()
 			doesn't let you change column names easily, so using pyarrow for parquet.
-			"""	
+			""" 
 			if not os.path.exists(path):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
 
@@ -1041,6 +1047,11 @@ class File(BaseModel):
 
 
 class Tabular(BaseModel):
+	"""
+	- Do not change `dtype=PickleField()` because we are stringifying the columns.
+	  I was tempted to do so for types like `np.float`, but we parse the final
+	  type that Pandas decides to use.
+	"""
 	# Is sequence just a subset of tabular with a file_index?
 	columns = JSONField()
 	dtype = JSONField()
@@ -1079,8 +1090,7 @@ class Label(BaseModel):
 		if (d.dataset_type != 'tabular'):
 			raise ValueError(f"\nYikes - Labels can only be created from `dataset_type='tabular'`.\nBut you provided `dataset_type`: <{d.dataset_type}>")
 		
-		d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
-		d_cols = d_file.tabulars[0].columns
+		d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
 
 		# Check that the user-provided columns exist.
 		all_cols_found = all(col in d_cols for col in columns)
@@ -1206,7 +1216,7 @@ class Label(BaseModel):
 		if (column_name == None):
 			column_name = label.columns[0]
 		d = label.dataset
-		column_dtype = label.dataset.Tabular.get_main_tabular_file(d.id).tabulars[0].dtype[column_name]
+		column_dtype = label.dataset.Tabular.get_main_tabular(d.id).dtype[column_name]
 		return column_dtype
 
 
@@ -1242,8 +1252,7 @@ class Featureset(BaseModel):
 			columns = None
 			columns_excluded = None
 		elif (d.dataset_type == 'tabular'):
-			d_file = Dataset.Tabular.get_main_tabular_file(dataset_id)
-			d_cols = d_file.tabulars[0].columns
+			d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
 
 			if (include_columns is not None) and (exclude_columns is not None):
 				raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
@@ -1442,10 +1451,10 @@ class Splitset(BaseModel):
 
 			# Check number of samples in Label vs Featureset, because they can come from different Datasets.
 			l_dataset_id = l.dataset.id
-			l_length = Dataset.Tabular.get_main_tabular_file(l_dataset_id).shape['rows']
+			l_length = Dataset.Tabular.get_main_file(l_dataset_id).shape['rows']
 			if (l_dataset_id != d.id):
 				if (d.dataset_type == 'tabular'):
-					f_length = Dataset.Tabular.get_main_tabular_file(d.id).shape['rows']
+					f_length = Dataset.Tabular.get_main_file(d.id).shape['rows']
 				elif (d.dataset_type == 'image'):
 					f_length = f.dataset.file_count
 				# Separate `if` to compare them.
@@ -1840,18 +1849,31 @@ class Encoderset(BaseModel):
 	def make_labelcoder(
 		id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool
+		, only_fit_train:bool = None
 	):
 		lc = Labelcoder.from_encoderset(
 			encoderset_id = id
 			, sklearn_preprocess = sklearn_preprocess
+			, only_fit_train = only_fit_train
 		)
 		return lc
 
-	#def test_featurecoders():
-		#if len==0: raise ValueError("\nYikes - This Encoderset does not have any labelcoders to test yet.\n")
 
-
+	def from_encoderset(
+		id:int
+		, sklearn_preprocess:object
+		, only_fit_train:bool = None
+		, all_columns:list = True
+		, dtypes_include:list = None
+		, dtypes_exclude:list = None
+		, columns_include:list = None
+		, columns_exclude:list = None
+	):
+		fc = Featurecoder.from_encoderset(
+			encoderset_id = id
+			, sklearn_preprocess = sklearn_preprocess
+		)
+		return fc
 
 class Labelcoder(BaseModel):
 	"""
@@ -1871,57 +1893,65 @@ class Labelcoder(BaseModel):
 	def from_encoderset(
 		encoderset_id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool = False
+		, only_fit_train:bool = None
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
 
+		if (only_fit_train is None):
+			only_fit_train = True
+		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
 			raise ValueError("\nYikes - `Splitset.supervision=='unsupervised'` therefore it cannot take on a Labelcoder.\n")
 		elif (len(encoderset.labelcoders) == 1):
 			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
 		
-		coder_type = str(type(sklearn_preprocess))
-		if ('sklearn.preprocessing._encoders' not in coder_type):
-			raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+		Labelcoder.check_sklearn_type(
+			sklearn_preprocess = sklearn_preprocess
+			, only_fit_train = only_fit_train
+		)
 
-		# Test Fit. 
-		try:
-			if (only_fit_train==True):
-				"""
-				- Foldset is tied to Batch. So just `fit()` on `train` split
-				  and don't worry about `folds_train_combined` for now.
-				- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
-				  in which case user should be using `only_fit_train=False` anyways.
-				"""
-				fit_samples = splitset.to_numpy(splits=['train'])['train']['labels']
-				communciated_split = "`splitset.to_numpy(splits=['train'])['train']['labels']`"
-			elif (only_fit_train==False):
-				fit_samples = splitset.label.to_numpy()
-				communciated_split = "`splitset.label.to_numpy()`"
-			fitted_encoder = sklearn_preprocess.fit(fit_samples)
-		except:
-			print(f"\nDuring testing, failed to `fit()` encoder on {communciated_split}.\n")
-			raise
-		else:
-			pass
-		# Test Transform/ Encode.
+		# 2. Test Fit. 
+		if (only_fit_train == True):
+			"""
+			- Foldset is tied to Batch. So just `fit()` on `train` split
+			  and don't worry about `folds_train_combined` for now.
+			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
+			  in which case user should be using `only_fit_train=False` anyways.
+			"""
+			samples_to_encode = splitset.to_numpy(splits=['train'])['train']['labels']
+			communicated_split = "the training split"
+		elif (only_fit_train == False):
+			samples_to_encode = splitset.label.to_numpy()
+			communicated_split = "all samples"
+
+		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+			sklearn_preprocess = sklearn_preprocess
+			, samples_to_fit = samples_to_encode
+		)
+
+		# 3. Test Transform/ Encode.
 		try:
 			"""
 			- During `Job.run`, it will touch every split/fold regardless of what it was fit on
 			  so just validate it on whole dataset.
 			"""
-			if (only_fit_train==False):
-				#Already in memory.
-				labels_all_samples = fit_samples
-			elif (only_fit_train==True):
-				labels_all_samples = splitset.label.to_numpy()
-			fitted_encoder.transform(labels_all_samples)
+			if (only_fit_train == False):
+				# Just use what is already in memory.
+				pass
+			elif (only_fit_train == True):
+				# Overwrite the specific split with all samples, so we can test it.
+				samples_to_encode = splitset.label.to_numpy()
+			
+			encoded_samples = Labelcoder.transform_dynamicDimensions(
+				fitted_encoders = fitted_encoders
+				, encoding_dimension = encoding_dimension
+				, samples_to_transform = samples_to_encode
+			)
 		except:
-			print("\nDuring testing, encoder `fit()` worked, but later failed to `transform(splitset.label.to_numpy())`.\nTip - for categoricals like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`, it is better to use `only_fit_train=False`.\n")
-			raise
+			raise ValueError("\nDuring testing, the encoder was successfully `fit()` on labels of {communicated_split}, but, it failed to `transform()` labels of the dataset as a whole.\nTip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`, it is better to use `only_fit_train=False`.\n")
 		else:
-			pass	
+			pass    
 		lc = Labelcoder.create(
 			only_fit_train = only_fit_train
 			, sklearn_preprocess = sklearn_preprocess
@@ -1930,38 +1960,318 @@ class Labelcoder(BaseModel):
 		return lc
 
 
-# class Featurecoder(BaseModel):
-# 	"""
-# 	- An Encoderset can have many Featurecoders that are applied sequentially.
-# 	- Encoders are sequential, meaning the columns encoded by `featurecoder_index=0` 
-# 	  are not available to `featurecoder_index=1`.
-# 	- Much validation because real-life encoding errors are cryptic and deep for beginners.
-# 	"""
-# 	featurecoder_index = IntegerField()
-# 	only_fit_train = BooleanField()
-# 	all_columns = BooleanField()
-# 	dtypes_include = JSONField(null=True)
-# 	dtypes_exclude = JSONField(null=True)
-# 	columns_include = JSONField(null=True)
-# 	columns_exclude = JSONField(null=True)
-# 	sklearn_preprocess = PickleField()
+	def check_sklearn_type(sklearn_preprocess:object, only_fit_train:bool):
+		coder_type = str(type(sklearn_preprocess))
+		coder_name = str(sklearn_preprocess)
 
-# 	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
+		categorical_encoders = [
+			'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
+			'Binarizer', 'MultiLabelBinarizer'
+			# Binners like 'KBinsDiscretizer' and 'QuantileTransformer'
+			# will place unseen observations outside bounds into existing min/max bin.
+		]
+
+		if ('sklearn.preprocessing' not in coder_type):
+			raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+		elif ('sklearn.preprocessing' in coder_type):
+			if (not hasattr(sklearn_preprocess, 'fit')):    
+				raise ValueError("\nYikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\nPlease use one of the uppercase methods instead.\nFor example: use `RobustScaler` instead of `robust_scale`.\n")
+			elif (hasattr(sklearn_preprocess, 'fit')):
+				pass
+			# Prevent sparse matrix output.
+			try:
+				# Wrap in `try` because it may not have that element at all.
+				# OneHotEncoder()
+				if (sklearn_preprocess.sparse == True):  
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse=True`.\nFYI `sparse` is True by default if left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
+				# KBinsDiscretizer()
+				if (("one-hot" in sklearn_preprocess.encode) and ("dense" not in sklearn_preprocess.encode)):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.encode!=True`.\nFYI `encode` is 'onehot' by default if left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
+				if (sklearn_preprocess.copy == True): 
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.copy==True`.\nPlease try again with 'copy=False'. For example, `Binarizer(copy=False)`.\nAs columns are encoded, they are sliced out of the original frame")
+			except:
+				pass
+
+		if (only_fit_train == True):
+			for c in categorical_encoders:
+				if (c in coder_name):
+					raise ValueError(f"\nYikes - `Labelcoder.only_fit_train` must be set to False if you are using the categorical encoder: {c}.\nPlease try again with `only_fit_train=False`.\n")
+
+		
+	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
+		"""
+		- Future: optimize to make sure not duplicating numpy. especially append to lists + reshape after transpose.
+		- As seen in `examples.encoder_compatibility_to_pandas()` there are 17 uppercase sklearn encoders,
+		  and 10 different data types across float, str, int when consider negatives, 2D multiple columns, 2D single columns.
+		  Different encoders work with different data types and dimensionality.
+		- This function normalizes that process by coercing the dimensionality that the encoder wants,
+		  and erroring if the wrong data type is used. 
+		"""
+		fitted_encoders = {}
+		incompatibilities = {
+			"string": [
+				"KBinsDiscretizer", "KernelCenterer", "MaxAbsScaler", 
+				"MinMaxScaler", "PowerTransformer", "QuantileTransformer", 
+				"RobustScaler", "StandardScaler"
+			]
+			, "float": ["LabelBinarizer"]
+			, "numeric array without dimensions both odd and square (e.g. 3x3, 5x5)": ["KernelCenterer"]
+		}
+		with warnings.catch_warnings(record=True) as w:
+			try:
+				# aiqc `to_numpy()` always fetches 2D.
+				fitted_encoders[0] = sklearn_preprocess.fit(samples_to_fit)
+			except:
+				# At this point, "2D" failed. It had 1 or more columns.
+				try:
+					width = samples_to_fit.shape[1]
+					if (width > 1):
+						# Reshape "2D many columns" to “3D of 2D single columns.”
+						samples_to_fit = samples_to_fit[None].T                    
+						# "2D single column" already failed. Need it to fail again to trigger except.
+					elif (width == 1):
+						# Reshape "2D single columns" to “3D of 2D single columns.”
+						samples_to_fit = samples_to_fit.reshape(1, samples_to_fit.shape[0], 1)    
+					# Fit against each 2D array within the 3D array.
+					for i, arr in enumerate(samples_to_fit):
+						fitted_encoders[i] = sklearn_preprocess.fit(arr)
+				except:
+					# At this point, "2D single column" has failed.
+					try:
+						# So reshape the "3D of 2D_singleColumn" into "2D of 1D for each column."
+						# This transformation is tested for both (width==1) as well as (width>1). 
+						samples_to_fit = samples_to_fit.transpose(2,0,1)[0]
+						# Fit against each column in 2D array.
+						for i, arr in enumerate(samples_to_fit):
+							fitted_encoders[i] = sklearn_preprocess.fit(arr)
+					except:
+						raise ValueError(f"\nYikes - Encoder failed to fit the columns you filtered.\n\nEither the data is dirty (e.g. contains NaNs),\nor you used one of the incompatible combinations of data type and encoder seen below:\n\n{incompatibilities}\n")
+					else:
+						encoding_dimension = "1D"
+				else:
+					encoding_dimension = "2D_singleColumn"
+			else:
+				encoding_dimension = "2D_multiColumn"
+		return fitted_encoders, encoding_dimension
 
 
-# 	# if ((s.featureset.dataset.dataset_type == "image") and (encoder_featureset is not None)):
-# 	# raise ValueError("\nYikes - `encoder_featureset` is not None, but `Dataset.dataset_type=='image'` does not support preprocessing on Featureset.\n")
-# 	coder_type = type(sklearn_preprocess)
-# 	if ('sklearn.preprocessing._encoders' not in coder_type):
-# 		raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+	def if_1d_make_2d(array:object):
+		if (len(array.shape) == 1):
+			array = array.reshape(array.shape[0], 1)
+		return array
 
 
-# 	# has to be created so that it can be run in sequence?
-# 	# or just run the existing sequence and try this one. 
-# 	# unless len()==0
+	def transform_dynamicDimensions(
+		fitted_encoders:dict
+		, encoding_dimension:str
+		, samples_to_transform:object
+	):
+		#with warnings.catch_warnings(record=True) as w:
+		if (encoding_dimension == '2D_multiColumn'):
+			# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
+			encoded_samples = fitted_encoders[0].transform(samples_to_transform)
+			encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)
+		elif (encoding_dimension == '2D_singleColumn'):
+			# Means that `2D_multiColumn` arrays cannot be used as is.
+			width = samples_to_transform.shape[1]
+			if (width == 1):
+				# It's already "2D_singleColumn"
+				encoded_samples = fitted_encoders[0].transform(samples_to_transform)
+				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)
+			elif (width > 1):
+				# Data must be fed into encoder as separate '2D_singleColumn' arrays, then recombined.
+				# Reshape "2D many columns" to “3D of 2D singleColumns” so we can loop on it.
+				encoded_samples = samples_to_transform[None].T
+				encoded_arrs = []
+				for i, arr in enumerate(encoded_samples):
+					encoded_arr = fitted_encoders[i].transform(arr)
+					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)  
+					encoded_arrs.append(encoded_arr)
+				encoded_samples = np.array(encoded_arrs).T
+				del encoded_arrs
+		elif (encoding_dimension == '1D'):
+			# From "2D_multiColumn" to "2D with 1D for each column"
+			# This `.T` works for both single and multi column.
+			encoded_samples = samples_to_transform.T
+			# Since each column is 1D, we care about rows now.
+			length = encoded_samples.shape[0]
+			if (length == 1):
+				encoded_samples = fitted_encoders[0].transform(encoded_samples)
+				# Some of these 1D encoders also output 1D.
+				# Need to put it back into 2D.
+				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)  
+			elif (length > 1):
+				encoded_arrs = []
+				for i, arr in enumerate(encoded_samples):
+					encoded_arr = fitted_encoders[i].transform(arr)
+					# Check if it is 1D before appending.
+					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)              
+					encoded_arrs.append(encoded_arr)
+				# From "3D of 2D_singleColumn" to "2D_multiColumn"
+				encoded_samples = np.array(encoded_arrs).T
+				del encoded_arrs
+		return encoded_samples
 
 
-# 	#add make_featurecoder() to Encoderset
+
+
+class Featurecoder(BaseModel):
+	"""
+	- An Encoderset can have a chain of Featurecoders.
+	- Encoders are applied sequential, meaning the columns encoded by `featurecoder_index=0` 
+	  are not available to `featurecoder_index=1`.
+	- Much validation because real-life encoding errors are cryptic and deep for beginners.
+	"""
+	featurecoder_index = IntegerField()
+	only_fit_train = BooleanField()
+	sklearn_preprocess = PickleField()
+	leftover_columns = JSONField()
+	leftover_dtypes = JSONField()
+	original_filter = JSONField()
+
+	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
+
+
+	def from_encoderset(
+		encoderset_id:int
+		, sklearn_preprocess:object
+		, only_fit_train:bool = False
+		, include:bool = True
+		, dtypes:list = None
+		, columns:list = None
+	):
+		encoderset = Encoderset.get_by_id(encoderset_id)
+		dataset = featureset.dataset
+		dataset_type = dataset.dataset_type
+		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset_id).dtype
+		
+		featureset = encoderset.splitset.featureset
+		featureset_cols = featureset.columns
+		existing_featurecoders = list(encoderset.featurecoders)
+
+		# 1. Figure out which columns have yet to be encoded.
+		# Order-wise no need to validate filters if there are no columns left to filter.
+		# Remember Featureset columns are a subset of the Dataset columns.
+		if (len(existing_featurecoders) == 0):
+			initial_columns = featureset_cols
+			featurecoder_index = 0
+		elif (len(existing_featurecoders) > 0):
+			# Get the leftover columns from the last one.
+			initial_columns = existing_featurecoders[-1].leftover_columns
+			featurecoder_index = existing_featurecoders[-1].featurecoder_index + 1
+			if (len(initial_columns == 0)):
+				raise ValueError("\nYikes - All features have already been encoded by previous Featurecoders.\n")
+		initial_dtypes = {}
+		for key,value in tabular_dtype.items():
+			for col in initial_columns:         
+				if (col == key):
+					initial_dtypes[col] = value
+					# Exit `c` loop early becuase matching `c` found.
+					break
+
+		# 2. Validation.
+		if (dataset_type == "image"):
+			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
+		
+		check_sklearn_type(
+			sklearn_preprocess=sklearn_preprocess
+			, only_fit_train=only_fit_train
+		)
+
+		criterium = [dtypes, columns]
+		for inex in criterium:
+			if (isinstance(inex, list)):
+				# check if list is empty
+				if (not inex):
+					raise ValueError("\nYikes - Inclusion/ exclusion criteria cannot be empty lists.\n")
+				# Choosing not to check if each item is a string because numpy classes can be `==` against strings.
+			elif (not isinstance(inex, list)):
+				raise ValueError("\nYikes - All inclusion/ exclusion crtieria must be provided as lists.\nFor example: `dtypes=['float64', 'float32']`.\nThis was not a list: {c}.\n")
+		
+		if (dtypes is not None):
+			for typ in dtypes:
+				if (typ not in set(initial_dtypes.values())):
+					raise ValueError(f"\nYikes - dtype '{typ}' was not found in remaining dtypes.\nRemove '{typ}' from `dtypes` and try again.\n")
+		
+		if (columns is not None):
+			for c in columns:
+				if (col not in initial_columns):
+					raise ValueError(f"\nYikes - Column '{col}' was not found in remaining columns.\nRemove '{col}' from `columns` and try again.\n")
+		
+		if (
+			(include==False)
+			and ((dtypes is None) and (columns is None))
+		):
+			raise ValueError("\nYikes - When `include==False`, either `dtypes` or `columns` must be provided.\n")
+
+		# 3. Filter the remaining columns.
+		if (include==True):
+			# Add to this empty list via inclusion.
+			matching_columns = []
+			
+			if (dtypes is not None):
+				for typ in dtypes:
+					for key,value in initial_dtypes.items():
+						if (value == typ):
+							matching_columns.append(key)
+							# Don't `break`; there can be more than one match.
+
+			if (columns is not None):
+				for c in columns:
+					# Remember that the dtype has already added some columns.
+					if (c not in matching_columns):
+						matching_columns.append(c)
+					elif (c in matching_columns):
+						# We know from validation above that the column existed in initial_columns.
+						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
+						raise ValueError(f"\nYikes - The column '{c}' was already excluded by `dtypes`, so this column-based filter is not valid.\nRemove '{c}' from `columns` and try again.\n")
+
+		elif (include==False):
+			# Prune this list via exclusion.
+			matching_columns = initial_columns 
+
+			if (dtypes is not None):
+				for typ in dtypes:
+					for key,value in initial_dtypes.items():                
+						if (value == typ):
+							matching_columns.remove(key)
+							# Don't `break`; there can be more than one match.
+
+			if (columns is not None):
+				for c in columns:
+					# Remember that the dtype has already pruned some columns.
+					if (c in matching_columns):
+						matching_columns.remove(c)
+					elif (c not in matching_columns):
+						# We know from validation above that the column existed in initial_columns.
+						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
+						raise ValueError(f"\nYikes - The column '{c}' was already excluded by `dtypes`, so this column-based filter is not valid.\nRemove '{c}' from `dtypes` and try again.\n")
+			
+		# >>>>>>>> issue warning if there is fit_train mismatch where not ohe or ordinal or binarizer
+
+		# 4. Record the output.
+		leftover_columns =  list(set(initial_columns) - set(matching_columns))
+		# This becomes leftover_dtypes.
+		for c in matching_columns:
+			del initial_dtypes[c]
+
+		original_filter = {
+			'include': include
+			, 'dtypes': dtypes
+			, 'columns': columns
+		}
+
+		featurecoder = Featurecoder.create(
+			featurecoder_index = featurecoder_index
+			, only_fit_train = only_fit_train
+			, sklearn_preprocess = sklearn_preprocess
+			, matching_columns = matching_columns
+			, leftover_columns = leftover_columns
+			, leftover_dtypes = initial_dtypes#pruned
+			, original_filter = original_filter
+		)
+		return featurecoder
+
 
 
 
@@ -2029,7 +2339,7 @@ class Algorithm(BaseModel):
 	def select_function_model_loss(
 		library:str,
 		analysis_type:str
-	):		
+	):      
 		function_model_loss = None
 		if (library == 'keras'):
 			function_model_loss = Algorithm.keras_model_loss
@@ -2505,7 +2815,7 @@ class Batch(BaseModel):
 
 	# not sure how this got in here. delete it after testing.
 	#def __init__(self, *args, **kwargs):
-	#	super(Batch, self).__init__(*args, **kwargs)
+	#   super(Batch, self).__init__(*args, **kwargs)
 
 	def from_algorithm(
 		algorithm_id:int
@@ -3056,34 +3366,24 @@ class Job(BaseModel):
 					samples['train'] = splitset.to_numpy(splits=['train'])['train']
 					key_train = "train"
 
-			# 2. Preprocess the features and labels.
-			# Preprocessing happens prior to training the model.
-			if (encoderset is not None):
-			# 	# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
-			# 	if (preprocess.encoder_features is not None):
-			# 		feature_encoder = preprocess.encoder_features
-			# 		feature_encoder.fit(samples[key_train]['features'])
-
-			# 		for split, data in samples.items():
-			# 			samples[split]['features'] = feature_encoder.transform(data['features'])
-				
+			# 2. Encode the features and labels.
+			# encoding happens prior to training the model.
+			# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
+			if (encoderset is not None):                
 				if (len(encoderset.labelcoders) == 1):
 					labelcoder = encoderset.labelcoders[0]
 					preproc = labelcoder.sklearn_preprocess
 
-					try:
-						if ((preproc.sparse == True) and (algorithm.library == 'keras')):  
-							preproc.sparse = False
-							print("\nWarning - Detected `OneHotEncoder(sparse=True)`.\nFYI this is the default if `sparse` is left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nbut AIQC intervened to set `sparse=False`.\nIn the future, set `OneHotEncoder(sparse=False)`.\n")
-					except:
-						pass
-
+					# Fit to either (train split/fold) or (all splits/folds).
 					if (labelcoder.only_fit_train == True):
 						fitted_preproc = preproc.fit(samples[key_train]['labels'])
+						# Some sklearn encoders only fit to 2D_single_column not 2D_multi_column.
 					elif (labelcoder.only_fit_train == False):
 						fitted_preproc = preproc.fit(splitset.label.to_numpy())
 
+					# Once the fits are applied, perform the transform to the rest of the splits.
 					for split, split_data in samples.items():
+						# Do it all in one step.
 						samples[split]['labels'] = fitted_preproc.transform(split_data['labels'])
 
 
@@ -3362,7 +3662,7 @@ class TrainingCallback():
 
 					if (statement == False):
 						break # Out of for loop.
-				        
+						
 				if (statement == False):
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
@@ -3529,15 +3829,15 @@ class Experiment():
 			hyperparamset_id = None
 
 		# if ((encoder_features is not None) or (encoder_labels is not None)):
-		# 	splitset = Splitset.get_by_id(splitset_id)
-		# 	encoderset = splitset.make_encoderset(
-		# 		encoder_features = encoder_features
-		# 		, encoder_labels = encoder_labels
-		# 		# dictionary for each?
-		# 	)
-		# 	encoderset_id = encoderset.id
+		#   splitset = Splitset.get_by_id(splitset_id)
+		#   encoderset = splitset.make_encoderset(
+		#       encoder_features = encoder_features
+		#       , encoder_labels = encoder_labels
+		#       # dictionary for each?
+		#   )
+		#   encoderset_id = encoderset.id
 		# elif (encoder_features is None) and (encoder_labels is None):
-		# 	encoderset_id = None
+		#   encoderset_id = None
 
 		batch = algorithm.make_batch(
 			splitset_id = splitset_id
