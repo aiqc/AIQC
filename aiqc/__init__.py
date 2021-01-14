@@ -1315,19 +1315,41 @@ class Featureset(BaseModel):
 		return f
 
 
-	def to_pandas(id:int, samples:list=None):
-		f_frame = Featureset.get_featureset(id=id, numpy_or_pandas='pandas', samples=samples)
+	def to_pandas(id:int, samples:list=None, columns:list=None):
+		f_frame = Featureset.get_featureset(
+			id = id
+			, numpy_or_pandas = 'pandas'
+			, samples = samples
+			, columns = columns
+		)
 		return f_frame
 
 
-	def to_numpy(id:int, samples:list=None):
-		f_arr = Featureset.get_featureset(id=id, numpy_or_pandas='numpy', samples=samples)
+	def to_numpy(id:int, samples:list=None, columns:list=None):
+		f_arr = Featureset.get_featureset(
+			id = id
+			, numpy_or_pandas = 'numpy'
+			, samples = samples
+			, columns = columns
+		)
 		return f_arr
 
 
-	def get_featureset(id:int, numpy_or_pandas:str, samples:list=None):
+	def get_featureset(
+		id:int
+		, numpy_or_pandas:str
+		, samples:list = None
+		, columns:list = None
+	):
 		f = Featureset.get_by_id(id)
 		f_cols = f.columns
+
+		if (columns is not None):
+			for c in columns:
+				if c not in f_cols:
+					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Featureset.columns`.\n")
+			f_cols = columns	
+
 		dataset_id = f.dataset.id
 		
 		if (numpy_or_pandas == 'numpy'):
@@ -2137,6 +2159,7 @@ class Featurecoder(BaseModel):
 	leftover_columns = JSONField()
 	leftover_dtypes = JSONField()
 	original_filter = JSONField()
+	encoding_dimension = CharField()
 
 	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
 
@@ -2280,6 +2303,23 @@ class Featurecoder(BaseModel):
 		}
 
 		# 4. Test fitting the encoder to matching columns.
+		if (only_fit_train == True):
+			"""
+			- Foldset is tied to Batch. So just `fit()` on `train` split
+			  and don't worry about `folds_train_combined` for now.
+			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
+			  in which case user should be using `only_fit_train=False` anyways.
+			"""
+			samples_to_encode = splitset.to_numpy(splits=['train'])['train']['features']
+			communicated_split = "the training split"
+		elif (only_fit_train == False):
+			samples_to_encode = splitset.featureset.to_numpy()
+			communicated_split = "all samples"
+
+		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+			sklearn_preprocess = sklearn_preprocess
+			, samples_to_fit = samples_to_encode
+		)
 
 
 		# 5. Test encoding the whole dataset using fit encoder on matching columns.
@@ -2293,6 +2333,7 @@ class Featurecoder(BaseModel):
 			, leftover_dtypes = initial_dtypes#pruned
 			, original_filter = original_filter
 			, encoderset = encoderset
+			, encoding_dimension = encoding_dimension
 		)
 		if (verbose == True):
 			print(f"\n=> The columns below matched your filters. Tested encoding them successfully.\n\n{pp.pformat(matching_columns)}\n")
