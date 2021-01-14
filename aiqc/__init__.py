@@ -284,7 +284,7 @@ def create_db():
 			print(f"\n=> Yikes - failed to create database file at path:\n{db_path}")
 			print("===================================\n")
 			raise
-		print(f"\n=> Success - created database file for machine learning metrics at path:\n{db_path}\n")
+		print(f"\n=> Success - created database file at path:\n{db_path}\n")
 
 	db = get_db()
 	# Create tables inside db.
@@ -1589,17 +1589,49 @@ class Splitset(BaseModel):
 		return s
 
 
-	def to_pandas(id:int, splits:list=None):
-		split_frames = Splitset.get_splits(id=id, numpy_or_pandas='pandas', splits=splits)
+	def to_pandas(
+		id:int
+		, splits:list = None
+		, include_label:bool = None
+		, include_featureset:bool = None
+		, featureset_columns:list = None
+	):
+		split_frames = Splitset.get_splits(
+			id = id
+			, numpy_or_pandas = 'pandas'
+			, splits = splits
+			, include_label = include_label
+			, include_featureset = include_featureset
+			, featureset_columns = featureset_columns
+		)
 		return split_frames
 
 
-	def to_numpy(id:int, splits:list=None):
-		split_arrs = Splitset.get_splits(id=id, numpy_or_pandas='numpy', splits=splits)
+	def to_numpy(
+		id:int
+		, splits:list = None
+		, include_label:bool = None
+		, include_featureset:bool = None
+		, featureset_columns:list = None
+	):
+		split_arrs = Splitset.get_splits(
+			id = id
+			, numpy_or_pandas = 'pandas'
+			, splits = splits
+			, include_label = include_label
+			, include_featureset = include_featureset
+			, featureset_columns = featureset_columns
+		)
 		return split_arrs
 
 
-	def get_splits(id:int, numpy_or_pandas:str, splits:list=None):
+	def get_splits(id:int
+		, numpy_or_pandas:str # Machine set, so don't validate.
+		, splits:list = None
+		, include_label:bool = None # Unsupervised can't be True.
+		, include_featureset:bool = None
+		, featureset_columns:list = None
+	):
 		"""
 		Future: Optimize!
 		- Worried it's holding all dataframes and arrays in memory.
@@ -1616,32 +1648,62 @@ class Splitset(BaseModel):
 			splits = list(s.samples.keys())
 
 		supervision = s.supervision
-		f = s.featureset
+		featureset = s.featureset
 
 		split_frames = {}
 
 		# Future: Optimize (switch to generators for memory usage).
 		# Here, split_names are: train, test, validation.
-		for split_name in splits:
-			
-			# placeholder for the frames/arrays
-			split_frames[split_name] = {}
-			
-			# fetch the sample indices for the split
-			split_samples = s.samples[split_name]
-			if (numpy_or_pandas == 'numpy'):
-				ff = f.to_numpy(samples=split_samples)
-			elif (numpy_or_pandas == 'pandas'):
-				ff = f.to_pandas(samples=split_samples)
-			split_frames[split_name]["features"] = ff
+		
+		# There are always featureset. It's just if you want to include them or not.
+		# Saves memory when you only want Labels by split.
+		if (include_featureset is None):
+			include_featureset = True
 
-			if supervision == "supervised":
-				l = s.label
+		if (supervision == "unsupervised"):
+			if (include_label is None):
+				include_label = False
+			elif (include_label == True):
+				raise ValueError("\nYikes - `include_label == True` but `Splitset.supervision=='unsupervised'`.\n")
+		elif (supervision == "supervised"):
+			if (include_label is None):
+				include_label = True
+
+		if ((include_featureset == False) and (include_label == False)):
+			raise ValueError("\nYikes - Both `include_featureset` and `include_label` cannot be False.\n")
+
+		if ((featureset_columns is not None) and (include_featureset != True)):
+			raise ValueError("\nYikes - `featureset_columns` must be None if `include_label==False`.\n")
+
+		for split_name in splits:
+			# Placeholder for the frames/arrays.
+			split_frames[split_name] = {}
+			# Fetch the sample indices for the split
+			split_samples = s.samples[split_name]
+			
+			if (include_featureset == False):
+				# Saves memory when you only want features by split.
+				pass
+			elif (include_featureset == True):
 				if (numpy_or_pandas == 'numpy'):
-					lf = l.to_numpy(samples=split_samples)
+					ff = featureset.to_numpy(samples=split_samples, columns=featureset_columns)
 				elif (numpy_or_pandas == 'pandas'):
-					lf = l.to_pandas(samples=split_samples)
-				split_frames[split_name]["labels"] = lf
+					ff = featureset.to_pandas(samples=split_samples, columns=featureset_columns)
+				split_frames[split_name]["features"] = ff
+
+			if (supervision == "supervised"):
+				if (include_label == False):
+					# Saves memory when you only want features by split.
+					pass
+				elif (include_label == True):
+					l = s.label
+					if (numpy_or_pandas == 'numpy'):
+						lf = l.to_numpy(samples=split_samples)
+					elif (numpy_or_pandas == 'pandas'):
+						lf = l.to_pandas(samples=split_samples)
+					split_frames[split_name]["labels"] = lf
+			elif (supervision == "unsupervised"):
+				pass
 		return split_frames
 
 
@@ -1949,7 +2011,10 @@ class Labelcoder(BaseModel):
 			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
 			  in which case user should be using `only_fit_train=False` anyways.
 			"""
-			samples_to_encode = splitset.to_numpy(splits=['train'])['train']['labels']
+			samples_to_encode = splitset.to_numpy(
+				splits = ['train']
+				, include_featureset = False
+			)['train']['labels']
 			communicated_split = "the training split"
 		elif (only_fit_train == False):
 			samples_to_encode = splitset.label.to_numpy()
@@ -1967,7 +2032,7 @@ class Labelcoder(BaseModel):
 			  so just validate it on whole dataset.
 			"""
 			if (only_fit_train == False):
-				# Just use what is already in memory.
+				# All samples are already in memory.
 				pass
 			elif (only_fit_train == True):
 				# Overwrite the specific split with all samples, so we can test it.
@@ -1979,7 +2044,7 @@ class Labelcoder(BaseModel):
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError("\nDuring testing, the encoder was successfully `fit()` on labels of {communicated_split}, but, it failed to `transform()` labels of the dataset as a whole.\nTip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`, it is better to use `only_fit_train=False`.\n")
+			raise ValueError(f"\nDuring testing, the encoder was successfully `fit()` on labels of {communicated_split}, but, it failed to `transform()` labels of the dataset as a whole.\nTip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`, it is better to use `only_fit_train=False`.\n")
 		else:
 			pass    
 		lc = Labelcoder.create(
@@ -2175,6 +2240,7 @@ class Featurecoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		
+		splitset = encoderset.splitset
 		featureset = encoderset.splitset.featureset
 		featureset_cols = featureset.columns
 		existing_featurecoders = list(encoderset.featurecoders)
@@ -2310,10 +2376,14 @@ class Featurecoder(BaseModel):
 			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
 			  in which case user should be using `only_fit_train=False` anyways.
 			"""
-			samples_to_encode = splitset.to_numpy(splits=['train'])['train']['features']
+			samples_to_encode = splitset.to_numpy(
+				splits=['train']
+				, include_label = False
+				, featureset_columns = matching_columns
+			)['train']['features']
 			communicated_split = "the training split"
 		elif (only_fit_train == False):
-			samples_to_encode = splitset.featureset.to_numpy()
+			samples_to_encode = featureset.to_numpy(columns=matching_columns)
 			communicated_split = "all samples"
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
@@ -2321,8 +2391,28 @@ class Featurecoder(BaseModel):
 			, samples_to_fit = samples_to_encode
 		)
 
-
-		# 5. Test encoding the whole dataset using fit encoder on matching columns.
+		# 5. Test encoding the whole dataset using fitted encoder on matching columns.
+		try:
+			"""
+			- During `Job.run`, it will touch every split/fold regardless of what it was fit on
+			  so just validate it on whole dataset.
+			"""
+			if (only_fit_train == False):
+				# All samples are already in memory.
+				pass
+			elif (only_fit_train == True):
+				# Overwrite the specific split with all samples, so we can test it.
+				samples_to_encode = featureset.to_numpy(columns=matching_columns)
+			
+			encoded_samples = Labelcoder.transform_dynamicDimensions(
+				fitted_encoders = fitted_encoders
+				, encoding_dimension = encoding_dimension
+				, samples_to_transform = samples_to_encode
+			)
+		except:
+			raise ValueError(f"\nDuring testing, the encoder was successfully `fit()` on features of {communicated_split}, but, it failed to `transform()` features of the dataset as a whole.\nTip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`, it is better to use `only_fit_train=False`.\n")
+		else:
+			pass
 
 		featurecoder = Featurecoder.create(
 			featurecoder_index = featurecoder_index
@@ -2335,6 +2425,7 @@ class Featurecoder(BaseModel):
 			, encoderset = encoderset
 			, encoding_dimension = encoding_dimension
 		)
+
 		if (verbose == True):
 			print(f"\n=> The columns below matched your filters. Tested encoding them successfully.\n\n{pp.pformat(matching_columns)}\n")
 			if (len(leftover_columns) == 0):
@@ -3410,7 +3501,10 @@ class Job(BaseModel):
 			"""
 			samples = {}
 			if (splitset.supervision == "unsupervised"):
-				samples['train'] = splitset.to_numpy(splits=['train'])['train']
+				samples['train'] = splitset.to_numpy(
+					splits = ['train']
+					, include_label = False
+				)['train']
 				key_train = "train"
 				key_evaluation = None
 			elif (splitset.supervision == "supervised"):
@@ -3452,10 +3546,15 @@ class Job(BaseModel):
 					elif (labelcoder.only_fit_train == False):
 						fitted_preproc = preproc.fit(splitset.label.to_numpy())
 
-					# Once the fits are applied, perform the transform to the rest of the splits.
+					# Once the fits are applied, perform the transform on the rest of the splits.
 					for split, split_data in samples.items():
-						# Do it all in one step.
 						samples[split]['labels'] = fitted_preproc.transform(split_data['labels'])
+
+				# >>> put featurecoders here and call from samples[split][features]
+				featurecoders = encoderset.featurecoders
+				#if (len(featurecoders) > 0):
+				#	for featurecoder in featurecoders:
+
 
 
 			# 3. Build and Train model.
