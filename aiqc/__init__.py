@@ -1,6 +1,7 @@
 import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
+import pprint as pp
 
 #OS agonstic system files.
 import appdirs
@@ -1859,19 +1860,23 @@ class Encoderset(BaseModel):
 		return lc
 
 
-	def from_encoderset(
+	def make_featurecoder(
 		id:int
 		, sklearn_preprocess:object
 		, only_fit_train:bool = None
-		, all_columns:list = True
-		, dtypes_include:list = None
-		, dtypes_exclude:list = None
-		, columns_include:list = None
-		, columns_exclude:list = None
+		, include:bool = None
+		, dtypes:list = None
+		, columns:list = None
+		, verbose = None
 	):
 		fc = Featurecoder.from_encoderset(
 			encoderset_id = id
 			, sklearn_preprocess = sklearn_preprocess
+			, only_fit_train = only_fit_train
+			, include = include
+			, dtypes = dtypes
+			, columns = columns
+			, verbose = verbose
 		)
 		return fc
 
@@ -2143,6 +2148,7 @@ class Featurecoder(BaseModel):
 		, include:bool = True
 		, dtypes:list = None
 		, columns:list = None
+		, verbose = True
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		
@@ -2162,12 +2168,11 @@ class Featurecoder(BaseModel):
 			featurecoder_index = 0
 		elif (len(existing_featurecoders) > 0):
 			# Get the leftover columns from the last one.
-			print(existing_featurecoders[-1].leftover_columns)
 			initial_columns = existing_featurecoders[-1].leftover_columns
 
 			featurecoder_index = existing_featurecoders[-1].featurecoder_index + 1
 			if (len(initial_columns) == 0):
-				raise ValueError("\nYikes - All features have already been encoded by previous Featurecoders.\n")
+				raise ValueError("\nYikes - All features already have encoders associated with them. Cannot add more Featurecoders to this Encoderset.\n")
 		initial_dtypes = {}
 		for key,value in tabular_dtype.items():
 			for col in initial_columns:         
@@ -2289,6 +2294,12 @@ class Featurecoder(BaseModel):
 			, original_filter = original_filter
 			, encoderset = encoderset
 		)
+		if (verbose == True):
+			print(f"\n=> The columns below matched your filters. Tested encoding them successfully.\n\n{pp.pformat(matching_columns)}\n")
+			if (len(leftover_columns) == 0):
+				print(f"\n=> Nice! Now all columns have encoders associated with them. No more Featurecoders can be added to this Encoderset.\n")
+			elif (len(leftover_columns) > 0):
+				print(f"\n=> The remaining columns and dtypes can be used in your downstream Featurecoder:\n\n{pp.pformat(initial_dtypes)}\n")
 		return featurecoder
 
 
