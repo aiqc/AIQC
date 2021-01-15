@@ -1594,7 +1594,7 @@ class Splitset(BaseModel):
 		, splits:list = None
 		, include_label:bool = None
 		, include_featureset:bool = None
-		, featureset_columns:list = None
+		, feature_columns:list = None
 	):
 		split_frames = Splitset.get_splits(
 			id = id
@@ -1602,7 +1602,7 @@ class Splitset(BaseModel):
 			, splits = splits
 			, include_label = include_label
 			, include_featureset = include_featureset
-			, featureset_columns = featureset_columns
+			, feature_columns = feature_columns
 		)
 		return split_frames
 
@@ -1612,7 +1612,7 @@ class Splitset(BaseModel):
 		, splits:list = None
 		, include_label:bool = None
 		, include_featureset:bool = None
-		, featureset_columns:list = None
+		, feature_columns:list = None
 	):
 		split_arrs = Splitset.get_splits(
 			id = id
@@ -1620,7 +1620,7 @@ class Splitset(BaseModel):
 			, splits = splits
 			, include_label = include_label
 			, include_featureset = include_featureset
-			, featureset_columns = featureset_columns
+			, feature_columns = feature_columns
 		)
 		return split_arrs
 
@@ -1630,7 +1630,7 @@ class Splitset(BaseModel):
 		, splits:list = None
 		, include_label:bool = None # Unsupervised can't be True.
 		, include_featureset:bool = None
-		, featureset_columns:list = None
+		, feature_columns:list = None
 	):
 		"""
 		Future: Optimize!
@@ -1672,8 +1672,8 @@ class Splitset(BaseModel):
 		if ((include_featureset == False) and (include_label == False)):
 			raise ValueError("\nYikes - Both `include_featureset` and `include_label` cannot be False.\n")
 
-		if ((featureset_columns is not None) and (include_featureset != True)):
-			raise ValueError("\nYikes - `featureset_columns` must be None if `include_label==False`.\n")
+		if ((feature_columns is not None) and (include_featureset != True)):
+			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
 
 		for split_name in splits:
 			# Placeholder for the frames/arrays.
@@ -1681,29 +1681,21 @@ class Splitset(BaseModel):
 			# Fetch the sample indices for the split
 			split_samples = s.samples[split_name]
 			
-			if (include_featureset == False):
-				# Saves memory when you only want features by split.
-				pass
-			elif (include_featureset == True):
+			if (include_featureset == True):
 				if (numpy_or_pandas == 'numpy'):
-					ff = featureset.to_numpy(samples=split_samples, columns=featureset_columns)
+					ff = featureset.to_numpy(samples=split_samples, columns=feature_columns)
 				elif (numpy_or_pandas == 'pandas'):
-					ff = featureset.to_pandas(samples=split_samples, columns=featureset_columns)
+					ff = featureset.to_pandas(samples=split_samples, columns=feature_columns)
 				split_frames[split_name]["features"] = ff
 
-			if (supervision == "supervised"):
-				if (include_label == False):
-					# Saves memory when you only want features by split.
-					pass
-				elif (include_label == True):
-					l = s.label
-					if (numpy_or_pandas == 'numpy'):
-						lf = l.to_numpy(samples=split_samples)
-					elif (numpy_or_pandas == 'pandas'):
-						lf = l.to_pandas(samples=split_samples)
-					split_frames[split_name]["labels"] = lf
-			elif (supervision == "unsupervised"):
-				pass
+			if (include_label == True):
+				l = s.label
+				if (numpy_or_pandas == 'numpy'):
+					lf = l.to_numpy(samples=split_samples)
+				elif (numpy_or_pandas == 'pandas'):
+					lf = l.to_pandas(samples=split_samples)
+				split_frames[split_name]["labels"] = lf
+
 		return split_frames
 
 
@@ -1830,22 +1822,55 @@ class Foldset(BaseModel):
 		return foldset
 
 
-	def to_pandas(id:int, fold_index:int=None):
-		fold_frames = Foldset.get_folds(id=id, numpy_or_pandas='pandas', fold_index=fold_index)
+	def to_pandas(
+		id:int
+		, fold_index:int = None
+		, include_label:bool = None
+		, include_featureset:bool = None
+		, feature_columns:list = None
+	):
+		fold_frames = Foldset.get_folds(
+			id = id
+			, numpy_or_pandas = 'pandas'
+			, fold_index = fold_index
+			, include_label = include_label
+			, include_featureset = include_featureset
+			, feature_columns = feature_columns
+		)
 		return fold_frames
 
 
-	def to_numpy(id:int, fold_index:int=None):
-		fold_arrs = Foldset.get_folds(id=id, numpy_or_pandas='numpy', fold_index=fold_index)
+	def to_numpy(
+		id:int
+		, fold_index:int = None
+		, include_label:bool = None
+		, include_featureset:bool = None
+		, feature_columns:list = None
+	):
+		fold_arrs = Foldset.get_folds(
+			id = id
+			, numpy_or_pandas = 'numpy'
+			, fold_index = fold_index
+			, include_label = include_label
+			, include_featureset = include_featureset
+			, feature_columns = feature_columns
+		)
 		return fold_arrs
 
 
-	def get_folds(id:int, numpy_or_pandas:str, fold_index:int=None):
+	def get_folds(
+		id:int
+		, numpy_or_pandas:str
+		, fold_index:int = None
+		, include_label:bool = None
+		, include_featureset:bool = None
+		, feature_columns:list = None
+	):
 		foldset = Foldset.get_by_id(id)
 		fold_count = foldset.fold_count
 		folds = foldset.folds
 
-		if fold_index is not None:
+		if (fold_index is not None):
 			if (0 > fold_index) or (fold_index > fold_count):
 				raise ValueError(f"\nYikes - This Foldset <id:{id}> has fold indices between 0 and {fold_count-1}\n")
 
@@ -1853,10 +1878,31 @@ class Foldset(BaseModel):
 		supervision = s.supervision
 		featureset = s.featureset
 
+		# There are always features, just whether to include or not.
+		# Saves memory when you only want Labels by split.
+		if (include_featureset is None):
+			include_featureset = True
+
+		if (supervision == "unsupervised"):
+			if (include_label is None):
+				include_label = False
+			elif (include_label == True):
+				raise ValueError("\nYikes - `include_label == True` but `Splitset.supervision=='unsupervised'`.\n")
+		elif (supervision == "supervised"):
+			if (include_label is None):
+				include_label = True
+
+		if ((include_featureset == False) and (include_label == False)):
+			raise ValueError("\nYikes - Both `include_featureset` and `include_label` cannot be False.\n")
+
+		if ((feature_columns is not None) and (include_featureset != True)):
+			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
+
+
 		fold_frames = {}
-		if fold_index is not None:
+		if (fold_index is not None):
 			fold_frames[fold_index] = {}
-		else:
+		elif (fold_index is None):
 			for i in range(fold_count):
 				fold_frames[i] = {}
 
@@ -1869,16 +1915,23 @@ class Foldset(BaseModel):
 
 				# placeholder for the frames/arrays
 				fold_frames[i][fold_name] = {}
-				
 				# fetch the sample indices for the split
 				folds_samples = fold.samples[fold_name]
-				if (numpy_or_pandas == 'numpy'):
-					ff = featureset.to_numpy(samples=folds_samples)
-				elif (numpy_or_pandas == 'pandas'):
-					ff = featureset.to_pandas(samples=folds_samples)
-				fold_frames[i][fold_name]["features"] = ff
 
-				if supervision == "supervised":
+				if (include_featureset == True):
+					if (numpy_or_pandas == 'numpy'):
+						ff = featureset.to_numpy(
+							samples = folds_samples
+							, columns = feature_columns
+						)
+					elif (numpy_or_pandas == 'pandas'):
+						ff = featureset.to_pandas(
+							samples = folds_samples
+							, columns = feature_columns
+						)
+					fold_frames[i][fold_name]["features"] = ff
+
+				if (include_label == True):
 					l = s.label
 					if (numpy_or_pandas == 'numpy'):
 						lf = l.to_numpy(samples=folds_samples)
@@ -2068,29 +2121,26 @@ class Labelcoder(BaseModel):
 
 		if ('sklearn.preprocessing' not in coder_type):
 			raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError("\nYikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\nPlease use one of the uppercase methods instead.\nFor example: use `RobustScaler` instead of `robust_scale`.\n")
 			elif (hasattr(sklearn_preprocess, 'fit')):
 				pass
-			# Prevent sparse matrix output.
-			try:
-				# Wrap in `try` because it may not have that element at all.
-				# OneHotEncoder()
-				if (sklearn_preprocess.sparse == True):  
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse=True`.\nFYI `sparse` is True by default if left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
-				# KBinsDiscretizer()
-				if (("one-hot" in sklearn_preprocess.encode) and ("dense" not in sklearn_preprocess.encode)):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.encode!=True`.\nFYI `encode` is 'onehot' by default if left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
-				if (sklearn_preprocess.copy == True): 
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.copy==True`.\nPlease try again with 'copy=False'. For example, `Binarizer(copy=False)`.\nAs columns are encoded, they are sliced out of the original frame")
-			except:
-				pass
+			
+			# Prevent sparse matrix output. [OneHotEncoder]
+			if (hasattr(sklearn_preprocess, 'sparse')):
+				if (sklearn_preprocess.sparse == True):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse=True`.\nFYI `sparse` is True by default if left blank.\nThis would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
 
-		if (only_fit_train == True):
-			for c in categorical_encoders:
-				if (c in coder_name):
-					raise ValueError(f"\nYikes - Encoder attribute `only_fit_train` must be set to False if you are using the categorical encoder: {c}.\nPlease try again with `only_fit_train=False`.\n")
+			if (hasattr(sklearn_preprocess, 'encode')):
+				if (sklearn_preprocess.encode != 'onehot-dense'):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.encode!=onehot-dense`.\nFYI `encode` is 'onehot' by default if left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
+
+			if (only_fit_train == True):
+				for c in categorical_encoders:
+					if (c in coder_name):
+						raise ValueError(f"\nYikes - Encoder attribute `only_fit_train` must be set to False if you are using the categorical encoder: {c}.\nPlease try again with `only_fit_train=False`.\n")
 
 		
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
@@ -2379,7 +2429,7 @@ class Featurecoder(BaseModel):
 			samples_to_encode = splitset.to_numpy(
 				splits=['train']
 				, include_label = False
-				, featureset_columns = matching_columns
+				, feature_columns = matching_columns
 			)['train']['features']
 			communicated_split = "the training split"
 		elif (only_fit_train == False):
@@ -3400,11 +3450,6 @@ class Job(BaseModel):
 
 
 	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
-		"""
-		Future: if we run into many errors with users attempting cross-validation
-		with too few samples and metrics are failing... wrap them in `try` statements 
-		and return None for that failed metric. Then make the plots handle null conditions.
-		"""
 		if analysis_type == "classification_binary":
 			average = "binary"
 			roc_average = "micro"
@@ -3467,6 +3512,9 @@ class Job(BaseModel):
 
 
 	def run(id:int, repeat_index:int, verbose:bool=False):
+		"""
+		Future: OPTIMIZE. shouldn't have to read whole dataset into memory at once. duplicate reads in encoders.
+		"""
 		j = Job.get_by_id(id)
 
 		# With the addition of `repeat_count`, the incoming request is for a specific repeat of the Job.
@@ -3531,31 +3579,77 @@ class Job(BaseModel):
 					samples['train'] = splitset.to_numpy(splits=['train'])['train']
 					key_train = "train"
 
-			# 2. Encode the features and labels.
+			# 2. Encode the labels and features.
 			# encoding happens prior to training the model.
 			# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
 			if (encoderset is not None):                
+				# 2a1. Fit labels.
 				if (len(encoderset.labelcoders) == 1):
 					labelcoder = encoderset.labelcoders[0]
 					preproc = labelcoder.sklearn_preprocess
+					# All label columns are always used in encoding.
 
 					# Fit to either (train split/fold) or (all splits/folds).
 					if (labelcoder.only_fit_train == True):
-						fitted_preproc = preproc.fit(samples[key_train]['labels'])
-						# Some sklearn encoders only fit to 2D_single_column not 2D_multi_column.
+						fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+							sklearn_preprocess = preproc
+							, samples_to_fit = samples[key_train]['labels']
+						)
 					elif (labelcoder.only_fit_train == False):
-						fitted_preproc = preproc.fit(splitset.label.to_numpy())
-
+						# Optimize. Duplicate fetch of the data.
+						fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+							sklearn_preprocess = preproc
+							, samples_to_fit = splitset.label.to_numpy()
+						)
+					# 2a2. Transform labels.
 					# Once the fits are applied, perform the transform on the rest of the splits.
 					for split, split_data in samples.items():
-						samples[split]['labels'] = fitted_preproc.transform(split_data['labels'])
+						samples[split]['labels'] = Labelcoder.transform_dynamicDimensions(
+							fitted_encoders = fitted_encoders
+							, encoding_dimension = encoding_dimension
+							, samples_to_transform = split_data['labels']
+						)
 
-				# >>> put featurecoders here and call from samples[split][features]
+				"""
+				### wait wait do i need to use fit_dynamic and transform_dynamic?
+
+				# 2b1. Fit features.
 				featurecoders = encoderset.featurecoders
-				#if (len(featurecoders) > 0):
-				#	for featurecoder in featurecoders:
+				if (len(featurecoders) == 0):
+					pass
+				elif (len(featurecoders) >= 1):
+					for featurecoder in featurecoders:
+						preproc = featurecoder.sklearn_preprocess
+						matching_columns = featurecoder.matching_columns
 
-
+						if (featurecoder.only_fit_train == True):
+							# Optimize. Duplicate fetch of the data.
+							# Can't fetch specific columns from the original samples dict.
+							if (fold is not None):
+								fitted_preproc = preproc.fit(
+									foldset.to_numpy(
+										fold_index = fold_index
+										, feature_columns = matching_columns
+									)[fold_index]['folds_train_combined']
+								)
+							elif (fold is None):
+								fitted_preproc = preproc.fit(
+									splitset.to_numpy(
+										splits = ['train']
+										, include_label = False
+										, feature_columns = matching_columns
+									)
+								)
+						elif (featurecoder.only_fit_train == False):
+							# Doesn't matter if folded, use all samples.
+							# Optimize. Duplicate fetch of the data.
+							fitted_preproc = preproc.fit(
+								splitset.featureset.to_numpy(columns=matching_columns)
+							)
+						#2b2. Transform features.
+						encoded_samples = {}
+						for split, data in samples.items():
+				"""
 
 			# 3. Build and Train model.
 			if (hyperparamcombo is not None):
