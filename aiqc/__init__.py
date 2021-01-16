@@ -890,11 +890,13 @@ class File(BaseModel):
 						if (typ != dataframe[col_name].dtype):
 							raise ValueError(f"\nYikes - You specified `dataframe['{col_name}']:dtype('{typ}'),\nbut Pandas did not convert it: `dataframe['{col_name}'].dtype == {dataframe[col_name].dtype}`.\nYou can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.\n")
 			"""
-			Rare types like np.uint8, np.double, 'bool', and the new 'string' are supported,
+			Rare types like np.uint8, np.double, 'bool', 
 			but not np.complex64 and np.float128 (aka np.longfloat) 
 			because `DataFrame.to_parquet(engine='auto')` fails.
+			- `StringArray.unique().tolist()` fails because stringarray doesnt have tolist()
+			^ can do unique().to_numpy().tolist() though.
 			"""
-			excluded_types = ['complex', 'longfloat', 'float128']
+			excluded_types = ['string', 'complex', 'longfloat', 'float128']
 			actual_dtypes = dataframe.dtypes.to_dict().items()
 
 			for col_name, typ in actual_dtypes:
@@ -3610,46 +3612,114 @@ class Job(BaseModel):
 							, samples_to_transform = split_data['labels']
 						)
 
-				"""
-				### wait wait do i need to use fit_dynamic and transform_dynamic?
-
 				# 2b1. Fit features.
-				featurecoders = encoderset.featurecoders
+				# Challenge here is selecting specific columns.
+				featurecoders = list(encoderset.featurecoders)
 				if (len(featurecoders) == 0):
 					pass
-				elif (len(featurecoders) >= 1):
+				elif (len(featurecoders) > 0):
+					# Drop the existing data because we need to get column-specific.
+					# Each encoder is going to concatenate its features into those empty values.
+					for split in samples.keys():
+						samples[split]['features'] = None
+
 					for featurecoder in featurecoders:
 						preproc = featurecoder.sklearn_preprocess
+						# Only encode these columns.
 						matching_columns = featurecoder.matching_columns
 
+						# Figure out which samples to fit against.
 						if (featurecoder.only_fit_train == True):
-							# Optimize. Duplicate fetch of the data.
-							# Can't fetch specific columns from the original samples dict.
-							if (fold is not None):
-								fitted_preproc = preproc.fit(
-									foldset.to_numpy(
-										fold_index = fold_index
-										, feature_columns = matching_columns
-									)[fold_index]['folds_train_combined']
-								)
-							elif (fold is None):
-								fitted_preproc = preproc.fit(
-									splitset.to_numpy(
-										splits = ['train']
-										, include_label = False
-										, feature_columns = matching_columns
-									)
-								)
+							if (fold is None):
+								samples_to_fit = splitset.to_numpy(
+									splits = ['train']
+									, include_label = False
+									, feature_columns = matching_columns
+								)['train']['features']
+							elif (fold is not None):
+								samples_to_fit = foldset.to_numpy(
+									fold_index = fold_index
+									, include_label = False
+									, feature_columns = matching_columns
+								)[fold_index]['folds_train_combined']['features']
+							
 						elif (featurecoder.only_fit_train == False):
 							# Doesn't matter if folded, use all samples.
-							# Optimize. Duplicate fetch of the data.
-							fitted_preproc = preproc.fit(
-								splitset.featureset.to_numpy(columns=matching_columns)
+							samples_to_fit = splitset.featureset.to_numpy(
+								columns = matching_columns
 							)
-						#2b2. Transform features.
-						encoded_samples = {}
-						for split, data in samples.items():
-				"""
+
+						fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+							sklearn_preprocess = preproc
+							, samples_to_fit = samples_to_fit
+						)
+						del samples_to_fit
+
+						
+						#2b2. Transform features. Populate `encoded_features` dict.
+						for split in samples.keys():
+
+							# Figure out which samples to encode.
+							if ("fold" in split):
+								samples_to_encode = foldset.to_numpy(
+									fold_index = fold_index
+									, include_label = False
+									, feature_columns = matching_columns
+								)[fold_index][split]['features']#<-- pay attention
+
+							elif ("fold" not in split):
+								samples_to_encode = splitset.to_numpy(
+									splits = [split]
+									, include_label = False
+									, feature_columns = matching_columns
+								)[split]['features']
+
+							if (featurecoder.featurecoder_index == 0):
+							# Nothing to concat with, so just overwite the None value.
+								samples[split]['features'] = Labelcoder.transform_dynamicDimensions(
+									fitted_encoders = fitted_encoders
+									, encoding_dimension = encoding_dimension
+									, samples_to_transform = samples_to_encode
+								)
+							elif (featurecoder.featurecoder_index > 0):
+							# Concatenate w previously encoded features.
+								samples_to_encode = Labelcoder.transform_dynamicDimensions(
+									fitted_encoders = fitted_encoders
+									, encoding_dimension = encoding_dimension
+									, samples_to_transform = samples_to_encode
+								)
+								samples[split]['features'] = np.concatenate(
+									(samples[split]['features'], samples_to_encode)
+									, axis = 1
+								)
+								del samples_to_encode
+
+					# After all featurecoders run, merge in leftover, unencoded columns.
+					leftover_columns = featurecoders[-1].leftover_columns
+					if (len(leftover_columns) == 0):
+						pass
+					elif (len(leftover_columns) > 0):
+						for split in samples.keys():
+							if ("fold" in split):
+								leftover_features = foldset.to_numpy(
+									fold_index = fold_index
+									, include_label = False
+									, feature_columns = leftover_columns
+								)[fold_index][split]
+							elif ("fold" not in split):
+								leftover_features = splitset.to_numpy(
+									splits = [split]
+									, include_label = False
+									, feature_columns = leftover_columns
+								)
+							samples[split]['features'] = np.concatenate(
+								(samples[split]['features'], leftover_features)
+								, axis = 1
+							)
+
+
+			################### when running foldset and splitset... do i need to specify ['features']?
+
 
 			# 3. Build and Train model.
 			if (hyperparamcombo is not None):
