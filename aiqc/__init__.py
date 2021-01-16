@@ -3652,6 +3652,7 @@ class Job(BaseModel):
 							elif (fold is not None):
 								samples_to_fit = foldset.to_numpy(
 									fold_index = fold_index
+									, fold_names = ['folds_train_combined']
 									, include_label = False
 									, feature_columns = matching_columns
 								)[fold_index]['folds_train_combined']['features']
@@ -3676,6 +3677,7 @@ class Job(BaseModel):
 							if ("fold" in split):
 								samples_to_encode = foldset.to_numpy(
 									fold_index = fold_index
+									, fold_names = [split]
 									, include_label = False
 									, feature_columns = matching_columns
 								)[fold_index][split]['features']#<-- pay attention
@@ -3716,23 +3718,20 @@ class Job(BaseModel):
 							if ("fold" in split):
 								leftover_features = foldset.to_numpy(
 									fold_index = fold_index
+									, fold_names = [split]
 									, include_label = False
 									, feature_columns = leftover_columns
-								)[fold_index][split]
+								)[fold_index][split]['features']
 							elif ("fold" not in split):
 								leftover_features = splitset.to_numpy(
 									splits = [split]
 									, include_label = False
 									, feature_columns = leftover_columns
-								)
+								)[split]['features']
 							samples[split]['features'] = np.concatenate(
 								(samples[split]['features'], leftover_features)
 								, axis = 1
 							)
-
-
-			################### when running foldset and splitset... do i need to specify ['features']?
-
 
 			# 3. Build and Train model.
 			if (hyperparamcombo is not None):
