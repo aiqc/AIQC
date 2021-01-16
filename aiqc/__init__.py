@@ -1,4 +1,4 @@
-import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics
+import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
 import pprint as pp
@@ -2134,8 +2134,11 @@ class Labelcoder(BaseModel):
 			# will place unseen observations outside bounds into existing min/max bin.
 		]
 
+		if (inspect.isclass(sklearn_preprocess)):
+			raise ValueError("\nYikes - The encoder you provided was Python class, but it should be a Python instance.\nClass (incorrect): `OrdinalEncoder`\nInstance (correct): `OrdinalEncoder()`\n")
+
 		if ('sklearn.preprocessing' not in coder_type):
-			raise ValueError("\nYikes - At this point in time, only scikit-learn encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
+			raise ValueError("\nYikes - At this point in time, only `sklearn.preprocessing` encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
 
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
@@ -2143,14 +2146,27 @@ class Labelcoder(BaseModel):
 			elif (hasattr(sklearn_preprocess, 'fit')):
 				pass
 			
-			# Prevent sparse matrix output. [OneHotEncoder]
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
 					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse=True`.\nFYI `sparse` is True by default if left blank.\nThis would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
 
 			if (hasattr(sklearn_preprocess, 'encode')):
-				if (sklearn_preprocess.encode != 'onehot-dense'):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.encode!=onehot-dense`.\nFYI `encode` is 'onehot' by default if left blank.\nEncoding would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
+				if (sklearn_preprocess.encode == 'onehot'):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.encode=='onehot'`.\nFYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense' or 'ordinal'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
+
+			if (hasattr(sklearn_preprocess, 'copy')):
+				if (sklearn_preprocess.copy == True):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.copy==True`.\nFYI `copy` is True by default if left blank, which consumes memory.\nPlease try again with 'copy=False'. For example, `StandardScaler(copy=False)`.\n")
+			
+			if (hasattr(sklearn_preprocess, 'sparse_output')):
+				if (sklearn_preprocess.sparse_output == True):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse_output==True`.\nPlease try again with 'sparse_output=False'. For example, `LabelBinarizer(sparse_output=False)`.\n")
+
+			if (hasattr(sklearn_preprocess, 'order')):
+				if (sklearn_preprocess.sparse_output == 'F'):
+					raise ValueError("\nYikes - Detected `sklearn_preprocess.order=='F'`.\nPlease try again with 'order='C'. For example, `PolynomialFeatures(order='C')`.\n")
+
+
 
 			if (only_fit_train == True):
 				for c in categorical_encoders:
@@ -2205,7 +2221,7 @@ class Labelcoder(BaseModel):
 						for i, arr in enumerate(samples_to_fit):
 							fitted_encoders[i] = sklearn_preprocess.fit(arr)
 					except:
-						raise ValueError(f"\nYikes - Encoder failed to fit the columns you filtered.\n\nEither the data is dirty (e.g. contains NaNs),\nor you used one of the incompatible combinations of data type and encoder seen below:\n\n{incompatibilities}\n")
+						raise ValueError(f"\nYikes - Encoder failed to fit the columns you filtered.\n\nEither the data is dirty (e.g. contains NaNs),\nor the encoder might not accept negative values (e.g. PowerTransformer.method='box-cox'),\nor you used one of the incompatible combinations of data type and encoder seen below:\n\n{incompatibilities}\n")
 					else:
 						encoding_dimension = "1D"
 				else:
