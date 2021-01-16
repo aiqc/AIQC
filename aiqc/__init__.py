@@ -1641,7 +1641,7 @@ class Splitset(BaseModel):
 		"""
 		s = Splitset.get_by_id(id)
 
-		if splits is not None:
+		if (splits is not None):
 			if (not isinstance(splits, list)):
 				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
 			if (len(splits) == 0):
@@ -1827,6 +1827,7 @@ class Foldset(BaseModel):
 	def to_pandas(
 		id:int
 		, fold_index:int = None
+		, fold_names:list = None
 		, include_label:bool = None
 		, include_featureset:bool = None
 		, feature_columns:list = None
@@ -1835,6 +1836,7 @@ class Foldset(BaseModel):
 			id = id
 			, numpy_or_pandas = 'pandas'
 			, fold_index = fold_index
+			, fold_names = fold_names
 			, include_label = include_label
 			, include_featureset = include_featureset
 			, feature_columns = feature_columns
@@ -1845,6 +1847,7 @@ class Foldset(BaseModel):
 	def to_numpy(
 		id:int
 		, fold_index:int = None
+		, fold_names:list = None
 		, include_label:bool = None
 		, include_featureset:bool = None
 		, feature_columns:list = None
@@ -1853,6 +1856,7 @@ class Foldset(BaseModel):
 			id = id
 			, numpy_or_pandas = 'numpy'
 			, fold_index = fold_index
+			, fold_names = fold_names
 			, include_label = include_label
 			, include_featureset = include_featureset
 			, feature_columns = feature_columns
@@ -1864,6 +1868,7 @@ class Foldset(BaseModel):
 		id:int
 		, numpy_or_pandas:str
 		, fold_index:int = None
+		, fold_names:list = None
 		, include_label:bool = None
 		, include_featureset:bool = None
 		, feature_columns:list = None
@@ -1900,24 +1905,32 @@ class Foldset(BaseModel):
 		if ((feature_columns is not None) and (include_featureset != True)):
 			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
 
+		if (fold_names is not None):
+			if (not isinstance(fold_names, list)):
+				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
+			if (len(fold_names) == 0):
+				raise ValueError("\nYikes - `splits` argument is an empty list.\nIt can be None, which defaults to all splits, but it can't not empty.\n")
+		elif (fold_names is None):
+			fold_names = list(folds[0].samples.keys())
+
 
 		fold_frames = {}
 		if (fold_index is not None):
+			# Just fetch one specific fold by index.
 			fold_frames[fold_index] = {}
 		elif (fold_index is None):
+			# Fetch all folds. Zero-based range.
 			for i in range(fold_count):
 				fold_frames[i] = {}
 
-		# keys are already 0 based range.
+		# Highest set of `.keys()` is the `fold_index`.
 		for i in fold_frames.keys():
-			
 			fold = folds[i]
 			# At the next level down, `.keys()` are 'folds_train_combined' and 'fold_validation'
-			for fold_name in fold.samples.keys():
-
-				# placeholder for the frames/arrays
+			for fold_name in fold_names:
+				# Placeholder for the frames/arrays.
 				fold_frames[i][fold_name] = {}
-				# fetch the sample indices for the split
+				# Fetch the sample indices for the split.
 				folds_samples = fold.samples[fold_name]
 
 				if (include_featureset == True):
