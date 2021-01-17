@@ -711,7 +711,7 @@ class File(BaseModel):
 			try:
 				tabular = Tabular.create(
 					columns = columns
-					, dtype = dtype
+					, dtypes = dtype
 					, file_id = file.id
 				)
 			except:
@@ -792,19 +792,19 @@ class File(BaseModel):
 			- Accepts dict{'column_name':'dtype_str'} or a single str.
 			"""
 			tab = f.tabulars[0]
-			df_dtype = tab.dtype
-			if (df_dtype is not None):
-				if (isinstance(df_dtype, dict)):
+			df_dtypes = tab.dtypes
+			if (df_dtypes is not None):
+				if (isinstance(df_dtypes, dict)):
 					if (columns is None):
 						columns = tab.columns
 					# Prunes out the excluded columns from the dtype dict.
-					df_dtype_cols = list(df_dtype.keys())
+					df_dtype_cols = list(df_dtypes.keys())
 					for col in df_dtype_cols:
 						if (col not in columns):
-							del df_dtype[col]
-				elif (isinstance(df_dtype, str)):
+							del df_dtypes[col]
+				elif (isinstance(df_dtypes, str)):
 					pass #dtype just gets applied as-is.
-				df = df.astype(df_dtype)
+				df = df.astype(df_dtypes)
 
 			return df
 
@@ -1057,7 +1057,7 @@ class Tabular(BaseModel):
 	"""
 	# Is sequence just a subset of tabular with a file_index?
 	columns = JSONField()
-	dtype = JSONField()
+	dtypes = JSONField()
 
 	file = ForeignKeyField(File, backref='tabulars')
 
@@ -1219,7 +1219,7 @@ class Label(BaseModel):
 		if (column_name == None):
 			column_name = label.columns[0]
 		d = label.dataset
-		column_dtype = label.dataset.Tabular.get_main_tabular(d.id).dtype[column_name]
+		column_dtype = label.dataset.Tabular.get_main_tabular(d.id).dtypes[column_name]
 		return column_dtype
 
 
@@ -1367,6 +1367,28 @@ class Featureset(BaseModel):
 				, samples = samples
 			)
 		return ff
+
+
+	def get_dtypes(
+		id:int
+	):
+		f = Featureset.get_by_id(id)
+
+		dataset = f.dataset
+		if (dataset.dataset_type == 'image'):
+			raise ValueError("\nYikes - `featureset.dataset.dataset_type=='image'` does not have dtypes.\n")
+
+		f_cols = f.columns
+		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtypes
+
+		featureset_dtypes = {}
+		for key,value in tabular_dtype.items():
+			for col in f_cols:         
+				if (col == key):
+					featureset_dtypes[col] = value
+					# Exit `col` loop early becuase matching `col` found.
+					break
+		return featureset_dtypes
 
 
 	def make_splitset(
@@ -2143,8 +2165,6 @@ class Labelcoder(BaseModel):
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError("\nYikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\nPlease use one of the uppercase methods instead.\nFor example: use `RobustScaler` instead of `robust_scale`.\n")
-			elif (hasattr(sklearn_preprocess, 'fit')):
-				pass
 			
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
@@ -2165,8 +2185,6 @@ class Labelcoder(BaseModel):
 			if (hasattr(sklearn_preprocess, 'order')):
 				if (sklearn_preprocess.sparse_output == 'F'):
 					raise ValueError("\nYikes - Detected `sklearn_preprocess.order=='F'`.\nPlease try again with 'order='C'. For example, `PolynomialFeatures(order='C')`.\n")
-
-
 
 			if (only_fit_train == True):
 				for c in categorical_encoders:
@@ -2324,11 +2342,11 @@ class Featurecoder(BaseModel):
 		splitset = encoderset.splitset
 		featureset = encoderset.splitset.featureset
 		featureset_cols = featureset.columns
+		featureset_dtypes = featureset.get_dtypes()
 		existing_featurecoders = list(encoderset.featurecoders)
 
 		dataset = featureset.dataset
 		dataset_type = dataset.dataset_type
-		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtype
 
 		# 1. Figure out which columns have yet to be encoded.
 		# Order-wise no need to validate filters if there are no columns left to filter.
@@ -2344,8 +2362,8 @@ class Featurecoder(BaseModel):
 			if (len(initial_columns) == 0):
 				raise ValueError("\nYikes - All features already have encoders associated with them. Cannot add more Featurecoders to this Encoderset.\n")
 		initial_dtypes = {}
-		for key,value in tabular_dtype.items():
-			for col in initial_columns:         
+		for key,value in featureset_dtypes.items():
+			for col in initial_columns:
 				if (col == key):
 					initial_dtypes[col] = value
 					# Exit `c` loop early becuase matching `c` found.
