@@ -6,7 +6,5 @@ Looking for help in these areas:
 
 - Adding support for other libraries: pytorch, mxnet.
 
-- Adding support for other model/ data types: cnn, rnn.
-
 
 Email address available in the AIQC GitHub profile.

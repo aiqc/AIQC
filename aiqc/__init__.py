@@ -1,4 +1,4 @@
-import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect
+import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
 import pprint as pp
