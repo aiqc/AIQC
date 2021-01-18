@@ -648,9 +648,9 @@ class Dataset(BaseModel):
 				raise ValueError(f"\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}\n")
 
 			try:
-				for i, u in enumerate(urls):  
-					file = File.Image.from_file(
-						path = u
+				for i, url in enumerate(urls):  
+					file = File.Image.from_url(
+						url = url
 						, pillow_save = pillow_save
 						, file_index = i
 						, dataset_id = dataset.id
@@ -1091,10 +1091,13 @@ class File(BaseModel):
 			, dataset_id:int
 			, pillow_save:dict = {}
 		):
-			# Already validated in `from_urls`
-			img = Imaje.open(
-				requests.get(url, stream=True).raw
-			)
+			# URL format is validated in `from_urls`.
+			try:
+				img = Imaje.open(
+					requests.get(url, stream=True).raw
+				)
+			except:
+				raise ValueError(f"\nYikes - Could not open file at this url with Pillow library:\n{url}\n")
 
 			shape = {
 				'width': img.size[0]
