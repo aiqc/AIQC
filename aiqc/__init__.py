@@ -5,33 +5,34 @@ import pprint as pp
 
 #OS agonstic system files.
 import appdirs
-#orm.
+# ORM.
 from peewee import *
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.fields import PickleField
-#etl.
+# ETL.
 import pyarrow
 from pyarrow import parquet
 import pandas as pd
 import numpy as np
-#sample prep. regression. unsupervised learning.
+# Sample prep. Unsupervised learning.
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import *
 from sklearn.preprocessing import *
-#deep learning.
+# Deep learning.
 import keras 
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout
 from keras.callbacks import History, Callback
-#progress bar for training.
+# Progress bar for training.
 from tqdm import tqdm
-#visualization.
+# Visualization.
 import plotly.express as px
-# images
+# Images.
 from PIL import Image as Imaje
-#file sorting
+# File sorting.
 from natsort import natsorted
-
+# Url validating.
+import validators
 
 name = "aiqc"
 
@@ -64,7 +65,6 @@ def create_folder():
 	if app_dir_exists:
 		print(f"\n=> Info - skipping folder creation as folder already exists at file path:\n{app_dir}\n")
 	else:
-		# ToDo - windows support.
 		try:
 			if os.name == 'nt':
 				# Windows: backslashes \ and double backslashes \\
@@ -75,11 +75,9 @@ def create_folder():
 				command = 'mkdir -p "' + app_dir + '"'
 				os.system(command)
 		except:
-			print(f"\n=> Yikes - error failed to execute this system command:\n{command}\n")
-			print("===================================\n")
-			raise
+			raise OSError(f"\n=> Yikes - error failed to execute this system command:\n{command}\n")
 		print(f"\n=> Success - created folder at file path:\n{app_dir}\n")
-		print("\n=> Fix - now try running `aiqc.create_config()` again.\n")
+		print("\n=> Next try running `aiqc.create_config()`.\n")
 
 
 def check_permissions_folder():
@@ -595,14 +593,64 @@ class Dataset(BaseModel):
 				modes.append(img.mode)
 
 			if (len(set(sizes)) > 1):
-				raise ValueError("\nYikes - All images in the Dataset must be of the same width and height. `PIL.Image.size`\n")
+				raise ValueError(f"\nYikes - All images in the Dataset must be of the same width and height. `PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}\n")
 			elif (len(set(modes)) > 1):
-				raise ValueError("\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\n")
+				raise ValueError(f"\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}\n")
 
 			try:
 				for i, p in enumerate(file_paths):  
 					file = File.Image.from_file(
 						path = p
+						, pillow_save = pillow_save
+						, file_index = i
+						, dataset_id = dataset.id
+					)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise       
+			return dataset
+
+
+		def from_urls(
+			urls:list
+			, pillow_save:dict = {}
+			, name:str = None
+			, source_path:str = None
+		):
+			for u in urls:
+				validation = validators.url(u)
+				if (validation != True): #`== False` doesn't work.
+					raise ValueError(f"\nYikes - Invalid url detected within `urls` list:\n'{u}'\n")
+
+			file_count = len(urls)
+
+			dataset = Dataset.create(
+				file_count = file_count
+				, name = name
+				, dataset_type = Dataset.Image.dataset_type
+				, source_path = source_path
+			)
+			
+			#Make sure the shape and mode of each image are the same before writing the Dataset.
+			sizes = []
+			modes = []
+			for u in urls:
+
+				img = Imaje.open(
+					requests.get(u, stream=True).raw
+				)
+				sizes.append(img.size)
+				modes.append(img.mode)
+
+			if (len(set(sizes)) > 1):
+				raise ValueError(f"\nYikes - All images in the Dataset must be of the same width and height. `PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}\n")
+			elif (len(set(modes)) > 1):
+				raise ValueError(f"\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}\n")
+
+			try:
+				for i, u in enumerate(urls):  
+					file = File.Image.from_file(
+						path = u
 						, pillow_save = pillow_save
 						, file_index = i
 						, dataset_id = dataset.id
@@ -1035,6 +1083,48 @@ class File(BaseModel):
 				file.delete_instance() # Orphaned.
 				raise
 			return file
+
+
+		def from_url(
+			url:str
+			, file_index:int
+			, dataset_id:int
+			, pillow_save:dict = {}
+		):
+			# Already validated in `from_urls`
+			img = Imaje.open(
+				requests.get(url, stream=True).raw
+			)
+
+			shape = {
+				'width': img.size[0]
+				, 'height':img.size[1]
+			}
+
+			blob = io.BytesIO()
+			img.save(blob, format=img.format, **pillow_save)
+			blob = blob.getvalue()
+			dataset = Dataset.get_by_id(dataset_id)
+			file = File.create(
+				blob = blob
+				, file_type = File.Image.file_type
+				, file_format = img.format
+				, file_index = file_index
+				, shape = shape
+				, source_path = url
+				, dataset = dataset
+			)
+			try:
+				image = Image.create(
+					mode = img.mode
+					, file = file
+					, pillow_save = pillow_save
+				)
+			except:
+				file.delete_instance() # Orphaned.
+				raise
+			return file
+
 
 
 		def to_pillow(id:int):
@@ -2024,12 +2114,10 @@ class Encoderset(BaseModel):
 	def make_labelcoder(
 		id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool = None
 	):
 		lc = Labelcoder.from_encoderset(
 			encoderset_id = id
 			, sklearn_preprocess = sklearn_preprocess
-			, only_fit_train = only_fit_train
 		)
 		return lc
 
@@ -2037,16 +2125,14 @@ class Encoderset(BaseModel):
 	def make_featurecoder(
 		id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool = None
-		, include:bool = None
+		, include:bool = True
+		, verbose:bool = True
 		, dtypes:list = None
 		, columns:list = None
-		, verbose = None
 	):
 		fc = Featurecoder.from_encoderset(
 			encoderset_id = id
 			, sklearn_preprocess = sklearn_preprocess
-			, only_fit_train = only_fit_train
 			, include = include
 			, dtypes = dtypes
 			, columns = columns
@@ -2075,23 +2161,17 @@ class Labelcoder(BaseModel):
 	def from_encoderset(
 		encoderset_id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool = None
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
 
-		if (only_fit_train is None):
-			only_fit_train = True
 		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
 			raise ValueError("\nYikes - `Splitset.supervision=='unsupervised'` therefore it cannot take on a Labelcoder.\n")
 		elif (len(encoderset.labelcoders) == 1):
 			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
-		
-		Labelcoder.check_sklearn_type(
-			sklearn_preprocess = sklearn_preprocess
-			, only_fit_train = only_fit_train
-		)
+
+		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
 
 		# 2. Test Fit. 
 		if (only_fit_train == True):
@@ -2145,52 +2225,60 @@ class Labelcoder(BaseModel):
 		return lc
 
 
-	def check_sklearn_type(sklearn_preprocess:object, only_fit_train:bool):
+	def check_sklearn_attributes(sklearn_preprocess:object):
 		coder_type = str(type(sklearn_preprocess))
 		coder_name = str(sklearn_preprocess)
-
-		categorical_encoders = [
-			'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
-			'Binarizer', 'MultiLabelBinarizer'
-			# Binners like 'KBinsDiscretizer' and 'QuantileTransformer'
-			# will place unseen observations outside bounds into existing min/max bin.
-		]
-
-		if (inspect.isclass(sklearn_preprocess)):
-			raise ValueError("\nYikes - The encoder you provided was Python class, but it should be a Python instance.\nClass (incorrect): `OrdinalEncoder`\nInstance (correct): `OrdinalEncoder()`\n")
 
 		if ('sklearn.preprocessing' not in coder_type):
 			raise ValueError("\nYikes - At this point in time, only `sklearn.preprocessing` encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
 
+		if (inspect.isclass(sklearn_preprocess)):
+			raise ValueError("\nYikes - The encoder you provided was Python class, but it should be a Python instance.\nClass (incorrect): `OrdinalEncoder`\nInstance (correct): `OrdinalEncoder()`\n")
+
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError("\nYikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\nPlease use one of the uppercase methods instead.\nFor example: use `RobustScaler` instead of `robust_scale`.\n")
-			
+
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse=True`.\nFYI `sparse` is True by default if left blank.\nThis would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
+					raise ValueError(f"\nYikes - Detected `sparse==True` attribute of {coder_name}.\nFYI `sparse` is True by default if left blank.\nThis would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
 
 			if (hasattr(sklearn_preprocess, 'encode')):
 				if (sklearn_preprocess.encode == 'onehot'):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.encode=='onehot'`.\nFYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense' or 'ordinal'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
+					raise ValueError(f"\nYikes - Detected `encode=='onehot'` attribute of {coder_name}.\nFYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense' or 'ordinal'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
 
 			if (hasattr(sklearn_preprocess, 'copy')):
 				if (sklearn_preprocess.copy == True):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.copy==True`.\nFYI `copy` is True by default if left blank, which consumes memory.\nPlease try again with 'copy=False'. For example, `StandardScaler(copy=False)`.\n")
+					raise ValueError(f"\nYikes - Detected `copy==True` attribute of {coder_name}.\nFYI `copy` is True by default if left blank, which consumes memory.\nPlease try again with 'copy=False'. For example, `StandardScaler(copy=False)`.\n")
 			
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.sparse_output==True`.\nPlease try again with 'sparse_output=False'. For example, `LabelBinarizer(sparse_output=False)`.\n")
+					raise ValueError(f"\nYikes - Detected `sparse_output==True` attribute of {coder_name}.\nPlease try again with 'sparse_output=False'. For example, `LabelBinarizer(sparse_output=False)`.\n")
 
 			if (hasattr(sklearn_preprocess, 'order')):
 				if (sklearn_preprocess.sparse_output == 'F'):
-					raise ValueError("\nYikes - Detected `sklearn_preprocess.order=='F'`.\nPlease try again with 'order='C'. For example, `PolynomialFeatures(order='C')`.\n")
+					raise ValueError(f"\nYikes - Detected `order=='F'` attribute of {coder_name}.\nPlease try again with 'order='C'. For example, `PolynomialFeatures(order='C')`.\n")
 
-			if (only_fit_train == True):
-				for c in categorical_encoders:
-					if (c in coder_name):
-						raise ValueError(f"\nYikes - Encoder attribute `only_fit_train` must be set to False if you are using the categorical encoder: {c}.\nPlease try again with `only_fit_train=False`.\n")
-
+			"""
+			- Attempting to automatically set this. I was originally validating based on 
+			  whether or not the encoder was categorical. But I realized, if I am going to 
+			  rule them out and in... why not automatically set it?
+			- Binners like 'KBinsDiscretizer' and 'QuantileTransformer'
+			  will place unseen observations outside bounds into existing min/max bin.
+			- Regarding a custom FunctionTransformer, assuming they wouldn't be numerical
+			  as opposed to OHE/Ordinal or binarizing.
+			"""
+			categorical_encoders = [
+				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
+				'Binarizer', 'MultiLabelBinarizer'
+			]
+			for c in categorical_encoders:
+				if (c in coder_name):
+					only_fit_train = False
+				elif (c not in coder_name):
+					only_fit_train = True
+			return only_fit_train
+			
 		
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 		"""
@@ -2317,7 +2405,6 @@ class Featurecoder(BaseModel):
 	- Much validation because real-life encoding errors are cryptic and deep for beginners.
 	"""
 	featurecoder_index = IntegerField()
-	only_fit_train = BooleanField()
 	sklearn_preprocess = PickleField()
 	matching_columns = JSONField()
 	leftover_columns = JSONField()
@@ -2331,11 +2418,10 @@ class Featurecoder(BaseModel):
 	def from_encoderset(
 		encoderset_id:int
 		, sklearn_preprocess:object
-		, only_fit_train:bool = True
 		, include:bool = True
 		, dtypes:list = None
 		, columns:list = None
-		, verbose = True
+		, verbose:bool = True
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		
@@ -2373,10 +2459,7 @@ class Featurecoder(BaseModel):
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
-		Labelcoder.check_sklearn_type(
-			sklearn_preprocess = sklearn_preprocess
-			, only_fit_train = only_fit_train
-		)
+		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
 
 		criterium = [dtypes, columns]
 		for inex in criterium:
@@ -2389,7 +2472,6 @@ class Featurecoder(BaseModel):
 						raise ValueError("\nYikes - Inclusion/ exclusion criteria cannot be empty lists.\n")
 					# Choosing not to check if each item is a string because numpy classes can be `==` against strings.
 
-			
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (typ not in set(initial_dtypes.values())):
@@ -2400,8 +2482,6 @@ class Featurecoder(BaseModel):
 				if (col not in initial_columns):
 					raise ValueError(f"\nYikes - Column '{col}' was not found in remaining columns.\nRemove '{col}' from `columns` and try again.\n")
 		
-
-
 		# 3a. Figure out which columns the filters apply to.
 		if (include==True):
 			# Add to this empty list via inclusion.
@@ -2526,11 +2606,11 @@ class Featurecoder(BaseModel):
 		)
 
 		if (verbose == True):
-			print(f"\n=> The columns below matched your filters. Tested encoding them successfully.\n\n{pp.pformat(matching_columns)}\n")
+			print(f"\n=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n\n{pp.pformat(matching_columns)}\n")
 			if (len(leftover_columns) == 0):
-				print(f"\n=> Nice! Now all columns have encoders associated with them. No more Featurecoders can be added to this Encoderset.\n")
+				print(f"\n=> Nice! Now all feature column(s) have encoder(s) associated with them.\nNo more Featurecoders can be added to this Encoderset.\n")
 			elif (len(leftover_columns) > 0):
-				print(f"\n=> The remaining columns and dtypes can be used in your downstream Featurecoder:\n\n{pp.pformat(initial_dtypes)}\n")
+				print(f"\n=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n\n{pp.pformat(initial_dtypes)}\n")
 		return featurecoder
 
 
@@ -3768,11 +3848,15 @@ class Job(BaseModel):
 							)
 
 			# 3. Build and Train model.
+			# Now that encoding has taken place, we can determine the input shape.
+			first_key = next(iter(samples))
+			input_shape = samples[first_key]['features'][0].shape
+
 			if (hyperparamcombo is not None):
 				hyperparameters = hyperparamcombo.hyperparameters
 			elif (hyperparamcombo is None):
 				hyperparameters = None
-			model = algorithm.function_model_build(**hyperparameters)
+			model = algorithm.function_model_build(input_shape, **hyperparameters)
 
 			if (key_evaluation is not None):
 				model = algorithm.function_model_train(
@@ -4084,10 +4168,12 @@ class Pipeline():
 
 
 	class Tabular():
-		def ingest(
+		def make(
 			dataFrame_or_filePath:object
 			, dtype:dict = None
 			, label_column:str = None
+			, label_encoder:object = None
+			, feature_encoders:list = None
 			, size_test:float = None
 			, size_validation:float = None
 			, fold_count:int = None
@@ -4098,11 +4184,11 @@ class Pipeline():
 				, dtype = dtype
 			)
 			# Not allowing user specify columns to keep/ include.
-			if label_column is not None:
+			if (label_column is not None):
 				label = dataset.make_label(columns=[label_column])
 				featureset = dataset.make_featureset(exclude_columns=[label_column])
 				label_id = label.id
-			elif label_column is None:
+			elif (label_column is None):
 				featureset = dataset.make_featureset()
 				label_id = None
 
@@ -4115,16 +4201,27 @@ class Pipeline():
 
 			if (fold_count is not None):
 				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+
+			if ((label_encoder is not None) or (feature_encoders is not None)):
+				encoderset = splitset.make_encoderset()
+
+				if (label_encoder is not None):
+					encoderset.make_labelcoder(sklearn_preprocess=label_encoder)
+
+				if (feature_encoders is not None):
+					for fc in feature_encoders:
+						encoderset.make_featurecoder(**fc)
 			return splitset
 
 
 	class Image():
-		def ingest(
+		def make(
 			image_folder_path:str
 			, pillow_save:dict = {}
 			, tabular_df_or_path:object = None
 			, tabular_dtype:dict = None
 			, label_column:str = None
+			, label_encoder:object = None
 			, size_test:float = None
 			, size_validation:float = None
 			, fold_count:int = None
@@ -4158,6 +4255,12 @@ class Pipeline():
 				, bin_count = bin_count
 			)
 
+			if (label_encoder is not None):
+				encoderset = splitset.make_encoderset()
+				encoderset.make_labelcoder(
+					sklearn_preprocess = label_encoder
+				)
+
 			if (fold_count is not None):
 				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 			return splitset
@@ -4174,7 +4277,7 @@ class Experiment():
 	`encoder_featureset`: List of dictionaries describing each encoder to run along with filters for different feature columns.
 	`encoder_label`: Single instantiation of an sklearn encoder: e.g. `OneHotEncoder()` that gets applied to the full label array.
 	"""
-	def stage(
+	def make(
 		library:str
 		, analysis_type:str
 		, function_model_build:object
@@ -4185,10 +4288,8 @@ class Experiment():
 		, function_model_predict:object = None
 		, function_model_loss:object = None
 		, hyperparameters:dict = None
-		# , encoder_labels:object = None
-		# , encoders_only_train:object = None
-		# , encoder_features:object = None
 		, foldset_id:int = None
+		, encoderset_id:int = None
 	):
 
 		algorithm = Algorithm.make(
@@ -4208,23 +4309,12 @@ class Experiment():
 		elif (hyperparameters is None):
 			hyperparamset_id = None
 
-		# if ((encoder_features is not None) or (encoder_labels is not None)):
-		#   splitset = Splitset.get_by_id(splitset_id)
-		#   encoderset = splitset.make_encoderset(
-		#       encoder_features = encoder_features
-		#       , encoder_labels = encoder_labels
-		#       # dictionary for each?
-		#   )
-		#   encoderset_id = encoderset.id
-		# elif (encoder_features is None) and (encoder_labels is None):
-		#   encoderset_id = None
-
 		batch = algorithm.make_batch(
 			splitset_id = splitset_id
 			, repeat_count = repeat_count
 			, hide_test = hide_test
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
-			, encoderset_id = None#encoderset_id
+			, encoderset_id = encoderset_id
 		)
 		return batch
