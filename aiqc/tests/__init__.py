@@ -29,7 +29,7 @@ def list_test_batches(format:str=None):
 			, 'analysis': 'regression'
 			, 'sub_analysis': None
 			, 'datum': 'houses.csv'	
-		}
+		},
 		{
 			'batch_name': 'image_binary'
 			, 'data_type': 'image'

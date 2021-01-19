@@ -21,9 +21,9 @@ from sklearn.preprocessing import *
 # Deep learning.
 import keras 
 from keras.models import load_model, Sequential
-from keras.layers import Dense, Conv1D, MaxPooling1D, Dropout, Flatten
+from keras.layers import *
 from keras.callbacks import History, Callback
-# Progress bar for training.
+# Progress bar.
 from tqdm import tqdm
 # Visualization.
 import plotly.express as px
