@@ -9,7 +9,7 @@ def list_datums(format:str=None):
 	# 'name' value cannot include 'https' because that's how remote datasets are detected.
 	datums = [
 		{
-			'name': 'exoplanets.parquet'
+			'file_name': 'exoplanets.parquet'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'SurfaceTempK'
@@ -20,7 +20,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'heart_failure.parquet'
+			'file_name': 'heart_failure.parquet'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'died'
@@ -31,7 +31,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'iris.tsv'
+			'file_name': 'iris.tsv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification_multi'
 			, 'label': 'species'
@@ -42,7 +42,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'sonar.csv'
+			'file_name': 'sonar.csv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification_binary'
 			, 'label': 'object'
@@ -53,7 +53,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'houses.csv'
+			'file_name': 'houses.csv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'price'
@@ -64,7 +64,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'iris_noHeaders.csv' 
+			'file_name': 'iris_noHeaders.csv' 
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi'
 			, 'label': 'species'
@@ -75,7 +75,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'iris_10x.tsv'
+			'file_name': 'iris_10x.tsv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi'
 			, 'label': 'species'
@@ -86,14 +86,14 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'brain_tumor'
+			'file_name': 'brain_tumor.csv'
 			, 'dataset_type': 'image'
 			, 'analysis_type': 'classification_binary'
 			, 'label': 'status'
 			, 'label_classes': 2
 			, 'features': 'N/A images'
 			, 'samples': 80
-			, 'description': 'Detect tumor in brain. No guarantee on healthy.'
+			, 'description': 'csv acts as label and manifest of image urls.'
 			, 'location': 'remote'
 		}
 	]

@@ -12,7 +12,6 @@ def list_test_batches(format:str=None):
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'multi label'
-			, 'validation': 'validation split'
 			, 'datum': 'iris.tsv'
 		},
 		{
@@ -21,7 +20,6 @@ def list_test_batches(format:str=None):
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'binary'
-			, 'validation': 'validation split'
 			, 'datum': 'sonar.csv'
 		},
 		{
@@ -30,8 +28,15 @@ def list_test_batches(format:str=None):
 			, 'supervision': 'supervised'
 			, 'analysis': 'regression'
 			, 'sub_analysis': None
-			, 'validation': 'validation split'
 			, 'datum': 'houses.csv'	
+		}
+		{
+			'batch_name': 'image_binary'
+			, 'data_type': 'image'
+			, 'supervision': 'supervised'
+			, 'analysis': 'classification'
+			, 'sub_analysis': 'binary'
+			, 'datum': 'brain_tumor.csv'	
 		}
 	]
 	
