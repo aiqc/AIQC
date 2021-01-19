@@ -1,160 +1,10 @@
-name = "examples"
-
-import pkg_resources #importlib.resources was not working on Google Collab.
-
 from aiqc import *
+from aiqc import datum
+
+name = "tests"
 
 
-def get_demo_files():
-	# 'name' value cannot include 'https' because that's how remote datasets are detected.
-	files = [
-		{
-			'name': 'exoplanets.parquet'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'SurfaceTempK'
-			, 'label_classes': 'N/A'
-			, 'features': 8
-			, 'samples': 433
-			, 'description': 'Predict temperature of exoplanet.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'heart_failure.parquet'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'died'
-			, 'label_classes': '2'
-			, 'features': 12
-			, 'samples': 299
-			, 'description': "Biometrics to predict loss of life."
-			, 'location': 'local'
-		},
-		{
-			'name': 'iris.tsv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification_multi'
-			, 'label': 'species'
-			, 'label_classes': 3
-			, 'features': 4
-			, 'samples': 150
-			, 'description': '3 species of flowers. Only 150 rows, so cross-folds not represent population.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'sonar.csv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'object'
-			, 'label_classes': 2
-			, 'features': 60
-			, 'samples': 208
-			, 'description': 'Detecting either a rock "R" or mine "M". Each feature is a sensor reading.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'houses.csv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'price'
-			, 'label_classes': 'N/A'
-			, 'features': 12
-			, 'samples': 506
-			, 'description': 'Predict the price of the house.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'iris_noHeaders.csv' 
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi'
-			, 'label': 'species'
-			, 'label_classes': 3
-			, 'features': 4
-			, 'samples': 150
-			, 'description': 'For testing; no column names.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'iris_10x.tsv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi'
-			, 'label': 'species'
-			, 'label_classes': 3
-			, 'features': 4
-			, 'samples': 1500
-			, 'description': 'For testing; duplicated 10x so cross-folds represent population.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'dtype_testing'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'N/A'
-			, 'label': 'N/A'
-			, 'label_classes': 'N/A'
-			, 'features': 'N/A'
-			, 'samples': 120
-			, 'description': 'Fake. Testing various dtypes.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'brain_tumor'
-			, 'dataset_type': 'image'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'status'
-			, 'label_classes': 2
-			, 'features': 'N/A images'
-			, 'samples': 80
-			, 'description': 'Detect tumor in brain. No guarantee on healthy.'
-			, 'location': 'remote'
-		}
-	]
-	return files	
-
-
-def list_demo_files(format:str=None):
-	files = get_demo_files()
-
-	formats_df = [None, 'pandas', 'df' ,'dataframe']
-	formats_lst = ['list', 'lst', 'l']
-	if format in formats_df:
-		pd.set_option('display.max_column',100)
-		pd.set_option('display.max_colwidth', 500)
-		df = pd.DataFrame.from_records(files)
-		return df
-	elif format in formats_lst:
-		return files
-	else:
-		raise ValueError(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
-
-
-def get_demo_file_path(file_name:str):
-	# Explicitly list the remote datasets.
-	if (file_name == 'brain_tumor'):
-		# 2nd aiqc is the repo, not the module.
-		full_path = f"https://github.com/aiqc/aiqc/remote_data/{file_name}"
-	else:
-		short_path = f"data/{file_name}"
-		full_path = pkg_resources.resource_filename('aiqc', short_path)
-	return full_path
-
-
-def demo_file_to_pandas(file_name:str):
-	file_path = get_demo_file_path(file_name)
-
-	if ('tsv' in file_name) or ('csv' in file_name):
-		if ('tsv' in file_name):
-			separator = '\t'
-		elif ('csv' in file_name):
-			separator = ','
-		else:
-			separator = None
-		df = pd.read_csv(file_path, sep=separator)
-	elif ('parquet' in file_name):
-		df = pd.read_parquet(file_path)
-	return df
-
-
-def get_demo_batches():
+def list_test_batches(format:str=None):
 	batches = [
 		{
 			'batch_name': 'multiclass'
@@ -163,7 +13,7 @@ def get_demo_batches():
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'multi label'
 			, 'validation': 'validation split'
-			, 'fileset': 'iris.tsv'
+			, 'datum': 'iris.tsv'
 		},
 		{
 			'batch_name': 'binary'
@@ -172,7 +22,7 @@ def get_demo_batches():
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'binary'
 			, 'validation': 'validation split'
-			, 'fileset': 'sonar.csv'
+			, 'datum': 'sonar.csv'
 		},
 		{
 			'batch_name': 'regression'
@@ -181,14 +31,9 @@ def get_demo_batches():
 			, 'analysis': 'regression'
 			, 'sub_analysis': None
 			, 'validation': 'validation split'
-			, 'fileset': 'houses.csv'	
+			, 'datum': 'houses.csv'	
 		}
 	]
-	return batches
-
-
-def list_demo_batches(format:str=None):
-	batches = get_demo_batches()
 	
 	formats_df = [None, 'pandas', 'df' ,'dataframe']
 	formats_lst = ['list', 'lst', 'l']
@@ -204,14 +49,14 @@ def list_demo_batches(format:str=None):
 
 """
 Remember, `pickle` does not accept nested functions.
-These dummy model functions must be defined outside of the function that accesses them.
-For example when creating an `def example_method()... Algorithm.function_model_build`
+So the model_build and model_train functions must be defined outside of the function that accesses them.
+For example when creating an `def test_method()... Algorithm.function_model_build`
 """
 
 # ------------------------ MULTICLASS ------------------------
-def multiclass_function_model_build(**hyperparameters):
+def multiclass_function_model_build(input_shape, **hyperparameters):
 	model = Sequential()
-	model.add(Dense(hyperparameters['neuron_count'], input_shape=(4,), activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.2))
 	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dense(3, activation='softmax'))
@@ -241,7 +86,7 @@ def multiclass_function_model_train(model, samples_train, samples_evaluate, **hy
 	return model
 
 
-def make_demo_batch_multiclass(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [9, 12]
 		, "batch_size": [3]
@@ -250,9 +95,9 @@ def make_demo_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	}
 
 	if fold_count is not None:
-		file_path = get_demo_file_path('iris_10x.tsv')
+		file_path = datum.get_datum_path('iris_10x.tsv')
 	else:
-		file_path = get_demo_file_path('iris.tsv')
+		file_path = datum.get_datum_path('iris.tsv')
 
 	fileset = Dataset.Tabular.from_path(
 		file_path = file_path
@@ -286,13 +131,20 @@ def make_demo_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoder_features = StandardScaler()
-	encoder_labels = OneHotEncoder(sparse=False)
+	encoderset = splitset.make_encoderset()
 
-	preprocess = splitset.make_preprocess(
-		description = "scaling features. ohe labels."
-		, encoder_features = encoder_features
-		, encoder_labels = encoder_labels
+	labelcoder = encoderset.make_labelcoder(
+		sklearn_preprocess = OneHotEncoder(sparse=False)
+	)
+
+	fc0 = encoderset.make_featurecoder(
+		sklearn_preprocess = StandardScaler(copy=False)
+		, columns = ['petal_width']
+	)
+
+	fc1 = encoderset.make_featurecoder(
+		sklearn_preprocess = StandardScaler(copy=False)
+		, dtypes = ['float64']
 	)
 
 	algorithm = Algorithm.make(
@@ -309,17 +161,17 @@ def make_demo_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	batch = algorithm.make_batch(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
+		, encoderset_id = encoderset.id
 		, hyperparamset_id = hyperparamset.id
-		, preprocess_id  = preprocess.id
 		, repeat_count = repeat_count
 	)
 	return batch
 
 
 # ------------------------ BINARY ------------------------
-def binary_model_build(**hyperparameters):
+def binary_model_build(input_shape, **hyperparameters):
 	model = Sequential(name='Sonar')
-	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
 	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
@@ -340,13 +192,13 @@ def binary_model_train(model, samples_train, samples_evaluate, **hyperparameters
 	return model
 
 
-def make_demo_batch_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
 	}
 
-	file_path = get_demo_file_path('sonar.csv')
+	file_path = datum.get_datum_path('sonar.csv')
 
 	fileset = Dataset.Tabular.from_path(
 		file_path = file_path
@@ -381,13 +233,16 @@ def make_demo_batch_binary(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoder_features = StandardScaler()
-	encoder_labels = LabelBinarizer()
 
-	preprocess = splitset.make_preprocess(
-		description = "scaling features. binary labels."
-		, encoder_features = encoder_features
-		, encoder_labels = encoder_labels
+	encoderset = splitset.make_encoderset()
+
+	labelcoder = encoderset.make_labelcoder(
+		sklearn_preprocess = LabelBinarizer(sparse_output=False)
+	)
+
+	fc0 = encoderset.make_featurecoder(
+		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
+		, dtypes = ['float64']
 	)
 
 	algorithm = Algorithm.make(
@@ -405,7 +260,7 @@ def make_demo_batch_binary(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, preprocess_id  = preprocess.id
+		, encoderset_id  = encoderset.id
 		, repeat_count = repeat_count
 	)
 	return batch
@@ -413,9 +268,9 @@ def make_demo_batch_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ REGRESSION ------------------------
 
-def regression_model_build(**hyperparameters):
+def regression_model_build(input_shape, **hyperparameters):
 	model = Sequential()
-	model.add(Dense(hyperparameters['neuron_count'], input_dim=12, kernel_initializer='normal', activation='relu'))
+	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, kernel_initializer='normal', activation='relu'))
 	model.add(Dropout(0.15))
 	model.add(Dense(hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(Dense(1, kernel_initializer='normal'))
@@ -437,13 +292,13 @@ def regression_model_train(model, samples_train, samples_evaluate, **hyperparame
 	)
 	return model
 
-def make_demo_batch_regression(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
 	}
 
-	file_path = get_demo_file_path('houses.csv')
+	file_path = datum.get_datum_path('houses.csv')
 
 	fileset = Dataset.Tabular.from_path(
 		file_path = file_path
@@ -480,13 +335,23 @@ def make_demo_batch_regression(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoder_features = None
-	encoder_labels = StandardScaler()
+	encoderset = splitset.make_encoderset()
 
-	preprocess = splitset.make_preprocess(
-		description = "scaled label."
-		, encoder_features = encoder_features
-		, encoder_labels = encoder_labels
+	labelcoder = encoderset.make_labelcoder(
+		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
+	)
+
+	fc0 = encoderset.make_featurecoder(
+		include = False
+		, dtypes = ['int64']
+		, sklearn_preprocess = MinMaxScaler(copy=False)
+	)
+	# We expect double None to use all columns because nothing is excluded.
+	fc1 = encoderset.make_featurecoder(
+		include = False
+		, dtypes = None
+		, columns = None
+		, sklearn_preprocess = OrdinalEncoder()
 	)
 
 	algorithm = Algorithm.make(
@@ -504,19 +369,19 @@ def make_demo_batch_regression(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, preprocess_id  = preprocess.id
+		, encoderset_id = encoderset.id
 		, repeat_count = repeat_count
 	)
 	return batch
 
 # ------------------------ DEMO BATCH CALLER ------------------------
-def make_demo_batch(name:str, repeat_count:int=1, fold_count:int=None):
+def make_test_batch(name:str, repeat_count:int=1, fold_count:int=None):
 	if (name == 'multiclass'):
-		batch = make_demo_batch_multiclass(repeat_count, fold_count)
+		batch = make_test_batch_multiclass(repeat_count, fold_count)
 	elif (name == 'binary'):
-		batch = make_demo_batch_binary(repeat_count, fold_count)
+		batch = make_test_batch_binary(repeat_count, fold_count)
 	elif (name == 'regression'):
-		batch = make_demo_batch_regression(repeat_count, fold_count)
+		batch = make_test_batch_regression(repeat_count, fold_count)
 	else:
-		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'examples.list_demo_batches()'.\n")
+		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'datum.list_test_batches()'.\n")
 	return batch

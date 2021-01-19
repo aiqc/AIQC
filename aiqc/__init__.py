@@ -587,7 +587,12 @@ class Dataset(BaseModel):
 			#Make sure the shape and mode of each image are the same before writing the Dataset.
 			sizes = []
 			modes = []
-			for path in file_paths:
+			
+			for i, path in enumerate(tqdm(
+					file_paths
+					, desc = "🖼️ Validating Images 🖼️"
+					, ncols = 85
+			)):
 				img = Imaje.open(path)
 				sizes.append(img.size)
 				modes.append(img.mode)
@@ -598,7 +603,11 @@ class Dataset(BaseModel):
 				raise ValueError(f"\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}\n")
 
 			try:
-				for i, p in enumerate(file_paths):  
+				for i, p in enumerate(tqdm(
+					file_paths
+					, desc = "🖼️ Ingesting Images 🖼️"
+					, ncols = 85
+				)):
 					file = File.Image.from_file(
 						path = p
 						, pillow_save = pillow_save
@@ -634,10 +643,14 @@ class Dataset(BaseModel):
 			#Make sure the shape and mode of each image are the same before writing the Dataset.
 			sizes = []
 			modes = []
-			for u in urls:
-
+			
+			for i, url in enumerate(tqdm(
+					urls
+					, desc = "🖼️ Validating Images 🖼️"
+					, ncols = 85
+			)):
 				img = Imaje.open(
-					requests.get(u, stream=True).raw
+					requests.get(url, stream=True).raw
 				)
 				sizes.append(img.size)
 				modes.append(img.mode)
@@ -648,6 +661,18 @@ class Dataset(BaseModel):
 				raise ValueError(f"\nYikes - All images in the Dataset must be of the same mode aka colorscale. `PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}\n")
 
 			try:
+				for i, url in enumerate(tqdm(
+					urls
+					, desc = "🖼️ Ingesting Images 🖼️"
+					, ncols = 85
+				)):
+					file = File.Image.from_url(
+						url = url
+						, pillow_save = pillow_save
+						, file_index = i
+						, dataset_id = dataset.id
+					)
+				"""
 				for i, url in enumerate(urls):  
 					file = File.Image.from_url(
 						url = url
@@ -655,6 +680,7 @@ class Dataset(BaseModel):
 						, file_index = i
 						, dataset_id = dataset.id
 					)
+				"""
 			except:
 				dataset.delete_instance() # Orphaned.
 				raise       
@@ -2230,37 +2256,36 @@ class Labelcoder(BaseModel):
 
 	def check_sklearn_attributes(sklearn_preprocess:object):
 		coder_type = str(type(sklearn_preprocess))
-		coder_name = str(sklearn_preprocess)
+		stringified_coder = str(sklearn_preprocess)
+
+		if (inspect.isclass(sklearn_preprocess)):
+			raise ValueError("\nYikes - The encoder you provided is Python class, but it should be a Python instance.\nClass (incorrect): `OrdinalEncoder`\nInstance (correct): `OrdinalEncoder()`\n")
 
 		if ('sklearn.preprocessing' not in coder_type):
 			raise ValueError("\nYikes - At this point in time, only `sklearn.preprocessing` encoders are supported.\nhttps://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing\n")
-
-		if (inspect.isclass(sklearn_preprocess)):
-			raise ValueError("\nYikes - The encoder you provided was Python class, but it should be a Python instance.\nClass (incorrect): `OrdinalEncoder`\nInstance (correct): `OrdinalEncoder()`\n")
-
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError("\nYikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\nPlease use one of the uppercase methods instead.\nFor example: use `RobustScaler` instead of `robust_scale`.\n")
 
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
-					raise ValueError(f"\nYikes - Detected `sparse==True` attribute of {coder_name}.\nFYI `sparse` is True by default if left blank.\nThis would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
+					raise ValueError(f"\nYikes - Detected `sparse==True` attribute of {stringified_coder}.\nFYI `sparse` is True by default if left blank.\nThis would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with False. For example, `OneHotEncoder(sparse=False)`.\n")
 
 			if (hasattr(sklearn_preprocess, 'encode')):
 				if (sklearn_preprocess.encode == 'onehot'):
-					raise ValueError(f"\nYikes - Detected `encode=='onehot'` attribute of {coder_name}.\nFYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense' or 'ordinal'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
+					raise ValueError(f"\nYikes - Detected `encode=='onehot'` attribute of {stringified_coder}.\nFYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix', causing Keras training to fail,\nPlease try again with 'onehot-dense' or 'ordinal'. For example, `KBinsDiscretizer(encode='onehot-dense')`.\n")
 
 			if (hasattr(sklearn_preprocess, 'copy')):
 				if (sklearn_preprocess.copy == True):
-					raise ValueError(f"\nYikes - Detected `copy==True` attribute of {coder_name}.\nFYI `copy` is True by default if left blank, which consumes memory.\nPlease try again with 'copy=False'. For example, `StandardScaler(copy=False)`.\n")
+					raise ValueError(f"\nYikes - Detected `copy==True` attribute of {stringified_coder}.\nFYI `copy` is True by default if left blank, which consumes memory.\nPlease try again with 'copy=False'. For example, `StandardScaler(copy=False)`.\n")
 			
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
-					raise ValueError(f"\nYikes - Detected `sparse_output==True` attribute of {coder_name}.\nPlease try again with 'sparse_output=False'. For example, `LabelBinarizer(sparse_output=False)`.\n")
+					raise ValueError(f"\nYikes - Detected `sparse_output==True` attribute of {stringified_coder}.\nPlease try again with 'sparse_output=False'. For example, `LabelBinarizer(sparse_output=False)`.\n")
 
 			if (hasattr(sklearn_preprocess, 'order')):
 				if (sklearn_preprocess.sparse_output == 'F'):
-					raise ValueError(f"\nYikes - Detected `order=='F'` attribute of {coder_name}.\nPlease try again with 'order='C'. For example, `PolynomialFeatures(order='C')`.\n")
+					raise ValueError(f"\nYikes - Detected `order=='F'` attribute of {stringified_coder}.\nPlease try again with 'order='C'. For example, `PolynomialFeatures(order='C')`.\n")
 
 			"""
 			- Attempting to automatically set this. I was originally validating based on 
@@ -2275,11 +2300,11 @@ class Labelcoder(BaseModel):
 				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
 				'Binarizer', 'MultiLabelBinarizer'
 			]
+			only_fit_train = True
 			for c in categorical_encoders:
-				if (c in coder_name):
+				if (stringified_coder.startswith(c)):
 					only_fit_train = False
-				elif (c not in coder_name):
-					only_fit_train = True
+					break
 			return only_fit_train
 			
 		
@@ -2414,6 +2439,7 @@ class Featurecoder(BaseModel):
 	leftover_dtypes = JSONField()
 	original_filter = JSONField()
 	encoding_dimension = CharField()
+	only_fit_train = BooleanField()
 
 	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
 
@@ -2457,6 +2483,9 @@ class Featurecoder(BaseModel):
 					initial_dtypes[col] = value
 					# Exit `c` loop early becuase matching `c` found.
 					break
+
+		if (verbose == True):
+			print(f"\n___/ featurecoder_index: {featurecoder_index} \\______") # Intentionally no trailing `\n`.
 
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
@@ -2512,7 +2541,7 @@ class Featurecoder(BaseModel):
 
 		elif (include==False):
 			# Prune this list via exclusion.
-			matching_columns = initial_columns 
+			matching_columns = initial_columns.copy()
 
 			if (dtypes is not None):
 				for typ in dtypes:
@@ -2520,7 +2549,6 @@ class Featurecoder(BaseModel):
 						if (value == typ):
 							matching_columns.remove(key)
 							# Don't `break`; there can be more than one match.
-
 			if (columns is not None):
 				for c in columns:
 					# Remember that the dtype has already pruned some columns.
@@ -2530,7 +2558,6 @@ class Featurecoder(BaseModel):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
 						raise ValueError(f"\nYikes - The column '{c}' was already excluded by `dtypes`, so this column-based filter is not valid.\nRemove '{c}' from `dtypes` and try again.\n")
-
 		if (len(matching_columns) == 0):
 			if (include == True):
 				inex_str = "inclusion"
@@ -4219,8 +4246,9 @@ class Pipeline():
 
 	class Image():
 		def make(
-			image_folder_path:str
-			, pillow_save:dict = {}
+			pillow_save:dict = {}
+			, image_folder_path:str = None
+			, image_urls:list = None
 			, tabular_df_or_path:object = None
 			, tabular_dtype:dict = None
 			, label_column:str = None
@@ -4230,13 +4258,31 @@ class Pipeline():
 			, fold_count:int = None
 			, bin_count:int = None
 		):
+			if ((image_folder_path is None) and (image_urls is None)):
+				raise ValueError("\nYikes - Both `image_folder_path` and `image_urls` cannot be None.\n")
+			elif ((image_folder_path is not None) and (image_urls is not None)):
+				raise ValueError("\nYikes - Use either `image_folder_path` or `image_urls`, but not both.One must be set to None.\n")
+
 			# Dataset.Image
-			dataset_image = Dataset.Image.from_folder(
-				folder_path = image_folder_path
-				, pillow_save = pillow_save
-			)
-			# Image Featureset.
+			if (image_folder_path is not None):
+				dataset_image = Dataset.Image.from_folder(
+					folder_path = image_folder_path
+					, pillow_save = pillow_save
+				)
+			elif (image_urls is not None):
+				dataset_image = Dataset.Image.from_urls(
+					urls = image_urls
+					, pillow_save = pillow_save
+				)
+			# Image-based Featureset.
 			featureset = dataset_image.make_featureset()
+
+			if (
+				((tabular_df_or_path is None) and (label_column is not None))
+				or
+				((tabular_df_or_path is not None) and (label_column is None))
+			):
+				raise ValueError("\nYikes - `tabular_df_or_path` and `label_column` are either used together or not at all.\n")
 
 			# Dataset.Tabular
 			if (tabular_df_or_path is not None):
@@ -4244,12 +4290,9 @@ class Pipeline():
 					dataFrame_or_filePath = tabular_df_or_path
 					, dtype = tabular_dtype
 				)
-
-				if label_column is not None:
-					label = dataset_tabular.make_label(columns=[label_column])
-					label_id = label.id
-				elif label_column is None:
-					raise ValueError("\nYikes - `label_column` must be specified if `tabular_df_or_path` is not None.\n")
+				# Tabular-based Label.
+				label = dataset_tabular.make_label(columns=[label_column])
+				label_id = label.id
 			
 			splitset = featureset.make_splitset(
 				label_id = label_id
