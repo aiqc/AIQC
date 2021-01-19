@@ -113,9 +113,9 @@ def list_datums(format:str=None):
 
 def get_datum_path(file_name:str):
 	# Explicitly list the remote datasets.
-	if (file_name == 'brain_tumor'):
+	if (file_name == 'brain_tumor.csv'):
 		# 2nd aiqc is the repo, not the module.
-		full_path = f"https://github.com/aiqc/aiqc/remote_datum/image/brain_tumor/tabular_manifest.csv?raw=true"
+		full_path = f"https://github.com/aiqc/aiqc/remote_datum/image/brain_tumor/brain_tumor.csv?raw=true"
 	else:
 		short_path = f"data/{file_name}"
 		full_path = pkg_resources.resource_filename('aiqc', short_path)

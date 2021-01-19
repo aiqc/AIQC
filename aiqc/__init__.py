@@ -20,8 +20,8 @@ from sklearn.metrics import *
 from sklearn.preprocessing import *
 # Deep learning.
 import keras 
-from keras.models import Sequential, load_model
-from keras.layers import Dense, Dropout
+from keras.models import load_model, Sequential
+from keras.layers import Dense, Conv1D, MaxPooling1D, Dropout, Flatten
 from keras.callbacks import History, Callback
 # Progress bar for training.
 from tqdm import tqdm
@@ -1759,7 +1759,7 @@ class Splitset(BaseModel):
 	):
 		split_arrs = Splitset.get_splits(
 			id = id
-			, numpy_or_pandas = 'pandas'
+			, numpy_or_pandas = 'numpy'
 			, splits = splits
 			, include_label = include_label
 			, include_featureset = include_featureset
@@ -2098,7 +2098,7 @@ class Foldset(BaseModel):
 
 
 
-	
+
 class Fold(BaseModel):
 	"""
 	- A Fold is 1 of many cross-validation sets generated as part of a Foldset.
