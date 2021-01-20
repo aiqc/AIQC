@@ -441,17 +441,14 @@ def make_test_batch_image_binary(repeat_count:int=1, fold_count:int=None):
 		, "cnn_init": ['he_normal', 'he_uniform']
 	}
 
-	df = datum.to_pandas(file_name='brain_tumor')
-	#df = pd.read_csv("/Users/layne/Desktop/aiqc/remote_datum/image/brain_tumor/brain_tumor.csv")
+	df = datum.to_pandas(name='brain_tumor.csv')
 
 	# Dataset.Tabular
 	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
 	label = dataset_tabular.make_label(columns=['status'])
 
 	# Dataset.Image
-	# urls are a column in the tabular dataframe above.
-	image_urls = df['url'].to_list()
-
+	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
 	dataset_image = Dataset.Image.from_urls(urls = image_urls)
 	featureset = dataset_image.make_featureset()
 	

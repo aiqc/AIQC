@@ -9,7 +9,7 @@ def list_datums(format:str=None):
 	# 'name' value cannot include 'https' because that's how remote datasets are detected.
 	datums = [
 		{
-			'file_name': 'exoplanets.parquet'
+			'name': 'exoplanets.parquet'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'SurfaceTempK'
@@ -20,7 +20,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'heart_failure.parquet'
+			'name': 'heart_failure.parquet'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'died'
@@ -31,7 +31,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'iris.tsv'
+			'name': 'iris.tsv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification_multi'
 			, 'label': 'species'
@@ -42,7 +42,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'sonar.csv'
+			'name': 'sonar.csv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification_binary'
 			, 'label': 'object'
@@ -53,7 +53,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'houses.csv'
+			'name': 'houses.csv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'regression'
 			, 'label': 'price'
@@ -64,7 +64,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'iris_noHeaders.csv' 
+			'name': 'iris_noHeaders.csv' 
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi'
 			, 'label': 'species'
@@ -75,7 +75,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'iris_10x.tsv'
+			'name': 'iris_10x.tsv'
 			, 'dataset_type': 'tabular'
 			, 'analysis_type': 'classification multi'
 			, 'label': 'species'
@@ -86,7 +86,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'file_name': 'brain_tumor.csv'
+			'name': 'brain_tumor.csv'
 			, 'dataset_type': 'image'
 			, 'analysis_type': 'classification_binary'
 			, 'label': 'status'
@@ -111,34 +111,39 @@ def list_datums(format:str=None):
 		raise ValueError(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
 
 
-def get_datum_path(file_name:str):
-	# Explicitly list the remote datasets.
-	if (file_name == 'brain_tumor.csv'):
+def get_datum_path(name:str):
+	"""
+	- pkg_resources is used to dynamically find where the files are located on the system
+	- In setup.py, `include_package_data=True,#triggers MANIFEST.in which grafts /data`
+	- Remote datasets locations are just hardcoded for now.
+	"""
+	if (name == 'brain_tumor.csv'):
 		# 2nd aiqc is the repo, not the module.
 		full_path = f"https://github.com/aiqc/aiqc/remote_datum/image/brain_tumor/brain_tumor.csv?raw=true"
 	else:
-		short_path = f"data/{file_name}"
+		short_path = f"data/{name}"
 		full_path = pkg_resources.resource_filename('aiqc', short_path)
 	return full_path
 
 
-def to_pandas(file_name:str):
-	file_path = get_datum_path(file_name)
+def to_pandas(name:str):
+	file_path = get_datum_path(name)
 
-	if ('.tsv' in file_name) or ('.csv' in file_name):
-		if ('.tsv' in file_name):
+	if ('.tsv' in name) or ('.csv' in name):
+		if ('.tsv' in name):
 			separator = '\t'
-		elif ('.csv' in file_name):
+		elif ('.csv' in name):
 			separator = ','
 		else:
 			separator = None
 		df = pd.read_csv(file_path, sep=separator)
-	elif ('.parquet' in file_name):
+	elif ('.parquet' in name):
 		df = pd.read_parquet(file_path)
 	return df
 
 
-def get_image_urls(manifest_dataframe:object):
-	remote_img_urls = manifest_dataframe['url'].to_list()
-	return remote_img_urls
+def get_remote_urls(manifest_name:'str'):
+	df = datum.to_pandas(name=manifest_name)
+	remote_urls = df['url'].to_list()
+	return remote_urls
 
