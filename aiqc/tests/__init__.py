@@ -41,7 +41,7 @@ def list_test_batches(format:str=None):
 	]
 	
 	formats_df = [None, 'pandas', 'df' ,'dataframe']
-	formats_lst = ['list', 'lst', 'l']
+	formats_lst = ['list', 'l']
 	if format in formats_df:
 		pd.set_option('display.max_column',100)
 		pd.set_option('display.max_colwidth', 500)

@@ -1,6 +1,6 @@
-*****
+#####
 Links
-*****
+#####
 
 .. list-table::
    :widths: 40, 80
@@ -21,6 +21,9 @@ Links
 
    * - `Slack <https://aiqc.slack.com>`__
      - Hosts the community chat.
+
+   * - `Ko-fi <https://ko-fi.com/donate2aiqc>`__
+     - Crowdsourced donations. 
 
    * - Medium (TBD)
      - Hosts the blog.

@@ -24,7 +24,6 @@
    :hidden:
 
    notebooks/example_datasets.ipynb
-   notebooks/example_experiments.ipynb
 
 .. image:: images/aiqc_logo_wide_black_docs.png
    :width: 385
@@ -33,9 +32,9 @@
 
 ----
 
-**********
+##########
 Highlights
-**********
+##########
 
 .. image:: images/metrics_15sec.gif
 	:width: 100%
@@ -46,6 +45,7 @@ Highlights
 * API/ ORM for sample and model pipelines.
 * Validation splits & cross-folds are first-level citizens.
 * Track which samples make up which split/ fold.
+* Encode splits/ folds on the fly by dtype or column.
 * Designed for Jupyter, but IDE/ OS agnostic.
 * No infrastructure to configure, just pip install.
 

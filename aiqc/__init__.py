@@ -1234,8 +1234,12 @@ class Label(BaseModel):
 		column_count = len(columns)
 
 		label_df = Dataset.to_pandas(id=dataset_id, columns=columns)
-		# Hmm. This cleaning is starting to get into Refinery territory.
-		# When multiple columns are provided, they must be OHE.
+		"""
+		- When multiple columns are provided, they must be OHE.
+		- Figure out column count because classification_binary and associated 
+		metrics can't be run on > 2 columns.
+		- Negative values do not alter type of numpy int64 and float64 arrays.
+		"""
 		if (column_count > 1):
 			unique_values = []
 			for c in columns:
@@ -1279,7 +1283,7 @@ class Label(BaseModel):
 			col = columns[0]
 			label_series = label_df[col]
 			dtype_str = str(label_series.dtype)
-			if ((dtype_str == 'float64') or (dtype_str == 'float32')):
+			if ('float' in dtype_str):
 				unique_classes = None
 				label_type = 'regression'
 			else:
@@ -3199,16 +3203,15 @@ class Batch(BaseModel):
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		splitset = Splitset.get_by_id(splitset_id)
-
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
 		if (splitset.supervision == 'supervised'):
 			label_type = splitset.label.label_type
 			analysis_type = algorithm.analysis_type
 			if (label_type != analysis_type):
-				raise ValueError(f"\nYikes - `splitset.label.label_type` and `algorithm.analysis_type` must be identical.\nYour `splitset.label.label_type`: <{label_type}>\nYour `algorithm.analysis_type`: <{analysis_type}>\n")
+				raise ValueError(f"\nYikes - `splitset.label.label_type` and `algorithm.analysis_type` must be identical.\nYour `splitset.label.label_type`: <{label_type}>\nYour `algorithm.analysis_type`: <{analysis_type}>\n\nPlease note that, although it is possible to perform regression on integer-typed labels, AIQC requires converting to that column to float first.\nThis not only improves performance by avoiding repeated conversion from int-to-float, but also, enables proper bin-based stratification of splits/ folds.")
 		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
 			raise ValueError(f"\nYikes - `splitset.supervision != 'supervised'` but `hide_test==True`.\n")
-		
+
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
 			foldset_splitset = foldset.splitset

@@ -1,38 +1,51 @@
-********
+########
 Features
-********
+########
 
 
 Compatibility Matrix
 ====================
 
 .. csv-table::
-   :header: Library, Model Type, Supported
+   :header: Analysis, Data, Library, Supported
    :align: center
-   :widths: 25, 50, 10
+   :widths: 30, 40, 20, 10
 
-   Keras, Classification (multi), ✓
-   Keras, Classification (binary), ✓
-   Keras, Regression (continuous), ✓
-   Keras, Time Series (e.g. LSTM), not yet
-   Keras, Convolutional (e.g. image recognition), not yet
+   Classification (binary), Tabular/ delimited/ flat (categorical), Keras, ✓
+   Classification (multi), Tabular/ delimited/ flat (categorical), Keras, ✓
+   Regression, Tabular/ delimited/ flat (continuous), Keras, ✓
+   Convolution, Features (images or tabular) + Labels (tabular), Keras, ✓
 
-*The framework is flexible because the `Algorithm` object is comprised of user-defined functions, so it will support almost any Python machine learning library.*
+Future Consideration:
+---------------------
+ * Sequence data for recurrent analysis.
+ * PyTorch models.
+ * Feature engineering.
+ * Cleaning: anomaly detection, imputation.
+
+*The framework is extremely extensible because the `Algorithm` object is comprised of user-defined functions. Support can be added for any Python machine learning library.*
 
 ----
+
+*All objects are persisted in a file-based SQLite database that is automatically configured when installing the pip package. It serves as an experiment tracker.*
+
 
 I. Sample Preparation
 =====================
 
-* Compress a dataset (csv, tsv, parquet, pandas dataframe, numpy ndarray) to be immutably analyzed.
+* Ingest and compress tabular data (csv, tsv, parquet, pandas dataframe, numpy ndarray).
 
-* Easily name columns that will serve as Labels and Featuresets.
+* Ingest homgenous images into a dataset.
+
+* Easily specify columns that will serve as Labels and Featuresets.
 
 * Split stratified samples by index while treating validation sets (3rd split) as a first-level citizen.
 
 * Cross-fold (k-fold) stratified samples by index while treating folds as first-level citizens.
 
-* Encode samples (fits on appropriate training split or fold) for specific algorithms.
+* Specify a label encoder and a sequence of dtype/ column-specific featureset encoders that will automatically be applied to the appropriate split/ fold.
+
+* Example datasets built into the package. Example image datasets on github.
 
 * [ToDo] Derive informative featuresets from that dataset using supervised and unsupervised methods.
 
@@ -40,7 +53,7 @@ I. Sample Preparation
 II. Model Training & Hyperparameter Tuning
 ==========================================
 
-* Flexibly define functions for building and training models.
+* Define functions for building and training models.
 
 * Define lists of hyperparameter values to be trained against and fed into the models.
 
@@ -50,6 +63,8 @@ II. Model Training & Hyperparameter Tuning
 
 * Queue training jobs on a background process.
 
+* Set a repeat count if you want to train on the same parameters multiple times.
+
 * [ToDo] Scale out to run cloud jobs in parallel by toggling `cloud_queue = True`.
 
 
@@ -58,6 +73,6 @@ III. Model Performance
 
 * Evaluates the performance metrics for each split/ fold. 
 
-* Evaluates per-epoch metrics via History objects.
+* Evaluates per-epoch metrics via History objects. Allows for early stopping.
 
 * Visually compare model metrics to find the best one.
