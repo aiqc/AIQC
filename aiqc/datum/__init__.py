@@ -111,7 +111,7 @@ def list_datums(format:str=None):
 		raise ValueError(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
 
 
-def get_datum_path(name:str):
+def get_path(name:str):
 	"""
 	- pkg_resources is used to dynamically find where the files are located on the system
 	- In setup.py, `include_package_data=True,#triggers MANIFEST.in which grafts /data`
@@ -127,7 +127,7 @@ def get_datum_path(name:str):
 
 
 def to_pandas(name:str):
-	file_path = get_datum_path(name)
+	file_path = get_path(name)
 
 	if ('.tsv' in name) or ('.csv' in name):
 		if ('.tsv' in name):

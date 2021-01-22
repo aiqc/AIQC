@@ -1,6 +1,8 @@
-import os, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests
+import os, sys, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests
+from importlib import reload
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
+from textwrap import dedent
 import pprint as pp
 
 #OS agonstic system files.
@@ -19,10 +21,10 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import *
 from sklearn.preprocessing import *
 # Deep learning.
-import keras 
+import keras
 from keras.models import load_model, Sequential
-from keras.layers import *
-from keras.callbacks import History, Callback
+from keras.callbacks import Callback#, History
+#from keras.layers import *
 # Progress bar.
 from tqdm import tqdm
 # Visualization.
@@ -55,10 +57,10 @@ def check_exists_folder():
 		print(f"\n=> Success - the following file path already exists on your system:\n{app_dir}\n")
 		return True
 	else:
-		print(f"""
-		=> Info - it appears the following folder does not exist on your system:\n{app_dir}\n
-		=> Fix - you can attempt to fix this by running `aiqc.create_folder()`.
-		""")
+		print(
+			f"=> Info - it appears the following folder does not exist on your system:\n{app_dir}\n\n" \
+			f"=> Fix - you can attempt to fix this by running `aiqc.create_folder()`.\n"
+		)
 		return False
 
 
@@ -68,20 +70,26 @@ def create_folder():
 		print(f"\n=> Info - skipping folder creation as folder already exists at file path:\n{app_dir}\n")
 	else:
 		try:
-			if os.name == 'nt':
-				# Windows: backslashes \ and double backslashes \\
-				command = 'mkdir ' + app_dir
-				os.system(command)
-			else:
-				# posix (mac and linux)
-				command = 'mkdir -p "' + app_dir + '"'
-				os.system(command)
+			"""
+			- `makedirs` will create any missing intermediary dir(s) in addition to the target dir.
+			- Whereas `mkdir` only creates the target dir and fails if intermediary dir(s) are missing.
+			- If this break for whatever reason, could also try out `path.mkdir(parents=True)`.
+			"""
+			os.makedirs(app_dir)
+			# if os.name == 'nt':
+			# 	# Windows: backslashes \ and double backslashes \\
+			# 	command = 'mkdir ' + app_dir
+			# 	os.system(command)
+			# else:
+			# 	# posix (mac and linux)
+			# 	command = 'mkdir -p "' + app_dir + '"'
+			# 	os.system(command)
 		except:
-			raise OSError(f"\n=> Yikes - error failed to execute this system command:\n{command}\n")
-		print(f"""
-		=> Success - created folder at file path:\n{app_dir}\n
-		=> Next try running `aiqc.create_config()`.
-		""")
+			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.mkdirs('{app_dir}')\n")
+		print(
+			f"=> Success - created folder at file path:\n{app_dir}\n\n" \
+			f"=> Next try running `aiqc.create_config()`.\n"
+		)
 
 
 def check_permissions_folder():
@@ -94,10 +102,10 @@ def check_permissions_folder():
 			
 			def permissions_fail_info():
 				# We don't want an error here because it needs to return False.
-				print("""
-				=> Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n
-				=> Fix - you can attempt to fix this by running `aiqc.grant_permissions_folder()`.\n
-				""")
+				print(
+					f"=> Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n\n" \
+					f"=> Fix - you can attempt to fix this by running `aiqc.grant_permissions_folder()`.\n"
+				)
 
 			try:
 				cmd_file_create = 'echo "test" >> ' + app_dir + file_name
@@ -164,10 +172,10 @@ def grant_permissions_folder():
 				command = 'chmod +wr ' + '"' + app_dir + '"'
 				os.system(command)
 		except:
-			print(f"""
-			=> Yikes - error failed to execute this system command:\n{command}\n
-			===================================
-			""")
+			print(
+				f"=> Yikes - error failed to execute this system command:\n{command}\n\n" \
+				f"===================================\n"
+			)
 			raise
 		
 		permissions = check_permissions_folder()
@@ -202,13 +210,14 @@ def create_config():
 				with open(default_config_path, 'w') as aiqc_config_file:
 					json.dump(aiqc_config, aiqc_config_file)
 			except:
-				print(f"""
-				=> Yikes - failed to create config file at path:\n{default_config_path}\n
-				=> Fix - you can attempt to fix this by running `aiqc.check_permissions_folder()`.\n
-				===================================
-				""")
+				print(
+					f"=> Yikes - failed to create config file at path:\n{default_config_path}\n\n" \
+					f"=> Fix - you can attempt to fix this by running `aiqc.check_permissions_folder()`.\n" \
+					f"==================================="
+				)
 				raise
 			print(f"\n=> Success - created config file for settings at path:\n{default_config_path}\n")
+			reload(sys.modules[__name__])
 		else:
 			print(f"\n=> Info - skipping as config file already exists at path:\n{default_config_path}\n")
 
@@ -223,12 +232,13 @@ def delete_config(confirm:bool=False):
 			try:
 				os.remove(config_path)
 			except:
-				print(f"""
-				=> Yikes - failed to delete config file at path:\n{config_path}\n
-				===================================
-				""")
+				print(
+					f"=> Yikes - failed to delete config file at path:\n{config_path}\n\n" \
+					f"===================================\n" \
+				)
 				raise
-			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")      
+			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")
+			reload(sys.modules[__name__])   
 		else:
 			print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
 
@@ -246,12 +256,13 @@ def update_config(kv:dict):
 			with open(config_path, 'w') as aiqc_config_file:
 				json.dump(aiqc_config, aiqc_config_file)
 		except:
-			print(f"""
-			=> Yikes - failed to update config file at path:\n{config_path}\n
-			===================================
-			""")
+			print(
+				f"=> Yikes - failed to update config file at path:\n{config_path}\n\n" \
+				f"===================================\n"
+			)
 			raise
 		print(f"\n=> Success - updated configuration settings:\n{aiqc_config}\n")
+		reload(sys.modules[__name__])
 
 
 #==================================================
@@ -294,10 +305,10 @@ def create_db():
 		try:
 			db = get_db()
 		except:
-			print(f"""
-			=> Yikes - failed to create database file at path:\n{db_path}\n
-			===================================
-			""")
+			print(
+				f"=> Yikes - failed to create database file at path:\n{db_path}\n\n" \
+				f"===================================\n"
+			)
 			raise
 		print(f"\n=> Success - created database file at path:\n{db_path}\n")
 
@@ -315,17 +326,17 @@ def create_db():
 			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Batch, Jobset, Job, Result,
+			Batch, Jobset, Job, Result
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
 		if table_count > 0:
 			print(f"\n=> Success - created the following tables within database:\n{tables}\n")
 		else:
-			print("""
-			=> Yikes - failed to create tables.
-			Please see README file section titled: 'Deleting & Recreating the Database'\n
-			""")
+			print(
+				f"=> Yikes - failed to create tables.\n" \
+				f"Please see README file section titled: 'Deleting & Recreating the Database'\n"
+			)
 
 
 def delete_db(confirm:bool=False):
@@ -336,10 +347,10 @@ def delete_db(confirm:bool=False):
 			try:
 				os.remove(db_path)
 			except:
-				print(f"""
-				=> Yikes - failed to delete database file at path:\n{db_path}\n
-				===================================
-				""")
+				print(
+					f"=> Yikes - failed to delete database file at path:\n{db_path}\n\n" \
+					f"===================================\n"
+				)
 				raise
 			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
 
@@ -347,7 +358,7 @@ def delete_db(confirm:bool=False):
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
 	else:
 		print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
-
+		reload(sys.modules[__name__])
 
 #==================================================
 # ORM
@@ -455,10 +466,10 @@ class Dataset(BaseModel):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
 
 			if not os.path.isfile(file_path):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:\n{file_path}
 				But `dataset_type=='tabular'` only supports a single file, not an entire directory.`
-				""")
+				"""))
 
 			# Use the raw, not absolute path for the name.
 			if name is None:
@@ -527,17 +538,17 @@ class Dataset(BaseModel):
 			if (type(ndarray).__name__ != 'ndarray'):
 				raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
 			elif (ndarray.dtype.names is not None):
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - Sorry, we do not support NumPy Structured Arrays.
 				However, you can use the `dtype` dict and `columns_names` to handle each column specifically.
-				""")
+				"""))
 
 			dimensions = len(ndarray.shape)
 			if (dimensions > 2) or (dimensions < 1):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - Tabular Datasets only support 1D and 2D arrays.
 				Your array dimensions had <{dimensions}> dimensions.
-				""")
+				"""))
 			
 			dataset = Dataset.create(
 				file_count = Dataset.Tabular.file_count
@@ -629,15 +640,15 @@ class Dataset(BaseModel):
 				modes.append(img.mode)
 
 			if (len(set(sizes)) > 1):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - All images in the Dataset must be of the same width and height.
 				`PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}
-				""")
+				"""))
 			elif (len(set(modes)) > 1):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - All images in the Dataset must be of the same mode aka colorscale.
 				`PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}
-				""")
+				"""))
 
 			try:
 				for i, p in enumerate(tqdm(
@@ -693,15 +704,15 @@ class Dataset(BaseModel):
 				modes.append(img.mode)
 
 			if (len(set(sizes)) > 1):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - All images in the Dataset must be of the same width and height.
 				`PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}
-				""")
+				"""))
 			elif (len(set(modes)) > 1):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - All images in the Dataset must be of the same mode aka colorscale.
 				`PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}
-				""")
+				"""))
 
 			try:
 				for i, url in enumerate(tqdm(
@@ -742,7 +753,7 @@ class Dataset(BaseModel):
 			return images
 
 
-		def to_numpy(id:int, samples:list=None, columns:list=None):
+		def to_numpy(id:int, samples:list=None):
 			"""
 			- Because Pillow works directly with numpy, there's no need for pandas right now.
 			- But downstream methods are using pandas.
@@ -965,10 +976,10 @@ class File(BaseModel):
 				col_count = len(column_names)
 				structure_col_count = dataframe.shape[1]
 				if col_count != structure_col_count:
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - The dataframe you provided has <{structure_col_count}> columns,
 					but you provided <{col_count}> columns.
-					""")
+					"""))
 
 
 		def df_set_metadata(
@@ -1001,19 +1012,19 @@ class File(BaseModel):
 					actual_dtypes = dataframe.dtypes.to_dict()
 					for col_nam, typ in actual_dtypes.items():
 						if (typ != dtype):
-							raise ValueError(f"""
+							raise ValueError(dedent(f"""
 							Yikes - You specified `dtype={dtype},
 							but Pandas did not convert it: `dataframe['{col_name}'].dtype == {typ}`.
 							You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
-							""")
+							"""))
 				elif (isinstance(dtype, dict)):
 					for col_name, typ in dtype.items():
 						if (typ != dataframe[col_name].dtype):
-							raise ValueError(f"""
+							raise ValueError(dedent(f"""
 							Yikes - You specified `dataframe['{col_name}']:dtype('{typ}'),
 							but Pandas did not convert it: `dataframe['{col_name}'].dtype == {dataframe[col_name].dtype}`.
 							You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
-							""")
+							"""))
 			"""
 			Rare types like np.uint8, np.double, 'bool', 
 			but not np.complex64 and np.float128 (aka np.longfloat) 
@@ -1027,10 +1038,10 @@ class File(BaseModel):
 			for col_name, typ in actual_dtypes:
 				for et in excluded_types:
 					if (et in str(typ)):
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - You specified `dtype['{col_name}']:'{typ}',
 						but aiqc does not support the following dtypes: {excluded_types}
-						""")
+						"""))
 
 			"""
 			Now, we take the all of the resulting dataframe dtypes and save them.
@@ -1093,10 +1104,10 @@ class File(BaseModel):
 				)
 			elif (source_file_format == 'parquet'):
 				if (skip_header_rows != 'infer'):
-					raise ValueError("""
+					raise ValueError(dedent("""
 					Yikes - The argument `skip_header_rows` is not supported for `source_file_format='parquet'`
 					because Parquet stores column names as metadata.\n
-					""")
+					"""))
 				tbl = pyarrow.parquet.read_table(path)
 				if (column_names is not None):
 					tbl = tbl.rename_columns(column_names)
@@ -1118,11 +1129,11 @@ class File(BaseModel):
 			elif (dimensions > 1) and (all(np.isnan(ndarray[0]))):
 				# Sometimes when coverting headered structures numpy will NaN them out.
 				ndarray = np.delete(ndarray, 0, axis=0)
-				print("""
+				print(dedent("""
 				Warning - The entire first row of your array is 'NaN',
 				which commonly happens in NumPy when headers are read into a numeric array,
 				so we deleted this row during ingestion.
-				""")
+				"""))
 
 
 	class Image():
@@ -1221,10 +1232,10 @@ class File(BaseModel):
 			#https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.open
 			file = File.get_by_id(id)
 			if (file.file_type != 'image'):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - Only `file.file_type='image' can be converted to Pillow images.
 				But you provided `file.file_type`: <{file.file_type}>
-				""")
+				"""))
 			img_bytes = io.BytesIO(file.blob)
 			img = Imaje.open(img_bytes)
 			return img
@@ -1274,10 +1285,10 @@ class Label(BaseModel):
 		d = Dataset.get_by_id(dataset_id)
 
 		if (d.dataset_type != 'tabular'):
-			raise ValueError(f"""
+			raise ValueError(dedent(f"""
 			Yikes - Labels can only be created from `dataset_type='tabular'`.
 			But you provided `dataset_type`: <{d.dataset_type}>
-			""")
+			"""))
 		
 		d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
 
@@ -1313,11 +1324,11 @@ class Label(BaseModel):
 				uniques = label_df[c].unique()
 				unique_values.append(uniques)
 				if (len(uniques) == 1):
-					print(f"""
-					Warning - There is only 1 unique value for this label column.
-					Unique value: <{uniques[0]}>
-					Label column: <{c}>
-					""")
+					print(
+						f"Warning - There is only 1 unique value for this label column.\n" \
+						f"Unique value: <{uniques[0]}>\n" \
+						f"Label column: <{c}>\n"
+					)
 			flat_uniques = np.concatenate(unique_values).ravel()
 			all_uniques = np.unique(flat_uniques).tolist()
 
@@ -1329,11 +1340,11 @@ class Label(BaseModel):
 				):
 					pass
 				else:
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - When multiple columns are provided, they must be One Hot Encoded:
 					Unique values of your columns were neither (0,1) or (0.,1.) or (0.0,1.0).
 					The columns you provided contained these unique values: {all_uniques}
-					""")
+					"""))
 			unique_classes = all_uniques
 			
 			del label_df
@@ -1344,15 +1355,15 @@ class Label(BaseModel):
 					arr = list(arr)
 					arr.remove(1)
 					if 1 in arr:
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - Label row <{i}> is supposed to be an OHE row,
 						but it contains multiple hot columns where value is 1.
-						""")
+						"""))
 				else:
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Label row <{i}> is supposed to be an OHE row,
 					but it contains no hot columns where value is 1.
-					""")
+					"""))
 			
 			if (column_count == 2):
 				label_type = 'classification_binary'
@@ -1372,10 +1383,10 @@ class Label(BaseModel):
 				class_count = len(unique_classes)
 
 				if (class_count == 1):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Categorical labels must have 2 or more unique classes.
 					Your Label's only class was: <{unique_classes[0]}>.
-					""")
+					"""))
 				elif (class_count == 2):
 					label_type = 'classification_binary'
 				elif (class_count > 2):
@@ -1514,10 +1525,10 @@ class Featureset(BaseModel):
 					else:
 						f_cols_alpha = None
 					if cols_aplha == f_cols_alpha:
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - This Dataset already has Featureset <id:{f_id}> with the same columns.
 						Cannot create duplicate.
-						""")
+						"""))
 
 		f = Featureset.create(
 			dataset = d
@@ -1696,10 +1707,10 @@ class Splitset(BaseModel):
 			supervision = "unsupervised"
 			l = None
 			if (size_test is not None) or (size_validation is not None):
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - Unsupervised Featuresets support neither test nor validation splits.
 				Set both `size_test` and `size_validation` as `None` for this Featureset.
-				\n""")
+				"""))
 			else:
 				indices_lst_train = arr_idx.tolist()
 				samples["train"] = indices_lst_train
@@ -1744,10 +1755,10 @@ class Splitset(BaseModel):
 				stratify1 = Splitset.label_values_to_bins(array_to_bin=arr_l, bin_count=bin_count)
 			else:
 				if (bin_count is not None):
-					raise ValueError("""
+					raise ValueError(dedent("""
 					Yikes - Your Label column's dtype is neither 'float32' nor 'float64'.
 					Therefore, you cannot provide a value for `bin_count`.
-					\n""")
+					"""))
 				stratify1 = arr_l
 			"""
 			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
@@ -1883,10 +1894,10 @@ class Splitset(BaseModel):
 			if (not isinstance(splits, list)):
 				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
 			if (len(splits) == 0):
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - `splits` argument is an empty list.
 				It can be None, which defaults to all splits, but it can't not empty.
-				\n""")
+				"""))
 		else:
 			splits = list(s.samples.keys())
 
@@ -2013,10 +2024,10 @@ class Foldset(BaseModel):
 			fold_count = 5 # More likely than 4 to be evenly divisible.
 		else:
 			if (fold_count < 2):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - Cross validation requires multiple folds.
 				But you provided `fold_count`: <{fold_count}>.
-				""")
+				"""))
 			elif (fold_count == 2):
 				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
@@ -2035,19 +2046,19 @@ class Foldset(BaseModel):
 			)
 		else:
 			if (bin_count is not None):
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - Your Label column's dtype is neither 'float32' nor 'float64'.
 				Therefore, you cannot provide a value for `bin_count`.
-				\n""")
+				\n"""))
 
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
 		if remainder != 0:
-			print(f"""
-			Warning - The number of samples <{train_count}> in your training Split
-			is not evenly divisible by the `fold_count` <{fold_count}> you specified.
-			This can result in misleading performance metrics for the last Fold.
-			""")
+			print(
+				f"Warning - The number of samples <{train_count}> in your training Split\n" \
+				f"is not evenly divisible by the `fold_count` <{fold_count}> you specified.\n" \
+				f"This can result in misleading performance metrics for the last Fold.\n"
+			)
 
 		foldset = Foldset.create(
 			fold_count = fold_count
@@ -2160,10 +2171,10 @@ class Foldset(BaseModel):
 			if (not isinstance(fold_names, list)):
 				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
 			if (len(fold_names) == 0):
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - `splits` argument is an empty list.
 				It can be None, which defaults to all splits, but it can't not empty.
-				\n""")
+				\n"""))
 		elif (fold_names is None):
 			fold_names = list(folds[0].samples.keys())
 
@@ -2356,12 +2367,12 @@ class Labelcoder(BaseModel):
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError(f"""
+			raise ValueError(dedent(f"""
 			During testing, the encoder was successfully `fit()` on labels of {communicated_split},
 			but, it failed to `transform()` labels of the dataset as a whole.\n
 			Tip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`,
 			it is better to use `only_fit_train=False`.
-			""")
+			"""))
 		else:
 			pass    
 		lc = Labelcoder.create(
@@ -2377,68 +2388,68 @@ class Labelcoder(BaseModel):
 		stringified_coder = str(sklearn_preprocess)
 
 		if (inspect.isclass(sklearn_preprocess)):
-			raise ValueError("""
+			raise ValueError(dedent("""
 			Yikes - The encoder you provided is Python class, but it should be a Python instance.\n
 			Class (incorrect): `OrdinalEncoder`
 			Instance (correct): `OrdinalEncoder()`
-			\n""")
+			\n"""))
 
 		if ('sklearn.preprocessing' not in coder_type):
-			raise ValueError("""
+			raise ValueError(dedent("""
 			Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
 			https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
-			\n""")
+			\n"""))
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
 				Please use one of the uppercase methods instead.
 				For example: use `RobustScaler` instead of `robust_scale`.
-				\n""")
+				\n"""))
 
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Detected `sparse==True` attribute of {stringified_coder}.
 					FYI `sparse` is True by default if left blank.
 					This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
 					Please try again with False. For example, `OneHotEncoder(sparse=False)`.
-					""")
+					"""))
 
 			if (hasattr(sklearn_preprocess, 'encode')):
 				if (sklearn_preprocess.encode == 'onehot'):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Detected `encode=='onehot'` attribute of {stringified_coder}.
 					FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
 					which causes Keras training to fail.\n
 					Please try again with 'onehot-dense' or 'ordinal'.
 					For example, `KBinsDiscretizer(encode='onehot-dense')`.
-					""")
+					"""))
 
 			if (hasattr(sklearn_preprocess, 'copy')):
 				if (sklearn_preprocess.copy == True):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Detected `copy==True` attribute of {stringified_coder}.
 					FYI `copy` is True by default if left blank, which consumes memory.\n
 					Please try again with 'copy=False'.
 					For example, `StandardScaler(copy=False)`.
-					""")
+					"""))
 			
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Detected `sparse_output==True` attribute of {stringified_coder}.
 					Please try again with 'sparse_output=False'.
 					For example, `LabelBinarizer(sparse_output=False)`.
-					""")
+					"""))
 
 			if (hasattr(sklearn_preprocess, 'order')):
 				if (sklearn_preprocess.sparse_output == 'F'):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Detected `order=='F'` attribute of {stringified_coder}.
 					Please try again with 'order='C'.
 					For example, `PolynomialFeatures(order='C')`.
-					""")
+					"""))
 
 			"""
 			- Attempting to automatically set this. I was originally validating based on 
@@ -2508,13 +2519,13 @@ class Labelcoder(BaseModel):
 						for i, arr in enumerate(samples_to_fit):
 							fitted_encoders[i] = sklearn_preprocess.fit(arr)
 					except:
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - Encoder failed to fit the columns you filtered.\n
 						Either the data is dirty (e.g. contains NaNs),
 						or the encoder might not accept negative values (e.g. PowerTransformer.method='box-cox'),
 						or you used one of the incompatible combinations of data type and encoder seen below:\n
 						{incompatibilities}
-						""")
+						"""))
 					else:
 						encoding_dimension = "1D"
 				else:
@@ -2644,7 +2655,7 @@ class Featurecoder(BaseModel):
 					break
 
 		if (verbose == True):
-			print(f"\n___/ featurecoder_index: {featurecoder_index} \\______") # Intentionally no trailing `\n`.
+			print(f"\n__/ featurecoder_index: {featurecoder_index} \\________") # Intentionally no trailing `\n`.
 
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
@@ -2656,11 +2667,11 @@ class Featurecoder(BaseModel):
 		for inex in criterium:
 			if (inex is not None):
 				if (not isinstance(inex, list)):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - All inclusion/ exclusion crtieria must be provided as lists.
 					For example: `dtypes=['float64', 'float32']`.
 					This was not a list: {inex}.
-					""")
+					"""))
 				if (isinstance(inex, list)):
 					# check if list is empty
 					if (not inex):
@@ -2670,18 +2681,18 @@ class Featurecoder(BaseModel):
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (typ not in set(initial_dtypes.values())):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - dtype '{typ}' was not found in remaining dtypes.
 					Remove '{typ}' from `dtypes` and try again.
-					""")
+					"""))
 		
 		if (columns is not None):
 			for c in columns:
 				if (col not in initial_columns):
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - Column '{col}' was not found in remaining columns.
 					Remove '{col}' from `columns` and try again.
-					""")
+					"""))
 		
 		# 3a. Figure out which columns the filters apply to.
 		if (include==True):
@@ -2706,10 +2717,10 @@ class Featurecoder(BaseModel):
 					elif (c in matching_columns):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - The column '{c}' was already included by `dtypes`, so this column-based filter is not valid.
 						Remove '{c}' from `columns` and try again.
-						""")
+						"""))
 
 		elif (include==False):
 			# Prune this list via exclusion.
@@ -2729,11 +2740,11 @@ class Featurecoder(BaseModel):
 					elif (c not in matching_columns):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - The column '{c}' was already excluded by `dtypes`,
 						so this column-based filter is not valid.
 						Remove '{c}' from `dtypes` and try again.
-						""")
+						"""))
 		if (len(matching_columns) == 0):
 			if (include == True):
 				inex_str = "inclusion"
@@ -2795,12 +2806,12 @@ class Featurecoder(BaseModel):
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError(f"""
+			raise ValueError(dedent(f"""
 			During testing, the encoder was successfully `fit()` on features of {communicated_split},
 			but, it failed to `transform()` features of the dataset as a whole.\n
 			Tip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`,
 			it is better to use `only_fit_train=False`.
-			""")
+			"""))
 		else:
 			pass
 
@@ -2817,20 +2828,20 @@ class Featurecoder(BaseModel):
 		)
 
 		if (verbose == True):
-			print(f"""
-			=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n
-			{pp.pformat(matching_columns)}
-			""")
+			print(
+				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n" \
+				f"{pp.pformat(matching_columns)}\n" 
+			)
 			if (len(leftover_columns) == 0):
-				print(f"""
-				=> Nice! Now all feature column(s) have encoder(s) associated with them.
-				No more Featurecoders can be added to this Encoderset.
-				""")
+				print(
+					f"=> Nice! Now all feature column(s) have encoder(s) associated with them.\n" \
+					f"No more Featurecoders can be added to this Encoderset.\n"
+				)
 			elif (len(leftover_columns) > 0):
-				print(f"""
-				=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n
-				{pp.pformat(initial_dtypes)}
-				""")
+				print(
+					f"=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n" \
+					f"{pp.pformat(initial_dtypes)}\n"
+				)
 		return featurecoder
 
 
@@ -2893,10 +2904,10 @@ class Algorithm(BaseModel):
 				function_model_predict = Algorithm.regression_model_predict
 		# After each of the predefined approaches above run, check if it is still undefined.
 		if function_model_predict is None:
-			raise ValueError("""
+			raise ValueError(dedent("""
 			Yikes - You did not provide a `function_model_predict`,
 			and we don't have an automated function for your combination of 'library' and 'analysis_type'
-			""")
+			"""))
 		return function_model_predict
 
 
@@ -2909,10 +2920,10 @@ class Algorithm(BaseModel):
 			function_model_loss = Algorithm.keras_model_loss
 		# After each of the predefined approaches above run, check if it is still undefined.
 		if function_model_loss is None:
-			raise ValueError("""
+			raise ValueError(dedent("""
 			Yikes - You did not provide a `function_model_loss`,
 			and we don't have an automated function for your combination of 'library' and 'analysis_type'
-			""")
+			"""))
 		return function_model_loss
 
 
@@ -3094,11 +3105,11 @@ class Plot:
 		elif (name_metric_2 == "r2"):
 			display_metric_2 = "R²"
 		else:
-			raise ValueError(f"""
+			raise ValueError(dedent(f"""
 			Yikes - The name of the 2nd metric to plot was neither 'accuracy' nor 'r2'.
 			You provided: {name_metric_2}.
 			The 2nd metric is supposed to be the last column of the dataframe provided.
-			""")
+			"""))
 
 		fig = px.line(
 			dataframe
@@ -3404,7 +3415,7 @@ class Batch(BaseModel):
 			label_type = splitset.label.label_type
 			analysis_type = algorithm.analysis_type
 			if (label_type != analysis_type):
-				raise ValueError(f"""
+				raise ValueError(dedent(f"""
 				Yikes - `splitset.label.label_type` and `algorithm.analysis_type` must be identical.
 				Your `splitset.label.label_type`: <{label_type}>
 				Your `algorithm.analysis_type`: <{analysis_type}>\n
@@ -3412,7 +3423,7 @@ class Batch(BaseModel):
 				AIQC requires converting to that column to float first.
 				This not only improves performance by avoiding repeated conversion from int-to-float,
 				but also, enables proper bin-based stratification of splits/ folds.
-				""")
+				"""))
 		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
 			raise ValueError(f"\nYikes - `splitset.supervision != 'supervised'` but `hide_test==True`.\n")
 
@@ -3601,10 +3612,10 @@ class Batch(BaseModel):
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if m not in metric_names:
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics`.
 					Note: the metrics available depend on the `Batch.analysis_type`.
-					""")
+					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
 
@@ -3684,10 +3695,10 @@ class Batch(BaseModel):
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if m not in metric_names:
-					raise ValueError(f"""
+					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.
 					Note: the metrics available depend on the `Batch.analysis_type`.
-					""")
+					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
 
@@ -4356,10 +4367,10 @@ class TrainingCallback():
 				for threshold in self.thresholds:
 					metric = logs.get(threshold['metric'])
 					if (metric is None):
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - The metric named '{threshold['metric']}' not found when running `logs.get('{threshold['metric']}')`
 						during `TrainingCallback.Keras.MetricCutoff.on_epoch_end`.
-						""")
+						"""))
 					cutoff = threshold['cutoff']
 
 					above_or_below = threshold['above_or_below']
@@ -4368,10 +4379,10 @@ class TrainingCallback():
 					elif (above_or_below == 'below'):
 						statement = operator.le(metric, cutoff)
 					else:
-						raise ValueError(f"""
+						raise ValueError(dedent(f"""
 						Yikes - Value for key 'above_or_below' must be either string 'above' or 'below'.
 						You provided:{above_or_below}
-						""")
+						"""))
 
 					if (statement == False):
 						break # Out of for loop.
@@ -4380,10 +4391,10 @@ class TrainingCallback():
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
 					# However, if the for loop actually finishes, then all metrics are satisfied.
-					print(f"""
-					:: Epoch #{epoch} ::
-					Satisfied thresholds defined in `MetricCutoff` callback. Stopped training early.
-					""")
+					print(
+						f":: Epoch #{epoch} ::\n" \
+						f"Satisfied thresholds defined in `MetricCutoff` callback. Stopped training early.\n"
+					)
 					self.model.stop_training = True
 					os.system("say bingo")
 
@@ -4408,10 +4419,10 @@ class Pipeline():
 			elif '.parquet' in d:
 				source_file_format='parquet'
 			else:
-				raise ValueError("""
+				raise ValueError(dedent("""
 				Yikes - None of the following file extensions were found in the path you provided:
 				'.csv', '.tsv', '.parquet'
-				""")
+				"""))
 			dataset = Dataset.Tabular.from_path(
 				path = d
 				, source_file_format = source_file_format
@@ -4427,6 +4438,7 @@ class Pipeline():
 			dataFrame_or_filePath:object
 			, dtype:dict = None
 			, label_column:str = None
+			, features_excluded:list = None
 			, label_encoder:object = None
 			, feature_encoders:list = None
 			, size_test:float = None
@@ -4438,14 +4450,18 @@ class Pipeline():
 				dataFrame_or_filePath = dataFrame_or_filePath
 				, dtype = dtype
 			)
-			# Not allowing user specify columns to keep/ include.
 			if (label_column is not None):
 				label = dataset.make_label(columns=[label_column])
-				featureset = dataset.make_featureset(exclude_columns=[label_column])
 				label_id = label.id
 			elif (label_column is None):
 				featureset = dataset.make_featureset()
 				label_id = None
+
+			if (features_excluded is None):
+				if (label_column is not None):
+					featureset = dataset.make_featureset(exclude_columns=[label_column])
+			elif (features_excluded is not None):
+				featureset = dataset.make_featureset(exclude_columns=features_excluded)
 
 			splitset = featureset.make_splitset(
 				label_id = label_id
@@ -4472,9 +4488,8 @@ class Pipeline():
 	class Image():
 		def make(
 			pillow_save:dict = {}
-			, image_folder_path:str = None
-			, image_urls:list = None
-			, tabular_df_or_path:object = None
+			, folderPath_or_urls:str = None
+			, tabularDF_or_path:object = None
 			, tabular_dtype:dict = None
 			, label_column:str = None
 			, label_encoder:object = None
@@ -4483,18 +4498,12 @@ class Pipeline():
 			, fold_count:int = None
 			, bin_count:int = None
 		):
-			if ((image_folder_path is None) and (image_urls is None)):
-				raise ValueError("\nYikes - Both `image_folder_path` and `image_urls` cannot be None.\n")
-			elif ((image_folder_path is not None) and (image_urls is not None)):
-				raise ValueError("\nYikes - Use either `image_folder_path` or `image_urls`, but not both.One must be set to None.\n")
-
-			# Dataset.Image
-			if (image_folder_path is not None):
+			if (isinstance(folderPath_or_urls, str)):
 				dataset_image = Dataset.Image.from_folder(
 					folder_path = image_folder_path
 					, pillow_save = pillow_save
 				)
-			elif (image_urls is not None):
+			elif (isinstance(folderPath_or_urls, list)):
 				dataset_image = Dataset.Image.from_urls(
 					urls = image_urls
 					, pillow_save = pillow_save
@@ -4503,16 +4512,16 @@ class Pipeline():
 			featureset = dataset_image.make_featureset()
 
 			if (
-				((tabular_df_or_path is None) and (label_column is not None))
+				((tabularDF_or_path is None) and (label_column is not None))
 				or
-				((tabular_df_or_path is not None) and (label_column is None))
+				((tabularDF_or_path is not None) and (label_column is None))
 			):
-				raise ValueError("\nYikes - `tabular_df_or_path` and `label_column` are either used together or not at all.\n")
+				raise ValueError("\nYikes - `tabularDF_or_path` and `label_column` are either used together or not at all.\n")
 
 			# Dataset.Tabular
-			if (tabular_df_or_path is not None):
+			if (tabularDF_or_path is not None):
 				dataset_tabular = Pipeline.parse_tabular_input(
-					dataFrame_or_filePath = tabular_df_or_path
+					dataFrame_or_filePath = tabularDF_or_path
 					, dtype = tabular_dtype
 				)
 				# Tabular-based Label.
