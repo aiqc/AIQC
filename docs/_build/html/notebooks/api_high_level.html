@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Low-Level API" href="api_low_level.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="prev" title="Example Data" href="example_datasets.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,30 +94,32 @@
 <li class="toctree-l1"><a class="reference internal" href="../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Documentation</span></p>
-<ul class="current">
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example Data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">High-Level API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Usage">Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#1.-Algorithm">1. Algorithm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Pipeline">1. Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a)-Tabular-Dataset">a) Tabular Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b)-Image-Dataset">b) Image Dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Algorithm">2. Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Model-Functions">Model Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Hyperparameters">Hyperparameters</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#2.-DataPipeline">2. DataPipeline</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#3.-Experiment">3. Experiment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Metrics-&amp;-Visualization">Metrics &amp; Visualization</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Experiment">3. Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Visualization-&amp;-Metrics">4. Visualization &amp; Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Built-In Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_experiments.html">Experiments</a></li>
 </ul>
 
             
@@ -455,40 +457,37 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="High-Level-API">
 <h1>High-Level API<a class="headerlink" href="#High-Level-API" title="Permalink to this headline">¶</a></h1>
-<p>These are the main objects used in the high-level API to create models, intelligently feed samples into them, and experiment with hyperparameters.</p>
+<p>The high-level API makes it easy to rapidly: * Prepare samples. * Hypertune/ train batches of models. * Feed appropriate data/ parameters into those models. * Assess model performance.</p>
+<p>It does so by wrapping and bundling together the methods of the low-level API. The table below demonstrates how the high-level entities abstract abstract the low-level entities. While this abstraction eliminates many steps to enable rapid model prototyping, it comes at a cost of customization.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 14%" />
+<col style="width: 86%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>High-level object</p></th>
-<th class="head"><p>Groups together the following objects</p></th>
+<th class="head"><p>Groups together or creates the following objects</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></p></td>
+<td><p>Dataset, File, Image, Tabular, Label, Featureset, Splitset, Foldset, Folds, Encoderset, Labelcoder, Featurecoder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></p></td>
 <td><p>Functions to build, train, predict, and evaluate a machine learning model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DataPipeline</span></code></p></td>
-<td><p>Dataset, Label, Featureset, Splitset, Foldset, Folds, Preprocess.</p></td>
-</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></p></td>
-<td><p>Algorithm, Hyperparamset, Hyperparamcombos, DataPipeline, Batch, Job.</p></td>
+<td><p>Algorithm, Hyperparamset, Hyperparamcombos, Batch, Job, Jobset, Result.</p></td>
 </tr>
 </tbody>
 </table>
-<p>In this way, the high-level API abstracts the lower-level API to make things easier for the user.</p>
-<div class="section" id="Prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>If you’ve already completed the instructions on the <strong>Installation</strong> page, then let’s get started.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">examples</span>
+<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
 </pre></div>
 </div>
 </div>
@@ -497,41 +496,312 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/compat/__init__.py:120: UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/compat/__init__.py:97: UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
   warnings.warn(msg)
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Usage">
-<h2>Usage<a class="headerlink" href="#Usage" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="1.-Algorithm">
-<h3>1. Algorithm<a class="headerlink" href="#1.-Algorithm" title="Permalink to this headline">¶</a></h3>
-<p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is the ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> for ORMs.</p>
+<div class="section" id="1.-Pipeline">
+<h2>1. Pipeline<a class="headerlink" href="#1.-Pipeline" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a)-Tabular-Dataset">
+<h3>a) Tabular Dataset<a class="headerlink" href="#a)-Tabular-Dataset" title="Permalink to this headline">¶</a></h3>
+<p>Tabular/ delimited/ flat-file <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> can be created from either Pandas DataFrames or flat files (CSV/ TSV or Parquet).</p>
+<p>Let’s grab one of AIQC’s built-in datasets from the <code class="docutils literal notranslate"><span class="pre">datum</span></code> module that we imported above. This module is described in the ‘Built-In Examples - Datasets’ section of the documentation.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;iris.tsv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> process starts with raw data. A Dataset object is generated from that data and prepared for training based on the parameters the user provides to the <code class="docutils literal notranslate"><span class="pre">Pipeline.make</span></code> method. To get started, set the <code class="docutils literal notranslate"><span class="pre">dataFrame_or_filePath</span></code> equal to the dataframe we just fetched. It’s the only argument that’s actually required so</p>
+<p>Import any scikit-learn encoders that you want to use to encode labels and/ or features. Any encoders that you pass in will need to be instantiated with the attributes you want them to use.</p>
+<blockquote>
+<div><p>Reference the <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> section of the low-level API for more detail on how to include/ exclude specific <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> columns by name/dtype. The <code class="docutils literal notranslate"><span class="pre">feature_encoders</span></code> argument seen below takes a list of dictionaries as input, where each dictionary contains the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> for a <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>.</p>
+</div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">PowerTransformer</span>
+</pre></div>
+</div>
+</div>
+<p>Rather than wrangling your data with many lines of data science code, just set the arguments below and AIQC takes care of the rest: stratification (including continuous dtypes), validation splits, cross-validation folds, and dtype/column specific encoders to be applied on-read.</p>
+<blockquote>
+<div><p>Don’t use <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> unless your (total sample count / fold_count) still gives you an accurate representation of your sample population. You can try it with the ‘iris_10x.tsv’ datum.</p>
+</div></blockquote>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="n">dataFrame_or_filePath</span> <span class="o">=</span> <span class="n">df</span>
+    <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;species&#39;</span>
+    <span class="p">,</span> <span class="n">features_excluded</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.24</span>
+    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
+    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">bin_count</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">feature_encoders</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;sklearn_preprocess&quot;</span><span class="p">:</span> <span class="n">PowerTransformer</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;box-cox&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">,</span> <span class="s2">&quot;dtypes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
+    <span class="p">}]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+__/ featurecoder_index: 0 \________
+
+=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
+[&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;, &#39;petal_width&#39;]
+
+
+=&gt; Nice! Now all feature column(s) have encoder(s) associated with them.
+No more Featurecoders can be added to this Encoderset.
+
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="b)-Image-Dataset">
+<h3>b) Image Dataset<a class="headerlink" href="#b)-Image-Dataset" title="Permalink to this headline">¶</a></h3>
+<p>AIQC also supports image data and convolutional analysis.</p>
+<p>In order to perform <em>supervised learning</em> on image files, you’ll need both a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> and a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> can be created from either a folder of images or a list of urls. The Pillow library is used to normalize images ingested into AIQC. Each image must be the same size (dimensions) and mode (colorscale).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> is created as seen in the section above. It must contain 1 row per image.</p></li>
+<li><p>Then a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> is constructed using:</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Label</span></code> of the <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> of the <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p>Again, we’ll use the built-in data found in the <code class="docutils literal notranslate"><span class="pre">datum</span></code> module that we imported above.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;brain_tumor.csv&#39;</span><span class="p">)</span>
+<span class="n">image_urls</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_remote_urls</span><span class="p">(</span><span class="n">manifest_name</span><span class="o">=</span><span class="s1">&#39;brain_tumor.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">HTTPError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-7-464aab74a27e&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>df <span class="ansi-blue-fg">=</span> datum<span class="ansi-blue-fg">.</span>to_pandas<span class="ansi-blue-fg">(</span>name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;brain_tumor.csv&#39;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> image_urls <span class="ansi-blue-fg">=</span> datum<span class="ansi-blue-fg">.</span>get_remote_urls<span class="ansi-blue-fg">(</span>manifest_name<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;brain_tumor.csv&#39;</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/Desktop/aiqc/aiqc/datum/__init__.py</span> in <span class="ansi-cyan-fg">to_pandas</span><span class="ansi-blue-fg">(name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    137</span>                 <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    138</span>                         separator <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span>
+<span class="ansi-green-fg">--&gt; 139</span><span class="ansi-red-fg">                 </span>df <span class="ansi-blue-fg">=</span> pd<span class="ansi-blue-fg">.</span>read_csv<span class="ansi-blue-fg">(</span>file_path<span class="ansi-blue-fg">,</span> sep<span class="ansi-blue-fg">=</span>separator<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    140</span>         <span class="ansi-green-fg">elif</span> <span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;.parquet&#39;</span> <span class="ansi-green-fg">in</span> name<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    141</span>                 df <span class="ansi-blue-fg">=</span> pd<span class="ansi-blue-fg">.</span>read_parquet<span class="ansi-blue-fg">(</span>file_path<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/parsers.py</span> in <span class="ansi-cyan-fg">read_csv</span><span class="ansi-blue-fg">(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options)</span>
+<span class="ansi-green-intense-fg ansi-bold">    603</span>     kwds<span class="ansi-blue-fg">.</span>update<span class="ansi-blue-fg">(</span>kwds_defaults<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    604</span>
+<span class="ansi-green-fg">--&gt; 605</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> _read<span class="ansi-blue-fg">(</span>filepath_or_buffer<span class="ansi-blue-fg">,</span> kwds<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    606</span>
+<span class="ansi-green-intense-fg ansi-bold">    607</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/parsers.py</span> in <span class="ansi-cyan-fg">_read</span><span class="ansi-blue-fg">(filepath_or_buffer, kwds)</span>
+<span class="ansi-green-intense-fg ansi-bold">    455</span>
+<span class="ansi-green-intense-fg ansi-bold">    456</span>     <span class="ansi-red-fg"># Create the parser.</span>
+<span class="ansi-green-fg">--&gt; 457</span><span class="ansi-red-fg">     </span>parser <span class="ansi-blue-fg">=</span> TextFileReader<span class="ansi-blue-fg">(</span>filepath_or_buffer<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwds<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    458</span>
+<span class="ansi-green-intense-fg ansi-bold">    459</span>     <span class="ansi-green-fg">if</span> chunksize <span class="ansi-green-fg">or</span> iterator<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/parsers.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, f, engine, **kwds)</span>
+<span class="ansi-green-intense-fg ansi-bold">    812</span>             self<span class="ansi-blue-fg">.</span>options<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#34;has_index_names&#34;</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">=</span> kwds<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#34;has_index_names&#34;</span><span class="ansi-blue-fg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">    813</span>
+<span class="ansi-green-fg">--&gt; 814</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>_engine <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>_make_engine<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>engine<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    815</span>
+<span class="ansi-green-intense-fg ansi-bold">    816</span>     <span class="ansi-green-fg">def</span> close<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/parsers.py</span> in <span class="ansi-cyan-fg">_make_engine</span><span class="ansi-blue-fg">(self, engine)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1043</span>             )
+<span class="ansi-green-intense-fg ansi-bold">   1044</span>         <span class="ansi-red-fg"># error: Too many arguments for &#34;ParserBase&#34;</span>
+<span class="ansi-green-fg">-&gt; 1045</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">return</span> mapping<span class="ansi-blue-fg">[</span>engine<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>f<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>options<span class="ansi-blue-fg">)</span>  <span class="ansi-red-fg"># type: ignore[call-arg]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1046</span>
+<span class="ansi-green-intense-fg ansi-bold">   1047</span>     <span class="ansi-green-fg">def</span> _failover_to_python<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/parsers.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, src, **kwds)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1860</span>
+<span class="ansi-green-intense-fg ansi-bold">   1861</span>         <span class="ansi-red-fg"># open handles</span>
+<span class="ansi-green-fg">-&gt; 1862</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>_open_handles<span class="ansi-blue-fg">(</span>src<span class="ansi-blue-fg">,</span> kwds<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1863</span>         <span class="ansi-green-fg">assert</span> self<span class="ansi-blue-fg">.</span>handles <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span>
+<span class="ansi-green-intense-fg ansi-bold">   1864</span>         <span class="ansi-green-fg">for</span> key <span class="ansi-green-fg">in</span> <span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;storage_options&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#34;encoding&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#34;memory_map&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#34;compression&#34;</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/parsers.py</span> in <span class="ansi-cyan-fg">_open_handles</span><span class="ansi-blue-fg">(self, src, kwds)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1361</span>             compression<span class="ansi-blue-fg">=</span>kwds<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;compression&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1362</span>             memory_map<span class="ansi-blue-fg">=</span>kwds<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;memory_map&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-green-fg">False</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-fg">-&gt; 1363</span><span class="ansi-red-fg">             </span>storage_options<span class="ansi-blue-fg">=</span>kwds<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;storage_options&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   1364</span>         )
+<span class="ansi-green-intense-fg ansi-bold">   1365</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/common.py</span> in <span class="ansi-cyan-fg">get_handle</span><span class="ansi-blue-fg">(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)</span>
+<span class="ansi-green-intense-fg ansi-bold">    561</span>         compression<span class="ansi-blue-fg">=</span>compression<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    562</span>         mode<span class="ansi-blue-fg">=</span>mode<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-fg">--&gt; 563</span><span class="ansi-red-fg">         </span>storage_options<span class="ansi-blue-fg">=</span>storage_options<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    564</span>     )
+<span class="ansi-green-intense-fg ansi-bold">    565</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/common.py</span> in <span class="ansi-cyan-fg">_get_filepath_or_buffer</span><span class="ansi-blue-fg">(filepath_or_buffer, encoding, compression, mode, storage_options)</span>
+<span class="ansi-green-intense-fg ansi-bold">    286</span>                 <span class="ansi-blue-fg">&#34;storage_options passed with file object or non-fsspec file path&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    287</span>             )
+<span class="ansi-green-fg">--&gt; 288</span><span class="ansi-red-fg">         </span>req <span class="ansi-blue-fg">=</span> urlopen<span class="ansi-blue-fg">(</span>filepath_or_buffer<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    289</span>         content_encoding <span class="ansi-blue-fg">=</span> req<span class="ansi-blue-fg">.</span>headers<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;Content-Encoding&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    290</span>         <span class="ansi-green-fg">if</span> content_encoding <span class="ansi-blue-fg">==</span> <span class="ansi-blue-fg">&#34;gzip&#34;</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/pandas/io/common.py</span> in <span class="ansi-cyan-fg">urlopen</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    192</span>     <span class="ansi-green-fg">import</span> urllib<span class="ansi-blue-fg">.</span>request
+<span class="ansi-green-intense-fg ansi-bold">    193</span>
+<span class="ansi-green-fg">--&gt; 194</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> urllib<span class="ansi-blue-fg">.</span>request<span class="ansi-blue-fg">.</span>urlopen<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    195</span>
+<span class="ansi-green-intense-fg ansi-bold">    196</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/lib/python3.7/urllib/request.py</span> in <span class="ansi-cyan-fg">urlopen</span><span class="ansi-blue-fg">(url, data, timeout, cafile, capath, cadefault, context)</span>
+<span class="ansi-green-intense-fg ansi-bold">    220</span>     <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    221</span>         opener <span class="ansi-blue-fg">=</span> _opener
+<span class="ansi-green-fg">--&gt; 222</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">return</span> opener<span class="ansi-blue-fg">.</span>open<span class="ansi-blue-fg">(</span>url<span class="ansi-blue-fg">,</span> data<span class="ansi-blue-fg">,</span> timeout<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    223</span>
+<span class="ansi-green-intense-fg ansi-bold">    224</span> <span class="ansi-green-fg">def</span> install_opener<span class="ansi-blue-fg">(</span>opener<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/lib/python3.7/urllib/request.py</span> in <span class="ansi-cyan-fg">open</span><span class="ansi-blue-fg">(self, fullurl, data, timeout)</span>
+<span class="ansi-green-intense-fg ansi-bold">    529</span>         <span class="ansi-green-fg">for</span> processor <span class="ansi-green-fg">in</span> self<span class="ansi-blue-fg">.</span>process_response<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>protocol<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    530</span>             meth <span class="ansi-blue-fg">=</span> getattr<span class="ansi-blue-fg">(</span>processor<span class="ansi-blue-fg">,</span> meth_name<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 531</span><span class="ansi-red-fg">             </span>response <span class="ansi-blue-fg">=</span> meth<span class="ansi-blue-fg">(</span>req<span class="ansi-blue-fg">,</span> response<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    532</span>
+<span class="ansi-green-intense-fg ansi-bold">    533</span>         <span class="ansi-green-fg">return</span> response
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/lib/python3.7/urllib/request.py</span> in <span class="ansi-cyan-fg">http_response</span><span class="ansi-blue-fg">(self, request, response)</span>
+<span class="ansi-green-intense-fg ansi-bold">    639</span>         <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> <span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">200</span> <span class="ansi-blue-fg">&lt;=</span> code <span class="ansi-blue-fg">&lt;</span> <span class="ansi-cyan-fg">300</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    640</span>             response = self.parent.error(
+<span class="ansi-green-fg">--&gt; 641</span><span class="ansi-red-fg">                 &#39;http&#39;, request, response, code, msg, hdrs)
+</span><span class="ansi-green-intense-fg ansi-bold">    642</span>
+<span class="ansi-green-intense-fg ansi-bold">    643</span>         <span class="ansi-green-fg">return</span> response
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/lib/python3.7/urllib/request.py</span> in <span class="ansi-cyan-fg">error</span><span class="ansi-blue-fg">(self, proto, *args)</span>
+<span class="ansi-green-intense-fg ansi-bold">    567</span>         <span class="ansi-green-fg">if</span> http_err<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    568</span>             args <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">(</span>dict<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;default&#39;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;http_error_default&#39;</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> orig_args
+<span class="ansi-green-fg">--&gt; 569</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>_call_chain<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    570</span>
+<span class="ansi-green-intense-fg ansi-bold">    571</span> <span class="ansi-red-fg"># XXX probably also want an abstract factory that knows when it makes</span>
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/lib/python3.7/urllib/request.py</span> in <span class="ansi-cyan-fg">_call_chain</span><span class="ansi-blue-fg">(self, chain, kind, meth_name, *args)</span>
+<span class="ansi-green-intense-fg ansi-bold">    501</span>         <span class="ansi-green-fg">for</span> handler <span class="ansi-green-fg">in</span> handlers<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    502</span>             func <span class="ansi-blue-fg">=</span> getattr<span class="ansi-blue-fg">(</span>handler<span class="ansi-blue-fg">,</span> meth_name<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 503</span><span class="ansi-red-fg">             </span>result <span class="ansi-blue-fg">=</span> func<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    504</span>             <span class="ansi-green-fg">if</span> result <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    505</span>                 <span class="ansi-green-fg">return</span> result
+
+<span class="ansi-green-fg">~/.pyenv/versions/3.7.6/lib/python3.7/urllib/request.py</span> in <span class="ansi-cyan-fg">http_error_default</span><span class="ansi-blue-fg">(self, req, fp, code, msg, hdrs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    647</span> <span class="ansi-green-fg">class</span> HTTPDefaultErrorHandler<span class="ansi-blue-fg">(</span>BaseHandler<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    648</span>     <span class="ansi-green-fg">def</span> http_error_default<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> req<span class="ansi-blue-fg">,</span> fp<span class="ansi-blue-fg">,</span> code<span class="ansi-blue-fg">,</span> msg<span class="ansi-blue-fg">,</span> hdrs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 649</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">raise</span> HTTPError<span class="ansi-blue-fg">(</span>req<span class="ansi-blue-fg">.</span>full_url<span class="ansi-blue-fg">,</span> code<span class="ansi-blue-fg">,</span> msg<span class="ansi-blue-fg">,</span> hdrs<span class="ansi-blue-fg">,</span> fp<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    650</span>
+<span class="ansi-green-intense-fg ansi-bold">    651</span> <span class="ansi-green-fg">class</span> HTTPRedirectHandler<span class="ansi-blue-fg">(</span>BaseHandler<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-red-fg">HTTPError</span>: HTTP Error 404: Not Found
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="n">folderPath_or_urls</span> <span class="o">=</span> <span class="n">image_urls</span>
+    <span class="p">,</span> <span class="n">pillow_save</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="p">,</span> <span class="n">tabularDF_or_path</span> <span class="o">=</span> <span class="n">df</span>
+    <span class="p">,</span> <span class="n">tabular_dtype</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;status&#39;</span>
+    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.26</span>
+    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="p">,</span> <span class="n">bin_count</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="2.-Algorithm">
+<h2>2. Algorithm<a class="headerlink" href="#2.-Algorithm" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is the ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> for ORMs.</p>
+<p>Right now, only <code class="docutils literal notranslate"><span class="pre">Keras</span></code> is supported since it is the most straightforward for entry-level users. You can read up on ML recipes at <a class="reference external" href="https://machinelearningmastery.com/?s=binary+classification&amp;post_type=post&amp;submit=Search">https://machinelearningmastery.com/?s=binary+classification&amp;post_type=post&amp;submit=Search</a> .</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">keras</span>
-<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">metrics</span>
 <span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
 <span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span>
 </pre></div>
 </div>
 </div>
-<p>You can name the functions below whatever you want, but do not change the predetermined <code class="docutils literal notranslate"><span class="pre">*args</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">**hyperparameters</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, etc.).</p>
+<div class="section" id="Model-Functions">
+<h3>Model Functions<a class="headerlink" href="#Model-Functions" title="Permalink to this headline">¶</a></h3>
+<p>You can construct your models as usual. You just wrap the sections of model definition in functions.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_build</span></code> contains the topology and parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_train</span></code> specifies the samples and how the model should run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_predict</span></code> and <code class="docutils literal notranslate"><span class="pre">function_model_loss</span></code> are automatically determined based on the <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code>.</p></li>
+</ul>
+<p>You can name the functions below whatever you want, but do not change their predetermined arugments (e.g. <code class="docutils literal notranslate"><span class="pre">input_shape</span></code>, <code class="docutils literal notranslate"><span class="pre">**hyperparameters</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, etc.). These items are used behind the scenes to pass the appropriate data, parameters, and models into your training jobs.</p>
 <p>Put a placeholder anywhere you want to try out different hyperparameters: <code class="docutils literal notranslate"><span class="pre">hyperparameters['&lt;some_variable_name&gt;']</span></code>. You’ll get a chance to define the hyperparameters in a minute.</p>
+<p>Because these are full-blown functions, we can even play with the topology as a parameter! As demonstrated by the <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">(hyperparameters['extra_layer'])</span></code> line below.</p>
+<blockquote>
+<div><p>Reference the low-level API documentation for information on the advanced early stopping callbacks AIQC makes available.</p>
+</div></blockquote>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">function_model_build</span><span class="p">(</span><span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+<span></span><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">function_model_build</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;dropout_size&#39;</span><span class="p">]))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;extra_layer&#39;</span><span class="p">]):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;dropout_size&#39;</span><span class="p">]))</span>
+
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">))</span>
 
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adamax&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
@@ -541,7 +811,16 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -562,10 +841,26 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hyperparameters</span></code> argument we saw earlier.</p>
+<p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hyperparameters['neuron_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;neuron_count&quot;:</span> <span class="pre">[9,</span> <span class="pre">12]</span></code> seen below. Where model A will have 9 neurons and model B will have 12 neurons.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;neuron_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;extra_layer&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;dropout_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 <p>Then pass these functions into the <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">library</span></code> and <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> help handle the model and its output behind the scenes. Current analysis types include: ‘classification_multi’, ‘classification_binary’, and ‘regression’.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -580,91 +875,36 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Hyperparameters">
 <h4>Hyperparameters<a class="headerlink" href="#Hyperparameters" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hyperparameters</span></code> argument we saw earlier.</p>
-<p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hyperparameters['neuron_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;neuron_count&quot;:</span> <span class="pre">[9,</span> <span class="pre">12]</span></code> seen below. Where model A will have 9 neurons and model B will have 12 neurons.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;neuron_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;dropout_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="2.-DataPipeline">
-<h3>2. DataPipeline<a class="headerlink" href="#2.-DataPipeline" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">file_path</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">demo_file_to_pandas</span><span class="p">(</span><span class="s1">&#39;iris.tsv&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">datapipeline</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">DataPipeline</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">dataFrame_or_filePath</span> <span class="o">=</span> <span class="n">file_path</span>
-    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;species&#39;</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.24</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.16</span>
-    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">encoder_features</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
-    <span class="p">,</span> <span class="n">encoder_labels</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<blockquote>
-<div><p>Don’t use <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> unless your (total sample count / fold_count) still gives you an accurate representation of your sample population. You can try it with the ‘iris_10x.tsv’ demo_file.</p>
-<p>In the future, we’ll turn the <code class="docutils literal notranslate"><span class="pre">encoder_*</span></code> attributes into customizable functions.</p>
-</div></blockquote>
 </div>
 <div class="section" id="3.-Experiment">
-<h3>3. Experiment<a class="headerlink" href="#3.-Experiment" title="Permalink to this headline">¶</a></h3>
+<h2>3. Experiment<a class="headerlink" href="#3.-Experiment" title="Permalink to this headline">¶</a></h2>
 <p>Now it’s time to bring together the data and logic into an <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_experiment</span><span class="p">(</span>
-    <span class="n">datapipeline_id</span> <span class="o">=</span> <span class="n">datapipeline</span><span class="o">.</span><span class="n">id</span>
+<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
+    <span class="p">,</span> <span class="n">function_model_build</span> <span class="o">=</span> <span class="n">function_model_build</span>
+    <span class="p">,</span> <span class="n">function_model_train</span> <span class="o">=</span> <span class="n">function_model_train</span>
+    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">function_model_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
+    <span class="p">,</span> <span class="n">function_model_loss</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">batch</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -677,11 +917,15 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:18&lt;00:00,  2.25s/it]
+🔮 Training Models 🔮: 100%|████████████████████████████████████████| 16/16 [00:46&lt;00:00,  2.93s/it]
 </pre></div></div>
 </div>
+</div>
+<div class="section" id="4.-Visualization-&amp;-Metrics">
+<h2>4. Visualization &amp; Metrics<a class="headerlink" href="#4.-Visualization-&-Metrics" title="Permalink to this headline">¶</a></h2>
+<p>For more information on visualization of performance metrics, reference the <strong>Visualization &amp; Metrics</strong> documentation.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -690,7 +934,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -712,289 +956,695 @@ div.rendered_html tbody tr:hover {
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>hyperparamcombo_id</th>
       <th>job_id</th>
+      <th>repeat_index</th>
+      <th>result_id</th>
       <th>split</th>
-      <th>roc_auc</th>
       <th>accuracy</th>
-      <th>precision</th>
-      <th>recall</th>
       <th>f1</th>
       <th>loss</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>roc_auc</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>41</td>
+      <td>41</td>
+      <td>0</td>
+      <td>29</td>
       <td>test</td>
-      <td>0.991898</td>
-      <td>0.888889</td>
-      <td>0.907692</td>
-      <td>0.888889</td>
-      <td>0.882963</td>
-      <td>0.395283</td>
+      <td>0.861111</td>
+      <td>0.856020</td>
+      <td>0.442127</td>
+      <td>0.865893</td>
+      <td>0.861111</td>
+      <td>0.965278</td>
     </tr>
     <tr>
       <th>1</th>
       <td>41</td>
+      <td>41</td>
+      <td>0</td>
+      <td>29</td>
       <td>validation</td>
-      <td>1.000000</td>
-      <td>0.840000</td>
-      <td>0.889231</td>
-      <td>0.840000</td>
-      <td>0.827879</td>
-      <td>0.390014</td>
+      <td>0.894737</td>
+      <td>0.891729</td>
+      <td>0.383510</td>
+      <td>0.921053</td>
+      <td>0.894737</td>
+      <td>0.991903</td>
     </tr>
     <tr>
       <th>2</th>
       <td>41</td>
+      <td>41</td>
+      <td>0</td>
+      <td>29</td>
       <td>train</td>
-      <td>0.975395</td>
-      <td>0.831461</td>
-      <td>0.853385</td>
-      <td>0.831461</td>
-      <td>0.824202</td>
-      <td>0.445891</td>
+      <td>0.884211</td>
+      <td>0.878364</td>
+      <td>0.410503</td>
+      <td>0.906282</td>
+      <td>0.884211</td>
+      <td>0.984962</td>
     </tr>
     <tr>
       <th>3</th>
       <td>42</td>
+      <td>42</td>
+      <td>0</td>
+      <td>30</td>
       <td>test</td>
-      <td>0.892361</td>
-      <td>0.805556</td>
-      <td>0.806527</td>
       <td>0.805556</td>
       <td>0.805217</td>
-      <td>0.486446</td>
+      <td>0.578499</td>
+      <td>0.806527</td>
+      <td>0.805556</td>
+      <td>0.931713</td>
     </tr>
     <tr>
       <th>4</th>
       <td>42</td>
+      <td>42</td>
+      <td>0</td>
+      <td>30</td>
       <td>validation</td>
-      <td>0.944559</td>
-      <td>0.840000</td>
-      <td>0.840000</td>
-      <td>0.840000</td>
-      <td>0.840000</td>
-      <td>0.431892</td>
+      <td>0.684211</td>
+      <td>0.631454</td>
+      <td>0.588944</td>
+      <td>0.796053</td>
+      <td>0.684211</td>
+      <td>0.955466</td>
     </tr>
     <tr>
       <th>5</th>
       <td>42</td>
+      <td>42</td>
+      <td>0</td>
+      <td>30</td>
       <td>train</td>
-      <td>0.911877</td>
-      <td>0.808989</td>
-      <td>0.810783</td>
-      <td>0.808989</td>
-      <td>0.808659</td>
-      <td>0.472854</td>
+      <td>0.831579</td>
+      <td>0.823115</td>
+      <td>0.534272</td>
+      <td>0.871447</td>
+      <td>0.831579</td>
+      <td>0.971261</td>
     </tr>
     <tr>
       <th>6</th>
       <td>43</td>
+      <td>43</td>
+      <td>0</td>
+      <td>31</td>
       <td>test</td>
-      <td>0.921296</td>
-      <td>0.750000</td>
-      <td>0.781955</td>
-      <td>0.750000</td>
-      <td>0.736533</td>
-      <td>0.654026</td>
+      <td>0.694444</td>
+      <td>0.597578</td>
+      <td>0.499870</td>
+      <td>0.800000</td>
+      <td>0.694444</td>
+      <td>0.969907</td>
     </tr>
     <tr>
       <th>7</th>
       <td>43</td>
+      <td>43</td>
+      <td>0</td>
+      <td>31</td>
       <td>validation</td>
-      <td>0.971765</td>
-      <td>0.760000</td>
-      <td>0.791429</td>
-      <td>0.760000</td>
-      <td>0.740406</td>
-      <td>0.559443</td>
+      <td>0.736842</td>
+      <td>0.719298</td>
+      <td>0.410054</td>
+      <td>0.754386</td>
+      <td>0.736842</td>
+      <td>0.963563</td>
     </tr>
     <tr>
       <th>8</th>
       <td>43</td>
+      <td>43</td>
+      <td>0</td>
+      <td>31</td>
       <td>train</td>
-      <td>0.903771</td>
-      <td>0.674157</td>
-      <td>0.673975</td>
-      <td>0.674157</td>
-      <td>0.635896</td>
-      <td>0.684904</td>
+      <td>0.821053</td>
+      <td>0.800626</td>
+      <td>0.417102</td>
+      <td>0.862812</td>
+      <td>0.821053</td>
+      <td>0.990977</td>
     </tr>
     <tr>
       <th>9</th>
       <td>44</td>
+      <td>44</td>
+      <td>0</td>
+      <td>32</td>
       <td>test</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-      <td>0.933333</td>
-      <td>0.916667</td>
-      <td>0.915344</td>
-      <td>0.365426</td>
+      <td>0.861111</td>
+      <td>0.860870</td>
+      <td>0.482303</td>
+      <td>0.862471</td>
+      <td>0.861111</td>
+      <td>0.949074</td>
     </tr>
     <tr>
       <th>10</th>
       <td>44</td>
+      <td>44</td>
+      <td>0</td>
+      <td>32</td>
       <td>validation</td>
-      <td>1.000000</td>
-      <td>0.960000</td>
-      <td>0.964000</td>
-      <td>0.960000</td>
-      <td>0.959719</td>
-      <td>0.360211</td>
+      <td>0.842105</td>
+      <td>0.831579</td>
+      <td>0.442537</td>
+      <td>0.894737</td>
+      <td>0.842105</td>
+      <td>0.995951</td>
     </tr>
     <tr>
       <th>11</th>
       <td>44</td>
+      <td>44</td>
+      <td>0</td>
+      <td>32</td>
       <td>train</td>
-      <td>0.993573</td>
-      <td>0.943820</td>
-      <td>0.952082</td>
-      <td>0.943820</td>
-      <td>0.943496</td>
-      <td>0.391472</td>
+      <td>0.884211</td>
+      <td>0.880668</td>
+      <td>0.417778</td>
+      <td>0.899368</td>
+      <td>0.884211</td>
+      <td>0.987636</td>
     </tr>
     <tr>
       <th>12</th>
       <td>45</td>
+      <td>45</td>
+      <td>0</td>
+      <td>33</td>
       <td>test</td>
-      <td>0.987269</td>
-      <td>0.833333</td>
-      <td>0.876320</td>
-      <td>0.833333</td>
-      <td>0.818084</td>
-      <td>0.579135</td>
+      <td>0.916667</td>
+      <td>0.916522</td>
+      <td>0.342418</td>
+      <td>0.918415</td>
+      <td>0.916667</td>
+      <td>0.953704</td>
     </tr>
     <tr>
       <th>13</th>
       <td>45</td>
+      <td>45</td>
+      <td>0</td>
+      <td>33</td>
       <td>validation</td>
-      <td>1.000000</td>
-      <td>0.880000</td>
-      <td>0.898990</td>
-      <td>0.880000</td>
-      <td>0.871330</td>
-      <td>0.517191</td>
+      <td>0.842105</td>
+      <td>0.831579</td>
+      <td>0.340511</td>
+      <td>0.894737</td>
+      <td>0.842105</td>
+      <td>0.983806</td>
     </tr>
     <tr>
       <th>14</th>
       <td>45</td>
+      <td>45</td>
+      <td>0</td>
+      <td>33</td>
       <td>train</td>
-      <td>0.965768</td>
-      <td>0.752809</td>
-      <td>0.767505</td>
-      <td>0.752809</td>
-      <td>0.734817</td>
-      <td>0.594523</td>
+      <td>0.894737</td>
+      <td>0.892972</td>
+      <td>0.277340</td>
+      <td>0.912024</td>
+      <td>0.894737</td>
+      <td>0.991654</td>
     </tr>
     <tr>
       <th>15</th>
       <td>46</td>
+      <td>46</td>
+      <td>0</td>
+      <td>34</td>
       <td>test</td>
-      <td>0.995370</td>
-      <td>0.888889</td>
-      <td>0.916667</td>
-      <td>0.888889</td>
-      <td>0.885714</td>
-      <td>0.302407</td>
+      <td>0.777778</td>
+      <td>0.776224</td>
+      <td>0.540099</td>
+      <td>0.780952</td>
+      <td>0.777778</td>
+      <td>0.883102</td>
     </tr>
     <tr>
       <th>16</th>
       <td>46</td>
+      <td>46</td>
+      <td>0</td>
+      <td>34</td>
       <td>validation</td>
-      <td>0.997647</td>
-      <td>0.920000</td>
-      <td>0.934545</td>
-      <td>0.920000</td>
-      <td>0.918286</td>
-      <td>0.304320</td>
+      <td>0.736842</td>
+      <td>0.735002</td>
+      <td>0.511033</td>
+      <td>0.738346</td>
+      <td>0.736842</td>
+      <td>0.878543</td>
     </tr>
     <tr>
       <th>17</th>
       <td>46</td>
+      <td>46</td>
+      <td>0</td>
+      <td>34</td>
       <td>train</td>
-      <td>0.979940</td>
-      <td>0.842697</td>
-      <td>0.866033</td>
-      <td>0.842697</td>
-      <td>0.838533</td>
-      <td>0.340107</td>
+      <td>0.778947</td>
+      <td>0.777590</td>
+      <td>0.521815</td>
+      <td>0.781845</td>
+      <td>0.778947</td>
+      <td>0.911445</td>
     </tr>
     <tr>
       <th>18</th>
       <td>47</td>
+      <td>47</td>
+      <td>0</td>
+      <td>35</td>
       <td>test</td>
-      <td>0.870370</td>
-      <td>0.583333</td>
-      <td>0.484848</td>
-      <td>0.583333</td>
-      <td>0.514919</td>
-      <td>0.687662</td>
+      <td>0.888889</td>
+      <td>0.888112</td>
+      <td>0.406913</td>
+      <td>0.895238</td>
+      <td>0.888889</td>
+      <td>0.944444</td>
     </tr>
     <tr>
       <th>19</th>
       <td>47</td>
+      <td>47</td>
+      <td>0</td>
+      <td>35</td>
       <td>validation</td>
-      <td>0.921029</td>
-      <td>0.760000</td>
-      <td>0.781538</td>
-      <td>0.760000</td>
-      <td>0.741818</td>
-      <td>0.611071</td>
+      <td>0.842105</td>
+      <td>0.831579</td>
+      <td>0.380107</td>
+      <td>0.894737</td>
+      <td>0.842105</td>
+      <td>0.959514</td>
     </tr>
     <tr>
       <th>20</th>
       <td>47</td>
+      <td>47</td>
+      <td>0</td>
+      <td>35</td>
       <td>train</td>
-      <td>0.923811</td>
-      <td>0.685393</td>
-      <td>0.713869</td>
-      <td>0.685393</td>
-      <td>0.637581</td>
-      <td>0.631250</td>
+      <td>0.821053</td>
+      <td>0.807468</td>
+      <td>0.368157</td>
+      <td>0.883136</td>
+      <td>0.821053</td>
+      <td>0.982623</td>
     </tr>
     <tr>
       <th>21</th>
       <td>48</td>
+      <td>48</td>
+      <td>0</td>
+      <td>36</td>
       <td>test</td>
-      <td>0.989583</td>
-      <td>0.944444</td>
-      <td>0.952381</td>
-      <td>0.944444</td>
-      <td>0.944056</td>
-      <td>0.366575</td>
+      <td>0.833333</td>
+      <td>0.832168</td>
+      <td>0.402911</td>
+      <td>0.838095</td>
+      <td>0.833333</td>
+      <td>0.953704</td>
     </tr>
     <tr>
       <th>22</th>
       <td>48</td>
+      <td>48</td>
+      <td>0</td>
+      <td>36</td>
       <td>validation</td>
-      <td>0.963824</td>
-      <td>0.880000</td>
-      <td>0.883889</td>
-      <td>0.880000</td>
-      <td>0.880000</td>
-      <td>0.422384</td>
+      <td>0.894737</td>
+      <td>0.891729</td>
+      <td>0.347774</td>
+      <td>0.921053</td>
+      <td>0.894737</td>
+      <td>0.991903</td>
     </tr>
     <tr>
       <th>23</th>
       <td>48</td>
+      <td>48</td>
+      <td>0</td>
+      <td>36</td>
       <td>train</td>
-      <td>0.933971</td>
-      <td>0.786517</td>
-      <td>0.786530</td>
-      <td>0.786517</td>
-      <td>0.786394</td>
-      <td>0.452266</td>
+      <td>0.852632</td>
+      <td>0.847262</td>
+      <td>0.352215</td>
+      <td>0.883636</td>
+      <td>0.852632</td>
+      <td>0.987636</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>41</td>
+      <td>41</td>
+      <td>1</td>
+      <td>37</td>
+      <td>test</td>
+      <td>0.861111</td>
+      <td>0.860870</td>
+      <td>0.380510</td>
+      <td>0.862471</td>
+      <td>0.861111</td>
+      <td>0.945602</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>41</td>
+      <td>41</td>
+      <td>1</td>
+      <td>37</td>
+      <td>validation</td>
+      <td>0.842105</td>
+      <td>0.831579</td>
+      <td>0.382534</td>
+      <td>0.894737</td>
+      <td>0.842105</td>
+      <td>0.955466</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>41</td>
+      <td>41</td>
+      <td>1</td>
+      <td>37</td>
+      <td>train</td>
+      <td>0.863158</td>
+      <td>0.857269</td>
+      <td>0.345431</td>
+      <td>0.902690</td>
+      <td>0.863158</td>
+      <td>0.982790</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>42</td>
+      <td>42</td>
+      <td>1</td>
+      <td>38</td>
+      <td>test</td>
+      <td>0.722222</td>
+      <td>0.690273</td>
+      <td>0.650899</td>
+      <td>0.710317</td>
+      <td>0.722222</td>
+      <td>0.916667</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>42</td>
+      <td>42</td>
+      <td>1</td>
+      <td>38</td>
+      <td>validation</td>
+      <td>0.894737</td>
+      <td>0.894737</td>
+      <td>0.554813</td>
+      <td>0.894737</td>
+      <td>0.894737</td>
+      <td>0.943320</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>42</td>
+      <td>42</td>
+      <td>1</td>
+      <td>38</td>
+      <td>train</td>
+      <td>0.789474</td>
+      <td>0.762704</td>
+      <td>0.585397</td>
+      <td>0.823502</td>
+      <td>0.789474</td>
+      <td>0.957561</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>43</td>
+      <td>43</td>
+      <td>1</td>
+      <td>39</td>
+      <td>test</td>
+      <td>0.666667</td>
+      <td>0.579670</td>
+      <td>0.604365</td>
+      <td>0.628571</td>
+      <td>0.666667</td>
+      <td>0.865741</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>43</td>
+      <td>43</td>
+      <td>1</td>
+      <td>39</td>
+      <td>validation</td>
+      <td>0.684211</td>
+      <td>0.644737</td>
+      <td>0.561561</td>
+      <td>0.684211</td>
+      <td>0.684211</td>
+      <td>0.910931</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>43</td>
+      <td>43</td>
+      <td>1</td>
+      <td>39</td>
+      <td>train</td>
+      <td>0.715789</td>
+      <td>0.647270</td>
+      <td>0.542702</td>
+      <td>0.826847</td>
+      <td>0.715789</td>
+      <td>0.939181</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>44</td>
+      <td>44</td>
+      <td>1</td>
+      <td>40</td>
+      <td>test</td>
+      <td>0.805556</td>
+      <td>0.798632</td>
+      <td>0.465134</td>
+      <td>0.805047</td>
+      <td>0.805556</td>
+      <td>0.922454</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>44</td>
+      <td>44</td>
+      <td>1</td>
+      <td>40</td>
+      <td>validation</td>
+      <td>0.736842</td>
+      <td>0.726635</td>
+      <td>0.439823</td>
+      <td>0.722368</td>
+      <td>0.736842</td>
+      <td>0.923077</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>44</td>
+      <td>44</td>
+      <td>1</td>
+      <td>40</td>
+      <td>train</td>
+      <td>0.831579</td>
+      <td>0.825801</td>
+      <td>0.376455</td>
+      <td>0.845282</td>
+      <td>0.831579</td>
+      <td>0.969758</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>45</td>
+      <td>45</td>
+      <td>1</td>
+      <td>41</td>
+      <td>test</td>
+      <td>0.833333</td>
+      <td>0.832168</td>
+      <td>0.426718</td>
+      <td>0.838095</td>
+      <td>0.833333</td>
+      <td>0.943287</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>45</td>
+      <td>45</td>
+      <td>1</td>
+      <td>41</td>
+      <td>validation</td>
+      <td>0.842105</td>
+      <td>0.841001</td>
+      <td>0.371664</td>
+      <td>0.846617</td>
+      <td>0.842105</td>
+      <td>0.971660</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>45</td>
+      <td>45</td>
+      <td>1</td>
+      <td>41</td>
+      <td>train</td>
+      <td>0.842105</td>
+      <td>0.838920</td>
+      <td>0.387475</td>
+      <td>0.857476</td>
+      <td>0.842105</td>
+      <td>0.967920</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>46</td>
+      <td>46</td>
+      <td>1</td>
+      <td>42</td>
+      <td>test</td>
+      <td>0.722222</td>
+      <td>0.714286</td>
+      <td>0.553120</td>
+      <td>0.729167</td>
+      <td>0.722222</td>
+      <td>0.908565</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>46</td>
+      <td>46</td>
+      <td>1</td>
+      <td>42</td>
+      <td>validation</td>
+      <td>0.684211</td>
+      <td>0.664662</td>
+      <td>0.561863</td>
+      <td>0.690789</td>
+      <td>0.684211</td>
+      <td>0.866397</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>46</td>
+      <td>46</td>
+      <td>1</td>
+      <td>42</td>
+      <td>train</td>
+      <td>0.810526</td>
+      <td>0.802825</td>
+      <td>0.536709</td>
+      <td>0.841736</td>
+      <td>0.810526</td>
+      <td>0.938012</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>47</td>
+      <td>47</td>
+      <td>1</td>
+      <td>43</td>
+      <td>test</td>
+      <td>0.777778</td>
+      <td>0.772339</td>
+      <td>0.505464</td>
+      <td>0.774603</td>
+      <td>0.777778</td>
+      <td>0.925926</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>47</td>
+      <td>47</td>
+      <td>1</td>
+      <td>43</td>
+      <td>validation</td>
+      <td>0.789474</td>
+      <td>0.763158</td>
+      <td>0.478877</td>
+      <td>0.873684</td>
+      <td>0.789474</td>
+      <td>0.862348</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>47</td>
+      <td>47</td>
+      <td>1</td>
+      <td>43</td>
+      <td>train</td>
+      <td>0.863158</td>
+      <td>0.859063</td>
+      <td>0.429102</td>
+      <td>0.876301</td>
+      <td>0.863158</td>
+      <td>0.963409</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>48</td>
+      <td>48</td>
+      <td>1</td>
+      <td>44</td>
+      <td>test</td>
+      <td>0.833333</td>
+      <td>0.828571</td>
+      <td>0.433788</td>
+      <td>0.854167</td>
+      <td>0.833333</td>
+      <td>0.969907</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>48</td>
+      <td>48</td>
+      <td>1</td>
+      <td>44</td>
+      <td>validation</td>
+      <td>0.842105</td>
+      <td>0.831579</td>
+      <td>0.384783</td>
+      <td>0.894737</td>
+      <td>0.842105</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>48</td>
+      <td>48</td>
+      <td>1</td>
+      <td>44</td>
+      <td>train</td>
+      <td>0.852632</td>
+      <td>0.847262</td>
+      <td>0.398690</td>
+      <td>0.883636</td>
+      <td>0.852632</td>
+      <td>0.989641</td>
     </tr>
   </tbody>
 </table>
 </div></div>
-</div>
-</div>
-<div class="section" id="Metrics-&amp;-Visualization">
-<h3>Metrics &amp; Visualization<a class="headerlink" href="#Metrics-&-Visualization" title="Permalink to this headline">¶</a></h3>
-<p>For more information of visualization of performance metrics, reference the <strong>Visualization &amp; Metrics</strong> documentation.</p>
 </div>
 </div>
 </div>
@@ -1010,7 +1660,7 @@ div.rendered_html tbody tr:hover {
         <a href="api_low_level.html" class="btn btn-neutral float-right" title="Low-Level API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="example_datasets.html" class="btn btn-neutral float-left" title="Example Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

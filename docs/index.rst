@@ -8,22 +8,25 @@
    features
    links
 
+
 .. toctree::
    :maxdepth: 2
-   :caption: Documentation
+   :caption: Getting Started
    :hidden:
 
    notebooks/installation
+   notebooks/example_datasets.ipynb
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Documentation
+   :hidden:
+
    notebooks/api_high_level
    notebooks/api_low_level
    notebooks/visualization
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Built-In Examples
-   :hidden:
-
-   notebooks/example_datasets.ipynb
 
 .. image:: images/aiqc_logo_wide_black_docs.png
    :width: 385

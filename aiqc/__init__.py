@@ -1958,7 +1958,7 @@ class Splitset(BaseModel):
 		Overwites continuous Label values with bin numbers for statification & folding.
 		Switched to `pd.qcut` because `np.digitize` never had enough samples in the up the leftmost/right bin.
 		"""
-		# Flatten the continuous Label values into a 1D array for qcut.
+		# Make 1D for qcut.
 		array_to_bin = array_to_bin.flatten()
 		# For really unbalanced labels, I ran into errors where bin boundaries would be duplicates all the way down to 2 bins.
 		# Setting `duplicates='drop'` to address this.

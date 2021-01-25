@@ -60,6 +60,11 @@ For example when creating an `def test_method()... Algorithm.function_model_buil
 
 # ------------------------ MULTICLASS ------------------------
 def multiclass_function_model_build(input_shape, **hyperparameters):
+	import keras
+	from keras.models import Sequential
+	from keras.layers import Dense, Dropout
+
+
 	model = Sequential()
 	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.2))
@@ -76,6 +81,8 @@ def multiclass_function_model_build(input_shape, **hyperparameters):
 
 
 def multiclass_function_model_train(model, samples_train, samples_evaluate, **hyperparameters):
+	from keras.callbacks import History
+
 	model.fit(
 		samples_train["features"]
 		, samples_train["labels"]
@@ -100,9 +107,9 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	}
 
 	if fold_count is not None:
-		file_path = datum.get_datum_path('iris_10x.tsv')
+		file_path = datum.get_path('iris_10x.tsv')
 	else:
-		file_path = datum.get_datum_path('iris.tsv')
+		file_path = datum.get_path('iris.tsv')
 
 	dataset = Dataset.Tabular.from_path(
 		file_path = file_path
@@ -175,6 +182,10 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ BINARY ------------------------
 def binary_model_build(input_shape, **hyperparameters):
+	import keras
+	from keras.models import Sequential
+	from keras.layers import Dense, Dropout
+
 	model = Sequential(name='Sonar')
 	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
@@ -186,6 +197,8 @@ def binary_model_build(input_shape, **hyperparameters):
 	return model
 
 def binary_model_train(model, samples_train, samples_evaluate, **hyperparameters):
+	from keras.callbacks import History
+
 	model.fit(
 	samples_train['features'], samples_train['labels']
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
@@ -203,7 +216,7 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 		, "epochs": [75, 150]
 	}
 
-	file_path = datum.get_datum_path('sonar.csv')
+	file_path = datum.get_path('sonar.csv')
 
 	dataset = Dataset.Tabular.from_path(
 		file_path = file_path
@@ -274,6 +287,10 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 # ------------------------ REGRESSION ------------------------
 
 def regression_model_build(input_shape, **hyperparameters):
+	import keras
+	from keras.models import Sequential
+	from keras.layers import Dense, Dropout
+
 	model = Sequential()
 	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, kernel_initializer='normal', activation='relu'))
 	model.add(Dropout(0.15))
@@ -287,6 +304,8 @@ def regression_model_build(input_shape, **hyperparameters):
 	return model
 
 def regression_model_train(model, samples_train, samples_evaluate, **hyperparameters):
+	from keras.callbacks import History
+
 	model.fit(
 		samples_train['features'], samples_train['labels']
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
@@ -303,7 +322,7 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 		, "epochs": [50, 75]
 	}
 
-	file_path = datum.get_datum_path('houses.csv')
+	file_path = datum.get_path('houses.csv')
 
 	dataset = Dataset.Tabular.from_path(
 		file_path = file_path
@@ -381,6 +400,10 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ IMAGE BINARY ------------------------
 def image_binary_model_build(input_shape, **hyperparameters):
+	import keras
+	from keras.models import Sequential
+	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout
+
 	model = Sequential()
 	
 	model.add(Conv1D(128*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], input_shape=input_shape, padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
@@ -404,6 +427,8 @@ def image_binary_model_build(input_shape, **hyperparameters):
 	return model
 
 def image_binary_model_train(model, samples_train, samples_evaluate, **hyperparameters):   
+	from keras.callbacks import History
+
 	metrics_cuttoffs = [
 		{"metric":"val_accuracy", "cutoff":0.70, "above_or_below":"above"},
 		{"metric":"accuracy", "cutoff":0.70, "above_or_below":"above"},

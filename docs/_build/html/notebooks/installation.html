@@ -41,7 +41,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="High-Level API" href="api_high_level.html" />
+    <link rel="next" title="Example Data" href="example_datasets.html" />
     <link rel="prev" title="Links" href="../links.html" /> 
 </head>
 
@@ -94,7 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Documentation</span></p>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#TLDR">TLDR</a></li>
@@ -102,32 +102,33 @@
 <li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Plotting-in-JupyterLab">Plotting in JupyterLab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Plotting">Plotting</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#AIQC-Setup">AIQC Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Python-Package">Python Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Create-Config-File">Create Config File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Create-Database-File">Create Database File</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Config-&amp;-Database-Location-Based-on-OS">Config &amp; Database Location Based on OS</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Optional---Deleting-the-Database">Optional - Deleting the Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Reloading-the-Package">Reloading the Package</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example Data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Built-In Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_experiments.html">Experiments</a></li>
 </ul>
 
             
@@ -474,21 +475,19 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
+<span></span><span class="o">!</span>pip install --upgrade aiqc
 
 <span class="kn">import</span> <span class="nn">aiqc</span>
 <span class="n">aiqc</span><span class="o">.</span><span class="n">create_folder</span><span class="p">()</span>
 <span class="n">aiqc</span><span class="o">.</span><span class="n">create_config</span><span class="p">()</span>
-
-<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
-<span class="n">reload</span><span class="p">(</span><span class="n">aiqc</span><span class="p">)</span>
-
 <span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>The database is simply a SQLite file, and AIQC serves as an ORM/ API for that SQL database.</p>
-<p>So you <strong>don’t</strong> have to worry about anything like installing a database server, ports, passwords, or environment variables.</p>
+<blockquote>
+<div><p>Technically, these backend files could be created automatically upon import, but we don’t want to get in the habit of running system commands without explicit user consent, and it’s easier to debug when run line by line.</p>
+</div></blockquote>
+<p>The database is simply a SQLite file, and AIQC serves as an ORM/ API for that SQL database. So you <strong>don’t</strong> have to worry about anything like installing a database server, ports, or passwords/ secrets/ environment variables.</p>
 <hr class="docutils" />
 </div>
 <div class="section" id="Environment">
@@ -508,9 +507,9 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Python-Version">
 <h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline">¶</a></h3>
 <p>Requires Python 3+ (check your deep learning library’s Python requirements). You will only need to perform these steps the first time you use the package.</p>
-<p>Additionally, check the Python version requires of the machine learning libraries that you intend to use. For example, at the time this is being written, Tensorflow/ Keras requires Python 3.5–3.8</p>
+<p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -520,7 +519,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -550,16 +549,18 @@ div.rendered_html tbody tr:hover {
 v14.7.0
 </pre></div></div>
 </div>
-<div class="section" id="Plotting-in-JupyterLab">
-<h4>Plotting in JupyterLab<a class="headerlink" href="#Plotting-in-JupyterLab" title="Permalink to this headline">¶</a></h4>
-<p>Plots are primarily served by Plotly within JupyterLab using the <code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code> extension. Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
-<p>Also, it usually takes 1-10 minutes to <em>rebuild</em> the JupyterLab assets. However, this will cease to be a problem with JupyterLab 3.0.</p>
+<div class="section" id="Plotting">
+<h4>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h4>
+<p>AIQC uses Plotly for interactive charts.</p>
+<p>If you want to render Plotly graphs withing within JupyterLab, then you need the <code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code> extension. Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
+<p>Tip - once Plotly prebuilds the ‘jupyterlab-dash’ extension then neither <em>rebuilding</em> your JupyterLab assets, nor having node installed will be necessary if you are using JupyterLab 3.0.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="o">!</span> jupyter labextension install jupyterlab-plotly
+<span class="o">!</span> jupyter lab build
 </pre></div>
 </div>
 </div>
@@ -571,12 +572,17 @@ v14.7.0
 Building jupyterlab assets (build:prod:minimize)
 </pre></div></div>
 </div>
-<hr class="docutils" />
 </div>
+</div>
+<div class="section" id="Optional---Swap-Space-for-Failover-Memory">
+<h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline">¶</a></h3>
+<p>It’s good practice to configure “swap space” on your machine so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD.</p>
+<hr class="docutils" />
 </div>
 </div>
 <div class="section" id="AIQC-Setup">
 <h2>AIQC Setup<a class="headerlink" href="#AIQC-Setup" title="Permalink to this headline">¶</a></h2>
+<p>Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>, and its reliable maintainer, Charles Leifer. Glad I found this fantastic and simple alternative to SQLAlchemy.</p>
 <div class="section" id="Python-Package">
 <h3>Python Package<a class="headerlink" href="#Python-Package" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
@@ -590,9 +596,6 @@ Building jupyterlab assets (build:prod:minimize)
 </div>
 </div>
 <p>Enter the following commands one-by-one and follow any instructions returned by the command prompt to resolve errors should they arise.</p>
-</div>
-<div class="section" id="Create-Config-File">
-<h3>Create Config File<a class="headerlink" href="#Create-Config-File" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -625,6 +628,9 @@ To get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.
 
 </pre></div></div>
 </div>
+</div>
+<div class="section" id="Create-Config-File">
+<h3>Create Config File<a class="headerlink" href="#Create-Config-File" title="Permalink to this headline">¶</a></h3>
 <p>Enter the following commands one-by-one and follow any instructions returned by the command prompt to resolve errors should they arise.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -681,29 +687,11 @@ To get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.
 </pre></div></div>
 </div>
 <p>If you run the <code class="docutils literal notranslate"><span class="pre">.create_*()</span></code> commands in the future, don’t worry, they won’t overwrite your existing data. They will detect the presence of the data and skip creation.</p>
-<p>Only now that the configuration exists can we create the database tables. You can either (a) <code class="docutils literal notranslate"><span class="pre">reload()</span></code> the package as seen below, or (b) restart your kernel/ shell before rerunning <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>.</p>
+<p>Only now that the configuration exists can we create the database tables. After creating the config, AIQC should reload itself behind the scenes. If this fails for whatever reason, reference the Troubleshooting section below.</p>
 </div>
 <div class="section" id="Create-Database-File">
 <h3>Create Database File<a class="headerlink" href="#Create-Database-File" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
-<span class="n">reload</span><span class="p">(</span><span class="n">aiqc</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;module &#39;aiqc&#39; from &#39;/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/aiqc/__init__.py&#39;&gt;
-</pre></div></div>
-</div>
+<p>This creates a SQLite database file that AIQC uses to reproducibly record experiments.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -728,13 +716,11 @@ To get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.
 
 </pre></div></div>
 </div>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">create_db()</span></code> is equivalent to a <em>migration</em> in Django or Rails in that it creates the tables found in the Object Relational Model (ORM). We use the <code class="docutils literal notranslate"><span class="pre">`peewee</span></code> &lt;<a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">http://docs.peewee-orm.com/en/latest/peewee/models.html</a>&gt;`__ ORM as it is simpler than SQLAlchemy, has good documentation, and found the project to be actively maintained (saw same-day GitHub response to issues on a Saturday). With the addition of Dash-Plotly, this will make for a full-stack experience that also works directly in an
-IDE like Jupyter or VS Code.</p>
-</div></blockquote>
+<hr class="docutils" />
+</div>
 </div>
 <div class="section" id="Location-of-AIQC-Files">
-<h3>Location of AIQC Files<a class="headerlink" href="#Location-of-AIQC-Files" title="Permalink to this headline">¶</a></h3>
+<h2>Location of AIQC Files<a class="headerlink" href="#Location-of-AIQC-Files" title="Permalink to this headline">¶</a></h2>
 <p>AIQC makes use of the Python package, <code class="docutils literal notranslate"><span class="pre">appdirs</span></code>, for an operating system (OS) agnostic location to store configuration and database files. This not only keeps your <code class="docutils literal notranslate"><span class="pre">$HOME</span></code> directory clean, but also helps prevent careless users from deleting your database.</p>
 <blockquote>
 <div><p>The installation process checks not only that the corresponding appdirs folder exists on your system but also that you have the permissions neceessary to read from and write to that location. If these conditions are not met, then you will be provided instructions during the installation about how to create the folder and/ or grant yourself the appropriate permissions.</p>
@@ -742,8 +728,6 @@ IDE like Jupyter or VS Code.</p>
 <blockquote>
 <div><p>We have attempted to support both Windows (<code class="docutils literal notranslate"><span class="pre">icacls</span></code> permissions and backslashes <code class="docutils literal notranslate"><span class="pre">C:\\</span></code>) as well as POSIX including Mac and Linux including containers &amp; Google Colab (<code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">letters</span></code> permissions and slashes <code class="docutils literal notranslate"><span class="pre">/</span></code>). Note: due to variations in the ordering of appdirs author and app directories in different OS’, we do not make use of the appdirs <code class="docutils literal notranslate"><span class="pre">appauthor</span></code> directory, only the <code class="docutils literal notranslate"><span class="pre">appname</span></code> directory.</p>
 </div></blockquote>
-<div class="section" id="Config-&amp;-Database-Location-Based-on-OS">
-<h4>Config &amp; Database Location Based on OS<a class="headerlink" href="#Config-&-Database-Location-Based-on-OS" title="Permalink to this headline">¶</a></h4>
 <p>Test it for yourself: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">appdirs;</span> <span class="pre">appdirs.user_data_dir('aiqc');</span></code></p>
 <ul class="simple">
 <li><p>Mac: <code class="docutils literal notranslate"><span class="pre">/Users/Username/Library/Application</span> <span class="pre">Support/aiqc</span></code></p></li>
@@ -751,8 +735,6 @@ IDE like Jupyter or VS Code.</p>
 <li><p>Windows: <code class="docutils literal notranslate"><span class="pre">C:\Users\Username\AppData\Local\aiqc</span></code></p></li>
 </ul>
 <hr class="docutils" />
-</div>
-</div>
 </div>
 <div class="section" id="Optional---Deleting-the-Database">
 <h2>Optional - Deleting the Database<a class="headerlink" href="#Optional---Deleting-the-Database" title="Permalink to this headline">¶</a></h2>
@@ -775,26 +757,6 @@ IDE like Jupyter or VS Code.</p>
 =&gt; Success - deleted database file at path:
 /Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
 
-</pre></div></div>
-</div>
-<p>You’ll need to reload the module so that the ORM can find the database path during initialization.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
-<span class="n">reload</span><span class="p">(</span><span class="n">aiqc</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;module &#39;aiqc&#39; from &#39;/Users/layne/.pyenv/versions/3.7.6/envs/jupyterlab/lib/python3.7/site-packages/aiqc/__init__.py&#39;&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -822,7 +784,18 @@ IDE like Jupyter or VS Code.</p>
 </pre></div></div>
 </div>
 <hr class="docutils" />
-<p>Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM</a>. Glad we took a chance on this SQLAlchemy alternative. Also, check out <a class="reference external" href="https://neomodel.readthedocs.io/en/latest/getting_started.html">neomodel</a> for a graph database ORM; biology doesn’t perform <code class="docutils literal notranslate"><span class="pre">joins</span></code>.</p>
+</div>
+<div class="section" id="Troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Reloading-the-Package">
+<h3>Reloading the Package<a class="headerlink" href="#Reloading-the-Package" title="Permalink to this headline">¶</a></h3>
+<p>After editing the <code class="docutils literal notranslate"><span class="pre">config.json</span></code> file, AIQC needs the be reimported in order to detect those changes. This can be done in one of three ways:</p>
+<ul class="simple">
+<li><p>Automatically behind the scenes: <code class="docutils literal notranslate"><span class="pre">reload(sys.modules['aiqc'])</span></code>.</p></li>
+<li><p>Manually by the user: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">importlib</span> <span class="pre">import</span> <span class="pre">reload;</span> <span class="pre">reload(aiqc)</span></code>.</p></li>
+<li><p>Manually restarting your Python kernel/ session and <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>.</p></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -834,7 +807,7 @@ IDE like Jupyter or VS Code.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api_high_level.html" class="btn btn-neutral float-right" title="High-Level API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_datasets.html" class="btn btn-neutral float-right" title="Example Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../links.html" class="btn btn-neutral float-left" title="Links" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

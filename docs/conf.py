@@ -7,6 +7,7 @@ pip install nbsphinx, sphinx_copybutton, sphinx_rtd_theme, ipython
 $ cd aiqc/docs
 $ make html
 # Then you can open 'aiqc/docs/_build/html' files in a browser.
+# pip install sphinx-autobuild # alternatively
 """
 
 # -- Project information -----------------------------------------------------
