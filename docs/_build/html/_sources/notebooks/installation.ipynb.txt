@@ -40,7 +40,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> Technically, these backend files could be created automatically upon import, but we don't want to get in the habit of running system commands without explicit user consent, and it's easier to debug when run line by line."
+    "> Technically, these backend installation files could be created automatically upon import, but we don't want to get in the habit of running system commands without explicit user consent, and it's easier to debug when run line by line."
    ]
   },
   {
@@ -153,7 +153,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Plotting\n",
+    "### Plotting\n",
     "\n",
     "AIQC uses Plotly for interactive charts.\n",
     "\n",
@@ -210,21 +210,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## AIQC Setup"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Shoutout to the [ORM, peewee](http://docs.peewee-orm.com/en/latest/index.html), and its reliable maintainer, Charles Leifer. Glad I found this fantastic and simple alternative to SQLAlchemy."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### Python Package"
+    "## AIQC Package"
    ]
   },
   {
@@ -233,7 +219,6 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "%%capture\n",
     "pip install --upgrade aiqc"
    ]
   },
@@ -279,7 +264,28 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## AIQC Config & Database"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "### Create Config File"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Shoutout to the [ORM, peewee](http://docs.peewee-orm.com/en/latest/index.html), and its reliable maintainer, Charles Leifer. Glad I found this fantastic and simple alternative to SQLAlchemy."
    ]
   },
   {
@@ -354,13 +360,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Only now that the configuration exists can we create the database tables. After creating the config, AIQC should reload itself behind the scenes. If this fails for whatever reason, reference the Troubleshooting section below."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "### Create Database File"
    ]
   },
@@ -369,6 +368,13 @@
    "metadata": {},
    "source": [
     "This creates a SQLite database file that AIQC uses to reproducibly record experiments."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Only now that the configuration exists can we create the database tables. After creating the config, the AIQC module should reload itself automatically. If you encounter errors, reference the Troubleshooting section below."
    ]
   },
   {
@@ -449,7 +455,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "If, for whatever reason, you find that you need to delete your database and start from scratch, then you can do so without having to manually find and `rm` the database file."
+    "If, for whatever reason, you find that you need to destroy your SQLite database file and start from scratch, then you can do so without having to manually find and `rm` the database file. In order to reduce the chance of an accident, `confirm:bool=False` by default."
    ]
   },
   {
@@ -469,7 +475,7 @@
     }
    ],
    "source": [
-    "aiqc.delete_db(True)"
+    "aiqc.delete_db(confirm=True)"
    ]
   },
   {

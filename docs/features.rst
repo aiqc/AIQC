@@ -7,23 +7,37 @@ Compatibility Matrix
 ====================
 
 .. csv-table::
-   :header: Analysis, Data, Library, Supported
+   :header: Deep Learning, Keras, PyTorch, MXNet
    :align: center
-   :widths: 30, 40, 20, 10
+   :widths: 40, 8, 8, 8
 
-   Classification (binary), Tabular/ delimited/ flat (categorical), Keras, ✓
-   Classification (multi), Tabular/ delimited/ flat (categorical), Keras, ✓
-   Regression, Tabular/ delimited/ flat (continuous), Keras, ✓
-   Convolution, Features (images or tabular) + Labels (tabular), Keras, ✓
+   Classification (binary), ✓, →, →
+   Classification (multi), ✓, →, →
+   Regression, ✓, →, →
+   Clustering/ PCA, →, →, →
+   Autoencode, →, →, →
+   Reinforcement, TBD, TBD, TBD
 
-Future Consideration:
----------------------
- * Sequence data for recurrent analysis.
- * PyTorch models.
- * Feature engineering.
- * Cleaning: anomaly detection, imputation.
 
-*The framework is extremely extensible because the `Algorithm` object is comprised of user-defined functions. Support can be added for any Python machine learning library.*
+* ✓  |  already supported.
+* →  |  to do (contributions welcome).
+* TBD  |  lower priority.
+
+
+.. csv-table::
+   :header: Data Preparation, Tabular, Image, Sequence
+   :align: center
+   :widths: 40, 8, 8, 8
+
+   Splitting, ✓, ✓, → 
+   Folding, ✓, ✓, → 
+   Encoding, ✓, TBD, → 
+   Dimensionality reduction, →, TBD, →
+   Imputation, →, →, →
+   Cleaning, →, →, →
+   Anomaly/ outlier detection, →, →, →
+   Feature engineering, →, TBD, →
+
 
 ----
 

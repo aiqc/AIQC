@@ -75,5 +75,5 @@ html_css_files = ['css/custom.css']
 # `make html` is supposed to replicate to `.../docs/_build/html/_static/css/custom.css` 
 # but I've been having to manually overwrite the _build css file at that location.
 
-#html_sidebars = { '**': ['globaltoc.html'] }
+html_sidebars = { '**': ['globaltoc.html'] }
 # ^ whenever I add a new page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.

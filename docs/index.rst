@@ -15,7 +15,7 @@
    :hidden:
 
    notebooks/installation
-   notebooks/example_datasets.ipynb
+   notebooks/example_datasets
 
 
 .. toctree::

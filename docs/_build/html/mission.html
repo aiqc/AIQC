@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Mission &mdash; AIQC  documentation</title>
+  <title>Mission &amp; Community &mdash; AIQC  documentation</title>
   
 
   
@@ -90,24 +90,25 @@
               <p class="caption"><span class="caption-text">About</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Highlights</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Mission</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mission &amp; Community</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-does-aiqc-exist">Why Does AIQC Exist?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#problems-solved">Problems Solved</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#community">Community</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Documentation</span></p>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/example_datasets.html">Example Data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/api_high_level.html">High-Level API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/api_low_level.html">Low-Level API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/visualization.html">Visualization &amp; Metrics</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Built-In Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/example_datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/example_experiments.html">Experiments</a></li>
 </ul>
 
             
@@ -154,7 +155,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Mission</li>
+      <li>Mission &amp; Community</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -197,17 +198,35 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="mission">
-<h1>Mission<a class="headerlink" href="#mission" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mission-community">
+<h1>Mission &amp; Community<a class="headerlink" href="#mission-community" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="why-does-aiqc-exist">
+<h2>Why Does AIQC Exist?<a class="headerlink" href="#why-does-aiqc-exist" title="Permalink to this headline">¶</a></h2>
+<p>To expedite Earth-saving scientific discoveries by:</p>
+<ol class="arabic simple">
+<li><p>Making deep learning more <em>accessible</em> to researchers by reducing the amount of <em>programming and data science know-how</em> required to perform machine learning.</p></li>
+<li><p>In doing so, make artificial intelligence more scientifically rigorous, less of a <em>black box</em>, by implementing validation rules, a “Quality control (QC)” process, around reproducible workflows. We are bringing the <em>scientific method</em> to data science.</p></li>
+</ol>
+<hr class="docutils" />
+<img alt="_images/ecosystem_banner.png" src="_images/ecosystem_banner.png" />
+</div>
+<hr class="docutils" />
+<div class="section" id="problems-solved">
+<h2>Problems Solved<a class="headerlink" href="#problems-solved" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Accelerating Research at Universities &amp; Institutes Everywhere.</strong></p>
+<li><p><strong>Empower Desktops/ HPCs + Disrupt Walled Gardens.</strong></p>
 <ul>
-<li><p>We empower non-cloud users: the academic/ institute HPCers, the private clouders, the remote server SSH’ers, and everyday desktop hackers - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker). This toolset provides research teams a standardized method for ML-based evidence, rather than each researcher spending time cobbling together their own approach.</p></li>
+<li><p>Most research isn’t performed in the cloud, it’s performed on the machines of individuals. We empower non-cloud users: the academic/ institute HPCers, the remote server SSH’ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, c3). This toolset provides research teams a standardized method for ML-based evidence, rather than each researcher spending time cobbling together their own approach.</p></li>
 </ul>
 </li>
 <li><p><strong>Reproducible Experiments.</strong></p>
 <ul>
 <li><p>No more black boxes. No more screenshotting loss-accuracy graphs and hyperparameter combinations. A record of every: dataset, feature, label, sample, split, fold, parameter, model, training job, and result - is automatically persisted in a lightweight, file-based database that is automatically configured when you import the package. Submit your <em>aidb</em> database file alongside your publications/ papers and model zoo entries as a proof.</p></li>
+</ul>
+</li>
+<li><p><strong>Queue Hypertuning Jobs.</strong></p>
+<ul>
+<li><p>Design a batch of runs to test many hypotheses at once. Queue many hypertuning jobs locally, or delegate big jobs to the cloud to run in parallel by setting <cite>cloud_queue = True</cite>.</p></li>
 </ul>
 </li>
 <li><p><strong>Queue Hypertuning Jobs.</strong></p>
@@ -226,15 +245,14 @@
 </ul>
 </li>
 </ul>
-<hr class="docutils" />
-<img alt="_images/ecosystem_banner.png" src="_images/ecosystem_banner.png" />
+</div>
 <hr class="docutils" />
 <div class="section" id="community">
 <h2>Community<a class="headerlink" href="#community" title="Permalink to this headline">¶</a></h2>
-<p><em>Lend a hand in building the next generation of open source machine learning, or just talk shop.</em></p>
-<p>ML is a broad space with plenty of challenges to solve. Let us know if you want to get involved. We plan to host monthly dev jam sessions and data science lightning talks. It’s more fun to hack in a group.</p>
-<p>Don’t know machine learning? It’s easy, we’ll teach you.</p>
-<p>Feel free to jump in the Slack channel on the <a class="reference internal" href="links.html"><span class="doc">Links</span></a> page.</p>
+<p>Lend a hand in building the next generation of open source machine learning, bolster your resume, come learn about machine learning, or just talk shop!</p>
+<p>Jump in the Slack channel on the <a class="reference internal" href="links.html"><span class="doc">Links</span></a> page to say hello. All are welcome.</p>
+<p>Machine learning is a broad space with plenty of challenges to solve. Let us know if you want to get involved. We plan to host monthly dev jam sessions and data science lightning talks. It’s more fun to hack in a group.</p>
+<p>Don’t know machine learning? It’s surprisingly easy, we’ll teach you.</p>
 </div>
 </div>
 

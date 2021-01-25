@@ -90,7 +90,7 @@
               <p class="caption"><span class="caption-text">About</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Highlights</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission &amp; Community</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features.html">Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
 </ul>
@@ -101,15 +101,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#Environment">Environment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Plotting">Plotting</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#AIQC-Setup">AIQC Setup</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Python-Package">Python Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIQC-Package">AIQC Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Create-Config-File">Create Config File</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Create-Database-File">Create Database File</a></li>
 </ul>
@@ -485,7 +483,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <blockquote>
-<div><p>Technically, these backend files could be created automatically upon import, but we don’t want to get in the habit of running system commands without explicit user consent, and it’s easier to debug when run line by line.</p>
+<div><p>Technically, these backend installation files could be created automatically upon import, but we don’t want to get in the habit of running system commands without explicit user consent, and it’s easier to debug when run line by line.</p>
 </div></blockquote>
 <p>The database is simply a SQLite file, and AIQC serves as an ORM/ API for that SQL database. So you <strong>don’t</strong> have to worry about anything like installing a database server, ports, or passwords/ secrets/ environment variables.</p>
 <hr class="docutils" />
@@ -549,8 +547,9 @@ div.rendered_html tbody tr:hover {
 v14.7.0
 </pre></div></div>
 </div>
+</div>
 <div class="section" id="Plotting">
-<h4>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h4>
+<h3>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h3>
 <p>AIQC uses Plotly for interactive charts.</p>
 <p>If you want to render Plotly graphs withing within JupyterLab, then you need the <code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code> extension. Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
 <p>Tip - once Plotly prebuilds the ‘jupyterlab-dash’ extension then neither <em>rebuilding</em> your JupyterLab assets, nor having node installed will be necessary if you are using JupyterLab 3.0.</p>
@@ -573,25 +572,20 @@ Building jupyterlab assets (build:prod:minimize)
 </pre></div></div>
 </div>
 </div>
-</div>
 <div class="section" id="Optional---Swap-Space-for-Failover-Memory">
 <h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline">¶</a></h3>
 <p>It’s good practice to configure “swap space” on your machine so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD.</p>
 <hr class="docutils" />
 </div>
 </div>
-<div class="section" id="AIQC-Setup">
-<h2>AIQC Setup<a class="headerlink" href="#AIQC-Setup" title="Permalink to this headline">¶</a></h2>
-<p>Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>, and its reliable maintainer, Charles Leifer. Glad I found this fantastic and simple alternative to SQLAlchemy.</p>
-<div class="section" id="Python-Package">
-<h3>Python Package<a class="headerlink" href="#Python-Package" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="AIQC-Package">
+<h2>AIQC Package<a class="headerlink" href="#AIQC-Package" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">%%capture</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
 </pre></div>
 </div>
 </div>
@@ -628,9 +622,13 @@ To get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.
 
 </pre></div></div>
 </div>
+<hr class="docutils" />
 </div>
+<div class="section" id="AIQC-Config-&amp;-Database">
+<h2>AIQC Config &amp; Database<a class="headerlink" href="#AIQC-Config-&-Database" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Create-Config-File">
 <h3>Create Config File<a class="headerlink" href="#Create-Config-File" title="Permalink to this headline">¶</a></h3>
+<p>Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>, and its reliable maintainer, Charles Leifer. Glad I found this fantastic and simple alternative to SQLAlchemy.</p>
 <p>Enter the following commands one-by-one and follow any instructions returned by the command prompt to resolve errors should they arise.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -687,11 +685,11 @@ To get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.
 </pre></div></div>
 </div>
 <p>If you run the <code class="docutils literal notranslate"><span class="pre">.create_*()</span></code> commands in the future, don’t worry, they won’t overwrite your existing data. They will detect the presence of the data and skip creation.</p>
-<p>Only now that the configuration exists can we create the database tables. After creating the config, AIQC should reload itself behind the scenes. If this fails for whatever reason, reference the Troubleshooting section below.</p>
 </div>
 <div class="section" id="Create-Database-File">
 <h3>Create Database File<a class="headerlink" href="#Create-Database-File" title="Permalink to this headline">¶</a></h3>
 <p>This creates a SQLite database file that AIQC uses to reproducibly record experiments.</p>
+<p>Only now that the configuration exists can we create the database tables. After creating the config, the AIQC module should reload itself automatically. If you encounter errors, reference the Troubleshooting section below.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -738,13 +736,13 @@ To get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.
 </div>
 <div class="section" id="Optional---Deleting-the-Database">
 <h2>Optional - Deleting the Database<a class="headerlink" href="#Optional---Deleting-the-Database" title="Permalink to this headline">¶</a></h2>
-<p>If, for whatever reason, you find that you need to delete your database and start from scratch, then you can do so without having to manually find and <code class="docutils literal notranslate"><span class="pre">rm</span></code> the database file.</p>
+<p>If, for whatever reason, you find that you need to destroy your SQLite database file and start from scratch, then you can do so without having to manually find and <code class="docutils literal notranslate"><span class="pre">rm</span></code> the database file. In order to reduce the chance of an accident, <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> by default.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">delete_db</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">delete_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
