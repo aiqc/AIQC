@@ -59,14 +59,14 @@ For example when creating an `def test_method()... Algorithm.function_model_buil
 """
 
 # ------------------------ MULTICLASS ------------------------
-def multiclass_function_model_build(input_shape, **hyperparameters):
+def multiclass_function_model_build(features_shape, label_shape, **hyperparameters):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
 
 	model = Sequential()
-	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hyperparameters['neuron_count'], features_shape=features_shape, label_shape, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.2))
 	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dense(3, activation='softmax'))
@@ -181,13 +181,13 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 
 
 # ------------------------ BINARY ------------------------
-def binary_model_build(input_shape, **hyperparameters):
+def binary_model_build(features_shape, label_shape, **hyperparameters):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
 	model = Sequential(name='Sonar')
-	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hyperparameters['neuron_count'], features_shape=features_shape, label_shape, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
 	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
@@ -286,13 +286,13 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ REGRESSION ------------------------
 
-def regression_model_build(input_shape, **hyperparameters):
+def regression_model_build(features_shape, label_shape, **hyperparameters):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
 	model = Sequential()
-	model.add(Dense(hyperparameters['neuron_count'], input_shape=input_shape, kernel_initializer='normal', activation='relu'))
+	model.add(Dense(hyperparameters['neuron_count'], features_shape=features_shape, label_shape, kernel_initializer='normal', activation='relu'))
 	model.add(Dropout(0.15))
 	model.add(Dense(hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(Dense(1, kernel_initializer='normal'))
@@ -399,14 +399,14 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 	return batch
 
 # ------------------------ IMAGE BINARY ------------------------
-def image_binary_model_build(input_shape, **hyperparameters):
+def image_binary_model_build(features_shape, label_shape, **hyperparameters):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout
 
 	model = Sequential()
 	
-	model.add(Conv1D(128*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], input_shape=input_shape, padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
+	model.add(Conv1D(128*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], features_shape=features_shape, label_shape, padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
 	model.add(MaxPooling1D(pool_size=hyperparameters['pool_size']))
 	model.add(Dropout(hyperparameters['dropout']))
 	

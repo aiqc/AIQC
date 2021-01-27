@@ -4104,13 +4104,24 @@ class Job(BaseModel):
 			# 3. Build and Train model.
 			# Now that encoding has taken place, we can determine the input shape.
 			first_key = next(iter(samples))
-			input_shape = samples[first_key]['features'][0].shape
+			features_shape = samples[first_key]['features'][0].shape
+			label_shape = samples[first_key]['labels'][0].shape
 
 			if (hyperparamcombo is not None):
 				hyperparameters = hyperparamcombo.hyperparameters
 			elif (hyperparamcombo is None):
 				hyperparameters = None
-			model = algorithm.function_model_build(input_shape, **hyperparameters)
+			
+			if (splitset.supervision == "unsupervised"):
+				model = algorithm.function_model_build(
+					features_shape,
+					**hyperparameters
+				)
+			elif (splitset.supervision == "supervised"):
+				model = algorithm.function_model_build(
+					features_shape, label_shape,
+					**hyperparameters
+				)
 
 			if (key_evaluation is not None):
 				model = algorithm.function_model_train(
