@@ -1,0 +1,192 @@
+.. toctree::
+   :maxdepth: 2
+   :caption: About
+   :hidden:
+
+   self
+   mission
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Getting Started
+   :hidden:
+
+   notebooks/installation
+   notebooks/example_datasets
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Documentation
+   :hidden:
+
+   notebooks/api_high_level
+   notebooks/api_low_level
+   notebooks/visualization
+
+
+.. image:: images/aiqc_logo_wide_black_docs.png
+   :width: 385
+   :align: center
+   :alt: AIQC logo wide
+
+###################
+Overview & Features
+###################
+
+
+Value Proposition
+=================
+* *AIQC* is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
+
+  * Empowers researchers by reducing the programming and data science know-how required to integrate machine learning into their research.
+
+  * Automatically records experimental design, results, and metrics in a file-based SQLite database that requires no configuration.
+
+----
+
+Feature Highlights
+==================
+
+* Automated performance metrics & visualization.
+* Validation splits & cross-folds are first-level citizens.
+* Automatically and reproducibly record experiments in a SQLite file.
+
+.. image:: images/plots.gif
+   :width: 100%
+   :alt: plots.gif
+
+* Hyperparameter tuning for batches of models.
+* Define topology parameters like # of layers.
+* No infrastructure/ app/ cloud needed, just `pip install`.
+
+.. image:: images/hyperparameters.gif
+   :width: 100%
+   :alt: hyperparameters.gif
+
+* High & low level APIs make for a gentle learning curve.
+* Encode splits/ folds by dtype/ column without leakage.
+* Supports flat files and multi-file image datasets.
+* Python ORM for sample preparation and model training.
+* Designed for Jupyter, but IDE/ OS agnostic.
+
+.. image:: images/pipeline.gif
+   :width: 100%
+   :alt: pipeline.gif
+
+----
+
+Compatibility Matrix
+====================
+
+.. csv-table::
+   :header: Deep Learning, Keras, PyTorch, MXNet
+   :align: center
+   :widths: 40, 8, 8, 8
+
+   Classification (binary), ✓, →, →
+   Classification (multi), ✓, →, →
+   Regression, ✓, →, →
+   Clustering/ PCA, →, →, →
+   Autoencode, →, →, →
+   Reinforcement, TBD, TBD, TBD
+
+
+* ✓  |  already supported.
+* →  |  to do (contributions welcome).
+* TBD  |  lower priority.
+
+
+.. csv-table::
+   :header: Data Preparation, Tabular, Image, Sequence
+   :align: center
+   :widths: 40, 8, 8, 8
+
+   Splitting, ✓, ✓, → 
+   Folding, ✓, ✓, → 
+   Encoding, ✓, TBD, → 
+   Dimensionality reduction, →, TBD, →
+   Imputation, →, →, →
+   Cleaning, →, →, →
+   Anomaly/ outlier detection, →, →, →
+   Feature engineering, →, TBD, →
+
+----
+
+
+I. Sample Preparation
+^^^^^^^^^^^^^^^^^^^^^
+
+* Ingest and compress tabular data (csv, tsv, parquet, pandas dataframe, numpy ndarray).
+
+* Ingest homgenous images into a dataset.
+
+* Easily specify columns that will serve as Labels and Featuresets.
+
+* Split stratified samples by index while treating validation sets (3rd split) as first-level citizens.
+
+* Cross-fold (k-fold) stratified samples by index while treating folds as first-level citizens.
+
+* Specify a label encoder and a sequence of dtype/ column-specific featureset encoders that will automatically be applied to the appropriate split/ fold.
+
+* Example datasets built into the package. Example image datasets on github.
+
+* [ToDo] Derive informative featuresets from that dataset using supervised and unsupervised methods.
+
+
+II. Model Training & Hyperparameter Tuning
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Define functions for building and training models.
+
+* Define lists of hyperparameter values to be trained against and fed into the models.
+
+* Automatically feed the appropriate splits/ folds into the training process.
+
+* Automatically feed the hyperparameter combinations into the training process.
+
+* Queue training jobs on a background process.
+
+* Set a repeat count if you want to train on the same parameters multiple times.
+
+* [ToDo] Scale out to run cloud jobs in parallel by toggling `cloud_queue = True`.
+
+
+III. Model Performance
+^^^^^^^^^^^^^^^^^^^^^^
+
+* Evaluates the performance metrics for each split/ fold. 
+
+* Evaluates per-epoch metrics via History objects. Allows for early stopping.
+
+* Visually compare model metrics to find the best one.
+
+----
+
+Problems Solved
+===============
+
+* **Empower Desktops/ HPCs.**
+  
+  * Most research doesn't happen in the cloud, it's performed on the machines of individuals. We empower non-cloud users: the academic/ institute HPCers, the remote server SSH'ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, c3). 
+
+* **Reproducible Experiments.**
+  
+  * No more black boxes. No more screenshotting loss-accuracy graphs and hyperparameter combinations. A record of every: dataset, feature, label, sample, split, fold, parameter, model, training job, result, etc. - is automatically persisted in a lightweight, file-based database that is automatically configured when you import the package. Submit your *aiqc* file alongside your publications/ papers and model zoo entries as a proof. This toolset provides research teams a standardized method for ML-based evidence, rather than each researcher spending time cobbling together their own approach.
+
+* **Train & Score Many Models at Once.**
+  
+  * Instead of running individual training jobs, design a batch of runs to test many hypotheses at once. Queue many hypertuning jobs locally, or delegate big jobs to the cloud to run in parallel by setting `cloud_queue = True`.
+
+* **Prevent Data Leakage.**
+  
+  * When performing multiple preprocesses on validation splits and rotating validation folds, it can be challenging to ensure the right fit/ transform is being unbiasedly applied to the appropriate samples. 
+
+* **Visually Compare Performance Metrics.**
+  
+  * Compare models using pre-defined plots for assessing performance, including: quantitative metrics (e.g. accuracy, loss, variance, precision, recall, etc.), training histories, and confusion/ contingency matrices.
+
+* **Code-Integrated & Agnostic.**
+
+  * We don’t disrupt the natural workflow of data scientists by forcing them into the confines of a GUI app or specific IDE. Instead, we weave automated tracking into their existing scripts so that *AIQC* is compatible with any data science toolset.

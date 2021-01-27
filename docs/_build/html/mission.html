@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Features" href="features.html" />
-    <link rel="prev" title="Highlights" href="index.html" /> 
+    <link rel="next" title="Installation" href="notebooks/installation.html" />
+    <link rel="prev" title="Overview &amp; Features" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,15 +89,13 @@
             
               <p class="caption"><span class="caption-text">About</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Highlights</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview &amp; Features</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Mission &amp; Community</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#why-does-aiqc-exist">Why Does AIQC Exist?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#problems-solved">Problems Solved</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#links">Links</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="links.html">Links</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
@@ -202,57 +200,76 @@
 <h1>Mission &amp; Community<a class="headerlink" href="#mission-community" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="why-does-aiqc-exist">
 <h2>Why Does AIQC Exist?<a class="headerlink" href="#why-does-aiqc-exist" title="Permalink to this headline">¶</a></h2>
-<p>To expedite Earth-saving scientific discoveries by:</p>
 <ol class="arabic simple">
-<li><p>Making deep learning more <em>accessible</em> to researchers by reducing the amount of <em>programming and data science know-how</em> required to perform machine learning.</p></li>
-<li><p>In doing so, make artificial intelligence more scientifically rigorous, less of a <em>black box</em>, by implementing validation rules, a “Quality control (QC)” process, around reproducible workflows. We are bringing the <em>scientific method</em> to data science.</p></li>
+<li><p><strong>Expedite Earth-saving scientific discoveries.</strong></p></li>
 </ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Make deep learning more <em>accessible to researchers</em> by reducing the amount of <em>programming and data science know-how</em> required to perform deep learning. This unattainable skillset trifecta causes machine learning to be underutilized in science.</p></li>
+<li><p>Radical scientific progress is needed to prevent the destruction of Earth’s resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can’t physically transport 10B people off of this planet. In order to survive here and elsewhere, we’ll need major advances in non-linear fields such as synthetic biology, small-scale nuclear power, Democracy enablers (blockchain/ security, satellite internet), and vertical farming. Deep learning can accelerate discoveries in these fields by revealing the laws of nature through data-driven pattern recognition. <a class="reference external" href="https://youtu.be/0fkKnfk4k40?t=368">[Kennedy 1963]</a>.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p><strong>Bring the scientific method to data science.</strong></p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Make machine learning <em>less of a black box</em> by implementing a “Quality control (QC)” process of validation rules around reproducible workflows. Submit an AIQC file alongside publications and model zoo entries as a <em>proof</em>.</p></li>
+<li><p>This toolset provides research teams a <em>standardized method for ML-based evidence</em>, rather than each researcher spending time cobbling together their own approach.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p><strong>Break down walled gardens. Science should be open.</strong></p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>The majority of research doesn’t happen in the cloud, it’s performed on the personal computers of individuals. We <em>empower the non-cloud researchers</em>: the academic/ institute HPCers, the remote server SSH’ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, C3). It’s going to take all of us, so we should all have the best tools.</p></li>
+</ul>
+</div></blockquote>
 <hr class="docutils" />
 <img alt="_images/ecosystem_banner.png" src="_images/ecosystem_banner.png" />
 </div>
 <hr class="docutils" />
-<div class="section" id="problems-solved">
-<h2>Problems Solved<a class="headerlink" href="#problems-solved" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Empower Desktops/ HPCs + Disrupt Walled Gardens.</strong></p>
-<ul>
-<li><p>Most research isn’t performed in the cloud, it’s performed on the machines of individuals. We empower non-cloud users: the academic/ institute HPCers, the remote server SSH’ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, c3). This toolset provides research teams a standardized method for ML-based evidence, rather than each researcher spending time cobbling together their own approach.</p></li>
-</ul>
-</li>
-<li><p><strong>Reproducible Experiments.</strong></p>
-<ul>
-<li><p>No more black boxes. No more screenshotting loss-accuracy graphs and hyperparameter combinations. A record of every: dataset, feature, label, sample, split, fold, parameter, model, training job, and result - is automatically persisted in a lightweight, file-based database that is automatically configured when you import the package. Submit your <em>aidb</em> database file alongside your publications/ papers and model zoo entries as a proof.</p></li>
-</ul>
-</li>
-<li><p><strong>Queue Hypertuning Jobs.</strong></p>
-<ul>
-<li><p>Design a batch of runs to test many hypotheses at once. Queue many hypertuning jobs locally, or delegate big jobs to the cloud to run in parallel by setting <cite>cloud_queue = True</cite>.</p></li>
-</ul>
-</li>
-<li><p><strong>Queue Hypertuning Jobs.</strong></p>
-<ul>
-<li><p>Design a batch of runs to test many hypotheses at once. Queue many hypertuning jobs locally, or delegate big jobs to the cloud to run in parallel by setting <cite>cloud_queue = True</cite>.</p></li>
-</ul>
-</li>
-<li><p><strong>Visually Compare Performance Metrics.</strong></p>
-<ul>
-<li><p>Compare models using pre-defined plots for assessing performance, including: quantitative metrics (e.g. accuracy, loss, variance, precision, recall, etc.), training histories, and confusion/ contingency matrices.</p></li>
-</ul>
-</li>
-<li><p><strong>Code-Integrated &amp; Agnostic.</strong></p>
-<ul>
-<li><p>We don’t disrupt the natural workflow of data scientists by forcing them into the confines of a GUI app or specific IDE. Instead, we weave automated tracking into their existing scripts so that <em>AIQC</em> is compatible with any data science toolset.</p></li>
-</ul>
-</li>
-</ul>
-</div>
-<hr class="docutils" />
 <div class="section" id="community">
 <h2>Community<a class="headerlink" href="#community" title="Permalink to this headline">¶</a></h2>
-<p>Lend a hand in building the next generation of open source machine learning, bolster your resume, come learn about machine learning, or just talk shop!</p>
-<p>Jump in the Slack channel on the <a class="reference internal" href="links.html"><span class="doc">Links</span></a> page to say hello. All are welcome.</p>
-<p>Machine learning is a broad space with plenty of challenges to solve. Let us know if you want to get involved. We plan to host monthly dev jam sessions and data science lightning talks. It’s more fun to hack in a group.</p>
-<p>Don’t know machine learning? It’s surprisingly easy, we’ll teach you.</p>
+<p>Lend a hand in building the next generation of open source machine learning, bolster your resume, come learn, or just talk shop!</p>
+<p>Jump in the Slack channel in the links below to say hello. All are welcome.</p>
+<p>Machine learning is a broad space with plenty of challenges to solve. Have a look at the :doc:<em>Compatibility Matrix</em> in the  Let us know if you want to get involved. We plan to host monthly dev jam sessions and data science lightning talks. It’s more fun to hack in a group.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Website</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://aiqc.readthedocs.io/">ReadTheDocs</a></p></td>
+<td><p>Hosts the documentation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pypi.org/project/aiqc/">PyPI</a></p></td>
+<td><p>Hosts the Python package.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/aiqc/aiqc/">GitHub</a></p></td>
+<td><p>Hosts the source code. File issues.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://aiqc.slack.com">Slack</a></p></td>
+<td><p>Hosts the community chat.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://ko-fi.com/donate2aiqc">Ko-fi</a></p></td>
+<td><p>Crowdsourced donations.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Medium (TBD)</p></td>
+<td><p>Hosts the blog.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -264,10 +281,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="notebooks/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Highlights" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Overview &amp; Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

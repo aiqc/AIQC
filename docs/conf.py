@@ -68,7 +68,7 @@ html_theme_options = {
 	'display_version': False
 }
 
-# For hyperlinks, I seem to have to use a `[](.html)` syntax to get it to work.
+# For notebook hyperlinks, I seem to have to use a `[](.html)` syntax to get it to work.
 # https://nbsphinx.readthedocs.io/en/0.8.1/markdown-cells.html#Links-to-Other-Notebooks
 
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_css_files
@@ -79,4 +79,4 @@ html_css_files = ['css/custom.css']
 # but I've been having to manually overwrite the _build css file at that location.
 
 #html_sidebars = { '**': ['globaltoc.html'] }
-# ^ whenever I add a new page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.
+# ^ whenever I add/ remove a page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.

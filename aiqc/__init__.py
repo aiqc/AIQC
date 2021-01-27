@@ -2655,7 +2655,7 @@ class Featurecoder(BaseModel):
 					break
 
 		if (verbose == True):
-			print(f"\n__/ featurecoder_index: {featurecoder_index} \\________") # Intentionally no trailing `\n`.
+			print(f"\n___/ featurecoder_index: {featurecoder_index} \\_________\n") # Intentionally no trailing `\n`.
 
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
@@ -4424,7 +4424,7 @@ class Pipeline():
 				'.csv', '.tsv', '.parquet'
 				"""))
 			dataset = Dataset.Tabular.from_path(
-				path = d
+				file_path = d
 				, source_file_format = source_file_format
 				, dtype = dtype
 			)
