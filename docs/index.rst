@@ -40,11 +40,11 @@ Overview & Features
 
 Value Proposition
 =================
-* *AIQC* is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
+* AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
 
-  * It empowers researchers by reducing the programming and data science know-how required to integrate machine learning into their research.
+  * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
 
-  * It makes machine learning less of a black box by automatically recording experiments in a file-based SQLite database that requires no configuration.
+  * It makes machine learning less of a black box by *reproducibly recording experiments* in a file-based database that requires no configuration.
 
 ----
 

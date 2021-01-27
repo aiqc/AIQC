@@ -6,8 +6,12 @@ pip install nbsphinx, sphinx_copybutton, sphinx_rtd_theme, ipython
 # Make after changes.
 $ cd aiqc/docs
 $ make html
+
 # Then you can open 'aiqc/docs/_build/html' files in a browser.
 # pip install sphinx-autobuild # Watch files instead of `make html`
+
+# The notebooks and images all get duplicated. So after lots of changes, 
+delete the `/_build` and rerun `make html`.
 """
 
 # -- Project information -----------------------------------------------------

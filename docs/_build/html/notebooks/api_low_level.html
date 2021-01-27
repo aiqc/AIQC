@@ -2145,10 +2145,15 @@ leakage, inclusively on the entire dataset thereby reducing the chance of errors
 </pre></div>
 </div>
 </div>
-<p>Simple, yet of critical importance, the <code class="docutils literal notranslate"><span class="pre">Batch.repeat_count:int</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Result</span></code> object associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Results</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">repeat_count:int</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Result</span></code> object associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Results</span></code>.</p></li>
+</ul>
 <blockquote>
 <div><p>Due to the fact that training is a <em>nondeterministic</em> process, we are likely to get different results each time we train a model, even if we use the same set of parameters. Perhaps you’ve have the right topology and parameters, but, this time around, the model just didn’t recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition.</p>
 </div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
+</ul>
 <div class="section" id="Job-objects.">
 <h3><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#Job-objects." title="Permalink to this headline">¶</a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Batch represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>

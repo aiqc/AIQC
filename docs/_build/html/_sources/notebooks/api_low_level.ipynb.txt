@@ -2520,9 +2520,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Simple, yet of critical importance, the `Batch.repeat_count:int` allows us to run the same `Job` multiple times. Normally, each `Job` has 1 `Result` object associated with it upon completion. However, when `repeat_count` is used, a single `Job` will have multiple `Results`.\n",
+    "* `repeat_count:int` allows us to run the same `Job` multiple times. Normally, each `Job` has 1 `Result` object associated with it upon completion. However, when `repeat_count` is used, a single `Job` will have multiple `Results`.\n",
     "\n",
     "> Due to the fact that training is a *nondeterministic* process, we are likely to get different results each time we train a model, even if we use the same set of parameters. Perhaps you've have the right topology and parameters, but, this time around, the model just didn't recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* `hide_test:bool` excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples."
    ]
   },
   {
