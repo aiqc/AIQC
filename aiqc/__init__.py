@@ -1275,7 +1275,6 @@ class Label(BaseModel):
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
-	label_type = CharField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
 	#probabilities = JSONField() #if you were to write back the result of unsupervised for semi-supervised learning.
 	
@@ -1364,39 +1363,39 @@ class Label(BaseModel):
 					Yikes - Label row <{i}> is supposed to be an OHE row,
 					but it contains no hot columns where value is 1.
 					"""))
-			
-			if (column_count == 2):
-				label_type = 'classification_binary'
-			elif (class_count > 2):
-				label_type = 'classification_multi'
 
 		elif (column_count == 1):
 			# At this point, `label_df` is a single column df that needs to fected as a Series.
 			col = columns[0]
 			label_series = label_df[col]
-			dtype_str = str(label_series.dtype)
-			if ('float' in dtype_str):
+			label_dtype = label_series.dtype
+			if (np.issubdtype(label_dtype, np.floating)):
 				unique_classes = None
-				label_type = 'regression'
 			else:
 				unique_classes = label_series.unique().tolist()
 				class_count = len(unique_classes)
 
+				if (
+					(np.issubdtype(label_dtype, np.signedinteger))
+					or
+					(np.issubdtype(label_dtype, np.unsignedinteger))
+				):
+					if (class_count >= 5):
+						print(
+							f"Tip - Detected  `unique_classes >= {class_count}` for an integer Label." \
+							f"If this Label is not meant to be categorical, then we recommend you convert to a float-based dtype." \
+							f"Although you'll still be able to bin these integers when it comes time to make a Splitset."
+						)
 				if (class_count == 1):
-					raise ValueError(dedent(f"""
-					Yikes - Categorical labels must have 2 or more unique classes.
-					Your Label's only class was: <{unique_classes[0]}>.
-					"""))
-				elif (class_count == 2):
-					label_type = 'classification_binary'
-				elif (class_count > 2):
-					label_type = 'classification_multi'
+					print(
+						f"Tip - Only detected 1 unique label class. Should have 2 or more unique classes." \
+						f"Your Label's only class was: <{unique_classes[0]}>."
+					)
 
 		l = Label.create(
 			dataset = d
 			, columns = columns
 			, column_count = column_count
-			, label_type = label_type
 			, unique_classes = unique_classes
 		)
 		return l
@@ -1431,7 +1430,7 @@ class Label(BaseModel):
 			)
 		return lf
 
-
+	# this is not used anywhere.
 	def get_column_dtype(id:int, column_name:str=None):
 		label = aiqc.Label.get_by_id(id)
 		if (column_name == None):
@@ -1439,6 +1438,25 @@ class Label(BaseModel):
 		d = label.dataset
 		column_dtype = label.dataset.Tabular.get_main_tabular(d.id).dtypes[column_name]
 		return column_dtype
+
+
+	def get_dtypes(
+		id:int
+	):
+		l = Label.get_by_id(id)
+
+		dataset = l.dataset
+		l_cols = l.columns
+		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtypes
+
+		label_dtypes = {}
+		for key,value in tabular_dtype.items():
+			for col in l_cols:         
+				if (col == key):
+					label_dtypes[col] = value
+					# Exit `col` loop early becuase matching `col` found.
+					break
+		return label_dtypes
 
 
 
@@ -1660,7 +1678,7 @@ class Splitset(BaseModel):
 		, bin_count:float = None
 	):
 
-		if size_test is not None:
+		if (size_test is not None):
 			if (size_test <= 0.0) or (size_test >= 1.0):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			# Don't handle `has_test` here. Need to check label first.
@@ -1668,7 +1686,7 @@ class Splitset(BaseModel):
 		if (size_validation is not None) and (size_test is None):
 			raise ValueError("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
 
-		if size_validation is not None:
+		if (size_validation is not None):
 			if (size_validation <= 0.0) or (size_validation >= 1.0):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			sum_test_val = size_validation + size_test
@@ -1708,15 +1726,15 @@ class Splitset(BaseModel):
 			l = None
 			if (size_test is not None) or (size_validation is not None):
 				raise ValueError(dedent("""
-				Yikes - Unsupervised Featuresets support neither test nor validation splits.
-				Set both `size_test` and `size_validation` as `None` for this Featureset.
+					Yikes - Unsupervised Featuresets support neither test nor validation splits.
+					Set both `size_test` and `size_validation` as `None` for this Featureset.
 				"""))
 			else:
 				indices_lst_train = arr_idx.tolist()
 				samples["train"] = indices_lst_train
 				sizes["train"] = {"percent": 1.00, "count": row_count}
 
-		elif label_id is not None:
+		elif (label_id is not None):
 			# We don't need to prevent duplicate Label/Featureset combos because Splits generate different samples each time.
 			l = Label.get_by_id(label_id)
 
@@ -1737,76 +1755,72 @@ class Splitset(BaseModel):
 			has_test = True
 			supervision = "supervised"
 
-			arr_l = l.to_numpy()
+			label_array = l.to_numpy()
 			# check for OHE cols and reverse them so we can still stratify.
-			if (arr_l.shape[1] > 1):
+			if (label_array.shape[1] > 1):
 				encoder = OneHotEncoder(sparse=False)
-				arr_l = encoder.fit_transform(arr_l)
-				arr_l = np.argmax(arr_l, axis=1)
+				label_array = encoder.fit_transform(label_array)
+				label_array = np.argmax(label_array, axis=1)
 				# argmax flattens the array, so reshape it to array of arrays.
-				count = arr_l.shape[0]
-				l_cat_shaped = arr_l.reshape(count, 1)
+				count = label_array.shape[0]
+				l_cat_shaped = label_array.reshape(count, 1)
 			# OHE dtype returns as int64
-			arr_l_dtype = arr_l.dtype
+			label_dtype = label_array.dtype
 
-			if ((arr_l_dtype == 'float32') or (arr_l_dtype == 'float64')):
-				if (bin_count is None):
-					bin_count = 3
-				stratify1 = Splitset.label_values_to_bins(array_to_bin=arr_l, bin_count=bin_count)
-			else:
-				if (bin_count is not None):
-					raise ValueError(dedent("""
-					Yikes - Your Label column's dtype is neither 'float32' nor 'float64'.
-					Therefore, you cannot provide a value for `bin_count`.
-					"""))
-				stratify1 = arr_l
+			stratifier1, bin_count = stratifier_by_dtype_binCount(
+				label_dtype = label_dtype,
+				label_array = label_array,
+				bin_count = bin_count
+			)
 			"""
 			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
 			- Don't include the Dataset.Image.featureset pixel arrays in stratification.
 			"""
-
 			if (d.dataset_type == 'tabular'):
 				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
-					arr_f, arr_l, arr_idx
+					arr_f, label_array, arr_idx
 					, test_size = size_test
-					, stratify = stratify1
+					, stratify = stratifier1
 					, shuffle = True
 				)
 
 				if (size_validation is not None):
-					if ((arr_l_dtype == 'float32') or (arr_l_dtype == 'float64')):
-						stratify2 = Splitset.label_values_to_bins(array_to_bin=labels_train, bin_count=bin_count)
-					else:
-						stratify2 = labels_train
+					stratifier2, bin_count = stratifier_by_dtype_binCount(
+						label_dtype = label_dtype,
+						label_array = labels_train, #This split is different from stratifier1.
+						bin_count = bin_count
+					)
 
 					features_train, features_validation, labels_train, labels_validation, indices_train, indices_validation = train_test_split(
 						features_train, labels_train, indices_train
 						, test_size = pct_for_2nd_split
-						, stratify = stratify2
+						, stratify = stratifier2
 						, shuffle = True
 					)
 					indices_lst_validation = indices_validation.tolist()
 					samples["validation"] = indices_lst_validation
 
 			elif (d.dataset_type == 'image'):
+				# Features not involved.
 				labels_train, labels_test, indices_train, indices_test = train_test_split(
 					arr_l, arr_idx
 					, test_size = size_test
-					, stratify = stratify1
+					, stratify = stratifier1
 					, shuffle = True
 				)
 
 				if (size_validation is not None):
-					if ((arr_l_dtype == 'float32') or (arr_l_dtype == 'float64')):
-						stratify2 = Splitset.label_values_to_bins(array_to_bin=labels_train, bin_count=bin_count)
-					else:
-						stratify2 = labels_train
+					stratifier2, bin_count = stratifier_by_dtype_binCount(
+						label_dtype = label_dtype,
+						label_array = labels_train, #This split is different from stratifier1.
+						bin_count = bin_count
+					)
 
 					labels_train, labels_validation, indices_train, indices_validation = train_test_split(
 						labels_train, indices_train
 						, test_size = pct_for_2nd_split
-						, stratify = stratify2
+						, stratify = stratifier2
 						, shuffle = True
 					)
 					indices_lst_validation = indices_validation.tolist()
@@ -1968,6 +1982,37 @@ class Splitset(BaseModel):
 		return bin_numbers
 
 
+	def stratifier_by_dtype_binCount(label_dtype:object, label_array:object, bin_count:int=None):
+		# Based on the dtype and bin_count determine how to stratify.
+		# Automatically bin floats.
+		if np.issubdtype(label_dtype, np.floating):
+			if (bin_count is None):
+				bin_count = 3
+			stratifier = Splitset.label_values_to_bins(array_to_bin=label_array, bin_count=bin_count)
+		# Allow ints to pass either binned or unbinned.
+		elif (
+			(np.issubdtype(label_dtype, np.signedinteger))
+			or
+			(np.issubdtype(label_dtype, np.unsignedinteger))
+		):
+			if (bin_count is not None):
+				stratifier = Splitset.label_values_to_bins(array_to_bin=label_array, bin_count=bin_count)
+			elif (bin_count is None):
+				# Assumes the int is for classification.
+				stratifier = label_array
+		# Reject binned objs.
+		elif (np.issubdtype(dtype_obj, np.number) == False):
+			if (bin_count is not None):
+				raise ValueError(dedent("""
+					Yikes - Your Label is not numeric (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
+					Therefore, you cannot provide a value for `bin_count`.
+				\n"""))
+			elif (bin_count is None):
+				stratifier = label_array
+
+		return stratifier, bin_count
+
+
 	def make_foldset(
 		id:int
 		, fold_count:int = None
@@ -2035,21 +2080,37 @@ class Foldset(BaseModel):
 		arr_train_indices = s.samples["train"]
 		arr_train_labels = s.label.to_numpy(samples=arr_train_indices)
 
-		# If the values of the Label array are continuous, then overwite the values w bin numbers.
+		# If the Labels are binned *overwite* the values w bin numbers. Otherwise untouched.
 		label_dtype = arr_train_labels.dtype
-		if (label_dtype == 'float32') or (label_dtype == 'float64'):
+		# Bin the floats.
+		if (np.issubdtype(label_dtype, np.floating)):
 			if (bin_count is None):
-				bin_count = 3
+				bin_count = s.bin_count #Inherit. 
 			arr_train_labels = Splitset.label_values_to_bins(
 				array_to_bin = arr_train_labels
 				, bin_count = bin_count
 			)
+		# Allow ints to pass either binned or unbinned.
+		elif (
+			(np.issubdtype(label_dtype, np.signedinteger))
+			or
+			(np.issubdtype(label_dtype, np.unsignedinteger))
+		):
+			if (bin_count is not None):
+				if (splitset.bin_count is None):
+					raise ValueError("Yikes - `Splitset.bin_count is None` but now you're trying to set `bin_count is not None` for the Foldset.")
+				elif (splitset.bin_count is not None):
+					arr_train_labels = Splitset.label_values_to_bins(
+						array_to_bin = arr_train_labels
+						, bin_count = bin_count
+					)
 		else:
 			if (bin_count is not None):
 				raise ValueError(dedent("""
-				Yikes - Your Label column's dtype is neither 'float32' nor 'float64'.
-				Therefore, you cannot provide a value for `bin_count`.
+					Yikes - Your Label is not numeric (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
+					Therefore, you cannot provide a value for `bin_count`.
 				\n"""))
+
 
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
@@ -2172,8 +2233,8 @@ class Foldset(BaseModel):
 				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
 			if (len(fold_names) == 0):
 				raise ValueError(dedent("""
-				Yikes - `splits` argument is an empty list.
-				It can be None, which defaults to all splits, but it can't not empty.
+					Yikes - `splits` argument is an empty list.
+					It can be None, which defaults to all splits, but it can't not empty.
 				\n"""))
 		elif (fold_names is None):
 			fold_names = list(folds[0].samples.keys())
@@ -2520,11 +2581,11 @@ class Labelcoder(BaseModel):
 							fitted_encoders[i] = sklearn_preprocess.fit(arr)
 					except:
 						raise ValueError(dedent(f"""
-						Yikes - Encoder failed to fit the columns you filtered.\n
-						Either the data is dirty (e.g. contains NaNs),
-						or the encoder might not accept negative values (e.g. PowerTransformer.method='box-cox'),
-						or you used one of the incompatible combinations of data type and encoder seen below:\n
-						{incompatibilities}
+							Yikes - Encoder failed to fit the columns you filtered.\n
+							Either the data is dirty (e.g. contains NaNs),
+							or the encoder might not accept negative values (e.g. PowerTransformer.method='box-cox'),
+							or you used one of the incompatible combinations of data type and encoder seen below:\n
+							{incompatibilities}
 						"""))
 					else:
 						encoding_dimension = "1D"
@@ -3410,22 +3471,53 @@ class Batch(BaseModel):
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		splitset = Splitset.get_by_id(splitset_id)
+		if (foldset_id is not None):
+			foldset = Foldset.get_by_id(foldset_id)
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
 		if (splitset.supervision == 'supervised'):
-			label_type = splitset.label.label_type
+			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
-			if (label_type != analysis_type):
-				raise ValueError(dedent(f"""
-				Yikes - `splitset.label.label_type` and `algorithm.analysis_type` must be identical.
-				Your `splitset.label.label_type`: <{label_type}>
-				Your `algorithm.analysis_type`: <{analysis_type}>\n
-				Please note that, although it is possible to perform regression on integer-typed labels,
-				AIQC requires converting to that column to float first.
-				This not only improves performance by avoiding repeated conversion from int-to-float,
-				but also, enables proper bin-based stratification of splits/ folds.
-				"""))
+			label_col_count = splitset.label.column_count
+			label_dtypes = splitset.label.get_dtypes()
+			
+			if (label_col_count == 1):
+				label_dtype = list(label.get_dtypes().values())[0]
+				
+				if ('classification' in analysis_type):	
+					if (np.issubdtype(label_dtype, np.floating)):
+						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
+
+					if (splitset.bin_count is not None):
+						print(dedent("""
+							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
+							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
+						"""))				
+					if ((foldset_id is not None) and (foldset_id.bin_count is not None)):
+						print(dedent("""
+							Warning - `'classification' in Algorithm.analysis_type`, but `Foldset.bin_count is not None`.
+							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
+						"""))
+				elif (analysis_type == 'regression'):
+					if (
+						(not np.issubdtype(label_dtype, np.floating))
+						and
+						(not np.issubdtype(label_dtype, np.unsignedinteger))
+						and
+						(not np.issubdtype(label_dtype, np.signedinteger))
+					):
+						raise ValueError(f"Yikes - Label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
+					if (splitset.bin_count is None):
+						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")					
+					if ((foldset_id is not None) and (foldset_id.bin_count is None)):
+						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")
+				
+			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
+			elif (label_col_count > 1):
+				if (analysis_type != 'classification_multi'):
+					raise ValueError(f"Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
+
 		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
-			raise ValueError(f"\nYikes - `splitset.supervision != 'supervised'` but `hide_test==True`.\n")
+			raise ValueError(f"\nYikes - Cannot have `hide_test==True` if `splitset.supervision != 'supervised'`.\n")
 
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
@@ -4102,7 +4194,7 @@ class Job(BaseModel):
 							)
 
 			# 3. Build and Train model.
-			# Now that encoding has taken place, we can determine the input shape.
+			# Now that encoding has taken place, we can determine the shapes.
 			first_key = next(iter(samples))
 			features_shape = samples[first_key]['features'][0].shape
 			label_shape = samples[first_key]['labels'][0].shape
