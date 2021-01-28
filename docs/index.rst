@@ -27,11 +27,9 @@
 
 
 .. image:: images/aiqc_logo_wide_controlroom.png
-  :width: 385
+  :width: 100%
   :align: center
   :alt: AIQC logo wide
-
-----
 
 ###################
 Overview & Features
