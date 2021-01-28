@@ -1,0 +1,36 @@
+Metadata-Version: 2.1
+Name: aiqc
+Version: 1.0.0
+Summary: End-to-end machine learning on your desktop or server.
+Home-page: https://aiqc.readthedocs.io/
+Author: Layne Sadler
+Author-email: layne.sadler@gmail.com
+License: AGPLv3
+Description: ![AIQC (wide)](/docs/images/aiqc_logo_wide_black_docs.png)
+        
+        ---
+        *pre-alpha; in active development*
+        
+        # Documentation
+        
+        [ReadTheDocs](https://aiqc.readthedocs.io/)
+        
+        # Value Proposition
+        
+        * AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
+        
+          * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
+        
+          * It makes machine learning less of a black box by *reproducibly recording experiments* in a file-based database that requires no configuration.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 1 - Planning
+Classifier: Framework :: Jupyter
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.7.6
+Description-Content-Type: text/markdown
