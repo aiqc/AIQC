@@ -130,7 +130,7 @@ Compatibility Matrix
   Classification (binary), ✓, →, →
   Classification (multi), ✓, →, →
   Regression, ✓, →, →
-  Autoencode, →, →, →
+  Generation, →, →, →
   Reinforcement, TBD, TBD, TBD
 
 
