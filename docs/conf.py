@@ -67,6 +67,8 @@ suppress_warnings = [
 
 html_logo ='images/aiqc_logo_wide_white_docs.png'
 
+html_favicon = 'images/favicon.png'
+
 html_theme_options = {
 	'logo_only': True,
 	'display_version': False
