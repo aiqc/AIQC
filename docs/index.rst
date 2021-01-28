@@ -26,10 +26,12 @@
   notebooks/visualization
 
 
-.. image:: images/aiqc_logo_wide_controlroom.png
+.. image:: images/aiqc_logo_banner_controlroom.png
   :width: 100%
   :align: center
   :alt: AIQC logo wide
+
+|
 
 ###################
 Overview & Features
