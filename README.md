@@ -4,6 +4,8 @@
 
 ### [ReadTheDocs](https://aiqc.readthedocs.io/)
 
+---
+
 ### Value Proposition
 
 * AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
