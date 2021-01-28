@@ -7,17 +7,10 @@
 
 [ReadTheDocs](https://aiqc.readthedocs.io/)
 
+# Value Proposition
 
-# PyPI Package
+* AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
 
-### Steps to Build & Upload
+  * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
 
-```bash
-pip3 install --upgrade wheel twine
-python3 setup.py sdist bdist_wheel
-python3 -m twine upload --repository pypi dist/*
-# username: __token__
-# password: <paste in the token>
-rm -r build dist aiqc.egg-info
-# proactively update the version number in setup.py next time
-```
+  * It makes machine learning less of a black box by *reproducibly recording experiments* in a file-based database that requires no configuration.
