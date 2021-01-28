@@ -58,6 +58,17 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_css_files
+# Create a CSS file at path: `.../docs/_static/css/custom.css`.
+html_css_files = ['css/custom.css']
+html_logo ='images/aiqc_logo_wide_white_docs.png'
+html_favicon = 'images/favicon.ico'
+html_show_sphinx = False
+html_show_copyright = False
+html_theme_options = {
+	'logo_only': True,
+	'display_version': False
+}
 
 hight_language = 'python3'
 
@@ -65,22 +76,9 @@ suppress_warnings = [
     'nbsphinx',
 ]
 
-html_logo ='images/aiqc_logo_wide_white_docs.png'
-
-html_favicon = 'images/favicon.ico'
-
-html_theme_options = {
-	'logo_only': True,
-	'display_version': False
-}
-
 # For notebook hyperlinks, I seem to have to use a `[](.html)` syntax to get it to work.
 # https://nbsphinx.readthedocs.io/en/0.8.1/markdown-cells.html#Links-to-Other-Notebooks
 
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_css_files
-# Create a CSS file at path: `.../docs/_static/css/custom.css`.
-html_static_path = ['_static']
-html_css_files = ['css/custom.css']
 # `make html` is supposed to replicate to `.../docs/_build/html/_static/css/custom.css` 
 # but I've been having to manually overwrite the _build css file at that location.
 

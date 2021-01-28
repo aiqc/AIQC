@@ -108,7 +108,7 @@ IV. Easy Setup
 
 * No infrastructure/ app/ cloud needed, just `pip install`.
 
-* IDE (Jupyter, RStudio, VS Code) and OS (Win, Mac, Lin) agnostic.
+* IDE (Jupyter, RStudio, VS Code, PyCharm) & OS (Win, Mac, Lin) agnostic.
 
 * High & low level APIs make for a gentle learning curve.
 
