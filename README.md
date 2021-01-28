@@ -1,7 +1,7 @@
 ![AIQC (wide)](/docs/images/aiqc_logo_wide_controlroom.png)
 
----
-*pre-alpha; in active development*
+<p style="text-align: center;">*Pre-alpha version; in active development.*</p>
+
 
 # Documentation
 
