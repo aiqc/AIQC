@@ -1,13 +1,13 @@
 ![AIQC (wide)](/docs/images/aiqc_logo_wide_controlroom.png)
 
-<p style="text-align: center;">*Pre-alpha version; in active development.*</p>
+<p align="center"><i>Pre-alpha version; in active development.</i></p>
 
 
-# Documentation
+## Documentation
 
 [ReadTheDocs](https://aiqc.readthedocs.io/)
 
-# Value Proposition
+## Value Proposition
 
 * AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models.
 
