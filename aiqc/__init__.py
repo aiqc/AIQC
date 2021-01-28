@@ -367,7 +367,8 @@ def delete_db(confirm:bool=False):
 def listify(supposed_lst:object=None):
 	"""
 	- When only providing a single element, it's easy to forget to put it in a list!
-	- If touching every list arg, then might as well validate it!
+	- If touching every list arg of every function, then might as well validate it!
+	- I am only trying to `listify` user-facing functions that were internal helpers.
 	"""
 	if (supposed_lst is not None):
 		if (not isinstance(supposed_lst, list)):
