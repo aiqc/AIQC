@@ -364,12 +364,37 @@ def delete_db(confirm:bool=False):
 # ORM
 #==================================================
 
-"""
-Runs when the package is imported.
-http://docs.peewee-orm.com/en/latest/peewee/models.html
-"""
+def listify(supposed_lst:object=None):
+	"""
+	- When only providing a single element, it's easy to forget to put it in a list!
+	- If touching every list arg, then might as well validate it!
+	"""
+	if (supposed_lst is not None):
+		if (not isinstance(supposed_lst, list)):
+			supposed_lst = [supposed_lst]
+		# If it was already a list, check it for emptiness and `None`.
+		elif (isinstance(supposed_lst, list)):
+			if (not supposed_lst):
+				raise ValueError(dedent(
+					f"Yikes - The list you provided contained `None` as an element." \
+					f"{supposed_lst}"
+				))
+			if (None in supposed_lst):
+				raise ValueError(dedent(
+					f"Yikes - The list you provided contained `None` as an element." \
+					f"{supposed_lst}"
+				))
+	# Allow `is None` to pass through because we need it to trigger null conditions.
+	return supposed_lst
+
+
+
+
 class BaseModel(Model):
-	"""By inheritting the BaseModel class, each Model class does not have to set Meta."""
+	"""
+	- Runs when the package is imported. http://docs.peewee-orm.com/en/latest/peewee/models.html
+	- ORM: by inheritting the BaseModel class, each Model class does not have to set Meta.
+	"""
 	class Meta:
 		database = get_db()
 
@@ -388,6 +413,7 @@ class Dataset(BaseModel):
 
 
 	def make_label(id:int, columns:list):
+		columns = listify(columns)
 		l = Label.from_dataset(dataset_id=id, columns=columns)
 		return l
 
@@ -397,6 +423,8 @@ class Dataset(BaseModel):
 		, include_columns:list = None
 		, exclude_columns:list = None
 	):
+		include_columns = listify(include_columns)
+		exclude_columns = listify(exclude_columns)
 		f = Featureset.from_dataset(
 			dataset_id = id
 			, include_columns = include_columns
@@ -407,6 +435,9 @@ class Dataset(BaseModel):
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
+		columns = listify(columns)
+		samples = listify(samples)
+
 		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
@@ -416,6 +447,9 @@ class Dataset(BaseModel):
 
 	def to_numpy(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
+		columns = listify(columns)
+		samples = listify(samples)
+
 		if (dataset.dataset_type == 'tabular'):
 			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
@@ -457,6 +491,7 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, skip_header_rows:int = 'infer'
 		):
+			column_names = listify(column_names)
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
 			if source_file_format not in accepted_formats:
@@ -466,10 +501,11 @@ class Dataset(BaseModel):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
 
 			if not os.path.isfile(file_path):
-				raise ValueError(dedent(f"""
-				Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:\n{file_path}
-				But `dataset_type=='tabular'` only supports a single file, not an entire directory.`
-				"""))
+				raise ValueError(dedent(
+					f"Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:" \
+					f"{file_path}"
+					f"But `dataset_type=='tabular'` only supports a single file, not an entire directory.`"
+				))
 
 			# Use the raw, not absolute path for the name.
 			if name is None:
@@ -506,6 +542,8 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
+			column_names = listify(column_names)
+
 			if (type(dataframe).__name__ != 'DataFrame'):
 				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ != 'DataFrame'`\n")
 
@@ -535,6 +573,7 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
+			column_names = listify(column_names)
 			if (type(ndarray).__name__ != 'ndarray'):
 				raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
 			elif (ndarray.dtype.names is not None):
@@ -575,6 +614,8 @@ class Dataset(BaseModel):
 			, samples:list = None
 		):
 			file = Dataset.Tabular.get_main_file(id)
+			columns = listify(columns)
+			samples = listify(samples)
 			df = file.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
@@ -585,6 +626,8 @@ class Dataset(BaseModel):
 			, samples:list = None
 		):
 			dataset = Dataset.get_by_id(id)
+			columns = listify(columns)
+			samples = listify(samples)
 			# This calls the method above. It does not need `.Tabular`
 			df = dataset.to_pandas(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
@@ -674,6 +717,7 @@ class Dataset(BaseModel):
 			, name:str = None
 			, source_path:str = None
 		):
+			urls = listify(urls)
 			for u in urls:
 				validation = validators.url(u)
 				if (validation != True): #`== False` doesn't work.
@@ -748,6 +792,7 @@ class Dataset(BaseModel):
 			- Future: could return the tabular data along with it.
 			- Might need this for Preprocess where rotate images and such.
 			"""
+			samples = listify(samples)
 			files = Dataset.Image.get_image_files(id, samples=samples)
 			images = [f.Image.to_pillow(f.id) for f in files]
 			return images
@@ -758,6 +803,7 @@ class Dataset(BaseModel):
 			- Because Pillow works directly with numpy, there's no need for pandas right now.
 			- But downstream methods are using pandas.
 			"""
+			samples = listify(samples)
 			images = Dataset.Image.to_pillow(id, samples=samples)
 			images = [np.array(img) for img in images]
 			images = np.array(images)
@@ -765,6 +811,7 @@ class Dataset(BaseModel):
 
 
 		def get_image_files(id:int, samples:list=None):
+			samples = listify(samples)
 			dataset = Dataset.get_by_id(id)
 			files = File.select().join(Dataset).where(
 				Dataset.id==id, File.file_type=='image'
@@ -814,6 +861,7 @@ class File(BaseModel):
 			, column_names:list = None
 			, source_path:str = None # passed in via from_file
 		):
+			column_names = listify(column_names)
 			File.Tabular.df_validate(dataframe, column_names)
 
 			dataframe, columns, shape, dtype = File.Tabular.df_set_metadata(
@@ -852,6 +900,7 @@ class File(BaseModel):
 			, column_names:list = None
 			, dtype:dict = None #Or single string.
 		):
+			column_names = listify(column_names)
 			"""
 			Only supporting homogenous arrays because structured arrays are a pain
 			when it comes time to convert them to dataframes. It complained about
@@ -885,6 +934,7 @@ class File(BaseModel):
 			, column_names:list = None
 			, skip_header_rows:int = 'infer'
 		):
+			column_names = listify(column_names)
 			df = File.Tabular.path_to_df(
 				path = path
 				, source_file_format = source_file_format
@@ -909,7 +959,8 @@ class File(BaseModel):
 		):
 			f = File.get_by_id(id)
 			blob = io.BytesIO(f.blob)
-			
+			columns = listify(columns)
+			samples = listify(samples)
 			# Filters.
 			df = pd.read_parquet(blob, columns=columns)
 			if samples is not None:
@@ -943,6 +994,8 @@ class File(BaseModel):
 			This is the only place where to_numpy() relies on to_pandas(). 
 			It does so because pandas is good with the parquet and dtypes.
 			"""
+			columns = listify(columns)
+			samples = listify(samples)
 			df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
 			arr = df.to_numpy()
 			return arr
@@ -1282,6 +1335,7 @@ class Label(BaseModel):
 	
 	def from_dataset(dataset_id:int, columns:list):
 		d = Dataset.get_by_id(dataset_id)
+		columns = listify(columns)
 
 		if (d.dataset_type != 'tabular'):
 			raise ValueError(dedent(f"""
@@ -1402,16 +1456,19 @@ class Label(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None):
+		samples = listify(samples)
 		l_frame = Label.get_label(id=id, numpy_or_pandas='pandas', samples=samples)
 		return l_frame
 
 
 	def to_numpy(id:int, samples:list=None):
+		samples = listify(samples)
 		l_arr = Label.get_label(id=id, numpy_or_pandas='numpy', samples=samples)
 		return l_arr
 
 
 	def get_label(id:int, numpy_or_pandas:str, samples:list=None):
+		samples = listify(samples)
 		l = Label.get_by_id(id)
 		l_cols = l.columns
 		dataset_id = l.dataset.id
@@ -1429,15 +1486,6 @@ class Label(BaseModel):
 				, samples = samples
 			)
 		return lf
-
-	# this is not used anywhere.
-	def get_column_dtype(id:int, column_name:str=None):
-		label = aiqc.Label.get_by_id(id)
-		if (column_name == None):
-			column_name = label.columns[0]
-		d = label.dataset
-		column_dtype = label.dataset.Tabular.get_main_tabular(d.id).dtypes[column_name]
-		return column_dtype
 
 
 	def get_dtypes(
@@ -1483,6 +1531,8 @@ class Featureset(BaseModel):
 		As we get further away from the `Dataset.<Types>` they need less isolation.
 		"""
 		d = Dataset.get_by_id(dataset_id)
+		include_columns = listify(include_columns)
+		exclude_columns = listify(exclude_columns)
 
 		if (d.dataset_type == 'image'):
 			# Just passes the Dataset through for now.
@@ -1557,6 +1607,8 @@ class Featureset(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None, columns:list=None):
+		samples = listify(samples)
+		columns = listify(columns)
 		f_frame = Featureset.get_featureset(
 			id = id
 			, numpy_or_pandas = 'pandas'
@@ -1567,6 +1619,8 @@ class Featureset(BaseModel):
 
 
 	def to_numpy(id:int, samples:list=None, columns:list=None):
+		samples = listify(samples)
+		columns = listify(columns)
 		f_arr = Featureset.get_featureset(
 			id = id
 			, numpy_or_pandas = 'numpy'
@@ -1583,6 +1637,8 @@ class Featureset(BaseModel):
 		, columns:list = None
 	):
 		f = Featureset.get_by_id(id)
+		samples = listify(samples)
+		columns = listify(columns)
 		f_cols = f.columns
 
 		if (columns is not None):
@@ -1612,7 +1668,6 @@ class Featureset(BaseModel):
 		id:int
 	):
 		f = Featureset.get_by_id(id)
-
 		dataset = f.dataset
 		if (dataset.dataset_type == 'image'):
 			raise ValueError("\nYikes - `featureset.dataset.dataset_type=='image'` does not have dtypes.\n")
@@ -1861,6 +1916,8 @@ class Splitset(BaseModel):
 		, include_featureset:bool = None
 		, feature_columns:list = None
 	):
+		splits = listify(splits)
+		feature_columns = listify(feature_columns)
 		split_frames = Splitset.get_splits(
 			id = id
 			, numpy_or_pandas = 'pandas'
@@ -1879,6 +1936,8 @@ class Splitset(BaseModel):
 		, include_featureset:bool = None
 		, feature_columns:list = None
 	):
+		splits = listify(splits)
+		feature_columns = listify(feature_columns)
 		split_arrs = Splitset.get_splits(
 			id = id
 			, numpy_or_pandas = 'numpy'
@@ -1903,23 +1962,14 @@ class Splitset(BaseModel):
 		- Generators to access one [key][set] at a time?
 		"""
 		s = Splitset.get_by_id(id)
+		splits = listify(splits)
+		feature_columns = listify(feature_columns)
 
-		if (splits is not None):
-			if (not isinstance(splits, list)):
-				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
-			if (len(splits) == 0):
-				raise ValueError(dedent("""
-				Yikes - `splits` argument is an empty list.
-				It can be None, which defaults to all splits, but it can't not empty.
-				"""))
-		else:
-			splits = list(s.samples.keys())
-
+		splits = list(s.samples.keys())
 		supervision = s.supervision
 		featureset = s.featureset
 
 		split_frames = {}
-
 		# Future: Optimize (switch to generators for memory usage).
 		# Here, split_names are: train, test, validation.
 		
@@ -2155,6 +2205,8 @@ class Foldset(BaseModel):
 		, include_featureset:bool = None
 		, feature_columns:list = None
 	):
+		fold_names = listify(fold_names)
+		feature_columns = listify(feature_columns)
 		fold_frames = Foldset.get_folds(
 			id = id
 			, numpy_or_pandas = 'pandas'
@@ -2175,6 +2227,8 @@ class Foldset(BaseModel):
 		, include_featureset:bool = None
 		, feature_columns:list = None
 	):
+		fold_names = listify(fold_names)
+		feature_columns = listify(feature_columns)
 		fold_arrs = Foldset.get_folds(
 			id = id
 			, numpy_or_pandas = 'numpy'
@@ -2196,6 +2250,8 @@ class Foldset(BaseModel):
 		, include_featureset:bool = None
 		, feature_columns:list = None
 	):
+		fold_names = listify(fold_names)
+		feature_columns = listify(feature_columns)
 		foldset = Foldset.get_by_id(id)
 		fold_count = foldset.fold_count
 		folds = foldset.folds
@@ -2228,17 +2284,8 @@ class Foldset(BaseModel):
 		if ((feature_columns is not None) and (include_featureset != True)):
 			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
 
-		if (fold_names is not None):
-			if (not isinstance(fold_names, list)):
-				raise ValueError("\nYikes - `splits` must be a list of strings. E.g. `['train', 'validation', 'test']`.\n")
-			if (len(fold_names) == 0):
-				raise ValueError(dedent("""
-					Yikes - `splits` argument is an empty list.
-					It can be None, which defaults to all splits, but it can't not empty.
-				\n"""))
-		elif (fold_names is None):
+		if (fold_names is None):
 			fold_names = list(folds[0].samples.keys())
-
 
 		fold_frames = {}
 		if (fold_index is not None):
@@ -2344,6 +2391,8 @@ class Encoderset(BaseModel):
 		, dtypes:list = None
 		, columns:list = None
 	):
+		dtypes = listify(dtypes)
+		columns = listify(columns)
 		fc = Featurecoder.from_encoderset(
 			encoderset_id = id
 			, sklearn_preprocess = sklearn_preprocess
@@ -2684,6 +2733,8 @@ class Featurecoder(BaseModel):
 		, verbose:bool = True
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
+		dtypes = listify(dtypes)
+		columns = listify(columns)
 		
 		splitset = encoderset.splitset
 		featureset = encoderset.splitset.featureset
@@ -2723,21 +2774,6 @@ class Featurecoder(BaseModel):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
 		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
-
-		criterium = [dtypes, columns]
-		for inex in criterium:
-			if (inex is not None):
-				if (not isinstance(inex, list)):
-					raise ValueError(dedent(f"""
-					Yikes - All inclusion/ exclusion crtieria must be provided as lists.
-					For example: `dtypes=['float64', 'float32']`.
-					This was not a list: {inex}.
-					"""))
-				if (isinstance(inex, list)):
-					# check if list is empty
-					if (not inex):
-						raise ValueError("\nYikes - Inclusion/ exclusion criteria cannot be empty lists.\n")
-					# Choosing not to check if each item is a string because numpy classes can be `==` against strings.
 
 		if (dtypes is not None):
 			for typ in dtypes:
@@ -3053,7 +3089,7 @@ class Algorithm(BaseModel):
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, encoderset_id:int = None
-		, hide_test = False
+		, hide_test:bool = False
 	):
 		batch = Batch.from_algorithm(
 			algorithm_id = id
@@ -3136,7 +3172,7 @@ class Hyperparamcombo(BaseModel):
 	hyperparamset = ForeignKeyField(Hyperparamset, backref='hyperparamcombos')
 
 
-	def hyperparameters_to_pandas(id:int, internal_call=False):
+	def hyperparameters_to_pandas(id:int, internal_call:bool=False):
 		hyperparamcombo = Hyperparamcombo.get_by_id(id)
 		hyperparameters = hyperparamcombo.hyperparameters
 		
@@ -3596,7 +3632,7 @@ class Batch(BaseModel):
 		return statuses
 
 
-	def statuses_to_pandas(id:int, internal_call=False):
+	def statuses_to_pandas(id:int, internal_call:bool=False):
 		batch = Batch.get_by_id(id)
 		jobs = list(batch.jobs)
 		statuses = []
@@ -3687,10 +3723,10 @@ class Batch(BaseModel):
 		, sort_by:list=None
 		, ascending:bool=False
 	):
-		if (selected_metrics==[]):
-			raise ValueError("\nYikes - The filter list that you provided for `selected_metrics` was empty.\n")
-
 		batch = Batch.get_by_id(id)
+		selected_metrics = listify(selected_metrics)
+		sort_by = listify(sort_by)
+		
 		batch_results = Result.select().join(Job).where(
 			Job.batch==id
 		).order_by(Result.id)
@@ -3767,10 +3803,11 @@ class Batch(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		if ((selected_metrics==[]) or (selected_stats==[])):
-			raise ValueError("\nYikes - The filter list that you provided for either `selected_metrics` or `selected_stats` was empty.\n")
-
 		batch = Batch.get_by_id(id)
+		selected_metrics = listify(selected_metrics)
+		selected_stats = listify(selected_stats)
+		sort_by = listify(sort_by)
+
 		batch_results = Result.select().join(Job).where(
 			Job.batch==id
 		).order_by(Result.id)
@@ -4549,6 +4586,9 @@ class Pipeline():
 			, fold_count:int = None
 			, bin_count:int = None
 		):
+			features_excluded = listify(features_excluded)
+			feature_encoders = listify(feature_encoders)
+
 			dataset = Pipeline.parse_tabular_input(
 				dataFrame_or_filePath = dataFrame_or_filePath
 				, dtype = dtype
