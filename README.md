@@ -1,4 +1,4 @@
-![AIQC (wide)](/docs/images/aiqc_logo_wide_black_docs.png)
+![AIQC (wide)](/docs/images/aiqc_logo_wide_controlroom.png)
 
 ---
 *pre-alpha; in active development*

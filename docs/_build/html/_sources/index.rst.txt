@@ -26,7 +26,7 @@
   notebooks/visualization
 
 
-.. image:: images/aiqc_logo_wide_black_docs.png
+.. image:: images/aiqc_logo_wide_controlroom.png
   :width: 385
   :align: center
   :alt: AIQC logo wide
