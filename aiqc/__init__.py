@@ -1,4 +1,4 @@
-import os, sys, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests
+import os, sys, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators
 from importlib import reload
 from datetime import datetime
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
@@ -23,8 +23,7 @@ from sklearn.preprocessing import *
 # Deep learning.
 import keras
 from keras.models import load_model, Sequential
-from keras.callbacks import Callback#, History
-#from keras.layers import *
+from keras.callbacks import Callback
 # Progress bar.
 from tqdm import tqdm
 # Visualization.
@@ -33,8 +32,7 @@ import plotly.express as px
 from PIL import Image as Imaje
 # File sorting.
 from natsort import natsorted
-# Url validating.
-import validators
+
 
 name = "aiqc"
 

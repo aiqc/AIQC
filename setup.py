@@ -5,9 +5,9 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="0.0.81",
+    version="1.0.0",
     author="Layne Sadler",
-    author_email="layne@protonmail.com",
+    author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -29,7 +29,8 @@ setuptools.setup(
         'pyarrow',
         'scikit-learn',
         'tensorflow',
-        'tqdm'
+        'tqdm',
+        'validators'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
