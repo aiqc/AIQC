@@ -37,7 +37,7 @@
 Overview & Features
 ###################
 
-|
+----
 
 Value Proposition
 =================
