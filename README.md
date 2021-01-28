@@ -2,10 +2,6 @@
 
 <br />
 
-<p align="center"><i>Pre-alpha version; in active development.</i></p>
-
-<br />
-
 ### [ReadTheDocs](https://aiqc.readthedocs.io/)
 
 <br />
@@ -21,3 +17,11 @@
   * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
 
   * It makes machine learning less of a black box by *reproducibly recording experiments* in a file-based database that requires no configuration.
+
+<br />
+
+---
+
+<br />
+
+<p align="center"><i>Pre-alpha version; in active development.</i></p>
