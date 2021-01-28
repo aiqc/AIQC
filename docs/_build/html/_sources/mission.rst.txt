@@ -8,7 +8,7 @@ Why Does AIQC Exist?
 1. **Expedite Earth-saving scientific discoveries.**
   
   * Make deep learning more *accessible to researchers* by reducing the amount of *programming and data science know-how* required to perform deep learning. This unattainable skillset trifecta causes machine learning to be underutilized in science.
-  * Radical scientific progress is needed to prevent the destruction of Earth's resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can't physically transport 10B people off of this planet. In order to survive here and elsewhere, we'll need major advances in non-linear fields such as synthetic biology, small-scale nuclear power, vetical farming, and securing Democracy (blockchain, satellite internet). Deep learning can accelerate discoveries and decision-making in these fields and more by revealing the laws of nature through data-driven pattern recognition. `[Kennedy 1963] <https://youtu.be/0fkKnfk4k40?t=368>`_.
+  * Radical scientific progress is needed to prevent the destruction of Earth's resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can't physically transport 10B people off of this planet. In order to survive here and elsewhere, we need major advances in non-linear fields such as synthetic biology, small-scale nuclear power, vertical farming, and Democracty-enabling technology (secure blockchain & satellite internet). Deep learning can accelerate discoveries and decision-making in these fields by revealing the laws of nature through data-driven pattern recognition. `[Kennedy 1963] <https://youtu.be/0fkKnfk4k40?t=368>`_.
 
 
 2. **Bring the scientific method to data science.**
