@@ -9,6 +9,9 @@
 Mission & Community
 *******************
 
+..
+  Without this comment, `make html` throws warning about page beginning w horizontal line below.
+
 ----
 
 Why Does AIQC Exist?
@@ -19,17 +22,15 @@ Why Does AIQC Exist?
   * Make deep learning more *accessible to researchers* by reducing the amount of *programming and data science know-how* required to perform deep learning. This unattainable skillset trifecta causes machine learning to be underutilized in science.
   * Radical scientific progress is needed to prevent the destruction of Earth's resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can't physically transport 10B people off of this planet. In order to survive here and elsewhere, we need major advances in non-linear fields such as synthetic biology, small-scale nuclear power, vertical farming, and Democracy-enabling technology (secure blockchain & satellite internet). Deep learning can accelerate discoveries and decision-making in these fields by revealing the laws of nature through data-driven pattern recognition. We have a choice. `[Kennedy 1963] <https://youtu.be/0fkKnfk4k40?t=368>`_
 
-
 2. **Bring the scientific method to data science.**
 
   * Make machine learning *less of a black box* by implementing a "Quality control (QC)" process of validation rules around reproducible workflows. Submit an AIQC file alongside publications and model zoo entries as a *proof*.
   * This toolset provides research teams a *standardized method for ML-based evidence*, rather than each researcher spending time cobbling together their own approach.
 
-
 3. **Break down walled gardens. Science should be open.**
 
-  * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We *empower the non-cloud researchers*: the academic/ institute HPCers, the remote server SSH'ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, C3). It's going to take all of us, so we should all have the best tools. 
-
+  * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We *empower the non-cloud researchers*: the academic/ institute HPCers, the remote server SSH'ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, C3). It's going to take all of us, so we should all have the best tools.
+  * Let's give ourselves a fighting chance by giving our researchers the best tools possible. 
 
 ----
 
@@ -50,31 +51,34 @@ Machine learning is a broad space with plenty of challenges to solve. Have a loo
 Links
 =====
 
-.. list-table::
-   :widths: 40, 80
-   :header-rows: 1
-   :align: center
-
-   * - Website
-     - Description
-
-   * - `ReadTheDocs <https://aiqc.readthedocs.io/>`__
-     - Hosts the documentation.
-
-   * - `PyPI <https://pypi.org/project/aiqc/>`__
-     - Hosts the Python package.
-
-   * - `GitHub <https://github.com/aiqc/aiqc/>`__
-     - Hosts the source code. File issues.
-
-   * - `Slack <https://aiqc.slack.com>`__
-     - Hosts the community chat.
-
-   * - `Ko-fi <https://ko-fi.com/donate2aiqc>`__
-     - Crowdsourced donations. 
-
-   * - Medium (TBD)
-     - Hosts the blog.
-
 ..
    External links must include 'https://' or 'http://' otherwise it will be treated as an internal page.
+
+.. list-table::
+  :widths: 40, 80
+  :header-rows: 1
+  :align: center
+
+  * - Website
+    - Description
+
+  * - `ReadTheDocs <https://aiqc.readthedocs.io/>`__
+    - Hosts the documentation.
+
+  * - `PyPI <https://pypi.org/project/aiqc/>`__
+    - Hosts the Python package.
+
+  * - `GitHub <https://github.com/aiqc/aiqc/>`__
+    - Hosts the source code. Report bugs/ suggest features.
+
+  * - `Slack <https://aiqc.slack.com>`__
+    - Hosts the community chat.
+
+  * - `Ko-fi <https://ko-fi.com/donate2aiqc>`__
+    - Crowdsourced donations. 
+
+  * - Medium (TBD)
+    - Hosts the blog.
+
+  * - Discourse (TBD)
+    - Hosts the Forum.

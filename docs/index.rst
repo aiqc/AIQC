@@ -37,6 +37,9 @@
 Overview & Features
 ###################
 
+..
+  Without this comment, `make html` throws warning about page beginning w horizontal line below.
+
 ----
 
 Value Proposition
