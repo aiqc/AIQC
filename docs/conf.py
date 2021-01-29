@@ -12,6 +12,9 @@ $ make html
 
 # The notebooks and images all get duplicated. So after lots of changes, 
 delete the `/_build` and rerun `make html`.
+
+# Once pushed to github repo, it's auto watched for changes via ‘github incoming webhook’ 
+https://readthedocs.org/dashboard/aiqc/integrations/
 """
 
 # -- Project information -----------------------------------------------------
@@ -20,15 +23,13 @@ copyright = '2020, Team AIQC'
 author = 'Team AIQC'
 
 # -- General configuration ---------------------------------------------------
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-import sphinx_rtd_theme
 
 # https://nbsphinx.readthedocs.io/en/0.8.0/
 # These are pip packages. See `docs/requirements.txt` 
 # Which is called by `.readthedocs.yml`
+import sphinx_rtd_theme
 extensions = [
 	'nbsphinx'
 	, 'sphinx_copybutton'
@@ -40,8 +41,6 @@ suppress_warnings = [
     'nbsphinx',
 ]
 
-html_theme = "sphinx_rtd_theme"
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -51,9 +50,8 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # nbsphinx automatically excludes '.ipynb_checkpoints'
 
-
 # -- Options for HTML output -------------------------------------------------
-
+html_theme = "sphinx_rtd_theme" # see extension and `import` above.
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -72,15 +70,14 @@ html_theme_options = {
 
 hight_language = 'python3'
 
-suppress_warnings = [
-    'nbsphinx',
-]
-
 # For notebook hyperlinks, I seem to have to use a `[](.html)` syntax to get it to work.
 # https://nbsphinx.readthedocs.io/en/0.8.1/markdown-cells.html#Links-to-Other-Notebooks
 
 # `make html` is supposed to replicate to `.../docs/_build/html/_static/css/custom.css` 
 # but I've been having to manually overwrite the _build css file at that location.
 
+# *** TROUBLESHOOTING SIDEBAR MENU ***
 #html_sidebars = { '**': ['globaltoc.html'] }
 # ^ whenever I add/ remove a page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.
+
+

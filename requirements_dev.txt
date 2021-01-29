@@ -1,0 +1,12 @@
+# So you don't typo yourself a virus: pip install --upgrade -r requirements_dev.txt
+# Packaging:
+pip
+wheel
+twine
+# Documentation:
+ipython==7.19.0
+nbsphinx==0.8.0
+sphinx_copybutton==0.3.1
+sphinx_rtd_theme==0.5.0
+# IDE 
+jupyterlab
