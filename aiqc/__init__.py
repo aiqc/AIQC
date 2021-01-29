@@ -3649,8 +3649,7 @@ class Batch(BaseModel):
 			return df.style.hide_index()
 
 
-	def background_proc():
-		print("start inside backproc")
+	def background_proc(repeated_jobs:list, verbose:bool=False):
 		BaseModel._meta.database.close()
 		BaseModel._meta.database = get_db()
 		for j in tqdm(
@@ -3658,7 +3657,6 @@ class Batch(BaseModel):
 			, desc = "🔮 Training Models 🔮"
 			, ncols = 100
 		):
-			print("start loop backproc")
 			job = j['job']
 			repeat_index = j['repeat_index']
 			job.run(verbose=verbose, repeat_index=repeat_index)
@@ -3694,23 +3692,13 @@ class Batch(BaseModel):
 		proc_names = [p.name for p in multiprocessing.active_children()]
 		if (proc_name in proc_names):
 			raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
-		"""
+		
 		proc = multiprocessing.Process(
-			target = Batch.background_proc
+			target = Batch.background_proc(repeated_jobs)
 			, name = proc_name
 			, daemon = True
 		)
-		print("right before proc start")
-		proc.start()"""
-
-		for j in tqdm(
-			repeated_jobs
-			, desc = "🔮 Training Models 🔮"
-			, ncols = 100
-		):
-			job = j['job']
-			repeat_index = j['repeat_index']
-			job.run(verbose=verbose, repeat_index=repeat_index)
+		proc.start()
 
 
 	def stop_jobs(id:int):
