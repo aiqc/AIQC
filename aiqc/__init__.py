@@ -86,7 +86,7 @@ def create_folder():
 			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.mkdirs('{app_dir}')\n")
 		print(
 			f"=> Success - created folder at file path:\n{app_dir}\n\n" \
-			f"=> Next try running `aiqc.create_config()`.\n"
+			f"=> Next run `aiqc.create_config()`.\n"
 		)
 
 
@@ -218,6 +218,7 @@ def create_config():
 			reload(sys.modules[__name__])
 		else:
 			print(f"\n=> Info - skipping as config file already exists at path:\n{default_config_path}\n")
+	print("\n=> Next run `aiqc.create_db()`.\n")
 
 
 def delete_config(confirm:bool=False):
@@ -351,12 +352,12 @@ def delete_db(confirm:bool=False):
 				)
 				raise
 			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
-
 		else:
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
+		reload(sys.modules[__name__])
 	else:
 		print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
-		reload(sys.modules[__name__])
+	
 
 #==================================================
 # ORM
@@ -1821,7 +1822,7 @@ class Splitset(BaseModel):
 			# OHE dtype returns as int64
 			label_dtype = label_array.dtype
 
-			stratifier1, bin_count = stratifier_by_dtype_binCount(
+			stratifier1, bin_count = Splitset.stratifier_by_dtype_binCount(
 				label_dtype = label_dtype,
 				label_array = label_array,
 				bin_count = bin_count
@@ -1840,7 +1841,7 @@ class Splitset(BaseModel):
 				)
 
 				if (size_validation is not None):
-					stratifier2, bin_count = stratifier_by_dtype_binCount(
+					stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
 						label_dtype = label_dtype,
 						label_array = labels_train, #This split is different from stratifier1.
 						bin_count = bin_count
@@ -1865,7 +1866,7 @@ class Splitset(BaseModel):
 				)
 
 				if (size_validation is not None):
-					stratifier2, bin_count = stratifier_by_dtype_binCount(
+					stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
 						label_dtype = label_dtype,
 						label_array = labels_train, #This split is different from stratifier1.
 						bin_count = bin_count
@@ -2050,7 +2051,7 @@ class Splitset(BaseModel):
 				# Assumes the int is for classification.
 				stratifier = label_array
 		# Reject binned objs.
-		elif (np.issubdtype(dtype_obj, np.number) == False):
+		elif (np.issubdtype(label_dtype, np.number) == False):
 			if (bin_count is not None):
 				raise ValueError(dedent("""
 					Yikes - Your Label is not numeric (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
@@ -3513,10 +3514,10 @@ class Batch(BaseModel):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
 			label_col_count = splitset.label.column_count
-			label_dtypes = splitset.label.get_dtypes()
+			label_dtypes = list(splitset.label.get_dtypes().values())
 			
 			if (label_col_count == 1):
-				label_dtype = list(label.get_dtypes().values())[0]
+				label_dtype = label_dtypes[0]
 				
 				if ('classification' in analysis_type):	
 					if (np.issubdtype(label_dtype, np.floating)):
@@ -3527,11 +3528,13 @@ class Batch(BaseModel):
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
 							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
 						"""))				
-					if ((foldset_id is not None) and (foldset_id.bin_count is not None)):
-						print(dedent("""
-							Warning - `'classification' in Algorithm.analysis_type`, but `Foldset.bin_count is not None`.
-							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
-						"""))
+					if (foldset_id is not None):
+						# Not doing an `and` because foldset can't be accessed if it doesn't exist.
+						if (foldset.bin_count is not None):
+							print(dedent("""
+								Warning - `'classification' in Algorithm.analysis_type`, but `Foldset.bin_count is not None`.
+								`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
+							"""))
 				elif (analysis_type == 'regression'):
 					if (
 						(not np.issubdtype(label_dtype, np.floating))
@@ -3543,8 +3546,9 @@ class Batch(BaseModel):
 						raise ValueError(f"Yikes - Label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
 					if (splitset.bin_count is None):
 						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")					
-					if ((foldset_id is not None) and (foldset_id.bin_count is None)):
-						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")
+					if (foldset_id is not None):
+						if (foldset.bin_count is not None):
+							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")
 				
 			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
 			elif (label_col_count > 1):
@@ -3645,6 +3649,21 @@ class Batch(BaseModel):
 			return df.style.hide_index()
 
 
+	def background_proc():
+		print("start inside backproc")
+		BaseModel._meta.database.close()
+		BaseModel._meta.database = get_db()
+		for j in tqdm(
+			repeated_jobs
+			, desc = "🔮 Training Models 🔮"
+			, ncols = 100
+		):
+			print("start loop backproc")
+			job = j['job']
+			repeat_index = j['repeat_index']
+			job.run(verbose=verbose, repeat_index=repeat_index)
+
+
 	def run_jobs(id:int, verbose:bool=False):
 		batch = Batch.get_by_id(id)
 		foldset = batch.foldset
@@ -3675,25 +3694,23 @@ class Batch(BaseModel):
 		proc_names = [p.name for p in multiprocessing.active_children()]
 		if (proc_name in proc_names):
 			raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
-
-		def background_proc():
-			BaseModel._meta.database.close()
-			BaseModel._meta.database = get_db()
-			for j in tqdm(
-				repeated_jobs
-				, desc = "🔮 Training Models 🔮"
-				, ncols = 100
-			):
-				job = j['job']
-				repeat_index = j['repeat_index']
-				job.run(verbose=verbose, repeat_index=repeat_index)
-
+		"""
 		proc = multiprocessing.Process(
-			target = background_proc
+			target = Batch.background_proc
 			, name = proc_name
 			, daemon = True
 		)
-		proc.start()
+		print("right before proc start")
+		proc.start()"""
+
+		for j in tqdm(
+			repeated_jobs
+			, desc = "🔮 Training Models 🔮"
+			, ncols = 100
+		):
+			job = j['job']
+			repeat_index = j['repeat_index']
+			job.run(verbose=verbose, repeat_index=repeat_index)
 
 
 	def stop_jobs(id:int):
@@ -4269,14 +4286,28 @@ class Job(BaseModel):
 			if (algorithm.library.lower() == "keras"):
 				# If blank this value is `{}` not None.
 				history = model.history.history
-
-				h5_buffer = io.BytesIO()
+				"""
+				- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
+				  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
+				  https://github.com/keras-team/keras/issues/14411
+				- So let's switch to a real file in appdirs. This approach will generalize better.
+				"""
+				# Write it.
+				temp_file_name = f"{app_dir}temp_keras_model"
 				model.save(
-					h5_buffer
+					temp_file_name
 					, include_optimizer = True
 					, save_format = 'h5'
 				)
-				model_bytes = h5_buffer.getvalue()
+				# Open the file.
+				model_file = h5py.File(temp_file_name,'r')
+				# Now write the 'open' file to bytesio stream.
+				bytesio = io.BytesIO()
+				h5py.File(bytesio,'w')
+				model_bytes = bytesio.getvalue()
+				# Cleanup
+				model_file.close()
+				os.remove(temp_file_name)
 			else:
 				model_bytes = None
 				history = None

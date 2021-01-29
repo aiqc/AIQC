@@ -63,13 +63,11 @@ def multiclass_function_model_build(features_shape, label_shape, **hyperparamete
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
-
-
 	model = Sequential()
-	model.add(Dense(hyperparameters['neuron_count'], features_shape=features_shape, label_shape, activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.2))
-	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dense(3, activation='softmax'))
+	model.add(Dense(units=hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(units=label_shape[0], activation='softmax'))
 
 	opt = keras.optimizers.Adamax(hyperparameters['learning_rate'])
 	model.compile(
@@ -187,12 +185,12 @@ def binary_model_build(features_shape, label_shape, **hyperparameters):
 	from keras.layers import Dense, Dropout
 
 	model = Sequential(name='Sonar')
-	model.add(Dense(hyperparameters['neuron_count'], features_shape=features_shape, label_shape, activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dropout(0.30))
 	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
 	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dense(1, activation='sigmoid', kernel_initializer='glorot_uniform'))
+	model.add(Dropout(0.30))
+	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
 	model.compile(optimizer="adam", loss='binary_crossentropy', metrics=['accuracy'])
 	return model
 
@@ -292,10 +290,10 @@ def regression_model_build(features_shape, label_shape, **hyperparameters):
 	from keras.layers import Dense, Dropout
 
 	model = Sequential()
-	model.add(Dense(hyperparameters['neuron_count'], features_shape=features_shape, label_shape, kernel_initializer='normal', activation='relu'))
+	model.add(Dense(units=hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(Dropout(0.15))
-	model.add(Dense(hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
-	model.add(Dense(1, kernel_initializer='normal'))
+	model.add(Dense(units=hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
+	model.add(Dense(units=label_shape[0], kernel_initializer='normal'))
 	model.compile(
 		loss='mean_squared_error'
 		, optimizer='rmsprop'
@@ -406,7 +404,7 @@ def image_binary_model_build(features_shape, label_shape, **hyperparameters):
 
 	model = Sequential()
 	
-	model.add(Conv1D(128*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], features_shape=features_shape, label_shape, padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
+	model.add(Conv1D(128*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
 	model.add(MaxPooling1D(pool_size=hyperparameters['pool_size']))
 	model.add(Dropout(hyperparameters['dropout']))
 	
@@ -420,7 +418,7 @@ def image_binary_model_build(features_shape, label_shape, **hyperparameters):
 	if hyperparameters['include_2nd_dense'] == True:
 		model.add(Dense(hyperparameters['2nd_dense_neurons'], activation='relu'))
 
-	model.add(Dense(1, activation='sigmoid'))
+	model.add(Dense(units=label_shape[0], activation='sigmoid'))
 
 	opt = keras.optimizers.Adamax(hyperparameters['learning_rate'])
 	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
