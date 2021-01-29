@@ -24,13 +24,12 @@ Why Does AIQC Exist?
 
 2. **Bring the scientific method to data science.**
 
-  * Make machine learning *less of a black box* by implementing a "Quality control (QC)" process of validation rules around reproducible workflows. Submit an AIQC file alongside publications and model zoo entries as a *proof*.
+  * Make machine learning *less of a black box* by implementing a "Quality control (QC)" process comprised of validation rules around reproducible workflows. Submit an AIQC file alongside publications and model zoo entries as a *proof*.
   * This toolset provides research teams a *standardized method for ML-based evidence*, rather than each researcher spending time cobbling together their own approach.
 
 3. **Break down walled gardens. Science should be open.**
 
-  * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We *empower the non-cloud researchers*: the academic/ institute HPCers, the remote server SSH'ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, C3). It's going to take all of us, so we should all have the best tools.
-  * Let's give ourselves a fighting chance by giving our researchers the best tools possible. 
+  * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We *empower the non-cloud researchers*: the academic/ institute HPCers, the remote server SSH'ers, and everyday desktop warriors - with the same quality ML tooling as present in public clouds (e.g. AWS SageMaker) and enterprise apps (e.g. DataRobot, C3). It's going to take all of us to overcome the challenges that we are currently faced with, so we should all have access to the best tools.
 
 ----
 
@@ -40,11 +39,14 @@ Why Does AIQC Exist?
 
 Community
 =========
-Lend a hand in building the next generation of open source machine learning, bolster your resume, come learn, or just talk shop!
+Lend a hand in building the next generation of open source machine learning, bolster your resume, beef up your skills, come learn something new, or just talk shop!
 
 Jump in the Slack channel in the links below to say hello. All are welcome.
 
-Machine learning is a broad space with plenty of challenges to solve. Have a look at the :doc:*Compatibility Matrix* in the  Let us know if you want to get involved. We plan to host monthly dev jam sessions and data science lightning talks. It's more fun to hack in a group.
+Machine learning is a broad space with plenty of challenges to solve. Have a look at the :doc:*Compatibility Matrix* to see what needs to be addressed and let us know if you want to get involved. Help build something that isn't lame.
+
+We plan to host monthly dev jam sessions and data science lightning talks. It's more fun to hack in a group.
+
 
 ----
 
