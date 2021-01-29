@@ -545,7 +545,7 @@ class Dataset(BaseModel):
 			column_names = listify(column_names)
 
 			if (type(dataframe).__name__ != 'DataFrame'):
-				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ != 'DataFrame'`\n")
+				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
 
 			dataset = Dataset.create(
 				file_count = Dataset.Tabular.file_count
@@ -1859,7 +1859,7 @@ class Splitset(BaseModel):
 			elif (d.dataset_type == 'image'):
 				# Features not involved.
 				labels_train, labels_test, indices_train, indices_test = train_test_split(
-					arr_l, arr_idx
+					label_array, arr_idx
 					, test_size = size_test
 					, stratify = stratifier1
 					, shuffle = True
@@ -4550,8 +4550,9 @@ class TrainingCallback():
 				elif (statement == True):
 					# However, if the for loop actually finishes, then all metrics are satisfied.
 					print(
-						f":: Epoch #{epoch} ::\n" \
-						f"Satisfied thresholds defined in `MetricCutoff` callback. Stopped training early.\n"
+						f"\n:: Epoch #{epoch} ::" \
+						f"\nCongrats. Stopped training early. Satisfied thresholds defined in `MetricCutoff` callback:" \
+						f"\n{pp.pformat(self.thresholds)}\n"
 					)
 					self.model.stop_training = True
 					os.system("say bingo")

@@ -400,7 +400,7 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 def image_binary_model_build(features_shape, label_shape, **hyperparameters):
 	import keras
 	from keras.models import Sequential
-	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout
+	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout, Flatten
 
 	model = Sequential()
 	

@@ -119,7 +119,7 @@ def get_path(name:str):
 	"""
 	if (name == 'brain_tumor.csv'):
 		# 2nd aiqc is the repo, not the module.
-		full_path = f"https://github.com/aiqc/aiqc/remote_datum/image/brain_tumor/brain_tumor.csv?raw=true"
+		full_path = f"https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/brain_tumor.csv"
 	else:
 		short_path = f"data/{name}"
 		full_path = pkg_resources.resource_filename('aiqc', short_path)
@@ -143,7 +143,7 @@ def to_pandas(name:str):
 
 
 def get_remote_urls(manifest_name:'str'):
-	df = datum.to_pandas(name=manifest_name)
+	# `to_pandas` looks weird but it's right.
+	df = to_pandas(name=manifest_name)
 	remote_urls = df['url'].to_list()
 	return remote_urls
-

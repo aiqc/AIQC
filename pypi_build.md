@@ -10,5 +10,5 @@ python3 -m twine upload --repository pypi dist/*
 # password: <paste in the token>
 # delete build-generated files before git commit.
 rm -r build dist aiqc.egg-info
-# proactively update the version number in setup.py next time
+# proactively update the version number in setup.py next time, you won't
 ```

@@ -5,3 +5,7 @@
 **/__pycache__/
 __pycache__/
 /dev_notebooks
+# pypi build
+/dist
+/aiqc.egg-info
+/build
