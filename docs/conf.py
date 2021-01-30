@@ -63,6 +63,8 @@ html_logo ='images/aiqc_logo_wide_white_docs.png'
 html_favicon = 'images/favicon.ico'
 html_show_sphinx = False
 html_show_copyright = False
+html_title = 'AIQC'
+html_short_title = 'AIQC'
 html_theme_options = {
 	'logo_only': True,
 	'display_version': False

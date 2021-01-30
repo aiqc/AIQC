@@ -338,8 +338,8 @@ def create_db():
 			)
 
 
-def delete_db(confirm:bool=False):
-	if confirm:
+def destroy_db(confirm:bool=False, rebuild:bool=False):
+	if (confirm==True):
 		db_path = get_path_db()
 		db_exists = os.path.exists(db_path)
 		if db_exists:
@@ -355,9 +355,18 @@ def delete_db(confirm:bool=False):
 		else:
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
 		reload(sys.modules[__name__])
+
+		if (rebuild==True):
+			create_db()
 	else:
-		print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
-	
+		print("\n=> Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
+
+
+def setup():
+	create_folder()
+	create_config()
+	create_db()
+
 
 #==================================================
 # ORM
@@ -4287,14 +4296,11 @@ class Job(BaseModel):
 					, include_optimizer = True
 					, save_format = 'h5'
 				)
-				# Open the file.
-				model_file = h5py.File(temp_file_name,'r')
-				# Now write the 'open' file to bytesio stream.
-				bytesio = io.BytesIO()
-				h5py.File(bytesio,'w')
-				model_bytes = bytesio.getvalue()
-				# Cleanup
-				model_file.close()
+				with h5py.File(temp_file_name,'r') as model_file:
+					bytesio = io.BytesIO()
+					# Automatically uses open file.
+					h5py.File(bytesio,'w')
+					model_bytes = bytesio.getvalue()
 				os.remove(temp_file_name)
 			else:
 				model_bytes = None
