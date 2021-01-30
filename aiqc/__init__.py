@@ -190,7 +190,7 @@ def get_config():
 			aiqc_config = json.load(aiqc_config_file)
 			return aiqc_config
 	else: 
-		print("\n=> Welcome to AIQC.\nTo get started, run `aiqc.create_folder()` followed by `aiqc.create_config()`.\n")
+		print("\n=> Welcome to AIQC.\nTo get started, run `aiqc.setup()`.\n")
 
 
 def create_config():
