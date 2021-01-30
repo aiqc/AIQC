@@ -17,6 +17,11 @@ delete the `/_build` and rerun `make html`.
 https://readthedocs.org/dashboard/aiqc/integrations/
 """
 
+# *** TROUBLESHOOTING SIDEBAR MENU ***
+#html_sidebars = { '**': ['globaltoc.html'] }
+# ^ whenever I add/ remove a page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.
+
+
 # -- Project information -----------------------------------------------------
 project = 'AIQC'
 copyright = '2020, Team AIQC'
@@ -34,6 +39,7 @@ extensions = [
 	'nbsphinx'
 	, 'sphinx_copybutton'
 	, 'sphinx_rtd_theme'
+	, 'sphinxext.opengraph'
 ]
 
 # https://nbsphinx.readthedocs.io/en/0.7.0/usage.html#suppress_warnings
@@ -78,8 +84,13 @@ hight_language = 'python3'
 # `make html` is supposed to replicate to `.../docs/_build/html/_static/css/custom.css` 
 # but I've been having to manually overwrite the _build css file at that location.
 
-# *** TROUBLESHOOTING SIDEBAR MENU ***
-#html_sidebars = { '**': ['globaltoc.html'] }
-# ^ whenever I add/ remove a page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.
-
-
+# -- <head><meta> for link formatting -----------------------------------------
+# https://github.com/wpilibsuite/sphinxext-opengraph
+ogp_site_url = "https://aiqc.readthedocs.io/"
+ogp_site_name = "AIQC"
+ogp_image = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png"
+ogp_image_alt = "Artificial Intelligence Quality Control"
+ogp_type = "website"
+ogp_custom_meta_tags = [
+    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />',
+]
