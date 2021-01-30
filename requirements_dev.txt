@@ -10,3 +10,4 @@ sphinx_copybutton==0.3.1
 sphinx_rtd_theme==0.5.0
 # IDE 
 jupyterlab
+ipywidgets>=7.5

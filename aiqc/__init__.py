@@ -316,7 +316,7 @@ def create_db():
 	tables = db.get_tables()
 	table_count = len(tables)
 	if table_count > 0:
-		print(f"\n=> Info - skipping table creation as the following tables already exist:\n{tables}\n")
+		print(f"\n=> Info - skipping table creation as the following tables already exist.{tables}\n")
 	else:
 		db.create_tables([
 			File, Tabular, Image,
@@ -330,7 +330,7 @@ def create_db():
 		tables = db.get_tables()
 		table_count = len(tables)
 		if table_count > 0:
-			print(f"\n=> Success - created the following tables within database:\n{tables}\n")
+			print(f"\n💾  Success - created all database tables.  💾\n")
 		else:
 			print(
 				f"=> Yikes - failed to create tables.\n" \
