@@ -1,8 +1,10 @@
 import os, sys, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators
 from importlib import reload
 from datetime import datetime
+from time import sleep
 from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
 from textwrap import dedent
+from math import floor, log10
 import pprint as pp
 
 #OS agonstic system files.
@@ -32,7 +34,6 @@ import plotly.express as px
 from PIL import Image as Imaje
 # File sorting.
 from natsort import natsorted
-
 
 name = "aiqc"
 
@@ -3635,7 +3636,7 @@ class Batch(BaseModel):
 		return b
 
 
-	def get_statuses(id:int):
+	def poll_statuses(id:int):
 		batch = Batch.get_by_id(id)
 		jobs = batch.jobs
 		statuses = {}
@@ -3644,10 +3645,57 @@ class Batch(BaseModel):
 		return statuses
 
 
+	def poll_progress(id:int, raw:bool=False, loop:bool=False, loop_delay:int=3):
+		if (loop==False):
+			statuses = Batch.poll_statuses(id)
+			total = len(statuses)
+			done_count = len([v for v in statuses.values() if v == "Succeeded"])
+			percent_done = done_count / total
+			if (raw==True):
+				return percent_done
+			elif (raw==False):
+				done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(floor(log10(0.05))))
+				bars_filled = int(done_pt05 * 20)
+				bars_blank = 20 - bars_filled
+				meter = '|'
+				for i in range(bars_filled):
+					meter += '██'
+				for i in range(bars_blank):
+					meter += '--'
+				meter += '|'
+				print(f"🔮 Training Models 🔮 {meter} {done_count}/{total} : {int(percent_done*100)}%")
+		elif (loop==True):
+			while (loop==True):
+				statuses = Batch.poll_statuses(id)
+				total = len(statuses)
+				done_count = len([v for v in statuses.values() if v == "Succeeded"])
+				percent_done = done_count / total
+				if (raw==True):
+					return percent_done
+				elif (raw==False):
+					done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(floor(log10(0.05))))
+					bars_filled = int(done_pt05 * 20)
+					bars_blank = 20 - bars_filled
+					meter = '|'
+					for i in range(bars_filled):
+						meter += '██'
+					for i in range(bars_blank):
+						meter += '--'
+					meter += '|'
+					print(f"🔮 Training Models 🔮 {meter} {done_count}/{total} : {int(percent_done*100)}%", end='\r')
+					#print()
+
+				if (done_count == total):
+					loop = False
+					os.system("say Model training completed")
+					break
+				sleep(loop_delay)
+
+
 	def statuses_to_pandas(id:int, internal_call:bool=False):
 		batch = Batch.get_by_id(id)
 		jobs = list(batch.jobs)
-		statuses = []
+		statuses = [] #whereas poll_statuses is a dict.
 		for j in jobs:
 			status = {"job_id":j.id, "status": j.status}
 			statuses.append(status)
@@ -3657,21 +3705,7 @@ class Batch(BaseModel):
 		else:
 			return df.style.hide_index()
 
-
-	def background_proc(repeated_jobs:list, verbose:bool=False):
-		BaseModel._meta.database.close()
-		BaseModel._meta.database = get_db()
-		for j in tqdm(
-			repeated_jobs
-			, desc = "🔮 Training Models 🔮"
-			, ncols = 100
-		):
-			job = j['job']
-			repeat_index = j['repeat_index']
-			job.run(verbose=verbose, repeat_index=repeat_index)
-
-
-	def run_jobs(id:int, verbose:bool=False):
+	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
 		batch = Batch.get_by_id(id)
 		foldset = batch.foldset
 		# For the sake of resumed Batches, we want succeeded Jobs to be fetched first so that the % done includes them.
@@ -3685,14 +3719,14 @@ class Batch(BaseModel):
 				job_dict = {"job":j, "repeat_index":i}
 				repeated_jobs.append(job_dict)
 
-		statuses = Batch.get_statuses(id=batch.id)
+		statuses = Batch.poll_statuses(id=batch.id)
 		all_succeeded = all(i == "Succeeded" for i in statuses.values())
 		if (all_succeeded):
 			print("\nAll jobs have been completed.\n")
 		elif (not (all_succeeded) and ("Succeeded" in statuses.values())):
 			print("\nResuming jobs...\n")
 
-		statuses = Batch.get_statuses(id)
+		statuses = Batch.poll_statuses(id)
 		all_not_started = (set(statuses.values()) == {'Not yet started'})
 		if (all_not_started):
 			Job.update(status="Queued").where(Job.batch==id).execute()
@@ -3702,12 +3736,24 @@ class Batch(BaseModel):
 		if (proc_name in proc_names):
 			raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
 		
-		proc = multiprocessing.Process(
-			target = Batch.background_proc(repeated_jobs)
-			, name = proc_name
-			, daemon = True
-		)
-		proc.start()
+		
+		if (in_background==True):			
+			proc = multiprocessing.Process(
+				target = execute_jobs
+				, name = proc_name
+				, args = (repeated_jobs, verbose,) #Needs trailing comma.
+			)
+			proc.start()
+		elif (in_background==False):
+			for j in tqdm(
+				repeated_jobs
+				, desc = "🔮 Training Models 🔮"
+				, ncols = 100
+			):
+				job = j['job']
+				repeat_index = j['repeat_index']
+				job.run(verbose=verbose, repeat_index=repeat_index)
+			os.system("say Model training completed")
 
 
 	def stop_jobs(id:int):
@@ -4040,6 +4086,7 @@ class Job(BaseModel):
 		"""
 		Future: OPTIMIZE. shouldn't have to read whole dataset into memory at once. duplicate reads in encoders.
 		"""
+		time_started = datetime.now()
 		j = Job.get_by_id(id)
 
 		# With the addition of `repeat_count`, the incoming request is for a specific repeat of the Job.
@@ -4360,9 +4407,14 @@ class Job(BaseModel):
 					"mean":mean, "median":median, "pstdev":pstdev, 
 					"minimum":minimum, "maximum":maximum 
 				}
+			time_succeeded = datetime.now()
+			time_duration = (time_succeeded - time_started).seconds
 
 			r = Result.create(
-				model_file = model_bytes
+				time_started = time_started
+				, time_succeeded = time_succeeded
+				, time_duration = time_duration
+				, model_file = model_bytes
 				, history = history
 				, predictions = predictions
 				, probabilities = probabilities
@@ -4380,6 +4432,22 @@ class Job(BaseModel):
 			return j
 
 
+def execute_jobs(repeated_jobs:list, verbose:bool=False):  
+	"""
+	- This needs to be a top level function, otherwise you get pickle attribute error.
+	- Alternatively, you can put this is a separate submodule file, and call it via
+	  `import aiqc.execute_jobs.execute_jobs`
+	"""
+	BaseModel._meta.database.close()
+	BaseModel._meta.database = get_db()
+	for j in tqdm(
+		repeated_jobs
+		, desc = "🔮 Training Models 🔮"
+		, ncols = 100
+	):
+		job = j['job']
+		repeat_index = j['repeat_index']
+		job.run(verbose=verbose, repeat_index=repeat_index)
 
 
 class Result(BaseModel):
@@ -4387,6 +4455,9 @@ class Result(BaseModel):
 	- Regarding metrics, the label encoder was fit on training split labels.
 	"""
 	repeat_index = IntegerField()
+	time_started = DateTimeField()
+	time_succeeded = DateTimeField()
+	time_duration = IntegerField()
 	model_file = BlobField()
 	history = JSONField()
 	predictions = PickleField()
@@ -4394,6 +4465,7 @@ class Result(BaseModel):
 	metrics_aggregate = PickleField()
 	plot_data = PickleField(null=True) # Regression only uses history.
 	probabilities = PickleField(null=True) # Not used for regression.
+
 
 	job = ForeignKeyField(Job, backref='results')
 

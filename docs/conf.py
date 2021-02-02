@@ -84,8 +84,10 @@ hight_language = 'python3'
 # `make html` is supposed to replicate to `.../docs/_build/html/_static/css/custom.css` 
 # but I've been having to manually overwrite the _build css file at that location.
 
-# -- <head><meta> for link formatting -----------------------------------------
+# -- <head><meta> title & links -----------------------------------------
 # https://github.com/wpilibsuite/sphinxext-opengraph
+# https://www.linkedin.com/pulse/how-clear-linkedin-link-preview-cache-ananda-kannan-p/
+# https://www.linkedin.com/post-inspector/
 ogp_site_url = "https://aiqc.readthedocs.io/"
 ogp_site_name = "AIQC"
 ogp_image = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png"
