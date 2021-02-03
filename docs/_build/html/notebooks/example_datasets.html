@@ -467,7 +467,7 @@ div.rendered_html tbody tr:hover {
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>If you’ve already completed the instructions on the <a class="reference external" href="installation.html">Installation</a> page, then let’s get started.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -487,7 +487,7 @@ div.rendered_html tbody tr:hover {
 <div><p>By default it returns a Pandas DataFrame, but you can <code class="docutils literal notranslate"><span class="pre">list_datums(format='list')</span></code> to change that.</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -496,7 +496,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -635,7 +635,7 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>Using the value of the <code class="docutils literal notranslate"><span class="pre">name</span></code> column, you can fetch that file via <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -645,7 +645,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -769,21 +769,21 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Alternatively, if you prefer to work directly with the file itself, then you can obtain the location of the file via the <code class="docutils literal notranslate"><span class="pre">get_demo_file_path()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">datum</span><span class="o">.</span><span class="n">get_datum_path</span><span class="p">(</span><span class="s1">&#39;houses.csv&#39;</span><span class="p">)</span>
+<span></span><span class="n">datum</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;houses.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;/Users/layne/Desktop/aiqc/aiqc/data/houses.csv&#39;
+&#39;/Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3/lib/python3.8/site-packages/aiqc/data/houses.csv&#39;
 </pre></div></div>
 </div>
 <hr class="docutils" />
@@ -797,8 +797,8 @@ div.rendered_html tbody tr:hover {
 <p>Otherwise, their locations are hardcoded into the datum methods.</p>
 </div></blockquote>
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">brain_tumor.csv</span></code> file as an example.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -807,11 +807,89 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>status</th>
+      <th>url</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_3.jpg?raw=true</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_4.jpg?raw=true</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
 <p>This file acts as a manifest for multi-modal datasets in that each row of this CSV represents a sample:</p>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">'status'</span></code> column of this file serves as the Label of that sample. We’ll construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> from this.</p></li>
 <li><p>Meanwhile, the <code class="docutils literal notranslate"><span class="pre">'url'</span></code> column acts as a manifest in that it contains the URL of the image file for that sample. We’ll construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from this.</p></li>
 </ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">img_urls</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_remote_urls</span><span class="p">(</span><span class="s1">&#39;brain_tumor.csv&#39;</span><span class="p">)</span>
+<span class="n">img_urls</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true&#39;,
+ &#39;https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true&#39;,
+ &#39;https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true&#39;]
+</pre></div></div>
+</div>
 <p>At this point, you can use either the high or low level AIQC APIs to ingest that data and work with it as normal.</p>
 </div>
 </div>

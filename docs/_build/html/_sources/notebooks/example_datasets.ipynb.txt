@@ -42,7 +42,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 1,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -75,7 +75,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 2,
    "metadata": {},
    "outputs": [
     {
@@ -253,7 +253,7 @@
        "7   remote  "
       ]
      },
-     "execution_count": 4,
+     "execution_count": 2,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -278,7 +278,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 3,
    "metadata": {},
    "outputs": [
     {
@@ -418,7 +418,7 @@
        "4   5.33   36.2  "
       ]
      },
-     "execution_count": 5,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -437,22 +437,22 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 5,
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "'/Users/layne/Desktop/aiqc/aiqc/data/houses.csv'"
+       "'/Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3/lib/python3.8/site-packages/aiqc/data/houses.csv'"
       ]
      },
-     "execution_count": 6,
+     "execution_count": 5,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "datum.get_datum_path('houses.csv')"
+    "datum.get_path('houses.csv')"
    ]
   },
   {
@@ -496,9 +496,85 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 6,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>status</th>\n",
+       "      <th>url</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0</td>\n",
+       "      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0</td>\n",
+       "      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>0</td>\n",
+       "      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>0</td>\n",
+       "      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_3.jpg?raw=true</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>0</td>\n",
+       "      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_4.jpg?raw=true</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   status  \\\n",
+       "0       0   \n",
+       "1       0   \n",
+       "2       0   \n",
+       "3       0   \n",
+       "4       0   \n",
+       "\n",
+       "                                                                                                          url  \n",
+       "0  https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true  \n",
+       "1  https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true  \n",
+       "2  https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true  \n",
+       "3  https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_3.jpg?raw=true  \n",
+       "4  https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_4.jpg?raw=true  "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "df = datum.to_pandas(name='brain_tumor.csv')\n",
     "df.head()"
@@ -513,6 +589,29 @@
     "* The `'status'` column of this file serves as the Label of that sample. We'll construct a `Dataset.Tabular` from this.\n",
     "* Meanwhile, the `'url'` column acts as a manifest in that it contains the URL of the image file for that sample. We'll construct a `Dataset.Image` from this.\n",
     "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true',\n",
+       " 'https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true',\n",
+       " 'https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true']"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "img_urls = datum.get_remote_urls('brain_tumor.csv')\n",
+    "img_urls[:3]"
    ]
   },
   {
@@ -539,7 +638,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.7.6"
+   "version": "3.8.7"
   }
  },
  "nbformat": 4,
