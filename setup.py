@@ -31,7 +31,7 @@ setuptools.setup(
         'pillow',
         'numpy',# Heavily depended on so other packages will install it.
         'pyarrow>=2.0.0',
-        'plotly>=4.13.0',
+        'plotly>=4.14.3',
         # Programmatic:
         'appdirs',
         'natsort',
