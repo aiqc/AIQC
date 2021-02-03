@@ -4783,12 +4783,12 @@ class Pipeline():
 		):
 			if (isinstance(folderPath_or_urls, str)):
 				dataset_image = Dataset.Image.from_folder(
-					folder_path = image_folder_path
+					folder_path = folderPath_or_urls
 					, pillow_save = pillow_save
 				)
 			elif (isinstance(folderPath_or_urls, list)):
 				dataset_image = Dataset.Image.from_urls(
-					urls = image_urls
+					urls = folderPath_or_urls
 					, pillow_save = pillow_save
 				)
 			# Image-based Featureset.
