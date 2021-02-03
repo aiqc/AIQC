@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="1.0.63",
+    version="1.0.65",
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
@@ -21,7 +21,7 @@ setuptools.setup(
     # a fresh python env, I don't need to require users to install 'wheel'.
     install_requires=[
         # Mandatory versions:
-        'tensorflow>=2.2'#tensorflow.org/install/pip
+        'tensorflow>=2.4.1'#tensorflow.org/install/pip
         'keras>=2.4.3',#https://docs.floydhub.com/guides/environments/
         'h5py~=2.10.0',#(tf2.4.1 req h5py~=2.10.0)
         # Frameworks:

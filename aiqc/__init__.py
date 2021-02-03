@@ -35,7 +35,23 @@ from PIL import Image as Imaje
 # File sorting.
 from natsort import natsorted
 
+
 name = "aiqc"
+"""
+https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+- 'fork' makes all variables on main process available to child process. OS attempts not to duplicate all variables.
+- 'spawn' requires that variables be passed to child as args, and seems to play by pickle's rules (e.g. no func in func).
+
+- In Python 3.8, macOS changed default from 'fork' to 'spawn' , which is how I learned all this.
+- Windows does not support 'fork'. It supports 'spawn'. So basically I have to play by spawn/ pickle rules.
+- Spawn/ pickle dictates (1) where execute_jobs func is placed, (2) if MetricsCutoff func works, (3) if tqdm output is visible.
+- Update: now MetricsCutoff is not working in `fork` mode.
+- Wrote the `poll_progress` func for 'spawn' situations.
+- If everything hits the fan, `run_jobs(in_background=False)` for a normal for loop.
+"""
+if (os.name != 'nt'):
+	# If `force=False`, then `reload(aiqc)` triggers `RuntimeError: context already set`.
+	multiprocessing.set_start_method('fork', force=True)
 
 
 #==================================================
@@ -2117,11 +2133,11 @@ class Foldset(BaseModel):
 		, fold_count:int = None
 		, bin_count:int = None
 	):
-		s = Splitset.get_by_id(splitset_id)
+		splitset = Splitset.get_by_id(splitset_id)
 		new_random = False
 		while new_random == False:
 			random_state = random.randint(0, 4294967295) #2**32 - 1 inclusive
-			matching_randoms = s.foldsets.select().where(Foldset.random_state==random_state)
+			matching_randoms = splitset.foldsets.select().where(Foldset.random_state==random_state)
 			count_matches = matching_randoms.count()
 			if count_matches == 0:
 				new_random = True
@@ -2137,15 +2153,15 @@ class Foldset(BaseModel):
 				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
 		# Get the training indices. The actual values of the features don't matter, only label values needed for stratification.
-		arr_train_indices = s.samples["train"]
-		arr_train_labels = s.label.to_numpy(samples=arr_train_indices)
+		arr_train_indices = splitset.samples["train"]
+		arr_train_labels = splitset.label.to_numpy(samples=arr_train_indices)
 
 		# If the Labels are binned *overwite* the values w bin numbers. Otherwise untouched.
 		label_dtype = arr_train_labels.dtype
 		# Bin the floats.
 		if (np.issubdtype(label_dtype, np.floating)):
 			if (bin_count is None):
-				bin_count = s.bin_count #Inherit. 
+				bin_count = splitset.bin_count #Inherit. 
 			arr_train_labels = Splitset.label_values_to_bins(
 				array_to_bin = arr_train_labels
 				, bin_count = bin_count
@@ -2158,12 +2174,17 @@ class Foldset(BaseModel):
 		):
 			if (bin_count is not None):
 				if (splitset.bin_count is None):
-					raise ValueError("Yikes - `Splitset.bin_count is None` but now you're trying to set `bin_count is not None` for the Foldset.")
-				elif (splitset.bin_count is not None):
-					arr_train_labels = Splitset.label_values_to_bins(
-						array_to_bin = arr_train_labels
-						, bin_count = bin_count
-					)
+					print(dedent("""
+						Warning - Previously you set `Splitset.bin_count is None`
+						but now you are trying to set `Foldset.bin_count is not None`.
+						
+						This can result in incosisten stratification processes being 
+						used for training samples versus validation and test samples.
+					\n"""))
+				arr_train_labels = Splitset.label_values_to_bins(
+					array_to_bin = arr_train_labels
+					, bin_count = bin_count
+				)
 		else:
 			if (bin_count is not None):
 				raise ValueError(dedent("""
@@ -2185,7 +2206,7 @@ class Foldset(BaseModel):
 			fold_count = fold_count
 			, random_state = random_state
 			, bin_count = bin_count
-			, splitset = s
+			, splitset = splitset
 		)
 		# Create the folds. Don't want the end user to run two commands.
 		skf = StratifiedKFold(n_splits=fold_count, shuffle=True, random_state=random_state)
@@ -3553,13 +3574,19 @@ class Batch(BaseModel):
 						and
 						(not np.issubdtype(label_dtype, np.signedinteger))
 					):
-						raise ValueError(f"Yikes - Label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
+						raise ValueError(f"Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
+					
 					if (splitset.bin_count is None):
-						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")					
+						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")					
 					if (foldset_id is not None):
-						if (foldset.bin_count is not None):
-							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitsets and Foldsets.")
-				
+						if (foldset.bin_count is None):
+							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Foldset.")
+							if (splitset.bin_count is not None):
+								print("Warning - `bin_count` was set for Splitset, but not for Foldset. This leads to inconsistent stratification across samples.")
+						elif (foldset.bin_count is not None):
+							if (splitset.bin_count is None):
+								print("Warning - `bin_count` was set for Foldset, but not for Splitset. This leads to inconsistent stratification across samples.")
+					
 			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
@@ -3738,6 +3765,12 @@ class Batch(BaseModel):
 		
 		
 		if (in_background==True):			
+			"""
+			- In 3.8, the default `multiprocessing.set_start_method` changed from 'fork' to 'spawn' for macOS.
+			- In 3.7, 'fork' was making all of my variables available to the `Process`.
+			- However, now I have to pass them in as arguments because it switched to 'fork'.
+			- This is actually a good thing because 'fork' is not supported on Windows.
+			"""
 			proc = multiprocessing.Process(
 				target = execute_jobs
 				, name = proc_name
@@ -4335,6 +4368,7 @@ class Job(BaseModel):
 				  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
 				  https://github.com/keras-team/keras/issues/14411
 				- So let's switch to a real file in appdirs. This approach will generalize better.
+				- Assuming `model.save()` will trigger OS-specific h5 drivers.
 				"""
 				# Write it.
 				temp_file_name = f"{app_dir}temp_keras_model"
@@ -4343,15 +4377,10 @@ class Job(BaseModel):
 					, include_optimizer = True
 					, save_format = 'h5'
 				)
-				with h5py.File(temp_file_name,'r') as model_file:
-					bytesio = io.BytesIO()
-					# Automatically uses open file.
-					h5py.File(bytesio,'w')
-					model_bytes = bytesio.getvalue()
+				# Fetch the bytes ('rb': read binary)
+				with open(temp_file_name, 'rb') as file:
+					model_bytes = file.read()
 				os.remove(temp_file_name)
-			else:
-				model_bytes = None
-				history = None
 
 			# 4. Fetch samples for evaluation.
 			predictions = {}
@@ -4429,6 +4458,9 @@ class Job(BaseModel):
 			job_results = len(list(j.results))
 			if (job_results == j.repeat_count):
 				Job.update(status="Succeeded").where(Job.id==j.id).execute()
+
+			# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
+			del samples
 			return j
 
 
@@ -4437,6 +4469,8 @@ def execute_jobs(repeated_jobs:list, verbose:bool=False):
 	- This needs to be a top level function, otherwise you get pickle attribute error.
 	- Alternatively, you can put this is a separate submodule file, and call it via
 	  `import aiqc.execute_jobs.execute_jobs`
+	- Tried `mp.Manager` and `mp.Value` for shared variable for progress, but gave up after
+	  a full day of troubleshooting.
 	"""
 	BaseModel._meta.database.close()
 	BaseModel._meta.database = get_db()
@@ -4474,11 +4508,17 @@ class Result(BaseModel):
 		r = Result.get_by_id(id)
 		algorithm = r.job.batch.algorithm
 		model_bytes = r.model_file
-		model_bytesio = io.BytesIO(model_bytes)
+
 		if (algorithm.library.lower() == "keras"):
-			h5_file = h5py.File(model_bytesio,'r')
-			model = load_model(h5_file, compile=True)
+			temp_file_name = f"{app_dir}temp_keras_model"
+			# Workaround: write bytes to file so keras can read from path instead of buffer.
+			with open(temp_file_name, 'wb') as f:
+				f.write(model_bytes)
+				model = load_model(temp_file_name, compile=True)
+			os.remove(temp_file_name)
 		return model
+
+		
 
 
 	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
@@ -4581,6 +4621,10 @@ class Environment(BaseModel)?
 class TrainingCallback():
 	class Keras():
 		class MetricCutoff(keras.callbacks.Callback):
+			"""
+			- Worried that these inner functions are not pickling during multi-processing.
+			https://stackoverflow.com/a/8805244/5739514
+			"""
 			def __init__(self, thresholds:list):
 				"""
 				# Tested with keras:2.4.3, tensorflow:2.3.1
@@ -4633,7 +4677,6 @@ class TrainingCallback():
 						f"\n{pp.pformat(self.thresholds)}\n"
 					)
 					self.model.stop_training = True
-					os.system("say bingo")
 
 
 #==================================================
