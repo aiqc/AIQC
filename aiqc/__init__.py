@@ -2616,9 +2616,9 @@ class Labelcoder(BaseModel):
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 		"""
 		- Future: optimize to make sure not duplicating numpy. especially append to lists + reshape after transpose.
-		- As seen in `examples.encoder_compatibility_to_pandas()` there are 17 uppercase sklearn encoders,
-		  and 10 different data types across float, str, int when consider negatives, 2D multiple columns, 2D single columns.
-		  Different encoders work with different data types and dimensionality.
+		- There are 17 uppercase sklearn encoders, and 10 different data types across float, str, int 
+		  when consider negatives, 2D multiple columns, 2D single columns.
+		- Different encoders work with different data types and dimensionality.
 		- This function normalizes that process by coercing the dimensionality that the encoder wants,
 		  and erroring if the wrong data type is used. 
 		"""
@@ -3203,7 +3203,7 @@ class Hyperparamcombo(BaseModel):
 	hyperparamset = ForeignKeyField(Hyperparamset, backref='hyperparamcombos')
 
 
-	def hyperparameters_to_pandas(id:int, internal_call:bool=False):
+	def get_hyperparameters(id:int, as_pandas:bool=False):
 		hyperparamcombo = Hyperparamcombo.get_by_id(id)
 		hyperparameters = hyperparamcombo.hyperparameters
 		
@@ -3211,11 +3211,12 @@ class Hyperparamcombo(BaseModel):
 		for k,v in hyperparameters.items():
 			param = {"param":k, "value":v}
 			params.append(param)
-		df = pd.DataFrame.from_records(params, columns=['param','value'])
-		if internal_call:
+		
+		if (as_pandas==True):
+			df = pd.DataFrame.from_records(params, columns=['param','value'])
 			return df
-		else:
-			return df.style.hide_index()
+		elif (as_pandas==False):
+			return params
 
 
 
@@ -3663,21 +3664,41 @@ class Batch(BaseModel):
 		return b
 
 
-	def poll_statuses(id:int):
+	def poll_statuses(id:int, as_pandas:bool=False):
 		batch = Batch.get_by_id(id)
-		jobs = batch.jobs
-		statuses = {}
-		for j in jobs:
-			statuses[j.id] = j.status
-		return statuses
+		repeat_count = batch.repeat_count
+		statuses = []
+		for i in range(repeat_count):
+			for j in batch.jobs:
+				# Check if there is a Result with a matching repeat_index
+				matching_result = Result.select().join(Job).join(Batch).where(
+					Batch.id==batch.id, Job.id==j.id, Result.repeat_index==i
+				)
+				if (len(matching_result) == 1):
+					r_id = matching_result[0].id
+				elif (len(matching_result) == 0):
+					r_id = None
+				job_dct = {"job_id":j.id, "repeat_index":i, "result_id": r_id}
+				statuses.append(job_dct)
+
+		if (as_pandas==True):
+			df = pd.DataFrame.from_records(statuses, columns=['job_id', 'repeat_index', 'result_id'])
+			return df.round()
+		elif (as_pandas==False):
+			return statuses
 
 
 	def poll_progress(id:int, raw:bool=False, loop:bool=False, loop_delay:int=3):
+		"""
+		- For background_process execution where progress bar not visible.
+		- Could also be used for cloud jobs though.
+		"""
 		if (loop==False):
 			statuses = Batch.poll_statuses(id)
 			total = len(statuses)
-			done_count = len([v for v in statuses.values() if v == "Succeeded"])
+			done_count = len([s for s in statuses if s['result_id'] is not None]) 
 			percent_done = done_count / total
+
 			if (raw==True):
 				return percent_done
 			elif (raw==False):
@@ -3695,7 +3716,7 @@ class Batch(BaseModel):
 			while (loop==True):
 				statuses = Batch.poll_statuses(id)
 				total = len(statuses)
-				done_count = len([v for v in statuses.values() if v == "Succeeded"])
+				done_count = len([s for s in statuses if s['result_id'] is not None]) 
 				percent_done = done_count / total
 				if (raw==True):
 					return percent_done
@@ -3719,74 +3740,41 @@ class Batch(BaseModel):
 				sleep(loop_delay)
 
 
-	def statuses_to_pandas(id:int, internal_call:bool=False):
-		batch = Batch.get_by_id(id)
-		jobs = list(batch.jobs)
-		statuses = [] #whereas poll_statuses is a dict.
-		for j in jobs:
-			status = {"job_id":j.id, "status": j.status}
-			statuses.append(status)
-		df = pd.DataFrame.from_records(statuses, columns=['job_id','status'])
-		if internal_call:
-			return df
-		else:
-			return df.style.hide_index()
-
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
 		batch = Batch.get_by_id(id)
-		foldset = batch.foldset
-		# For the sake of resumed Batches, we want succeeded Jobs to be fetched first so that the % done includes them.
-		jobs = Job.select().join(Batch).where(Batch.id == batch.id).order_by(Job.status.desc())
-		repeat_count = batch.repeat_count
-
-		repeated_jobs = []
-		for i in range(repeat_count):
-			for j in jobs:
-				# `repeat_index` will be used as an attribute of each Result.
-				job_dict = {"job":j, "repeat_index":i}
-				repeated_jobs.append(job_dict)
-
-		statuses = Batch.poll_statuses(id=batch.id)
-		all_succeeded = all(i == "Succeeded" for i in statuses.values())
-		if (all_succeeded):
-			print("\nAll jobs have been completed.\n")
-		elif (not (all_succeeded) and ("Succeeded" in statuses.values())):
-			print("\nResuming jobs...\n")
-
-		statuses = Batch.poll_statuses(id)
-		all_not_started = (set(statuses.values()) == {'Not yet started'})
-		if (all_not_started):
-			Job.update(status="Queued").where(Job.batch==id).execute()
-
-		proc_name = "aiqc_batch_" + str(batch.id)
-		proc_names = [p.name for p in multiprocessing.active_children()]
-		if (proc_name in proc_names):
-			raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
-		
-		
-		if (in_background==True):			
-			"""
-			- In 3.8, the default `multiprocessing.set_start_method` changed from 'fork' to 'spawn' for macOS.
-			- In 3.7, 'fork' was making all of my variables available to the `Process`.
-			- However, now I have to pass them in as arguments because it switched to 'fork'.
-			- This is actually a good thing because 'fork' is not supported on Windows.
-			"""
-			proc = multiprocessing.Process(
-				target = execute_jobs
-				, name = proc_name
-				, args = (repeated_jobs, verbose,) #Needs trailing comma.
-			)
-			proc.start()
-		elif (in_background==False):
-			for j in tqdm(
-				repeated_jobs
-				, desc = "🔮 Training Models 🔮"
-				, ncols = 100
-			):
-				job = j['job']
-				repeat_index = j['repeat_index']
-				job.run(verbose=verbose, repeat_index=repeat_index)
-			os.system("say Model training completed")
+		# Quick check to make sure all results aren't already complete.
+		run_count = batch.run_count
+		result_count = Result.select().join(Job).join(Batch).where(
+			Batch.id == batch.id).count()
+		if (run_count == result_count):
+			print("\nAll Jobs have been completed.\n")
+		else:
+			if (run_count > result_count > 0):
+				print("\nResuming Jobs...\n")
+			job_statuses = Batch.poll_statuses(id)
+			
+			if (in_background==True):
+				proc_name = "aiqc_batch_" + str(batch.id)
+				proc_names = [p.name for p in multiprocessing.active_children()]
+				if (proc_name in proc_names):
+					raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
+				
+				# See notes at top of file about 'fork' vs 'spawn'
+				proc = multiprocessing.Process(
+					target = execute_jobs
+					, name = proc_name
+					, args = (job_statuses, verbose,) #Needs trailing comma.
+				)
+				proc.start()
+			elif (in_background==False):
+				for j in tqdm(
+					job_statuses
+					, desc = "🔮 Training Models 🔮"
+					, ncols = 100
+				):
+					if (j['result_id'] is None):
+						Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
+				os.system("say Model training completed")
 
 
 	def stop_jobs(id:int):
@@ -4121,367 +4109,352 @@ class Job(BaseModel):
 		"""
 		time_started = datetime.now()
 		j = Job.get_by_id(id)
+		if verbose:
+			print(f"\nJob #{j.id} starting...")
+		algorithm = j.batch.algorithm
+		analysis_type = algorithm.analysis_type
+		hide_test = j.batch.hide_test
+		splitset = j.batch.splitset
+		encoderset = j.batch.encoderset
+		hyperparamcombo = j.hyperparamcombo
+		fold = j.fold
 
-		# With the addition of `repeat_count`, the incoming request is for a specific repeat of the Job.
-		matching_results = Result.select().join(Job).where(
-			Job.id==id, Result.repeat_index==repeat_index
-		)
-
-		if (j.status == "Succeeded"):
-			if verbose:
-				print(f"\nSkipping <Job.id{j.id}> as is has already succeeded.\n")
-			return j
-		elif (len(matching_results) > 0):
-			if verbose:
-				print(f"\nSkipping <repeat_index:{repeat_index}> of <Job.id:{j.id}> as it already has a Result.\n")
-			return j
-		elif (len(matching_results) == 0):
-			if verbose:
-				print(f"\nJob #{j.id} starting...")
-			algorithm = j.batch.algorithm
-			analysis_type = algorithm.analysis_type
-			hide_test = j.batch.hide_test
-			splitset = j.batch.splitset
-			encoderset = j.batch.encoderset
-			hyperparamcombo = j.hyperparamcombo
-			fold = j.fold
-
-			"""
-			1. Figure out which splits the model needs to be trained and predicted against. 
-			- Unlike a Batch, each Job can have a different fold.
-			- The `key_*` variables dynamically determine which splits to use during model_training.
-			  It is being intentionally overwritten as more complex validations/ training splits are introduced.
-			"""
-			samples = {}
-			if (splitset.supervision == "unsupervised"):
-				samples['train'] = splitset.to_numpy(
-					splits = ['train']
-					, include_label = False
-				)['train']
-				key_train = "train"
+		"""
+		1. Figure out which splits the model needs to be trained and predicted against. 
+		- Unlike a Batch, each Job can have a different fold.
+		- The `key_*` variables dynamically determine which splits to use during model_training.
+		  It is being intentionally overwritten as more complex validations/ training splits are introduced.
+		"""
+		samples = {}
+		if (splitset.supervision == "unsupervised"):
+			samples['train'] = splitset.to_numpy(
+				splits = ['train']
+				, include_label = False
+			)['train']
+			key_train = "train"
+			key_evaluation = None
+		elif (splitset.supervision == "supervised"):
+			if (hide_test == False):
+				samples['test'] = splitset.to_numpy(splits=['test'])['test']
+				key_evaluation = 'test'
+			elif (hide_test == True):
 				key_evaluation = None
-			elif (splitset.supervision == "supervised"):
-				if (hide_test == False):
-					samples['test'] = splitset.to_numpy(splits=['test'])['test']
-					key_evaluation = 'test'
-				elif (hide_test == True):
-					key_evaluation = None
+			
+			if (splitset.has_validation):
+				samples['validation'] = splitset.to_numpy(splits=['validation'])['validation']
+				key_evaluation = 'validation'
 				
-				if (splitset.has_validation):
-					samples['validation'] = splitset.to_numpy(splits=['validation'])['validation']
-					key_evaluation = 'validation'
-					
-				if (fold is not None):
-					foldset = fold.foldset
-					fold_index = fold.fold_index
-					fold_samples_np = foldset.to_numpy(fold_index=fold_index)[fold_index]
-					samples['folds_train_combined'] = fold_samples_np['folds_train_combined']
-					samples['fold_validation'] = fold_samples_np['fold_validation']
-					
-					key_train = "folds_train_combined"
-					key_evaluation = "fold_validation"
-				elif (fold is None):
-					samples['train'] = splitset.to_numpy(splits=['train'])['train']
-					key_train = "train"
+			if (fold is not None):
+				foldset = fold.foldset
+				fold_index = fold.fold_index
+				fold_samples_np = foldset.to_numpy(fold_index=fold_index)[fold_index]
+				samples['folds_train_combined'] = fold_samples_np['folds_train_combined']
+				samples['fold_validation'] = fold_samples_np['fold_validation']
+				
+				key_train = "folds_train_combined"
+				key_evaluation = "fold_validation"
+			elif (fold is None):
+				samples['train'] = splitset.to_numpy(splits=['train'])['train']
+				key_train = "train"
 
-			# 2. Encode the labels and features.
-			# encoding happens prior to training the model.
-			# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
-			if (encoderset is not None):                
-				# 2a1. Fit labels.
-				if (len(encoderset.labelcoders) == 1):
-					labelcoder = encoderset.labelcoders[0]
-					preproc = labelcoder.sklearn_preprocess
-					# All label columns are always used in encoding.
+		# 2. Encode the labels and features.
+		# encoding happens prior to training the model.
+		# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
+		if (encoderset is not None):                
+			# 2a1. Fit labels.
+			if (len(encoderset.labelcoders) == 1):
+				labelcoder = encoderset.labelcoders[0]
+				preproc = labelcoder.sklearn_preprocess
+				# All label columns are always used in encoding.
 
-					# Fit to either (train split/fold) or (all splits/folds).
-					if (labelcoder.only_fit_train == True):
-						fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-							sklearn_preprocess = preproc
-							, samples_to_fit = samples[key_train]['labels']
-						)
-					elif (labelcoder.only_fit_train == False):
-						# Optimize. Duplicate fetch of the data.
-						fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-							sklearn_preprocess = preproc
-							, samples_to_fit = splitset.label.to_numpy()
-						)
-					# 2a2. Transform labels.
-					# Once the fits are applied, perform the transform on the rest of the splits.
-					for split, split_data in samples.items():
-						samples[split]['labels'] = Labelcoder.transform_dynamicDimensions(
-							fitted_encoders = fitted_encoders
-							, encoding_dimension = encoding_dimension
-							, samples_to_transform = split_data['labels']
-						)
+				# Fit to either (train split/fold) or (all splits/folds).
+				if (labelcoder.only_fit_train == True):
+					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+						sklearn_preprocess = preproc
+						, samples_to_fit = samples[key_train]['labels']
+					)
+				elif (labelcoder.only_fit_train == False):
+					# Optimize. Duplicate fetch of the data.
+					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+						sklearn_preprocess = preproc
+						, samples_to_fit = splitset.label.to_numpy()
+					)
+				# 2a2. Transform labels.
+				# Once the fits are applied, perform the transform on the rest of the splits.
+				for split, split_data in samples.items():
+					samples[split]['labels'] = Labelcoder.transform_dynamicDimensions(
+						fitted_encoders = fitted_encoders
+						, encoding_dimension = encoding_dimension
+						, samples_to_transform = split_data['labels']
+					)
 
-				# 2b1. Fit features.
-				# Challenge here is selecting specific columns.
-				featurecoders = list(encoderset.featurecoders)
-				if (len(featurecoders) == 0):
-					pass
-				elif (len(featurecoders) > 0):
-					# Drop the existing data because we need to get column-specific.
-					# Each encoder is going to concatenate its features into those empty values.
-					for split in samples.keys():
-						samples[split]['features'] = None
+			# 2b1. Fit features.
+			# Challenge here is selecting specific columns.
+			featurecoders = list(encoderset.featurecoders)
+			if (len(featurecoders) == 0):
+				pass
+			elif (len(featurecoders) > 0):
+				# Drop the existing data because we need to get column-specific.
+				# Each encoder is going to concatenate its features into those empty values.
+				for split in samples.keys():
+					samples[split]['features'] = None
 
-					for featurecoder in featurecoders:
-						preproc = featurecoder.sklearn_preprocess
-						# Only encode these columns.
-						matching_columns = featurecoder.matching_columns
+				for featurecoder in featurecoders:
+					preproc = featurecoder.sklearn_preprocess
+					# Only encode these columns.
+					matching_columns = featurecoder.matching_columns
 
-						# Figure out which samples to fit against.
-						if (featurecoder.only_fit_train == True):
-							if (fold is None):
-								samples_to_fit = splitset.to_numpy(
-									splits = ['train']
-									, include_label = False
-									, feature_columns = matching_columns
-								)['train']['features']
-							elif (fold is not None):
-								samples_to_fit = foldset.to_numpy(
-									fold_index = fold_index
-									, fold_names = ['folds_train_combined']
-									, include_label = False
-									, feature_columns = matching_columns
-								)[fold_index]['folds_train_combined']['features']
-							
-						elif (featurecoder.only_fit_train == False):
-							# Doesn't matter if folded, use all samples.
-							samples_to_fit = splitset.featureset.to_numpy(
-								columns = matching_columns
-							)
-
-						fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-							sklearn_preprocess = preproc
-							, samples_to_fit = samples_to_fit
-						)
-						del samples_to_fit
-
+					# Figure out which samples to fit against.
+					if (featurecoder.only_fit_train == True):
+						if (fold is None):
+							samples_to_fit = splitset.to_numpy(
+								splits = ['train']
+								, include_label = False
+								, feature_columns = matching_columns
+							)['train']['features']
+						elif (fold is not None):
+							samples_to_fit = foldset.to_numpy(
+								fold_index = fold_index
+								, fold_names = ['folds_train_combined']
+								, include_label = False
+								, feature_columns = matching_columns
+							)[fold_index]['folds_train_combined']['features']
 						
-						#2b2. Transform features. Populate `encoded_features` dict.
-						for split in samples.keys():
+					elif (featurecoder.only_fit_train == False):
+						# Doesn't matter if folded, use all samples.
+						samples_to_fit = splitset.featureset.to_numpy(
+							columns = matching_columns
+						)
 
-							# Figure out which samples to encode.
-							if ("fold" in split):
-								samples_to_encode = foldset.to_numpy(
-									fold_index = fold_index
-									, fold_names = [split]
-									, include_label = False
-									, feature_columns = matching_columns
-								)[fold_index][split]['features']#<-- pay attention
+					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+						sklearn_preprocess = preproc
+						, samples_to_fit = samples_to_fit
+					)
+					del samples_to_fit
 
-							elif ("fold" not in split):
-								samples_to_encode = splitset.to_numpy(
-									splits = [split]
-									, include_label = False
-									, feature_columns = matching_columns
-								)[split]['features']
+					
+					#2b2. Transform features. Populate `encoded_features` dict.
+					for split in samples.keys():
 
-							if (featurecoder.featurecoder_index == 0):
-							# Nothing to concat with, so just overwite the None value.
-								samples[split]['features'] = Labelcoder.transform_dynamicDimensions(
-									fitted_encoders = fitted_encoders
-									, encoding_dimension = encoding_dimension
-									, samples_to_transform = samples_to_encode
-								)
-							elif (featurecoder.featurecoder_index > 0):
-							# Concatenate w previously encoded features.
-								samples_to_encode = Labelcoder.transform_dynamicDimensions(
-									fitted_encoders = fitted_encoders
-									, encoding_dimension = encoding_dimension
-									, samples_to_transform = samples_to_encode
-								)
-								samples[split]['features'] = np.concatenate(
-									(samples[split]['features'], samples_to_encode)
-									, axis = 1
-								)
-								del samples_to_encode
+						# Figure out which samples to encode.
+						if ("fold" in split):
+							samples_to_encode = foldset.to_numpy(
+								fold_index = fold_index
+								, fold_names = [split]
+								, include_label = False
+								, feature_columns = matching_columns
+							)[fold_index][split]['features']#<-- pay attention
 
-					# After all featurecoders run, merge in leftover, unencoded columns.
-					leftover_columns = featurecoders[-1].leftover_columns
-					if (len(leftover_columns) == 0):
-						pass
-					elif (len(leftover_columns) > 0):
-						for split in samples.keys():
-							if ("fold" in split):
-								leftover_features = foldset.to_numpy(
-									fold_index = fold_index
-									, fold_names = [split]
-									, include_label = False
-									, feature_columns = leftover_columns
-								)[fold_index][split]['features']
-							elif ("fold" not in split):
-								leftover_features = splitset.to_numpy(
-									splits = [split]
-									, include_label = False
-									, feature_columns = leftover_columns
-								)[split]['features']
+						elif ("fold" not in split):
+							samples_to_encode = splitset.to_numpy(
+								splits = [split]
+								, include_label = False
+								, feature_columns = matching_columns
+							)[split]['features']
+
+						if (featurecoder.featurecoder_index == 0):
+						# Nothing to concat with, so just overwite the None value.
+							samples[split]['features'] = Labelcoder.transform_dynamicDimensions(
+								fitted_encoders = fitted_encoders
+								, encoding_dimension = encoding_dimension
+								, samples_to_transform = samples_to_encode
+							)
+						elif (featurecoder.featurecoder_index > 0):
+						# Concatenate w previously encoded features.
+							samples_to_encode = Labelcoder.transform_dynamicDimensions(
+								fitted_encoders = fitted_encoders
+								, encoding_dimension = encoding_dimension
+								, samples_to_transform = samples_to_encode
+							)
 							samples[split]['features'] = np.concatenate(
-								(samples[split]['features'], leftover_features)
+								(samples[split]['features'], samples_to_encode)
 								, axis = 1
 							)
+							del samples_to_encode
 
-			# 3. Build and Train model.
-			# Now that encoding has taken place, we can determine the shapes.
-			first_key = next(iter(samples))
-			features_shape = samples[first_key]['features'][0].shape
-			label_shape = samples[first_key]['labels'][0].shape
+				# After all featurecoders run, merge in leftover, unencoded columns.
+				leftover_columns = featurecoders[-1].leftover_columns
+				if (len(leftover_columns) == 0):
+					pass
+				elif (len(leftover_columns) > 0):
+					for split in samples.keys():
+						if ("fold" in split):
+							leftover_features = foldset.to_numpy(
+								fold_index = fold_index
+								, fold_names = [split]
+								, include_label = False
+								, feature_columns = leftover_columns
+							)[fold_index][split]['features']
+						elif ("fold" not in split):
+							leftover_features = splitset.to_numpy(
+								splits = [split]
+								, include_label = False
+								, feature_columns = leftover_columns
+							)[split]['features']
+						samples[split]['features'] = np.concatenate(
+							(samples[split]['features'], leftover_features)
+							, axis = 1
+						)
 
-			if (hyperparamcombo is not None):
-				hyperparameters = hyperparamcombo.hyperparameters
-			elif (hyperparamcombo is None):
-				hyperparameters = None
-			
-			if (splitset.supervision == "unsupervised"):
-				model = algorithm.function_model_build(
-					features_shape,
-					**hyperparameters
-				)
-			elif (splitset.supervision == "supervised"):
-				model = algorithm.function_model_build(
-					features_shape, label_shape,
-					**hyperparameters
-				)
+		# 3. Build and Train model.
+		# Now that encoding has taken place, we can determine the shapes.
+		first_key = next(iter(samples))
+		features_shape = samples[first_key]['features'][0].shape
+		label_shape = samples[first_key]['labels'][0].shape
 
-			if (key_evaluation is not None):
-				model = algorithm.function_model_train(
-					model = model
-					, samples_train = samples[key_train]
-					, samples_evaluate = samples[key_evaluation]
-					, **hyperparameters
-				)
-			elif (key_evaluation is None):
-				model = algorithm.function_model_train(
-					model = model
-					, samples_train = samples[key_train]
-					, samples_evaluate = None
-					, **hyperparameters
-				)
-
-			if (algorithm.library.lower() == "keras"):
-				# If blank this value is `{}` not None.
-				history = model.history.history
-				"""
-				- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
-				  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
-				  https://github.com/keras-team/keras/issues/14411
-				- So let's switch to a real file in appdirs. This approach will generalize better.
-				- Assuming `model.save()` will trigger OS-specific h5 drivers.
-				"""
-				# Write it.
-				temp_file_name = f"{app_dir}temp_keras_model"
-				model.save(
-					temp_file_name
-					, include_optimizer = True
-					, save_format = 'h5'
-				)
-				# Fetch the bytes ('rb': read binary)
-				with open(temp_file_name, 'rb') as file:
-					model_bytes = file.read()
-				os.remove(temp_file_name)
-
-			# 4. Fetch samples for evaluation.
-			predictions = {}
-			probabilities = {}
-			metrics = {}
-			plot_data = {}
-
-			if ("classification" in analysis_type):
-				for split, data in samples.items():
-					preds, probs = algorithm.function_model_predict(model, data)
-					predictions[split] = preds
-					probabilities[split] = probs
-
-					metrics[split] = Job.split_classification_metrics(
-						data['labels'], 
-						preds, probs, analysis_type
-					)
-					metrics[split]['loss'] = algorithm.function_model_loss(model, data)
-					plot_data[split] = Job.split_classification_plots(
-						data['labels'], 
-						preds, probs, analysis_type
-					) 
-			elif analysis_type == "regression":
-				probabilities = None
-				for split, data in samples.items():
-					preds = algorithm.function_model_predict(model, data)
-					predictions[split] = preds
-					metrics[split] = Job.split_regression_metrics(
-						data['labels'], preds
-					)
-					metrics[split]['loss'] = algorithm.function_model_loss(model, data)
-					plot_data = None
-
-			# Alphabetize metrics dictionary by key.
-			for k,v in metrics.items():
-				metrics[k] = dict(natsorted(v.items()))
-			# Aggregate metrics across splits (e.g. mean, pstdev).
-			metric_names = list(list(metrics.values())[0].keys())
-			metrics_aggregate = {}
-			for metric in metric_names:
-				split_values = []
-				for split, split_metrics in metrics.items():
-					value = split_metrics[metric]
-					split_values.append(value)
-
-				mean = statistics.mean(split_values)
-				median = statistics.median(split_values)
-				pstdev = statistics.pstdev(split_values)
-				minimum = min(split_values)
-				maximum = max(split_values)
-
-				metrics_aggregate[metric] = {
-					"mean":mean, "median":median, "pstdev":pstdev, 
-					"minimum":minimum, "maximum":maximum 
-				}
-			time_succeeded = datetime.now()
-			time_duration = (time_succeeded - time_started).seconds
-
-			r = Result.create(
-				time_started = time_started
-				, time_succeeded = time_succeeded
-				, time_duration = time_duration
-				, model_file = model_bytes
-				, history = history
-				, predictions = predictions
-				, probabilities = probabilities
-				, metrics = metrics
-				, metrics_aggregate = metrics_aggregate
-				, plot_data = plot_data
-				, job = j
-				, repeat_index = repeat_index
+		if (hyperparamcombo is not None):
+			hyperparameters = hyperparamcombo.hyperparameters
+		elif (hyperparamcombo is None):
+			hyperparameters = None
+		
+		if (splitset.supervision == "unsupervised"):
+			model = algorithm.function_model_build(
+				features_shape,
+				**hyperparameters
+			)
+		elif (splitset.supervision == "supervised"):
+			model = algorithm.function_model_build(
+				features_shape, label_shape,
+				**hyperparameters
 			)
 
-			# Check if all of the repeats are done.
-			job_results = len(list(j.results))
-			if (job_results == j.repeat_count):
-				Job.update(status="Succeeded").where(Job.id==j.id).execute()
+		if (key_evaluation is not None):
+			model = algorithm.function_model_train(
+				model = model
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples[key_evaluation]
+				, **hyperparameters
+			)
+		elif (key_evaluation is None):
+			model = algorithm.function_model_train(
+				model = model
+				, samples_train = samples[key_train]
+				, samples_evaluate = None
+				, **hyperparameters
+			)
 
-			# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
-			del samples
-			return j
+		if (algorithm.library.lower() == "keras"):
+			# If blank this value is `{}` not None.
+			history = model.history.history
+			"""
+			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
+			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
+			  https://github.com/keras-team/keras/issues/14411
+			- So let's switch to a real file in appdirs. This approach will generalize better.
+			- Assuming `model.save()` will trigger OS-specific h5 drivers.
+			"""
+			# Write it.
+			temp_file_name = f"{app_dir}temp_keras_model"
+			model.save(
+				temp_file_name
+				, include_optimizer = True
+				, save_format = 'h5'
+			)
+			# Fetch the bytes ('rb': read binary)
+			with open(temp_file_name, 'rb') as file:
+				model_bytes = file.read()
+			os.remove(temp_file_name)
+
+		# 4. Fetch samples for evaluation.
+		predictions = {}
+		probabilities = {}
+		metrics = {}
+		plot_data = {}
+
+		if ("classification" in analysis_type):
+			for split, data in samples.items():
+				preds, probs = algorithm.function_model_predict(model, data)
+				predictions[split] = preds
+				probabilities[split] = probs
+
+				metrics[split] = Job.split_classification_metrics(
+					data['labels'], 
+					preds, probs, analysis_type
+				)
+				metrics[split]['loss'] = algorithm.function_model_loss(model, data)
+				plot_data[split] = Job.split_classification_plots(
+					data['labels'], 
+					preds, probs, analysis_type
+				) 
+		elif analysis_type == "regression":
+			probabilities = None
+			for split, data in samples.items():
+				preds = algorithm.function_model_predict(model, data)
+				predictions[split] = preds
+				metrics[split] = Job.split_regression_metrics(
+					data['labels'], preds
+				)
+				metrics[split]['loss'] = algorithm.function_model_loss(model, data)
+				plot_data = None
+
+		# Alphabetize metrics dictionary by key.
+		for k,v in metrics.items():
+			metrics[k] = dict(natsorted(v.items()))
+		# Aggregate metrics across splits (e.g. mean, pstdev).
+		metric_names = list(list(metrics.values())[0].keys())
+		metrics_aggregate = {}
+		for metric in metric_names:
+			split_values = []
+			for split, split_metrics in metrics.items():
+				value = split_metrics[metric]
+				split_values.append(value)
+
+			mean = statistics.mean(split_values)
+			median = statistics.median(split_values)
+			pstdev = statistics.pstdev(split_values)
+			minimum = min(split_values)
+			maximum = max(split_values)
+
+			metrics_aggregate[metric] = {
+				"mean":mean, "median":median, "pstdev":pstdev, 
+				"minimum":minimum, "maximum":maximum 
+			}
+		time_succeeded = datetime.now()
+		time_duration = (time_succeeded - time_started).seconds
+
+		r = Result.create(
+			time_started = time_started
+			, time_succeeded = time_succeeded
+			, time_duration = time_duration
+			, model_file = model_bytes
+			, history = history
+			, predictions = predictions
+			, probabilities = probabilities
+			, metrics = metrics
+			, metrics_aggregate = metrics_aggregate
+			, plot_data = plot_data
+			, job = j
+			, repeat_index = repeat_index
+		)
+
+		# Check if all of the repeats are done.
+		job_results = len(list(j.results))
+		if (job_results == j.repeat_count):
+			Job.update(status="Succeeded").where(Job.id==j.id).execute()
+
+		# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
+		del samples
+		return j
 
 
-def execute_jobs(repeated_jobs:list, verbose:bool=False):  
+def execute_jobs(job_statuses:list, verbose:bool=False):  
 	"""
 	- This needs to be a top level function, otherwise you get pickle attribute error.
 	- Alternatively, you can put this is a separate submodule file, and call it via
 	  `import aiqc.execute_jobs.execute_jobs`
 	- Tried `mp.Manager` and `mp.Value` for shared variable for progress, but gave up after
 	  a full day of troubleshooting.
+	- Also you have to get a separate database connection for the separate process.
 	"""
 	BaseModel._meta.database.close()
 	BaseModel._meta.database = get_db()
 	for j in tqdm(
-		repeated_jobs
+		job_statuses
 		, desc = "🔮 Training Models 🔮"
 		, ncols = 100
 	):
-		job = j['job']
-		repeat_index = j['repeat_index']
-		job.run(verbose=verbose, repeat_index=repeat_index)
+		if (j['result_id'] is None):
+			Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 
 
 class Result(BaseModel):
