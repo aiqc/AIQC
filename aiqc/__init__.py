@@ -3216,7 +3216,7 @@ class Hyperparamcombo(BaseModel):
 			df = pd.DataFrame.from_records(params, columns=['param','value'])
 			return df
 		elif (as_pandas==False):
-			return params
+			return hyperparameters
 
 
 
