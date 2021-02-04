@@ -3512,7 +3512,6 @@ class Plot:
 
 
 class Batch(BaseModel):
-	status = CharField()
 	repeat_count = IntegerField()
 	run_count = IntegerField()
 	hide_test = BooleanField()
@@ -3625,7 +3624,6 @@ class Batch(BaseModel):
 		run_count = len(combos) * len(folds) * repeat_count
 
 		b = Batch.create(
-			status = "Not yet started"
 			, run_count = run_count
 			, repeat_count = repeat_count
 			, algorithm = algorithm
@@ -3650,7 +3648,6 @@ class Batch(BaseModel):
 			try:
 				for f in folds:
 					Job.create(
-						status = "Not yet started"
 						, batch = b
 						, hyperparamcombo = c
 						, fold = f
@@ -3747,7 +3744,7 @@ class Batch(BaseModel):
 		result_count = Result.select().join(Job).join(Batch).where(
 			Batch.id == batch.id).count()
 		if (run_count == result_count):
-			print("\nAll Jobs have been completed.\n")
+			print("\nAll Jobs have already completed.\n")
 		else:
 			if (run_count > result_count > 0):
 				print("\nResuming Jobs...\n")
@@ -4031,7 +4028,6 @@ class Job(BaseModel):
 	- Gets its Algorithm through the Batch.
 	- Saves its Model to a Result.
 	"""
-	status = CharField()
 	repeat_count = IntegerField()
 	#log = CharField() #record failures
 
@@ -4426,11 +4422,6 @@ class Job(BaseModel):
 			, job = j
 			, repeat_index = repeat_index
 		)
-
-		# Check if all of the repeats are done.
-		job_results = len(list(j.results))
-		if (job_results == j.repeat_count):
-			Job.update(status="Succeeded").where(Job.id==j.id).execute()
 
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
 		del samples
