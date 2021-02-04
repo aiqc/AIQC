@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="1.0.66",
+    version="1.0.70",
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
@@ -22,21 +22,21 @@ setuptools.setup(
     install_requires=[
         # Mandatory versions:
         'tensorflow>=2.4.1'#tensorflow.org/install/pip
-        'keras>=2.4.3',#https://docs.floydhub.com/guides/environments/
-        'h5py~=2.10.0',#(tf2.4.1 req h5py~=2.10.0)
+        , 'keras>=2.4.3'#https://docs.floydhub.com/guides/environments/
+        , 'h5py~=2.10.0'#(tf2.4.1 req h5py~=2.10.0)
         # Frameworks:
-        'peewee>=3.14.0',#Just pip show'ed where this was at during aiqc 1.0.0
-        'scikit-learn>=0.23.2',#Just pip show'ed where this was at during aiqc 1.0.0
-        'pandas',# Heavily depended on so other packages will install it.
-        'pillow',
-        'numpy',# Heavily depended on so other packages will install it.
-        'pyarrow>=2.0.0',
-        'plotly>=4.14.3',
+        , 'peewee>=3.14.0'#Just pip show'ed where this was at during aiqc 1.0.0
+        , 'scikit-learn>=0.23.2'#Just pip show'ed where this was at during aiqc 1.0.0
+        , 'pandas'# Heavily depended on so other packages will install it.
+        , 'pillow'
+        , 'numpy'# Heavily depended on so other packages will install it.
+        , 'pyarrow>=2.0.0'
+        , 'plotly>=4.14.3'
         # Programmatic:
-        'appdirs',
-        'natsort',
-        'tqdm',
-        'validators'
+        , 'appdirs'
+        , 'natsort'
+        , 'tqdm'
+        , 'validators'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

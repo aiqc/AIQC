@@ -1,4 +1,4 @@
-import os, sys, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators
+import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators
 from importlib import reload
 from datetime import datetime
 from time import sleep
@@ -48,6 +48,7 @@ https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-method
 - Update: now MetricsCutoff is not working in `fork` mode.
 - Wrote the `poll_progress` func for 'spawn' situations.
 - If everything hits the fan, `run_jobs(in_background=False)` for a normal for loop.
+- Tried `concurrent.futures` but it only works with `.py` from command line.
 """
 if (os.name != 'nt'):
 	# If `force=False`, then `reload(aiqc)` triggers `RuntimeError: context already set`.
@@ -217,8 +218,18 @@ def create_config():
 		config_exists = os.path.exists(default_config_path)
 		if not config_exists:
 			aiqc_config = {
-				"config_path": default_config_path,
-				"db_path": default_db_path,
+				"created_at": str(datetime.now())
+				, "config_path": default_config_path
+				, "db_path": default_db_path
+				, "sys.version": sys.version
+				, "platform.python_implementation()": platform.python_implementation()
+				, "sys.prefix": sys.prefix
+				, "os.name": os.name
+				, "platform.version()": platform.version()
+				, "platform.java_ver()": platform.java_ver()
+				, "platform.win32_ver()": platform.win32_ver()
+				, "platform.libc_ver()": platform.libc_ver()
+				, "platform.mac_ver()": platform.mac_ver()
 			}
 			
 			try:
@@ -2978,7 +2989,8 @@ class Featurecoder(BaseModel):
 
 class Algorithm(BaseModel):
 	"""
-	# Remember, pytorch and mxnet handle optimizer/loss outside the model definition as part of the train.
+	- Remember, pytorch and mxnet handle optimizer/loss outside the model definition as part of the train.
+	- Could do a `.py` file as an alternative to Pickle.
 	"""
 	library = CharField()
 	analysis_type = CharField()#classification_multi, classification_binary, regression, clustering.
@@ -3624,7 +3636,7 @@ class Batch(BaseModel):
 		run_count = len(combos) * len(folds) * repeat_count
 
 		b = Batch.create(
-			, run_count = run_count
+			run_count = run_count
 			, repeat_count = repeat_count
 			, algorithm = algorithm
 			, splitset = splitset
@@ -3648,7 +3660,7 @@ class Batch(BaseModel):
 			try:
 				for f in folds:
 					Job.create(
-						, batch = b
+						batch = b
 						, hyperparamcombo = c
 						, fold = f
 						, repeat_count = repeat_count
@@ -3754,7 +3766,10 @@ class Batch(BaseModel):
 				proc_name = "aiqc_batch_" + str(batch.id)
 				proc_names = [p.name for p in multiprocessing.active_children()]
 				if (proc_name in proc_names):
-					raise ValueError(f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running.\n")
+					raise ValueError(
+						f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running."
+						f"\nIf need be, you can kill the existing Process with `batch.stop_jobs()`.\n"
+					)
 				
 				# See notes at top of file about 'fork' vs 'spawn'
 				proc = multiprocessing.Process(
@@ -3763,6 +3778,7 @@ class Batch(BaseModel):
 					, args = (job_statuses, verbose,) #Needs trailing comma.
 				)
 				proc.start()
+				# proc terminates when `execute_jobs` finishes.
 			elif (in_background==False):
 				for j in tqdm(
 					job_statuses
@@ -4107,11 +4123,12 @@ class Job(BaseModel):
 		j = Job.get_by_id(id)
 		if verbose:
 			print(f"\nJob #{j.id} starting...")
-		algorithm = j.batch.algorithm
+		batch = j.batch
+		algorithm = batch.algorithm
 		analysis_type = algorithm.analysis_type
-		hide_test = j.batch.hide_test
-		splitset = j.batch.splitset
-		encoderset = j.batch.encoderset
+		hide_test = batch.hide_test
+		splitset = batch.splitset
+		encoderset = batch.encoderset
 		hyperparamcombo = j.hyperparamcombo
 		fold = j.fold
 
@@ -4407,6 +4424,17 @@ class Job(BaseModel):
 			}
 		time_succeeded = datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
+
+		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
+		matching_result = Result.select().join(Job).join(Batch).where(
+			Batch.id==batch.id, Job.id==j.id, Result.repeat_index==repeat_index)
+		if (len(matching_result) > 0):
+			raise ValueError(
+				f"\nYikes - Duplicate run detected:" \
+				f"\nBatch<{batch.id}>, Job<{j.id}>, Job.repeat_index<{repeat_index}>.\n" \
+				f"\nCancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing." \
+				f"\nNo action needed, the other instance will continue running to completion.\n"
+			)
 
 		r = Result.create(
 			time_started = time_started
