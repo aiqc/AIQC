@@ -91,7 +91,7 @@ def list_datums(format:str=None):
 			, 'analysis_type': 'classification_binary'
 			, 'label': 'status'
 			, 'label_classes': 2
-			, 'features': '1 color x 160 wide x 120 tall'
+			, 'features': '1 color x 160 tall x 120 wide'
 			, 'samples': 80
 			, 'description': 'csv acts as label and manifest of image urls.'
 			, 'location': 'remote'
