@@ -123,15 +123,15 @@ Compatibility Matrix
 ====================
 
 .. csv-table::
-  :header: Deep Learning, Keras, PyTorch, MXNet
+  :header: Deep Learning, Keras, PyTorch
   :align: center
   :widths: 40, 8, 8, 8
 
-  Classification (binary), ✓, →, →
-  Classification (multi), ✓, →, →
-  Regression, ✓, →, →
-  Generation, →, →, →
-  Reinforcement, TBD, TBD, TBD
+  Classification (binary), ✓, →
+  Classification (multi), ✓, →
+  Regression, ✓, →
+  Generation, →, →
+  Reinforcement, TBD, TBD
 
 
 * ✓  |  already supported.
@@ -149,7 +149,7 @@ Compatibility Matrix
   Encoding, ✓, TBD, → 
   Dimensionality reduction, →, TBD, →
   Imputation, →, →, →
-  Cleaning, →, →, →
   Anomaly/ outlier detection, →, →, →
-  Feature engineering, →, TBD, →
+  Feature selection, →, TBD, →
   Clustering/ PCA, →, →, →
+  Cleaning, →, →, →

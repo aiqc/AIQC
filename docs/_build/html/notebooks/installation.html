@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/installation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="TLDR:[1]: pip install --upgrade aiqc If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook.[2]: ..." />
+  <meta property="og:description" content="TLDR:[ ]: pip install --upgrade aiqc If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook.[2]: ..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -43,7 +43,7 @@
         <script src="../_static/doctools.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha512-VCK7oF67GXNc+J7zsu5o57jtxhLA75nSMHGaq8Q8TCOxDj4nMDw5dhQZvm9Cd9RN+3zgcodqbKcRc9gyPP8a2w==" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -107,7 +107,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#TLDR">TLDR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Environment">Environment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Pickle-Disclaimer">Pickle Disclaimer</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
@@ -121,6 +124,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#Create-Database-File">Create Database File</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#Config-File">Config File</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a></li>
@@ -483,7 +487,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="TLDR">
 <h2>TLDR<a class="headerlink" href="#TLDR" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -492,7 +496,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -501,6 +505,48 @@ div.rendered_html tbody tr:hover {
 <span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Welcome to AIQC.
+To get started, run `aiqc.setup()`.
+
+
+=&gt; Info - Cannot fetch database yet because it has not been configured.
+
+=&gt; Info - it appears the following folder does not exist on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
+
+=&gt; Success - created folder at file path:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Next run `aiqc.create_config()`.
+
+
+=&gt; Success - the following file path already exists on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+
+=&gt; Success - created config file for settings at path:
+/Users/layne/Library/Application Support/aiqc/config.json
+
+
+=&gt; Next run `aiqc.create_db()`.
+
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">setup()</span></code> only needs to be ran once. Going forward, just <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>. Don’t use <code class="docutils literal notranslate"><span class="pre">as</span></code> when importing.</p>
 <blockquote>
@@ -529,7 +575,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Python-Version">
 <h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline">¶</a></h3>
-<p>Requires Python 3+ (check your deep learning library’s Python requirements). Originally developed on 3.7.6 and then upgraded to 3.8.7.</p>
+<p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was originally developed on 3.7.6 and then upgraded to 3.8.7. We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing python installations and virtualenvs.</p>
 <p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is in the root of the github.com/aiqc/aiqc repository.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -550,12 +596,16 @@ div.rendered_html tbody tr:hover {
 &#39;3.8.7 (default, Jan 28 2021, 17:14:59) \n[Clang 12.0.0 (clang-1200.0.31.1)]&#39;
 </pre></div></div>
 </div>
+<div class="section" id="Pickle-Disclaimer">
+<h4>Pickle Disclaimer<a class="headerlink" href="#Pickle-Disclaimer" title="Permalink to this headline">¶</a></h4>
+<p>AIQC relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful OS/ Python information is stored in the config file at the time of creation.</p>
+</div>
 </div>
 <div class="section" id="Optional---JupyterLab-IDE">
 <h3>Optional - JupyterLab IDE<a class="headerlink" href="#Optional---JupyterLab-IDE" title="Permalink to this headline">¶</a></h3>
 <p>AIQC runs anywhere Python runs. We just like Jupyter for interactive visualization and data transformation. FYI, <em>jupyterlab</em> is not an official dependency of the AIQC package.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -565,7 +615,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>JupyterLab requires Node.js &gt;= 10. Once all extensions switch to JupyterLab 3.0 prebuilding, this will no longer be necessary.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -590,7 +640,7 @@ v14.7.0
 </div></blockquote>
 <p>If you want to render Plotly graphs withing within JupyterLab, then you need the <code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code> extension. Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -598,8 +648,8 @@ v14.7.0
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -607,16 +657,8 @@ v14.7.0
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Building jupyterlab assets (production, minimized)
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -632,24 +674,14 @@ Building jupyterlab assets (production, minimized)
 jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="o">!</span>jupyter lab build
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[LabBuildApp] JupyterLab 3.0.6
-[LabBuildApp] Building in /Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3/share/jupyter/lab
-[LabBuildApp] Building jupyterlab assets (production, minimized)
-</pre></div></div>
 </div>
 </div>
 <div class="section" id="Optional---Swap-Space-for-Failover-Memory">
@@ -661,7 +693,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <div class="section" id="AIQC-Package">
 <h2>AIQC Package<a class="headerlink" href="#AIQC-Package" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -673,14 +705,14 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <ul class="simple">
 <li><p>Be sure to include <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> when running the command above.</p>
 <ul>
-<li><p>Rarely, the command above must be ran twice.</p></li>
+<li><p>The command above must often be ran twice (PyPI bug).</p></li>
 </ul>
 </li>
 <li><p>Upgrade <code class="docutils literal notranslate"><span class="pre">pip</span></code> itself: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span></code></p></li>
 <li><p>Install<code class="docutils literal notranslate"><span class="pre">wheel</span></code> is recommended: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">wheel</span></code></p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -696,7 +728,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <h3>a) One-Line Install<a class="headerlink" href="#a)-One-Line-Install" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">setup()</span></code> method just runs the following methods in one go: <code class="docutils literal notranslate"><span class="pre">create_folder()</span></code>, <code class="docutils literal notranslate"><span class="pre">create_config()</span></code>, and <code class="docutils literal notranslate"><span class="pre">create_db()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -735,8 +767,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 /Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
 
 
-=&gt; Success - created the following tables within database:
-[&#39;algorithm&#39;, &#39;batch&#39;, &#39;dataset&#39;, &#39;encoderset&#39;, &#39;featurecoder&#39;, &#39;featureset&#39;, &#39;file&#39;, &#39;fold&#39;, &#39;foldset&#39;, &#39;hyperparamcombo&#39;, &#39;hyperparamset&#39;, &#39;image&#39;, &#39;job&#39;, &#39;jobset&#39;, &#39;label&#39;, &#39;labelcoder&#39;, &#39;result&#39;, &#39;splitset&#39;, &#39;tabular&#39;]
+💾  Success - created all database tables.  💾
 
 </pre></div></div>
 </div>
@@ -748,7 +779,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <h4>Create Config File<a class="headerlink" href="#Create-Config-File" title="Permalink to this headline">¶</a></h4>
 <p>Enter the following commands one-by-one and follow any instructions returned by the command prompt to resolve errors should they arise.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -774,7 +805,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -807,7 +838,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <p>This creates a SQLite database file that AIQC uses to reproducibly record experiments.</p>
 <p>Only now that the configuration exists can we create the database tables. After creating the config, the AIQC module should reload itself automatically. If you encounter errors, reference the Troubleshooting section below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -825,13 +856,45 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 /Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
 
 
-=&gt; Success - created the following tables within database:
-[&#39;algorithm&#39;, &#39;batch&#39;, &#39;dataset&#39;, &#39;encoderset&#39;, &#39;featurecoder&#39;, &#39;featureset&#39;, &#39;file&#39;, &#39;fold&#39;, &#39;foldset&#39;, &#39;hyperparamcombo&#39;, &#39;hyperparamset&#39;, &#39;image&#39;, &#39;job&#39;, &#39;jobset&#39;, &#39;label&#39;, &#39;labelcoder&#39;, &#39;result&#39;, &#39;splitset&#39;, &#39;tabular&#39;]
+💾  Success - created all database tables.  💾
 
 </pre></div></div>
 </div>
-<hr class="docutils" />
 </div>
+</div>
+<div class="section" id="Config-File">
+<h3>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline">¶</a></h3>
+<p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;created_at&#39;: &#39;2021-02-04 18:23:01.707030&#39;,
+ &#39;config_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/config.json&#39;,
+ &#39;db_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3&#39;,
+ &#39;sys.version&#39;: &#39;3.8.7 (default, Jan 28 2021, 17:14:59) \n[Clang 12.0.0 (clang-1200.0.31.1)]&#39;,
+ &#39;platform.python_implementation()&#39;: &#39;CPython&#39;,
+ &#39;sys.prefix&#39;: &#39;/Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3&#39;,
+ &#39;os.name&#39;: &#39;posix&#39;,
+ &#39;platform.version()&#39;: &#39;Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10 PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64&#39;,
+ &#39;platform.java_ver()&#39;: [&#39;&#39;, &#39;&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], [&#39;&#39;, &#39;&#39;, &#39;&#39;]],
+ &#39;platform.win32_ver()&#39;: [&#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;],
+ &#39;platform.libc_ver()&#39;: [&#39;&#39;, &#39;&#39;],
+ &#39;platform.mac_ver()&#39;: [&#39;10.15.6&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], &#39;x86_64&#39;]}
+</pre></div></div>
+</div>
+<hr class="docutils" />
 </div>
 </div>
 <div class="section" id="Location-of-AIQC-Files">
@@ -858,7 +921,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <h3>a) One-Liner<a class="headerlink" href="#a)-One-Liner" title="Permalink to this headline">¶</a></h3>
 <p>Both <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> and <code class="docutils literal notranslate"><span class="pre">rebuild:bool=False</span></code>, so it only does what you command it to do.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -880,8 +943,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 /Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
 
 
-=&gt; Success - created the following tables within database:
-[&#39;algorithm&#39;, &#39;batch&#39;, &#39;dataset&#39;, &#39;encoderset&#39;, &#39;featurecoder&#39;, &#39;featureset&#39;, &#39;file&#39;, &#39;fold&#39;, &#39;foldset&#39;, &#39;hyperparamcombo&#39;, &#39;hyperparamset&#39;, &#39;image&#39;, &#39;job&#39;, &#39;jobset&#39;, &#39;label&#39;, &#39;labelcoder&#39;, &#39;result&#39;, &#39;splitset&#39;, &#39;tabular&#39;]
+💾  Success - created all database tables.  💾
 
 </pre></div></div>
 </div>
@@ -889,7 +951,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <div class="section" id="b)-Or-Line-by-Line">
 <h3>b) Or Line-by-Line<a class="headerlink" href="#b)-Or-Line-by-Line" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -909,7 +971,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -927,8 +989,7 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 /Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
 
 
-=&gt; Success - created the following tables within database:
-[&#39;algorithm&#39;, &#39;batch&#39;, &#39;dataset&#39;, &#39;encoderset&#39;, &#39;featurecoder&#39;, &#39;featureset&#39;, &#39;file&#39;, &#39;fold&#39;, &#39;foldset&#39;, &#39;hyperparamcombo&#39;, &#39;hyperparamset&#39;, &#39;image&#39;, &#39;job&#39;, &#39;jobset&#39;, &#39;label&#39;, &#39;labelcoder&#39;, &#39;result&#39;, &#39;splitset&#39;, &#39;tabular&#39;]
+💾  Success - created all database tables.  💾
 
 </pre></div></div>
 </div>

@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/visualization.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Prerequisites: Plotly is used for all charts, so they are interactive (hover, toggle, zoom, etc.). Reference the Installation notebook for information about configuring Plotly. We’ve static pasted ..." />
+  <meta property="og:description" content="Prerequisites: Plotly is used for all charts, so they are interactive (hover, toggle, zoom, etc.). Reference the Installation notebook for information about configuring Plotly. However, static imag..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -43,7 +43,7 @@
         <script src="../_static/doctools.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script crossorigin="anonymous" integrity="sha512-VCK7oF67GXNc+J7zsu5o57jtxhLA75nSMHGaq8Q8TCOxDj4nMDw5dhQZvm9Cd9RN+3zgcodqbKcRc9gyPP8a2w==" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -469,7 +469,7 @@ div.rendered_html tbody tr:hover {
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for all charts, so they are interactive (hover, toggle, zoom, etc.). Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> notebook for information about configuring Plotly.</p>
 <blockquote>
-<div><p>We’ve static pasted PNGs in this notebook due to recent issues displaying plots on ReadTheDocs with nbsphinx and plotly</p>
+<div><p><em>However, static images are used in this notebook due to recent difficulty with 3rd party JS on the documentation portal.</em></p>
 </div></blockquote>
 </div>
 <div class="section" id="Overview">
@@ -588,7 +588,7 @@ No more Featurecoders can be added to this Encoderset.
                 &#39;roc_auc&#39;: 1.0}}
 </pre></div></div>
 </div>
-<p>It also contains per-epoch metrics calculated during model training.</p>
+<p>It also contains per-epoch <code class="docutils literal notranslate"><span class="pre">History</span></code> metrics calculated during model training.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
