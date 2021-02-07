@@ -43,7 +43,7 @@ Lend a hand in building the next generation of open source machine learning, bol
 
 Jump in the Slack channel in the links below to say hello. All are welcome.
 
-Machine learning is a broad space with plenty of challenges to solve. Have a look at the `Compatibility_Matrix <index.html#compatibility-matrix>`_ to see what needs to be addressed and let us know if you want to get involved. Help build something that isn't lame.
+Machine learning is a broad space with plenty of challenges to solve. Have a look at the `Compatibility Matrix <index.html#compatibility-matrix>`_ to see what needs to be addressed and let us know if you want to get involved. Help build something that isn't lame.
 
 We plan to host monthly dev jam sessions and data science lightning talks. It's more fun to hack in a group.
 
@@ -72,6 +72,9 @@ Links
 
   * - `GitHub <https://github.com/aiqc/aiqc/>`__
     - Hosts the source code. Report bugs/ suggest features.
+
+  * - `YouTube <https://www.youtube.com/watch?v=cN7d8c-3Vxc&t/>`__
+    - Video with overview, mission, and demo.
 
   * - `Slack <https://aiqc.slack.com>`__
     - Hosts the community chat.
