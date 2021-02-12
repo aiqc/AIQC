@@ -120,6 +120,7 @@ IV. Easy setup
 
 * Records experiments in a file-based SQLite database that requires no configuration.
 
+|
 
 ----
 
@@ -142,6 +143,7 @@ Libraries & Analysis
   Generation, →, →
   Reinforcement, TBD, TBD
 
+|
 
 Data Preparation
 ================
@@ -161,6 +163,7 @@ Data Preparation
   Clustering/ PCA, →, TBD, →, TBD
   Cleaning, →, →, →, →
 
+|
 
 Legend
 ^^^^^^
