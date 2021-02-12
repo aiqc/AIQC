@@ -73,7 +73,7 @@ Links
   * - `GitHub <https://github.com/aiqc/aiqc/>`__
     - Hosts the source code. Report bugs/ suggest features.
 
-  * - `YouTube <https://www.youtube.com/watch?v=cN7d8c-3Vxc&t/>`__
+  * - `YouTube <https://www.youtube.com/watch?v=cN7d8c-3Vxc&list=PLzDUt2WiohNj7MUrYL3YxoPbXjt5iDEPz/>`__
     - Video with overview, mission, and demo.
 
   * - `Slack <https://aiqc.slack.com>`__

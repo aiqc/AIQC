@@ -26,7 +26,7 @@
   notebooks/visualization
 
 
-.. image:: images/aiqc_logo_banner_controlroom.png
+.. image:: images/aiqc_logo_banner_narrow.png
   :width: 100%
   :align: center
   :alt: AIQC logo wide
@@ -42,37 +42,39 @@ Overview & Features
 
 ----
 
-Value Proposition
-=================
 * AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models without an expensive cloud backend.
 
   * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
 
   * It makes machine learning less of a black box by *reproducibly recording experiments* in a file-based database that requires no configuration.
 
-----
 
-Feature Highlights
-==================
+.. image:: images/diagram_framework.png
+  :width: 100%
+  :align: center
+  :alt: framework diagram
 
-I. Sample Preparation
-^^^^^^^^^^^^^^^^^^^^^
+|
+
+I. Leakage-free data preparation
+================================
 
 .. image:: images/pipeline_25sec_compress.gif
   :width: 100%
   :alt: pipeline.gif
 
-* Ingest flat files (csv, tsv, parquet, pandas, numpy) and images (pillow).
+* Make datasets from files (csv, parquet, pandas, numpy) & images (pillow).
 
-* Name the columns that will serve as the Labels and Featureset.
+* Name columns (include/ exclude) as the Labels and Features.
 
-* Split, cross-fold, & stratify samples with simple args (`fold_count=5`).
+* Simply split, cross-fold, & stratify samples (`fold_count=5`).
 
-* Leakage-free dtype/ column encoders applied when fetching samples.
+* Apply encoders (dtype or column-specific) when fetching samples.
 
+|
 
-II. Model Training & Hyperparameter Tuning
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+II. Batch training of models & parameters 
+=========================================
 
 .. image:: images/hyperparam_25sec_compress.gif
   :width: 100%
@@ -80,31 +82,33 @@ II. Model Training & Hyperparameter Tuning
 
 * Queue a batch of training jobs on a background process.
 
-* Dictonary of hyperparameters passed into models funcs as `**kwargs`.
+* Dictonary of hyperparameters passed into models as `**kwargs`.
 
 * Flexibly define functions for building and training models.
 
-* Topology params (# layers, conic layers). Repeat training (`repeat_count=3`).
+* Topology params (# of layers). Repeat training (`repeat_count=3`).
 
+|
 
-III. Model Performance
-^^^^^^^^^^^^^^^^^^^^^^
+III. Performance metrics & charts
+=================================
 
 .. image:: images/plots_25sec_compress.gif
    :width: 100%
    :alt: plots.gif
 
-* Automated performance metrics & visualizations for splits/ folds.
+* Automated performance metrics & visualization for every split/ fold.
 
-* Define multi-metric (acc & val_loss) criteria for early stopping.
+* Define multi-metric criteria for early stopping.
 
 * Captures history metrics for learning curves.
 
 * Aggregate metrics for sets of cross-folded jobs.
 
+|
 
-IV. Easy Setup
-^^^^^^^^^^^^^^
+IV. Easy setup
+==============
 
 * No infrastructure/ app/ cloud needed, just `pip install`.
 
@@ -119,13 +123,18 @@ IV. Easy Setup
 
 ----
 
-Compatibility Matrix
+
+#############
+Compatibility
+#############
+
+Libraries & Analysis
 ====================
 
 .. csv-table::
-  :header: Deep Learning, Keras, PyTorch
+  :header: , Keras, PyTorch
   :align: center
-  :widths: 40, 8, 8, 8
+  :widths: 30, 8, 8
 
   Classification (binary), ✓, →
   Classification (multi), ✓, →
@@ -134,22 +143,28 @@ Compatibility Matrix
   Reinforcement, TBD, TBD
 
 
+Data Preparation
+================
+
+.. csv-table::
+  :header: , Tabular, Image, Sequence, Graph
+  :align: center
+  :widths: 30, 8, 8, 8, 8
+
+  Splitting, ✓, ✓, →, →
+  Folding, ✓, ✓, →, →
+  Encoding, ✓, ✓, →, → 
+  Dimensionality reduction, →, TBD, →, →
+  Imputation, →, TBD, →, →
+  Anomaly/ outlier detection, →, TBD, →, TBD
+  Feature selection/ augmentation, →, TBD, →, →
+  Clustering/ PCA, →, TBD, →, TBD
+  Cleaning, →, →, →, →
+
+
+Legend
+^^^^^^
+
 * ✓  |  already supported.
 * →  |  to do (contributions welcome).
 * TBD  |  lower priority.
-
-
-.. csv-table::
-  :header: Data Preparation, Tabular, Image, Sequence
-  :align: center
-  :widths: 40, 8, 8, 8
-
-  Splitting, ✓, ✓, → 
-  Folding, ✓, ✓, → 
-  Encoding, ✓, TBD, → 
-  Dimensionality reduction, →, TBD, →
-  Imputation, →, →, →
-  Anomaly/ outlier detection, →, →, →
-  Feature selection, →, TBD, →
-  Clustering/ PCA, →, →, →
-  Cleaning, →, →, →
