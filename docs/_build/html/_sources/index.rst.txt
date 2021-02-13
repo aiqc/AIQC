@@ -5,7 +5,7 @@
 
   self
   mission
-  compatibility
+  links
 
 
 .. toctree::
@@ -19,12 +19,21 @@
 
 .. toctree::
   :maxdepth: 2
+  :caption: Tutorials
+  :hidden:
+
+  notebooks/visualization
+
+
+.. toctree::
+  :maxdepth: 2
   :caption: API Documentation
   :hidden:
 
   notebooks/api_high_level
   notebooks/api_low_level
-  notebooks/visualization
+  compatibility
+  
 
 
 .. image:: images/aiqc_logo_banner_narrow.png
@@ -34,16 +43,16 @@
 
 |
 
-###################
-Overview & Features
-###################
+########
+Overview
+########
 
 ..
   Without this comment, `make html` throws warning about page beginning w horizontal line below.
 
 ----
 
-* AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models without an expensive cloud backend.
+* AIQC is an open source Python package that simplifies data preparation and parameter tuning for batches of deep learning models without an expensive cloud backend.
 
   * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
 
@@ -108,15 +117,15 @@ III. Performance metrics & charts
 
 |
 
-IV. Easy setup
-==============
+IV. Easy to setup & use
+=======================
 
-* No infrastructure/ app/ cloud needed, just `pip install`.
-
-* IDE (Jupyter, RStudio, VS Code, PyCharm) & OS (Win, Mac, Lin) agnostic.
-
-* High & low level APIs make for a gentle learning curve.
+* Just `pip install`. Requires neither infrastructure, app, nor cloud. 
 
 * Example datasets built into package. Example image datasets in github repo.
 
-* Records experiments in a file-based SQLite database that requires no configuration.
+* High & low level APIs make for a gentle learning curve.
+
+* Agnostic of IDE (jupyter, rstudio, vscode, pycharm) & OS (win, mac, lin).
+
+* Automatically records experiments in a local SQLite database file.

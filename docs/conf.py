@@ -17,9 +17,9 @@ delete the `/_build` and rerun `make html`.
 https://readthedocs.org/dashboard/aiqc/integrations/
 """
 
-# *** TROUBLESHOOTING SIDEBAR MENU ***
+# *** REFRESHING SIDEBAR MENU ***
 #html_sidebars = { '**': ['globaltoc.html'] }
-# ^ whenever I add/ remove a page, I seem to have to run `make html` with this uncommented or commented in order to get the toc to stick.
+# ^ When you change menu/ page tiles. Uncomment this and run `make html`. Then comment it out again.
 
 
 # -- Project information -----------------------------------------------------

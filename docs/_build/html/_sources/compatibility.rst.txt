@@ -42,5 +42,5 @@ Legend
 ^^^^^^
 
 * ✓  |  already supported.
-* →  |  to do (contributions welcome).
-* TBD  |  lower priority.
+* →  |  to do.
+* TBD  |  low applicability/ priority.
