@@ -5,6 +5,7 @@
 
   self
   mission
+  compatibility
 
 
 .. toctree::
@@ -73,8 +74,8 @@ I. Leakage-free data preparation
 
 |
 
-II. Batch training of models & parameters 
-=========================================
+II. Batch training of models based on parameters 
+================================================
 
 .. image:: images/hyperparam_25sec_compress.gif
   :width: 100%
@@ -119,55 +120,3 @@ IV. Easy setup
 * Example datasets built into package. Example image datasets in github repo.
 
 * Records experiments in a file-based SQLite database that requires no configuration.
-
-|
-
-----
-
-
-#############
-Compatibility
-#############
-
-Libraries & Analysis
-====================
-
-.. csv-table::
-  :header: , Keras, PyTorch
-  :align: center
-  :widths: 30, 8, 8
-
-  Classification (binary), ✓, →
-  Classification (multi), ✓, →
-  Regression, ✓, →
-  Generation, →, →
-  Reinforcement, TBD, TBD
-
-|
-
-Data Preparation
-================
-
-.. csv-table::
-  :header: , Tabular, Image, Sequence, Graph
-  :align: center
-  :widths: 30, 8, 8, 8, 8
-
-  Splitting, ✓, ✓, →, →
-  Folding, ✓, ✓, →, →
-  Encoding, ✓, ✓, →, → 
-  Dimensionality reduction, →, TBD, →, →
-  Imputation, →, TBD, →, →
-  Anomaly/ outlier detection, →, TBD, →, TBD
-  Feature selection/ augmentation, →, TBD, →, →
-  Clustering/ PCA, →, TBD, →, TBD
-  Cleaning, →, →, →, →
-
-|
-
-Legend
-^^^^^^
-
-* ✓  |  already supported.
-* →  |  to do (contributions welcome).
-* TBD  |  lower priority.

@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8">
   
-  <meta property="og:title" content="Overview & Features" />
+  <meta property="og:title" content="Compatibility" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://aiqc.readthedocs.io/index.html" />
+  <meta property="og:url" content="https://aiqc.readthedocs.io/compatibility.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="AIQC logo wide, AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models without an expensive cloud backend.- It empowers..." />
+  <meta property="og:description" content="Libraries & Analyses:,,,, Keras, PyTorch,,, Classification (binary), ✓, →,, Classification (multi), ✓, →,, Regression, ✓, →,, Generation, →, →,, Reinforcement, TBD, TBD,,,,, Data Preparation:,,,,,,..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview &amp; Features &mdash; AIQC</title>
+  <title>Compatibility &mdash; AIQC</title>
   
 
   
@@ -50,7 +50,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Mission &amp; Community" href="mission.html" /> 
+    <link rel="next" title="Installation" href="notebooks/installation.html" />
+    <link rel="prev" title="Mission &amp; Community" href="mission.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -64,7 +65,7 @@
           
 
           
-            <a href="#">
+            <a href="index.html">
           
 
           
@@ -97,9 +98,16 @@
             
               <p class="caption"><span class="caption-text">About</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview &amp; Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview &amp; Features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mission.html">Mission &amp; Community</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compatibility.html">Compatibility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Compatibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#libraries-analyses">Libraries &amp; Analyses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-preparation">Data Preparation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#legend">Legend</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
@@ -126,7 +134,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">AIQC</a>
+          <a href="index.html">AIQC</a>
         
       </nav>
 
@@ -155,15 +163,15 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Overview &amp; Features</li>
+      <li>Compatibility</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/compatibility.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -200,79 +208,135 @@
     text-align: unset;
 }
 </style>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<a class="reference internal image-reference" href="_images/aiqc_logo_banner_narrow.png"><img alt="AIQC logo wide" class="align-center" src="_images/aiqc_logo_banner_narrow.png" style="width: 100%;" /></a>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="section" id="overview-features">
-<h1>Overview &amp; Features<a class="headerlink" href="#overview-features" title="Permalink to this headline">¶</a></h1>
-<hr class="docutils" />
-<ul class="simple">
-<li><p>AIQC is an open source Python package that simplifies data preparation and hyperparameter tuning for batches of deep learning models without an expensive cloud backend.</p>
-<ul>
-<li><p>It <em>empowers researchers</em> by reducing the programming and data science know-how required to integrate machine learning into their research.</p></li>
-<li><p>It makes machine learning less of a black box by <em>reproducibly recording experiments</em> in a file-based database that requires no configuration.</p></li>
-</ul>
-</li>
-</ul>
-<a class="reference internal image-reference" href="_images/diagram_framework.png"><img alt="framework diagram" class="align-center" src="_images/diagram_framework.png" style="width: 100%;" /></a>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="section" id="i-leakage-free-data-preparation">
-<h2>I. Leakage-free data preparation<a class="headerlink" href="#i-leakage-free-data-preparation" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/pipeline_25sec_compress.gif"><img alt="pipeline.gif" src="_images/pipeline_25sec_compress.gif" style="width: 100%;" /></a>
-<ul class="simple">
-<li><p>Make datasets from files (csv, parquet, pandas, numpy) &amp; images (pillow).</p></li>
-<li><p>Name columns (include/ exclude) as the Labels and Features.</p></li>
-<li><p>Simply split, cross-fold, &amp; stratify samples (<cite>fold_count=5</cite>).</p></li>
-<li><p>Apply encoders (dtype or column-specific) when fetching samples.</p></li>
-</ul>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-</div>
-<div class="section" id="ii-batch-training-of-models-based-on-parameters">
-<h2>II. Batch training of models based on parameters<a class="headerlink" href="#ii-batch-training-of-models-based-on-parameters" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/hyperparam_25sec_compress.gif"><img alt="hyperparameters.gif" src="_images/hyperparam_25sec_compress.gif" style="width: 100%;" /></a>
-<ul class="simple">
-<li><p>Queue a batch of training jobs on a background process.</p></li>
-<li><p>Dictonary of hyperparameters passed into models as <cite>**kwargs</cite>.</p></li>
-<li><p>Flexibly define functions for building and training models.</p></li>
-<li><p>Topology params (# of layers). Repeat training (<cite>repeat_count=3</cite>).</p></li>
-</ul>
+<div class="section" id="compatibility">
+<h1>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="libraries-analyses">
+<h2>Libraries &amp; Analyses<a class="headerlink" href="#libraries-analyses" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 65%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Keras</p></th>
+<th class="head"><p>PyTorch</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Classification (binary)</p></td>
+<td><p>✓</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-odd"><td><p>Classification (multi)</p></td>
+<td><p>✓</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-even"><td><p>Regression</p></td>
+<td><p>✓</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-odd"><td><p>Generation</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-even"><td><p>Reinforcement</p></td>
+<td><p>TBD</p></td>
+<td><p>TBD</p></td>
+</tr>
+</tbody>
+</table>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 </div>
-<div class="section" id="iii-performance-metrics-charts">
-<h2>III. Performance metrics &amp; charts<a class="headerlink" href="#iii-performance-metrics-charts" title="Permalink to this headline">¶</a></h2>
-<a class="reference internal image-reference" href="_images/plots_25sec_compress.gif"><img alt="plots.gif" src="_images/plots_25sec_compress.gif" style="width: 100%;" /></a>
-<ul class="simple">
-<li><p>Automated performance metrics &amp; visualization for every split/ fold.</p></li>
-<li><p>Define multi-metric criteria for early stopping.</p></li>
-<li><p>Captures history metrics for learning curves.</p></li>
-<li><p>Aggregate metrics for sets of cross-folded jobs.</p></li>
-</ul>
+<div class="section" id="data-preparation">
+<h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Tabular</p></th>
+<th class="head"><p>Image</p></th>
+<th class="head"><p>Sequence</p></th>
+<th class="head"><p>Graph</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Splitting</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-odd"><td><p>Folding</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-even"><td><p>Encoding</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dimensionality reduction</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-even"><td><p>Imputation</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-odd"><td><p>Anomaly/ outlier detection</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+</tr>
+<tr class="row-even"><td><p>Feature selection/ augmentation</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+<tr class="row-odd"><td><p>Clustering/ PCA</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+<td><p>→</p></td>
+<td><p>TBD</p></td>
+</tr>
+<tr class="row-even"><td><p>Cleaning</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+<td><p>→</p></td>
+</tr>
+</tbody>
+</table>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-</div>
-<div class="section" id="iv-easy-setup">
-<h2>IV. Easy setup<a class="headerlink" href="#iv-easy-setup" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="legend">
+<h3>Legend<a class="headerlink" href="#legend" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>No infrastructure/ app/ cloud needed, just <cite>pip install</cite>.</p></li>
-<li><p>IDE (Jupyter, RStudio, VS Code, PyCharm) &amp; OS (Win, Mac, Lin) agnostic.</p></li>
-<li><p>High &amp; low level APIs make for a gentle learning curve.</p></li>
-<li><p>Example datasets built into package. Example image datasets in github repo.</p></li>
-<li><p>Records experiments in a file-based SQLite database that requires no configuration.</p></li>
+<li><p>✓  |  already supported.</p></li>
+<li><p>→  |  to do (contributions welcome).</p></li>
+<li><p>TBD  |  lower priority.</p></li>
 </ul>
+</div>
 </div>
 </div>
 
@@ -284,8 +348,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mission.html" class="btn btn-neutral float-right" title="Mission &amp; Community" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="notebooks/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="mission.html" class="btn btn-neutral float-left" title="Mission &amp; Community" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
