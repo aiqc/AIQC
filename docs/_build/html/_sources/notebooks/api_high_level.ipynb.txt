@@ -266,9 +266,7 @@
    "source": [
     "As seen in the [Compatibility Matrix](compatibility.html), the only library supported at this point in time is `Keras` as it is the most straightforward for entry-level users. \n",
     "\n",
-    "> You can find great examples of machine learning cookbooks on this blog:\n",
-    ">\n",
-    "> https://machinelearningmastery.com/?s=binary+classification&post_type=post&submit=Search ."
+    "> You can find great examples of machine learning cookbooks on this blog: [MachineLearningMastery.com; Multi-Label Classification](https://machinelearningmastery.com/multi-label-classification-with-deep-learning/)"
    ]
   },
   {

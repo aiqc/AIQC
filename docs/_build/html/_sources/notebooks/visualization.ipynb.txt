@@ -18,9 +18,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "`Plotly` is used for all charts, so they are interactive (hover, toggle, zoom, etc.). Reference the [Installation](installation.html#Plotting) notebook for information about configuring Plotly.\n",
-    "\n",
-    "> *However, static images are used in this notebook due to recent difficulty with 3rd party JS on the documentation portal.*"
+    "`Plotly` is used for all charts to provide an interactive experience: hover, toggle, and zoom. Reference the [Installation](installation.html#Plotting) notebook for information about configuring Plotly. However, static images are used in this notebook due to recent difficulty with 3rd party JS on the documentation portal."
    ]
   },
   {
