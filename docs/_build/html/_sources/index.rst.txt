@@ -10,7 +10,7 @@
 
 .. toctree::
   :maxdepth: 2
-  :caption: Getting Started
+  :caption: Start
   :hidden:
 
   notebooks/installation
@@ -27,7 +27,7 @@
 
 .. toctree::
   :maxdepth: 2
-  :caption: API Documentation
+  :caption: Documentation
   :hidden:
 
   notebooks/api_high_level
