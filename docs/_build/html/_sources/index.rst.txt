@@ -124,7 +124,7 @@ IV. Easy to setup & use
 
 * Example datasets built into package. Example image datasets in github repo.
 
-* High & low level APIs make for a gentle learning curve.
+* High & low level APIs make for a gentle learning curve (only 2 steps).
 
 * Agnostic of IDE (jupyter, rstudio, vscode, pycharm) & OS (win, mac, lin).
 
