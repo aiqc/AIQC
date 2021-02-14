@@ -239,10 +239,10 @@
 <h2>I. Leakage-free data preparation<a class="headerlink" href="#i-leakage-free-data-preparation" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/pipeline_25sec_compress.gif"><img alt="pipeline.gif" src="_images/pipeline_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
-<li><p>Make datasets from files (csv, parquet, pandas, numpy) &amp; images (pillow).</p></li>
-<li><p>Name columns (include/ exclude) as the Labels and Features.</p></li>
-<li><p>Simply split, cross-fold, &amp; stratify samples (<cite>fold_count=5</cite>).</p></li>
-<li><p>Apply encoders (dtype or column-specific) when fetching samples.</p></li>
+<li><p>Make datasets from files (csv, parquet), structures (pandas, numpy), &amp; images (pillow).</p></li>
+<li><p>Name columns to either include or exclude as Features and/ or Labels.</p></li>
+<li><p>Easily split, fold, &amp; stratify samples (<cite>size_validation=0.12</cite>, <cite>fold_count=5</cite>).</p></li>
+<li><p>Apply encoders by dtype (<cite>float64</cite>) without leaking test/ validation data.</p></li>
 </ul>
 <div class="line-block">
 <div class="line"><br /></div>
@@ -252,10 +252,10 @@
 <h2>II. Batch training of models based on parameters<a class="headerlink" href="#ii-batch-training-of-models-based-on-parameters" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/hyperparam_25sec_compress.gif"><img alt="hyperparameters.gif" src="_images/hyperparam_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
-<li><p>Queue a batch of training jobs on a background process.</p></li>
-<li><p>Dictonary of hyperparameters passed into models as <cite>**kwargs</cite>.</p></li>
-<li><p>Flexibly define functions for building and training models.</p></li>
-<li><p>Topology params (# of layers). Repeat training (<cite>repeat_count=3</cite>).</p></li>
+<li><p>Queue a batch a many training jobs; one job per hyperparameter combination.</p></li>
+<li><p>Automatically passes param combinations into model functions as <cite>**kwargs</cite>.</p></li>
+<li><p>Tweak model topology as a param (<cite>params[‘extra_conv3D_layer’]=True</cite>).</p></li>
+<li><p>Repeat a job to to give it a chance to perform well (<cite>repeat_count=3</cite>).</p></li>
 </ul>
 <div class="line-block">
 <div class="line"><br /></div>
@@ -266,22 +266,22 @@
 <a class="reference internal image-reference" href="_images/plots_25sec_compress.gif"><img alt="plots.gif" src="_images/plots_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
 <li><p>Automated performance metrics &amp; visualization for every split/ fold.</p></li>
-<li><p>Define multi-metric criteria for early stopping.</p></li>
-<li><p>Captures history metrics for learning curves.</p></li>
+<li><p>Define multi-metric success criteria for early stopping.</p></li>
+<li><p>Captures per-epoch history metrics for learning curves.</p></li>
 <li><p>Aggregate metrics for sets of cross-folded jobs.</p></li>
 </ul>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 </div>
-<div class="section" id="iv-easy-to-setup-use">
-<h2>IV. Easy to setup &amp; use<a class="headerlink" href="#iv-easy-to-setup-use" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="iv-embarassingly-simple-to-setup-use-reproduce">
+<h2>IV. Embarassingly simple to setup, use, &amp; reproduce<a class="headerlink" href="#iv-embarassingly-simple-to-setup-use-reproduce" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Just <cite>pip install</cite>. Requires neither infrastructure, app, nor cloud.</p></li>
 <li><p>Example datasets built into package. Example image datasets in github repo.</p></li>
 <li><p>High &amp; low level APIs make for a gentle learning curve (only 2 steps).</p></li>
 <li><p>Agnostic of IDE (jupyter, rstudio, vscode, pycharm) &amp; OS (win, mac, lin).</p></li>
-<li><p>Automatically records experiments in a local SQLite database file.</p></li>
+<li><p>Automatically records experiments in a local sqlite database file.</p></li>
 </ul>
 </div>
 </div>

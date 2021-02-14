@@ -77,13 +77,13 @@ I. Leakage-free data preparation
   :width: 100%
   :alt: pipeline.gif
 
-* Make datasets from files (csv, parquet, pandas, numpy) & images (pillow).
+* Make datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
 
-* Name columns (include/ exclude) as the Labels and Features.
+* Name columns to either include or exclude as Features and/ or Labels.
 
-* Simply split, cross-fold, & stratify samples (`fold_count=5`).
+* Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
 
-* Apply encoders (dtype or column-specific) when fetching samples.
+* Apply encoders by dtype (`float64`) without leaking test/ validation data.
 
 |
 
@@ -94,13 +94,13 @@ II. Batch training of models based on parameters
   :width: 100%
   :alt: hyperparameters.gif
 
-* Queue a batch of training jobs on a background process.
+* Queue a batch a many training jobs; one job per hyperparameter combination.
 
-* Dictonary of hyperparameters passed into models as `**kwargs`.
+* Automatically passes param combinations into model functions as `**kwargs`.
 
-* Flexibly define functions for building and training models.
+* Tweak model topology as a param (`params['extra_conv3D_layer']=True`).
 
-* Topology params (# of layers). Repeat training (`repeat_count=3`).
+* Repeat a job to to give it a chance to perform well (`repeat_count=3`).
 
 |
 
@@ -113,16 +113,16 @@ III. Performance metrics & charts
 
 * Automated performance metrics & visualization for every split/ fold.
 
-* Define multi-metric criteria for early stopping.
+* Define multi-metric success criteria for early stopping.
 
-* Captures history metrics for learning curves.
+* Captures per-epoch history metrics for learning curves.
 
 * Aggregate metrics for sets of cross-folded jobs.
 
 |
 
-IV. Easy to setup & use
-=======================
+IV. Embarassingly simple to setup, use, & reproduce
+===================================================
 
 * Just `pip install`. Requires neither infrastructure, app, nor cloud. 
 
@@ -132,4 +132,4 @@ IV. Easy to setup & use
 
 * Agnostic of IDE (jupyter, rstudio, vscode, pycharm) & OS (win, mac, lin).
 
-* Automatically records experiments in a local SQLite database file.
+* Automatically records experiments in a local sqlite database file.
