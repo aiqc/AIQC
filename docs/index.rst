@@ -25,6 +25,7 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
+  notebooks/pytorch
 
 
 .. toctree::
