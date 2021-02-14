@@ -266,7 +266,7 @@
    "source": [
     "As seen in the [Compatibility Matrix](compatibility.html), the only library supported at this point in time is `Keras` as it is the most straightforward for entry-level users. \n",
     "\n",
-    "> You can find great examples of machine learning cookbooks on this blog: [MachineLearningMastery.com; Multi-Label Classification](https://machinelearningmastery.com/multi-label-classification-with-deep-learning/)"
+    "> You can find great examples of machine learning cookbooks on this blog: [MachineLearningMastery.com \"Multi-Label Classification\"](https://machinelearningmastery.com/multi-label-classification-with-deep-learning/)"
    ]
   },
   {
@@ -475,7 +475,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 3. Visualization & Metrics"
+    "---"
    ]
   },
   {

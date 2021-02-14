@@ -18,7 +18,7 @@ https://readthedocs.org/dashboard/aiqc/integrations/
 """
 
 # *** REFRESHING SIDEBAR MENU ***
-#html_sidebars = { '**': ['globaltoc.html'] }
+html_sidebars = { '**': ['globaltoc.html'] }
 # ^ When you change menu/ page tiles. Uncomment this and run `make html`. Then comment it out again.
 
 

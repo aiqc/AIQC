@@ -1,0 +1,1 @@
+Since file names appear in the URL, they are tied to search engine optimization.

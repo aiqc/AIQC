@@ -1,0 +1,835 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "valued-pharmacology",
+   "metadata": {},
+   "source": [
+    "# Keras: Classify Binary"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "frozen-humanity",
+   "metadata": {},
+   "source": [
+    "Reference this great blog for machine learning cookbooks: [MachineLearningMastery.com \"Binary Classification\"](https://machinelearningmastery.com/binary-classification-tutorial-with-the-keras-deep-learning-library/)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "unexpected-holder",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import keras\n",
+    "from keras.models import Sequential\n",
+    "from keras.layers import Dense, Dropout\n",
+    "from keras.callbacks import History\n",
+    "\n",
+    "from sklearn.preprocessing import LabelBinarizer, PowerTransformer\n",
+    "\n",
+    "import aiqc\n",
+    "from aiqc import datum"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "moved-submission",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "expired-riverside",
+   "metadata": {},
+   "source": [
+    "## Example Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "middle-mining",
+   "metadata": {},
+   "source": [
+    "Reference [Example Datasets](example_datasets.ipynb) for more information."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "loving-aggregate",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = datum.to_pandas('sonar.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "liable-lease",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>a</th>\n",
+       "      <th>b</th>\n",
+       "      <th>c</th>\n",
+       "      <th>d</th>\n",
+       "      <th>e</th>\n",
+       "      <th>f</th>\n",
+       "      <th>g</th>\n",
+       "      <th>h</th>\n",
+       "      <th>i</th>\n",
+       "      <th>j</th>\n",
+       "      <th>...</th>\n",
+       "      <th>az</th>\n",
+       "      <th>ba</th>\n",
+       "      <th>bb</th>\n",
+       "      <th>bc</th>\n",
+       "      <th>bd</th>\n",
+       "      <th>be</th>\n",
+       "      <th>bf</th>\n",
+       "      <th>bg</th>\n",
+       "      <th>bh</th>\n",
+       "      <th>object</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0.0200</td>\n",
+       "      <td>0.0371</td>\n",
+       "      <td>0.0428</td>\n",
+       "      <td>0.0207</td>\n",
+       "      <td>0.0954</td>\n",
+       "      <td>0.0986</td>\n",
+       "      <td>0.1539</td>\n",
+       "      <td>0.1601</td>\n",
+       "      <td>0.3109</td>\n",
+       "      <td>0.2111</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0027</td>\n",
+       "      <td>0.0065</td>\n",
+       "      <td>0.0159</td>\n",
+       "      <td>0.0072</td>\n",
+       "      <td>0.0167</td>\n",
+       "      <td>0.0180</td>\n",
+       "      <td>0.0084</td>\n",
+       "      <td>0.0090</td>\n",
+       "      <td>0.0032</td>\n",
+       "      <td>R</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0.0453</td>\n",
+       "      <td>0.0523</td>\n",
+       "      <td>0.0843</td>\n",
+       "      <td>0.0689</td>\n",
+       "      <td>0.1183</td>\n",
+       "      <td>0.2583</td>\n",
+       "      <td>0.2156</td>\n",
+       "      <td>0.3481</td>\n",
+       "      <td>0.3337</td>\n",
+       "      <td>0.2872</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0084</td>\n",
+       "      <td>0.0089</td>\n",
+       "      <td>0.0048</td>\n",
+       "      <td>0.0094</td>\n",
+       "      <td>0.0191</td>\n",
+       "      <td>0.0140</td>\n",
+       "      <td>0.0049</td>\n",
+       "      <td>0.0052</td>\n",
+       "      <td>0.0044</td>\n",
+       "      <td>R</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>0.0262</td>\n",
+       "      <td>0.0582</td>\n",
+       "      <td>0.1099</td>\n",
+       "      <td>0.1083</td>\n",
+       "      <td>0.0974</td>\n",
+       "      <td>0.2280</td>\n",
+       "      <td>0.2431</td>\n",
+       "      <td>0.3771</td>\n",
+       "      <td>0.5598</td>\n",
+       "      <td>0.6194</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0232</td>\n",
+       "      <td>0.0166</td>\n",
+       "      <td>0.0095</td>\n",
+       "      <td>0.0180</td>\n",
+       "      <td>0.0244</td>\n",
+       "      <td>0.0316</td>\n",
+       "      <td>0.0164</td>\n",
+       "      <td>0.0095</td>\n",
+       "      <td>0.0078</td>\n",
+       "      <td>R</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>0.0100</td>\n",
+       "      <td>0.0171</td>\n",
+       "      <td>0.0623</td>\n",
+       "      <td>0.0205</td>\n",
+       "      <td>0.0205</td>\n",
+       "      <td>0.0368</td>\n",
+       "      <td>0.1098</td>\n",
+       "      <td>0.1276</td>\n",
+       "      <td>0.0598</td>\n",
+       "      <td>0.1264</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0121</td>\n",
+       "      <td>0.0036</td>\n",
+       "      <td>0.0150</td>\n",
+       "      <td>0.0085</td>\n",
+       "      <td>0.0073</td>\n",
+       "      <td>0.0050</td>\n",
+       "      <td>0.0044</td>\n",
+       "      <td>0.0040</td>\n",
+       "      <td>0.0117</td>\n",
+       "      <td>R</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>0.0762</td>\n",
+       "      <td>0.0666</td>\n",
+       "      <td>0.0481</td>\n",
+       "      <td>0.0394</td>\n",
+       "      <td>0.0590</td>\n",
+       "      <td>0.0649</td>\n",
+       "      <td>0.1209</td>\n",
+       "      <td>0.2467</td>\n",
+       "      <td>0.3564</td>\n",
+       "      <td>0.4459</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.0031</td>\n",
+       "      <td>0.0054</td>\n",
+       "      <td>0.0105</td>\n",
+       "      <td>0.0110</td>\n",
+       "      <td>0.0015</td>\n",
+       "      <td>0.0072</td>\n",
+       "      <td>0.0048</td>\n",
+       "      <td>0.0107</td>\n",
+       "      <td>0.0094</td>\n",
+       "      <td>R</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 61 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "        a       b       c       d       e       f       g       h       i  \\\n",
+       "0  0.0200  0.0371  0.0428  0.0207  0.0954  0.0986  0.1539  0.1601  0.3109   \n",
+       "1  0.0453  0.0523  0.0843  0.0689  0.1183  0.2583  0.2156  0.3481  0.3337   \n",
+       "2  0.0262  0.0582  0.1099  0.1083  0.0974  0.2280  0.2431  0.3771  0.5598   \n",
+       "3  0.0100  0.0171  0.0623  0.0205  0.0205  0.0368  0.1098  0.1276  0.0598   \n",
+       "4  0.0762  0.0666  0.0481  0.0394  0.0590  0.0649  0.1209  0.2467  0.3564   \n",
+       "\n",
+       "        j  ...      az      ba      bb      bc      bd      be      bf  \\\n",
+       "0  0.2111  ...  0.0027  0.0065  0.0159  0.0072  0.0167  0.0180  0.0084   \n",
+       "1  0.2872  ...  0.0084  0.0089  0.0048  0.0094  0.0191  0.0140  0.0049   \n",
+       "2  0.6194  ...  0.0232  0.0166  0.0095  0.0180  0.0244  0.0316  0.0164   \n",
+       "3  0.1264  ...  0.0121  0.0036  0.0150  0.0085  0.0073  0.0050  0.0044   \n",
+       "4  0.4459  ...  0.0031  0.0054  0.0105  0.0110  0.0015  0.0072  0.0048   \n",
+       "\n",
+       "       bg      bh  object  \n",
+       "0  0.0090  0.0032       R  \n",
+       "1  0.0052  0.0044       R  \n",
+       "2  0.0095  0.0078       R  \n",
+       "3  0.0040  0.0117       R  \n",
+       "4  0.0107  0.0094       R  \n",
+       "\n",
+       "[5 rows x 61 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "chief-religious",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "incredible-indonesia",
+   "metadata": {},
+   "source": [
+    "## a) High-Level API"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "resident-student",
+   "metadata": {},
+   "source": [
+    "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "plain-panic",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "___/ featurecoder_index: 0 \\_________\n",
+      "\n",
+      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "['a',\n",
+      " 'b',\n",
+      " 'c',\n",
+      " 'd',\n",
+      " 'e',\n",
+      " 'f',\n",
+      " 'g',\n",
+      " 'h',\n",
+      " 'i',\n",
+      " 'j',\n",
+      " 'k',\n",
+      " 'l',\n",
+      " 'm',\n",
+      " 'n',\n",
+      " 'o',\n",
+      " 'p',\n",
+      " 'q',\n",
+      " 'r',\n",
+      " 's',\n",
+      " 't',\n",
+      " 'u',\n",
+      " 'v',\n",
+      " 'w',\n",
+      " 'x',\n",
+      " 'y',\n",
+      " 'z',\n",
+      " 'aa',\n",
+      " 'ab',\n",
+      " 'ac',\n",
+      " 'ad',\n",
+      " 'ae',\n",
+      " 'af',\n",
+      " 'ag',\n",
+      " 'ah',\n",
+      " 'ai',\n",
+      " 'aj',\n",
+      " 'ak',\n",
+      " 'al',\n",
+      " 'am',\n",
+      " 'an',\n",
+      " 'ao',\n",
+      " 'ap',\n",
+      " 'aq',\n",
+      " 'ar',\n",
+      " 'as',\n",
+      " 'at',\n",
+      " 'au',\n",
+      " 'av',\n",
+      " 'aw',\n",
+      " 'ax',\n",
+      " 'ay',\n",
+      " 'az',\n",
+      " 'ba',\n",
+      " 'bb',\n",
+      " 'bc',\n",
+      " 'bd',\n",
+      " 'be',\n",
+      " 'bf',\n",
+      " 'bg',\n",
+      " 'bh']\n",
+      "\n",
+      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "No more Featurecoders can be added to this Encoderset.\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "    dataFrame_or_filePath = df\n",
+    "    , label_column = 'object'\n",
+    "    , size_test = 0.22\n",
+    "    , size_validation = 0.12\n",
+    "    , label_encoder = LabelBinarizer(sparse_output=False)\n",
+    "    , feature_encoders = [{\n",
+    "        \"sklearn_preprocess\": PowerTransformer(method='yeo-johnson', copy=False)\n",
+    "        , \"dtypes\": ['float64']\n",
+    "    }]\n",
+    "    \n",
+    "    , dtype = None\n",
+    "    , features_excluded = None\n",
+    "    , fold_count = None\n",
+    "    , bin_count = None\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "acceptable-louisiana",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def function_model_build(features_shape, label_shape, **hyperparameters):\n",
+    "    model = Sequential(name='Sonar')\n",
+    "    model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dropout(0.30))\n",
+    "    model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dropout(0.30))\n",
+    "    model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))\n",
+    "    model.compile(optimizer=\"adam\", loss='binary_crossentropy', metrics=['accuracy'])\n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "understood-simpson",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def function_model_train(model, samples_train, samples_evaluate, **hyperparameters):\n",
+    "    model.fit(\n",
+    "    samples_train['features'], samples_train['labels']\n",
+    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
+    "        , verbose = 0\n",
+    "        , batch_size = 3\n",
+    "        , epochs = hyperparameters['epochs']\n",
+    "        , callbacks = [History()]\n",
+    "    )\n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "decreased-diary",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparameters = {\n",
+    "    \"neuron_count\": [25, 50]\n",
+    "    , \"epochs\": [75, 150]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "extreme-robertson",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "batch = aiqc.Experiment.make(\n",
+    "    library = \"keras\"\n",
+    "    , analysis_type = \"classification_binary\"\n",
+    "    , function_model_build = function_model_build\n",
+    "    , function_model_train = function_model_train\n",
+    "    , splitset_id = splitset.id\n",
+    "    , encoderset_id = splitset.encodersets[0]\n",
+    "    , repeat_count = 2\n",
+    "    , hide_test = False\n",
+    "    , hyperparameters = hyperparameters\n",
+    "    \n",
+    "    , function_model_predict = None #automated\n",
+    "    , function_model_loss = None #automated\n",
+    "    , foldset_id = None\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "spiritual-montgomery",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:21<00:00, 10.22s/it]\n"
+     ]
+    }
+   ],
+   "source": [
+    "batch.run_jobs()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "welsh-happening",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "controlled-exploration",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "completed-microwave",
+   "metadata": {},
+   "source": [
+    "## b) Low-Level API"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "awful-coaching",
+   "metadata": {},
+   "source": [
+    "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "subsequent-american",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dataset = aiqc.Dataset.Tabular.from_pandas(df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "resistant-investment",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "label_column = 'object'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "returning-grill",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "label = dataset.make_label(columns=[label_column])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "beautiful-affair",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "featureset = dataset.make_featureset(exclude_columns=[label_column])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "headed-payment",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "splitset = featureset.make_splitset(\n",
+    "    label_id = label.id\n",
+    "    , size_test = 0.22\n",
+    "    , size_validation = 0.12\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "residential-recording",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "encoderset = splitset.make_encoderset()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "psychological-macintosh",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "labelcoder = encoderset.make_labelcoder(\n",
+    "    sklearn_preprocess = LabelBinarizer(sparse_output=False)\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "expired-fruit",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "___/ featurecoder_index: 0 \\_________\n",
+      "\n",
+      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "['a',\n",
+      " 'b',\n",
+      " 'c',\n",
+      " 'd',\n",
+      " 'e',\n",
+      " 'f',\n",
+      " 'g',\n",
+      " 'h',\n",
+      " 'i',\n",
+      " 'j',\n",
+      " 'k',\n",
+      " 'l',\n",
+      " 'm',\n",
+      " 'n',\n",
+      " 'o',\n",
+      " 'p',\n",
+      " 'q',\n",
+      " 'r',\n",
+      " 's',\n",
+      " 't',\n",
+      " 'u',\n",
+      " 'v',\n",
+      " 'w',\n",
+      " 'x',\n",
+      " 'y',\n",
+      " 'z',\n",
+      " 'aa',\n",
+      " 'ab',\n",
+      " 'ac',\n",
+      " 'ad',\n",
+      " 'ae',\n",
+      " 'af',\n",
+      " 'ag',\n",
+      " 'ah',\n",
+      " 'ai',\n",
+      " 'aj',\n",
+      " 'ak',\n",
+      " 'al',\n",
+      " 'am',\n",
+      " 'an',\n",
+      " 'ao',\n",
+      " 'ap',\n",
+      " 'aq',\n",
+      " 'ar',\n",
+      " 'as',\n",
+      " 'at',\n",
+      " 'au',\n",
+      " 'av',\n",
+      " 'aw',\n",
+      " 'ax',\n",
+      " 'ay',\n",
+      " 'az',\n",
+      " 'ba',\n",
+      " 'bb',\n",
+      " 'bc',\n",
+      " 'bd',\n",
+      " 'be',\n",
+      " 'bf',\n",
+      " 'bg',\n",
+      " 'bh']\n",
+      "\n",
+      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "No more Featurecoders can be added to this Encoderset.\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "featurecoder_0 = encoderset.make_featurecoder(\n",
+    "    sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)\n",
+    "    , dtypes = ['float64']\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "provincial-prince",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def function_model_build(features_shape, label_shape, **hyperparameters):\n",
+    "    model = Sequential(name='Sonar')\n",
+    "    model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dropout(0.30))\n",
+    "    model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dropout(0.30))\n",
+    "    model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
+    "    model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))\n",
+    "    model.compile(optimizer=\"adam\", loss='binary_crossentropy', metrics=['accuracy'])\n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "applicable-southwest",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def function_model_train(model, samples_train, samples_evaluate, **hyperparameters):\n",
+    "    model.fit(\n",
+    "    samples_train['features'], samples_train['labels']\n",
+    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
+    "        , verbose = 0\n",
+    "        , batch_size = 3\n",
+    "        , epochs = hyperparameters['epochs']\n",
+    "        , callbacks = [History()]\n",
+    "    )\n",
+    "    return model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "consistent-sound",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "algorithm = aiqc.Algorithm.make(\n",
+    "    library = \"keras\"\n",
+    "    , analysis_type = \"classification_binary\"\n",
+    "    , function_model_build = function_model_build\n",
+    "    , function_model_train = function_model_train\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "uniform-colleague",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparameters = {\n",
+    "    \"neuron_count\": [25, 50]\n",
+    "    , \"epochs\": [75, 150]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "signal-landscape",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparamset = algorithm.make_hyperparamset(\n",
+    "    hyperparameters = hyperparameters\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "tamil-burner",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "batch = algorithm.make_batch(\n",
+    "    splitset_id = splitset.id\n",
+    "    , hyperparamset_id = hyperparamset.id\n",
+    "    , encoderset_id  = encoderset.id\n",
+    "    , repeat_count = 2\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "qualified-taste",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:22<00:00, 10.25s/it]\n"
+     ]
+    }
+   ],
+   "source": [
+    "batch.run_jobs()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "solved-radius",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

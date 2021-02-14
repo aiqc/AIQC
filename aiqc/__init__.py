@@ -4054,11 +4054,11 @@ class Job(BaseModel):
 
 
 	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
-		if analysis_type == "classification_binary":
+		if (analysis_type == "classification_binary"):
 			average = "binary"
 			roc_average = "micro"
 			roc_multi_class = None
-		elif analysis_type == "classification_multi":
+		elif (analysis_type == "classification_multi"):
 			average = "weighted"
 			roc_average = "weighted"
 			roc_multi_class = "ovr"

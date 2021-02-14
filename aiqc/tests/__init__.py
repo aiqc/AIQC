@@ -306,7 +306,9 @@ def regression_model_train(model, samples_train, samples_evaluate, **hyperparame
 
 	model.fit(
 		samples_train['features'], samples_train['labels']
-		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
+		, validation_data = (
+			samples_evaluate['features'],
+			samples_evaluate['labels'])
 		, verbose = 0
 		, batch_size = 3
 		, epochs = hyperparameters['epochs']

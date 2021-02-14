@@ -22,7 +22,9 @@
   :caption: Tutorials
   :hidden:
 
-  notebooks/visualization
+  notebooks/keras_binary_classification
+  notebooks/keras_multi-label_classification
+  notebooks/keras_regression
 
 
 .. toctree::
@@ -32,6 +34,7 @@
 
   notebooks/api_high_level
   notebooks/api_low_level
+  notebooks/visualization
   compatibility
   
 
