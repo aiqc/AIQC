@@ -70,8 +70,8 @@ Overview
 
 |
 
-I. Rapidly prepare folded data for analysis without leakage
-===========================================================
+I. Rapidly prepare folded data for analysis without leakage.
+============================================================
 
 .. image:: images/pipeline_25sec_compress.gif
   :width: 100%
@@ -87,8 +87,8 @@ I. Rapidly prepare folded data for analysis without leakage
 
 |
 
-II. Train many variations of an algorithm in a single batch
-===========================================================
+II. Train many variations of an algorithm in a single batch.
+============================================================
 
 .. image:: images/hyperparam_25sec_compress.gif
   :width: 100%
@@ -104,8 +104,8 @@ II. Train many variations of an algorithm in a single batch
 
 |
 
-III. Evaluate algorithm performance with metrics & charts
-=========================================================
+III. Evaluate algorithm performance with metrics & charts.
+==========================================================
 
 .. image:: images/plots_25sec_compress.gif
    :width: 100%
@@ -121,8 +121,8 @@ III. Evaluate algorithm performance with metrics & charts
 
 |
 
-IV. Refreshingly simple to setup, use, & reproduce
-==================================================
+IV. Refreshingly simple to setup, use, & reproduce.
+===================================================
 
 .. code-block:: python
 
@@ -139,7 +139,7 @@ IV. Refreshingly simple to setup, use, & reproduce
 
 * Example datasets built into package. Example image datasets in github repo.
 
-* High & low level APIs make for a gentle learning curve (only 2 steps).
-
 * Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
+
+* Easy to learn in just 2 steps: a `Pipeline` that feeds an `Experiment`.
 
