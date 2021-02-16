@@ -607,7 +607,8 @@ To get started, run `aiqc.setup()`.
 </div>
 <div class="section" id="Pickle-Disclaimer">
 <h4>Pickle Disclaimer<a class="headerlink" href="#Pickle-Disclaimer" title="Permalink to this headline">¶</a></h4>
-<p>AIQC relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful OS/ Python information is stored in the config file at the time of creation.</p>
+<p>AIQC, much like PyTorch, relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful OS/ Python information is stored in the config file at the time of
+creation.</p>
 </div>
 </div>
 <div class="section" id="Optional---JupyterLab-IDE">

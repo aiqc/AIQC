@@ -191,7 +191,7 @@
    "source": [
     "#### Pickle Disclaimer\n",
     "\n",
-    "AIQC relies heavily on [Pickle](https://docs.python.org/3/library/pickle.html) for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an `aiqc.sqlite` file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, `sys.version` and other helpful OS/ Python information is stored in the config file at the time of creation."
+    "AIQC, much like PyTorch, relies heavily on [Pickle](https://docs.python.org/3/library/pickle.html) for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an `aiqc.sqlite` file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, `sys.version` and other helpful OS/ Python information is stored in the config file at the time of creation."
    ]
   },
   {

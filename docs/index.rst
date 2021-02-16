@@ -70,8 +70,8 @@ Overview
 
 |
 
-I. Leakage-free data preparation
-================================
+I. Rapidly prepare folded data for analysis without leakage
+===========================================================
 
 .. image:: images/pipeline_25sec_compress.gif
   :width: 100%
@@ -87,8 +87,8 @@ I. Leakage-free data preparation
 
 |
 
-II. Batch training of models based on parameters 
-================================================
+II. Train many variations of an algorithm in a single batch
+===========================================================
 
 .. image:: images/hyperparam_25sec_compress.gif
   :width: 100%
@@ -104,8 +104,8 @@ II. Batch training of models based on parameters
 
 |
 
-III. Performance metrics & charts
-=================================
+III. Evaluate algorithm performance with metrics & charts
+=========================================================
 
 .. image:: images/plots_25sec_compress.gif
    :width: 100%
@@ -121,15 +121,25 @@ III. Performance metrics & charts
 
 |
 
-IV. Embarassingly simple to setup, use, & reproduce
-===================================================
+IV. Refreshingly simple to setup, use, & reproduce
+==================================================
 
-* Just `pip install`. Requires neither infrastructure, app, nor cloud. 
+.. code-block:: python
+
+   # pip install --upgrade aiqc
+   >>> import aiqc
+   >>> aiqc.setup()
+
+   >>> aiqc.get_config()['db_path']
+   '/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3'
+
+* Automatically records all experiments in a local sqlite database file.
+
+* No infrastructure hassle; `aiqc.setup()` takes care of all configuration.
 
 * Example datasets built into package. Example image datasets in github repo.
 
 * High & low level APIs make for a gentle learning curve (only 2 steps).
 
-* Agnostic of IDE (jupyter, rstudio, vscode, pycharm) & OS (win, mac, lin).
+* Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
 
-* Automatically records experiments in a local sqlite database file.
