@@ -122,8 +122,8 @@ III. Evaluate algorithm performance with metrics & charts.
 |
 
 
-IV. Effortlessly reproduce & prove experiments.
-===============================================
+IV. Effortlessly track, reproduce, & prove experiments.
+=======================================================
 
 .. code-block:: python
 
