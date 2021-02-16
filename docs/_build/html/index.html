@@ -274,13 +274,9 @@
 <div class="line"><br /></div>
 </div>
 </div>
-<div class="section" id="iv-effortlessly-reproduce-experiments">
-<h2>IV. Effortlessly reproduce experiments.<a class="headerlink" href="#iv-effortlessly-reproduce-experiments" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here&#39;s how you plot the metrics shown in the gif above.</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span><span class="n">max_loss</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">min_accuracy</span><span class="o">=</span><span class="mf">0.90</span><span class="p">)</span>
-
-
-<span class="c1"># No more writing down parameters or screenshotting charts!</span>
+<div class="section" id="iv-effortlessly-reproduce-prove-experiments">
+<h2>IV. Effortlessly reproduce &amp; prove experiments.<a class="headerlink" href="#iv-effortlessly-reproduce-prove-experiments" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># No more writing down parameters or screenshotting charts!</span>
 <span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
 <span class="p">{</span>
     <span class="s1">&#39;include_nth_layer&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -289,6 +285,13 @@
     <span class="s1">&#39;dense_neurons&#39;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
     <span class="o">...</span>
 <span class="p">}</span>
+
+<span class="c1"># Model weights and definitions are saved in sqlite.</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_build</span>
+
+<span class="c1"># Metrics are already calculated, just call them.</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
 </pre></div>
 </div>
 <ul class="simple">

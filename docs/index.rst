@@ -122,14 +122,10 @@ III. Evaluate algorithm performance with metrics & charts.
 |
 
 
-IV. Effortlessly reproduce experiments.
-=======================================
+IV. Effortlessly reproduce & prove experiments.
+===============================================
 
 .. code-block:: python
-   
-   # Here's how you plot the metrics shown in the gif above.
-   batch.plot_performance(max_loss=0.10, min_accuracy=0.90)
-
 
    # No more writing down parameters or screenshotting charts!
    batch.jobs[0].hyperparamcombo.hyperparameters
@@ -140,6 +136,13 @@ IV. Effortlessly reproduce experiments.
        'dense_neurons': 64,
        ...
    }
+
+   # Model weights and definitions are saved in sqlite.
+   batch.jobs[0].results[0].get_model()
+   batch.algorithm.function_model_build
+
+   # Metrics are already calculated, just call them.
+   batch.metrics_to_pandas()
 
 
 * Automatically records experiments in a local sqlite database file.

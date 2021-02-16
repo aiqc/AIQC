@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/Untitled.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="[2]: import aiqc[7]: aiqc.Batch.get_by_id(1).jobs[0].hyperparamcombo.hyperparameters[7]:" />
+  <meta property="og:description" content="[2]: import aiqc[6]: aiqc.setup()[7]: from aiqc import tests[8]: batch = tests.make_test_batch('multiclass')[9]: batch.run_jobs()[13]: dir(batch.jobs[0].results[0])[13]:[12]: batch.algorithm.functi..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -463,32 +463,251 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">Batch</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+=&gt; Info - it appears the following folder does not exist on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
+
+=&gt; Success - created folder at file path:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Next run `aiqc.create_config()`.
+
+
+=&gt; Success - the following file path already exists on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+
+=&gt; Success - created config file for settings at path:
+/Users/layne/Library/Application Support/aiqc/config.json
+
+
+=&gt; Next run `aiqc.create_db()`.
+
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">tests</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_batch</span><span class="p">(</span><span class="s1">&#39;multiclass&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+___/ featurecoder_index: 0 \_________
+
+=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+[&#39;petal_width&#39;]
+
+=&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
+{&#39;petal_length&#39;: &#39;float64&#39;, &#39;sepal_length&#39;: &#39;float64&#39;, &#39;sepal_width&#39;: &#39;float64&#39;}
+
+
+___/ featurecoder_index: 1 \_________
+
+=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+[&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;]
+
+=&gt; Nice! Now all feature column(s) have encoder(s) associated with them.
+No more Featurecoders can be added to this Encoderset.
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:29&lt;00:00,  3.73s/it]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">dir</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;include_2nd_dense&#39;: True,
- &#39;neuron_multiply&#39;: 1.0,
- &#39;epoch_count&#39;: 300,
- &#39;learning_rate&#39;: 0.01,
- &#39;pool_size&#39;: 2,
- &#39;dropout&#39;: 0.4,
- &#39;batch_size&#39;: 8,
- &#39;kernel_size&#39;: 3,
- &#39;dense_neurons&#39;: 64,
- &#39;2nd_dense_neurons&#39;: 24,
- &#39;cnn_init&#39;: &#39;he_normal&#39;}
+[&#39;DoesNotExist&#39;,
+ &#39;__class__&#39;,
+ &#39;__data__&#39;,
+ &#39;__delattr__&#39;,
+ &#39;__dict__&#39;,
+ &#39;__dir__&#39;,
+ &#39;__doc__&#39;,
+ &#39;__eq__&#39;,
+ &#39;__format__&#39;,
+ &#39;__ge__&#39;,
+ &#39;__getattribute__&#39;,
+ &#39;__gt__&#39;,
+ &#39;__hash__&#39;,
+ &#39;__init__&#39;,
+ &#39;__init_subclass__&#39;,
+ &#39;__le__&#39;,
+ &#39;__lt__&#39;,
+ &#39;__module__&#39;,
+ &#39;__ne__&#39;,
+ &#39;__new__&#39;,
+ &#39;__reduce__&#39;,
+ &#39;__reduce_ex__&#39;,
+ &#39;__rel__&#39;,
+ &#39;__repr__&#39;,
+ &#39;__setattr__&#39;,
+ &#39;__sizeof__&#39;,
+ &#39;__sql__&#39;,
+ &#39;__str__&#39;,
+ &#39;__subclasshook__&#39;,
+ &#39;__weakref__&#39;,
+ &#39;_coerce&#39;,
+ &#39;_dirty&#39;,
+ &#39;_meta&#39;,
+ &#39;_normalize_data&#39;,
+ &#39;_pk&#39;,
+ &#39;_pk_expr&#39;,
+ &#39;_populate_unsaved_relations&#39;,
+ &#39;_prune_fields&#39;,
+ &#39;_schema&#39;,
+ &#39;add_index&#39;,
+ &#39;alias&#39;,
+ &#39;bind&#39;,
+ &#39;bind_ctx&#39;,
+ &#39;bulk_create&#39;,
+ &#39;bulk_update&#39;,
+ &#39;clone&#39;,
+ &#39;coerce&#39;,
+ &#39;copy&#39;,
+ &#39;create&#39;,
+ &#39;create_table&#39;,
+ &#39;delete&#39;,
+ &#39;delete_by_id&#39;,
+ &#39;delete_instance&#39;,
+ &#39;dependencies&#39;,
+ &#39;dirty_fields&#39;,
+ &#39;drop_table&#39;,
+ &#39;filter&#39;,
+ &#39;get&#39;,
+ &#39;get_by_id&#39;,
+ &#39;get_id&#39;,
+ &#39;get_model&#39;,
+ &#39;get_or_create&#39;,
+ &#39;get_or_none&#39;,
+ &#39;history&#39;,
+ &#39;id&#39;,
+ &#39;index&#39;,
+ &#39;insert&#39;,
+ &#39;insert_from&#39;,
+ &#39;insert_many&#39;,
+ &#39;is_alias&#39;,
+ &#39;is_dirty&#39;,
+ &#39;job&#39;,
+ &#39;job_id&#39;,
+ &#39;metrics&#39;,
+ &#39;metrics_aggregate&#39;,
+ &#39;model_file&#39;,
+ &#39;noop&#39;,
+ &#39;plot_confusion_matrix&#39;,
+ &#39;plot_data&#39;,
+ &#39;plot_learning_curve&#39;,
+ &#39;plot_precision_recall&#39;,
+ &#39;plot_roc_curve&#39;,
+ &#39;predictions&#39;,
+ &#39;probabilities&#39;,
+ &#39;raw&#39;,
+ &#39;repeat_index&#39;,
+ &#39;replace&#39;,
+ &#39;replace_many&#39;,
+ &#39;save&#39;,
+ &#39;select&#39;,
+ &#39;set_by_id&#39;,
+ &#39;table_exists&#39;,
+ &#39;time_duration&#39;,
+ &#39;time_started&#39;,
+ &#39;time_succeeded&#39;,
+ &#39;truncate_table&#39;,
+ &#39;unwrap&#39;,
+ &#39;update&#39;,
+ &#39;validate_model&#39;]
 </pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_train</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;function aiqc.tests.multiclass_function_model_train(model, samples_train, samples_evaluate, **hyperparameters)&gt;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
 </div>
 
 

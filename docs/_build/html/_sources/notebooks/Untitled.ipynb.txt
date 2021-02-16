@@ -3,7 +3,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "white-white",
+   "id": "august-state",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -12,34 +12,259 @@
   },
   {
    "cell_type": "code",
+   "execution_count": 6,
+   "id": "automotive-python",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "=> Info - it appears the following folder does not exist on your system:\n",
+      "/Users/layne/Library/Application Support/aiqc/\n",
+      "\n",
+      "=> Fix - you can attempt to fix this by running `aiqc.create_folder()`.\n",
+      "\n",
+      "=> Success - created folder at file path:\n",
+      "/Users/layne/Library/Application Support/aiqc/\n",
+      "\n",
+      "=> Next run `aiqc.create_config()`.\n",
+      "\n",
+      "\n",
+      "=> Success - the following file path already exists on your system:\n",
+      "/Users/layne/Library/Application Support/aiqc/\n",
+      "\n",
+      "\n",
+      "=> Success - created config file for settings at path:\n",
+      "/Users/layne/Library/Application Support/aiqc/config.json\n",
+      "\n",
+      "\n",
+      "=> Next run `aiqc.create_db()`.\n",
+      "\n",
+      "\n",
+      "=> Success - created database file at path:\n",
+      "/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3\n",
+      "\n",
+      "\n",
+      "💾  Success - created all database tables.  💾\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "aiqc.setup()"
+   ]
+  },
+  {
+   "cell_type": "code",
    "execution_count": 7,
-   "id": "agricultural-brighton",
+   "id": "collaborative-adjustment",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from aiqc import tests"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "continued-israeli",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "___/ featurecoder_index: 0 \\_________\n",
+      "\n",
+      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "['petal_width']\n",
+      "\n",
+      "=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n",
+      "{'petal_length': 'float64', 'sepal_length': 'float64', 'sepal_width': 'float64'}\n",
+      "\n",
+      "\n",
+      "___/ featurecoder_index: 1 \\_________\n",
+      "\n",
+      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "['sepal_length', 'sepal_width', 'petal_length']\n",
+      "\n",
+      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "No more Featurecoders can be added to this Encoderset.\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "batch = tests.make_test_batch('multiclass')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "cultural-design",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:29<00:00,  3.73s/it]\n"
+     ]
+    }
+   ],
+   "source": [
+    "batch.run_jobs()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "collective-building",
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "{'include_2nd_dense': True,\n",
-       " 'neuron_multiply': 1.0,\n",
-       " 'epoch_count': 300,\n",
-       " 'learning_rate': 0.01,\n",
-       " 'pool_size': 2,\n",
-       " 'dropout': 0.4,\n",
-       " 'batch_size': 8,\n",
-       " 'kernel_size': 3,\n",
-       " 'dense_neurons': 64,\n",
-       " '2nd_dense_neurons': 24,\n",
-       " 'cnn_init': 'he_normal'}"
+       "['DoesNotExist',\n",
+       " '__class__',\n",
+       " '__data__',\n",
+       " '__delattr__',\n",
+       " '__dict__',\n",
+       " '__dir__',\n",
+       " '__doc__',\n",
+       " '__eq__',\n",
+       " '__format__',\n",
+       " '__ge__',\n",
+       " '__getattribute__',\n",
+       " '__gt__',\n",
+       " '__hash__',\n",
+       " '__init__',\n",
+       " '__init_subclass__',\n",
+       " '__le__',\n",
+       " '__lt__',\n",
+       " '__module__',\n",
+       " '__ne__',\n",
+       " '__new__',\n",
+       " '__reduce__',\n",
+       " '__reduce_ex__',\n",
+       " '__rel__',\n",
+       " '__repr__',\n",
+       " '__setattr__',\n",
+       " '__sizeof__',\n",
+       " '__sql__',\n",
+       " '__str__',\n",
+       " '__subclasshook__',\n",
+       " '__weakref__',\n",
+       " '_coerce',\n",
+       " '_dirty',\n",
+       " '_meta',\n",
+       " '_normalize_data',\n",
+       " '_pk',\n",
+       " '_pk_expr',\n",
+       " '_populate_unsaved_relations',\n",
+       " '_prune_fields',\n",
+       " '_schema',\n",
+       " 'add_index',\n",
+       " 'alias',\n",
+       " 'bind',\n",
+       " 'bind_ctx',\n",
+       " 'bulk_create',\n",
+       " 'bulk_update',\n",
+       " 'clone',\n",
+       " 'coerce',\n",
+       " 'copy',\n",
+       " 'create',\n",
+       " 'create_table',\n",
+       " 'delete',\n",
+       " 'delete_by_id',\n",
+       " 'delete_instance',\n",
+       " 'dependencies',\n",
+       " 'dirty_fields',\n",
+       " 'drop_table',\n",
+       " 'filter',\n",
+       " 'get',\n",
+       " 'get_by_id',\n",
+       " 'get_id',\n",
+       " 'get_model',\n",
+       " 'get_or_create',\n",
+       " 'get_or_none',\n",
+       " 'history',\n",
+       " 'id',\n",
+       " 'index',\n",
+       " 'insert',\n",
+       " 'insert_from',\n",
+       " 'insert_many',\n",
+       " 'is_alias',\n",
+       " 'is_dirty',\n",
+       " 'job',\n",
+       " 'job_id',\n",
+       " 'metrics',\n",
+       " 'metrics_aggregate',\n",
+       " 'model_file',\n",
+       " 'noop',\n",
+       " 'plot_confusion_matrix',\n",
+       " 'plot_data',\n",
+       " 'plot_learning_curve',\n",
+       " 'plot_precision_recall',\n",
+       " 'plot_roc_curve',\n",
+       " 'predictions',\n",
+       " 'probabilities',\n",
+       " 'raw',\n",
+       " 'repeat_index',\n",
+       " 'replace',\n",
+       " 'replace_many',\n",
+       " 'save',\n",
+       " 'select',\n",
+       " 'set_by_id',\n",
+       " 'table_exists',\n",
+       " 'time_duration',\n",
+       " 'time_started',\n",
+       " 'time_succeeded',\n",
+       " 'truncate_table',\n",
+       " 'unwrap',\n",
+       " 'update',\n",
+       " 'validate_model']"
       ]
      },
-     "execution_count": 7,
+     "execution_count": 13,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "aiqc.Batch.get_by_id(1).jobs[0].hyperparamcombo.hyperparameters"
+    "dir(batch.jobs[0].results[0])"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "empty-planner",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<function aiqc.tests.multiclass_function_model_train(model, samples_train, samples_evaluate, **hyperparameters)>"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "batch.algorithm.function_model_train"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "anticipated-blend",
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {
