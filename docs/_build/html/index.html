@@ -276,22 +276,20 @@
 </div>
 <div class="section" id="iv-effortlessly-reproduce-prove-experiments">
 <h2>IV. Effortlessly reproduce &amp; prove experiments.<a class="headerlink" href="#iv-effortlessly-reproduce-prove-experiments" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># No more writing down parameters or screenshotting charts!</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Everything is saved. No more writing down parameters or screenshotting charts!</span>
 <span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
 <span class="p">{</span>
     <span class="s1">&#39;include_nth_layer&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s1">&#39;initialization&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-    <span class="s1">&#39;dense_neurons&#39;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
-    <span class="o">...</span>
+    <span class="s1">&#39;dense_neurons&#39;</span><span class="p">:</span> <span class="mi">64</span>
 <span class="p">}</span>
 
-<span class="c1"># Model weights and definitions are saved in sqlite.</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_build</span>
-
-<span class="c1"># Metrics are already calculated, just call them.</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
+<span class="c1"># Recorded end-to-end:</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span> <span class="c1"># trained model</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_build</span> <span class="c1"># model definition</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span> <span class="c1"># predictions</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span> <span class="c1"># sample indeces by split</span>
 </pre></div>
 </div>
 <ul class="simple">

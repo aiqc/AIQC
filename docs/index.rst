@@ -127,22 +127,20 @@ IV. Effortlessly reproduce & prove experiments.
 
 .. code-block:: python
 
-   # No more writing down parameters or screenshotting charts!
+   # Everything is saved. No more writing down parameters or screenshotting charts!
    batch.jobs[0].hyperparamcombo.hyperparameters
    {
        'include_nth_layer': True,
        'initialization': 'he_normal',
        'batch_size': 8,
-       'dense_neurons': 64,
-       ...
+       'dense_neurons': 64
    }
 
-   # Model weights and definitions are saved in sqlite.
-   batch.jobs[0].results[0].get_model()
-   batch.algorithm.function_model_build
-
-   # Metrics are already calculated, just call them.
-   batch.metrics_to_pandas()
+   # Recorded end-to-end:
+   batch.jobs[0].results[0].get_model() # trained model
+   batch.algorithm.function_model_build # model definition
+   batch.jobs[0].results[0].predictions['fold_validation'] # predictions
+   batch.jobs[0].fold.samples['fold_validation']['features'] # sample indeces by split
 
 
 * Automatically records experiments in a local sqlite database file.
