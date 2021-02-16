@@ -79,7 +79,7 @@ I. Rapidly prepare folded data for analysis without leakage.
 
 * Make datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
 
-* Name columns to either include or exclude as Features and/ or Labels.
+* Designate columns by name as either Features or Labels.
 
 * Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
 
@@ -98,7 +98,7 @@ II. Train many variations of an algorithm in a single batch.
 
 * Automatically passes param combinations into model functions as `**kwargs`.
 
-* Tweak model topology as a param (`params['extra_conv3D_layer']=True`).
+* Tweak the model topology as a param (`params['extra_conv3D_layer']=True`).
 
 * Repeat a job to to give it a chance to perform well (`repeat_count=3`).
 
@@ -121,25 +121,49 @@ III. Evaluate algorithm performance with metrics & charts.
 
 |
 
-IV. Refreshingly simple to setup, use, & reproduce.
-===================================================
+
+IV. Effortlessly reproduce experiments.
+=======================================
+
+.. code-block:: python
+   
+   # Here's how you plot the metrics shown in the gif above.
+   batch.plot_performance(max_loss=0.10, min_accuracy=0.90)
+
+
+   # No more writing down parameters or screenshotting charts!
+   batch.jobs[0].hyperparamcombo.hyperparameters
+   {
+       'include_nth_layer': True,
+       'initialization': 'he_normal',
+       'batch_size': 8,
+       'dense_neurons': 64,
+       ...
+   }
+
+
+* Automatically records experiments in a local sqlite database file.
+
+* No infrastructure hassle; `aiqc.setup()` creates the database for you.
+
+|
+
+V. Easy to install. Tutorials to guide you.
+===========================================
 
 .. code-block:: python
 
    # pip install --upgrade aiqc
-   >>> import aiqc
-   >>> aiqc.setup()
 
-   >>> aiqc.get_config()['db_path']
-   '/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3'
+   import aiqc
+   from aiqc import datum # data for tutorials.
+   
+   aiqc.setup()
 
-* Automatically records all experiments in a local sqlite database file.
-
-* No infrastructure hassle; `aiqc.setup()` takes care of all configuration.
 
 * Example datasets built into package. Example image datasets in github repo.
 
 * Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
 
-* Easy to learn in just 2 steps: a `Pipeline` that feeds an `Experiment`.
+* Easy to learn with 2 step tutorials: make a `Pipeline` to feed an `Experiment`.
 

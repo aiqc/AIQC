@@ -240,7 +240,7 @@
 <a class="reference internal image-reference" href="_images/pipeline_25sec_compress.gif"><img alt="pipeline.gif" src="_images/pipeline_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
 <li><p>Make datasets from files (csv, parquet), structures (pandas, numpy), &amp; images (pillow).</p></li>
-<li><p>Name columns to either include or exclude as Features and/ or Labels.</p></li>
+<li><p>Designate columns by name as either Features or Labels.</p></li>
 <li><p>Easily split, fold, &amp; stratify samples (<cite>size_validation=0.12</cite>, <cite>fold_count=5</cite>).</p></li>
 <li><p>Apply encoders by dtype (<cite>float64</cite>) without leaking test/ validation data.</p></li>
 </ul>
@@ -254,7 +254,7 @@
 <ul class="simple">
 <li><p>Queue a batch a many training jobs; one job per hyperparameter combination.</p></li>
 <li><p>Automatically passes param combinations into model functions as <cite>**kwargs</cite>.</p></li>
-<li><p>Tweak model topology as a param (<cite>params[‘extra_conv3D_layer’]=True</cite>).</p></li>
+<li><p>Tweak the model topology as a param (<cite>params[‘extra_conv3D_layer’]=True</cite>).</p></li>
 <li><p>Repeat a job to to give it a chance to perform well (<cite>repeat_count=3</cite>).</p></li>
 </ul>
 <div class="line-block">
@@ -274,22 +274,45 @@
 <div class="line"><br /></div>
 </div>
 </div>
-<div class="section" id="iv-refreshingly-simple-to-setup-use-reproduce">
-<h2>IV. Refreshingly simple to setup, use, &amp; reproduce.<a class="headerlink" href="#iv-refreshingly-simple-to-setup-use-reproduce" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pip install --upgrade aiqc</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+<div class="section" id="iv-effortlessly-reproduce-experiments">
+<h2>IV. Effortlessly reproduce experiments.<a class="headerlink" href="#iv-effortlessly-reproduce-experiments" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here&#39;s how you plot the metrics shown in the gif above.</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span><span class="n">max_loss</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">min_accuracy</span><span class="o">=</span><span class="mf">0.90</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s1">&#39;db_path&#39;</span><span class="p">]</span>
-<span class="s1">&#39;/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3&#39;</span>
+
+<span class="c1"># No more writing down parameters or screenshotting charts!</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
+<span class="p">{</span>
+    <span class="s1">&#39;include_nth_layer&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;initialization&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;dense_neurons&#39;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Automatically records all experiments in a local sqlite database file.</p></li>
-<li><p>No infrastructure hassle; <cite>aiqc.setup()</cite> takes care of all configuration.</p></li>
+<li><p>Automatically records experiments in a local sqlite database file.</p></li>
+<li><p>No infrastructure hassle; <cite>aiqc.setup()</cite> creates the database for you.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="v-easy-to-install-tutorials-to-guide-you">
+<h2>V. Easy to install. Tutorials to guide you.<a class="headerlink" href="#v-easy-to-install-tutorials-to-guide-you" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pip install --upgrade aiqc</span>
+
+<span class="kn">import</span> <span class="nn">aiqc</span>
+<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span> <span class="c1"># data for tutorials.</span>
+
+<span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
 <li><p>Example datasets built into package. Example image datasets in github repo.</p></li>
 <li><p>Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) &amp; OS (win, mac, lin).</p></li>
-<li><p>Easy to learn in just 2 steps: a <cite>Pipeline</cite> that feeds an <cite>Experiment</cite>.</p></li>
+<li><p>Easy to learn with 2 step tutorials: make a <cite>Pipeline</cite> to feed an <cite>Experiment</cite>.</p></li>
 </ul>
 </div>
 </div>
