@@ -159,7 +159,7 @@ V. Easy to install. Tutorials to guide you.
    import aiqc
    from aiqc import datum # data for tutorials.
    
-   aiqc.setup()
+   aiqc.setup() # create & connect to the database.
 
 
 * Example datasets built into package. Example image datasets in github repo.
