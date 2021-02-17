@@ -149,8 +149,8 @@ IV. Effortlessly track, reproduce, & prove experiments.
 
 |
 
-V. Easy to install. Tutorials to guide you.
-===========================================
+V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials</notebooks/api_high_level.ipynb>` to guide you.
+===============================================================================================================================
 
 .. code-block:: python
 
