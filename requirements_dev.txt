@@ -1,5 +1,5 @@
-# So you don't typo yourself a virus: pip install --upgrade -r requirements_dev.txt
-# Instead of requirements.txt, `pip install --upgrade aiqc` installs user-facing reality specified in `setup.py install_requires=[]` 
+# Run this so you don't typo yourself a virus: pip install --upgrade -r requirements_dev.txt
+# Instead of traditional requirements.txt file, run `pip install --upgrade aiqc` to install user-facing reality dictated by `setup.py install_requires=[]` 
 # Packaging:
 pip
 wheel
