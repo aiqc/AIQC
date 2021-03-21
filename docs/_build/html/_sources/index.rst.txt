@@ -37,13 +37,13 @@
   notebooks/api_low_level
   notebooks/visualization
   compatibility
-  
 
 
 .. image:: images/aiqc_logo_banner_narrow.png
   :width: 100%
   :align: center
-  :alt: AIQC logo wide
+  :alt: functionality banner
+
 
 |
 
@@ -101,17 +101,25 @@ Overview
    </script>
 
 
-* AIQC is an open source Python package that simplifies data preparation and parameter tuning for batches of deep learning models without an expensive cloud backend.
+* **AIQC is an open source Python framework for rapid & reproducible deep learning.**
 
-  * It *empowers researchers* by reducing the programming and data science know-how required to integrate machine learning into their research.
+  * **Mission** - empower open science by: *[1]* Reducing the programming & data science know-how required to adopt deep learning. *[2]* Automatically recording experiment workflows. *[3]* Providing a free alternative to expensive clouds & walled gardens.
 
-  * It makes machine learning less of a black box by *reproducibly recording experiments* in a file-based database that requires no configuration.
+  * **Tech** - a Python package that provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job) that not only: *[1]* Accelerates preprocessing and batch model tuning/ scoring but also *[2]* Prevents data leakage and evaluation bias.
 
 
-.. image:: images/diagram_framework.png
+
+.. image:: images/functionality_banner.png
   :width: 100%
   :align: center
-  :alt: framework diagram
+  :alt: functionality banner
+
+|
+
+.. image:: images/pydata_banner.png
+  :width: 100%
+  :align: center
+  :alt: pydata banner
 
 |
 
@@ -188,7 +196,7 @@ IV. Effortlessly track, reproduce, & prove experiments.
    batch.jobs[0].fold.samples['fold_validation']['features'] # sample indeces by split
 
 
-* Automatically records experiments in a local sqlite database file.
+* Automatically records experiments in a local SQLite database file.
 
 * No infrastructure hassle; `aiqc.setup()` creates the database for you.
 

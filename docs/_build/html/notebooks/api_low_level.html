@@ -110,7 +110,7 @@
 <p class="caption"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch.html">PyTorch (coming soon)</a></li>
 </ul>
@@ -594,7 +594,7 @@ div.rendered_html tbody tr:hover {
 </li>
 </ul>
 <blockquote>
-<div><p><em>Considering these types in the future:</em> * <em>Sequence/ time series: multi-file tabular (e.g. 3D numpy, HDF5)</em> * <em>Graph: multi-file nodes and multi-file edges (e.g. DGL)</em></p>
+<div><p>Considering these types in the future: Sequence/ time series: multi-file tabular (e.g. 3D numpy, HDF5). Graph: multi-file nodes and multi-file edges (e.g. DGL).</p>
 </div></blockquote>
 </div>
 <div class="section" id="Persisting-and-Compressing-Structured-Data">
@@ -608,8 +608,18 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 <div class="section" id="Data-Sources">
 <h3>Data Sources<a class="headerlink" href="#Data-Sources" title="Permalink to this headline">¶</a></h3>
-<p>You can make a dataset from either: * <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> * In-memory data structures (pandas dataframe, numpy array). * Flat files (csv, tsv, parquet). * Accepts urls.</p>
+<p>You can make a dataset from either:</p>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></p>
+<ul>
+<li><p>In-memory data structures (pandas dataframe, numpy array).</p></li>
+<li><p>Flat files (csv, tsv, parquet).</p>
+<ul>
+<li><p>Accepts urls.</p></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></p>
 <ul>
 <li><p>Any image file format that can be read by the Pillow library.</p>
@@ -1180,7 +1190,11 @@ array([[11, 11, 11, ..., 18, 18, 18],
 <div class="section" id="ORM">
 <h3>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline">¶</a></h3>
 <p>From a Dataset, pick the column(s) that you want to predict/ train against. Creating a <code class="docutils literal notranslate"><span class="pre">Label</span></code> won’t duplicate your data! It simply marks the Dataset <code class="docutils literal notranslate"><span class="pre">columns</span></code> to be used for supervised learning.</p>
-<p>Later, we’ll see that a <code class="docutils literal notranslate"><span class="pre">Label</span></code> triggers: * The <code class="docutils literal notranslate"><span class="pre">supervision</span></code> attribute of a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> to be either <code class="docutils literal notranslate"><span class="pre">'unsupervised'</span></code>/<code class="docutils literal notranslate"><span class="pre">'supervised'</span></code>. * Approval/ rejection of the <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code>. For example, you wouldn’t perform regression on a string label.</p>
+<p>Later, we’ll see that a <code class="docutils literal notranslate"><span class="pre">Label</span></code> triggers:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">supervision</span></code> attribute of a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> to be either <code class="docutils literal notranslate"><span class="pre">'unsupervised'</span></code>/<code class="docutils literal notranslate"><span class="pre">'supervised'</span></code>.</p></li>
+<li><p>Approval/ rejection of the <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code>. For example, you wouldn’t perform regression on a string label.</p></li>
+</ul>
 <p>Part of the magic of this library is that it prevents you from making silly mistakes like these so that you aren’t faced with some obscure NumPy/ Tensor, dtype/ dimensionality error on the nth layer of your neural network.</p>
 <p>For categorical labels, but not for continuous/float labels, the <code class="docutils literal notranslate"><span class="pre">Label.unique_classes</span></code> are recorded.</p>
 </div>
@@ -1956,9 +1970,14 @@ array([[5.1, 3.5, 1.4, 0.2],
 <li><p>Scaling continuous features from (-1 to 1) or (0.0 to 1.0). Or transforming them to resemble a more Gaussian distribution.</p></li>
 </ul>
 <p>There are two phases of encoding: 1. <code class="docutils literal notranslate"><span class="pre">fit</span></code> - where the encoder learns about the values of the samples made available to it. Ideally, you only want to <code class="docutils literal notranslate"><span class="pre">fit</span></code> aka learn from your training split so that you are not <em>“leaking”</em> information from your validation and test spits into your encoder! 2. <code class="docutils literal notranslate"><span class="pre">transform</span></code> - where the encoder transforms all of the samples in the population.</p>
-<p>AIQC has solved the following challenges that encoding brings to light: * How does one dynamically <code class="docutils literal notranslate"><span class="pre">fit</span></code> on only the training samples in advanced scenarios like cross-validation where a different fold is used for validation each time? * For certain encoders, especially categorical ones, there is arguably no leakage. If an encoder is arbitrarilly assigning values/ tags to a sample through a process that is not aggregate-informed, then the information that is reveal to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> is largely
-irrelevant. As an analogy, if we are examining swan color and all of a sudden there is a black swan… it’s clearly not white, so slap a non-white label on it and move on. In fact, the prediction process and performance metric calucatlion may fail if it doesn’t know how to handle the previously unseen category. * Certain encoders only accept certain dtypes. Certain encoders only accept certain dimensionality (e.g. 1D, 2D, 3D) or shape patterns (odd-by-odd square). Unfortunately, there is not much
-uniformity here. * Certain encoders output extraneous objects that don’t work with deep learning libraries.</p>
+<p>AIQC has solved the following challenges related to encoding:</p>
+<ul class="simple">
+<li><p>How does one dynamically <code class="docutils literal notranslate"><span class="pre">fit</span></code> on only the training samples in advanced scenarios like cross-validation where a different fold is used for validation each time?</p></li>
+<li><p>For certain encoders, especially categorical ones, there is arguably no leakage. If an encoder is arbitrarilly assigning values/ tags to a sample through a process that is not aggregate-informed, then the information that is reveal to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> is largely irrelevant. As an analogy, if we are examining swan color and all of a sudden there is a black swan… it’s clearly not white, so slap a non-white label on it and move on. In fact, the prediction process and performance metric calucatlion
+may fail if it doesn’t know how to handle the previously unseen category.</p></li>
+<li><p>Certain encoders only accept certain dtypes. Certain encoders only accept certain dimensionality (e.g. 1D, 2D, 3D) or shape patterns (odd-by-odd square). Unfortunately, there is not much uniformity here.</p></li>
+<li><p>Certain encoders output extraneous objects that don’t work with deep learning libraries.</p></li>
+</ul>
 <blockquote>
 <div><p><em>For now, only ``sklearn.preprocessing`` methods are supported. That may change as we add support for more low-level tensor-based frameworks like PyTorch.</em></p>
 </div></blockquote>
@@ -1993,8 +2012,12 @@ uniformity here. * Certain encoders output extraneous objects that don’t work 
 <h3>Background<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>The simplistic <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code> is a good warmup for the moe advanced <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>.</p>
 <p>Of course, you cannot encode Labels if your <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> does not have labels in the first place.</p>
-<p>The process is straightforward. You provide an instantiated encoder [e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> not <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code>], and then AIQC will: * Verify that the encoder works with your <code class="docutils literal notranslate"><span class="pre">Label</span></code>’s dtype, sample values, and figure out what dimensionality it needs in order to succeed. * Validate the attributes of your encoder to smooth out any common errors they would cause. * Determine whether the encoder should be <code class="docutils literal notranslate"><span class="pre">fit</span></code> either (a) exclusively on the train split, or (b) if it is not prone to
-leakage, inclusively on the entire dataset thereby reducing the chance of errors arising.</p>
+<p>The process is straightforward. You provide an instantiated encoder [e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> not <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code>], and then AIQC will:</p>
+<ul class="simple">
+<li><p>Verify that the encoder works with your <code class="docutils literal notranslate"><span class="pre">Label</span></code>’s dtype, sample values, and figure out what dimensionality it needs in order to succeed.</p></li>
+<li><p>Validate the attributes of your encoder to smooth out any common errors they would cause.</p></li>
+<li><p>Determine whether the encoder should be <code class="docutils literal notranslate"><span class="pre">fit</span></code> either (a) exclusively on the train split, or (b) if it is not prone to leakage, inclusively on the entire dataset thereby reducing the chance of errors arising.</p></li>
+</ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
 </pre></div>
@@ -2026,8 +2049,19 @@ leakage, inclusively on the entire dataset thereby reducing the chance of errors
 </div>
 <div class="section" id="Filtering-feature-columns">
 <h3>Filtering feature columns<a class="headerlink" href="#Filtering-feature-columns" title="Permalink to this headline">¶</a></h3>
-<p>The filtering mode is either: * Inclusive (<code class="docutils literal notranslate"><span class="pre">include=True</span></code>) encode columns that match the filter. * Exclusive (<code class="docutils literal notranslate"><span class="pre">include=False</span></code>) encode columns outside of the filter.</p>
-<p>Then you can select: 1. An optional list of <code class="docutils literal notranslate"><span class="pre">dtypes</span></code>. 2. An optional list of <code class="docutils literal notranslate"><span class="pre">columns</span></code> name. * The column filter is applied after the dtype filter.</p>
+<p>The filtering mode is either:</p>
+<ul class="simple">
+<li><p>Inclusive (<code class="docutils literal notranslate"><span class="pre">include=True</span></code>) encode columns that match the filter.</p></li>
+<li><p>Exclusive (<code class="docutils literal notranslate"><span class="pre">include=False</span></code>) encode columns outside of the filter.</p></li>
+</ul>
+<p>Then you can select:</p>
+<ol class="arabic simple">
+<li><p>An optional list of <code class="docutils literal notranslate"><span class="pre">dtypes</span></code>.</p></li>
+<li><p>An optional list of <code class="docutils literal notranslate"><span class="pre">columns</span></code> name.</p></li>
+</ol>
+<ul class="simple">
+<li><p>The column filter is applied after the dtype filter.</p></li>
+</ul>
 <blockquote>
 <div><p>You can create a filter for all columns by setting <code class="docutils literal notranslate"><span class="pre">include=False</span></code> and then seting both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </div></blockquote>
@@ -2074,8 +2108,13 @@ No more Featurecoders can be added to this Encoderset.
 <blockquote>
 <div><p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is the ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> for ORMs.</p>
 </div></blockquote>
-<p>The following attributes tell AIQC how to handle the Algorithm behind the scenes: * <code class="docutils literal notranslate"><span class="pre">library</span></code> - right now, only ‘keras’ is supported. * Each library’s model object and callbacks (history, early stopping) need to be handled differently.</p>
+<p>The following attributes tell AIQC how to handle the Algorithm behind the scenes:</p>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">library</span></code> - right now, only ‘keras’ is supported.</p>
+<ul>
+<li><p>Each library’s model object and callbacks (history, early stopping) need to be handled differently.</p></li>
+</ul>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> - right now, these types are supported:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code>, <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code>, <code class="docutils literal notranslate"><span class="pre">'regression'</span></code>.</p></li>
@@ -2087,7 +2126,13 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="section" id="Model-Definition">
 <h3>Model Definition<a class="headerlink" href="#Model-Definition" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is composed of the functions: * <code class="docutils literal notranslate"><span class="pre">function_model_build</span></code>. * <code class="docutils literal notranslate"><span class="pre">function_model_train</span></code>. * <code class="docutils literal notranslate"><span class="pre">function_model_evaluate</span></code> (optional, inferred by <code class="docutils literal notranslate"><span class="pre">analyis_type</span></code>). * <code class="docutils literal notranslate"><span class="pre">function_model_predict</span></code> (optional, inferred by <code class="docutils literal notranslate"><span class="pre">analyis_type</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is composed of the functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_build</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_train</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_evaluate</span></code> (optional, inferred by <code class="docutils literal notranslate"><span class="pre">analyis_type</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function_model_predict</span></code> (optional, inferred by <code class="docutils literal notranslate"><span class="pre">analyis_type</span></code>).</p></li>
+</ul>
 <blockquote>
 <div><p>May provide overridable defaults for build and train in the future.</p>
 </div></blockquote>
@@ -2113,7 +2158,11 @@ No more Featurecoders can be added to this Encoderset.
 <div class="section" id="Function-to-build-model">
 <h4>Function to build model<a class="headerlink" href="#Function-to-build-model" title="Permalink to this headline">¶</a></h4>
 <p>If you normally don’t wrap the building of your model in a function, don’t be scared, all you have to do is add <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">model</span></code> to the bottom of it, and AIQC will handle the rest. Also, if using <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> feels intimidating, you can skip them.</p>
-<p>The automatically provided <code class="docutils literal notranslate"><span class="pre">features_shape</span></code> and <code class="docutils literal notranslate"><span class="pre">label_shape</span></code> are handy because: * The number of feature/ label columns is mutable due to encoders (e.g. OHE). * Shapes can be less obvious in multi-dimensional scenarios like colored images.</p>
+<p>The automatically provided <code class="docutils literal notranslate"><span class="pre">features_shape</span></code> and <code class="docutils literal notranslate"><span class="pre">label_shape</span></code> are handy because:</p>
+<ul class="simple">
+<li><p>The number of feature/ label columns is mutable due to encoders (e.g. OHE).</p></li>
+<li><p>Shapes can be less obvious in multi-dimensional scenarios like colored images.</p></li>
+</ul>
 <blockquote>
 <div><p>You can customize the metrics if you so desire (e.g. change the loss or accuracy), but they will only be applied to the training process/ <code class="docutils literal notranslate"><span class="pre">History</span></code> callback. We’ll see later that AIQC will calculate metrics for you automatically.</p>
 </div></blockquote>

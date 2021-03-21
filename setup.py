@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="1.0.70",
+    version="1.0.71",
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
@@ -27,9 +27,9 @@ setuptools.setup(
         # Frameworks:
         , 'peewee>=3.14.0'#Just pip show'ed where this was at during aiqc 1.0.0
         , 'scikit-learn>=0.23.2'#Just pip show'ed where this was at during aiqc 1.0.0
+        , 'numpy~=1.19.2'# The version required by tensorflow. Wasn't accepting 1.20.
         , 'pandas'# Heavily depended on so other packages will install it.
         , 'pillow'
-        , 'numpy'# Heavily depended on so other packages will install it.
         , 'pyarrow>=2.0.0'
         , 'plotly>=4.14.3'
         # Programmatic:

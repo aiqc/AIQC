@@ -1,1 +1,1 @@
-For now, be cordial.
+Be cordial; https://www.dictionary.com/browse/cordial

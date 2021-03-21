@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "gorgeous-mainland",
+   "id": "pointed-honolulu",
    "metadata": {},
    "source": [
     "# PyTorch (coming soon)"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "statewide-enforcement",
+   "id": "hundred-might",
    "metadata": {},
    "source": [
     "*AIQC is extensible. Support for PyTorch models coming soon.*"
