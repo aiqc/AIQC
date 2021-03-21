@@ -1,1 +1,0 @@
-Be cordial; https://www.dictionary.com/browse/cordial
