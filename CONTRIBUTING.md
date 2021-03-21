@@ -9,12 +9,12 @@ If you already have an idea about something you would like to contribute, please
 <br />
 
 ### Reaching out.
-Send an email to layne.sadlerATgmail.com. We can talk through the schema, and find out where you can make an impact.
+Send an email to `layne.sadlerATgmail.com`. We can talk through the schema, get you up to speed, and find out where you can make an impact.
 
 <br />
 
 ### Setting up environment.
-We currently have an [Issue open for a setting up a docker dev env](https://github.com/aiqc/aiqc/issues/16), which would be a great way to get familiar with the project.
+We currently have an [Issue open for a setting up a docker dev env](https://github.com/aiqc/aiqc/issues/16), which would be a great way to get familiar with the project. The Issue explains most of the dependencies and where to find them.
 
 [Reference the **Install** section of the documentation](https://aiqc.readthedocs.io/en/latest/notebooks/installation.html
 )
@@ -22,14 +22,21 @@ We currently have an [Issue open for a setting up a docker dev env](https://gith
 <br />
 
 ### Programming style.
-Prioritize human readability, maintainability, and simplicity over conciseness and performance. For example, can you do it without `lambda` or some complex 1-liner that takes an hour to reverse engineer? 
+Prioritize human readability, maintainability, and simplicity over conciseness and performance. For example, can you do it without lambda, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists are fundamentally not world class software engineers, and vice versa!
 
 When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modular DRYness. For example, we don't want to have to trace through 10 functions to figure out what you are trying to do.
 
-Try to handle obvious edge cases, but don't make the program more complex than it has to be. For example, *[do]* verify that the file/directory exists when users provide a path argument, and provide helpful error messages, but *[don't]* spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. 
+Apply the Pareto principle; try to handle obvious edge cases, but don't make the program more complex than it has to be. For example:
+
+* *[Do]* verify that the file/directory exists when users provide a path argument, and provide helpful error messages, but 
+* *[Don't]* spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. 
+
+If in doubt, ask!
 
 <br />
 
 ### Code of conduct.
 
-Be cordial and welcoming. Strive to give people the benefit of the doubt at first. However, encourage them to learn on their own if they demonstrate no research by pointing them to a starting point without doing all of the work for them. In generally, be slightly less rigid than the StackOverflow community.
+* Be cordial and welcoming.
+* Strive to give people the benefit of the doubt at first. However, encourage them to learn on their own if they demonstrate no research by pointing them to a starting point without doing all of the work for them. In generally, be slightly less rigid than the StackOverflow community. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. 
+* Don't talk trash about other competitors or people. Everyone is doing the best they can.
