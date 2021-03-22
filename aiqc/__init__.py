@@ -2469,6 +2469,7 @@ class Labelcoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
+		label_col_count = splitset.label.column_count
 
 		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
@@ -2536,12 +2537,13 @@ class Labelcoder(BaseModel):
 
 
 	def check_sklearn_attributes(sklearn_preprocess:object):
+		"""Used by Featurecoder too."""
 		coder_type = str(type(sklearn_preprocess))
 		stringified_coder = str(sklearn_preprocess)
 
 		if (inspect.isclass(sklearn_preprocess)):
 			raise ValueError(dedent("""
-			Yikes - The encoder you provided is Python class, but it should be a Python instance.\n
+			Yikes - The encoder you provided is a class name, but it should be a class instance.\n
 			Class (incorrect): `OrdinalEncoder`
 			Instance (correct): `OrdinalEncoder()`
 			\n"""))
@@ -3550,6 +3552,7 @@ class Batch(BaseModel):
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		splitset = Splitset.get_by_id(splitset_id)
+
 		if (foldset_id is not None):
 			foldset = Foldset.get_by_id(foldset_id)
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
@@ -3565,6 +3568,21 @@ class Batch(BaseModel):
 				if ('classification' in analysis_type):	
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
+
+					if ('_binary' in analysis_type):
+						# Prevent OHE w classification_binary
+						if (encoderset_id is not None):
+							encoderset = Encoderset.get_by_id(encoderset_id)
+							labelcoder = encoderset.labelcoders[0]
+							stringified_coder = str(labelcoder.sklearn_preprocess)
+							if (stringified_coder.startswith("OneHotEncoder")):
+								raise ValueError(dedent("""
+								Yikes - `Algorithm.analysis_type=='classification_binary', but 
+								`Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
+								This would result in a multi-column output, but binary classification
+								needs a single column output.
+								Go back and make a Labelcoder with `Binarizer()` instead.
+								"""))
 
 					if (splitset.bin_count is not None):
 						print(dedent("""
@@ -3586,7 +3604,7 @@ class Batch(BaseModel):
 						and
 						(not np.issubdtype(label_dtype, np.signedinteger))
 					):
-						raise ValueError(f"Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
+						raise ValueError("Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
 					
 					if (splitset.bin_count is None):
 						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")					
@@ -3602,7 +3620,7 @@ class Batch(BaseModel):
 			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
-					raise ValueError(f"Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
+					raise ValueError("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
 
 		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
 			raise ValueError(f"\nYikes - Cannot have `hide_test==True` if `splitset.supervision != 'supervised'`.\n")
@@ -3626,7 +3644,8 @@ class Batch(BaseModel):
 			combos = [None]
 			hyperparamset = None
 			
-
+		# Splitset can have multiple Encodersets for experimentation.
+		# So this relationship determines which one is tied to Batch.
 		if (encoderset_id is not None):
 			encoderset = Encoderset.get_by_id(encoderset_id)
 		else:
@@ -3794,9 +3813,9 @@ class Batch(BaseModel):
 		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
 		batch = Batch.get_by_id(id)
 		
-		proc_name = "aiqc_batch_" + str(batch.id)
-		proc_names = [p.name for p in multiprocessing.active_children()]
-		if (proc_name not in proc_names):
+		proc_name = f"aiqc_batch_{batch.id}"
+		current_procs = [p.name for p in multiprocessing.active_children()]
+		if (proc_name not in current_procs):
 			raise ValueError(f"\nYikes - Cannot terminate `multiprocessing.Process.name` '{proc_name}' because it is not running.\n")
 
 		processes = multiprocessing.active_children()
@@ -4320,6 +4339,7 @@ class Job(BaseModel):
 		elif (hyperparamcombo is None):
 			hyperparameters = None
 		
+
 		if (splitset.supervision == "unsupervised"):
 			model = algorithm.function_model_build(
 				features_shape,
@@ -4510,9 +4530,15 @@ class Result(BaseModel):
 			os.remove(temp_file_name)
 		return model
 
+
+	def get_hyperparameters(id:int, as_pandas:bool=False):
+		"""This is actually a method of `Hyperparamcombo` so we just pass through."""
+		r = Result.get_by_id(id)
+		hyperparamcombo = r.job.hyperparamcombo
+		hp = hyperparamcombo.get_hyperparameters(as_pandas=as_pandas)
+		return hp
+
 		
-
-
 	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
 		r = Result.get_by_id(id)
 		a = r.job.batch.algorithm

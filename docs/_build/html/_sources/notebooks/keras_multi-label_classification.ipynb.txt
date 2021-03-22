@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "consecutive-aluminum",
+   "id": "perfect-seven",
    "metadata": {},
    "source": [
     "# Keras: Classify Multi-Label"
@@ -10,7 +10,15 @@
   },
   {
    "cell_type": "markdown",
-   "id": "liberal-graphics",
+   "id": "obvious-garage",
+   "metadata": {},
+   "source": [
+    "![houses](../images/iris.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "placed-visiting",
    "metadata": {},
    "source": [
     "Reference this great blog for machine learning cookbooks: [MachineLearningMastery.com \"Multi-Label Classification\"](https://machinelearningmastery.com/multi-label-classification-with-deep-learning/)."
@@ -19,7 +27,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "fiscal-commerce",
+   "id": "breeding-printer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "destroyed-exploration",
+   "id": "insured-discount",
    "metadata": {},
    "source": [
     "---"
@@ -44,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "statewide-massage",
+   "id": "removable-exposure",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -52,7 +60,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "spatial-peripheral",
+   "id": "robust-walker",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -61,7 +69,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "changing-dealer",
+   "id": "favorite-watts",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -71,7 +79,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "level-sewing",
+   "id": "proved-stuff",
    "metadata": {},
    "outputs": [
     {
@@ -168,7 +176,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "united-beijing",
+   "id": "other-value",
    "metadata": {},
    "outputs": [
     {
@@ -193,7 +201,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "synthetic-making",
+   "id": "pointed-publication",
    "metadata": {},
    "source": [
     "---"
@@ -201,7 +209,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "swiss-bhutan",
+   "id": "certain-flash",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -209,7 +217,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "muslim-ceiling",
+   "id": "theoretical-cholesterol",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -218,7 +226,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "possible-suffering",
+   "id": "catholic-furniture",
    "metadata": {},
    "outputs": [
     {
@@ -259,7 +267,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "coordinated-fifty",
+   "id": "coated-skating",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -282,7 +290,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "accessory-adobe",
+   "id": "right-proxy",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -305,7 +313,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "laughing-sheffield",
+   "id": "periodic-bracket",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -320,7 +328,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "seven-editor",
+   "id": "together-wholesale",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -344,7 +352,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "bacterial-easter",
+   "id": "infectious-catalog",
    "metadata": {},
    "outputs": [
     {
@@ -361,7 +369,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "unauthorized-course",
+   "id": "loved-volleyball",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -369,7 +377,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "commercial-tunnel",
+   "id": "sticky-pavilion",
    "metadata": {},
    "source": [
     "---"
@@ -377,7 +385,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "published-treasury",
+   "id": "pleased-experiment",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -385,7 +393,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "received-weapon",
+   "id": "worldwide-samba",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -394,7 +402,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "dense-banner",
+   "id": "connected-algeria",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -404,7 +412,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "worldwide-taylor",
+   "id": "solved-geography",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -414,7 +422,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "downtown-annual",
+   "id": "joined-omega",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -424,7 +432,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "abandoned-reputation",
+   "id": "otherwise-database",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -434,7 +442,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "olive-mayor",
+   "id": "tamil-respondent",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -448,7 +456,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "threaded-tunisia",
+   "id": "corporate-virgin",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -458,7 +466,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "sixth-supervision",
+   "id": "disturbed-northern",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -470,7 +478,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "accepting-pension",
+   "id": "capital-translator",
    "metadata": {},
    "outputs": [
     {
@@ -499,7 +507,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "quiet-wedding",
+   "id": "prescribed-budget",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -522,7 +530,7 @@
   {
    "cell_type": "code",
    "execution_count": 36,
-   "id": "breeding-synthetic",
+   "id": "cellular-musician",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -545,7 +553,7 @@
   {
    "cell_type": "code",
    "execution_count": 37,
-   "id": "corresponding-qualification",
+   "id": "diagnostic-northern",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -560,7 +568,7 @@
   {
    "cell_type": "code",
    "execution_count": 38,
-   "id": "rational-antibody",
+   "id": "pending-advance",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -575,7 +583,7 @@
   {
    "cell_type": "code",
    "execution_count": 39,
-   "id": "distinguished-directive",
+   "id": "useful-belize",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -587,7 +595,7 @@
   {
    "cell_type": "code",
    "execution_count": 40,
-   "id": "continuing-packing",
+   "id": "diagnostic-appliance",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -602,7 +610,7 @@
   {
    "cell_type": "code",
    "execution_count": 41,
-   "id": "innovative-possibility",
+   "id": "comprehensive-cameroon",
    "metadata": {},
    "outputs": [
     {
@@ -619,7 +627,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "italian-interview",
+   "id": "employed-break",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -642,7 +650,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.7"
+   "version": "3.7.6"
   }
  },
  "nbformat": 4,
