@@ -3581,7 +3581,7 @@ class Batch(BaseModel):
 								`Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
 								This would result in a multi-column output, but binary classification
 								needs a single column output.
-								Go back and make a Labelcoder with `Binarizer()` instead.
+								Go back and make a Labelcoder with single column output preprocess like `Binarizer()` instead.
 								"""))
 
 					if (splitset.bin_count is not None):
