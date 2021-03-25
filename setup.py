@@ -21,22 +21,22 @@ setuptools.setup(
     # a fresh python env, I don't need to require users to install 'wheel'.
     install_requires=[
         # Mandatory versions:
-        'tensorflow>=2.4.1'#tensorflow.org/install/pip
-        , 'keras>=2.4.3'#https://docs.floydhub.com/guides/environments/
-        , 'h5py~=2.10.0'#(tf2.4.1 req h5py~=2.10.0)
+        'tensorflow==2.4.1'#tensorflow.org/install/pip
+        , 'Keras==2.4.3'#https://docs.floydhub.com/guides/environments/
+        , 'h5py==2.10.0'#(tf2.4.1 req h5py~=2.10.0)
         # Frameworks:
-        , 'peewee>=3.14.0'#Just pip show'ed where this was at during aiqc 1.0.0
-        , 'scikit-learn>=0.23.2'#Just pip show'ed where this was at during aiqc 1.0.0
-        , 'numpy~=1.19.2'# The version required by tensorflow. Wasn't accepting 1.20.
-        , 'pandas'# Heavily depended on so other packages will install it.
-        , 'pillow'
-        , 'pyarrow>=2.0.0'
-        , 'plotly>=4.14.3'
+        , 'peewee==3.14.3'#Just pip show'ed where this was at during aiqc 1.0.0
+        , 'scikit-learn==0.24.1'#Just pip show'ed where this was at during aiqc 1.0.0
+        , 'numpy==1.19.5'# The version required by tensorflow. Wasn't accepting 1.20.
+        , 'pandas==1.2.3'# Heavily depended on so other packages will install it.
+        , 'Pillow==8.1.2'
+        , 'pyarrow==3.0.0'
+        , 'plotly==4.14.3'
         # Programmatic:
-        , 'appdirs'
-        , 'natsort'
-        , 'tqdm'
-        , 'validators'
+        , 'appdirs==1.4.4'
+        , 'natsort==7.1.1'
+        , 'tqdm==4.59.0'
+        , 'validators==0.18.2'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
