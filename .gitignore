@@ -2,7 +2,6 @@
 .DS_Store
 **/.ipynb_checkpoints/
 .ipynb_checkpoints/
-.github
 **/__pycache__/
 __pycache__/
 /dev_notebooks
