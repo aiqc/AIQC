@@ -1,13 +1,5 @@
----
-name: Issue
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
----
-
-> If you are not a contributor, please open a [Discussion](https://github.com/aiqc/aiqc/discussions) instead.
+* Do NOT ask help oriented questions here. Use StackOverflow tag `#aiqc` for that.
+* If you are not an AIQC contributor, please open a [Discussion](https://github.com/aiqc/aiqc/discussions) instead.
 
 ## Background
 Provide just enough context about the current functionality, or lack thereof, so that people know what you are talking about. 
