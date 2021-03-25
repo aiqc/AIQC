@@ -2189,7 +2189,7 @@ class Foldset(BaseModel):
 						Warning - Previously you set `Splitset.bin_count is None`
 						but now you are trying to set `Foldset.bin_count is not None`.
 						
-						This can result in incosisten stratification processes being 
+						This can result in incosistent stratification processes being 
 						used for training samples versus validation and test samples.
 					\n"""))
 				arr_train_labels = Splitset.label_values_to_bins(

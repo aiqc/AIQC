@@ -1,5 +1,12 @@
 # Contributing
 
+<br />
+
+### Mission.
+AIQC exists to bring rapid & reproducible deep learning to open science. We strive to provide researchers free tools that are easy to integrate into their research. Ultimately, we'd like to create field-specific preprocessing pipelines & pre-trained models for each type of science. You can [learn more about our mission here](https://aiqc.readthedocs.io/en/latest/mission.html).
+
+<br />
+
 ### What to work on?
 Check the **Issues** for something to pick up if you are looking to get involved. Each issue is given a *difficulty* score to make it easier to find low hanging fruit.
 https://github.com/aiqc/aiqc/issues
