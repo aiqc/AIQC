@@ -19,6 +19,7 @@ rm -r build dist aiqc.egg-info
 
 ### Testing a Fresh Install
 
+# Uninstalls all user-installed packages.
 ```bash
 pip freeze | xargs pip uninstall -y
 pip install --upgrade aiqc
