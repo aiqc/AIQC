@@ -46,6 +46,11 @@ If in doubt, ask!
 
 <br />
 
+### Agreement.
+The current license of this library is *GNU Affero General Public License v3.0 (AGPL)*, which means that closed source software (yet another AWS cloud service) cannot steal it without also adopting AGPL and releasing the source code. If, in the future, we decide that we want to create a consulting company similar to: NumFOCUS Dask's Coiled, NumFOCUS JuliaLang's JuliaComputing, SeqeraLabs' Nextflow, or Apache Spark's Databricks, then we will consider changing the license to something more permissive like either BSD or MIT. In making this change, other corporations would be able to use the AIQC software too. For example, SaturnCloud using Dask, Lifebit using Nextflow, AWS forking Elasticsearch, Databricks forking Apache Zeppelin. By making this change at a time of our chosing, we level the playing field. We want you to be aware of this when contributing your code.
+
+<br/>
+
 ### Code of conduct.
 * Be cordial and welcoming.
 * Strive to give people the benefit of the doubt at first. However, encourage them to learn on their own if they demonstrate no research by pointing them to a starting point without doing all of the work for them. In generally, be slightly less rigid than the StackOverflow community. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. English is also a 2nd language for many, so be patient.
