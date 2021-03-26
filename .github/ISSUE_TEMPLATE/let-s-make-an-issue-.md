@@ -1,6 +1,6 @@
 ---
 name: Let's Make an Issue!
-about: Provide background, problem, solution, & discussion.
+about: Follow the instructions in the next screen.
 title: ''
 labels: ''
 assignees: aiqc
