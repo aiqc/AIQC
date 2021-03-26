@@ -1,0 +1,1 @@
+The use of AIQC permits neither persecution nor misinformation of any species anywhere in the universe.
