@@ -2,7 +2,7 @@
 name: Let's Make an Issue!
 about: Provide background, problem, solution, & discussion.
 title: ''
-labels: enhancement
+labels: ''
 assignees: aiqc
 
 ---
