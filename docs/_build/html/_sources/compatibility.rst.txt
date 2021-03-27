@@ -13,7 +13,7 @@ Libraries & Analyses
   Classification (binary), ✓, H, M
   Classification (multi), ✓, H, M
   Regression, ✓, H, M
-  Generation, H, L, L
+  Generation, H, M, L
   Reinforcement, L, L, L
 
 |

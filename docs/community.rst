@@ -80,9 +80,9 @@ Programming style.
 
 ----
 
-**********
-Open core.
-**********
+**************
+Why open core?
+**************
 
 * Many open source projects have adopted the *open core* model.
   * Notable examples include:NumFOCUS JuliaLang - JuliaComputing, NumFOCUS Dask - Coiled & SaturnCloud, Apache Spark - Databricks, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
@@ -91,7 +91,10 @@ Open core.
 * In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path.
   * Alternativiely, many grants application processes are explicitly not open to everyday citizens that are not affiliated with an esteemed institution.
 * The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
+* It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service and 5% of users pay for the premium option because it solves their specific problems.
 * To paraphrase, Isaacson's `The Innovators <https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703>`__, "The first computer that was invented is sitting in a university basement in Iowa gathering dust. The 2nd computer that was created was made by IBM and sat on every professional desktop and point-of-sale counter in the world - it led the digital revolution."
+
+For these reasons, AIQC is considering an open core strategy in the long run.
 
 ----
 
