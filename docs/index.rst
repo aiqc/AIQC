@@ -102,7 +102,7 @@ Overview
 
 
 
-* AIQC exists to bring rapid & reproducible deep learning to open science. 
+* The AIQC framework brings rapid & reproducible deep learning to open science. 
 
   * `Mission - empower open science: <https://aiqc.readthedocs.io/en/latest/mission.html>`__ [1] Reduce the programming & data science know-how required to adopt deep learning. [2] Automatically record experiment workflows. [3] Provide a free alternative to expensive cloud SaaS & walled gardens. [4] Accelerate Earth-healing discoveries.
 

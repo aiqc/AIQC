@@ -8,13 +8,13 @@ Libraries & Analyses
 .. csv-table::
   :header: , Keras, PyTorch, TensorFlow
   :align: center
-  :widths: 30, 8, 8
+  :widths: 30, 8, 8, 8
 
-  Classification (binary), ✓, →, →
-  Classification (multi), ✓, →, →
-  Regression, ✓, →, →
-  Generation, →, →, →
-  Reinforcement, TBD, TBD, TBD
+  Classification (binary), ✓, H, M
+  Classification (multi), ✓, H, M
+  Regression, ✓, H, M
+  Generation, H, M, L
+  Reinforcement, L, L, L
 
 |
 
@@ -22,19 +22,18 @@ Data Preparation
 ================
 
 .. csv-table::
-  :header: , Tabular, Image, Sequence, Graph, Text
+  :header: , Tabular, Sequence, Image, Text, Graph
   :align: center
-  :widths: 30, 8, 8, 8, 8
+  :widths: 28, 6, 6, 6, 6, 6
 
-  Splitting, ✓, ✓, →, →, →
-  Folding, ✓, ✓, →, →, →
-  Encoding, ✓, ✓, →, →, →
-  Dimensionality reduction, →, TBD, →, →, TBD
-  Imputation, →, TBD, →, →, TBD
-  Anomaly/ outlier detection, →, TBD, →, TBD, TBD
-  Feature selection/ augmentation, →, TBD, →, →, TBD
-  Clustering/ PCA, →, TBD, →, TBD, TBD
-  Cleaning, →, →, →, →, TBD
+  Splitting, ✓, H, ✓, M, L
+  Folding, ✓, H, ✓, M, L
+  Encoding, ✓, H, H, M, L
+  Augmentation, L, L, H, L, L
+  Imputation, H, H, L, L, L
+  Cleaning & outlier detection, M, M, L, L, L
+  Feature selection, M, M, L, L, L
+  Exploratory data analysis (EDA), M, M, L, L, L
 
 |
 
@@ -42,5 +41,6 @@ Legend
 ^^^^^^
 
 * ✓  |  already supported.
-* →  |  to do.
-* TBD  |  low applicability/ priority.
+* H  |  high priority.
+* M  |  medium priority.
+* L  |  low applicability/ priority.

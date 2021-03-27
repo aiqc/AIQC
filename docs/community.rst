@@ -10,15 +10,18 @@ Community
 ********
 Purpose.
 ********
-AIQC exists to bring rapid & reproducible deep learning to open science. 
 
-We strive to provide researchers with a free tool that is easy to integrate into their experiments. To start, this is about providing a guided framework for each major type of data (tabular, image, sequence, text, graph) and analysis (classify, quantify, generate). Ultimately, we'd like to create field-specific preprocessing pipelines, pre-trained models, and visualizations for each domain of science in order to accelerate discovery. You can `learn more about our mission here <https://aiqc.readthedocs.io/en/latest/mission.html>`__.
+The AIQC framework brings rapid & reproducible deep learning to open science.
+
+We strive to provide researchers with a free tool that is easy to integrate into their experiments. To start, this is about providing a guided framework for each major type of data (tabular, image, sequence, text, graph) and analysis (classify, quantify, generate). 
+
+Ultimately, we'd like to (a) specialize in GANs, and (b) create field-specific preprocessing pipelines, pre-trained models, and visualizations for each domain of science in order to accelerate discovery. You can `learn more about our mission here <https://aiqc.readthedocs.io/en/latest/mission.html>`__.
 
 ----
 
-*****************
-Where can I help?
-*****************
+*********************
+Where can I help out?
+*********************
 
 * Have a look at the `GitHub Issues <https://github.com/aiqc/aiqc/issues>`__ for something that interests you.
   
@@ -34,7 +37,7 @@ Where can I help?
 Research collaborations.
 ************************
 
-Are you working at an institute, government department, university,  non-profit, or company that is conducting altruistic research? Reach out to see if we can help accelerate your work.
+Are you working at an institute, government department, university,  non-profit, or company that is conducting altruistic research? Is your data science team swamped? Reach out to see if we can help accelerate your work with a collaboration.
 
 ----
 
