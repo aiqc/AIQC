@@ -3808,7 +3808,7 @@ class Batch(BaseModel):
 						try:
 							Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 						except KeyboardInterrupt:
-							print("Queue was gracefully interrupted.")
+							print("\nQueue was gracefully interrupted.\n")
 				os.system("say Model training completed")
 
 
