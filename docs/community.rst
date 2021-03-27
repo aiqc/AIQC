@@ -12,7 +12,7 @@ Purpose.
 ********
 AIQC exists to bring rapid & reproducible deep learning to open science. 
 
-We strive to provide researchers with a free tool that is easy to integrate into their experiments. To start, this is about providing a guided framework for each major type of data (tabular, image, sequence, graph) and analysis (classify, quantify, generate). Ultimately, we'd like to create field-specific preprocessing pipelines, pre-trained models, and visualizations for each domain of science in order to accelerate discovery. You can `learn more about our mission here <https://aiqc.readthedocs.io/en/latest/mission.html>`__.
+We strive to provide researchers with a free tool that is easy to integrate into their experiments. To start, this is about providing a guided framework for each major type of data (tabular, image, sequence, text, graph) and analysis (classify, quantify, generate). Ultimately, we'd like to create field-specific preprocessing pipelines, pre-trained models, and visualizations for each domain of science in order to accelerate discovery. You can `learn more about our mission here <https://aiqc.readthedocs.io/en/latest/mission.html>`__.
 
 ----
 
