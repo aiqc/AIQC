@@ -2,12 +2,19 @@
 Community
 #########
 
+..
+  Without this comment, `make html` throws warning about page beginning w horizontal line below.
+
+----
+
 ********
 Purpose.
 ********
 AIQC exists to bring rapid & reproducible deep learning to open science. 
 
 We strive to provide researchers with a free tool that is easy to integrate into their experiments. To start, this is about providing a guided framework for each major type of data (tabular, image, sequence, graph) and analysis (classify, quantify, generate). Ultimately, we'd like to create field-specific preprocessing pipelines, pre-trained models, and visualizations for each domain of science in order to accelerate discovery. You can `learn more about our mission here <https://aiqc.readthedocs.io/en/latest/mission.html>`__.
+
+----
 
 *****************
 Where can I help?
@@ -21,6 +28,8 @@ Where can I help?
 * Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself if you have an idea. We can help you get started.
   * Or check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, but a Discussion is preferred because we may have design plans to address these areas.
 
+----
+
 *************
 Reaching out.
 *************
@@ -29,6 +38,8 @@ Reaching out.
 
 * Check the `Links <https://aiqc.readthedocs.io/en/latest/links.html>`__ for the Slack info. Heads up, this hasn't really taken off/ been promoted until now.
 
+----
+
 ***********************
 Setting up environment.
 ***********************
@@ -36,6 +47,8 @@ Setting up environment.
 `Reference the Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__.
 
 We currently have an `Issue open for a setting up a docker dev env <https://github.com/aiqc/aiqc/issues/16>`__, which would be a great way to get familiar with the project. The Issue explains most of the dependencies and where to find them.
+
+----
 
 ******************
 Programming style.
@@ -54,6 +67,8 @@ Programming style.
 
 * If in doubt, ask what other people think in a `Discussion <https://github.com/aiqc/aiqc/discussions>`__.
 
+----
+
 **********
 Open core.
 **********
@@ -66,6 +81,8 @@ Open core.
   * Alternativiely, many grants application processes are explicitly not open to everyday citizens that are not affiliated with an esteemed institution.
 * The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
 * To paraphrase, Isaacson's `The Innovators <https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703>`__, "The first computer that was invented is sitting in a university basement in Iowa gathering dust. The 2nd computer that was created was made by IBM and sat on every professional desktop and point-of-sale counter in the world - it led the digital revolution."
+
+----
 
 ****************
 Code of conduct.
