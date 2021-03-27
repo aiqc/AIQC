@@ -3805,7 +3805,10 @@ class Batch(BaseModel):
 					, ncols = 100
 				):
 					if (j['result_id'] is None):
-						Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
+						try:
+							Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
+						except KeyboardInterrupt:
+							print("Queue was gracefully interrupted.")
 				os.system("say Model training completed")
 
 
