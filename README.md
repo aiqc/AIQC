@@ -4,7 +4,7 @@
 
 ### [ReadTheDocs](https://aiqc.readthedocs.io/)
 
-###[Community](https://aiqc.readthedocs.io/en/latest/community.html)
+### [Community](https://aiqc.readthedocs.io/en/latest/community.html)
 
 <br />
 
