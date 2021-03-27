@@ -30,6 +30,14 @@ Where can I help?
 
 ----
 
+************************
+Research collaborations.
+************************
+
+Are you working at an institute, government department, university,  non-profit, or company that is conducting altruistic research? Reach out to see if we can help accelerate your work.
+
+----
+
 *************
 Reaching out.
 *************
