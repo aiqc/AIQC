@@ -3799,16 +3799,18 @@ class Batch(BaseModel):
 				proc.start()
 				# proc terminates when `execute_jobs` finishes.
 			elif (in_background==False):
-				for j in tqdm(
-					job_statuses
-					, desc = "🔮 Training Models 🔮"
-					, ncols = 100
-				):
-					if (j['result_id'] is None):
-						try:
-							Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
-						except KeyboardInterrupt:
-							print("\nQueue was gracefully interrupted.\n")
+				try:
+					for j in tqdm(
+						job_statuses
+						, desc = "🔮 Training Models 🔮"
+						, ncols = 100
+					):
+						if (j['result_id'] is None):
+							
+								Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
+				except (KeyboardInterrupt):
+					# So that we don't get nasty error messages when interrupting a long running loop.
+					print("\nQueue was gracefully interrupted.\n")
 				os.system("say Model training completed")
 
 
