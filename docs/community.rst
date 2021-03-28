@@ -19,36 +19,30 @@ Ultimately, we'd like to (a) specialize in GANs, and (b) create field-specific p
 
 ----
 
-*******************
-How can I help out?
-*******************
+***********************
+How can I get involved?
+***********************
 
 * Have a look at the `GitHub Issues <https://github.com/aiqc/aiqc/issues>`__ for something that interests you.
   
   * Keep an eye out for issues are tagged with <kbd>good first issue</kbd>.
   * Every issue has a `Difficulty: ★★★☆☆` score based on how much effort and how complex it has the potential to be.
 
-* Check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
-
-* Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself if you have an idea. We can help you get started.
+  * Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
 
 ----
 
-************************
-Research collaborations.
-************************
+***********************
+How can I get in touch?
+***********************
 
-Are you working at an institute, government department, university,  non-profit, or company that is conducting altruistic research? Is your data science team swamped? Reach out to see if we can help accelerate your work with a collaboration.
+* Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
 
-----
+  * If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.
 
-*************
-Reaching out.
-*************
+  * If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
-* Send a note to the community manager `layne.sadler AT gmail.com`. They can help get you up to speed and find an area where you can make an impact.
-
-* Check the `Links <https://aiqc.readthedocs.io/en/latest/links.html>`__ for the Slack info. Heads up, this hasn't really taken off/ been promoted until now.
+* Alternatively, you can send a note to the community manager `layne.sadler AT gmail.com`.
 
 ----
 
