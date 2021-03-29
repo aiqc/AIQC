@@ -1,11 +1,13 @@
 ---
-name: Let's Make an Issue!
+name: Let's make an issue!
 about: Follow the instructions in the next screen.
 title: ''
 labels: ''
 assignees: aiqc
 
 ---
+
+If you are not an AIQC contributor, then you should make a Discussion instead:
 
 * For feature ideas, please open a [Discussion - Ideas](https://github.com/aiqc/aiqc/discussions) instead. We keep this list clean for committed work.
 * If you think you've found a bug or you need help using AIQC, then please open a [Discussion - Help & Bugs](https://github.com/aiqc/aiqc/discussions/categories/help-bugs) so that we can attempt to reproduce the bug or the problem you are running into.
