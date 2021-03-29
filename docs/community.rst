@@ -19,9 +19,9 @@ Ultimately, we'd like to (a) specialize in GANs, and (b) create field-specific p
 
 ----
 
-***********************
-How can I get involved?
-***********************
+**********************
+What can I contribute?
+**********************
 
 * Have a look at the `GitHub Issues <https://github.com/aiqc/aiqc/issues>`__ for something that interests you.
   
@@ -33,7 +33,7 @@ How can I get involved?
 ----
 
 ***********************
-How can I get in touch?
+How can I get involved?
 ***********************
 
 * Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
@@ -128,6 +128,8 @@ For the following reasons, AIQC will adopt an *open core* model:
   * This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.
 
 * The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
+
+* Many biotech businesses offer either free or reduced pricing for students and academics.
 
 * It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service and 5% of users pay for the premium option because it solves their specific problems.
 
