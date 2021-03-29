@@ -6,11 +6,7 @@
 
 ### [Community - how to contribute?](https://aiqc.readthedocs.io/en/latest/community.html)
 
-<br />
-
 ---
-
-<br />
 
 ### Overview
 
