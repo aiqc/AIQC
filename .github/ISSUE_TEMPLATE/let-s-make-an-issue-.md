@@ -7,8 +7,8 @@ assignees: aiqc
 
 ---
 
-* Do NOT ask help oriented questions here. Use StackOverflow tag `#aiqc` for that.
-* If you are not an AIQC contributor, please open a [Discussion](https://github.com/aiqc/aiqc/discussions) instead.
+* For feature ideas, please open a [Discussion - Ideas](https://github.com/aiqc/aiqc/discussions) instead. We keep this list clean for committed work.
+* If you think you've found a bug or you need help using AIQC, then please open a [Discussion - Help & Bugs](https://github.com/aiqc/aiqc/discussions/categories/help-bugs) so that we can attempt to reproduce the bug or the problem you are running into.
 
 ## Background
 Provide just enough context about the current functionality, or lack thereof, so that people know what you are talking about. 
