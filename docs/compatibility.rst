@@ -5,6 +5,8 @@ Compatibility
 Libraries & Analyses
 ====================
 
+Enables batch model training and hyperparameter tuning for the following types of analyses using the deep learning libraries below.
+
 .. csv-table::
   :header: , Keras, PyTorch, TensorFlow
   :align: center
@@ -20,6 +22,8 @@ Libraries & Analyses
 
 Data Preparation
 ================
+
+Enables the following types of preprocessing for the data types below.
 
 .. csv-table::
   :header: , Tabular, Sequence, Image, Text, Graph
