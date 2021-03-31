@@ -1,7 +1,7 @@
 # Pull Request (PR) Template
 
-> *Not sure how to make a PR? Watch this [video](https://www.youtube.com/watch?v=rgbCcBNZcdQ).<br>
-> Fork it. Clone it. **Branch it.** Code it. Push it. PR it.<br>
+> *Not sure how to make a PR? Watch this [video](https://www.youtube.com/watch?v=rgbCcBNZcdQ).
+> Fork it. Clone it. **Branch it.** Code it. Push it. PR it.
 > You'll also want to [set an `upstream` repo](https://www.atlassian.com/git/tutorials/git-forks-and-upstreams ) to keep your fork up to date.*
 
 ---
