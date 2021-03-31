@@ -30,6 +30,10 @@ What can I contribute?
 
   * Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
 
+* Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
+  
+  * This document also explains how to run the tests.
+
 ----
 
 ***********************
