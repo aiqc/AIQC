@@ -54,9 +54,9 @@ How can I get involved?
 Setting up environment.
 ***********************
 
-`Reference the Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__.
+Have a read through the `Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
 
-We currently have an `Issue open for a setting up a docker dev env <https://github.com/aiqc/aiqc/issues/16>`__, which would be a great way to get familiar with the project. The Issue explains most of the dependencies and where to find them.
+Don't install `aiqc` becuase you'll be cloning this repo instead. Once you clone the repo, `cd` into the directory and `pip install --upgrade -r requirements.txt` as well as `pip install --upgrade -r requirements_dev.txt`. If you want to make your own documentation then you will need to [install the `pandoc` binary](https://pandoc.org/installing.html).
 
 ----
 
