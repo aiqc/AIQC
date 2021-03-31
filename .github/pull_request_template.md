@@ -28,6 +28,8 @@
 - [ ] I have included updates to the documentation.
 - [ ] I am pushing a *branch*, not my *main/ master*.
 
+> Describe the env you tested on: OS, Python version, shell type (e.g. cli, ide, notebook).
+
 ## Contains breaking changes:
 - [ ] Yes (explain what functionality it breaks).
 - [ ] No
