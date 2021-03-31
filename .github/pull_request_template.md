@@ -37,7 +37,9 @@
 ---
 
 ## How to run tests.
-Test source code is located in `aiqc/aiqc/tests/__init__.py`. Once we are confident that our schema handles all data types and analysis types, we will invest more rigorous testing.
+The source code for tests is located in `aiqc/aiqc/tests/__init__.py`. 
+
+Once we are confident that our schema handles all data types and analysis types, we will invest more rigorous testing.
 ```python
 import aiqc
 from aiqc import tests
