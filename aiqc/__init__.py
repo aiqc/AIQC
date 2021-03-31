@@ -515,7 +515,10 @@ class Dataset(BaseModel):
 
 
 	class Tabular():
-		# Not using `(Dataset)` class because I don't want a separate table.
+		"""
+		This does not use a subclass e.g. `class Tabular(Dataset):`
+		because the ORM would make a separate table.
+		"""
 		dataset_type = 'tabular'
 		file_index = 0
 		file_count = 1
