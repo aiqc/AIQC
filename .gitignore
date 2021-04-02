@@ -9,3 +9,5 @@ __pycache__/
 /dist
 /aiqc.egg-info
 /build
+.idea
+venv
