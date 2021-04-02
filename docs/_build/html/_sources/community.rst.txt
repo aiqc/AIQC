@@ -30,6 +30,10 @@ What can I contribute?
 
   * Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
 
+* Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
+  
+  * This document also explains how to run the tests.
+
 ----
 
 ***********************
@@ -50,9 +54,17 @@ How can I get involved?
 Setting up environment.
 ***********************
 
-`Reference the Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__.
+Have a read through the `Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
 
-We currently have an `Issue open for a setting up a docker dev env <https://github.com/aiqc/aiqc/issues/16>`__, which would be a great way to get familiar with the project. The Issue explains most of the dependencies and where to find them.
+.. code-block:: bash
+
+   git clone git@github.com:aiqc/aiqc.git
+   cd aiqc
+   pip install --upgrade -r requirements_dev.txt
+   pip install --upgrade -r requirements.txt
+
+
+If you want to make your own documentation then you will need to `install the pandoc binary <https://pandoc.org/installing.html>`__.
 
 ----
 

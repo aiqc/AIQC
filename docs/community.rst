@@ -56,7 +56,15 @@ Setting up environment.
 
 Have a read through the `Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
 
-Don't install `aiqc` becuase you'll be cloning this repo instead. Once you clone the repo, `cd` into the directory and `pip install --upgrade -r requirements.txt` as well as `pip install --upgrade -r requirements_dev.txt`. If you want to make your own documentation then you will need to [install the `pandoc` binary](https://pandoc.org/installing.html).
+.. code-block:: bash
+
+   git clone git@github.com:aiqc/aiqc.git
+   cd aiqc
+   pip install --upgrade -r requirements_dev.txt
+   pip install --upgrade -r requirements.txt
+
+
+If you want to make your own documentation then you will need to `install the pandoc binary <https://pandoc.org/installing.html>`__.
 
 ----
 

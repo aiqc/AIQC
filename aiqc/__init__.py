@@ -4144,7 +4144,7 @@ class Job(BaseModel):
 
 	def run(id:int, repeat_index:int, verbose:bool=False):
 		"""
-		Future: OPTIMIZE. shouldn't have to read whole dataset into memory at once. duplicate reads in encoders.
+		Needs optimization = https://github.com/aiqc/aiqc/projects/1
 		"""
 		time_started = datetime.now()
 		j = Job.get_by_id(id)
@@ -4160,10 +4160,11 @@ class Job(BaseModel):
 		fold = j.fold
 
 		"""
-		1. Figure out which splits the model needs to be trained and predicted against. 
-		- Unlike a Batch, each Job can have a different fold.
-		- The `key_*` variables dynamically determine which splits to use during model_training.
-		  It is being intentionally overwritten as more complex validations/ training splits are introduced.
+		1. Determines which splits/folds are needed.
+		
+		- The rest of the tasks in Job.run() look to `samples:dict` for their data.
+		- Where the training and evaluation data should come from will vary based on how Splitset and Foldset were designed.
+		- The `key_*` variables are passed to downstream tasks.
 		"""
 		samples = {}
 		if (splitset.supervision == "unsupervised"):
@@ -4197,9 +4198,11 @@ class Job(BaseModel):
 				samples['train'] = splitset.to_numpy(splits=['train'])['train']
 				key_train = "train"
 
-		# 2. Encode the labels and features.
-		# encoding happens prior to training the model.
-		# Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
+		"""
+		2. Encodes the labels and features.
+		- encoding happens prior to training the model.
+		- Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
+		"""
 		if (encoderset is not None):                
 			# 2a1. Fit labels.
 			if (len(encoderset.labelcoders) == 1):
@@ -4336,8 +4339,10 @@ class Job(BaseModel):
 							, axis = 1
 						)
 
-		# 3. Build and Train model.
-		# Now that encoding has taken place, we can determine the shapes.
+		"""
+		3. Build and Train model.
+		- Now that encoding has taken place, we can determine the shapes.
+		"""
 		first_key = next(iter(samples))
 		features_shape = samples[first_key]['features'][0].shape
 		label_shape = samples[first_key]['labels'][0].shape
@@ -4396,7 +4401,9 @@ class Job(BaseModel):
 				model_bytes = file.read()
 			os.remove(temp_file_name)
 
-		# 4. Fetch samples for evaluation.
+		"""
+		4. Evaluation: predictions, metrics, charts.
+		"""
 		predictions = {}
 		probabilities = {}
 		metrics = {}
@@ -4463,7 +4470,9 @@ class Job(BaseModel):
 				f"\nCancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing." \
 				f"\nNo action needed, the other instance will continue running to completion.\n"
 			)
-
+		"""
+		5. Save it to Result object.
+		"""
 		r = Result.create(
 			time_started = time_started
 			, time_succeeded = time_succeeded

@@ -243,6 +243,11 @@
 <li><p>Also check out the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/mission.html">Compatibility Matrix</a>, to help you find a focus area.</p></li>
 </ul>
 </li>
+<li><p>Take a look at the <a class="reference external" href="https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md">Pull Request Template</a>.</p>
+<ul>
+<li><p>This document also explains how to run the tests.</p></li>
+</ul>
+</li>
 </ul>
 </div>
 <hr class="docutils" />
@@ -261,8 +266,14 @@
 <hr class="docutils" />
 <div class="section" id="setting-up-environment">
 <h2>Setting up environment.<a class="headerlink" href="#setting-up-environment" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Reference the Install section of the documentation</a>.</p>
-<p>We currently have an <a class="reference external" href="https://github.com/aiqc/aiqc/issues/16">Issue open for a setting up a docker dev env</a>, which would be a great way to get familiar with the project. The Issue explains most of the dependencies and where to find them.</p>
+<p>Have a read through the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Install section of the documentation</a> for information about OS, Python versions, and optional Jupyter extensions.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:aiqc/aiqc.git
+<span class="nb">cd</span> aiqc
+pip install --upgrade -r requirements_dev.txt
+pip install --upgrade -r requirements.txt
+</pre></div>
+</div>
+<p>If you want to make your own documentation then you will need to <a class="reference external" href="https://pandoc.org/installing.html">install the pandoc binary</a>.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="code-of-conduct">
