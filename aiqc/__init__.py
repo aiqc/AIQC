@@ -475,7 +475,7 @@ class Dataset(BaseModel):
 		columns = listify(columns)
 		samples = listify(samples)
 
-		if (dataset.dataset_type == 'tabular'):
+		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
 			raise ValueError("\nYikes - `Dataset.Image` class does not have a `to_pandas()` method.\n")
@@ -860,6 +860,93 @@ class Dataset(BaseModel):
 			if (samples is not None):
 				files = [files[i] for i in samples]
 			return files
+
+
+	class Text():
+		dataset_type = 'text'
+		file_count = 1
+
+		def from_strings(
+			strings: list,
+			name: str = None
+		):
+			for expectedString in strings:
+				if type(expectedString) != 	str:
+					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
+			
+			column_names = ['TextData']
+
+			dataset = Dataset.create(
+				file_count = Dataset.Text.file_count,
+				dataset_type = Dataset.Text.dataset_type,
+				name = name if name is not None else 'default_text_df',
+				source_path = None
+			)
+
+			dataframe = pd.DataFrame(strings, columns = column_names)
+
+			try:
+				File.Tabular.from_pandas(
+					dataframe = dataframe,  
+					column_names = column_names, 
+					dataset_id = dataset.id
+				)
+			except:
+				dataset.delete_instance() 
+				raise 
+
+			return dataset
+
+
+		def from_pandas(
+			dataframe:object,
+			name:str = None, 
+			dtype:dict = None, 
+			column_names:list = None
+		):
+			column_names = listify(column_names)
+
+			if (type(dataframe).__name__ != 'DataFrame'):
+				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
+
+			dataset = Dataset.create(
+				file_count = Dataset.Text.file_count
+				, dataset_type = Dataset.Text.dataset_type
+				, name = name if name is not None else 'default_text_df'
+				, source_path = None
+			)
+
+			try:
+				File.Tabular.from_pandas(
+					dataframe = dataframe
+					, dtype = dtype
+					, column_names = column_names
+					, dataset_id = dataset.id
+				)
+			except:
+				dataset.delete_instance()
+				raise 
+			return dataset	
+
+
+		def from_folder(
+			folder_path:str, 
+			name:str = None
+		):
+			if name is None:
+				name = folder_path
+			source_path = os.path.abspath(folder_path)
+
+			input_files = Dataset.sorted_file_list(source_path)
+			file_count = len(input_files)
+			
+			files_data = []
+			for input_file in input_files:
+				with open(input_file, 'r') as file_pointer:
+					files_data.extend([file_pointer.read()])
+
+			return Dataset.Text.from_strings(files_data, name)
+			
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
