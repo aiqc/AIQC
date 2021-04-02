@@ -1,5 +1,4 @@
-#Comments must be on a separate line for when they are parsed by `setup.py`
-# Run this so you don't typo yourself a virus: `pip install --upgrade -r requirements.txt`
+# pip install --upgrade -r requirements.txt
 # Reference tensorflow.org/install/pip
 tensorflow==2.4.1
 #https://docs.floydhub.com/guides/environments/
