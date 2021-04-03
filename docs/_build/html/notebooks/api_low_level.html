@@ -920,7 +920,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 <h3>Reading Datasets<a class="headerlink" href="#Reading-Datasets" title="Permalink to this headline">¶</a></h3>
 <p>All of the sample-related objects in the API have <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> methods that accept the following arguments:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">samples=[]</span></code> list of indeces to fetch.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samples=[]</span></code> list of indices to fetch.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">columns=[]</span></code> list of columns to fetch.</p></li>
 <li><p>In some cases you can specify a <code class="docutils literal notranslate"><span class="pre">split</span></code>/ <code class="docutils literal notranslate"><span class="pre">fold</span></code> name.</p></li>
 </ul>
@@ -1534,7 +1534,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </tr>
 </tbody>
 </table>
-<p>Again, creating a Splitset won’t duplicate your data. It simply denotes the sample indeces (aka rows) to be used in the splits that you specify!</p>
+<p>Again, creating a Splitset won’t duplicate your data. It simply denotes the sample indices (aka rows) to be used in the splits that you specify!</p>
 <div class="section" id="Split-Strategies">
 <h3>Split Strategies<a class="headerlink" href="#Split-Strategies" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="a)-Default-supervised-70-30-split.">
@@ -1629,9 +1629,9 @@ dict_keys([&#39;validation&#39;, &#39;train&#39;, &#39;test&#39;])
 <p><code class="docutils literal notranslate"><span class="pre">.keys()</span></code> of 1st layer are referred to as “split_name” in the source code: e.g. ‘train’ as well as, optionally, ‘validation’ and ‘test’.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Splitset.samples</span></code> on disk:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indeces</span><span class="o">&gt;</span><span class="p">],</span>
-    <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indeces</span><span class="o">&gt;</span><span class="p">],</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indeces</span><span class="o">&gt;</span><span class="p">]</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indices</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indices</span><span class="o">&gt;</span><span class="p">],</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indices</span><span class="o">&gt;</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1656,7 +1656,7 @@ dict_keys([&#39;validation&#39;, &#39;train&#39;, &#39;test&#39;])
  &#39;train&#39;: {&#39;percent&#39;: 0.68, &#39;count&#39;: 102}}
 </pre></div></div>
 </div>
-<p>The main attribute of the splitset is the <code class="docutils literal notranslate"><span class="pre">samples</span></code> dictionary. Again, on-disk this only contains sample indeces. The dictionary is structured like so:</p>
+<p>The main attribute of the splitset is the <code class="docutils literal notranslate"><span class="pre">samples</span></code> dictionary. Again, on-disk this only contains sample indices. The dictionary is structured like so:</p>
 </div>
 <div class="section" id="Splitset.to_numpy()">
 <h3><code class="docutils literal notranslate"><span class="pre">Splitset.to_numpy()</span></code><a class="headerlink" href="#Splitset.to_numpy()" title="Permalink to this headline">¶</a></h3>
@@ -1771,11 +1771,11 @@ array([[5. , 3.5, 1.3, 0.3],
 <blockquote>
 <div><p>Tip - DO NOT use a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> unless your <em>(total sample count / fold_count)</em> still gives you an accurate representation of your sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that <em>(total sample count / fold_count)</em> is evenly divisible. Both of these tips help avoid poorly stratified/ undersized folds that perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate
 prediction on a normally good model).</p>
-<p>Tip - The sample indeces of the validation fold are not discarded. In fact, <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> can actually be used alongside a split <code class="docutils literal notranslate"><span class="pre">validation</span></code> for double validation 🤘. However, it’s more sensible to skip the validation split when cross-validating because you’ll want each <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> to be as large (representative of the population) as possible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics.</p>
+<p>Tip - The sample indices of the validation fold are not discarded. In fact, <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> can actually be used alongside a split <code class="docutils literal notranslate"><span class="pre">validation</span></code> for double validation 🤘. However, it’s more sensible to skip the validation split when cross-validating because you’ll want each <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> to be as large (representative of the population) as possible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics.</p>
 <p>Candidly, if you’ve ever performed cross-validation manually, let alone systematically, you’ll know that, barring stratification of continuous labels, it’s easy enough to construct the folds, but then it’s a pain to generate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try
 to do something undersized like “150 samples in their dataset and a <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> &gt; 3 with <code class="docutils literal notranslate"><span class="pre">unique_classes</span></code> &gt; 4,” then you may run into edge cases.</p>
 </div></blockquote>
-<p>Similar to <code class="docutils literal notranslate"><span class="pre">Splitset.samples</span></code>, there is a <code class="docutils literal notranslate"><span class="pre">Fold.samples</span></code> dictionary of sample indeces with the following <code class="docutils literal notranslate"><span class="pre">.keys()</span></code>: * <code class="docutils literal notranslate"><span class="pre">samples['folds_train_combined']</span></code> - all the included folds. * <code class="docutils literal notranslate"><span class="pre">samples['fold_validation']</span></code> - the fold that got left out.</p>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">Splitset.samples</span></code>, there is a <code class="docutils literal notranslate"><span class="pre">Fold.samples</span></code> dictionary of sample indices with the following <code class="docutils literal notranslate"><span class="pre">.keys()</span></code>: * <code class="docutils literal notranslate"><span class="pre">samples['folds_train_combined']</span></code> - all the included folds. * <code class="docutils literal notranslate"><span class="pre">samples['fold_validation']</span></code> - the fold that got left out.</p>
 <p><img alt="cross fold objects" src="../_images/cross_fold_objects.png" /></p>
 </div>
 </div>

@@ -518,7 +518,7 @@
    "source": [
     "All of the sample-related objects in the API have `to_numpy()` and `to_pandas()` methods that accept the following arguments:\n",
     "\n",
-    "* `samples=[]` list of indeces to fetch.\n",
+    "* `samples=[]` list of indices to fetch.\n",
     "* `columns=[]` list of columns to fetch.\n",
     "* In some cases you can specify a `split`/ `fold` name.\n",
     "\n",
@@ -1365,7 +1365,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Again, creating a Splitset won't duplicate your data. It simply denotes the sample indeces (aka rows) to be used in the splits that you specify!"
+    "Again, creating a Splitset won't duplicate your data. It simply denotes the sample indices (aka rows) to be used in the splits that you specify!"
    ]
   },
   {
@@ -1516,9 +1516,9 @@
     "`Splitset.samples` on disk:\n",
     "```\n",
     " {\n",
-    "     'train': [<sample_indeces>],\n",
-    "     'validation': [<sample_indeces>],\n",
-    "     'test': [<sample_indeces>]\n",
+    "     'train': [<sample_indices>],\n",
+    "     'validation': [<sample_indices>],\n",
+    "     'test': [<sample_indices>]\n",
     " }\n",
     "```"
    ]
@@ -1556,7 +1556,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The main attribute of the splitset is the `samples` dictionary. Again, on-disk this only contains sample indeces. The dictionary is structured like so:"
+    "The main attribute of the splitset is the `samples` dictionary. Again, on-disk this only contains sample indices. The dictionary is structured like so:"
    ]
   },
   {
@@ -1753,7 +1753,7 @@
    "source": [
     "> Tip - DO NOT use a `Foldset` unless your *(total sample count / fold_count)* still gives you an accurate representation of your sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that *(total sample count / fold_count)* is evenly divisible. Both of these tips help avoid poorly stratified/ undersized folds that perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on a normally good model).\n",
     ">\n",
-    "> Tip - The sample indeces of the validation fold are not discarded. In fact, `fold_validation` can actually be used alongside a split `validation` for double validation 🤘. However, it's more sensible to skip the validation split when cross-validating because you'll want each `fold_validation` to be as large (representative of the population) as possible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics.\n",
+    "> Tip - The sample indices of the validation fold are not discarded. In fact, `fold_validation` can actually be used alongside a split `validation` for double validation 🤘. However, it's more sensible to skip the validation split when cross-validating because you'll want each `fold_validation` to be as large (representative of the population) as possible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics.\n",
     "> \n",
     "> Candidly, if you've ever performed cross-validation manually, let alone systematically, you'll know that, barring stratification of continuous labels, it's easy enough to construct the folds, but then it's a pain to generate performance metrics (e.g. `zero_division`, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try to do something undersized like \"150 samples in their dataset and a `fold_count` > 3 with `unique_classes` > 4,\" then you may run into edge cases."
    ]
@@ -1762,7 +1762,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Similar to `Splitset.samples`, there is a `Fold.samples` dictionary of sample indeces with the following `.keys()`:\n",
+    "Similar to `Splitset.samples`, there is a `Fold.samples` dictionary of sample indices with the following `.keys()`:\n",
     "* `samples['folds_train_combined']` - all the included folds.\n",
     "* `samples['fold_validation']` - the fold that got left out."
    ]
@@ -1843,7 +1843,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "##### Sample indeces of each Fold:"
+    "##### Sample indices of each Fold:"
    ]
   },
   {
