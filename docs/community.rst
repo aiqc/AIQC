@@ -123,7 +123,7 @@ BSD is seen as a *permissive* license, as opposed to *restrictive*. The major im
 
 The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright by the decision of vote of 2/3rds majority (US Senate precedent).
 
-[Still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights]
+*[Still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights]*
 
 
 Open core
