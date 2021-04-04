@@ -902,29 +902,9 @@ class Dataset(BaseModel):
 			dtype:dict = None, 
 			column_names:list = None
 		):
-			column_names = listify(column_names)
-
-			if (type(dataframe).__name__ != 'DataFrame'):
-				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
-
-			dataset = Dataset.create(
-				file_count = Dataset.Text.file_count
-				, dataset_type = Dataset.Text.dataset_type
-				, name = name if name is not None else 'default_text_df'
-				, source_path = None
-			)
-
-			try:
-				File.Tabular.from_pandas(
-					dataframe = dataframe
-					, dtype = dtype
-					, column_names = column_names
-					, dataset_id = dataset.id
-				)
-			except:
-				dataset.delete_instance()
-				raise 
-			return dataset	
+			if Dataset.Text.column_name not in dataframe.columns:
+				raise ValueError(r'TextData column not found in input df. Please rename the column containing the text data as "TextData"')
+			return Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
 
 
 		def from_folder(
