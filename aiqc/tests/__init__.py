@@ -198,7 +198,7 @@ def binary_model_train(model, samples_train, samples_evaluate, **hyperparameters
 	from keras.callbacks import History
 
 	model.fit(
-	samples_train['features'], samples_train['labels']
+		samples_train['features'], samples_train['labels']
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
 		, verbose = 0
 		, batch_size = 3

@@ -34,6 +34,8 @@ import plotly.express as px
 from PIL import Image as Imaje
 # File sorting.
 from natsort import natsorted
+# Complex serialization.
+import dill as dill
 
 
 name = "aiqc"
@@ -400,11 +402,11 @@ def setup():
 # ORM
 #==================================================
 
+
+# --------- HELPER FUNCTIONS ---------
 def listify(supposed_lst:object=None):
 	"""
-	- When only providing a single element, it's easy to forget to put it in a list!
-	- If touching every list arg of every function, then might as well validate it!
-	- I am only trying to `listify` user-facing functions that were internal helpers.
+	- When only providing a single element, it's easy to forget to put it inside a list!
 	"""
 	if (supposed_lst is not None):
 		if (not isinstance(supposed_lst, list)):
@@ -423,6 +425,20 @@ def listify(supposed_lst:object=None):
 				))
 	# Allow `is None` to pass through because we need it to trigger null conditions.
 	return supposed_lst
+
+
+def dill_serialize(objekt:object):
+	blob = io.BytesIO()
+	dill.dump(objekt, blob)
+	blob = blob.getvalue()
+	return blob
+
+
+def dill_deserialize(blob:bytes):
+	objekt = io.BytesIO(blob)
+	objekt = dill.load(objekt)
+	return objekt
+# --------- END HELPERS ---------
 
 
 
@@ -3078,21 +3094,24 @@ class Featurecoder(BaseModel):
 
 
 
-
 class Algorithm(BaseModel):
 	"""
 	- Remember, pytorch and mxnet handle optimizer/loss outside the model definition as part of the train.
 	- Could do a `.py` file as an alternative to Pickle.
+
+	- Currently waiting for coleifer to accept prospect of a DillField
+	https://github.com/coleifer/peewee/issues/2385
 	"""
 	library = CharField()
 	analysis_type = CharField()#classification_multi, classification_binary, regression, clustering.
-	function_model_build = PickleField()
-	function_model_train = PickleField()
-	function_model_predict = PickleField()
-	function_model_loss = PickleField() # null? do clustering algs have loss?
+	function_model_build = BlobField()
+	function_model_train = BlobField()
+	function_model_predict = BlobField()
+	function_model_loss = BlobField() # null? do unsupervised algs have loss?
 	description = CharField(null=True)
 
-	# predefined functions because pickle does not allow nested functions.
+	
+	# --- used by `select_function_model_predict()` ---
 	def multiclass_model_predict(model, samples_predict):
 		probabilities = model.predict(samples_predict['features'])
 		# This is the official keras replacement for multiclass `.predict_classes()`
@@ -3111,6 +3130,7 @@ class Algorithm(BaseModel):
 		predictions = model.predict(samples_predict['features'])
 		return predictions
 
+	# --- used by `select_function_model_loss()` ---
 	def keras_model_loss(model, samples_evaluate):
 		metrics = model.evaluate(samples_evaluate['features'], samples_evaluate['labels'], verbose=0)
 		if (isinstance(metrics, list)):
@@ -3187,10 +3207,15 @@ class Algorithm(BaseModel):
 			)
 
 		funcs = [function_model_build, function_model_train, function_model_predict, function_model_loss]
-		for f in funcs:
+		for i, f in enumerate(funcs):
 			is_func = callable(f)
 			if (not is_func):
-				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n{f}\n")
+				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
+
+		function_model_build = dill_serialize(function_model_build)
+		function_model_train = dill_serialize(function_model_train)
+		function_model_predict = dill_serialize(function_model_predict)
+		function_model_loss = dill_serialize(function_model_loss)
 
 		algorithm = Algorithm.create(
 			library = library
@@ -4439,27 +4464,28 @@ class Job(BaseModel):
 		elif (hyperparamcombo is None):
 			hyperparameters = None
 		
-
+		function_model_build = dill_deserialize(algorithm.function_model_build)
 		if (splitset.supervision == "unsupervised"):
-			model = algorithm.function_model_build(
+			model = function_model_build(
 				features_shape,
 				**hyperparameters
 			)
 		elif (splitset.supervision == "supervised"):
-			model = algorithm.function_model_build(
+			model = function_model_build(
 				features_shape, label_shape,
 				**hyperparameters
 			)
 
+		function_model_train = dill_deserialize(algorithm.function_model_train)
 		if (key_evaluation is not None):
-			model = algorithm.function_model_train(
+			model = function_model_train(
 				model = model
 				, samples_train = samples[key_train]
 				, samples_evaluate = samples[key_evaluation]
 				, **hyperparameters
 			)
 		elif (key_evaluation is None):
-			model = algorithm.function_model_train(
+			model = function_model_train(
 				model = model
 				, samples_train = samples[key_train]
 				, samples_evaluate = None
@@ -4496,17 +4522,19 @@ class Job(BaseModel):
 		metrics = {}
 		plot_data = {}
 
+		function_model_predict = dill_deserialize(algorithm.function_model_predict)
+		function_model_loss = dill_deserialize(algorithm.function_model_loss)
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
-				preds, probs = algorithm.function_model_predict(model, data)
+				
+				preds, probs = function_model_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
-
 				metrics[split] = Job.split_classification_metrics(
 					data['labels'], 
 					preds, probs, analysis_type
 				)
-				metrics[split]['loss'] = algorithm.function_model_loss(model, data)
+				metrics[split]['loss'] = function_model_loss(model, data)
 				plot_data[split] = Job.split_classification_plots(
 					data['labels'], 
 					preds, probs, analysis_type
@@ -4514,12 +4542,12 @@ class Job(BaseModel):
 		elif analysis_type == "regression":
 			probabilities = None
 			for split, data in samples.items():
-				preds = algorithm.function_model_predict(model, data)
+				preds = function_model_predict(model, data)
 				predictions[split] = preds
 				metrics[split] = Job.split_regression_metrics(
 					data['labels'], preds
 				)
-				metrics[split]['loss'] = algorithm.function_model_loss(model, data)
+				metrics[split]['loss'] = function_model_loss(model, data)
 				plot_data = None
 
 		# Alphabetize metrics dictionary by key.
@@ -4725,6 +4753,7 @@ class Result(BaseModel):
 
 
 """
+# maybe now i could dill the entire env/venv?
 class Environment(BaseModel)?
 	# Even in local envs, you can have different pyenvs.
 	# Check if they are imported or not at the start.
