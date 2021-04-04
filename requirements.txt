@@ -17,4 +17,5 @@ appdirs==1.4.4
 natsort==7.1.1
 tqdm==4.59.0
 validators==0.18.2
+dill==0.3.3
 # Do not end file with blank line.
