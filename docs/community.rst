@@ -121,7 +121,7 @@ BSD is seen as a *permissive* license, as opposed to *restrictive*. The major im
 
   Consideration of 4-Clause BSD; The *original* BSD license included an additional *advertising clause* that states: "All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by []." Which helps, in part, to address the widespread complaint of, "If you are going to fork our project, at least give us a nod." We've actually seen this play out at `Datto <https://www.datto.com/>`__. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the *advertising clause* of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.
 
-The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright.
+The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright by the decision of vote of 2/3rds majority (US Senate precedent).
 
 [Still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights]
 
@@ -133,11 +133,11 @@ For the following reasons, AIQC will adopt an *open core* model:
 
 * Many successful open source projects have championed the open core model while managing to remain open:
   
-  * Notable examples include: NumFOCUS JuliaLang - JuliaComputing, NumFOCUS Dask - Coiled & SaturnCloud, Apache Spark - Databricks, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
+  * Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled & SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
 
-* In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path.
+* In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__.
   
-  * In contrast, the majority of grant application processes are explicitly reserved for esteemed institutions, which makes them off limits for everyday citizens.
+  * Unfortunately, the majority of grant application processes are explicitly reserved for esteemed institutions, which makes them off limits for everyday citizens.
 
 * In reality, the success of many open source projects, even those that are not directly affiliated with a company themselves, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.
   
@@ -145,7 +145,7 @@ For the following reasons, AIQC will adopt an *open core* model:
 
 * The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
 
-* Many biotech businesses offer either free or reduced pricing for students and academics.
+* Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.
 
 * It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service and 5% of users pay for the premium option because it solves their specific problems.
 
