@@ -924,7 +924,22 @@ class Dataset(BaseModel):
 					files_data.extend([file_pointer.read()])
 
 			return Dataset.Text.from_strings(files_data, name)
-			
+
+
+		def to_pandas(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			return Dataset.Tabular.to_pandas(id, columns, samples)
+
+
+		def to_strings(
+			id:int, 
+			samples:list = None
+		):
+			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
+			return data_df[Dataset.Text.column_name].tolist()
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
