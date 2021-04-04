@@ -104,22 +104,26 @@ Programming style.
 Open source
 ***********
 
-License
-=======
+Choosing a license
+==================
 
 .. image:: images/license_badge.png
   :width: 20%
   :alt: OSI-BSD Badge
 
-AIQC is made open source under the `Berkeley Software Distribution (BSD) 4-Clause "Original" <https://github.com/aiqc/aiqc/blob/main/LICENSE>`__ license. This license is approved by the `Open Source Initiative (OSI) <https://choosealicense.com/appendix/>`__, which is preferred by `NumFOCUS <https://numfocus.org/projects-overview>`__. BSD is used by notable projects including both `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/main/COPYING>`__, `Dask <https://github.com/dask/dask/blob/main/LICENSE.txt>`__, and, of course, `FreeBSD <https://github.com/freebsd/freebsd-src/blob/main/COPYRIGHT>`__. 
+AIQC is made open source under the `Berkeley Software Distribution (BSD) 3-Clause <https://github.com/aiqc/aiqc/blob/main/LICENSE>`__ license. This license is approved by the `Open Source Initiative (OSI) <https://choosealicense.com/appendix/>`__, which is preferred by `NumFOCUS <https://numfocus.org/projects-overview>`__. 3-Clause BSD is used by notable projects including: NumPy, Scikit-learn, Dask, Matplotlib, IPython, and Jupyter.
 
 BSD is seen as a *permissive* license, as opposed to *restrictive*. The major implications are that people that incorporate AIQC into their work are *neither* obligated to release their source code as open source, nor restricted to publishing their work under the same license.
 
   The simplest argument for AIQC adopting the BSD license is that AIQC uses upstream BSD projects. Therefore, it should pay it forward by using the same license and allowing others the same freedom it enjoys.
 
-  On one hand, the permissive nature of this license means that the cloud providers can fork this project and release it as their own closed source cloud service, which has been a recurring theme on HackerNews [`a <https://news.ycombinator.com/item?id=24799660>`__, `b <https://news.ycombinator.com/item?id=25865094>`__, etc.]. On the other hand, feedback from our friends in the Python community was that people would avoid using libraries with restrictive licenses, like AGPL, at work. They explained they they aren't allowed to open source their work and they "don't want to get their legal team involved." This begs the question, what good is being open source under a restrictive license if no one can actually use your software? Hopefully the cloud providers will put programs in place to guarantee either platform profit-sharing with (similar to App Store) or code contributions back to the communities whose projects they fork. 
+  On one hand, the permissive nature of this license means that the cloud providers can fork this project and release it as their own closed source cloud service, which has been a recurring theme on HackerNews [`a <https://news.ycombinator.com/item?id=24799660>`__, `b <https://news.ycombinator.com/item?id=25865094>`__, etc.]. On the other hand, feedback from our friends in the Python community was that people would avoid using libraries with restrictive licenses, like AGPL, in their work. They explained that they aren't allowed to open source their work and they "don't want to get their legal team involved." This begs the question, what good is being open source under a restrictive license if no one can *actually* use your software? Hopefully the cloud providers will put programs in place to contribute either code or profit (similar to App Store) back to the communities whose projects they fork. 
 
-  The fourth clause of BSD states: "All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by [AIQC]." Which helps, in part, to address the widespread complaint of, "If you are going to fork our project, at least give us credit." We've actually seen this play out at `Datto <https://www.datto.com/>`__. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair.
+  Consideration of 4-Clause BSD; The *original* BSD license included an additional *advertising clause* that states: "All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by []." Which helps, in part, to address the widespread complaint of, "If you are going to fork our project, at least give us a nod." We've actually seen this play out at `Datto <https://www.datto.com/>`__. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the *advertising clause* of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.
+
+The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright.
+
+[Still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights]
 
 
 Open core
