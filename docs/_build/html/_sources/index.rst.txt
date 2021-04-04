@@ -102,11 +102,11 @@ Overview
 
 
 
-* AIQC is an open source Python framework that brings rapid & reproducible deep learning workflows to open science.
+- AIQC is an open source Python framework that brings rapid & reproducible deep learning workflows to open science.
 
-  * `Mission = accelerate open science: <https://aiqc.readthedocs.io/en/latest/mission.html>`__ [1] Reduces the programming & data science know-how required to adopt deep learning. [2] Automatically records experiment workflows. [3] Provides a free alternative to expensive cloud SaaS & walled gardens.
+  + `Mission = accelerate open science: <https://aiqc.readthedocs.io/en/latest/mission.html>`__ [1] Reduces the programming & data science know-how required to adopt deep learning. [2] Reproducibly records experiment workflows. [3] Provides a free alternative to walled gardens of expensive cloud SaaS.
 
-  * `Tech = easy-to-use Python package: <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ [1] Provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job). [2] Simplifies preprocessing and batch model tuning/ scoring. [3] Prevents data leakage and evaluation bias. [4] Persists experiments in a SQLite database file.
+  + `Tech = easy-to-use Python package: <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ [1] Provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job). [2] Simplifies data preprocessing, model tuning, and model scoring. [3] Prevents data leakage and evaluation bias. [4] Reproducibly persists experiments in a SQLite database file.
 
 
 .. image:: images/framework_w_txt.png
@@ -130,13 +130,13 @@ I. Rapidly prepare folded data for analysis without leakage.
   :width: 100%
   :alt: pipeline.gif
 
-* Make datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
+- Make datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
 
-* Designate columns by name as either Features or Labels.
+- Designate columns by name as either Features or Labels.
 
-* Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
+- Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
 
-* Apply encoders by dtype (`float64`) without leaking test/ validation data.
+- Apply encoders by dtype (`float64`) without leaking test/ validation data.
 
 |
 
@@ -147,13 +147,13 @@ II. Train many variations of an algorithm in a single batch.
   :width: 100%
   :alt: hyperparameters.gif
 
-* Queue a batch a many training jobs; one job per hyperparameter combination.
+- Queue a batch a many training jobs; one job per hyperparameter combination.
 
-* Automatically passes param combinations into model functions as `**kwargs`.
+- Automatically passes param combinations into model functions as `**kwargs`.
 
-* Tweak the model topology as a param (`params['extra_conv3D_layer']=True`).
+- Tweak the model topology as a param (`params['extra_conv3D_layer']=True`).
 
-* Repeat a job to to give it a chance to perform well (`repeat_count=3`).
+- Repeat a job to to give it a chance to perform well (`repeat_count=3`).
 
 |
 
@@ -164,16 +164,15 @@ III. Evaluate algorithm performance with metrics & charts.
    :width: 100%
    :alt: plots.gif
 
-* Automated performance metrics & visualization for every split/ fold.
+- Automated performance metrics & visualization for every split/ fold.
 
-* Define multi-metric success criteria for early stopping.
+- Define multi-metric success criteria for early stopping.
 
-* Captures per-epoch history metrics for learning curves.
+- Captures per-epoch history metrics for learning curves.
 
-* Aggregate metrics for sets of cross-folded jobs.
+- Aggregate metrics for sets of cross-folded jobs.
 
 |
-
 
 IV. Effortlessly track, reproduce, & prove experiments.
 =======================================================
@@ -215,9 +214,8 @@ V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials<
    aiqc.setup() # create & connect to the database.
 
 
-* Example datasets built into package. Example image datasets in github repo.
+- Example datasets built into package. Example image datasets in github repo.
 
-* Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
+- Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
 
-* Easy to learn with 2 step tutorials: make a `Pipeline` to feed an `Experiment`.
-
+- Easy to learn with 2 step tutorials: make a `Pipeline` to feed an `Experiment`.

@@ -23,16 +23,15 @@ Ultimately, we'd like to (a) specialize in GANs, and (b) create field-specific p
 What can I contribute?
 **********************
 
-* Have a look at the `GitHub Issues <https://github.com/aiqc/aiqc/issues>`__ for something that interests you.
+- Have a look at the `GitHub Issues <https://github.com/aiqc/aiqc/issues>`__ for something that interests you.
   
-  * Keep an eye out for issues are tagged with <kbd>good first issue</kbd>.
-  * Every issue has a `Difficulty: ★★★☆☆` score based on how much effort and how complex it has the potential to be.
+  + Keep an eye out for issues are tagged with <kbd>good first issue</kbd>.
+  + Every issue has a `Difficulty: ★★★☆☆` score based on how much effort and how complex it has the potential to be.
+  + Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
 
-  * Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
-
-* Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
+- Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
   
-  * This document also explains how to run the tests.
+  + This document also explains how to run the tests.
 
 ----
 
@@ -40,13 +39,13 @@ What can I contribute?
 How can I get involved?
 ***********************
 
-* Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
+- Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
 
-  * If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.
+  + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.
 
-  * If you want to join the community calls, then be sure to include your timezone and email in your introduction.
+  + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
-* Alternatively, you can send a note to the community manager `layne.sadler AT gmail.com`.
+- Alternatively, you can send a note to the community manager `layne.sadler AT gmail.com`.
 
 ----
 
@@ -74,10 +73,10 @@ Code of conduct.
 
 `Google I/O 2008 - Open Source Projects and Poisonous People <https://www.youtube.com/watch?v=-F-3E8pyjFo>`__
 
-* *Be cordial and welcoming*; Communities are living, breathing social organisms where we can all learn to better ourselves while coming together to enact meaningful change.
-* *Agree to disagree*; on one hand, acknowledge the merits of the ideas of others and be willing to adapt your opinion based on new information, but, on the other hand, **do not** sacrifice what you truly believe in for the sake of consensus.
-* *Help educate & mentor*; point people in the right direction to get started, but don't continue to help those who won't help themselves. Open source projects are a way for people to break out of their 9-5, so a lot of people are learning new things. In generally, be significantly less rigid than the StackOverflow community, but do ask people to state what they have tried, their env, etc. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. English is also a 2nd language for many, so be patient.
-* *Other tech*; When speaking about alternative technologies, give them as much praise as you can for what they have done well. Don't shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with.
+- *Be cordial and welcoming*; Communities are living, breathing social organisms where we can all learn to better ourselves while coming together to enact meaningful change.
+- *Agree to disagree*; on one hand, acknowledge the merits of the ideas of others and be willing to adapt your opinion based on new information, but, on the other hand, **do not** sacrifice what you truly believe in for the sake of consensus.
+- *Help educate & mentor*; point people in the right direction to get started, but don't continue to help those who won't help themselves. Open source projects are a way for people to break out of their 9-5, so a lot of people are learning new things. In generally, be significantly less rigid than the StackOverflow community, but do ask people to state what they have tried, their env, etc. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. English is also a 2nd language for many, so be patient.
+- *Speaking about other technologies*; When you mention other tools, give them as much praise as you can for what they have done well. Don't shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with. For example, "We wanted our tool to be persistent and easy-to-use because that's what it was going to take to get it into the hands of researchers. When we tried out other tools for ourselves as practicioners, we didn't feel like they fully satisfied our criteria."
 
 ----
 
@@ -85,18 +84,18 @@ Code of conduct.
 Programming style.
 ******************
 
-* Prioritize human readability, maintainability, and simplicity over conciseness and performance.
+- Prioritize human readability, maintainability, and simplicity over conciseness and performance.
 
-  * Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate your code. It's better to move on to the next problem than making the current functionality x% better.
-  * Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren't world class software engineers, and vice versa!
-  * When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.
+  + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
+  + Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren't world class software engineers, and vice versa!
+  + When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.
 
-* When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don't make the program more complex than it has to be.
+- When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don't make the program more complex than it has to be.
 
-  * *Do -* verify that the file/directory exists when users provide a path argument, and provide helpful error messages, but 
-  * *Don't -* spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.
+  + *Do -* verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes & shapes of input, but;
+  + *Don't -* spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.
 
-* If in doubt, ask what other people think in a `Discussion <https://github.com/aiqc/aiqc/discussions>`__.
+- If in doubt, ask what other people think in a `Discussion <https://github.com/aiqc/aiqc/discussions>`__.
 
 ----
 
@@ -121,9 +120,9 @@ BSD is seen as a *permissive* license, as opposed to *restrictive*. The major im
 
   Consideration of 4-Clause BSD; The *original* BSD license included an additional *advertising clause* that states: "All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by []." Which helps, in part, to address the widespread complaint of, "If you are going to fork our project, at least give us a nod." We've actually seen this play out at `Datto <https://www.datto.com/>`__. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the *advertising clause* of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.
 
-The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright by the decision of vote of 2/3rds majority (US Senate precedent).
+The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright by a vote of 2/3rds majority (U.S. Senate precedent).
 
-*[Still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights]*
+*Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights*
 
 
 Open core
@@ -131,22 +130,22 @@ Open core
 
 For the following reasons, AIQC will adopt an *open core* model:
 
-* Many successful open source projects have championed the open core model while managing to remain open:
+- Many successful open source projects have championed the open core model while managing to remain open:
   
-  * Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled & SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
+  + Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled & SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
 
-* In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__.
+- In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__.
   
-  * Unfortunately, the majority of grant application processes are explicitly reserved for esteemed institutions, which makes them off limits for everyday citizens.
+  + Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.
 
-* In reality, the success of many open source projects, even those that are not directly affiliated with a company themselves, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.
+- In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.
   
-  * This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.
+  + This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.
 
-* The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
+- The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
 
-* Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.
+- Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.
 
-* It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service and 5% of users pay for the premium option because it solves their specific problems.
+- It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.
 
-* To paraphrase, Isaacson's `The Innovators <https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703>`__: *"The first computer that was invented is sitting in a university basement in Iowa gathering dust. The 2nd computer that was created was made by IBM, and it sat on every professional desktop and point-of-sale counter in the world; it led the digital revolution."*
+- To paraphrase Isaacson's, `The Innovators <https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703>`__,: *"The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution."*

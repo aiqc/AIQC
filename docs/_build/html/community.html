@@ -283,7 +283,7 @@ pip install --upgrade -r requirements.txt
 <li><p><em>Be cordial and welcoming</em>; Communities are living, breathing social organisms where we can all learn to better ourselves while coming together to enact meaningful change.</p></li>
 <li><p><em>Agree to disagree</em>; on one hand, acknowledge the merits of the ideas of others and be willing to adapt your opinion based on new information, but, on the other hand, <strong>do not</strong> sacrifice what you truly believe in for the sake of consensus.</p></li>
 <li><p><em>Help educate &amp; mentor</em>; point people in the right direction to get started, but don’t continue to help those who won’t help themselves. Open source projects are a way for people to break out of their 9-5, so a lot of people are learning new things. In generally, be significantly less rigid than the StackOverflow community, but do ask people to state what they have tried, their env, etc. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. English is also a 2nd language for many, so be patient.</p></li>
-<li><p><em>Other tech</em>; When speaking about alternative technologies, give them as much praise as you can for what they have done well. Don’t shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with.</p></li>
+<li><p><em>Speaking about other technologies</em>; When you mention other tools, give them as much praise as you can for what they have done well. Don’t shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with. For example, “We wanted our tool to be persistent and easy-to-use because that’s what it was going to take to get it into the hands of researchers. When we tried out other tools for ourselves as practicioners, we didn’t feel like they fully satisfied our criteria.”</p></li>
 </ul>
 </div>
 <hr class="docutils" />
@@ -292,14 +292,14 @@ pip install --upgrade -r requirements.txt
 <ul class="simple">
 <li><p>Prioritize human readability, maintainability, and simplicity over conciseness and performance.</p>
 <ul>
-<li><p>Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate your code. It’s better to move on to the next problem than making the current functionality x% better.</p></li>
+<li><p>Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It’s better to move on to the next problem than making the current functionality “x%” better.</p></li>
 <li><p>Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren’t world class software engineers, and vice versa!</p></li>
 <li><p>When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.</p></li>
 </ul>
 </li>
 <li><p>When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don’t make the program more complex than it has to be.</p>
 <ul>
-<li><p><em>Do -</em> verify that the file/directory exists when users provide a path argument, and provide helpful error messages, but</p></li>
+<li><p><em>Do -</em> verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes &amp; shapes of input, but;</p></li>
 <li><p><em>Don’t -</em> spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.</p></li>
 </ul>
 </li>
@@ -319,8 +319,8 @@ pip install --upgrade -r requirements.txt
 <p>On one hand, the permissive nature of this license means that the cloud providers can fork this project and release it as their own closed source cloud service, which has been a recurring theme on HackerNews [<a class="reference external" href="https://news.ycombinator.com/item?id=24799660">a</a>, <a class="reference external" href="https://news.ycombinator.com/item?id=25865094">b</a>, etc.]. On the other hand, feedback from our friends in the Python community was that people would avoid using libraries with restrictive licenses, like AGPL, in their work. They explained that they aren’t allowed to open source their work and they “don’t want to get their legal team involved.” This begs the question, what good is being open source under a restrictive license if no one can <em>actually</em> use your software? Hopefully the cloud providers will put programs in place to contribute either code or profit (similar to App Store) back to the communities whose projects they fork.</p>
 <p>Consideration of 4-Clause BSD; The <em>original</em> BSD license included an additional <em>advertising clause</em> that states: “All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by [].” Which helps, in part, to address the widespread complaint of, “If you are going to fork our project, at least give us a nod.” We’ve actually seen this play out at <a class="reference external" href="https://www.datto.com/">Datto</a>. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the <em>advertising clause</em> of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.</p>
 </div></blockquote>
-<p>The copyright section is modeled after the <a class="reference external" href="https://github.com/ipython/ipython/blob/master/LICENSE">IPython</a> project. As major contributors distinguish themselves, they will also be added to the copyright by the decision of vote of 2/3rds majority (US Senate precedent).</p>
-<p><em>[Still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent &amp; trademark rights]</em></p>
+<p>The copyright section is modeled after the <a class="reference external" href="https://github.com/ipython/ipython/blob/master/LICENSE">IPython</a> project. As major contributors distinguish themselves, they will also be added to the copyright by a vote of 2/3rds majority (U.S. Senate precedent).</p>
+<p><em>Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent &amp; trademark rights</em></p>
 </div>
 <div class="section" id="open-core">
 <h3>Open core<a class="headerlink" href="#open-core" title="Permalink to this headline">¶</a></h3>
@@ -333,18 +333,18 @@ pip install --upgrade -r requirements.txt
 </li>
 <li><p>In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is <em>required</em> to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&amp;D-intensive tasks (e.g. <a class="reference external" href="https://github.com/JuliaParallel/Dagger.jl#acknowledgements">Dagger.jl</a>.</p>
 <ul>
-<li><p>Unfortunately, the majority of grant application processes are explicitly reserved for esteemed institutions, which makes them off limits for everyday citizens.</p></li>
+<li><p>Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.</p></li>
 </ul>
 </li>
-<li><p>In reality, the success of many open source projects, even those that are not directly affiliated with a company themselves, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.</p>
+<li><p>In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.</p>
 <ul>
 <li><p>This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.</p></li>
 </ul>
 </li>
 <li><p>The <a class="reference external" href="https://www.ga4gh.org/">Global Alliance for Genomics &amp; Health (GA4GH)]</a> eventually had to organize for legal protection.</p></li>
 <li><p>Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.</p></li>
-<li><p>It’s analogous to the <em>freemium</em> days of web 2.0 and apps. 95% of people get access to the free service and 5% of users pay for the premium option because it solves their specific problems.</p></li>
-<li><p>To paraphrase, Isaacson’s <a class="reference external" href="https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703">The Innovators</a>: <em>“The first computer that was invented is sitting in a university basement in Iowa gathering dust. The 2nd computer that was created was made by IBM, and it sat on every professional desktop and point-of-sale counter in the world; it led the digital revolution.”</em></p></li>
+<li><p>It’s analogous to the <em>freemium</em> days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.</p></li>
+<li><p>To paraphrase Isaacson’s, <a class="reference external" href="https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703">The Innovators</a>,: <em>“The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution.”</em></p></li>
 </ul>
 </div>
 </div>

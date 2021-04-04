@@ -23,7 +23,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,# Triggers `MANIFEST.in` file.
     python_requires='>=3.5, <=3.8.7', # (tf req Py3.5-3.8)
-    license='AGPLv3',
+    license='BSD 3-Clause',
     # Version operands https://pip.pypa.io/en/stable/reference/pip_install/#requirement-specifiers
     # According to Python slack wizards, despite wheel-related warnings when installing aiqc on 
     # a fresh python env, I don't need to require users to install 'wheel'.
@@ -31,7 +31,7 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "Natural Language :: English",
-        "License :: OSI Approved :: GNU Affero General Public License v3",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Development Status :: 1 - Planning",
         "Framework :: Jupyter",

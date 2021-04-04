@@ -17,7 +17,7 @@ Mission
 Why Does AIQC Exist?
 ********************
 
-Radical scientific progress is needed to prevent the complete destruction of Earth's resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can't physically transport 10 billion people off of this planet. In order to survive both here and elsewhere, we need major advances in non-linear fields such as: synthetic biology (to heal the earth), vertical farming (to feed its people), small-scale nuclear power (to fuel its progress), as well as cybersecurity & connectivity (to shake off the chains of tyranny).
+Radical scientific progress is needed to prevent the complete destruction of Earth's resources. When coupled with ballooning population growth, resource shortages have the potential to cause widespread conflict. We can't physically transport 10 billion people off of this planet. In order to survive both here and elsewhere, we need major advances in non-linear fields such as: synthetic biology (to heal the earth), vertical farming (to feed its people), small-scale nuclear power (to fuel its progress), as well as cybersecurity & connectivity (to shake off the chains of tyranny).
 
 Deep learning has the power to *accelerate* these scientific discoveries by acting as a torch that reveals the laws of nature through data-driven pattern recognition.
 
