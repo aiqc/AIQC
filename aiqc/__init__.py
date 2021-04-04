@@ -881,6 +881,7 @@ class Dataset(BaseModel):
 	class Text():
 		dataset_type = 'text'
 		file_count = 1
+		column_name = 'TextData'
 
 		def from_strings(
 			strings: list,
@@ -889,29 +890,10 @@ class Dataset(BaseModel):
 			for expectedString in strings:
 				if type(expectedString) != 	str:
 					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
-			
-			column_names = ['TextData']
 
-			dataset = Dataset.create(
-				file_count = Dataset.Text.file_count,
-				dataset_type = Dataset.Text.dataset_type,
-				name = name if name is not None else 'default_text_df',
-				source_path = None
-			)
+			dataframe = pd.DataFrame(strings, columns = Dataset.Text.column_name, dtype = "string")
 
-			dataframe = pd.DataFrame(strings, columns = column_names)
-
-			try:
-				File.Tabular.from_pandas(
-					dataframe = dataframe,  
-					column_names = column_names, 
-					dataset_id = dataset.id
-				)
-			except:
-				dataset.delete_instance() 
-				raise 
-
-			return dataset
+			return Dataset.Tabular.from_pandas(dataframe, name)
 
 
 		def from_pandas(
