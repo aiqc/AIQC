@@ -881,6 +881,7 @@ class Dataset(BaseModel):
 	class Text():
 		dataset_type = 'text'
 		file_count = 1
+		column_name = 'TextData'
 
 		def from_strings(
 			strings: list,
@@ -889,29 +890,10 @@ class Dataset(BaseModel):
 			for expectedString in strings:
 				if type(expectedString) != 	str:
 					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
-			
-			column_names = ['TextData']
 
-			dataset = Dataset.create(
-				file_count = Dataset.Text.file_count,
-				dataset_type = Dataset.Text.dataset_type,
-				name = name if name is not None else 'default_text_df',
-				source_path = None
-			)
+			dataframe = pd.DataFrame(strings, columns = Dataset.Text.column_name, dtype = "string")
 
-			dataframe = pd.DataFrame(strings, columns = column_names)
-
-			try:
-				File.Tabular.from_pandas(
-					dataframe = dataframe,  
-					column_names = column_names, 
-					dataset_id = dataset.id
-				)
-			except:
-				dataset.delete_instance() 
-				raise 
-
-			return dataset
+			return Dataset.Tabular.from_pandas(dataframe, name)
 
 
 		def from_pandas(
@@ -920,29 +902,9 @@ class Dataset(BaseModel):
 			dtype:dict = None, 
 			column_names:list = None
 		):
-			column_names = listify(column_names)
-
-			if (type(dataframe).__name__ != 'DataFrame'):
-				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
-
-			dataset = Dataset.create(
-				file_count = Dataset.Text.file_count
-				, dataset_type = Dataset.Text.dataset_type
-				, name = name if name is not None else 'default_text_df'
-				, source_path = None
-			)
-
-			try:
-				File.Tabular.from_pandas(
-					dataframe = dataframe
-					, dtype = dtype
-					, column_names = column_names
-					, dataset_id = dataset.id
-				)
-			except:
-				dataset.delete_instance()
-				raise 
-			return dataset	
+			if Dataset.Text.column_name not in dataframe.columns:
+				raise ValueError(r'TextData column not found in input df. Please rename the column containing the text data as "TextData"')
+			return Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
 
 
 		def from_folder(
@@ -962,7 +924,22 @@ class Dataset(BaseModel):
 					files_data.extend([file_pointer.read()])
 
 			return Dataset.Text.from_strings(files_data, name)
-			
+
+
+		def to_pandas(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			return Dataset.Tabular.to_pandas(id, columns, samples)
+
+
+		def to_strings(
+			id:int, 
+			samples:list = None
+		):
+			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
+			return data_df[Dataset.Text.column_name].tolist()
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
