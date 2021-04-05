@@ -3085,9 +3085,10 @@ class Algorithm(BaseModel):
 	function_model_train = BlobField()
 	function_model_predict = BlobField()
 	function_model_loss = BlobField() # null? do unsupervised algs have loss?
+	function_model_optimize = BlobField(null=True)# keras can skip via `model.compile(opt='adam')`.
 	description = CharField(null=True)
 
-	
+
 	# --- used by `select_function_model_predict()` ---
 	def multiclass_model_predict(model, samples_predict):
 		probabilities = model.predict(samples_predict['features'])
@@ -3163,6 +3164,7 @@ class Algorithm(BaseModel):
 		, function_model_train:object
 		, function_model_predict:object = None
 		, function_model_loss:object = None
+		, function_model_optimize:object = None
 		, description:str = None
 	):
 		library = library.lower()
@@ -3183,21 +3185,38 @@ class Algorithm(BaseModel):
 				library=library, analysis_type=analysis_type
 			)
 
-		funcs = [function_model_build, function_model_train, function_model_predict, function_model_loss]
+		funcs = [function_model_build, function_model_optimize, function_model_train, function_model_predict, function_model_loss]
 		for i, f in enumerate(funcs):
-			is_func = callable(f)
-			if (not is_func):
-				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
+			if (f is not None):
+				is_func = callable(f)
+				if (not is_func):
+					raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
 
 		function_model_build = dill_serialize(function_model_build)
 		function_model_train = dill_serialize(function_model_train)
 		function_model_predict = dill_serialize(function_model_predict)
 		function_model_loss = dill_serialize(function_model_loss)
+		
+		if (function_model_optimize is not None):
+			function_model_optimize = dill_serialize(function_model_optimize)
+		if (function_model_optimize is None):
+			if (library == 'keras'):
+				print(dedent("""
+					Warning - `function_model_optimize` is not defined, so 
+					the optimizer must be defined within either `function_model_train` 
+					or `function_model_build`; otherwise training will fail.
+				"""))
+			elif (library == 'pytorch'):
+				raise ValueError(dedent("""
+					Yikes - `function_model_optimize` must be defined for `Algorithm.library == 'pytorch'`
+					because we need to know how to persist the optimizer for checkpointing/ exporting.
+				"""))
 
 		algorithm = Algorithm.create(
 			library = library
 			, analysis_type = analysis_type
 			, function_model_build = function_model_build
+			, function_model_optimize = function_model_optimize
 			, function_model_train = function_model_train
 			, function_model_predict = function_model_predict
 			, function_model_loss = function_model_loss
@@ -4432,51 +4451,58 @@ class Job(BaseModel):
 		3. Build and Train model.
 		- Now that encoding has taken place, we can determine the shapes.
 		"""
+		# The shape of the features and labels is a predefined argument
+		# of the Algorithm functions.
 		first_key = next(iter(samples))
 		features_shape = samples[first_key]['features'][0].shape
 		label_shape = samples[first_key]['labels'][0].shape
 
 		if (hyperparamcombo is not None):
-			hyperparameters = hyperparamcombo.hyperparameters
+			hp = hyperparamcombo.hyperparameters
 		elif (hyperparamcombo is None):
-			hyperparameters = None
+			hp = None
 		
 		function_model_build = dill_deserialize(algorithm.function_model_build)
 		if (splitset.supervision == "unsupervised"):
 			model = function_model_build(
 				features_shape,
-				**hyperparameters
+				**hp
 			)
 		elif (splitset.supervision == "supervised"):
 			model = function_model_build(
 				features_shape, label_shape,
-				**hyperparameters
+				**hp
 			)
 
+		if (algorithm.function_model_optimize is not None):
+			function_model_optimize = dill_deserialize(algorithm.function_model_optimize)
+			optimizer = function_model_optimize(**hp)
+		elif (algorithm.function_model_optimize is None):
+			optimizer = None
+
+		# The model and optimizer get combined during training.
 		function_model_train = dill_deserialize(algorithm.function_model_train)
 		if (key_evaluation is not None):
-			model = function_model_train(
-				model = model
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples[key_evaluation]
-				, **hyperparameters
-			)
+			samples_eval = samples[key_evaluation]
 		elif (key_evaluation is None):
-			model = function_model_train(
-				model = model
-				, samples_train = samples[key_train]
-				, samples_evaluate = None
-				, **hyperparameters
-			)
+			samples_eval = None
+		model = function_model_train(
+			model = model
+			, optimizer = optimizer
+			, samples_train = samples[key_train]
+			, samples_evaluate = samples_eval
+			, **hp
+		)
 
-		if (algorithm.library.lower() == "keras"):
+		# Save the artifacts of the trained model.
+		if (algorithm.library == "keras"):
 			# If blank this value is `{}` not None.
 			history = model.history.history
 			"""
 			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
 			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
 			  https://github.com/keras-team/keras/issues/14411
-			- So let's switch to a real file in appdirs. This approach will generalize better.
+			- So let's switch to a real file in appdirs.
 			- Assuming `model.save()` will trigger OS-specific h5 drivers.
 			"""
 			# Write it.
@@ -4490,6 +4516,24 @@ class Job(BaseModel):
 			with open(temp_file_name, 'rb') as file:
 				model_bytes = file.read()
 			os.remove(temp_file_name)
+		elif (algorithm.library == 'pytorch'):
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
+			model_blob = io.BytesIO()
+			torch.save(
+				{
+					'model_state_dict': model.state_dict(),
+					'optimizer_state_dict': None, ###placeholder
+				},
+				model_blob
+			)
+			model_blob = model_blob.getvalue()
+			"""
+			checkpoint = torch.load(model_blob)
+			new_model = model.load_state_dict(
+				checkpoint['model_state_dict']
+			)
+			"""
+			history = None
 
 		"""
 		4. Evaluation: predictions, metrics, charts.
@@ -4621,7 +4665,6 @@ class Result(BaseModel):
 	plot_data = PickleField(null=True) # Regression only uses history.
 	probabilities = PickleField(null=True) # Not used for regression.
 
-
 	job = ForeignKeyField(Job, backref='results')
 
 
@@ -4630,7 +4673,7 @@ class Result(BaseModel):
 		algorithm = r.job.batch.algorithm
 		model_bytes = r.model_file
 
-		if (algorithm.library.lower() == "keras"):
+		if (algorithm.library == "keras"):
 			temp_file_name = f"{app_dir}temp_keras_model"
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
@@ -4766,8 +4809,8 @@ class TrainingCallback():
 				# Only stops training early if all user-specified metrics are satisfied.
 				# `above_or_below`: where 'above' means `>=` and 'below' means `<=`.
 				"""
-				super(TrainingCallback.Keras.MetricCutoff, self).__init__()
 				self.thresholds = thresholds
+				
 
 			def on_epoch_end(self, epoch, logs=None):
 				logs = logs or {}

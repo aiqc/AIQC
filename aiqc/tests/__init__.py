@@ -56,20 +56,22 @@ def list_test_batches(format:str=None):
 Remember, `pickle` does not accept nested functions.
 So the model_build and model_train functions must be defined outside of the function that accesses them.
 For example when creating an `def test_method()... Algorithm.function_model_build`
+
+Each test takes a slightly different approach to `function_model_optimizer`.
 """
 
 # ------------------------ MULTICLASS ------------------------
-def multiclass_function_model_build(features_shape, label_shape, **hyperparameters):
+def multiclass_function_model_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 	model = Sequential()
 	model.add(Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.2))
-	model.add(Dense(units=hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dense(units=label_shape[0], activation='softmax'))
 
-	opt = keras.optimizers.Adamax(hyperparameters['learning_rate'])
+	opt = keras.optimizers.Adamax(hp['learning_rate'])
 	model.compile(
 		loss = 'categorical_crossentropy'
 		, optimizer = opt
@@ -78,7 +80,7 @@ def multiclass_function_model_build(features_shape, label_shape, **hyperparamete
 	return model
 
 
-def multiclass_function_model_train(model, samples_train, samples_evaluate, **hyperparameters):
+def multiclass_function_model_train(model, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
 
 	model.fit(
@@ -89,8 +91,8 @@ def multiclass_function_model_train(model, samples_train, samples_evaluate, **hy
 			, samples_evaluate["labels"]
 		)
 		, verbose = 0
-		, batch_size = hyperparameters['batch_size']
-		, epochs = hyperparameters['epoch_count']
+		, batch_size = hp['batch_size']
+		, epochs = hp['epoch_count']
 		, callbacks=[History()]
 	)
 	return model
@@ -179,30 +181,31 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 
 
 # ------------------------ BINARY ------------------------
-def binary_model_build(features_shape, label_shape, **hyperparameters):
+def binary_model_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
 	model = Sequential(name='Sonar')
-	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
-	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
-	model.add(Dense(hyperparameters['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
-	model.compile(optimizer="adam", loss='binary_crossentropy', metrics=['accuracy'])
 	return model
 
-def binary_model_train(model, samples_train, samples_evaluate, **hyperparameters):
-	from keras.callbacks import History
+# keeping this one as a string-based optimizer.
 
+def binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
+	from keras.callbacks import History
+	model.compile(optimizer="adamax", loss='binary_crossentropy', metrics=['accuracy'])
 	model.fit(
 		samples_train['features'], samples_train['labels']
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
 		, verbose = 0
 		, batch_size = 3
-		, epochs = hyperparameters['epochs']
+		, epochs = hp['epochs']
 		, callbacks = [History()]
 	)
 	return model
@@ -284,25 +287,30 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ REGRESSION ------------------------
 
-def regression_model_build(features_shape, label_shape, **hyperparameters):
+def regression_model_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
 	model = Sequential()
-	model.add(Dense(units=hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
+	model.add(Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(Dropout(0.15))
-	model.add(Dense(units=hyperparameters['neuron_count'], kernel_initializer='normal', activation='relu'))
+	model.add(Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(Dense(units=label_shape[0], kernel_initializer='normal'))
-	model.compile(
-		loss='mean_squared_error'
-		, optimizer='rmsprop'
-		, metrics = ['mean_squared_error']
-	)
 	return model
 
-def regression_model_train(model, samples_train, samples_evaluate, **hyperparameters):
+def regression_model_optimize(**hp):
+	optimizer = keras.optimizers.RMSprop()
+	return optimizer
+
+def regression_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
+
+	model.compile(
+		loss='mean_squared_error'
+		, optimizer=optimizer
+		, metrics = ['mean_squared_error']
+	)
 
 	model.fit(
 		samples_train['features'], samples_train['labels']
@@ -311,7 +319,7 @@ def regression_model_train(model, samples_train, samples_evaluate, **hyperparame
 			samples_evaluate['labels'])
 		, verbose = 0
 		, batch_size = 3
-		, epochs = hyperparameters['epochs']
+		, epochs = hp['epochs']
 		, callbacks = [History()]
 	)
 	return model
@@ -383,6 +391,7 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 		, analysis_type = "regression"
 		, function_model_build = regression_model_build
 		, function_model_train = regression_model_train
+		, function_model_optimize = regression_model_optimize
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(
@@ -399,35 +408,34 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 	return batch
 
 # ------------------------ IMAGE BINARY ------------------------
-def image_binary_model_build(features_shape, label_shape, **hyperparameters):
+def image_binary_model_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout, Flatten
 
 	model = Sequential()
 	
-	model.add(Conv1D(128*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
-	model.add(MaxPooling1D(pool_size=hyperparameters['pool_size']))
-	model.add(Dropout(hyperparameters['dropout']))
+	model.add(Conv1D(128*hp['neuron_multiply'], kernel_size=hp['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
+	model.add(MaxPooling1D(pool_size=hp['pool_size']))
+	model.add(Dropout(hp['dropout']))
 	
-	model.add(Conv1D(256*hyperparameters['neuron_multiply'], kernel_size=hyperparameters['kernel_size'], padding='same', activation='relu', kernel_initializer=hyperparameters['cnn_init']))
-	model.add(MaxPooling1D(pool_size=hyperparameters['pool_size']))
-	model.add(Dropout(hyperparameters['dropout']))
+	model.add(Conv1D(256*hp['neuron_multiply'], kernel_size=hp['kernel_size'], padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
+	model.add(MaxPooling1D(pool_size=hp['pool_size']))
+	model.add(Dropout(hp['dropout']))
 
 	model.add(Flatten())
-	model.add(Dense(hyperparameters['dense_neurons']*hyperparameters['neuron_multiply'], activation='relu'))
+	model.add(Dense(hp['dense_neurons']*hp['neuron_multiply'], activation='relu'))
 	model.add(Dropout(0.2))
-	if hyperparameters['include_2nd_dense'] == True:
-		model.add(Dense(hyperparameters['2nd_dense_neurons'], activation='relu'))
+	if hp['include_2nd_dense'] == True:
+		model.add(Dense(hp['2nd_dense_neurons'], activation='relu'))
 
 	model.add(Dense(units=label_shape[0], activation='sigmoid'))
-
-	opt = keras.optimizers.Adamax(hyperparameters['learning_rate'])
-	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 	return model
 
-def image_binary_model_train(model, samples_train, samples_evaluate, **hyperparameters):   
+def image_binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):   
 	from keras.callbacks import History
+
+	model.compile(optimizer='adamax', loss='binary_crossentropy', metrics=['accuracy'])
 
 	metrics_cuttoffs = [
 		{"metric":"val_accuracy", "cutoff":0.70, "above_or_below":"above"},
@@ -445,9 +453,9 @@ def image_binary_model_train(model, samples_train, samples_evaluate, **hyperpara
 			, samples_evaluate["labels"]
 		)
 		, verbose = 0
-		, batch_size = hyperparameters['batch_size']
+		, batch_size = hp['batch_size']
 		, callbacks=[History(), cutoffs]
-		, epochs = hyperparameters['epoch_count']
+		, epochs = hp['epoch_count']
 	)
 	return model
 
