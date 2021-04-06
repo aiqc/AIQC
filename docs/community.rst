@@ -41,13 +41,13 @@ What can I contribute?
 How can I get involved?
 ***********************
 
-- Create a `Discussion <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
+- Create a post on the `discussion board <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
 
   + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.
 
   + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
-- Alternatively, you can send a note to the community manager `layne.sadler AT gmail.com`.
+- Jump into the conversation in the `slack group <https://aiqc.readthedocs.io/en/latest/links.html>`__.
 
 ----
 
