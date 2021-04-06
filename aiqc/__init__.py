@@ -3082,10 +3082,10 @@ class Algorithm(BaseModel):
 	library = CharField()
 	analysis_type = CharField()#classification_multi, classification_binary, regression, clustering.
 	function_model_build = BlobField()
+	function_model_optimize = BlobField()
 	function_model_train = BlobField()
 	function_model_predict = BlobField()
 	function_model_loss = BlobField() # null? do unsupervised algs have loss?
-	function_model_optimize = BlobField(null=True)# keras can skip via `model.compile(opt='adam')`.
 	description = CharField(null=True)
 
 
@@ -3119,6 +3119,16 @@ class Algorithm(BaseModel):
 			raise ValueError(f"\nYikes - The 'metrics' returned are neither a list nor a float:\n{metrics}\n")
 		return loss
 
+	# --- used by `select_function_model_optimize()` ---
+	"""
+	- Eventually could help the user select an optimizer based on topology (e.g. depth),
+	  but adamax works great for me everywhere.
+	 - `**hp` needs to be included because that's how it is called in training loop.
+	"""
+	def keras_model_optimize(**hp):
+		optimizer = keras.optimizers.Adamax(learning_rate=0.01)
+		return optimizer
+
 
 	def select_function_model_predict(
 		library:str,
@@ -3132,7 +3142,7 @@ class Algorithm(BaseModel):
 				function_model_predict = Algorithm.binary_model_predict
 			elif (analysis_type == 'regression'):
 				function_model_predict = Algorithm.regression_model_predict
-		# After each of the predefined approaches above run, check if it is still undefined.
+		# After each of the predefined approaches above, check if it is still undefined.
 		if function_model_predict is None:
 			raise ValueError(dedent("""
 			Yikes - You did not provide a `function_model_predict`,
@@ -3148,13 +3158,26 @@ class Algorithm(BaseModel):
 		function_model_loss = None
 		if (library == 'keras'):
 			function_model_loss = Algorithm.keras_model_loss
-		# After each of the predefined approaches above run, check if it is still undefined.
+		# After each of the predefined approaches above, check if it is still undefined.
 		if function_model_loss is None:
 			raise ValueError(dedent("""
 			Yikes - You did not provide a `function_model_loss`,
 			and we don't have an automated function for your combination of 'library' and 'analysis_type'
 			"""))
 		return function_model_loss
+
+	def select_function_model_optimize(library:str):
+		function_model_optimize = None
+		if (library == 'keras'):
+			function_model_optimize = Algorithm.keras_model_optimize
+		# After each of the predefined approaches above, check if it is still undefined.
+		if (function_model_optimize is None):
+			raise ValueError(dedent("""
+			Yikes - You did not provide a `function_model_optimize`,
+			and we don't have an automated function for your 'library'
+			"""))
+		return function_model_optimize
+
 
 
 	def make(
@@ -3180,6 +3203,8 @@ class Algorithm(BaseModel):
 			function_model_predict = Algorithm.select_function_model_predict(
 				library=library, analysis_type=analysis_type
 			)
+		if (function_model_optimize is None):
+			function_model_optimize = Algorithm.select_function_model_optimize(library=library)
 		if (function_model_loss is None):
 			function_model_loss = Algorithm.select_function_model_loss(
 				library=library, analysis_type=analysis_type
@@ -3187,30 +3212,15 @@ class Algorithm(BaseModel):
 
 		funcs = [function_model_build, function_model_optimize, function_model_train, function_model_predict, function_model_loss]
 		for i, f in enumerate(funcs):
-			if (f is not None):
-				is_func = callable(f)
-				if (not is_func):
-					raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
+			is_func = callable(f)
+			if (not is_func):
+				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
 
 		function_model_build = dill_serialize(function_model_build)
+		function_model_optimize = dill_serialize(function_model_optimize)
 		function_model_train = dill_serialize(function_model_train)
 		function_model_predict = dill_serialize(function_model_predict)
 		function_model_loss = dill_serialize(function_model_loss)
-		
-		if (function_model_optimize is not None):
-			function_model_optimize = dill_serialize(function_model_optimize)
-		if (function_model_optimize is None):
-			if (library == 'keras'):
-				print(dedent("""
-					Warning - `function_model_optimize` is not defined, so 
-					the optimizer must be defined within either `function_model_train` 
-					or `function_model_build`; otherwise training will fail.
-				"""))
-			elif (library == 'pytorch'):
-				raise ValueError(dedent("""
-					Yikes - `function_model_optimize` must be defined for `Algorithm.library == 'pytorch'`
-					because we need to know how to persist the optimizer for checkpointing/ exporting.
-				"""))
 
 		algorithm = Algorithm.create(
 			library = library
@@ -4474,13 +4484,11 @@ class Job(BaseModel):
 				**hp
 			)
 
-		if (algorithm.function_model_optimize is not None):
-			function_model_optimize = dill_deserialize(algorithm.function_model_optimize)
-			optimizer = function_model_optimize(**hp)
-		elif (algorithm.function_model_optimize is None):
-			optimizer = None
-
+		
 		# The model and optimizer get combined during training.
+		function_model_optimize = dill_deserialize(algorithm.function_model_optimize)
+		optimizer = function_model_optimize(**hp)
+		
 		function_model_train = dill_deserialize(algorithm.function_model_train)
 		if (key_evaluation is not None):
 			samples_eval = samples[key_evaluation]
@@ -5019,6 +5027,7 @@ class Experiment():
 		, splitset_id:int
 		, repeat_count:int = 1
 		, hide_test:bool = False
+		, function_model_optimize:object = None
 		, function_model_predict:object = None
 		, function_model_loss:object = None
 		, hyperparameters:dict = None
@@ -5031,6 +5040,7 @@ class Experiment():
 			, analysis_type = analysis_type
 			, function_model_build = function_model_build
 			, function_model_train = function_model_train
+			, function_model_optimize = function_model_optimize
 			, function_model_predict = function_model_predict
 			, function_model_loss = function_model_loss
 		)

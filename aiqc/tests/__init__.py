@@ -70,18 +70,19 @@ def multiclass_function_model_build(features_shape, label_shape, **hp):
 	model.add(Dropout(0.2))
 	model.add(Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dense(units=label_shape[0], activation='softmax'))
-
-	opt = keras.optimizers.Adamax(hp['learning_rate'])
-	model.compile(
-		loss = 'categorical_crossentropy'
-		, optimizer = opt
-		, metrics = ['accuracy']
-	)
 	return model
 
+def multiclass_function_model_optimize(**hp):
+	optimizer = keras.optimizers.Adamax(hp['learning_rate'])
+	return optimizer
 
-def multiclass_function_model_train(model, samples_train, samples_evaluate, **hp):
+def multiclass_function_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
+	model.compile(
+		loss = 'categorical_crossentropy'
+		, optimizer = optimizer
+		, metrics = ['accuracy']
+	)
 
 	model.fit(
 		samples_train["features"]
@@ -163,6 +164,7 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 		library = "keras"
 		, analysis_type = "classification_multi"
 		, function_model_build = multiclass_function_model_build
+		, function_model_optimize = multiclass_function_model_optimize
 		, function_model_train = multiclass_function_model_train
 	)
 
@@ -195,11 +197,11 @@ def binary_model_build(features_shape, label_shape, **hp):
 	model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
 	return model
 
-# keeping this one as a string-based optimizer.
+# tests default `function_model_optimize`
 
 def binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
-	model.compile(optimizer="adamax", loss='binary_crossentropy', metrics=['accuracy'])
+	model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
 	model.fit(
 		samples_train['features'], samples_train['labels']
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
@@ -435,7 +437,11 @@ def image_binary_model_build(features_shape, label_shape, **hp):
 def image_binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):   
 	from keras.callbacks import History
 
-	model.compile(optimizer='adamax', loss='binary_crossentropy', metrics=['accuracy'])
+	model.compile(
+		optimizer=optimizer
+		, loss='binary_crossentropy'
+		, metrics=['accuracy']
+	)
 
 	metrics_cuttoffs = [
 		{"metric":"val_accuracy", "cutoff":0.70, "above_or_below":"above"},
