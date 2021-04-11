@@ -65,7 +65,7 @@ def keras_multiclass_fn_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
-	model = Sequential()
+	model = keras.models.Sequential()
 	model.add(Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.2))
 	model.add(Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
@@ -187,7 +187,7 @@ def keras_binary_fn_build(features_shape, label_shape, **hp):
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
-	model = Sequential(name='Sonar')
+	model = keras.models.Sequential()
 	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dropout(0.30))
 	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
@@ -292,7 +292,7 @@ def keras_regression_fn_build(features_shape, label_shape, **hp):
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
 
-	model = Sequential()
+	model = keras.models.Sequential()
 	model.add(Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(Dropout(0.15))
 	model.add(Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
@@ -414,7 +414,7 @@ def keras_image_binary_fn_build(features_shape, label_shape, **hp):
 	from keras.models import Sequential
 	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout, Flatten
 
-	model = Sequential()
+	model = keras.models.Sequential()
 	
 	model.add(Conv1D(128*hp['neuron_multiply'], kernel_size=hp['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
 	model.add(MaxPooling1D(pool_size=hp['pool_size']))
