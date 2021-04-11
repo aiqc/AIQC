@@ -955,6 +955,14 @@ class Dataset(BaseModel):
 			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
 			return data_df[Dataset.Text.column_name].tolist()
 
+		
+		def to_numpy(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			return Dataset.Tabular.to_numpy(id, columns, samples)
+
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
 	# the only unique thing is an edge_data for each Graph file.
