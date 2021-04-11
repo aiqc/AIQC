@@ -2,9 +2,9 @@
 
 <br />
 
-### [ReadTheDocs](https://aiqc.readthedocs.io/)
+### 📚 [ReadTheDocs](https://aiqc.readthedocs.io/)
 
-### [Community - how to contribute?](https://aiqc.readthedocs.io/en/latest/community.html)
+### 🧑‍💻 [Community - how to contribute?](https://aiqc.readthedocs.io/en/latest/community.html)
 
 ---
 

@@ -108,11 +108,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#TLDR">TLDR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Environment">Environment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Pickle-Disclaimer">Pickle Disclaimer</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
@@ -571,18 +571,6 @@ To get started, run `aiqc.setup()`.
 </div>
 <div class="section" id="Environment">
 <h2>Environment<a class="headerlink" href="#Environment" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="Operating-System">
-<h3>Operating System<a class="headerlink" href="#Operating-System" title="Permalink to this headline">¶</a></h3>
-<p>AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:</p>
-<ul class="simple">
-<li><p>macOS 10.15+</p></li>
-<li><p>Linux (Ubuntu, Alpine, RHEL).</p></li>
-<li><p>Windows 10 (and WSL).</p></li>
-</ul>
-<blockquote>
-<div><p>If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible.</p>
-</div></blockquote>
-</div>
 <div class="section" id="Python-Version">
 <h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline">¶</a></h3>
 <p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was originally developed on 3.7.6 and then upgraded to 3.8.7. We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing python installations and virtualenvs.</p>
@@ -608,9 +596,21 @@ To get started, run `aiqc.setup()`.
 </div>
 <div class="section" id="Pickle-Disclaimer">
 <h4>Pickle Disclaimer<a class="headerlink" href="#Pickle-Disclaimer" title="Permalink to this headline">¶</a></h4>
-<p>AIQC, much like PyTorch, relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful OS/ Python information is stored in the config file at the time of
-creation.</p>
+<p>AIQC, much like PyTorch, relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, if you create objects in your <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful info about your OS/ Python version is stored in the
+<code class="docutils literal notranslate"><span class="pre">config.json</span></code> file at the time of creation.</p>
 </div>
+</div>
+<div class="section" id="Operating-System">
+<h3>Operating System<a class="headerlink" href="#Operating-System" title="Permalink to this headline">¶</a></h3>
+<p>AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:</p>
+<ul class="simple">
+<li><p>macOS 10.15+</p></li>
+<li><p>Linux (Ubuntu, Alpine, RHEL).</p></li>
+<li><p>Windows 10 (and WSL).</p></li>
+</ul>
+<blockquote>
+<div><p>If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible.</p>
+</div></blockquote>
 </div>
 <div class="section" id="Optional---JupyterLab-IDE">
 <h3>Optional - JupyterLab IDE<a class="headerlink" href="#Optional---JupyterLab-IDE" title="Permalink to this headline">¶</a></h3>

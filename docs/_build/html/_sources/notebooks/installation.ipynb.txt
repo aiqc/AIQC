@@ -137,26 +137,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Operating System"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:\n",
-    "\n",
-    "- macOS 10.15+\n",
-    "- Linux (Ubuntu, Alpine, RHEL).\n",
-    "- Windows 10 (and WSL).\n",
-    "\n",
-    "> If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "### Python Version\n",
     "\n",
     "Requires Python 3+ (check your deep learning library's Python requirements). AIQC was originally developed on 3.7.6 and then upgraded to 3.8.7. We highly recommend `pyenv` for managing python installations and virtualenvs.\n",
@@ -191,7 +171,27 @@
    "source": [
     "#### Pickle Disclaimer\n",
     "\n",
-    "AIQC, much like PyTorch, relies heavily on [Pickle](https://docs.python.org/3/library/pickle.html) for saving Python objects in its database. Therefore, as a caveat of Pickle, If you create an `aiqc.sqlite` file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, `sys.version` and other helpful OS/ Python information is stored in the config file at the time of creation."
+    "AIQC, much like PyTorch, relies heavily on [Pickle](https://docs.python.org/3/library/pickle.html) for saving Python objects in its database. Therefore, as a caveat of Pickle, if you create objects in your `aiqc.sqlite` file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, `sys.version` and other helpful info about your OS/ Python version is stored in the `config.json` file at the time of creation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Operating System"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:\n",
+    "\n",
+    "- macOS 10.15+\n",
+    "- Linux (Ubuntu, Alpine, RHEL).\n",
+    "- Windows 10 (and WSL).\n",
+    "\n",
+    "> If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible."
    ]
   },
   {
@@ -811,7 +811,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.7.6"
+   "version": "3.8.7"
   }
  },
  "nbformat": 4,

@@ -652,19 +652,12 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">function_model_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
-
-    <span class="n">opt</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="s1">&#39;categorical_crossentropy&#39;</span>
-        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">opt</span>
-        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
@@ -674,7 +667,12 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">function_model_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="s1">&#39;categorical_crossentropy&#39;</span>
+        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
         <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
@@ -683,8 +681,8 @@ No more Featurecoders can be added to this Encoderset.
             <span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
@@ -713,16 +711,17 @@ No more Featurecoders can be added to this Encoderset.
 <span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
-    <span class="p">,</span> <span class="n">function_model_build</span> <span class="o">=</span> <span class="n">function_model_build</span>
-    <span class="p">,</span> <span class="n">function_model_train</span> <span class="o">=</span> <span class="n">function_model_train</span>
+    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
+    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
 
-    <span class="p">,</span> <span class="n">function_model_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
-    <span class="p">,</span> <span class="n">function_model_loss</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
+    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
+    <span class="p">,</span> <span class="n">fn_loss</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
@@ -750,7 +749,18 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="section" id="b)-Low-Level-API">
 <h2>b) Low-Level API<a class="headerlink" href="#b)-Low-Level-API" title="Permalink to this headline">¶</a></h2>
-<p>Reference <a class="reference internal" href="api_high_level.html"><span class="doc">Low-Level API Docs</span></a> for more information including how to work with non-tabular data.</p>
+<p>Reference <a class="reference internal" href="api_high_level.html"><span class="doc">Low-Level API Docs</span></a> for more information including how to work with non-tabular data, and defining an optimizer.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">optimizer</span>
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
@@ -853,19 +863,12 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">function_model_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
-
-    <span class="n">opt</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="s1">&#39;categorical_crossentropy&#39;</span>
-        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">opt</span>
-        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
@@ -875,7 +878,12 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">function_model_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hyperparameters</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="s1">&#39;categorical_crossentropy&#39;</span>
+        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
         <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
@@ -884,8 +892,8 @@ No more Featurecoders can be added to this Encoderset.
             <span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hyperparameters</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
@@ -900,8 +908,8 @@ No more Featurecoders can be added to this Encoderset.
 <span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
-    <span class="p">,</span> <span class="n">function_model_build</span> <span class="o">=</span> <span class="n">function_model_build</span>
-    <span class="p">,</span> <span class="n">function_model_train</span> <span class="o">=</span> <span class="n">function_model_train</span>
+    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
+    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
 <span class="p">)</span>
 </pre></div>
 </div>

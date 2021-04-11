@@ -36,6 +36,11 @@ from PIL import Image as Imaje
 from natsort import natsorted
 # Complex serialization.
 import dill as dill
+# Pytorch
+import torch
+import torch.nn as nn
+from torch import optim
+import torchmetrics #by PyTorchLightning
 
 
 name = "aiqc"
@@ -433,11 +438,20 @@ def dill_serialize(objekt:object):
 	blob = blob.getvalue()
 	return blob
 
-
 def dill_deserialize(blob:bytes):
 	objekt = io.BytesIO(blob)
 	objekt = dill.load(objekt)
 	return objekt
+
+def dill_reveal_code(serialized_objekt:object, print_it:bool=True):
+	code_str = (
+		dill.source.getsource(
+			dill_deserialize(serialized_objekt).__code__
+		)
+	)
+	if (print_it == True):
+		print(dedent(code_str))
+	return code_str
 # --------- END HELPERS ---------
 
 
@@ -462,7 +476,6 @@ class Dataset(BaseModel):
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # only includes file_types that match the dataset_type.
 	source_path = CharField(null=True)
-	#s3_path = CharField(null=True) # Write an order to check.
 
 
 	def make_label(id:int, columns:list):
@@ -532,8 +545,9 @@ class Dataset(BaseModel):
 
 	class Tabular():
 		"""
-		This does not use a subclass e.g. `class Tabular(Dataset):`
-		because the ORM would make a separate table.
+		- Does not inherit the Dataset class e.g. `class Tabular(Dataset):`
+		  because then ORM would make a separate table for it.
+		- It is just a collection of methods and default variables.
 		"""
 		dataset_type = 'tabular'
 		file_index = 0
@@ -1077,12 +1091,19 @@ class File(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
+			"""
+			This function could be optimized to read columns and rows selectively
+			rather than dropping them after the fact.
+			https://stackoverflow.com/questions/64050609/pyarrow-read-parquet-via-column-index-or-order
+			"""
 			f = File.get_by_id(id)
-			blob = io.BytesIO(f.blob)
 			columns = listify(columns)
 			samples = listify(samples)
 			# Filters.
-			df = pd.read_parquet(blob, columns=columns)
+			df = pd.read_parquet(
+				io.BytesIO(f.blob) #saves memory?
+				, columns=columns
+			)
 			if samples is not None:
 				df = df.iloc[samples]
 			
@@ -3081,155 +3102,198 @@ class Algorithm(BaseModel):
 	"""
 	library = CharField()
 	analysis_type = CharField()#classification_multi, classification_binary, regression, clustering.
-	function_model_build = BlobField()
-	function_model_optimize = BlobField()
-	function_model_train = BlobField()
-	function_model_predict = BlobField()
-	function_model_loss = BlobField() # null? do unsupervised algs have loss?
-	description = CharField(null=True)
+	
+	fn_build = BlobField()
+	fn_lose = BlobField() # null? do unsupervised algs have loss?
+	fn_optimize = BlobField()
+	fn_train = BlobField()
+	fn_predict = BlobField()
 
-
-	# --- used by `select_function_model_predict()` ---
-	def multiclass_model_predict(model, samples_predict):
+	# --- used by `select_fn_predict()` ---
+	def keras_multiclass_predict(model, samples_predict):
+		# Shows the probabilities of each class coming out of softmax neurons:
+		# array([[9.9990356e-01, 9.6374511e-05, 3.3754202e-10]
 		probabilities = model.predict(samples_predict['features'])
 		# This is the official keras replacement for multiclass `.predict_classes()`
 		# Returns one ordinal array per sample: `[[0][1][2][3]]` 
-		predictions = np.argmax(probabilities, axis=-1)
-		return predictions, probabilities
+		prediction = np.argmax(probabilities, axis=-1)
+		return prediction, probabilities
 
-	def binary_model_predict(model, samples_predict):
-		probabilities = model.predict(samples_predict['features'])
-		# this is the official keras replacement for binary classes `.predict_classes()`
-		# Returns one array per sample: `[[0][1][0][1]]` 
-		predictions = (probabilities > 0.5).astype("int32")
-		return predictions, probabilities
+	def keras_binary_predict(model, samples_predict):
+		# Sigmoid output is between 0 and 1.
+		# It's not technically a probability, but it is still easy to interpret.
+		probability = model.predict(samples_predict['features'])
+		# This is the official keras replacement for binary classes `.predict_classes()`.
+		# Returns one array per sample: `[[0][1][0][1]]`.
+		prediction = (probability > 0.5).astype("int32")
+		return prediction, probability
 
-	def regression_model_predict(model, samples_predict):
-		predictions = model.predict(samples_predict['features'])
-		return predictions
+	def keras_regression_predict(model, samples_predict):
+		prediction = model.predict(samples_predict['features'])
+		# ^ verified that output only produces a single value.
+		return prediction
 
-	# --- used by `select_function_model_loss()` ---
-	def keras_model_loss(model, samples_evaluate):
-		metrics = model.evaluate(samples_evaluate['features'], samples_evaluate['labels'], verbose=0)
-		if (isinstance(metrics, list)):
-			loss = metrics[0]
-		elif (isinstance(metrics, float)):
-			loss = metrics
-		else:
-			raise ValueError(f"\nYikes - The 'metrics' returned are neither a list nor a float:\n{metrics}\n")
-		return loss
+	def pytorch_binary_predict(model, samples_predict):
+		probability = model(samples_predict['features'])
+		# Convert tensor back to numpy for AIQC metrics.
+		probability = probability.detach().numpy()
+		prediction = (probability > 0.5).astype("int32")
+		# Both objects are numpy.
+		return prediction, probability
 
-	# --- used by `select_function_model_optimize()` ---
+	# --- used by `select_fn_lose()` ---
+	def keras_regression_lose(**hp):
+		loser = keras.losses.MeanAbsoluteError()
+		return loser
+	
+	def keras_binary_lose(**hp):
+		loser = keras.losses.BinaryCrossentropy()
+		return loser
+	
+	def keras_multiclass_lose(**hp):
+		loser = keras.losses.CategoricalCrossentropy()
+		return loser
+
+	def pytorch_binary_lose(**hp):
+		loser = nn.BCELoss()
+		return loser
+
+	# --- used by `select_fn_optimize()` ---
 	"""
 	- Eventually could help the user select an optimizer based on topology (e.g. depth),
-	  but adamax works great for me everywhere.
+	  but Adamax works great for me everywhere.
 	 - `**hp` needs to be included because that's how it is called in training loop.
 	"""
-	def keras_model_optimize(**hp):
+	def keras_optimize(**hp):
 		optimizer = keras.optimizers.Adamax(learning_rate=0.01)
 		return optimizer
 
+	def pytorch_optimize(model, **hp):
+		optimizer = optim.Adamax(model.parameters(),lr=0.01)
+		return optimizer
 
-	def select_function_model_predict(
+
+	def select_fn_predict(
 		library:str,
 		analysis_type:str
 	):
-		function_model_predict = None
+		fn_predict = None
 		if (library == 'keras'):
 			if (analysis_type == 'classification_multi'):
-				function_model_predict = Algorithm.multiclass_model_predict
+				fn_predict = Algorithm.keras_multiclass_predict
 			elif (analysis_type == 'classification_binary'):
-				function_model_predict = Algorithm.binary_model_predict
+				fn_predict = Algorithm.keras_binary_predict
 			elif (analysis_type == 'regression'):
-				function_model_predict = Algorithm.regression_model_predict
+				fn_predict = Algorithm.keras_regression_predict
+		elif (library == 'pytorch'):
+			if (analysis_type == 'classification_multi'):
+				raise ValueError("doesnt exist yet")
+			elif (analysis_type == 'classification_binary'):
+				fn_predict = Algorithm.pytorch_binary_predict
+			elif (analysis_type == 'regression'):
+				raise ValueError("doesnt exist yet")
+
 		# After each of the predefined approaches above, check if it is still undefined.
-		if function_model_predict is None:
+		if fn_predict is None:
 			raise ValueError(dedent("""
-			Yikes - You did not provide a `function_model_predict`,
+			Yikes - You did not provide a `fn_predict`,
 			and we don't have an automated function for your combination of 'library' and 'analysis_type'
 			"""))
-		return function_model_predict
+		return fn_predict
 
 
-	def select_function_model_loss(
+	def select_fn_lose(
 		library:str,
 		analysis_type:str
 	):      
-		function_model_loss = None
+		fn_lose = None
 		if (library == 'keras'):
-			function_model_loss = Algorithm.keras_model_loss
+			if (analysis_type == 'regression'):
+				fn_lose = Algorithm.keras_regression_lose
+			elif (analysis_type == 'classification_binary'):
+				fn_lose = Algorithm.keras_binary_lose
+			elif (analysis_type == 'classification_multi'):
+				fn_lose = Algorithm.keras_multiclass_lose
+		elif (library == 'pytorch'):
+			if (analysis_type == 'regression'):
+				raise ValueError("doesnt exist yet")
+			elif (analysis_type == 'classification_binary'):
+				fn_lose = Algorithm.pytorch_binary_lose
+			elif (analysis_type == 'classification_multi'):
+				raise ValueError("doesnt exist yet")
 		# After each of the predefined approaches above, check if it is still undefined.
-		if function_model_loss is None:
+		if fn_lose is None:
 			raise ValueError(dedent("""
-			Yikes - You did not provide a `function_model_loss`,
+			Yikes - You did not provide a `fn_lose`,
 			and we don't have an automated function for your combination of 'library' and 'analysis_type'
 			"""))
-		return function_model_loss
+		return fn_lose
 
-	def select_function_model_optimize(library:str):
-		function_model_optimize = None
+	def select_fn_optimize(library:str):
+		fn_optimize = None
 		if (library == 'keras'):
-			function_model_optimize = Algorithm.keras_model_optimize
+			fn_optimize = Algorithm.keras_optimize
+		elif (library == 'pytorch'):
+			fn_optimize = Algorithm.pytorch_optimize
 		# After each of the predefined approaches above, check if it is still undefined.
-		if (function_model_optimize is None):
+		if (fn_optimize is None):
 			raise ValueError(dedent("""
-			Yikes - You did not provide a `function_model_optimize`,
+			Yikes - You did not provide a `fn_optimize`,
 			and we don't have an automated function for your 'library'
 			"""))
-		return function_model_optimize
-
+		return fn_optimize
 
 
 	def make(
 		library:str
 		, analysis_type:str
-		, function_model_build:object
-		, function_model_train:object
-		, function_model_predict:object = None
-		, function_model_loss:object = None
-		, function_model_optimize:object = None
+		, fn_build:object
+		, fn_train:object
+		, fn_predict:object = None
+		, fn_lose:object = None
+		, fn_optimize:object = None
 		, description:str = None
 	):
 		library = library.lower()
-		if (library != 'keras'):
-			raise ValueError("\nYikes - Right now, the only library we support is 'keras.' More to come soon!\n")
+		if ((library != 'keras') and (library != 'pytorch')):
+			raise ValueError("\nYikes - Right now, the only libraries we support are 'keras' and 'pytorch'\nMore to come soon!\n")
 
 		analysis_type = analysis_type.lower()
 		supported_analyses = ['classification_multi', 'classification_binary', 'regression']
 		if (analysis_type not in supported_analyses):
 			raise ValueError(f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n")
 
-		if (function_model_predict is None):
-			function_model_predict = Algorithm.select_function_model_predict(
+		if (fn_predict is None):
+			fn_predict = Algorithm.select_fn_predict(
 				library=library, analysis_type=analysis_type
 			)
-		if (function_model_optimize is None):
-			function_model_optimize = Algorithm.select_function_model_optimize(library=library)
-		if (function_model_loss is None):
-			function_model_loss = Algorithm.select_function_model_loss(
+		if (fn_optimize is None):
+			fn_optimize = Algorithm.select_fn_optimize(library=library)
+		if (fn_lose is None):
+			fn_lose = Algorithm.select_fn_lose(
 				library=library, analysis_type=analysis_type
 			)
 
-		funcs = [function_model_build, function_model_optimize, function_model_train, function_model_predict, function_model_loss]
+		funcs = [fn_build, fn_optimize, fn_train, fn_predict, fn_lose]
 		for i, f in enumerate(funcs):
 			is_func = callable(f)
 			if (not is_func):
 				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
 
-		function_model_build = dill_serialize(function_model_build)
-		function_model_optimize = dill_serialize(function_model_optimize)
-		function_model_train = dill_serialize(function_model_train)
-		function_model_predict = dill_serialize(function_model_predict)
-		function_model_loss = dill_serialize(function_model_loss)
+		fn_build = dill_serialize(fn_build)
+		fn_optimize = dill_serialize(fn_optimize)
+		fn_train = dill_serialize(fn_train)
+		fn_predict = dill_serialize(fn_predict)
+		fn_lose = dill_serialize(fn_lose)
 
 		algorithm = Algorithm.create(
 			library = library
 			, analysis_type = analysis_type
-			, function_model_build = function_model_build
-			, function_model_optimize = function_model_optimize
-			, function_model_train = function_model_train
-			, function_model_predict = function_model_predict
-			, function_model_loss = function_model_loss
+			, fn_build = fn_build
+			, fn_optimize = fn_optimize
+			, fn_train = fn_train
+			, fn_predict = fn_predict
+			, fn_lose = fn_lose
 			, description = description
 		)
 		return algorithm
@@ -3297,20 +3361,25 @@ class Hyperparamset(BaseModel):
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 
-		# construct the hyperparameter combinations
+		# Construct the hyperparameter combinations
 		params_names = list(hyperparameters.keys())
 		params_lists = list(hyperparameters.values())
-		# from multiple lists, come up with every unique combination.
+
+		# Make sure they are actually lists.
+		for i, pl in enumerate(params_lists):
+			params_lists[i] = listify(pl)
+
+		# From multiple lists, come up with every unique combination.
 		params_combos = list(itertools.product(*params_lists))
 		hyperparamcombo_count = len(params_combos)
 
 		params_combos_dicts = []
-		# dictionary comprehension for making a dict from two lists.
+		# Dictionary comprehension for making a dict from two lists.
 		for params in params_combos:
 			params_combos_dict = {params_names[i]: params[i] for i in range(len(params_names))} 
 			params_combos_dicts.append(params_combos_dict)
 		
-		# now that we have the metadata about combinations
+		# Now that we have the metadata about combinations
 		hyperparamset = Hyperparamset.create(
 			algorithm = algorithm
 			, description = description
@@ -3932,7 +4001,6 @@ class Batch(BaseModel):
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
 					print("\nQueue was gracefully interrupted.\n")
-				os.system("say Model training completed")
 
 
 	def stop_jobs(id:int):
@@ -3974,10 +4042,10 @@ class Batch(BaseModel):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
 
-		metric_names = list(list(batch.jobs[0].results[0].metrics.values())[0].keys())
+		metric_names = list(list(batch.jobs[0].results[0].metrics.values())[0].keys())#bad.
 		if (selected_metrics is not None):
 			for m in selected_metrics:
-				if m not in metric_names:
+				if (m not in metric_names):
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics`.
 					Note: the metrics available depend on the `Batch.analysis_type`.
@@ -3991,7 +4059,11 @@ class Batch(BaseModel):
 			for split_name,metrics in r.metrics.items():
 
 				split_metric = {}
-				split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+				if (r.job.hyperparamcombo is not None):
+					split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+				elif (r.job.hyperparamcombo is None):
+					split_metric['hyperparamcombo_id'] = None
+
 				if (batch.foldset is not None):
 					split_metric['jobset_id'] = r.job.jobset.id
 					split_metric['fold_index'] = r.job.fold.fold_index
@@ -4470,38 +4542,54 @@ class Job(BaseModel):
 		if (hyperparamcombo is not None):
 			hp = hyperparamcombo.hyperparameters
 		elif (hyperparamcombo is None):
-			hp = None
-		
-		function_model_build = dill_deserialize(algorithm.function_model_build)
-		if (splitset.supervision == "unsupervised"):
-			model = function_model_build(
-				features_shape,
-				**hp
-			)
-		elif (splitset.supervision == "supervised"):
-			model = function_model_build(
-				features_shape, label_shape,
-				**hp
-			)
+			hp = {} #`**` cannot be None.
 
+		fn_build = dill_deserialize(algorithm.fn_build)
+		if (splitset.supervision == "supervised"):
+			model = fn_build(features_shape, label_shape, **hp)
+		elif (splitset.supervision == "unsupervised"):
+			model = fn_build(features_shape, **hp)
 		
 		# The model and optimizer get combined during training.
-		function_model_optimize = dill_deserialize(algorithm.function_model_optimize)
-		optimizer = function_model_optimize(**hp)
+		fn_lose = dill_deserialize(algorithm.fn_lose)
+		fn_optimize = dill_deserialize(algorithm.fn_optimize)
+		fn_train = dill_deserialize(algorithm.fn_train)
+
+		loser = fn_lose(**hp)
+		if (algorithm.library == 'keras'):
+			optimizer = fn_optimize(**hp)
+		elif (algorithm.library == 'pytorch'):
+			optimizer = fn_optimize(model, **hp)
 		
-		function_model_train = dill_deserialize(algorithm.function_model_train)
 		if (key_evaluation is not None):
 			samples_eval = samples[key_evaluation]
 		elif (key_evaluation is None):
 			samples_eval = None
-		model = function_model_train(
-			model = model
-			, optimizer = optimizer
-			, samples_train = samples[key_train]
-			, samples_evaluate = samples_eval
-			, **hp
-		)
+		
+		if (algorithm.library == "keras"):
+			model = fn_train(
+				model = model
+				, loser = loser
+				, optimizer = optimizer
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples_eval
+				, **hp
+			)
+		elif (algorithm.library == "pytorch"):
+			# Have to convert each array into a tensor.
+			samples[key_train]['features'] = torch.FloatTensor(samples[key_train]['features'])
+			samples[key_train]['labels'] = torch.FloatTensor(samples[key_train]['labels'])
+			samples_eval['features'] = torch.FloatTensor(samples_eval['features'])
+			samples_eval['labels'] = torch.FloatTensor(samples_eval['labels'])
 
+			model, history = fn_train(
+				model = model
+				, loser = loser
+				, optimizer = optimizer
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples_eval
+				, **hp
+			)
 		# Save the artifacts of the trained model.
 		if (algorithm.library == "keras"):
 			# If blank this value is `{}` not None.
@@ -4522,7 +4610,7 @@ class Job(BaseModel):
 			)
 			# Fetch the bytes ('rb': read binary)
 			with open(temp_file_name, 'rb') as file:
-				model_bytes = file.read()
+				model_blob = file.read()
 			os.remove(temp_file_name)
 		elif (algorithm.library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
@@ -4530,7 +4618,7 @@ class Job(BaseModel):
 			torch.save(
 				{
 					'model_state_dict': model.state_dict(),
-					'optimizer_state_dict': None, ###placeholder
+					'optimizer_state_dict': optimizer.state_dict()
 				},
 				model_blob
 			)
@@ -4541,42 +4629,72 @@ class Job(BaseModel):
 				checkpoint['model_state_dict']
 			)
 			"""
-			history = None
 
 		"""
-		4. Evaluation: predictions, metrics, charts.
+		4. Evaluation: predictions, metrics, charts for each split/fold.
 		"""
 		predictions = {}
 		probabilities = {}
 		metrics = {}
 		plot_data = {}
 
-		function_model_predict = dill_deserialize(algorithm.function_model_predict)
-		function_model_loss = dill_deserialize(algorithm.function_model_loss)
+		fn_predict = dill_deserialize(algorithm.fn_predict)
+
+		# just keeping these separate until we have all analysis types figured out.
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
 				
-				preds, probs = function_model_predict(model, data)
+				# Convert any remaining numpy splits into tensors
+				if (algorithm.library == 'pytorch'):
+					if (type(data) != torch.Tensor):
+						data['features'] = torch.FloatTensor(data['features'])
+						data['labels'] = torch.FloatTensor(data['labels'])
+
+				preds, probs = fn_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
+				# ^ Our PyTorch prediction actually returns numpy here.
 				metrics[split] = Job.split_classification_metrics(
 					data['labels'], 
 					preds, probs, analysis_type
 				)
-				metrics[split]['loss'] = function_model_loss(model, data)
+
+				#https://keras.io/api/losses/probabilistic_losses/
+				if (algorithm.library == 'keras'):
+					loss = loser(data['labels'], probs)
+				elif (algorithm.library == 'pytorch'):
+					# data['labels'] is already a tensor.
+					probs = torch.FloatTensor(probs)
+					loss = loser(data['labels'], probs)
+					# convert back to numpy for plots.
+					probs = probs.detach().numpy()
+				metrics[split]['loss'] = float(loss)
+
 				plot_data[split] = Job.split_classification_plots(
 					data['labels'], 
 					preds, probs, analysis_type
 				) 
-		elif analysis_type == "regression":
+		elif (analysis_type == "regression"):
 			probabilities = None
 			for split, data in samples.items():
-				preds = function_model_predict(model, data)
+				
+				# REMEMBER To convert to tensor
+				# and check output type np or tensor?
+
+				preds = fn_predict(model, data)
 				predictions[split] = preds
 				metrics[split] = Job.split_regression_metrics(
 					data['labels'], preds
 				)
-				metrics[split]['loss'] = function_model_loss(model, data)
+				#https://keras.io/api/losses/regression_losses/
+				if (algorithm.library == 'keras'):
+					loss = loser(data['labels'], preds)
+				elif (algorithm.library == 'pytorch'):
+					tz_preds = torch.FloatTensor(preds)
+					tz_labels = torch.FloatTensor(data['labels'])
+					loss = loser(tz_preds, tz_labels)
+				metrics[split]['loss'] = float(loss)
+
 				plot_data = None
 
 		# Alphabetize metrics dictionary by key.
@@ -4621,7 +4739,7 @@ class Job(BaseModel):
 			time_started = time_started
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
-			, model_file = model_bytes
+			, model_file = model_blob
 			, history = history
 			, predictions = predictions
 			, probabilities = probabilities
@@ -4635,6 +4753,40 @@ class Job(BaseModel):
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
 		del samples
 		return j
+
+
+	def torch_batch_splitter(
+		features:object
+		, labels:object
+		, batch_size = 5
+		, enforce_sameSize:bool=False
+		, allow_1Sample:bool=False
+	):
+		features = torch.split(features, batch_size)
+		labels = torch.split(labels, batch_size)
+		
+		features = Job.torch_drop_invalid_batchSize(features)
+		labels = Job.torch_drop_invalid_batchSize(labels)
+		return features, labels
+
+	def torch_drop_invalid_batchSize(
+		batched_data:object
+		, batch_size = 5
+		, enforce_sameSize:bool=False
+		, allow_1Sample:bool=False
+	):
+		if (batch_size == 1):
+			print("\nWarning - `batch_size==1` can lead to errors.\nE.g. running BatchNormalization on a single sample.\n")
+		# Similar to a % remainder, this will only apply to the last element in the batch.
+		last_batch_size = batched_data[-1].shape[0]
+		if (
+			((allow_1Sample == False) and (last_batch_size == 1))
+			or 
+			((enforce_sameSize == True) and (batched_data[0].shape[0] != last_batch_size))
+		):
+			# So if there is a problem, just trim the last split.
+			batched_data = batched_data[:-1]
+		return batched_data
 
 
 def execute_jobs(job_statuses:list, verbose:bool=False):  
@@ -5022,14 +5174,14 @@ class Experiment():
 	def make(
 		library:str
 		, analysis_type:str
-		, function_model_build:object
-		, function_model_train:object
+		, fn_build:object
+		, fn_train:object
 		, splitset_id:int
 		, repeat_count:int = 1
 		, hide_test:bool = False
-		, function_model_optimize:object = None
-		, function_model_predict:object = None
-		, function_model_loss:object = None
+		, fn_optimize:object = None
+		, fn_predict:object = None
+		, fn_lose:object = None
 		, hyperparameters:dict = None
 		, foldset_id:int = None
 		, encoderset_id:int = None
@@ -5038,11 +5190,11 @@ class Experiment():
 		algorithm = Algorithm.make(
 			library = library
 			, analysis_type = analysis_type
-			, function_model_build = function_model_build
-			, function_model_train = function_model_train
-			, function_model_optimize = function_model_optimize
-			, function_model_predict = function_model_predict
-			, function_model_loss = function_model_loss
+			, fn_build = fn_build
+			, fn_train = fn_train
+			, fn_optimize = fn_optimize
+			, fn_predict = fn_predict
+			, fn_lose = fn_lose
 		)
 
 		if (hyperparameters is not None):

@@ -20,7 +20,7 @@ Links
     - Python package.
 
   * - `GitHub <https://github.com/aiqc/aiqc/>`__
-    - Source code. Report bugs and suggest features.
+    - Source code and discussion board.
 
   * - `Docker Hub <https://hub.docker.com/u/aiqc>`__
     - Hosts container images for rapid environment setup.
@@ -42,6 +42,3 @@ Links
 
   * - `Slack <https://aiqc.slack.com>`__
     - Community chat.
-
-  * - Discourse (TBD)
-    - Community forum.

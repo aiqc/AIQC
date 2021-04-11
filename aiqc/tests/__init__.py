@@ -55,13 +55,13 @@ def list_test_batches(format:str=None):
 """
 Remember, `pickle` does not accept nested functions.
 So the model_build and model_train functions must be defined outside of the function that accesses them.
-For example when creating an `def test_method()... Algorithm.function_model_build`
+For example when creating an `def test_method()... Algorithm.fn_build`
 
-Each test takes a slightly different approach to `function_model_optimizer`.
+Each test takes a slightly different approach to `fn_optimizer`.
 """
 
-# ------------------------ MULTICLASS ------------------------
-def multiclass_function_model_build(features_shape, label_shape, **hp):
+# ------------------------ KERAS MULTICLASS ------------------------
+def keras_multiclass_fn_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
@@ -72,14 +72,14 @@ def multiclass_function_model_build(features_shape, label_shape, **hp):
 	model.add(Dense(units=label_shape[0], activation='softmax'))
 	return model
 
-def multiclass_function_model_optimize(**hp):
+def keras_multiclass_fn_optimize(**hp):
 	optimizer = keras.optimizers.Adamax(hp['learning_rate'])
 	return optimizer
 
-def multiclass_function_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
+def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
 	model.compile(
-		loss = 'categorical_crossentropy'
+		loss = loser
 		, optimizer = optimizer
 		, metrics = ['accuracy']
 	)
@@ -98,8 +98,7 @@ def multiclass_function_model_train(model, optimizer, samples_train, samples_eva
 	)
 	return model
 
-
-def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [9, 12]
 		, "batch_size": [3]
@@ -163,9 +162,9 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	algorithm = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_multi"
-		, function_model_build = multiclass_function_model_build
-		, function_model_optimize = multiclass_function_model_optimize
-		, function_model_train = multiclass_function_model_train
+		, fn_build = keras_multiclass_fn_build
+		, fn_optimize = keras_multiclass_fn_optimize
+		, fn_train = keras_multiclass_fn_train
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(
@@ -182,8 +181,8 @@ def make_test_batch_multiclass(repeat_count:int=1, fold_count:int=None):
 	return batch
 
 
-# ------------------------ BINARY ------------------------
-def binary_model_build(features_shape, label_shape, **hp):
+# ------------------------ KERAS BINARY ------------------------
+def keras_binary_fn_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
@@ -197,11 +196,13 @@ def binary_model_build(features_shape, label_shape, **hp):
 	model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
 	return model
 
-# tests default `function_model_optimize`
-
-def binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
+def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
-	model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+	model.compile(
+		loss=loser
+		, optimizer=optimizer
+		, metrics=['accuracy']
+	)
 	model.fit(
 		samples_train['features'], samples_train['labels']
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
@@ -212,8 +213,7 @@ def binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
 	)
 	return model
 
-
-def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_keras_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
@@ -254,7 +254,6 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-
 	encoderset = splitset.make_encoderset()
 
 	labelcoder = encoderset.make_labelcoder(
@@ -269,8 +268,8 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 	algorithm = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
-		, function_model_build = binary_model_build
-		, function_model_train = binary_model_train
+		, fn_build = keras_binary_fn_build
+		, fn_train = keras_binary_fn_train
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(
@@ -287,9 +286,8 @@ def make_test_batch_binary(repeat_count:int=1, fold_count:int=None):
 	return batch
 
 
-# ------------------------ REGRESSION ------------------------
-
-def regression_model_build(features_shape, label_shape, **hp):
+# ------------------------ KERAS REGRESSION ------------------------
+def keras_regression_fn_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Dense, Dropout
@@ -301,15 +299,15 @@ def regression_model_build(features_shape, label_shape, **hp):
 	model.add(Dense(units=label_shape[0], kernel_initializer='normal'))
 	return model
 
-def regression_model_optimize(**hp):
+def keras_regression_fn_optimize(**hp):
 	optimizer = keras.optimizers.RMSprop()
 	return optimizer
 
-def regression_model_train(model, optimizer, samples_train, samples_evaluate, **hp):
+def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from keras.callbacks import History
 
 	model.compile(
-		loss='mean_squared_error'
+		loss=loser
 		, optimizer=optimizer
 		, metrics = ['mean_squared_error']
 	)
@@ -326,7 +324,7 @@ def regression_model_train(model, optimizer, samples_train, samples_evaluate, **
 	)
 	return model
 
-def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_keras_regression(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -391,9 +389,9 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 	algorithm = Algorithm.make(
 		library = "keras"
 		, analysis_type = "regression"
-		, function_model_build = regression_model_build
-		, function_model_train = regression_model_train
-		, function_model_optimize = regression_model_optimize
+		, fn_build = keras_regression_fn_build
+		, fn_train = keras_regression_fn_train
+		, fn_optimize = keras_regression_fn_optimize
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(
@@ -409,8 +407,9 @@ def make_test_batch_regression(repeat_count:int=1, fold_count:int=None):
 	)
 	return batch
 
-# ------------------------ IMAGE BINARY ------------------------
-def image_binary_model_build(features_shape, label_shape, **hp):
+
+# ------------------------ KERAS IMAGE BINARY ------------------------
+def keras_image_binary_fn_build(features_shape, label_shape, **hp):
 	import keras
 	from keras.models import Sequential
 	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout, Flatten
@@ -434,12 +433,12 @@ def image_binary_model_build(features_shape, label_shape, **hp):
 	model.add(Dense(units=label_shape[0], activation='sigmoid'))
 	return model
 
-def image_binary_model_train(model, optimizer, samples_train, samples_evaluate, **hp):   
+def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
 	from keras.callbacks import History
 
 	model.compile(
 		optimizer=optimizer
-		, loss='binary_crossentropy'
+		, loss=loser
 		, metrics=['accuracy']
 	)
 
@@ -465,7 +464,7 @@ def image_binary_model_train(model, optimizer, samples_train, samples_evaluate, 
 	)
 	return model
 
-def make_test_batch_image_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_batch_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"include_2nd_dense": [True]
 		, "neuron_multiply": [1.0]
@@ -515,8 +514,8 @@ def make_test_batch_image_binary(repeat_count:int=1, fold_count:int=None):
 	algorithm = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
-		, function_model_build = image_binary_model_build
-		, function_model_train = image_binary_model_train
+		, fn_build = keras_image_binary_fn_build
+		, fn_train = keras_image_binary_fn_train
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(
@@ -533,16 +532,156 @@ def make_test_batch_image_binary(repeat_count:int=1, fold_count:int=None):
 	return batch
 
 
-# ------------------------ DEMO BATCH CALLER ------------------------
+# ------------------------ KERAS IMAGE BINARY ------------------------
+def pytorch_binary_fn_build(features_shape, label_shape, **hp):
+	import torch.nn as nn
+	model = nn.Sequential(
+		nn.Linear(features_shape[0], 12),
+		nn.BatchNorm1d(12,12),
+		nn.ReLU(),
+		nn.Dropout(p=0.5),
+
+		nn.Linear(12, label_shape[0]),
+		nn.Sigmoid()
+	)
+	return model
+
+def pytorch_binary_fn_optimize(model, **hp):
+	optimizer = optim.Adamax(
+		model.parameters()
+		, lr=hp['learning_rate']
+	)
+	return optimizer
+
+
+def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+	## --- Prepare mini batches for analysis ---
+	batched_features, batched_labels = Job.torch_batch_splitter(
+		samples_train['features'], samples_train['labels'],
+		batch_size=5, enforce_sameSize=False, allow_1Sample=False
+	)
+
+	## --- Metrics ---
+	acc = torchmetrics.Accuracy()
+	# Mirrors `keras.model.History.history` object.
+	history = {
+		'loss':list(), 'accuracy': list(), 
+		'val_loss':list(), 'val_accuracy':list()
+	}
+
+	## --- Training loop ---
+	epochs = hp['epoch_count']
+	for epoch in range(epochs):
+		## --- Batch training ---
+		for i, batch in enumerate(batched_features):      
+			# Make raw (unlabeled) predictions.
+			batch_probability = model(batched_features[i])
+			batch_loss = loser(batch_probability, batched_labels[i])
+			# Backpropagation.
+			optimizer.zero_grad()
+			batch_loss.backward()
+			optimizer.step()
+
+		## --- Epoch metrics ---
+		# Overall performance on training data.
+		train_probability = model(samples_train['features'])
+		train_loss = loser(train_probability, samples_train['labels'])
+		train_acc = acc(train_probability, samples_train['labels'].to(torch.short))
+		history['loss'].append(float(train_loss))
+		history['accuracy'].append(float(train_acc))
+		# Performance on evaluation data.
+		eval_probability = model(samples_evaluate['features'])
+		eval_loss = loser(eval_probability, samples_evaluate['labels'])
+		eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    
+		history['val_loss'].append(float(eval_loss))
+		history['val_accuracy'].append(float(eval_acc))
+	return model, history
+
+def make_test_batch_pytorch_binary(repeat_count:int=1, fold_count:int=None):
+	file_path = datum.get_path('sonar.csv')
+
+	dataset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
+		, name = 'rocks n radio'
+		, dtype = None
+	)
+	
+	label_column = 'object'
+	label = dataset.make_label(columns=[label_column])
+
+	featureset = dataset.make_featureset(exclude_columns=[label_column])
+
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.18
+		size_validation = 0.14
+
+	splitset = featureset.make_splitset(
+		label_id = label.id
+		, size_test = size_test
+		, size_validation = size_validation
+	)
+
+	if (fold_count is not None):
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+
+	encoderset = splitset.make_encoderset()
+
+	labelcoder = encoderset.make_labelcoder(
+		sklearn_preprocess = LabelBinarizer(sparse_output=False)
+	)
+
+	fc0 = encoderset.make_featurecoder(
+		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
+		, dtypes = ['float64']
+	)
+
+	algorithm = Algorithm.make(
+		library = "pytorch"
+		, analysis_type = "classification_binary"
+		, fn_build = pytorch_binary_fn_build
+		, fn_train = pytorch_binary_fn_train
+	)
+
+	hyperparameters = {
+		"learning_rate": [0.01, 0.005]
+		, "epoch_count": [50]
+	}
+
+	hyperparamset = algorithm.make_hyperparamset(
+		hyperparameters = hyperparameters
+	)
+
+	batch = algorithm.make_batch(
+		splitset_id = splitset.id
+		, foldset_id = foldset_id
+		, hyperparamset_id = hyperparamset.id
+		, encoderset_id  = encoderset.id
+		, repeat_count = repeat_count
+	)
+	return batch
+
+
+# ------------------------ TEST BATCH CALLER ------------------------
 def make_test_batch(name:str, repeat_count:int=1, fold_count:int=None):
-	if (name == 'multiclass'):
-		batch = make_test_batch_multiclass(repeat_count, fold_count)
-	elif (name == 'binary'):
-		batch = make_test_batch_binary(repeat_count, fold_count)
-	elif (name == 'regression'):
-		batch = make_test_batch_regression(repeat_count, fold_count)
-	elif (name == 'image_binary'):
-		batch = make_test_batch_image_binary(repeat_count, fold_count)
+	if (name == 'keras_multiclass'):
+		batch = make_test_batch_keras_multiclass(repeat_count, fold_count)
+	elif (name == 'keras_binary'):
+		batch = make_test_batch_keras_binary(repeat_count, fold_count)
+	elif (name == 'keras_regression'):
+		batch = make_test_batch_keras_regression(repeat_count, fold_count)
+	elif (name == 'keras_image_binary'):
+		batch = make_test_batch_keras_image_binary(repeat_count, fold_count)
+	elif (name == 'pytorch_binary'):
+		batch = make_test_batch_pytorch_binary(repeat_count, fold_count)
 	else:
 		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'datum.list_test_batches()'.\n")
 	return batch

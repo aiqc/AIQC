@@ -44,15 +44,15 @@ Once we are confident that our schema handles all data types and analysis types,
 import aiqc
 from aiqc import tests
 
-b1 = tests.make_test_batch('binary')
+b1 = tests.make_test_batch('keras_binary')
 b1.run_jobs()
 
-b2 = tests.make_test_batch('multiclass')
+b2 = tests.make_test_batch('keras_multiclass')
 b2.run_jobs()
 
-b3 = tests.make_test_batch('regression')
+b3 = tests.make_test_batch('keras_regression')
 b3.run_jobs()
 
-b4 = tests.make_test_batch('image_binary')
+b4 = tests.make_test_batch('keras_image_binary')
 b4.run.jobs()
 ```
