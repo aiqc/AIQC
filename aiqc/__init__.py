@@ -26,6 +26,7 @@ from sklearn.preprocessing import *
 import keras
 from keras.models import load_model, Sequential
 from keras.callbacks import Callback
+from keras.utils import to_categorical
 # Progress bar.
 from tqdm import tqdm
 # Visualization.
@@ -3117,6 +3118,45 @@ class Algorithm(BaseModel):
 	fn_train = BlobField()
 	fn_predict = BlobField()
 
+	# --- used by `select_fn_lose()` ---
+	def keras_regression_lose(**hp):
+		loser = keras.losses.MeanAbsoluteError()
+		return loser
+	
+	def keras_binary_lose(**hp):
+		loser = keras.losses.BinaryCrossentropy()
+		return loser
+	
+	def keras_multiclass_lose(**hp):
+		loser = keras.losses.CategoricalCrossentropy()
+		return loser
+
+	def pytorch_binary_lose(**hp):
+		loser = nn.BCELoss()
+		return loser
+
+	def pytorch_multiclass_lose(**hp):
+		loser = nn.CrossEntropyLoss()
+		return loser
+
+	def pytorch_regression_lose(**hp):
+		loser = nn.L1Loss()#mean absolute error.
+		return loser
+
+	# --- used by `select_fn_optimize()` ---
+	"""
+	- Eventually could help the user select an optimizer based on topology (e.g. depth),
+	  but Adamax works great for me everywhere.
+	 - `**hp` needs to be included because that's how it is called in training loop.
+	"""
+	def keras_optimize(**hp):
+		optimizer = keras.optimizers.Adamax(learning_rate=0.01)
+		return optimizer
+
+	def pytorch_optimize(model, **hp):
+		optimizer = optim.Adamax(model.parameters(),lr=0.01)
+		return optimizer
+
 	# --- used by `select_fn_predict()` ---
 	def keras_multiclass_predict(model, samples_predict):
 		# Shows the probabilities of each class coming out of softmax neurons:
@@ -3149,65 +3189,17 @@ class Algorithm(BaseModel):
 		# Both objects are numpy.
 		return prediction, probability
 
-	# --- used by `select_fn_lose()` ---
-	def keras_regression_lose(**hp):
-		loser = keras.losses.MeanAbsoluteError()
-		return loser
-	
-	def keras_binary_lose(**hp):
-		loser = keras.losses.BinaryCrossentropy()
-		return loser
-	
-	def keras_multiclass_lose(**hp):
-		loser = keras.losses.CategoricalCrossentropy()
-		return loser
+	def pytorch_multiclass_predict(model, samples_predict):
+		probabilities = model(samples_predict['features'])
+		# Convert tensor back to numpy for AIQC metrics.
+		probabilities = probabilities.detach().numpy()
+		prediction = np.argmax(probabilities, axis=-1)
+		# Both objects are numpy.
+		return prediction, probabilities
 
-	def pytorch_binary_lose(**hp):
-		loser = nn.BCELoss()
-		return loser
-
-	# --- used by `select_fn_optimize()` ---
-	"""
-	- Eventually could help the user select an optimizer based on topology (e.g. depth),
-	  but Adamax works great for me everywhere.
-	 - `**hp` needs to be included because that's how it is called in training loop.
-	"""
-	def keras_optimize(**hp):
-		optimizer = keras.optimizers.Adamax(learning_rate=0.01)
-		return optimizer
-
-	def pytorch_optimize(model, **hp):
-		optimizer = optim.Adamax(model.parameters(),lr=0.01)
-		return optimizer
-
-
-	def select_fn_predict(
-		library:str,
-		analysis_type:str
-	):
-		fn_predict = None
-		if (library == 'keras'):
-			if (analysis_type == 'classification_multi'):
-				fn_predict = Algorithm.keras_multiclass_predict
-			elif (analysis_type == 'classification_binary'):
-				fn_predict = Algorithm.keras_binary_predict
-			elif (analysis_type == 'regression'):
-				fn_predict = Algorithm.keras_regression_predict
-		elif (library == 'pytorch'):
-			if (analysis_type == 'classification_multi'):
-				raise ValueError("doesnt exist yet")
-			elif (analysis_type == 'classification_binary'):
-				fn_predict = Algorithm.pytorch_binary_predict
-			elif (analysis_type == 'regression'):
-				raise ValueError("doesnt exist yet")
-
-		# After each of the predefined approaches above, check if it is still undefined.
-		if fn_predict is None:
-			raise ValueError(dedent("""
-			Yikes - You did not provide a `fn_predict`,
-			and we don't have an automated function for your combination of 'library' and 'analysis_type'
-			"""))
-		return fn_predict
+	def pytorch_regression_predict(model, samples_predict):
+		prediction = model(samples_predict['features']).detach().numpy()
+		return prediction
 
 
 	def select_fn_lose(
@@ -3224,11 +3216,11 @@ class Algorithm(BaseModel):
 				fn_lose = Algorithm.keras_multiclass_lose
 		elif (library == 'pytorch'):
 			if (analysis_type == 'regression'):
-				raise ValueError("doesnt exist yet")
+				fn_lose = Algorithm.pytorch_regression_lose
 			elif (analysis_type == 'classification_binary'):
 				fn_lose = Algorithm.pytorch_binary_lose
 			elif (analysis_type == 'classification_multi'):
-				raise ValueError("doesnt exist yet")
+				fn_lose = Algorithm.pytorch_multiclass_lose
 		# After each of the predefined approaches above, check if it is still undefined.
 		if fn_lose is None:
 			raise ValueError(dedent("""
@@ -3250,6 +3242,34 @@ class Algorithm(BaseModel):
 			and we don't have an automated function for your 'library'
 			"""))
 		return fn_optimize
+
+	def select_fn_predict(
+		library:str,
+		analysis_type:str
+	):
+		fn_predict = None
+		if (library == 'keras'):
+			if (analysis_type == 'classification_multi'):
+				fn_predict = Algorithm.keras_multiclass_predict
+			elif (analysis_type == 'classification_binary'):
+				fn_predict = Algorithm.keras_binary_predict
+			elif (analysis_type == 'regression'):
+				fn_predict = Algorithm.keras_regression_predict
+		elif (library == 'pytorch'):
+			if (analysis_type == 'classification_multi'):
+				fn_predict = Algorithm.pytorch_multiclass_predict
+			elif (analysis_type == 'classification_binary'):
+				fn_predict = Algorithm.pytorch_binary_predict
+			elif (analysis_type == 'regression'):
+				fn_predict = Algorithm.pytorch_regression_predict
+
+		# After each of the predefined approaches above, check if it is still undefined.
+		if fn_predict is None:
+			raise ValueError(dedent("""
+			Yikes - You did not provide a `fn_predict`,
+			and we don't have an automated function for your combination of 'library' and 'analysis_type'
+			"""))
+		return fn_predict
 
 
 	def make(
@@ -4278,7 +4298,7 @@ class Job(BaseModel):
 	jobset = ForeignKeyField(Jobset, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 
 
-	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
+	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type, library):
 		if (analysis_type == "classification_binary"):
 			average = "binary"
 			roc_average = "micro"
@@ -4287,6 +4307,10 @@ class Job(BaseModel):
 			average = "weighted"
 			roc_average = "weighted"
 			roc_multi_class = "ovr"
+
+			# pytorch multiclass data is coming in as ordinal, so OHE it.
+			if (library == 'pytorch'):
+				labels_processed = to_categorical(labels_processed)
 			
 		split_metrics = {}
 		# Let the classification_multi labels hit this metric in OHE format.
@@ -4310,7 +4334,7 @@ class Job(BaseModel):
 		return split_metrics
 
 
-	def split_classification_plots(labels_processed, predictions, probabilities, analysis_type):
+	def split_classification_plots(labels_processed, predictions, probabilities, analysis_type, library):
 		predictions = predictions.flatten()
 		probabilities = probabilities.flatten()
 		split_plot_data = {}
@@ -4322,6 +4346,9 @@ class Job(BaseModel):
 			precision, recall, _ = precision_recall_curve(labels_processed, probabilities)
 		
 		elif analysis_type == "classification_multi":
+			# pytorch is coming in as ordinal
+			if (library == 'pytorch'):
+				labels_processed = to_categorical(labels_processed)
 			# Flatten OHE labels for use with probabilities.
 			labels_flat = labels_processed.flatten()
 			fpr, tpr, _ = roc_curve(labels_flat, probabilities)
@@ -4554,7 +4581,12 @@ class Job(BaseModel):
 
 		fn_build = dill_deserialize(algorithm.fn_build)
 		if (splitset.supervision == "supervised"):
-			model = fn_build(features_shape, label_shape, **hp)
+			# pytorch multiclass has a single ordinal label.
+			if (analysis_type == 'classification_multi') and (algorithm.library == 'pytorch'):
+				num_classes = len(splitset.label.unique_classes)
+				model = fn_build(features_shape, num_classes, **hp)
+			else:
+				model = fn_build(features_shape, label_shape, **hp)
 		elif (splitset.supervision == "unsupervised"):
 			model = fn_build(features_shape, **hp)
 		
@@ -4664,7 +4696,7 @@ class Job(BaseModel):
 				# ^ Our PyTorch prediction actually returns numpy here.
 				metrics[split] = Job.split_classification_metrics(
 					data['labels'], 
-					preds, probs, analysis_type
+					preds, probs, analysis_type, algorithm.library
 				)
 
 				#https://keras.io/api/losses/probabilistic_losses/
@@ -4673,24 +4705,37 @@ class Job(BaseModel):
 				elif (algorithm.library == 'pytorch'):
 					# data['labels'] is already a tensor.
 					probs = torch.FloatTensor(probs)
-					loss = loser(data['labels'], probs)
+					if (algorithm.analysis_type == 'classification_binary'):
+						loss = loser(probs, data['labels'])
+					elif (algorithm.analysis_type == 'classification_multi'):
+						flat_labels = data['labels'].flatten().to(torch.long)
+						loss = loser(probs, flat_labels)
 					# convert back to numpy for plots.
 					probs = probs.detach().numpy()
 				metrics[split]['loss'] = float(loss)
 
 				plot_data[split] = Job.split_classification_plots(
 					data['labels'], 
-					preds, probs, analysis_type
+					preds, probs, analysis_type, algorithm.library
 				) 
 		elif (analysis_type == "regression"):
+			# The raw output values *is* the continuous prediction itself.
 			probabilities = None
 			for split, data in samples.items():
 				
-				# REMEMBER To convert to tensor
-				# and check output type np or tensor?
+				# Convert any remaining numpy splits into tensors
+				if (algorithm.library == 'pytorch'):
+					if (type(data) != torch.Tensor):
+						data['features'] = torch.FloatTensor(data['features'])
+						data['labels'] = torch.FloatTensor(data['labels'])
 
 				preds = fn_predict(model, data)
 				predictions[split] = preds
+
+				# convert labels back to numpy.
+				if (algorithm.library == 'pytorch'):
+					data['labels'] = data['labels'].detach().numpy()
+
 				metrics[split] = Job.split_regression_metrics(
 					data['labels'], preds
 				)
@@ -4702,7 +4747,6 @@ class Job(BaseModel):
 					tz_labels = torch.FloatTensor(data['labels'])
 					loss = loser(tz_preds, tz_labels)
 				metrics[split]['loss'] = float(loss)
-
 				plot_data = None
 
 		# Alphabetize metrics dictionary by key.
@@ -4714,7 +4758,8 @@ class Job(BaseModel):
 		for metric in metric_names:
 			split_values = []
 			for split, split_metrics in metrics.items():
-				value = split_metrics[metric]
+				# ran into obscure errors with `pstdev` when not `float(value)`
+				value = float(split_metrics[metric])
 				split_values.append(value)
 
 			mean = statistics.mean(split_values)
