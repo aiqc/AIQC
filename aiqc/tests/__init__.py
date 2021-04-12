@@ -37,6 +37,46 @@ def list_test_batches(format:str=None):
 			, 'analysis': 'classification'
 			, 'sub_analysis': 'binary'
 			, 'datum': 'brain_tumor.csv'	
+		},
+				{
+			'batch_name': 'keras_multiclass'
+			, 'data_type': 'tabular'
+			, 'supervision': 'supervised'
+			, 'analysis': 'classification'
+			, 'sub_analysis': 'multi label'
+			, 'datum': 'iris.tsv'
+		},
+		{
+			'batch_name': 'pytorch_multiclass'
+			, 'data_type': 'tabular'
+			, 'supervision': 'supervised'
+			, 'analysis': 'classification'
+			, 'sub_analysis': 'multi label'
+			, 'datum': 'iris.tsv'
+		},
+		{
+			'batch_name': 'pytorch_binary'
+			, 'data_type': 'tabular'
+			, 'supervision': 'supervised'
+			, 'analysis': 'classification'
+			, 'sub_analysis': 'binary'
+			, 'datum': 'sonar.csv'
+		},
+		{
+			'batch_name': 'pytorch_regression'
+			, 'data_type': 'tabular'
+			, 'supervision': 'supervised'
+			, 'analysis': 'regression'
+			, 'sub_analysis': None
+			, 'datum': 'houses.csv'	
+		},
+		{
+			'batch_name': 'pytorch_image_binary'
+			, 'data_type': 'image'
+			, 'supervision': 'supervised'
+			, 'analysis': 'classification'
+			, 'sub_analysis': 'binary'
+			, 'datum': 'brain_tumor.csv'	
 		}
 	]
 	
@@ -816,70 +856,70 @@ def pytorch_regression_lose(**hp):
 	return loser	
 	
 def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
-    nc = hp['neuron_count']
-    model = nn.Sequential(
-        nn.Linear(features_shape[0], nc),
-        nn.BatchNorm1d(nc,nc),
-        nn.ReLU(),
-        nn.Dropout(p=0.4),
+	nc = hp['neuron_count']
+	model = nn.Sequential(
+		nn.Linear(features_shape[0], nc),
+		nn.BatchNorm1d(nc,nc),
+		nn.ReLU(),
+		nn.Dropout(p=0.4),
 
-        nn.Linear(nc, nc),
-        nn.BatchNorm1d(nc,nc),
-        nn.ReLU(),
-        nn.Dropout(p=0.4),
+		nn.Linear(nc, nc),
+		nn.BatchNorm1d(nc,nc),
+		nn.ReLU(),
+		nn.Dropout(p=0.4),
 
-        nn.Linear(nc, labels_shape[0])
-    )
-    return model
+		nn.Linear(nc, labels_shape[0])
+	)
+	return model
 
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-    from torchmetrics.functional import explained_variance as expVar
-    ## --- Prepare mini batches for analysis ---
-    batched_features, batched_labels = Job.torch_batch_splitter(
-        samples_train['features'], samples_train['labels'],
-        batch_size=5, enforce_sameSize=False, allow_1Sample=False
-    )
+	from torchmetrics.functional import explained_variance as expVar
+	## --- Prepare mini batches for analysis ---
+	batched_features, batched_labels = Job.torch_batch_splitter(
+		samples_train['features'], samples_train['labels'],
+		batch_size=5, enforce_sameSize=False, allow_1Sample=False
+	)
 
-    ## --- Metrics ---
-    # Modeled after `keras.model.History.history` object.
-    history = {
-        'loss':list(), 'expVar': list(), 
-        'val_loss':list(), 'val_expVar':list()
-    }
+	## --- Metrics ---
+	# Modeled after `keras.model.History.history` object.
+	history = {
+		'loss':list(), 'expVar': list(), 
+		'val_loss':list(), 'val_expVar':list()
+	}
 
-    ## --- Training loop ---
-    epochs = 75
-    for epoch in range(epochs):
-        # --- Batch training ---
-        for i, batch in enumerate(batched_features):      
-            # Make raw (unlabeled) predictions.
-            batch_probability = model(batched_features[i])
-            batch_flat_labels = batched_labels[i].flatten()
-            #batch_loss = loser(batch_probability, batch_flat_labels)
-            batch_loss = loser(batch_probability.flatten(), batch_flat_labels)
-            # Backpropagation.
-            optimizer.zero_grad()
-            batch_loss.backward()
-            optimizer.step()
+	## --- Training loop ---
+	epochs = 75
+	for epoch in range(epochs):
+		# --- Batch training ---
+		for i, batch in enumerate(batched_features):      
+			# Make raw (unlabeled) predictions.
+			batch_probability = model(batched_features[i])
+			batch_flat_labels = batched_labels[i].flatten()
+			#batch_loss = loser(batch_probability, batch_flat_labels)
+			batch_loss = loser(batch_probability.flatten(), batch_flat_labels)
+			# Backpropagation.
+			optimizer.zero_grad()
+			batch_loss.backward()
+			optimizer.step()
 
-        ## --- Epoch metrics ---
-        # Overall performance on training data.
-        train_probability = model(samples_train['features'])
-        train_flat_labels = samples_train['labels'].flatten()
-        train_loss = loser(train_probability.flatten(), train_flat_labels)
-        train_expVar = expVar(train_probability, samples_train['labels'])
-        history['loss'].append(float(train_loss))
-        history['expVar'].append(float(train_expVar))
+		## --- Epoch metrics ---
+		# Overall performance on training data.
+		train_probability = model(samples_train['features'])
+		train_flat_labels = samples_train['labels'].flatten()
+		train_loss = loser(train_probability.flatten(), train_flat_labels)
+		train_expVar = expVar(train_probability, samples_train['labels'])
+		history['loss'].append(float(train_loss))
+		history['expVar'].append(float(train_expVar))
 
-        # Performance on evaluation data.
-        eval_probability = model(samples_evaluate['features'])
-        eval_flat_labels = samples_evaluate['labels'].flatten()
-        eval_loss = loser(eval_probability.flatten(), eval_flat_labels)
+		# Performance on evaluation data.
+		eval_probability = model(samples_evaluate['features'])
+		eval_flat_labels = samples_evaluate['labels'].flatten()
+		eval_loss = loser(eval_probability.flatten(), eval_flat_labels)
 
-        eval_expVar = expVar(eval_probability, samples_evaluate['labels'])    
-        history['val_loss'].append(float(eval_loss))
-        history['val_expVar'].append(float(eval_expVar))
-    return model, history
+		eval_expVar = expVar(eval_probability, samples_evaluate['labels'])    
+		history['val_loss'].append(float(eval_loss))
+		history['val_expVar'].append(float(eval_expVar))
+	return model, history
  
 def make_test_batch_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	file_path = datum.get_path('houses.csv')
@@ -965,6 +1005,131 @@ def make_test_batch_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	return batch
 
 
+# ------------------------ PYTORCH IMAGE BINARY ------------------------
+def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
+	model = nn.Sequential(
+		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
+		nn.Conv1d(
+			in_channels=160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
+			, out_channels=56 #arbitrary number. treating this as network complexity.
+			, kernel_size=3
+			, padding=1
+		)
+		, nn.ReLU() #it wasnt learning with tanh
+		, nn.MaxPool1d(kernel_size=2, stride=2)
+		, nn.Dropout(p=0.4)
+
+		, nn.Conv1d(
+			in_channels=56, out_channels=128,
+			kernel_size=3, padding=1
+		)
+		, nn.ReLU()
+		, nn.MaxPool1d(kernel_size=2, stride=2)
+		, nn.Dropout(p=0.4)
+		#[5x3840]
+		, nn.Flatten()
+		, nn.Linear(3840,3840)
+		, nn.BatchNorm1d(3840,3840)
+		, nn.ReLU()
+		, nn.Dropout(p=0.4)
+
+		, nn.Linear(3840, 1)
+		, nn.Sigmoid()
+	)
+	return model
+
+def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
+	## --- Prepare mini batches for analysis ---
+	batched_features, batched_labels = Job.torch_batch_splitter(
+		samples_train['features'], samples_train['labels'],
+		batch_size=5, enforce_sameSize=False, allow_1Sample=False
+	)
+
+	## --- Metrics ---
+	acc = torchmetrics.Accuracy()
+	# Modeled after `keras.model.History.history` object.
+	history = {
+		'loss':list(), 'accuracy': list(), 
+		'val_loss':list(), 'val_accuracy':list()
+	}
+
+	## --- Training loop ---
+	epochs = 40
+	for epoch in range(epochs):
+		# --- Batch training ---
+		for i, batch in enumerate(batched_features):      
+			# Make raw (unlabeled) predictions.
+			batch_probability = model(batched_features[i])
+			batch_loss = loser(batch_probability, batched_labels[i])
+			# Backpropagation.
+			optimizer.zero_grad()
+			batch_loss.backward()
+			optimizer.step()
+
+		## --- Epoch metrics ---
+		# Overall performance on training data.
+		train_probability = model(samples_train['features'])
+		train_loss = loser(train_probability, samples_train['labels'])
+		train_acc = acc(train_probability, samples_train['labels'].to(torch.short))
+		history['loss'].append(float(train_loss))
+		history['accuracy'].append(float(train_acc))
+		# Performance on evaluation data.
+		eval_probability = model(samples_evaluate['features'])
+		eval_loss = loser(eval_probability, samples_evaluate['labels'])
+		eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    
+		history['val_loss'].append(float(eval_loss))
+		history['val_accuracy'].append(float(eval_acc))
+	return model, history
+
+def make_test_batch_pytorch_image_binary(repeat_count:int=1, fold_count:int=None):
+	df = datum.to_pandas(name='brain_tumor.csv')
+
+	# Dataset.Tabular
+	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
+	label = dataset_tabular.make_label(columns=['status'])
+
+	# Dataset.Image
+	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
+	dataset_image = Dataset.Image.from_urls(urls = image_urls)
+	featureset = dataset_image.make_featureset()
+	
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.18
+		size_validation = 0.14
+
+	splitset = featureset.make_splitset(
+		label_id = label.id
+		, size_test = size_test
+		, size_validation = size_validation
+	)
+
+	if (fold_count is not None):
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+
+	algorithm = Algorithm.make(
+		library = "pytorch"
+		, analysis_type = "classification_binary"
+		, fn_build = pytorch_image_binary_fn_build
+		, fn_train = pytorch_image_binary_fn_train
+	)
+
+	batch = algorithm.make_batch(
+		splitset_id = splitset.id
+		, foldset_id = foldset_id
+		, hyperparamset_id = None #network takes a while.
+		, encoderset_id  = None
+		, repeat_count = repeat_count
+	)
+	return batch
+
 # ------------------------ TEST BATCH CALLER ------------------------
 def make_test_batch(name:str, repeat_count:int=1, fold_count:int=None):
 	if (name == 'keras_multiclass'):
@@ -981,6 +1146,8 @@ def make_test_batch(name:str, repeat_count:int=1, fold_count:int=None):
 		batch = make_test_batch_pytorch_multiclass(repeat_count, fold_count)
 	elif (name == 'pytorch_regression'):
 		batch = make_test_batch_pytorch_regression(repeat_count, fold_count)
+	elif (name == 'pytorch_image_binary'):
+		batch = make_test_batch_pytorch_image_binary(repeat_count, fold_count)
 	else:
 		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'datum.list_test_batches()'.\n")
 	return batch

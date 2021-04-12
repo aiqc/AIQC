@@ -3136,6 +3136,7 @@ class Algorithm(BaseModel):
 		return loser
 
 	def pytorch_multiclass_lose(**hp):
+		# ptrckblck says `nn.NLLLoss()` will work too.
 		loser = nn.CrossEntropyLoss()
 		return loser
 
