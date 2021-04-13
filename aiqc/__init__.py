@@ -453,6 +453,40 @@ def dill_reveal_code(serialized_objekt:object, print_it:bool=True):
 	if (print_it == True):
 		print(dedent(code_str))
 	return code_str
+
+
+def torch_batch_splitter(
+	features:object
+	, labels:object
+	, batch_size = 5
+	, enforce_sameSize:bool=False
+	, allow_1Sample:bool=False
+):
+	features = torch.split(features, batch_size)
+	labels = torch.split(labels, batch_size)
+	
+	features = torch_drop_invalid_batchSize(features)
+	labels = torch_drop_invalid_batchSize(labels)
+	return features, labels
+
+def torch_drop_invalid_batchSize(
+	batched_data:object
+	, batch_size = 5
+	, enforce_sameSize:bool=False
+	, allow_1Sample:bool=False
+):
+	if (batch_size == 1):
+		print("\nWarning - `batch_size==1` can lead to errors.\nE.g. running BatchNormalization on a single sample.\n")
+	# Similar to a % remainder, this will only apply to the last element in the batch.
+	last_batch_size = batched_data[-1].shape[0]
+	if (
+		((allow_1Sample == False) and (last_batch_size == 1))
+		or 
+		((enforce_sameSize == True) and (batched_data[0].shape[0] != last_batch_size))
+	):
+		# So if there is a problem, just trim the last split.
+		batched_data = batched_data[:-1]
+	return batched_data
 # --------- END HELPERS ---------
 
 
@@ -3787,12 +3821,12 @@ class Batch(BaseModel):
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
-					if ('_binary' in analysis_type):
-						# Prevent OHE w classification_binary
-						if (encoderset_id is not None):
-							encoderset = Encoderset.get_by_id(encoderset_id)
-							labelcoder = encoderset.labelcoders[0]
-							stringified_coder = str(labelcoder.sklearn_preprocess)
+					if (encoderset_id is not None):
+						encoderset = Encoderset.get_by_id(encoderset_id)
+						labelcoder = encoderset.labelcoders[0]
+						stringified_coder = str(labelcoder.sklearn_preprocess)
+						if ('_binary' in analysis_type):
+							# Prevent OHE w classification_binary
 							if (stringified_coder.startswith("OneHotEncoder")):
 								raise ValueError(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
@@ -3801,7 +3835,18 @@ class Batch(BaseModel):
 								needs a single column output.
 								Go back and make a Labelcoder with single column output preprocess like `Binarizer()` instead.
 								"""))
-
+						elif ('_multi' in analysis_type):
+							if (library == 'pytorch'):
+								# Prevent OHE w pytorch.
+								if (stringified_coder.startswith("OneHotEncoder")):
+									raise ValueError(dedent("""
+									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
+									but `Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
+									This would result in a multi-column OHE output.
+									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
+									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
+									"""))
+									
 					if (splitset.bin_count is not None):
 						print(dedent("""
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
@@ -4298,7 +4343,7 @@ class Job(BaseModel):
 	jobset = ForeignKeyField(Jobset, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 
 
-	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type, library):
+	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
 		if (analysis_type == "classification_binary"):
 			average = "binary"
 			roc_average = "micro"
@@ -4307,10 +4352,6 @@ class Job(BaseModel):
 			average = "weighted"
 			roc_average = "weighted"
 			roc_multi_class = "ovr"
-
-			# pytorch multiclass data is coming in as ordinal, so OHE it.
-			if (library == 'pytorch'):
-				labels_processed = to_categorical(labels_processed)
 			
 		split_metrics = {}
 		# Let the classification_multi labels hit this metric in OHE format.
@@ -4334,7 +4375,7 @@ class Job(BaseModel):
 		return split_metrics
 
 
-	def split_classification_plots(labels_processed, predictions, probabilities, analysis_type, library):
+	def split_classification_plots(labels_processed, predictions, probabilities, analysis_type):
 		predictions = predictions.flatten()
 		probabilities = probabilities.flatten()
 		split_plot_data = {}
@@ -4346,9 +4387,6 @@ class Job(BaseModel):
 			precision, recall, _ = precision_recall_curve(labels_processed, probabilities)
 		
 		elif analysis_type == "classification_multi":
-			# pytorch is coming in as ordinal
-			if (library == 'pytorch'):
-				labels_processed = to_categorical(labels_processed)
 			# Flatten OHE labels for use with probabilities.
 			labels_flat = labels_processed.flatten()
 			fpr, tpr, _ = roc_curve(labels_flat, probabilities)
@@ -4378,6 +4416,7 @@ class Job(BaseModel):
 		batch = j.batch
 		algorithm = batch.algorithm
 		analysis_type = algorithm.analysis_type
+		library = algorithm.library
 		hide_test = batch.hide_test
 		splitset = batch.splitset
 		encoderset = batch.encoderset
@@ -4588,13 +4627,15 @@ class Job(BaseModel):
 		fn_build = dill_deserialize(algorithm.fn_build)
 		if (splitset.supervision == "supervised"):
 			# pytorch multiclass has a single ordinal label.
-			if (analysis_type == 'classification_multi') and (algorithm.library == 'pytorch'):
+			if (analysis_type == 'classification_multi') and (library == 'pytorch'):
 				num_classes = len(splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
 				model = fn_build(features_shape, label_shape, **hp)
 		elif (splitset.supervision == "unsupervised"):
 			model = fn_build(features_shape, **hp)
+		if (model is None):
+			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
 		
 		# The model and optimizer get combined during training.
 		fn_lose = dill_deserialize(algorithm.fn_lose)
@@ -4602,17 +4643,23 @@ class Job(BaseModel):
 		fn_train = dill_deserialize(algorithm.fn_train)
 
 		loser = fn_lose(**hp)
-		if (algorithm.library == 'keras'):
+		if (loser is None):
+			raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+
+		if (library == 'keras'):
 			optimizer = fn_optimize(**hp)
-		elif (algorithm.library == 'pytorch'):
+		elif (library == 'pytorch'):
 			optimizer = fn_optimize(model, **hp)
+		if (optimizer is None):
+			raise ValueError("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
+
 		
 		if (key_evaluation is not None):
 			samples_eval = samples[key_evaluation]
 		elif (key_evaluation is None):
 			samples_eval = None
 		
-		if (algorithm.library == "keras"):
+		if (library == "keras"):
 			model = fn_train(
 				model = model
 				, loser = loser
@@ -4621,7 +4668,8 @@ class Job(BaseModel):
 				, samples_evaluate = samples_eval
 				, **hp
 			)
-		elif (algorithm.library == "pytorch"):
+
+		elif (library == "pytorch"):
 			# Have to convert each array into a tensor.
 			samples[key_train]['features'] = torch.FloatTensor(samples[key_train]['features'])
 			samples[key_train]['labels'] = torch.FloatTensor(samples[key_train]['labels'])
@@ -4636,8 +4684,14 @@ class Job(BaseModel):
 				, samples_evaluate = samples_eval
 				, **hp
 			)
+			if (history is None):
+				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+		if (model is None):
+			raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+
+
 		# Save the artifacts of the trained model.
-		if (algorithm.library == "keras"):
+		if (library == "keras"):
 			# If blank this value is `{}` not None.
 			history = model.history.history
 			"""
@@ -4658,7 +4712,7 @@ class Job(BaseModel):
 			with open(temp_file_name, 'rb') as file:
 				model_blob = file.read()
 			os.remove(temp_file_name)
-		elif (algorithm.library == 'pytorch'):
+		elif (library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
 			model_blob = io.BytesIO()
 			torch.save(
@@ -4680,12 +4734,10 @@ class Job(BaseModel):
 
 		fn_predict = dill_deserialize(algorithm.fn_predict)
 
-		# just keeping these separate until we have all analysis types figured out.
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
-				
-				# Convert any remaining numpy splits into tensors
-				if (algorithm.library == 'pytorch'):
+				# Convert any remaining numpy splits into tensors.
+				if (library == 'pytorch'):
 					if (type(data) != torch.Tensor):
 						data['features'] = torch.FloatTensor(data['features'])
 						data['labels'] = torch.FloatTensor(data['labels'])
@@ -4693,62 +4745,66 @@ class Job(BaseModel):
 				preds, probs = fn_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
-				# ^ Our PyTorch prediction actually returns numpy here.
-				metrics[split] = Job.split_classification_metrics(
-					data['labels'], 
-					preds, probs, analysis_type, algorithm.library
-				)
+				# Outputs numpy.
 
-				#https://keras.io/api/losses/probabilistic_losses/
-				if (algorithm.library == 'keras'):
+				# https://keras.io/api/losses/probabilistic_losses/
+				if (library == 'keras'):
 					loss = loser(data['labels'], probs)
-				elif (algorithm.library == 'pytorch'):
-					# data['labels'] is already a tensor.
-					probs = torch.FloatTensor(probs)
+				elif (library == 'pytorch'):
+					tz_probs = torch.FloatTensor(probs)
 					if (algorithm.analysis_type == 'classification_binary'):
-						loss = loser(probs, data['labels'])
+						loss = loser(tz_probs, data['labels'])
+						# convert back to numpy for metrics and plots.
+						data['labels'] = data['labels'].detach().numpy()
 					elif (algorithm.analysis_type == 'classification_multi'):
 						flat_labels = data['labels'].flatten().to(torch.long)
-						loss = loser(probs, flat_labels)
-					# convert back to numpy for plots.
-					probs = probs.detach().numpy()
+						loss = loser(tz_probs, flat_labels)
+						# convert back to *OHE* numpy for metrics and plots.
+						data['labels'] = data['labels'].detach().numpy()
+						data['labels'] = to_categorical(data['labels'])
+
+				metrics[split] = Job.split_classification_metrics(
+					data['labels'], preds, probs, analysis_type
+				)
 				metrics[split]['loss'] = float(loss)
 
 				plot_data[split] = Job.split_classification_plots(
-					data['labels'], 
-					preds, probs, analysis_type, algorithm.library
+					data['labels'], preds, probs, analysis_type
 				) 
 		elif (analysis_type == "regression"):
 			# The raw output values *is* the continuous prediction itself.
 			probabilities = None
 			for split, data in samples.items():
 				
-				# Convert any remaining numpy splits into tensors
-				if (algorithm.library == 'pytorch'):
+				# Convert any remaining numpy splits into tensors.
+				# Do all of the tensor operations below before numpy operations.
+				if (library == 'pytorch'):
 					if (type(data) != torch.Tensor):
 						data['features'] = torch.FloatTensor(data['features'])
 						data['labels'] = torch.FloatTensor(data['labels'])
 
 				preds = fn_predict(model, data)
 				predictions[split] = preds
+				# Outputs numpy.
 
-				# convert labels back to numpy.
-				if (algorithm.library == 'pytorch'):
+				#https://keras.io/api/losses/regression_losses/
+				if (library == 'keras'):
+					loss = loser(data['labels'], preds)
+				elif (library == 'pytorch'):
+					tz_preds = torch.FloatTensor(preds)
+					loss = loser(tz_preds, data['labels'])
+					# After obtaining loss, make labels numpy again for metrics.
 					data['labels'] = data['labels'].detach().numpy()
+					# `preds` object is still numpy.
 
+				# Numpy inputs.
 				metrics[split] = Job.split_regression_metrics(
 					data['labels'], preds
 				)
-				#https://keras.io/api/losses/regression_losses/
-				if (algorithm.library == 'keras'):
-					loss = loser(data['labels'], preds)
-				elif (algorithm.library == 'pytorch'):
-					tz_preds = torch.FloatTensor(preds)
-					tz_labels = torch.FloatTensor(data['labels'])
-					loss = loser(tz_preds, tz_labels)
 				metrics[split]['loss'] = float(loss)
 				plot_data = None
 
+		# 4b. Aggregate metrics across splits/ folds.
 		# Alphabetize metrics dictionary by key.
 		for k,v in metrics.items():
 			metrics[k] = dict(natsorted(v.items()))
@@ -4807,40 +4863,6 @@ class Job(BaseModel):
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
 		del samples
 		return j
-
-
-	def torch_batch_splitter(
-		features:object
-		, labels:object
-		, batch_size = 5
-		, enforce_sameSize:bool=False
-		, allow_1Sample:bool=False
-	):
-		features = torch.split(features, batch_size)
-		labels = torch.split(labels, batch_size)
-		
-		features = Job.torch_drop_invalid_batchSize(features)
-		labels = Job.torch_drop_invalid_batchSize(labels)
-		return features, labels
-
-	def torch_drop_invalid_batchSize(
-		batched_data:object
-		, batch_size = 5
-		, enforce_sameSize:bool=False
-		, allow_1Sample:bool=False
-	):
-		if (batch_size == 1):
-			print("\nWarning - `batch_size==1` can lead to errors.\nE.g. running BatchNormalization on a single sample.\n")
-		# Similar to a % remainder, this will only apply to the last element in the batch.
-		last_batch_size = batched_data[-1].shape[0]
-		if (
-			((allow_1Sample == False) and (last_batch_size == 1))
-			or 
-			((enforce_sameSize == True) and (batched_data[0].shape[0] != last_batch_size))
-		):
-			# So if there is a problem, just trim the last split.
-			batched_data = batched_data[:-1]
-		return batched_data
 
 
 def execute_jobs(job_statuses:list, verbose:bool=False):  

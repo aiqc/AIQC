@@ -595,7 +595,7 @@ def pytorch_binary_fn_optimize(model, **hp):
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = Job.torch_batch_splitter(
+	batched_features, batched_labels = torch_batch_splitter(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -728,7 +728,7 @@ def pytorch_multiclass_lose(**hp):
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = Job.torch_batch_splitter(
+	batched_features, batched_labels = torch_batch_splitter(
 		samples_train['features'], samples_train['labels'],
 		batch_size=hp['batch_size'], enforce_sameSize=False, allow_1Sample=False
 	)
@@ -875,7 +875,7 @@ def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from torchmetrics.functional import explained_variance as expVar
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = Job.torch_batch_splitter(
+	batched_features, batched_labels = torch_batch_splitter(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1010,7 +1010,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 	model = nn.Sequential(
 		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
 		nn.Conv1d(
-			in_channels=160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
+			in_channels=features_shape[0]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
 			, out_channels=56 #arbitrary number. treating this as network complexity.
 			, kernel_size=3
 			, padding=1
@@ -1033,14 +1033,14 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 		, nn.ReLU()
 		, nn.Dropout(p=0.4)
 
-		, nn.Linear(3840, 1)
+		, nn.Linear(3840, label_shape[0])
 		, nn.Sigmoid()
 	)
 	return model
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = Job.torch_batch_splitter(
+	batched_features, batched_labels = torch_batch_splitter(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1057,7 +1057,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	epochs = 40
 	for epoch in range(epochs):
 		# --- Batch training ---
-		for i, batch in enumerate(batched_features):      
+		for i, batch in enumerate(batched_features):
 			# Make raw (unlabeled) predictions.
 			batch_probability = model(batched_features[i])
 			batch_loss = loser(batch_probability, batched_labels[i])
