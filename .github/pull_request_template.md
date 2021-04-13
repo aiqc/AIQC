@@ -62,4 +62,13 @@ b4.run.jobs()
 
 b5 = tests.make_test_batch('pytorch_binary')
 b5.run.jobs()
+
+b6 = tests.make_test_batch('pytorch_multiclass')
+b6.run.jobs()
+
+b7 = tests.make_test_batch('pytorch_regression')
+b7.run.jobs()
+
+b8 = tests.make_test_batch('pytorch_image_binary')
+b8.run.jobs()
 ```

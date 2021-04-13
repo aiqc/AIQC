@@ -1479,7 +1479,6 @@ class Label(BaseModel):
 	columns = JSONField()
 	column_count = IntegerField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
-	#probabilities = JSONField() #if you were to write back the result of unsupervised for semi-supervised learning.
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
 	
@@ -4575,6 +4574,12 @@ class Job(BaseModel):
 		features_shape = samples[first_key]['features'][0].shape
 		label_shape = samples[first_key]['labels'][0].shape
 
+		# Does not include the `batch_size`
+		input_shapes = {
+			"features_shape": features_shape
+			, "label_shape": label_shape
+		}
+
 		if (hyperparamcombo is not None):
 			hp = hyperparamcombo.hyperparameters
 		elif (hyperparamcombo is None):
@@ -4664,12 +4669,6 @@ class Job(BaseModel):
 				model_blob
 			)
 			model_blob = model_blob.getvalue()
-			"""
-			checkpoint = torch.load(model_blob)
-			new_model = model.load_state_dict(
-				checkpoint['model_state_dict']
-			)
-			"""
 
 		"""
 		4. Evaluation: predictions, metrics, charts for each split/fold.
@@ -4794,6 +4793,7 @@ class Job(BaseModel):
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
 			, model_file = model_blob
+			, input_shapes = input_shapes
 			, history = history
 			, predictions = predictions
 			, probabilities = probabilities
@@ -4872,6 +4872,7 @@ class Result(BaseModel):
 	time_succeeded = DateTimeField()
 	time_duration = IntegerField()
 	model_file = BlobField()
+	input_shapes = JSONField()
 	history = JSONField()
 	predictions = PickleField()
 	metrics = PickleField()
@@ -4883,18 +4884,38 @@ class Result(BaseModel):
 
 
 	def get_model(id:int):
-		r = Result.get_by_id(id)
-		algorithm = r.job.batch.algorithm
-		model_bytes = r.model_file
+		result = Result.get_by_id(id)
+		algorithm = result.job.batch.algorithm
+		model_blob = result.model_file
 
 		if (algorithm.library == "keras"):
 			temp_file_name = f"{app_dir}temp_keras_model"
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
-				f.write(model_bytes)
+				f.write(model_blob)
 				model = load_model(temp_file_name, compile=True)
 			os.remove(temp_file_name)
-		return model
+			return model
+		elif (algorithm.library == 'pytorch'):
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
+			# Need to initialize the classes first, which requires reconstructing them.
+			hp = result.job.hyperparamcombo.hyperparameters
+			features_shape = result.input_shapes['features_shape']
+			label_shape = result.input_shapes['label_shape']
+
+			fn_build = dill_deserialize(algorithm.fn_build)
+			fn_optimize = dill_deserialize(algorithm.fn_optimize)
+
+			model = fn_build(features_shape, label_shape, **hp)
+			optimizer = fn_optimize(model, **hp)
+
+			model_bytes = io.BytesIO(model_blob)
+			checkpoint = torch.load(model_bytes)
+			# Don't assign them: `model = model.load_state_dict ...`
+			model.load_state_dict(checkpoint['model_state_dict'])
+			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
+			return model, optimizer
 
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):
