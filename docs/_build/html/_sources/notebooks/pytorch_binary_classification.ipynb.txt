@@ -2,39 +2,31 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "compound-breast",
+   "id": "simple-consequence",
    "metadata": {},
    "source": [
-    "# Keras: Classify Binary"
+    "# PyTorch: Classify Binary"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "bright-clearance",
+   "id": "saving-toner",
    "metadata": {},
    "source": [
     "![houses](../images/mines.png)"
    ]
   },
   {
-   "cell_type": "markdown",
-   "id": "automated-enhancement",
-   "metadata": {},
-   "source": [
-    "Reference this great blog for machine learning cookbooks: [MachineLearningMastery.com \"Binary Classification\"](https://machinelearningmastery.com/binary-classification-tutorial-with-the-keras-deep-learning-library/)."
-   ]
-  },
-  {
    "cell_type": "code",
-   "execution_count": 1,
-   "id": "another-modeling",
+   "execution_count": 3,
+   "id": "canadian-honor",
    "metadata": {},
    "outputs": [],
    "source": [
-    "import keras\n",
-    "from keras.models import Sequential\n",
-    "from keras.layers import Dense, Dropout\n",
-    "from keras.callbacks import History\n",
+    "import torch\n",
+    "import torch.nn as nn\n",
+    "from torch import optim\n",
+    "import torchmetrics\n",
     "\n",
     "from sklearn.preprocessing import LabelBinarizer, PowerTransformer\n",
     "\n",
@@ -44,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "natural-coordination",
+   "id": "hungarian-firewall",
    "metadata": {},
    "source": [
     "---"
@@ -52,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "allied-production",
+   "id": "nutritional-twenty",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -60,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "unlike-exclusion",
+   "id": "plain-participant",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -68,8 +60,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
-   "id": "adequate-identifier",
+   "execution_count": 4,
+   "id": "partial-monte",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -78,8 +70,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "average-going",
+   "execution_count": 5,
+   "id": "standing-holder",
    "metadata": {},
    "outputs": [
     {
@@ -277,7 +269,7 @@
        "[5 rows x 61 columns]"
       ]
      },
-     "execution_count": 3,
+     "execution_count": 5,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -288,7 +280,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "adult-special",
+   "id": "frozen-technique",
    "metadata": {},
    "source": [
     "---"
@@ -296,7 +288,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "shared-needle",
+   "id": "flying-cleanup",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -304,7 +296,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "sustained-switch",
+   "id": "brilliant-miniature",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -312,8 +304,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
-   "id": "swiss-ticket",
+   "execution_count": 6,
+   "id": "temporal-smart",
    "metadata": {},
    "outputs": [
     {
@@ -412,68 +404,120 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
-   "id": "focused-cruise",
+   "execution_count": 7,
+   "id": "deluxe-sapphire",
    "metadata": {},
    "outputs": [],
    "source": [
     "def fn_build(features_shape, label_shape, **hp):\n",
-    "    model = Sequential(name='Sonar')\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dropout(0.30))\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dropout(0.30))\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))\n",
-    "    return model"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 6,
-   "id": "ready-tanzania",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
-    "    model.compile(\n",
-    "        loss=loser\n",
-    "        , optimizer=optimizer\n",
-    "        , metrics=['accuracy']\n",
-    "    )\n",
-    "    model.fit(\n",
-    "        samples_train['features'], samples_train['labels']\n",
-    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
-    "        , verbose = 0\n",
-    "        , batch_size = 3\n",
-    "        , epochs = hp['epochs']\n",
-    "        , callbacks = [History()]\n",
+    "    model = nn.Sequential(\n",
+    "        nn.Linear(features_shape[0], 12),\n",
+    "        nn.BatchNorm1d(12,12),\n",
+    "        nn.ReLU(),\n",
+    "        nn.Dropout(p=0.5),\n",
+    "\n",
+    "        nn.Linear(12, label_shape[0]),\n",
+    "        nn.Sigmoid()\n",
     "    )\n",
     "    return model"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 7,
-   "id": "conventional-fantasy",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "hyperparameters = {\n",
-    "    \"neuron_count\": [25, 50]\n",
-    "    , \"epochs\": [75, 150]\n",
-    "}"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "rational-maryland",
+   "id": "graduate-michigan",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
+    "    ## --- Prepare mini batches for analysis ---\n",
+    "    batched_features, batched_labels = aiqc.torch_batch_splitter(\n",
+    "        samples_train['features'], samples_train['labels'],\n",
+    "        batch_size=5, enforce_sameSize=False, allow_1Sample=False\n",
+    "    )\n",
+    "\n",
+    "    ## --- Metrics ---\n",
+    "    acc = torchmetrics.Accuracy()\n",
+    "    # Mirrors `keras.model.History.history` object.\n",
+    "    history = {\n",
+    "        'loss':list(), 'accuracy': list(), \n",
+    "        'val_loss':list(), 'val_accuracy':list()\n",
+    "    }\n",
+    "\n",
+    "    ## --- Training loop ---\n",
+    "    epochs = hp['epoch_count']\n",
+    "    for epoch in range(epochs):\n",
+    "        ## --- Batch training ---\n",
+    "        for i, batch in enumerate(batched_features):      \n",
+    "            # Make raw (unlabeled) predictions.\n",
+    "            batch_probability = model(batched_features[i])\n",
+    "            batch_loss = loser(batch_probability, batched_labels[i])\n",
+    "            # Backpropagation.\n",
+    "            optimizer.zero_grad()\n",
+    "            batch_loss.backward()\n",
+    "            optimizer.step()\n",
+    "\n",
+    "        ## --- Epoch metrics ---\n",
+    "        # Overall performance on training data.\n",
+    "        train_probability = model(samples_train['features'])\n",
+    "        train_loss = loser(train_probability, samples_train['labels'])\n",
+    "        train_acc = acc(train_probability, samples_train['labels'].to(torch.short))\n",
+    "        history['loss'].append(float(train_loss))\n",
+    "        history['accuracy'].append(float(train_acc))\n",
+    "        # Performance on evaluation data.\n",
+    "        eval_probability = model(samples_evaluate['features'])\n",
+    "        eval_loss = loser(eval_probability, samples_evaluate['labels'])\n",
+    "        eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    \n",
+    "        history['val_loss'].append(float(eval_loss))\n",
+    "        history['val_accuracy'].append(float(eval_acc))\n",
+    "    return model, history"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "distinct-january",
+   "metadata": {},
+   "source": [
+    "Optional, will be automatically selected based on `analysis_type` if left as `None`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "located-allergy",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def fn_optimize(model, **hp):\n",
+    "    optimizer = optim.Adamax(\n",
+    "        model.parameters()\n",
+    "        , lr=hp['learning_rate']\n",
+    "    )\n",
+    "    return optimizer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "ready-worth",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparameters = {\n",
+    "    \"learning_rate\": [0.01, 0.005]\n",
+    "    , \"epoch_count\": [50]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "overhead-dance",
    "metadata": {},
    "outputs": [],
    "source": [
     "batch = aiqc.Experiment.make(\n",
-    "    library = \"keras\"\n",
+    "    library = \"pytorch\"\n",
     "    , analysis_type = \"classification_binary\"\n",
     "    , fn_build = fn_build\n",
     "    , fn_train = fn_train\n",
@@ -483,24 +527,24 @@
     "    , hide_test = False\n",
     "    , hyperparameters = hyperparameters\n",
     "    \n",
-    "    , fn_lose = None #automated\n",
-    "    , fn_optimize = None #automated\n",
-    "    , fn_predict = None #automated\n",
+    "    , fn_lose = None #optional/ automated\n",
+    "    , fn_optimize = fn_optimize #optional/ automated\n",
+    "    , fn_predict = None #optional/ automated\n",
     "    , foldset_id = None\n",
     ")"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
-   "id": "thorough-belle",
+   "execution_count": 12,
+   "id": "recreational-consideration",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:21<00:00, 10.22s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:09<00:00,  2.35s/it]\n"
      ]
     }
    ],
@@ -510,7 +554,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "judicial-recruitment",
+   "id": "scientific-package",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -518,7 +562,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "actual-creation",
+   "id": "superior-principal",
    "metadata": {},
    "source": [
     "---"
@@ -526,7 +570,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "vocational-waterproof",
+   "id": "intimate-healing",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -534,7 +578,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "external-crossing",
+   "id": "pressed-margin",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
@@ -542,8 +586,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
-   "id": "liable-toronto",
+   "execution_count": 13,
+   "id": "wound-digest",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -552,8 +596,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
-   "id": "prostate-agenda",
+   "execution_count": 14,
+   "id": "pleased-territory",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -562,8 +606,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
-   "id": "heard-liabilities",
+   "execution_count": 15,
+   "id": "stupid-messaging",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -572,8 +616,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
-   "id": "assisted-honolulu",
+   "execution_count": 16,
+   "id": "finite-sleeve",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -582,8 +626,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
-   "id": "refined-authorization",
+   "execution_count": 17,
+   "id": "spare-pension",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -596,8 +640,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
-   "id": "every-cursor",
+   "execution_count": 18,
+   "id": "quarterly-testing",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -606,8 +650,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
-   "id": "played-sharing",
+   "execution_count": 19,
+   "id": "diverse-father",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -618,8 +662,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
-   "id": "norman-mechanics",
+   "execution_count": 20,
+   "id": "still-mozambique",
    "metadata": {},
    "outputs": [
     {
@@ -706,78 +750,131 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 18,
-   "id": "nominated-regulation",
+   "execution_count": 21,
+   "id": "urban-estonia",
    "metadata": {},
    "outputs": [],
    "source": [
     "def fn_build(features_shape, label_shape, **hp):\n",
-    "    model = Sequential(name='Sonar')\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dropout(0.30))\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dropout(0.30))\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))\n",
-    "    return model"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 19,
-   "id": "revolutionary-milton",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
-    "    model.compile(\n",
-    "        loss=loser\n",
-    "        , optimizer=optimizer\n",
-    "        , metrics=['accuracy']\n",
-    "    )\n",
-    "    model.fit(\n",
-    "        samples_train['features'], samples_train['labels']\n",
-    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
-    "        , verbose = 0\n",
-    "        , batch_size = 3\n",
-    "        , epochs = hp['epochs']\n",
-    "        , callbacks = [History()]\n",
+    "    model = nn.Sequential(\n",
+    "        nn.Linear(features_shape[0], 12),\n",
+    "        nn.BatchNorm1d(12,12),\n",
+    "        nn.ReLU(),\n",
+    "        nn.Dropout(p=0.5),\n",
+    "\n",
+    "        nn.Linear(12, label_shape[0]),\n",
+    "        nn.Sigmoid()\n",
     "    )\n",
     "    return model"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 20,
-   "id": "normal-diversity",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "algorithm = aiqc.Algorithm.make(\n",
-    "    library = \"keras\"\n",
-    "    , analysis_type = \"classification_binary\"\n",
-    "    , fn_build = fn_build\n",
-    "    , fn_train = fn_train\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 21,
-   "id": "inside-classification",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "hyperparameters = {\n",
-    "    \"neuron_count\": [25, 50]\n",
-    "    , \"epochs\": [75, 150]\n",
-    "}"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "multiple-symbol",
+   "id": "seven-conviction",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
+    "    ## --- Prepare mini batches for analysis ---\n",
+    "    batched_features, batched_labels = aiqc.torch_batch_splitter(\n",
+    "        samples_train['features'], samples_train['labels'],\n",
+    "        batch_size=5, enforce_sameSize=False, allow_1Sample=False\n",
+    "    )\n",
+    "\n",
+    "    ## --- Metrics ---\n",
+    "    acc = torchmetrics.Accuracy()\n",
+    "    # Mirrors `keras.model.History.history` object.\n",
+    "    history = {\n",
+    "        'loss':list(), 'accuracy': list(), \n",
+    "        'val_loss':list(), 'val_accuracy':list()\n",
+    "    }\n",
+    "\n",
+    "    ## --- Training loop ---\n",
+    "    epochs = hp['epoch_count']\n",
+    "    for epoch in range(epochs):\n",
+    "        ## --- Batch training ---\n",
+    "        for i, batch in enumerate(batched_features):      \n",
+    "            # Make raw (unlabeled) predictions.\n",
+    "            batch_probability = model(batched_features[i])\n",
+    "            batch_loss = loser(batch_probability, batched_labels[i])\n",
+    "            # Backpropagation.\n",
+    "            optimizer.zero_grad()\n",
+    "            batch_loss.backward()\n",
+    "            optimizer.step()\n",
+    "\n",
+    "        ## --- Epoch metrics ---\n",
+    "        # Overall performance on training data.\n",
+    "        train_probability = model(samples_train['features'])\n",
+    "        train_loss = loser(train_probability, samples_train['labels'])\n",
+    "        train_acc = acc(train_probability, samples_train['labels'].to(torch.short))\n",
+    "        history['loss'].append(float(train_loss))\n",
+    "        history['accuracy'].append(float(train_acc))\n",
+    "        # Performance on evaluation data.\n",
+    "        eval_probability = model(samples_evaluate['features'])\n",
+    "        eval_loss = loser(eval_probability, samples_evaluate['labels'])\n",
+    "        eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    \n",
+    "        history['val_loss'].append(float(eval_loss))\n",
+    "        history['val_accuracy'].append(float(eval_acc))\n",
+    "    return model, history"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "geological-nirvana",
+   "metadata": {},
+   "source": [
+    "Optional, will be automatically selected based on `analysis_type` if left as `None`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "unknown-scheme",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def fn_optimize(model, **hp):\n",
+    "    optimizer = optim.Adamax(\n",
+    "        model.parameters()\n",
+    "        , lr=hp['learning_rate']\n",
+    "    )\n",
+    "    return optimizer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "careful-roberts",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparameters = {\n",
+    "    \"learning_rate\": [0.01, 0.005]\n",
+    "    , \"epoch_count\": [50]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "advised-market",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "algorithm = aiqc.Algorithm.make(\n",
+    "    library = \"pytorch\"\n",
+    "    , analysis_type = \"classification_binary\"\n",
+    "    , fn_build = fn_build\n",
+    "    , fn_train = fn_train\n",
+    "    , fn_optimize = fn_optimize\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "accessory-spokesman",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -788,8 +885,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 23,
-   "id": "psychological-suffering",
+   "execution_count": 27,
+   "id": "broadband-terminal",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -797,21 +894,21 @@
     "    splitset_id = splitset.id\n",
     "    , hyperparamset_id = hyperparamset.id\n",
     "    , encoderset_id  = encoderset.id\n",
-    "    , repeat_count = 2\n",
+    "    , repeat_count = 1\n",
     ")"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 24,
-   "id": "wicked-mouth",
+   "execution_count": 28,
+   "id": "dynamic-fight",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:22<00:00, 10.25s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [00:04<00:00,  2.34s/it]\n"
      ]
     }
    ],
@@ -821,7 +918,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "opposed-pastor",
+   "id": "located-infection",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."

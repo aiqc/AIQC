@@ -51,7 +51,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Low-Level API" href="api_low_level.html" />
-    <link rel="prev" title="PyTorch (coming soon)" href="pytorch.html" /> 
+    <link rel="prev" title="PyTorch: Regression" href="pytorch_regression.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -113,7 +113,9 @@
 <li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch.html">PyTorch (coming soon)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
@@ -128,7 +130,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#2.-Experiment">2. Experiment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Model-Functions">Model Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#fn_build"><code class="docutils literal notranslate"><span class="pre">fn_build</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#fn_optimize"><code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fn_train"><code class="docutils literal notranslate"><span class="pre">fn_train</span></code></a></li>
 </ul>
 </li>
@@ -678,7 +679,7 @@ No more Featurecoders can be added to this Encoderset.
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">fn_build</span></code> contains the topology/ layers.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fn_train</span></code> specifies the samples and how the model should run.</p></li>
-<li><p>Optional and automatically determined: <code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code>, <code class="docutils literal notranslate"><span class="pre">fn_predict</span></code> and <code class="docutils literal notranslate"><span class="pre">fn_loss</span></code>.</p></li>
+<li><p>Optional and automatically determined: <code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code>, <code class="docutils literal notranslate"><span class="pre">fn_predict</span></code> and <code class="docutils literal notranslate"><span class="pre">fn_lose</span></code>.</p></li>
 </ul>
 <p>You can name the functions below whatever you want, but do not change their predetermined arugments (e.g. <code class="docutils literal notranslate"><span class="pre">features_shape</span></code>, <code class="docutils literal notranslate"><span class="pre">**hp</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, etc.). These items are used behind the scenes to pass the appropriate data, parameters, and models into your training jobs.</p>
 <p>Because these are functions, we can even play with the topology as a parameter! As demonstrated by the <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">(hp['extra_layer'])</span></code> line below.</p>
@@ -708,20 +709,6 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 </div>
-<div class="section" id="fn_optimize">
-<h4><code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code><a class="headerlink" href="#fn_optimize" title="Permalink to this headline">¶</a></h4>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">optimizer</span>
-</pre></div>
-</div>
-</div>
-</div>
 <div class="section" id="fn_train">
 <h4><code class="docutils literal notranslate"><span class="pre">fn_train</span></code><a class="headerlink" href="#fn_train" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput nblast docutils container">
@@ -729,7 +716,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
         <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
         <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span>
@@ -791,16 +778,16 @@ No more Featurecoders can be added to this Encoderset.
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
     <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="n">fn_optimize</span>
     <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
-    <span class="p">,</span> <span class="n">fn_loss</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
+    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -839,7 +826,7 @@ No more Featurecoders can be added to this Encoderset.
         <a href="api_low_level.html" class="btn btn-neutral float-right" title="Low-Level API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pytorch.html" class="btn btn-neutral float-left" title="PyTorch (coming soon)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pytorch_regression.html" class="btn btn-neutral float-left" title="PyTorch: Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

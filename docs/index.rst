@@ -26,8 +26,9 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
-  notebooks/pytorch
-
+  notebooks/pytorch_binary_classification
+  notebooks/pytorch_multi-label_classification
+  notebooks/pytorch_regression
 
 .. toctree::
   :maxdepth: 2

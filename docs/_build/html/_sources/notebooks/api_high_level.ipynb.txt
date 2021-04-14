@@ -296,7 +296,7 @@
     "\n",
     "* `fn_build` contains the topology/ layers.\n",
     "* `fn_train` specifies the samples and how the model should run.\n",
-    "* Optional and automatically determined: `fn_optimize`, `fn_predict` and `fn_loss`."
+    "* Optional and automatically determined: `fn_optimize`, `fn_predict` and `fn_lose`."
    ]
   },
   {
@@ -351,24 +351,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### `fn_optimize`"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "def fn_optimize(**hp):\n",
-    "    optimizer = keras.optimizers.Adamax(hp['learning_rate'])\n",
-    "    return optimizer"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "#### `fn_train`"
    ]
   },
@@ -378,7 +360,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "def fn_train(model, optimizer, samples_train, samples_evaluate, **hp):    \n",
+    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):    \n",
     "    model.compile(\n",
     "        optimizer=optimizer,\n",
     "        loss='categorical_crossentropy',\n",
@@ -471,16 +453,16 @@
     "    library = \"keras\"\n",
     "    , analysis_type = \"classification_multi\"\n",
     "    , fn_build = fn_build\n",
-    "    , fn_optimize = fn_optimize\n",
     "    , fn_train = fn_train\n",
     "    , splitset_id = splitset.id\n",
     "    , repeat_count = 2\n",
     "    , hide_test = False\n",
-    "    , fn_predict = None #automated.\n",
-    "    , fn_loss = None #automated.\n",
     "    , hyperparameters = hyperparameters\n",
     "    , foldset_id = None\n",
     "    , encoderset_id = splitset.encodersets[0]\n",
+    "    , fn_lose = None #automated.\n",
+    "    , fn_optimize = None #automated.\n",
+    "    , fn_predict = None #automated.\n",
     ")"
    ]
   },

@@ -3803,6 +3803,7 @@ class Batch(BaseModel):
 		, encoderset_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
+		library = algorithm.library
 		splitset = Splitset.get_by_id(splitset_id)
 
 		if (foldset_id is not None):

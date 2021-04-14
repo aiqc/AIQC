@@ -880,7 +880,6 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
 
-	## --- Metrics ---
 	# Modeled after `keras.model.History.history` object.
 	history = {
 		'loss':list(), 'expVar': list(), 
