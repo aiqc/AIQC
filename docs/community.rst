@@ -123,7 +123,7 @@ Guild bylaws [aka Governance].
   - "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
   - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
-The vernacular is designed as a D&D guild to make governance fun. If anyone deviates from this vocabulary, you can interrupt them with "you speak in riddles."
+The vernacular is modeled after a D&D guild in order to make governance fun. If anyone deviates from this vocabulary, feel free to interrupt them with, *"You speak in riddles."*
 
 *Band of Squires [aka Public Participants]*:
 

@@ -220,6 +220,6 @@ V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials<
 
 - Example datasets built into package.
 
-- Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) & OS (win, mac, lin).
+- Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) & OS (Win, Mac, Lin).
 
 - Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.
