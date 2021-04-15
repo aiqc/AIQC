@@ -261,7 +261,7 @@
 <li><p>Create a post on the <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">discussion board</a> and introduce yourself so that we can help get you up to speed!</p>
 <ul>
 <li><p>If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.</p></li>
-<li><p>We can design a <em>sprint</em> that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing.</p></li>
+<li><p>We can design a <em>sprint</em> that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing. As described in the <em>Governance</em> section, completing a <em>sprint</em> is how you join the Core Team.</p></li>
 <li><p>If you want to join the community calls, then be sure to include your timezone and email in your introduction.</p></li>
 </ul>
 </li>
@@ -289,7 +289,7 @@ pip install --upgrade -r requirements.txt
 <li><p><em>Agree to disagree</em>; on one hand, acknowledge the merits of the ideas of others and be willing to adapt your opinion based on new information, but, on the other hand, <strong>do not</strong> sacrifice what you truly believe in for the sake of consensus.</p></li>
 <li><p><em>Help educate &amp; mentor</em>; point people in the right direction to get started, but don’t continue to help those who won’t help themselves. Open source projects are a way for people to break out of their 9-5, so a lot of people are learning new things. In generally, be significantly less rigid than the StackOverflow community, but do ask people to state what they have tried, share their code, share their env, etc. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. English is also a 2nd language for many, so be patient.</p></li>
 <li><p><em>Speaking about other technologies</em>; When you mention other tools, give them as much praise as you can for what they have done well. Don’t shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with. For example, “We wanted our tool to be persistent and easy-to-use because that’s what it was going to take to get it into the hands of researchers. When we tried out other tools for ourselves as practicioners, we didn’t feel like they fully satisfied our criteria.”</p></li>
-<li><p><em>Violations</em>; If you feel that certain behavior does not fit the code of conduct, please report the instance to the community manager, Layne Sadler.</p></li>
+<li><p><em>Violations</em>; If you feel that certain behavior does not jive with the code of conduct, please report the instance to the community manager, Layne Sadler. In particular, any instance of either hate, harassment, or heinous prejudice will result in an immediate and permanent ban without the explicit need for a vote.</p></li>
 </ul>
 </div>
 <hr class="docutils" />
@@ -299,6 +299,7 @@ pip install --upgrade -r requirements.txt
 <blockquote>
 <div><ul class="simple">
 <li><p>“Governance in the early days was largely about reviewing PRs and asking ourselves, <em>‘Should we do this?’</em>”</p></li>
+<li><p>“This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise.”</p></li>
 <li><p>“In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”</p></li>
 </ul>
 </div></blockquote>
@@ -308,28 +309,32 @@ pip install --upgrade -r requirements.txt
 <li><p>Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a <em>sprint</em>.</p></li>
 <li><p>All are welcome. Get in touch and we will help design a <em>sprint</em> for you.</p></li>
 <li><p>PRs must be reviewed by a council member before a merger.</p></li>
+<li><p>All participants are subject to the <em>Code of Conduct</em>.</p></li>
 </ul>
 </div></blockquote>
 <p><em>Fellowship of Archmages [aka Core Team]</em>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Anyone who has completed a <em>sprint</em>.</p></li>
+<li><p>Anyone who has completed 1-4 <em>sprints</em> (level I, II, III, IV).</p></li>
 <li><p>Participates in the biweekly team meetings.</p></li>
 <li><p>Helps administer the Slack community and discussion board.</p></li>
 <li><p>PRs must still be reviewed by a council member before a merger.</p></li>
+<li><p>If it becomes absolutely necessary, the team can submit a proposal to remove/demote a team member for either repeated breach of <em>Code of Conduct</em> (2 strike depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.</p></li>
+<li><p>The team can force any proposal submitted to the discussion board up to the council with a 2/3 vote (assuming there are at least 3 people on the team). However, rational discourse is preferred to forced votes.</p></li>
 </ul>
 </div></blockquote>
 <p><em>Council of Warlocks [aka Technical Board]</em>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Anyone who has completed 5+ <em>sprints</em>.</p></li>
+<li><p>Anyone who has completed 5+ <em>sprints</em> (level V+).</p></li>
 <li><p>Ability to approve PRs.</p></li>
 <li><p>Ability to release software (e.g. PyPI).</p></li>
-<li><p>Inclusion in the license copyright.</p></li>
 <li><p>Design sprints for new members.</p></li>
-<li><p>The Council can vote on proposals submitted to the discussion board regarding the technical direction of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.</p></li>
-<li><p>The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal once, and the proposal cannot be brought up again until 6 months have passed.</p></li>
-<li><p>Changes to governance and code of conduct require a proposal.</p></li>
+<li><p>Inclusion in the license copyright.</p></li>
+<li><p>The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.</p></li>
+<li><p>The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.</p></li>
+<li><p>If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of <em>Code of Conduct</em> (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.</p></li>
+<li><p>Changes to <em>Governance</em> and <em>Code of Conduct</em> require a proposal to the discussion board.</p></li>
 </ul>
 </div></blockquote>
 </div>

@@ -47,7 +47,7 @@ How can I get involved?
 
   + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone. 
 
-  + We can design a *sprint* that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing.
+  + We can design a *sprint* that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing. As described in the *Governance* section, completing a *sprint* is how you join the Core Team.
 
   + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
@@ -87,7 +87,7 @@ Code of conduct.
 
 - *Speaking about other technologies*; When you mention other tools, give them as much praise as you can for what they have done well. Don't shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with. For example, "We wanted our tool to be persistent and easy-to-use because that's what it was going to take to get it into the hands of researchers. When we tried out other tools for ourselves as practicioners, we didn't feel like they fully satisfied our criteria."
 
-- *Violations*; If you feel that certain behavior does not fit the code of conduct, please report the instance to the community manager, Layne Sadler.
+- *Violations*; If you feel that certain behavior does not jive with the code of conduct, please report the instance to the community manager, Layne Sadler. In particular, any instance of either hate, harassment, or heinous prejudice will result in an immediate and permanent ban without the explicit need for a vote.
 
 ----
 
@@ -98,6 +98,7 @@ Guild Bylaws [aka Governance].
 `Inspired by conversations with our friends at Django and Jupyter. <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
 
   - "Governance in the early days was largely about reviewing PRs and asking ourselves, *'Should we do this?'*"
+  - "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
   - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
 
@@ -106,24 +107,28 @@ Guild Bylaws [aka Governance].
   - Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a *sprint*.
   - All are welcome. Get in touch and we will help design a *sprint* for you.
   - PRs must be reviewed by a council member before a merger.
+  - All participants are subject to the *Code of Conduct*.
 
 *Fellowship of Archmages [aka Core Team]*:
 
-  - Anyone who has completed a *sprint*.
+  - Anyone who has completed 1-4 *sprints* (level I, II, III, IV).
   - Participates in the biweekly team meetings.
   - Helps administer the Slack community and discussion board.
   - PRs must still be reviewed by a council member before a merger.
+  - If it becomes absolutely necessary, the team can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strike depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
+  - The team can force any proposal submitted to the discussion board up to the council with a 2/3 vote (assuming there are at least 3 people on the team). However, rational discourse is preferred to forced votes.
 
 *Council of Warlocks [aka Technical Board]*:
 
-  - Anyone who has completed 5+ *sprints*.
+  - Anyone who has completed 5+ *sprints* (level V+).
   - Ability to approve PRs.
   - Ability to release software (e.g. PyPI).
-  - Inclusion in the license copyright.
   - Design sprints for new members.
-  - The Council can vote on proposals submitted to the discussion board regarding the technical direction of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
-  - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal once, and the proposal cannot be brought up again until 6 months have passed.
-  - Changes to governance and code of conduct require a proposal.
+  - Inclusion in the license copyright.
+  - The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
+  - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.
+  - If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
+  - Changes to *Governance* and *Code of Conduct* require a proposal to the discussion board.
 
 ----
 
