@@ -106,8 +106,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#how-can-i-get-involved">How can I get involved?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-environment">Setting up environment.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of conduct.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#guild-bylaws-aka-governance">Guild Bylaws [aka Governance].</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#programming-style">Programming style.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#open-source">Open source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#open-source">Open source.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#choosing-a-license">Choosing a license</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#open-core">Open core</a></li>
 </ul>
@@ -247,7 +248,8 @@
 </li>
 <li><p>Take a look at the <a class="reference external" href="https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md">Pull Request Template</a>.</p>
 <ul>
-<li><p>This document also explains how to run the tests.</p></li>
+<li><p>This document provides a PR checklist and shows how to run the tests.</p></li>
+<li><p>We’ll review your PR and provide comments on how to get it ready for production. You can also converse with us in the Slack channel mentioned below.</p></li>
 </ul>
 </li>
 </ul>
@@ -259,10 +261,11 @@
 <li><p>Create a post on the <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">discussion board</a> and introduce yourself so that we can help get you up to speed!</p>
 <ul>
 <li><p>If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.</p></li>
+<li><p>We can design a <em>sprint</em> that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing.</p></li>
 <li><p>If you want to join the community calls, then be sure to include your timezone and email in your introduction.</p></li>
 </ul>
 </li>
-<li><p>Jump into the conversation in the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/links.html">slack group</a>.</p></li>
+<li><p>Jump into the conversation in the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/links.html">Slack group</a>.</p></li>
 </ul>
 </div>
 <hr class="docutils" />
@@ -290,6 +293,47 @@ pip install --upgrade -r requirements.txt
 </ul>
 </div>
 <hr class="docutils" />
+<div class="section" id="guild-bylaws-aka-governance">
+<h2>Guild Bylaws [aka Governance].<a class="headerlink" href="#guild-bylaws-aka-governance" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.djangoproject.com/weblog/2020/mar/12/governance/">Inspired by conversations with our friends at Django and Jupyter.</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“Governance in the early days was largely about reviewing PRs and asking ourselves, <em>‘Should we do this?’</em>”</p></li>
+<li><p>“In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”</p></li>
+</ul>
+</div></blockquote>
+<p><em>Squires [aka Public Contributors]</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a <em>sprint</em>.</p></li>
+<li><p>All are welcome. Get in touch and we will help design a <em>sprint</em> for you.</p></li>
+<li><p>PRs must be reviewed by a council member before a merger.</p></li>
+</ul>
+</div></blockquote>
+<p><em>Fellowship of Archmages [aka Core Team]</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Anyone who has completed a <em>sprint</em>.</p></li>
+<li><p>Participates in the biweekly team meetings.</p></li>
+<li><p>Helps administer the Slack community and discussion board.</p></li>
+<li><p>PRs must still be reviewed by a council member before a merger.</p></li>
+</ul>
+</div></blockquote>
+<p><em>Council of Warlocks [aka Technical Board]</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Anyone who has completed 5+ <em>sprints</em>.</p></li>
+<li><p>Ability to approve PRs.</p></li>
+<li><p>Ability to release software (e.g. PyPI).</p></li>
+<li><p>Inclusion in the license copyright.</p></li>
+<li><p>Design sprints for new members.</p></li>
+<li><p>The Council can vote on proposals submitted to the discussion board regarding the technical direction of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.</p></li>
+<li><p>The Grand Warlock has the tie-breaking vote. They can veto a majority vote on a given proposal once, and the bill cannot be brought up for another 6 months.</p></li>
+<li><p>Changes to governance and code of conduct require a proposal.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<hr class="docutils" />
 <div class="section" id="programming-style">
 <h2>Programming style.<a class="headerlink" href="#programming-style" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -311,7 +355,7 @@ pip install --upgrade -r requirements.txt
 </div>
 <hr class="docutils" />
 <div class="section" id="open-source">
-<h2>Open source<a class="headerlink" href="#open-source" title="Permalink to this headline">¶</a></h2>
+<h2>Open source.<a class="headerlink" href="#open-source" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="choosing-a-license">
 <h3>Choosing a license<a class="headerlink" href="#choosing-a-license" title="Permalink to this headline">¶</a></h3>
 <a class="reference internal image-reference" href="_images/license_badge.png"><img alt="OSI-BSD Badge" src="_images/license_badge.png" style="width: 20%;" /></a>
@@ -322,12 +366,12 @@ pip install --upgrade -r requirements.txt
 <p>On one hand, the permissive nature of this license means that the cloud providers can fork this project and release it as their own closed source cloud service, which has been a recurring theme [<a class="reference external" href="https://news.ycombinator.com/item?id=24799660">a</a>, <a class="reference external" href="https://aws.amazon.com/blogs/opensource/introducing-opensearch/">b</a>, etc.]. On the other hand, feedback from our friends in the Python community was that people would avoid using libraries with restrictive licenses, like AGPL, in their work. They explained that they aren’t allowed to open source their work and they “don’t want to get their legal team involved.” This begs the question, what good is being open source under a restrictive license if no one can <em>actually</em> use your software? Hopefully the cloud providers will put programs in place to contribute either code or profit (similar to App Store) back to the communities whose projects they fork.</p>
 <p>Consideration of 4-Clause BSD; The <em>original</em> BSD license included an additional <em>advertising clause</em> that states: “All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by [].” Which helps, in part, to address the widespread complaint of, “If you are going to fork our project, at least give us a nod.” We’ve actually seen this play out at <a class="reference external" href="https://www.datto.com/">Datto</a>. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the <em>advertising clause</em> of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.</p>
 </div></blockquote>
-<p>The copyright section is modeled after the <a class="reference external" href="https://github.com/ipython/ipython/blob/master/LICENSE">IPython</a> project. As major contributors distinguish themselves, they will also be added to the copyright by a vote of 2/3rds majority (U.S. Senate precedent).</p>
+<p>The copyright section is modeled after the <a class="reference external" href="https://github.com/ipython/ipython/blob/master/LICENSE">IPython</a> project.</p>
 <p><em>Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent &amp; trademark rights.</em></p>
 </div>
 <div class="section" id="open-core">
 <h3>Open core<a class="headerlink" href="#open-core" title="Permalink to this headline">¶</a></h3>
-<p>For the following reasons, AIQC will adopt an <em>open core</em> model:</p>
+<p>For the following reasons, AIQC plans to adopt an <em>open core</em> model in the long run:</p>
 <ul class="simple">
 <li><p>Many successful open source projects have championed the open core model while managing to remain open:</p>
 <ul>

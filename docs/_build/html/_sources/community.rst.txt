@@ -33,7 +33,9 @@ What can I contribute?
 
 - Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
   
-  + This document also explains how to run the tests.
+  + This document provides a PR checklist and shows how to run the tests.
+
+  + We'll review your PR and provide comments on how to get it ready for production. You can also converse with us in the Slack channel mentioned below.
 
 ----
 
@@ -43,11 +45,13 @@ How can I get involved?
 
 - Create a post on the `discussion board <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
 
-  + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.
+  + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone. 
+
+  + We can design a *sprint* that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing.
 
   + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
-- Jump into the conversation in the `slack group <https://aiqc.readthedocs.io/en/latest/links.html>`__.
+- Jump into the conversation in the `Slack group <https://aiqc.readthedocs.io/en/latest/links.html>`__.
 
 ----
 
@@ -87,6 +91,42 @@ Code of conduct.
 
 ----
 
+******************************
+Guild Bylaws [aka Governance].
+******************************
+
+`Inspired by conversations with our friends at Django and Jupyter. <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
+
+  - "Governance in the early days was largely about reviewing PRs and asking ourselves, *'Should we do this?'*"
+  - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
+
+
+*Squires [aka Public Contributors]*:
+
+  - Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a *sprint*.
+  - All are welcome. Get in touch and we will help design a *sprint* for you.
+  - PRs must be reviewed by a council member before a merger.
+
+*Fellowship of Archmages [aka Core Team]*:
+
+  - Anyone who has completed a *sprint*.
+  - Participates in the biweekly team meetings.
+  - Helps administer the Slack community and discussion board.
+  - PRs must still be reviewed by a council member before a merger.
+
+*Council of Warlocks [aka Technical Board]*:
+
+  - Anyone who has completed 5+ *sprints*.
+  - Ability to approve PRs.
+  - Ability to release software (e.g. PyPI).
+  - Inclusion in the license copyright.
+  - Design sprints for new members.
+  - The Council can vote on proposals submitted to the discussion board regarding the technical direction of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
+  - The Grand Warlock has the tie-breaking vote. They can veto a majority vote on a given proposal once, and the bill cannot be brought up for another 6 months.
+  - Changes to governance and code of conduct require a proposal.
+
+----
+
 ******************
 Programming style.
 ******************
@@ -109,9 +149,9 @@ Programming style.
 
 ----
 
-***********
-Open source
-***********
+************
+Open source.
+************
 
 Choosing a license
 ==================
@@ -130,7 +170,7 @@ BSD is seen as a *permissive* license, as opposed to *restrictive*. The major im
 
   Consideration of 4-Clause BSD; The *original* BSD license included an additional *advertising clause* that states: "All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by []." Which helps, in part, to address the widespread complaint of, "If you are going to fork our project, at least give us a nod." We've actually seen this play out at `Datto <https://www.datto.com/>`__. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the *advertising clause* of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.
 
-The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project. As major contributors distinguish themselves, they will also be added to the copyright by a vote of 2/3rds majority (U.S. Senate precedent).
+The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project.
 
 *Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights.*
 
@@ -138,7 +178,7 @@ The copyright section is modeled after the `IPython <https://github.com/ipython/
 Open core
 =========
 
-For the following reasons, AIQC will adopt an *open core* model:
+For the following reasons, AIQC plans to adopt an *open core* model in the long run:
 
 - Many successful open source projects have championed the open core model while managing to remain open:
   
