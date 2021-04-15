@@ -31,6 +31,8 @@ What can I contribute?
   
   + Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/mission.html>`__, to help you find a focus area.
 
+  + We can design a *sprint* for you that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design, blog-writing, or grant-writing. As described in the *Governance* section, completing a *sprint* is how you join the Core Team.
+
 - Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
   
   + This document provides a PR checklist and shows how to run the tests.
@@ -46,8 +48,6 @@ How can I get involved?
 - Create a post on the `discussion board <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
 
   + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone. 
-
-  + We can design a *sprint* that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design or blog-writing. As described in the *Governance* section, completing a *sprint* is how you join the Core Team.
 
   + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
@@ -124,7 +124,7 @@ Guild bylaws [aka Governance].
   - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
 
-*Squires [aka Public Participants]*:
+*Band of Squires [aka Public Participants]*:
 
   - Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a *sprint*.
   - All are welcome. Get in touch and we will help design a *sprint* for you.
@@ -151,6 +151,8 @@ Guild bylaws [aka Governance].
   - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.
   - If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
   - Changes to either the *Governance*, *Code of Conduct*, or *License* require a proposal to the discussion board.
+
+In order to make governance fun, if anyone breaks from the above vernacular, feel free to interject like so: "You speak in riddles. We are comprised not of a 'Core Team,' but of a benevolent Fellowship of Archmages. And how will this change be received by the Band of Squires?"
 
 ----
 
@@ -189,7 +191,7 @@ For the following reasons, AIQC plans to adopt an *open core* model in the long 
   
   + Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled & SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
 
-- In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__.
+- In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl) <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__.
   
   + Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.
 
