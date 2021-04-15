@@ -184,16 +184,19 @@ IV. Effortlessly track, reproduce, & prove experiments.
    batch.jobs[0].hyperparamcombo.hyperparameters
    {
        'include_nth_layer': True,
-       'initialization': 'he_normal',
+       'weight_init': 'he_normal',
        'batch_size': 8,
        'dense_neurons': 64
    }
 
-   # Recorded end-to-end:
-   batch.jobs[0].results[0].get_model() # trained model
-   batch.algorithm.function_model_build # model definition
-   batch.jobs[0].results[0].predictions['fold_validation'] # predictions
-   batch.jobs[0].fold.samples['fold_validation']['features'] # sample indeces by split
+   # Examples of what is recorded:
+   batch.jobs[0].results[0].get_model()
+
+   batch.algorithm.fn_build
+
+   batch.jobs[0].results[0].predictions['fold_validation']
+
+   batch.jobs[0].fold.samples['fold_validation']['features']
 
 
 * Automatically records experiments in a local SQLite database file.
@@ -215,8 +218,8 @@ V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials<
    aiqc.setup() # create & connect to the database.
 
 
-- Example datasets built into package. Example image datasets in github repo.
+- Example datasets built into package.
 
-- Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
+- Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) & OS (Win, Mac, Lin).
 
-- Easy to learn with 2 step tutorials: make a `Pipeline` to feed an `Experiment`.
+- Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.

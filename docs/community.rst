@@ -15,7 +15,7 @@ The AIQC framework brings rapid & reproducible deep learning to open science. We
 
 Our initial goal is to build a guided framework for each major type of data (tabular, image, sequence, text, graph) and analysis (classify, quantify, generate). 
 
-Ultimately, we'd like to (a) specialize in GANs, and (b) create field-specific preprocessing pipelines, pre-trained models, and visualizations for each domain of science in order to accelerate discovery. 
+Ultimately, we'd like to create specific preprocessing pipelines, pre-trained models, and visualizations for each major scientific domain in order to accelerate discovery. 
 
 ----
 
@@ -123,6 +123,7 @@ Guild bylaws [aka Governance].
   - "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
   - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
+The vernacular is designed as a D&D guild to make governance fun. If anyone deviates from this vocabulary, you can interrupt them with "you speak in riddles."
 
 *Band of Squires [aka Public Participants]*:
 
@@ -151,8 +152,6 @@ Guild bylaws [aka Governance].
   - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.
   - If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
   - Changes to either the *Governance*, *Code of Conduct*, or *License* require a proposal to the discussion board.
-
-In order to make governance fun, if anyone breaks from the above vernacular, feel free to interject like so: "You speak in riddles. We are comprised not of a 'Core Team,' but of a benevolent Fellowship of Archmages. And how will this change be received by the Band of Squires?"
 
 ----
 

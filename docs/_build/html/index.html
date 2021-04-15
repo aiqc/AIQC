@@ -287,16 +287,19 @@
 <span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
 <span class="p">{</span>
     <span class="s1">&#39;include_nth_layer&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;initialization&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;weight_init&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
     <span class="s1">&#39;dense_neurons&#39;</span><span class="p">:</span> <span class="mi">64</span>
 <span class="p">}</span>
 
-<span class="c1"># Recorded end-to-end:</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span> <span class="c1"># trained model</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_build</span> <span class="c1"># model definition</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span> <span class="c1"># predictions</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span> <span class="c1"># sample indeces by split</span>
+<span class="c1"># Examples of what is recorded:</span>
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_build</span>
+
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span>
+
+<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -318,9 +321,9 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Example datasets built into package. Example image datasets in github repo.</p></li>
-<li><p>Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) &amp; OS (win, mac, lin).</p></li>
-<li><p>Easy to learn with 2 step tutorials: make a <cite>Pipeline</cite> to feed an <cite>Experiment</cite>.</p></li>
+<li><p>Example datasets built into package.</p></li>
+<li><p>Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) &amp; OS (win, mac, lin).</p></li>
+<li><p>Easy to learn, 2-step tutorials: <cite>Pipeline</cite> that feeds into an <cite>Experiment</cite>.</p></li>
 </ul>
 </div>
 </div>
