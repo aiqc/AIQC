@@ -122,7 +122,7 @@ Guild Bylaws [aka Governance].
   - Inclusion in the license copyright.
   - Design sprints for new members.
   - The Council can vote on proposals submitted to the discussion board regarding the technical direction of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
-  - The Grand Warlock has the tie-breaking vote. They can veto a majority vote on a given proposal once, and the bill cannot be brought up for another 6 months.
+  - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal once, and the proposal cannot be brought up again until 6 months have passed.
   - Changes to governance and code of conduct require a proposal.
 
 ----
