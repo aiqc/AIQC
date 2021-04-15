@@ -105,9 +105,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#what-can-i-contribute">What can I contribute?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-can-i-get-involved">How can I get involved?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-environment">Setting up environment.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of conduct.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#guild-bylaws-aka-governance">Guild Bylaws [aka Governance].</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#programming-style">Programming style.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of conduct.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#guild-bylaws-aka-governance">Guild bylaws [aka Governance].</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#open-source">Open source.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#choosing-a-license">Choosing a license</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#open-core">Open core</a></li>
@@ -281,9 +281,29 @@ pip install --upgrade -r requirements.txt
 <p>If you want to make your own documentation then you will need to <a class="reference external" href="https://pandoc.org/installing.html">install the pandoc binary</a>.</p>
 </div>
 <hr class="docutils" />
+<div class="section" id="programming-style">
+<h2>Programming style.<a class="headerlink" href="#programming-style" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Prioritize human readability, maintainability, and simplicity over conciseness and performance.</p>
+<ul>
+<li><p>Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It’s better to move on to the next problem than making the current functionality “x%” better.</p></li>
+<li><p>Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren’t world class software engineers, and vice versa!</p></li>
+<li><p>When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.</p></li>
+</ul>
+</li>
+<li><p>When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don’t make the program more complex than it has to be.</p>
+<ul>
+<li><p><em>Do -</em> verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes &amp; shapes of input, but;</p></li>
+<li><p><em>Don’t -</em> spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.</p></li>
+</ul>
+</li>
+<li><p>If in doubt, ask what other people think in a <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">Discussion</a>.</p></li>
+</ul>
+</div>
+<hr class="docutils" />
 <div class="section" id="code-of-conduct">
 <h2>Code of conduct.<a class="headerlink" href="#code-of-conduct" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://www.youtube.com/watch?v=-F-3E8pyjFo">Google I/O 2008 - Open Source Projects and Poisonous People</a></p>
+<p><a class="reference external" href="https://www.youtube.com/watch?v=-F-3E8pyjFo">Inspired by NumFOCUS leaders and ‘Google I/O 2008 - Open Source Projects and Poisonous People’</a></p>
 <ul class="simple">
 <li><p><em>Be cordial and welcoming</em>; Communities are living, breathing social organisms where we can all learn to better ourselves while coming together to enact meaningful change.</p></li>
 <li><p><em>Agree to disagree</em>; on one hand, acknowledge the merits of the ideas of others and be willing to adapt your opinion based on new information, but, on the other hand, <strong>do not</strong> sacrifice what you truly believe in for the sake of consensus.</p></li>
@@ -294,8 +314,8 @@ pip install --upgrade -r requirements.txt
 </div>
 <hr class="docutils" />
 <div class="section" id="guild-bylaws-aka-governance">
-<h2>Guild Bylaws [aka Governance].<a class="headerlink" href="#guild-bylaws-aka-governance" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://www.djangoproject.com/weblog/2020/mar/12/governance/">Inspired by conversations with our friends at Django and Jupyter.</a></p>
+<h2>Guild bylaws [aka Governance].<a class="headerlink" href="#guild-bylaws-aka-governance" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.djangoproject.com/weblog/2020/mar/12/governance/">Inspired by conversations with our friends at Django and Jupyter:</a></p>
 <blockquote>
 <div><ul class="simple">
 <li><p>“Governance in the early days was largely about reviewing PRs and asking ourselves, <em>‘Should we do this?’</em>”</p></li>
@@ -303,7 +323,7 @@ pip install --upgrade -r requirements.txt
 <li><p>“In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”</p></li>
 </ul>
 </div></blockquote>
-<p><em>Squires [aka Public Contributors]</em>:</p>
+<p><em>Squires [aka Public Participants]</em>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a <em>sprint</em>.</p></li>
@@ -334,29 +354,9 @@ pip install --upgrade -r requirements.txt
 <li><p>The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.</p></li>
 <li><p>The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.</p></li>
 <li><p>If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of <em>Code of Conduct</em> (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.</p></li>
-<li><p>Changes to <em>Governance</em> and <em>Code of Conduct</em> require a proposal to the discussion board.</p></li>
+<li><p>Changes to either the <em>Governance</em>, <em>Code of Conduct</em>, or <em>License</em> require a proposal to the discussion board.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<hr class="docutils" />
-<div class="section" id="programming-style">
-<h2>Programming style.<a class="headerlink" href="#programming-style" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Prioritize human readability, maintainability, and simplicity over conciseness and performance.</p>
-<ul>
-<li><p>Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It’s better to move on to the next problem than making the current functionality “x%” better.</p></li>
-<li><p>Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren’t world class software engineers, and vice versa!</p></li>
-<li><p>When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.</p></li>
-</ul>
-</li>
-<li><p>When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don’t make the program more complex than it has to be.</p>
-<ul>
-<li><p><em>Do -</em> verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes &amp; shapes of input, but;</p></li>
-<li><p><em>Don’t -</em> spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.</p></li>
-</ul>
-</li>
-<li><p>If in doubt, ask what other people think in a <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">Discussion</a>.</p></li>
-</ul>
 </div>
 <hr class="docutils" />
 <div class="section" id="open-source">

@@ -73,11 +73,33 @@ If you want to make your own documentation then you will need to `install the pa
 
 ----
 
+******************
+Programming style.
+******************
+
+- Prioritize human readability, maintainability, and simplicity over conciseness and performance.
+
+  + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
+  
+  + Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren't world class software engineers, and vice versa!
+  
+  + When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.
+
+- When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don't make the program more complex than it has to be.
+
+  + *Do -* verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes & shapes of input, but;
+  
+  + *Don't -* spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.
+
+- If in doubt, ask what other people think in a `Discussion <https://github.com/aiqc/aiqc/discussions>`__.
+
+----
+
 ****************
 Code of conduct.
 ****************
 
-`Google I/O 2008 - Open Source Projects and Poisonous People <https://www.youtube.com/watch?v=-F-3E8pyjFo>`__
+`Inspired by NumFOCUS leaders and 'Google I/O 2008 - Open Source Projects and Poisonous People' <https://www.youtube.com/watch?v=-F-3E8pyjFo>`__
 
 - *Be cordial and welcoming*; Communities are living, breathing social organisms where we can all learn to better ourselves while coming together to enact meaningful change.
 
@@ -92,17 +114,17 @@ Code of conduct.
 ----
 
 ******************************
-Guild Bylaws [aka Governance].
+Guild bylaws [aka Governance].
 ******************************
 
-`Inspired by conversations with our friends at Django and Jupyter. <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
+`Inspired by conversations with our friends at Django and Jupyter: <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
 
   - "Governance in the early days was largely about reviewing PRs and asking ourselves, *'Should we do this?'*"
   - "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
   - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
 
-*Squires [aka Public Contributors]*:
+*Squires [aka Public Participants]*:
 
   - Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a *sprint*.
   - All are welcome. Get in touch and we will help design a *sprint* for you.
@@ -128,29 +150,7 @@ Guild Bylaws [aka Governance].
   - The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
   - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.
   - If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
-  - Changes to *Governance* and *Code of Conduct* require a proposal to the discussion board.
-
-----
-
-******************
-Programming style.
-******************
-
-- Prioritize human readability, maintainability, and simplicity over conciseness and performance.
-
-  + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
-  
-  + Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren't world class software engineers, and vice versa!
-  
-  + When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.
-
-- When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don't make the program more complex than it has to be.
-
-  + *Do -* verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes & shapes of input, but;
-  
-  + *Don't -* spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.
-
-- If in doubt, ask what other people think in a `Discussion <https://github.com/aiqc/aiqc/discussions>`__.
+  - Changes to either the *Governance*, *Code of Conduct*, or *License* require a proposal to the discussion board.
 
 ----
 
