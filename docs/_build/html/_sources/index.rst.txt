@@ -114,7 +114,7 @@ Overview
   :alt: framework
 
 .. centered::
-  **On a mission to accelerate open science.**
+  **On a mission to accelerate open science:**
 
 + Reduce the programming & data science know-how required to adopt deep learning.
 + Open source methodologies instead of walled garden SaaS apps.
