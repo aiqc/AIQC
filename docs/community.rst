@@ -117,13 +117,13 @@ Code of conduct.
 Guild bylaws [aka Governance].
 ******************************
 
-`Inspired by conversations with our friends at Django and Jupyter: <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
+`Based on advice from our friends at Django and Jupyter: <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
 
   - "Governance in the early days was largely about reviewing PRs and asking ourselves, *'Should we do this?'*"
   - "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
   - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
-The vernacular is modeled after a D&D guild in order to make governance fun. If anyone deviates from this vocabulary, feel free to interrupt them with, *"You speak in riddles."*
+The vernacular is modeled after a D&D-like guild in order to make governance less dry.
 
 *Band of Squires [aka Public Participants]*:
 
