@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/index.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="functionality banner, AIQC is an open source Python framework that brings rapid & reproducible deep learning workflows to open science.- Mission = accelerate open science:[1] Reduces the programmin..." />
+  <meta property="og:description" content="functionality banner, AIQC is a Python framework for rapid & reproducible deep learning., framework On a mission to accelerate open science., Reduce the programming & data science know-how required..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -226,15 +226,16 @@
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<ul class="simple">
-<li><p>AIQC is an open source Python framework that brings rapid &amp; reproducible deep learning workflows to open science.</p>
-<ul>
-<li><p><a class="reference external" href="https://aiqc.readthedocs.io/en/latest/mission.html">Mission = accelerate open science:</a> [1] Reduces the programming &amp; data science know-how required to adopt deep learning. [2] Reproducibly records experiment workflows. [3] Provides a free alternative to walled gardens of expensive cloud SaaS.</p></li>
-<li><p><a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Tech = easy-to-use Python package:</a> [1] Provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job). [2] Simplifies data preprocessing, model tuning, and model scoring. [3] Prevents data leakage and evaluation bias. [4] Reproducibly persists experiments in a SQLite database file.</p></li>
+<p class="centered">
+<strong><strong>AIQC is a Python framework for rapid &amp; reproducible deep learning.</strong></strong></p><a class="reference internal image-reference" href="_images/framework_diagram_april16.png"><img alt="framework" class="align-center" src="_images/framework_diagram_april16.png" style="width: 100%;" /></a>
+<p class="centered">
+<strong><strong>On a mission to accelerate open science.</strong></strong></p><ul class="simple">
+<li><p>Reduce the programming &amp; data science know-how required to adopt deep learning.</p></li>
+<li><p>Open source methodologies instead of walled garden SaaS apps.</p></li>
+<li><p>Reproducibly record deep learning experiments &amp; data preparation workflows.</p></li>
+<li><p>Automated quality control protocols for data preparation and model performance.</p></li>
+<li><p>Runs anywhere; most research happens on laptops &amp; HPCs, not in expensive clouds.</p></li>
 </ul>
-</li>
-</ul>
-<a class="reference internal image-reference" href="_images/framework_w_txt.png"><img alt="framework" class="align-center" src="_images/framework_w_txt.png" style="width: 100%;" /></a>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -255,8 +256,8 @@
 <div class="line"><br /></div>
 </div>
 </div>
-<div class="section" id="ii-train-many-variations-of-an-algorithm-in-a-single-batch">
-<h2>II. Train many variations of an algorithm in a single batch.<a class="headerlink" href="#ii-train-many-variations-of-an-algorithm-in-a-single-batch" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ii-train-many-variations-of-an-algorithm-in-a-queue">
+<h2>II. Train many variations of an algorithm in a queue.<a class="headerlink" href="#ii-train-many-variations-of-an-algorithm-in-a-queue" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/hyperparam_25sec_compress.gif"><img alt="hyperparameters.gif" src="_images/hyperparam_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
 <li><p>Queue a batch a many training jobs; one job per hyperparameter combination.</p></li>

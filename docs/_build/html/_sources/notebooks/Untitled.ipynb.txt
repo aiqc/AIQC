@@ -2,58 +2,72 @@
  "cells": [
   {
    "cell_type": "code",
+   "execution_count": 1,
+   "id": "substantial-latex",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'/Users/layne/Desktop/aiqc/docs/notebooks'"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pwd"
+   ]
+  },
+  {
+   "cell_type": "code",
    "execution_count": 2,
-   "id": "hungry-sixth",
+   "id": "medium-glucose",
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Name: torch\n",
-      "Version: 1.8.1\n",
-      "Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration\n",
-      "Home-page: https://pytorch.org/\n",
-      "Author: PyTorch Team\n",
-      "Author-email: packages@pytorch.org\n",
-      "License: BSD-3\n",
-      "Location: /Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3/lib/python3.8/site-packages\n",
-      "Requires: numpy, typing-extensions\n",
-      "Required-by: torchmetrics\n",
-      "Note: you may need to restart the kernel to use updated packages.\n"
+      "/Users/layne/Desktop/aiqc\n"
      ]
     }
    ],
    "source": [
-    "pip show torch"
+    "cd ../.."
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "silver-indie",
+   "id": "included-relaxation",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import aiqc"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "prerequisite-addiction",
    "metadata": {},
    "outputs": [
     {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Name: torchmetrics\n",
-      "Version: 0.2.0\n",
-      "Summary: PyTorch native Metrics\n",
-      "Home-page: https://github.com/PyTorchLightning/metrics\n",
-      "Author: PyTorchLightning et al.\n",
-      "Author-email: name@pytorchlightning.ai\n",
-      "License: Apache-2.0\n",
-      "Location: /Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3/lib/python3.8/site-packages\n",
-      "Requires: torch\n",
-      "Required-by: \n",
-      "Note: you may need to restart the kernel to use updated packages.\n"
-     ]
+     "data": {
+      "text/plain": [
+       "'/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3'"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
     }
    ],
    "source": [
-    "pip show torchmetrics"
+    "aiqc.get_path_db()"
    ]
   }
  ],

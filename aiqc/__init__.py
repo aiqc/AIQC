@@ -304,6 +304,9 @@ def update_config(kv:dict):
 # DATABASE
 #==================================================
 
+def printer():
+	print("12")
+
 def get_path_db():
 	"""
 	Originally, this code was in a child directory.
