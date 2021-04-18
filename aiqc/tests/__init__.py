@@ -4,10 +4,10 @@ from aiqc import datum
 name = "tests"
 
 
-def list_test_batches(format:str=None):
-	batches = [
+def list_test_queues(format:str=None):
+	queues = [
 		{
-			'batch_name': 'keras_multiclass'
+			'queue_name': 'keras_multiclass'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -15,7 +15,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'iris.tsv'
 		},
 		{
-			'batch_name': 'keras_binary'
+			'queue_name': 'keras_binary'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -23,7 +23,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'sonar.csv'
 		},
 		{
-			'batch_name': 'keras_regression'
+			'queue_name': 'keras_regression'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'regression'
@@ -31,7 +31,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'houses.csv'	
 		},
 		{
-			'batch_name': 'keras_image_binary'
+			'queue_name': 'keras_image_binary'
 			, 'data_type': 'image'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -39,7 +39,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'brain_tumor.csv'	
 		},
 				{
-			'batch_name': 'keras_multiclass'
+			'queue_name': 'keras_multiclass'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -47,7 +47,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'iris.tsv'
 		},
 		{
-			'batch_name': 'pytorch_multiclass'
+			'queue_name': 'pytorch_multiclass'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -55,7 +55,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'iris.tsv'
 		},
 		{
-			'batch_name': 'pytorch_binary'
+			'queue_name': 'pytorch_binary'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -63,7 +63,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'sonar.csv'
 		},
 		{
-			'batch_name': 'pytorch_regression'
+			'queue_name': 'pytorch_regression'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
 			, 'analysis': 'regression'
@@ -71,7 +71,7 @@ def list_test_batches(format:str=None):
 			, 'datum': 'houses.csv'	
 		},
 		{
-			'batch_name': 'pytorch_image_binary'
+			'queue_name': 'pytorch_image_binary'
 			, 'data_type': 'image'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
@@ -85,7 +85,7 @@ def list_test_batches(format:str=None):
 	if format in formats_df:
 		pd.set_option('display.max_column',100)
 		pd.set_option('display.max_colwidth', 500)
-		df = pd.DataFrame.from_records(batches)
+		df = pd.DataFrame.from_records(queues)
 		return df
 	elif format in formats_lst:
 		return sub_dicts
@@ -138,7 +138,7 @@ def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_ev
 	)
 	return model
 
-def make_test_batch_keras_multiclass(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [9, 12]
 		, "batch_size": [3]
@@ -211,14 +211,14 @@ def make_test_batch_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, encoderset_id = encoderset.id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ KERAS BINARY ------------------------
@@ -253,7 +253,7 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 	)
 	return model
 
-def make_test_batch_keras_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
@@ -316,14 +316,14 @@ def make_test_batch_keras_binary(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, encoderset_id  = encoderset.id
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ KERAS REGRESSION ------------------------
@@ -364,7 +364,7 @@ def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_ev
 	)
 	return model
 
-def make_test_batch_keras_regression(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -438,14 +438,14 @@ def make_test_batch_keras_regression(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, encoderset_id = encoderset.id
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ KERAS IMAGE BINARY ------------------------
@@ -504,7 +504,7 @@ def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_
 	)
 	return model
 
-def make_test_batch_keras_image_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"include_2nd_dense": [True]
 		, "neuron_multiply": [1.0]
@@ -562,14 +562,14 @@ def make_test_batch_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, encoderset_id  = None
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ PYTORCH BINARY ------------------------
@@ -636,7 +636,7 @@ def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_eval
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
-def make_test_batch_pytorch_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 	file_path = datum.get_path('sonar.csv')
 
 	dataset = Dataset.Tabular.from_path(
@@ -699,14 +699,14 @@ def make_test_batch_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, encoderset_id  = encoderset.id
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ PYTORCH MULTI ------------------------
@@ -772,7 +772,7 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
-def make_test_batch_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	if fold_count is not None:
 		file_path = datum.get_path('iris_10x.tsv')
 	else:
@@ -837,14 +837,14 @@ def make_test_batch_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, encoderset_id = encoderset.id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ PYTORCH REGRESSION ------------------------
@@ -920,7 +920,7 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 		history['val_expVar'].append(float(eval_expVar))
 	return model, history
  
-def make_test_batch_pytorch_regression(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	file_path = datum.get_path('houses.csv')
 
 	dataset = Dataset.Tabular.from_path(
@@ -994,14 +994,14 @@ def make_test_batch_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 		hyperparameters = hyperparameters
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, encoderset_id = encoderset.id
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 
 # ------------------------ PYTORCH IMAGE BINARY ------------------------
@@ -1080,7 +1080,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
-def make_test_batch_pytorch_image_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas(name='brain_tumor.csv')
 
 	# Dataset.Tabular
@@ -1120,33 +1120,33 @@ def make_test_batch_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 		, fn_train = pytorch_image_binary_fn_train
 	)
 
-	batch = algorithm.make_batch(
+	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = None #network takes a while.
 		, encoderset_id  = None
 		, repeat_count = repeat_count
 	)
-	return batch
+	return queue
 
 # ------------------------ TEST BATCH CALLER ------------------------
-def make_test_batch(name:str, repeat_count:int=1, fold_count:int=None):
+def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 	if (name == 'keras_multiclass'):
-		batch = make_test_batch_keras_multiclass(repeat_count, fold_count)
+		queue = make_test_queue_keras_multiclass(repeat_count, fold_count)
 	elif (name == 'keras_binary'):
-		batch = make_test_batch_keras_binary(repeat_count, fold_count)
+		queue = make_test_queue_keras_binary(repeat_count, fold_count)
 	elif (name == 'keras_regression'):
-		batch = make_test_batch_keras_regression(repeat_count, fold_count)
+		queue = make_test_queue_keras_regression(repeat_count, fold_count)
 	elif (name == 'keras_image_binary'):
-		batch = make_test_batch_keras_image_binary(repeat_count, fold_count)
+		queue = make_test_queue_keras_image_binary(repeat_count, fold_count)
 	elif (name == 'pytorch_binary'):
-		batch = make_test_batch_pytorch_binary(repeat_count, fold_count)
+		queue = make_test_queue_pytorch_binary(repeat_count, fold_count)
 	elif (name == 'pytorch_multiclass'):
-		batch = make_test_batch_pytorch_multiclass(repeat_count, fold_count)
+		queue = make_test_queue_pytorch_multiclass(repeat_count, fold_count)
 	elif (name == 'pytorch_regression'):
-		batch = make_test_batch_pytorch_regression(repeat_count, fold_count)
+		queue = make_test_queue_pytorch_regression(repeat_count, fold_count)
 	elif (name == 'pytorch_image_binary'):
-		batch = make_test_batch_pytorch_image_binary(repeat_count, fold_count)
+		queue = make_test_queue_pytorch_image_binary(repeat_count, fold_count)
 	else:
-		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'datum.list_test_batches()'.\n")
-	return batch
+		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'datum.list_test_queues()'.\n")
+	return queue

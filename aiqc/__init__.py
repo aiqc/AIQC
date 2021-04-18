@@ -364,7 +364,7 @@ def create_db():
 			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Batch, Jobset, Job, Result
+			Queue, Jobset, Job, Result
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -2631,7 +2631,7 @@ class Labelcoder(BaseModel):
 		# 2. Test Fit. 
 		if (only_fit_train == True):
 			"""
-			- Foldset is tied to Batch. So just `fit()` on `train` split
+			- Foldset is tied to Queue. So just `fit()` on `train` split
 			  and don't worry about `folds_train_combined` for now.
 			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
 			  in which case user should be using `only_fit_train=False` anyways.
@@ -3057,7 +3057,7 @@ class Featurecoder(BaseModel):
 		# 4. Test fitting the encoder to matching columns.
 		if (only_fit_train == True):
 			"""
-			- Foldset is tied to Batch. So just `fit()` on `train` split
+			- Foldset is tied to Queue. So just `fit()` on `train` split
 			  and don't worry about `folds_train_combined` for now.
 			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
 			  in which case user should be using `only_fit_train=False` anyways.
@@ -3377,7 +3377,7 @@ class Algorithm(BaseModel):
 		return hyperparamset
 
 
-	def make_batch(
+	def make_queue(
 		id:int
 		, splitset_id:int
 		, repeat_count:int = 1
@@ -3386,7 +3386,7 @@ class Algorithm(BaseModel):
 		, encoderset_id:int = None
 		, hide_test:bool = False
 	):
-		batch = Batch.from_algorithm(
+		queue = Queue.from_algorithm(
 			algorithm_id = id
 			, splitset_id = splitset_id
 			, hyperparamset_id = hyperparamset_id
@@ -3395,14 +3395,14 @@ class Algorithm(BaseModel):
 			, repeat_count = repeat_count
 			, hide_test = hide_test
 		)
-		return batch
+		return queue
 
 
 
 class Hyperparamset(BaseModel):
 	"""
 	- Not glomming this together with Algorithm and Preprocess because you can keep the Algorithm the same,
-	  while running many different batches of hyperparams.
+	  while running many different queues of hyperparams.
 	- An algorithm does not have to have a hyperparamset. It can used fixed parameters.
 	- `repeat_count` is the number of times to run a model, sometimes you just get stuck at local minimas.
 	- `param_count` is the number of paramets that are being hypertuned.
@@ -3492,7 +3492,7 @@ class Hyperparamcombo(BaseModel):
 
 class Plot:
 	"""
-	Data is prepared in the Batch and Result classes
+	Data is prepared in the Queue and Result classes
 	before being fed into the methods below.
 	"""
 	def performance(dataframe:object):
@@ -3780,21 +3780,18 @@ class Plot:
 
 
 
-class Batch(BaseModel):
+class Queue(BaseModel):
 	repeat_count = IntegerField()
 	run_count = IntegerField()
 	hide_test = BooleanField()
 
-	algorithm = ForeignKeyField(Algorithm, backref='batches') 
-	splitset = ForeignKeyField(Splitset, backref='batches')
+	algorithm = ForeignKeyField(Algorithm, backref='queues') 
+	splitset = ForeignKeyField(Splitset, backref='queues')
 
-	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
-	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
-	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
+	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
+	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
+	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 
-	# not sure how this got in here. delete it after testing.
-	#def __init__(self, *args, **kwargs):
-	#   super(Batch, self).__init__(*args, **kwargs)
 
 	def from_algorithm(
 		algorithm_id:int
@@ -3912,7 +3909,7 @@ class Batch(BaseModel):
 			hyperparamset = None
 			
 		# Splitset can have multiple Encodersets for experimentation.
-		# So this relationship determines which one is tied to Batch.
+		# So this relationship determines which one is tied to Queue.
 		if (encoderset_id is not None):
 			encoderset = Encoderset.get_by_id(encoderset_id)
 		else:
@@ -3921,7 +3918,7 @@ class Batch(BaseModel):
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		run_count = len(combos) * len(folds) * repeat_count
 
-		b = Batch.create(
+		q = Queue.create(
 			run_count = run_count
 			, repeat_count = repeat_count
 			, algorithm = algorithm
@@ -3936,7 +3933,7 @@ class Batch(BaseModel):
 			if (foldset is not None):
 				jobset = Jobset.create(
 					repeat_count = repeat_count
-					, batch = b
+					, queue = q
 					, hyperparamcombo = c
 					, foldset = foldset
 				)
@@ -3946,7 +3943,7 @@ class Batch(BaseModel):
 			try:
 				for f in folds:
 					Job.create(
-						batch = b
+						queue = q
 						, hyperparamcombo = c
 						, fold = f
 						, repeat_count = repeat_count
@@ -3956,18 +3953,18 @@ class Batch(BaseModel):
 				if (foldset is not None):
 					jobset.delete_instance() # Orphaned.
 					raise
-		return b
+		return q
 
 
 	def poll_statuses(id:int, as_pandas:bool=False):
-		batch = Batch.get_by_id(id)
-		repeat_count = batch.repeat_count
+		queue = Queue.get_by_id(id)
+		repeat_count = queue.repeat_count
 		statuses = []
 		for i in range(repeat_count):
-			for j in batch.jobs:
+			for j in queue.jobs:
 				# Check if there is a Result with a matching repeat_index
-				matching_result = Result.select().join(Job).join(Batch).where(
-					Batch.id==batch.id, Job.id==j.id, Result.repeat_index==i
+				matching_result = Result.select().join(Job).join(Queue).where(
+					Queue.id==queue.id, Job.id==j.id, Result.repeat_index==i
 				)
 				if (len(matching_result) == 1):
 					r_id = matching_result[0].id
@@ -3989,7 +3986,7 @@ class Batch(BaseModel):
 		- Could also be used for cloud jobs though.
 		"""
 		if (loop==False):
-			statuses = Batch.poll_statuses(id)
+			statuses = Queue.poll_statuses(id)
 			total = len(statuses)
 			done_count = len([s for s in statuses if s['result_id'] is not None]) 
 			percent_done = done_count / total
@@ -4009,7 +4006,7 @@ class Batch(BaseModel):
 				print(f"🔮 Training Models 🔮 {meter} {done_count}/{total} : {int(percent_done*100)}%")
 		elif (loop==True):
 			while (loop==True):
-				statuses = Batch.poll_statuses(id)
+				statuses = Queue.poll_statuses(id)
 				total = len(statuses)
 				done_count = len([s for s in statuses if s['result_id'] is not None]) 
 				percent_done = done_count / total
@@ -4036,25 +4033,25 @@ class Batch(BaseModel):
 
 
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		# Quick check to make sure all results aren't already complete.
-		run_count = batch.run_count
-		result_count = Result.select().join(Job).join(Batch).where(
-			Batch.id == batch.id).count()
+		run_count = queue.run_count
+		result_count = Result.select().join(Job).join(Queue).where(
+			Queue.id == queue.id).count()
 		if (run_count == result_count):
 			print("\nAll Jobs have already completed.\n")
 		else:
 			if (run_count > result_count > 0):
 				print("\nResuming Jobs...\n")
-			job_statuses = Batch.poll_statuses(id)
+			job_statuses = Queue.poll_statuses(id)
 			
 			if (in_background==True):
-				proc_name = "aiqc_batch_" + str(batch.id)
+				proc_name = "aiqc_queue_" + str(queue.id)
 				proc_names = [p.name for p in multiprocessing.active_children()]
 				if (proc_name in proc_names):
 					raise ValueError(
-						f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running."
-						f"\nIf need be, you can kill the existing Process with `batch.stop_jobs()`.\n"
+						f"\nYikes - Cannot start this Queue because multiprocessing.Process.name '{proc_name}' is already running."
+						f"\nIf need be, you can kill the existing Process with `queue.stop_jobs()`.\n"
 					)
 				
 				# See notes at top of file about 'fork' vs 'spawn'
@@ -4082,9 +4079,9 @@ class Batch(BaseModel):
 
 	def stop_jobs(id:int):
 		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		
-		proc_name = f"aiqc_batch_{batch.id}"
+		proc_name = f"aiqc_queue_{queue.id}"
 		current_procs = [p.name for p in multiprocessing.active_children()]
 		if (proc_name not in current_procs):
 			raise ValueError(f"\nYikes - Cannot terminate `multiprocessing.Process.name` '{proc_name}' because it is not running.\n")
@@ -4097,7 +4094,7 @@ class Batch(BaseModel):
 				except:
 					raise Exception(f"\nYikes - Failed to terminate `multiprocessing.Process` '{proc_name}.'\n")
 				else:
-					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from Batch <id:{batch.id}>\n")
+					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from aiqc.Queue <id:{queue.id}>\n")
 
 
 	def metrics_to_pandas(
@@ -4106,33 +4103,33 @@ class Batch(BaseModel):
 		, sort_by:list=None
 		, ascending:bool=False
 	):
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		selected_metrics = listify(selected_metrics)
 		sort_by = listify(sort_by)
 		
-		batch_results = Result.select().join(Job).where(
-			Job.batch==id
+		queue_results = Result.select().join(Job).where(
+			Job.queue==id
 		).order_by(Result.id)
-		batch_results = list(batch_results)
+		queue_results = list(queue_results)
 
-		if (not batch_results):
+		if (not queue_results):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
 
-		metric_names = list(list(batch.jobs[0].results[0].metrics.values())[0].keys())#bad.
+		metric_names = list(list(queue.jobs[0].results[0].metrics.values())[0].keys())#bad.
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if (m not in metric_names):
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics`.
-					Note: the metrics available depend on the `Batch.analysis_type`.
+					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
 
-		# Unpack the split data from each Result and tag it with relevant Batch metadata.
+		# Unpack the split data from each Result and tag it with relevant Queue metadata.
 		split_metrics = []
-		for r in batch_results:
+		for r in queue_results:
 			for split_name,metrics in r.metrics.items():
 
 				split_metric = {}
@@ -4141,7 +4138,7 @@ class Batch(BaseModel):
 				elif (r.job.hyperparamcombo is None):
 					split_metric['hyperparamcombo_id'] = None
 
-				if (batch.foldset is not None):
+				if (queue.foldset is not None):
 					split_metric['jobset_id'] = r.job.jobset.id
 					split_metric['fold_index'] = r.job.fold.fold_index
 				split_metric['job_id'] = r.job.id
@@ -4158,16 +4155,16 @@ class Batch(BaseModel):
 
 				split_metrics.append(split_metric)
 
-		# Return relevant columns based on how the Batch was designed.
-		if (batch.foldset is not None):
-			if (batch.repeat_count > 1):
+		# Return relevant columns based on how the Queue was designed.
+		if (queue.foldset is not None):
+			if (queue.repeat_count > 1):
 				sort_list = ['hyperparamcombo_id','jobset_id','repeat_index','fold_index']
-			elif (batch.repeat_count == 1):
+			elif (queue.repeat_count == 1):
 				sort_list = ['hyperparamcombo_id','jobset_id','fold_index']
-		elif (batch.foldset is None):
-			if (batch.repeat_count > 1):
+		elif (queue.foldset is None):
+			if (queue.repeat_count > 1):
 				sort_list = ['hyperparamcombo_id','job_id','repeat_index']
-			elif (batch.repeat_count == 1):
+			elif (queue.repeat_count == 1):
 				sort_list = ['hyperparamcombo_id','job_id']
 
 		column_names = list(split_metrics[0].keys())
@@ -4190,21 +4187,21 @@ class Batch(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		selected_metrics = listify(selected_metrics)
 		selected_stats = listify(selected_stats)
 		sort_by = listify(sort_by)
 
-		batch_results = Result.select().join(Job).where(
-			Job.batch==id
+		queue_results = Result.select().join(Job).where(
+			Job.queue==id
 		).order_by(Result.id)
-		batch_results = list(batch_results)
+		queue_results = list(queue_results)
 
-		if (not batch_results):
+		if (not queue_results):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
 
-		metrics_aggregate = batch_results[0].metrics_aggregate
+		metrics_aggregate = queue_results[0].metrics_aggregate
 		metric_names = list(metrics_aggregate.keys())
 		stat_names = list(list(metrics_aggregate.values())[0].keys())
 
@@ -4213,7 +4210,7 @@ class Batch(BaseModel):
 				if m not in metric_names:
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.
-					Note: the metrics available depend on the `Batch.analysis_type`.
+					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
@@ -4226,7 +4223,7 @@ class Batch(BaseModel):
 			selected_stats = stat_names
 
 		results_stats = []
-		for r in batch_results:
+		for r in queue_results:
 			for metric, stats in r.metrics_aggregate.items():
 				# Check whitelist.
 				if metric in selected_metrics:
@@ -4276,20 +4273,20 @@ class Batch(BaseModel):
 		but that would be confusing for users, so I went with informative 
 		erro messages instead.
 		"""
-		batch = Batch.get_by_id(id)
-		analysis_type = batch.algorithm.analysis_type
+		queue = Queue.get_by_id(id)
+		analysis_type = queue.algorithm.analysis_type
 
 		# Now we need to filter the df based on the specified criteria.
 		if ("classification" in analysis_type):
 			if (min_r2 is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in batch.analysis_type`.\n")
+				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in queue.analysis_type`.\n")
 			if (min_accuracy is None):
 				min_accuracy = 0.0
 			min_metric_2 = min_accuracy
 			name_metric_2 = "accuracy"
 		elif (analysis_type == 'regression'):
 			if (min_accuracy is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_accuracy` if `batch.analysis_type='regression'`.\n")
+				raise ValueError("\nYikes - Cannot use argument `min_accuracy` if `queue.analysis_type='regression'`.\n")
 			if (min_r2 is None):
 				min_r2 = -1.0
 			min_metric_2 = min_r2
@@ -4298,7 +4295,7 @@ class Batch(BaseModel):
 		if (max_loss is None):
 			max_loss = float('inf')
 			
-		df = batch.metrics_to_pandas()
+		df = queue.metrics_to_pandas()
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
 			return None
@@ -4322,26 +4319,26 @@ class Batch(BaseModel):
 class Jobset(BaseModel):
 	"""
 	- Used to group cross-fold Jobs.
-	- Union of Hyperparamcombo, Foldset, and Batch.
+	- Union of Hyperparamcombo, Foldset, and Queue.
 	"""
 	repeat_count = IntegerField
 
 	foldset = ForeignKeyField(Foldset, backref='jobsets')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='jobsets')
-	batch = ForeignKeyField(Batch, backref='jobsets')
+	queue = ForeignKeyField(Queue, backref='jobsets')
 
 
 
 
 class Job(BaseModel):
 	"""
-	- Gets its Algorithm through the Batch.
+	- Gets its Algorithm through the Queue.
 	- Saves its Model to a Result.
 	"""
 	repeat_count = IntegerField()
 	#log = CharField() #record failures
 
-	batch = ForeignKeyField(Batch, backref='jobs')
+	queue = ForeignKeyField(Queue, backref='jobs')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	fold = ForeignKeyField(Fold, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	jobset = ForeignKeyField(Jobset, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
@@ -4417,13 +4414,13 @@ class Job(BaseModel):
 		j = Job.get_by_id(id)
 		if verbose:
 			print(f"\nJob #{j.id} starting...")
-		batch = j.batch
-		algorithm = batch.algorithm
+		queue = j.queue
+		algorithm = queue.algorithm
 		analysis_type = algorithm.analysis_type
 		library = algorithm.library
-		hide_test = batch.hide_test
-		splitset = batch.splitset
-		encoderset = batch.encoderset
+		hide_test = queue.hide_test
+		splitset = queue.splitset
+		encoderset = queue.encoderset
 		hyperparamcombo = j.hyperparamcombo
 		fold = j.fold
 
@@ -4836,12 +4833,12 @@ class Job(BaseModel):
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
-		matching_result = Result.select().join(Job).join(Batch).where(
-			Batch.id==batch.id, Job.id==j.id, Result.repeat_index==repeat_index)
+		matching_result = Result.select().join(Job).join(Queue).where(
+			Queue.id==queue.id, Job.id==j.id, Result.repeat_index==repeat_index)
 		if (len(matching_result) > 0):
 			raise ValueError(
 				f"\nYikes - Duplicate run detected:" \
-				f"\nBatch<{batch.id}>, Job<{j.id}>, Job.repeat_index<{repeat_index}>.\n" \
+				f"\nQueue<{queue.id}>, Job<{j.id}>, Job.repeat_index<{repeat_index}>.\n" \
 				f"\nCancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing." \
 				f"\nNo action needed, the other instance will continue running to completion.\n"
 			)
@@ -4864,7 +4861,7 @@ class Job(BaseModel):
 			, repeat_index = repeat_index
 		)
 
-		# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
+		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
 		del samples
 		return j
 
@@ -4911,7 +4908,7 @@ class Result(BaseModel):
 
 	def get_model(id:int):
 		result = Result.get_by_id(id)
-		algorithm = result.job.batch.algorithm
+		algorithm = result.job.queue.algorithm
 		model_blob = result.model_file
 
 		if (algorithm.library == "keras"):
@@ -4954,7 +4951,7 @@ class Result(BaseModel):
 		
 	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
 		r = Result.get_by_id(id)
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 
 		history = r.history
@@ -4969,7 +4966,7 @@ class Result(BaseModel):
 	def plot_confusion_matrix(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
@@ -4985,7 +4982,7 @@ class Result(BaseModel):
 	def plot_precision_recall(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
@@ -5010,7 +5007,7 @@ class Result(BaseModel):
 	def plot_roc_curve(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
@@ -5263,7 +5260,7 @@ class Pipeline():
 
 class Experiment():
 	"""
-	- Create Algorithm, Hyperparamset, Preprocess, and Batch.
+	- Create Algorithm, Hyperparamset, Preprocess, and Queue.
 	- Put Preprocess here because it's weird to encode labels before you know what your final training layer looks like.
 	  Also, it's optional, so you'd have to access it from splitset before passing it in.
 	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
@@ -5306,7 +5303,7 @@ class Experiment():
 		elif (hyperparameters is None):
 			hyperparamset_id = None
 
-		batch = algorithm.make_batch(
+		queue = algorithm.make_queue(
 			splitset_id = splitset_id
 			, repeat_count = repeat_count
 			, hide_test = hide_test
@@ -5314,4 +5311,4 @@ class Experiment():
 			, foldset_id = foldset_id
 			, encoderset_id = encoderset_id
 		)
-		return batch
+		return queue

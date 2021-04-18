@@ -48,27 +48,27 @@ Once we are confident that our schema handles all data types and analysis types,
 import aiqc
 from aiqc import tests
 
-b1 = tests.make_test_batch('keras_binary')
-b1.run_jobs()
+q1 = tests.make_test_queue('keras_binary')
+q1.run_jobs()
 
-b2 = tests.make_test_batch('keras_multiclass')
-b2.run_jobs()
+q2 = tests.make_test_queue('keras_multiclass')
+q2.run_jobs()
 
-b3 = tests.make_test_batch('keras_regression')
-b3.run_jobs()
+q3 = tests.make_test_queue('keras_regression')
+q3.run_jobs()
 
-b4 = tests.make_test_batch('keras_image_binary')
-b4.run.jobs()
+q4 = tests.make_test_queue('keras_image_binary')
+q4.run.jobs()
 
-b5 = tests.make_test_batch('pytorch_binary')
-b5.run.jobs()
+q5 = tests.make_test_queue('pytorch_binary')
+q5.run.jobs()
 
-b6 = tests.make_test_batch('pytorch_multiclass')
-b6.run.jobs()
+q6 = tests.make_test_queue('pytorch_multiclass')
+q6.run.jobs()
 
-b7 = tests.make_test_batch('pytorch_regression')
-b7.run.jobs()
+q7 = tests.make_test_queue('pytorch_regression')
+q7.run.jobs()
 
-b8 = tests.make_test_batch('pytorch_image_binary')
-b8.run.jobs()
+q8 = tests.make_test_queue('pytorch_image_binary')
+q8.run.jobs()
 ```

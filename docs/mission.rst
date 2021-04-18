@@ -17,9 +17,9 @@ Mission
 Why Does AIQC Exist?
 ********************
 
-Deep learning has the power to *accelerate* scientific discoveries by acting as a torch that reveals the laws of nature through data-driven pattern recognition.
+Deep learning has the power to accelerate scientific discoveries by acting as a torch that reveals the laws of nature through data-driven pattern recognition.
 
-Radical scientific progress is needed to prevent the destruction of Earth's resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can't physically transport 10 billion people off of this planet. In order to survive both here and elsewhere, we need major advances in non-linear fields such as: synthetic biology (to heal the earth), vertical farming (to feed its people), and small-scale nuclear power (to fuel its progress).
+Radical scientific progress is needed to prevent the destruction of Earth's resources. When coupled with ballooning population growth, shortages have the potential to cause widespread conflict. We can't physically transport 10 billion people off of this planet. In order to survive both here and elsewhere, we need to make major advances in non-linear fields like: synthetic biology (to heal the earth), vertical farming (to feed its people), and small-scale nuclear power (to fuel its progress).
 
   * `Kennedy - Peace; our survival demands unified, systematic action. <https://youtu.be/0fkKnfk4k40?t=368>`__
   * `Kennedy - Moon; lead the holistic advancement of science for the good of mankind. <https://youtu.be/WZyRbnpGyzQ?t=183>`__
