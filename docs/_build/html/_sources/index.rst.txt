@@ -26,6 +26,7 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
+  notebooks/tensorflow_binary_classification
   notebooks/pytorch_binary_classification
   notebooks/pytorch_multi-label_classification
   notebooks/pytorch_regression
@@ -155,7 +156,7 @@ II. Train many variations of an algorithm in a queue.
   :width: 100%
   :alt: hyperparameters.gif
 
-- Queue a batch a many training jobs; one job per hyperparameter combination.
+- Queue many training jobs for hyperparameter tuning & cross-validation.
 
 - Automatically passes param combinations into model functions as `**kwargs`.
 
@@ -188,7 +189,7 @@ IV. Effortlessly track, reproduce, & prove experiments.
 .. code-block:: python
 
    # Everything is saved. No more writing down parameters or screenshotting charts!
-   batch.jobs[0].hyperparamcombo.hyperparameters
+   queue.jobs[0].hyperparamcombo.hyperparameters
    {
        'include_nth_layer': True,
        'weight_init': 'he_normal',
@@ -197,13 +198,13 @@ IV. Effortlessly track, reproduce, & prove experiments.
    }
 
    # Examples of what is recorded:
-   batch.jobs[0].results[0].get_model()
+   queue.jobs[0].results[0].get_model()
 
-   batch.algorithm.fn_build
+   queue.algorithm.fn_build
 
-   batch.jobs[0].results[0].predictions['fold_validation']
+   queue.jobs[0].results[0].predictions['fold_validation']
 
-   batch.jobs[0].fold.samples['fold_validation']['features']
+   queue.jobs[0].fold.samples['fold_validation']['features']
 
 
 * Automatically records experiments in a local SQLite database file.

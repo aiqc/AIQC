@@ -1,4 +1,4 @@
-import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators
+import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators, math
 from importlib import reload
 from datetime import datetime
 from time import sleep
@@ -458,7 +458,7 @@ def dill_reveal_code(serialized_objekt:object, print_it:bool=True):
 	return code_str
 
 
-def torch_batch_splitter(
+def torch_batcher(
 	features:object
 	, labels:object
 	, batch_size = 5
@@ -490,6 +490,23 @@ def torch_drop_invalid_batchSize(
 		# So if there is a problem, just trim the last split.
 		batched_data = batched_data[:-1]
 	return batched_data
+
+
+def tf_batcher(features:object, labels:object, batch_size = 5):
+	"""
+	- `np.array_split` allows for subarrays to be of different sizes, which is rare.
+	  https://numpy.org/doc/stable/reference/generated/numpy.array_split.html 
+	- If there is a remainder, it will evenly distribute samples into the other arrays.
+	- Have not tested this with >= 3D data yet.
+	"""
+	rows_per_batch = math.ceil(features.shape[0]/batch_size)
+
+	batched_features = np.array_split(features, rows_per_batch)
+	batched_features = np.array(batched_features, dtype=object)
+
+	batched_labels = np.array_split(labels, rows_per_batch)
+	batched_labels = np.array(batched_labels, dtype=object)
+	return batched_features, batched_labels
 # --------- END HELPERS ---------
 
 

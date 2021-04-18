@@ -12,9 +12,9 @@ Enables batch model training and hyperparameter tuning for the following types o
   :align: center
   :widths: 30, 8, 8, 8
 
-  Classification (binary), ✓, ✓, H
-  Classification (multi), ✓, ✓, H
-  Regression, ✓, ✓, H
+  Classification (binary), ✓, ✓, ✓
+  Classification (multi), ✓, ✓, ✓
+  Regression, ✓, ✓, ✓
   Generation, H, M, L
   Reinforcement, L, L, L
 

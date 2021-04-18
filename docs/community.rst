@@ -7,6 +7,11 @@ Community
 
 ----
 
+.. image:: images/community_meeting.png
+  :width: 100%
+  :align: center
+  :alt: community banner
+
 ********
 Purpose.
 ********

@@ -113,6 +113,7 @@
 <li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a></li>
@@ -205,11 +206,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#8.-Optional,-associate-a-Hyperparamset-with-your-model.">8. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#9.-Create-a-Batch-of-training-Jobs.">9. Create a <code class="docutils literal notranslate"><span class="pre">Batch</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Create-a-Queue-of-training-Jobs.">9. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Execute-all-Jobs.">Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#1.-batch.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">batch.run_jobs(in_background=False)</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#2.-batch.run_jobs(in_background=True);-experimental">2. <code class="docutils literal notranslate"><span class="pre">batch.run_jobs(in_background=True)</span></code>; experimental</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#2.-queue.run_jobs(in_background=True);-experimental">2. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#3.-Future,-distributed-cloud-execution.">3. Future, distributed cloud execution.</a></li>
 </ul>
 </li>
@@ -1514,7 +1515,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 <div class="section" id="4.-Slice-samples-with-a-Splitset.">
 <h2>4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#4.-Slice-samples-with-a-Splitset." title="Permalink to this headline">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides a the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Featureset</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Batch</span></code>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides a the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Featureset</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
 <p>Both contiuous and categorical <code class="docutils literal notranslate"><span class="pre">Labels</span></code> are automatically stratified.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -2515,15 +2516,15 @@ No more Featurecoders can be added to this Encoderset.
 </div></div>
 </div>
 </div>
-<div class="section" id="9.-Create-a-Batch-of-training-Jobs.">
-<h2>9. Create a <code class="docutils literal notranslate"><span class="pre">Batch</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#9.-Create-a-Batch-of-training-Jobs." title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Batch</span></code> is the central object of the “logic side” of the ORM. It ties together everything we need for training and hyperparameter tuning.</p>
+<div class="section" id="9.-Create-a-Queue-of-training-Jobs.">
+<h2>9. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#9.-Create-a-Queue-of-training-Jobs." title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Queue</span></code> is the central object of the “logic side” of the ORM. It ties together everything we need for training and hyperparameter tuning.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[66]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Batch</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
     <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span> <span class="c1"># Optional.</span>
@@ -2545,9 +2546,9 @@ No more Featurecoders can be added to this Encoderset.
 </ul>
 <div class="section" id="Job-objects.">
 <h3><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#Job-objects." title="Permalink to this headline">¶</a></h3>
-<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Batch represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Queue represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
 <blockquote>
-<div><p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Batch</span></code> creation, then (a) the number of jobs is multiplied by the <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> and the <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>, (b) each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p>
+<div><p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then (a) the number of jobs is multiplied by the <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> and the <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>, (b) each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">poll_statuses(as_pandas:bool=False)</span></code> is used to determine which Job-repeats have been completed.</p>
 <div class="nbinput docutils container">
@@ -2555,7 +2556,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span><span class="o">.</span><span class="n">poll_statuses</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">poll_statuses</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2667,9 +2668,9 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="section" id="Execute-all-Jobs.">
 <h3>Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#Execute-all-Jobs." title="Permalink to this headline">¶</a></h3>
-<p>There are two ways to execute a Batch of Jobs:</p>
-<div class="section" id="1.-batch.run_jobs(in_background=False)">
-<h4>1. <code class="docutils literal notranslate"><span class="pre">batch.run_jobs(in_background=False)</span></code><a class="headerlink" href="#1.-batch.run_jobs(in_background=False)" title="Permalink to this headline">¶</a></h4>
+<p>There are two ways to execute a Queue of Jobs:</p>
+<div class="section" id="1.-queue.run_jobs(in_background=False)">
+<h4>1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code><a class="headerlink" href="#1.-queue.run_jobs(in_background=False)" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Jobs are simply ran on a loop on the main <em>Process</em>.</p></li>
 <li><p>Stop the Jobs with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter.</p></li>
@@ -2678,21 +2679,21 @@ No more Featurecoders can be added to this Encoderset.
 <li><p>Prototype your training jobs in this method so that you can see any errors that arise in the console.</p></li>
 </ul>
 </div>
-<div class="section" id="2.-batch.run_jobs(in_background=True);-experimental">
-<h4>2. <code class="docutils literal notranslate"><span class="pre">batch.run_jobs(in_background=True)</span></code>; experimental<a class="headerlink" href="#2.-batch.run_jobs(in_background=True);-experimental" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="2.-queue.run_jobs(in_background=True);-experimental">
+<h4>2. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental<a class="headerlink" href="#2.-queue.run_jobs(in_background=True);-experimental" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>The Jobs loop is executed on a separate, parallel <code class="docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code></p></li>
-<li><p>Stop the Jobs with <code class="docutils literal notranslate"><span class="pre">batch.stop_jobs()</span></code>, which kills the parallel <em>Process</em> unless it already failed.</p></li>
+<li><p>Stop the Jobs with <code class="docutils literal notranslate"><span class="pre">queue.stop_jobs()</span></code>, which kills the parallel <em>Process</em> unless it already failed.</p></li>
 <li><p>The benefit is that you can continue to code while your models are trained. There is no performance boost.</p></li>
 <li><p>On Mac and Linux (Unix), <code class="docutils literal notranslate"><span class="pre">'fork'</span></code> multiprocessing is used (<code class="docutils literal notranslate"><span class="pre">force=True</span></code>), which allows us to display the progress bar. FYI, even in ‘fork’ mode, Python multiprocessing is much more fragile in Python 3.8, which seems to be caused by how pickling is handled in passing variables to the child process.</p></li>
 <li><p>On Windows, <code class="docutils literal notranslate"><span class="pre">'spawn'</span></code> multiprocessing is used, which requires polling:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">batch.poll_statuses()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">batch.poll_progress(raw:bool=False,</span> <span class="pre">loop:bool=False,</span> <span class="pre">loop_delay:int=3)</span></code> where <code class="docutils literal notranslate"><span class="pre">raw=True</span></code> is just a float, <code class="docutils literal notranslate"><span class="pre">loop=True</span></code> won’t stop checking jobs until they are all complete, and <code class="docutils literal notranslate"><span class="pre">loop_delay=3</span></code> checks the progress every 3 seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">queue.poll_statuses()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">queue.poll_progress(raw:bool=False,</span> <span class="pre">loop:bool=False,</span> <span class="pre">loop_delay:int=3)</span></code> where <code class="docutils literal notranslate"><span class="pre">raw=True</span></code> is just a float, <code class="docutils literal notranslate"><span class="pre">loop=True</span></code> won’t stop checking jobs until they are all complete, and <code class="docutils literal notranslate"><span class="pre">loop_delay=3</span></code> checks the progress every 3 seconds.</p></li>
 </ul>
 </li>
 <li><p>It is a known bug that the <code class="docutils literal notranslate"><span class="pre">aiqc.TrainingCallbacks.Keras.MetricCutoff</span></code> class does not work with <code class="docutils literal notranslate"><span class="pre">in_background=True</span></code> as of Python 3.8.</p></li>
-<li><p>Also, during stress tests, I observed that when running multiple batches at the same time, the SQLite database would lock when simultaneous writes were attempted.</p></li>
+<li><p>Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.</p></li>
 </ul>
 </div>
 <div class="section" id="3.-Future,-distributed-cloud-execution.">
@@ -2705,7 +2706,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="n">in_background</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="n">in_background</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2717,7 +2718,7 @@ No more Featurecoders can be added to this Encoderset.
 🔮 Training Models 🔮: 100%|████████████████████████████████████████| 12/12 [00:49&lt;00:00,  4.14s/it]
 </pre></div></div>
 </div>
-<p>The queue is interuptable. You can stop the execution of a batch and resume it later.</p>
+<p>The queue is interuptable. You can stop the execution of a queue and resume it later.</p>
 <blockquote>
 <div><p>This also comes in handy if either your machine or Python kernel either crashes or are interupted by accident. Whatever the reason, rest easy, just <code class="docutils literal notranslate"><span class="pre">run_jobs()</span></code> again to pick up where you left off. Be aware that the <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> iteration time in the progress bar will be wrong because it will be divided by the jobs already ran.</p>
 </div></blockquote>
@@ -2745,7 +2746,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">compiled_model</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span></span><span class="n">compiled_model</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
 <span class="n">compiled_model</span>
 </pre></div>
 </div>
@@ -2767,7 +2768,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
 </pre></div>
 </div>
 </div>

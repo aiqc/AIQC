@@ -1342,7 +1342,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "A `Splitset` divides a the samples of the Dataset into the following *splits* in the table below. It is the central object of the data preparation side of the ORM in that it touches `Label`, `Featureset`, `Foldset`, and `Encoderset`. It is the only mandatory data preparation object required by the training `Batch`."
+    "A `Splitset` divides a the samples of the Dataset into the following *splits* in the table below. It is the central object of the data preparation side of the ORM in that it touches `Label`, `Featureset`, `Foldset`, and `Encoderset`. It is the only mandatory data preparation object required by the training `Queue`."
    ]
   },
   {
@@ -2881,14 +2881,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 9. Create a `Batch` of training `Jobs`."
+    "## 9. Create a `Queue` of training `Jobs`."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The `Batch` is the central object of the \"logic side\" of the ORM. It ties together everything we need for training and hyperparameter tuning."
+    "The `Queue` is the central object of the \"logic side\" of the ORM. It ties together everything we need for training and hyperparameter tuning."
    ]
   },
   {
@@ -2897,7 +2897,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch = aiqc.Batch.from_algorithm(\n",
+    "queue = aiqc.Queue.from_algorithm(\n",
     "\talgorithm_id = algorithm.id\n",
     "\t, splitset_id = splitset.id\n",
     "\t, hyperparamset_id = hyperparamset.id # Optional.\n",
@@ -2934,9 +2934,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Each `Job` in the Batch represents a `Hyperparamcombo` that needs to be trained.\n",
+    "Each `Job` in the Queue represents a `Hyperparamcombo` that needs to be trained.\n",
     "\n",
-    "> If a `Foldset` is used during `Batch` creation, then (a) the number of jobs is multiplied by the `hyperparamcombo_count` and the `fold_count`, (b) each Job will have a `Fold`. Additionally, a superficial `Jobset` will be used to keep track of all Jobs related to that Foldset."
+    "> If a `Foldset` is used during `Queue` creation, then (a) the number of jobs is multiplied by the `hyperparamcombo_count` and the `fold_count`, (b) each Job will have a `Fold`. Additionally, a superficial `Jobset` will be used to keep track of all Jobs related to that Foldset."
    ]
   },
   {
@@ -3076,7 +3076,7 @@
     }
    ],
    "source": [
-    "batch.poll_statuses(as_pandas=True)"
+    "queue.poll_statuses(as_pandas=True)"
    ]
   },
   {
@@ -3085,9 +3085,9 @@
    "source": [
     "### Execute all `Jobs`.\n",
     "\n",
-    "There are two ways to execute a Batch of Jobs:\n",
+    "There are two ways to execute a Queue of Jobs:\n",
     "\n",
-    "#### 1. `batch.run_jobs(in_background=False)`\n",
+    "#### 1. `queue.run_jobs(in_background=False)`\n",
     "\n",
     "* Jobs are simply ran on a loop on the main *Process*.\n",
     "\n",
@@ -3100,11 +3100,11 @@
     "* Prototype your training jobs in this method so that you can see any errors that arise in the console.\n",
     "\n",
     "\n",
-    "#### 2. `batch.run_jobs(in_background=True)`; experimental\n",
+    "#### 2. `queue.run_jobs(in_background=True)`; experimental\n",
     "\n",
     "* The Jobs loop is executed on a separate, parallel `multiprocessing.Process`\n",
     "\n",
-    "* Stop the Jobs with `batch.stop_jobs()`, which kills the parallel *Process* unless it already failed.\n",
+    "* Stop the Jobs with `queue.stop_jobs()`, which kills the parallel *Process* unless it already failed.\n",
     "\n",
     "* The benefit is that you can continue to code while your models are trained. There is no performance boost.\n",
     "\n",
@@ -3112,13 +3112,13 @@
     "\n",
     "* On Windows, `'spawn'` multiprocessing is used, which requires polling:\n",
     "\n",
-    "  * `batch.poll_statuses()`\n",
+    "  * `queue.poll_statuses()`\n",
     "  \n",
-    "  * `batch.poll_progress(raw:bool=False, loop:bool=False, loop_delay:int=3)` where `raw=True` is just a float, `loop=True` won't stop checking jobs until they are all complete, and `loop_delay=3` checks the progress every 3 seconds. \n",
+    "  * `queue.poll_progress(raw:bool=False, loop:bool=False, loop_delay:int=3)` where `raw=True` is just a float, `loop=True` won't stop checking jobs until they are all complete, and `loop_delay=3` checks the progress every 3 seconds. \n",
     "  \n",
     "* It is a known bug that the `aiqc.TrainingCallbacks.Keras.MetricCutoff` class does not work with `in_background=True` as of Python 3.8.\n",
     "\n",
-    "* Also, during stress tests, I observed that when running multiple batches at the same time, the SQLite database would lock when simultaneous writes were attempted.\n",
+    "* Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.\n",
     "\n",
     "#### 3. Future, distributed cloud execution.\n",
     "\n",
@@ -3139,14 +3139,14 @@
     }
    ],
    "source": [
-    "batch.run_jobs(in_background=False)"
+    "queue.run_jobs(in_background=False)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The queue is interuptable. You can stop the execution of a batch and resume it later.\n",
+    "The queue is interuptable. You can stop the execution of a queue and resume it later.\n",
     "\n",
     "> This also comes in handy if either your machine or Python kernel either crashes or are interupted by accident. Whatever the reason, rest easy, just `run_jobs()` again to pick up where you left off. Be aware that the `tqdm` iteration time in the progress bar will be wrong because it will be divided by the jobs already ran."
    ]
@@ -3208,7 +3208,7 @@
     }
    ],
    "source": [
-    "compiled_model = batch.jobs[0].results[0].get_model()\n",
+    "compiled_model = queue.jobs[0].results[0].get_model()\n",
     "compiled_model"
    ]
   },
@@ -3253,7 +3253,7 @@
     }
    ],
    "source": [
-    "batch.jobs[0].results[0].metrics"
+    "queue.jobs[0].results[0].metrics"
    ]
   },
   {

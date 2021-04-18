@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_high_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Overview: The High-Level API makes it easy to rapidly: Prepare samples., Hypertune/ train batches of models., Feed appropriate data/ parameters into those models., Evaluate model performance with m..." />
+  <meta property="og:description" content="Overview: The High-Level API makes it easy to rapidly: Prepare samples., Hypertune/ train queues of models., Feed appropriate data/ parameters into those models., Evaluate model performance with me..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -113,6 +113,7 @@
 <li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a></li>
@@ -484,7 +485,7 @@ div.rendered_html tbody tr:hover {
 <p>The High-Level API makes it easy to rapidly:</p>
 <ul class="simple">
 <li><p>Prepare samples.</p></li>
-<li><p>Hypertune/ train batches of models.</p></li>
+<li><p>Hypertune/ train queues of models.</p></li>
 <li><p>Feed appropriate data/ parameters into those models.</p></li>
 <li><p>Evaluate model performance with metrics and plots.</p></li>
 </ul>
@@ -507,7 +508,7 @@ div.rendered_html tbody tr:hover {
 <td><p>Functions to build, train, predict, and evaluate a machine learning model.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></p></td>
-<td><p>Algorithm, Hyperparamset, Hyperparamcombos, Batch, Job, Jobset, Result.</p></td>
+<td><p>Algorithm, Hyperparamset, Hyperparamcombos, Queue, Job, Jobset, Result.</p></td>
 </tr>
 </tbody>
 </table>
@@ -774,7 +775,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
     <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
@@ -797,7 +798,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">batch</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

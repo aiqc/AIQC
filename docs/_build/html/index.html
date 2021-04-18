@@ -112,6 +112,7 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/keras_binary_classification.html">Keras: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/keras_multi-label_classification.html">Keras: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/keras_regression.html">Keras: Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch_binary_classification.html">PyTorch: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch_regression.html">PyTorch: Regression</a></li>
@@ -260,7 +261,7 @@
 <h2>II. Train many variations of an algorithm in a queue.<a class="headerlink" href="#ii-train-many-variations-of-an-algorithm-in-a-queue" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/hyperparam_25sec_compress.gif"><img alt="hyperparameters.gif" src="_images/hyperparam_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
-<li><p>Queue a batch a many training jobs; one job per hyperparameter combination.</p></li>
+<li><p>Queue many training jobs for hyperparameter tuning &amp; cross-validation.</p></li>
 <li><p>Automatically passes param combinations into model functions as <cite>**kwargs</cite>.</p></li>
 <li><p>Tweak the model topology as a param (<cite>params[‘extra_conv3D_layer’]=True</cite>).</p></li>
 <li><p>Repeat a job to to give it a chance to perform well (<cite>repeat_count=3</cite>).</p></li>
@@ -285,7 +286,7 @@
 <div class="section" id="iv-effortlessly-track-reproduce-prove-experiments">
 <h2>IV. Effortlessly track, reproduce, &amp; prove experiments.<a class="headerlink" href="#iv-effortlessly-track-reproduce-prove-experiments" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Everything is saved. No more writing down parameters or screenshotting charts!</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
 <span class="p">{</span>
     <span class="s1">&#39;include_nth_layer&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s1">&#39;weight_init&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
@@ -294,13 +295,13 @@
 <span class="p">}</span>
 
 <span class="c1"># Examples of what is recorded:</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
 
-<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_build</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_build</span>
 
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span>
 
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <ul class="simple">
