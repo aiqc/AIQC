@@ -582,7 +582,7 @@ class Dataset(BaseModel):
 
 	def sorted_file_list(dir_path:str):
 		if not os.path.exists(dir_path):
-			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
+			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(dir_path)`:\n{dir_path}\n")
 		path = os.path.abspath(dir_path)
 		if (os.path.isdir(path) == False):
 			raise ValueError(f"\nYikes - The path that you provided is not a directory:{path}\n")
@@ -1267,7 +1267,7 @@ class File(BaseModel):
 				if (not isinstance(dtype, dict)):
 					# Inspect each column:dtype pair and check to see if it is the same as the user-provided dtype.
 					actual_dtypes = dataframe.dtypes.to_dict()
-					for col_nam, typ in actual_dtypes.items():
+					for col_name, typ in actual_dtypes.items():
 						if (typ != dtype):
 							raise ValueError(dedent(f"""
 							Yikes - You specified `dtype={dtype},
