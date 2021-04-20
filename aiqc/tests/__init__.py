@@ -595,7 +595,7 @@ def pytorch_binary_fn_optimize(model, **hp):
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batch_splitter(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
