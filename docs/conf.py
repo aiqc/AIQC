@@ -1,4 +1,5 @@
 """
+### README
 # Dependencies. 
 brew install pandoc
 pip install nbsphinx, sphinx_copybutton, sphinx_rtd_theme, ipython
@@ -18,8 +19,8 @@ https://readthedocs.org/dashboard/aiqc/integrations/
 """
 
 # *** REFRESHING SIDEBAR MENU ***
+# When you change menu/ page tiles. Run `make html` both with and without line above commented:
 #html_sidebars = { '**': ['globaltoc.html'] }
-# ^ When you change menu/ page tiles. Run `make html` both with and without line above commented.
 
 
 # -- Project information -----------------------------------------------------

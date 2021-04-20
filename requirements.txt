@@ -5,6 +5,8 @@ tensorflow==2.4.1
 Keras==2.4.3
 #(tf2.4.1 req h5py~=2.10.0)
 h5py==2.10.0
+torch==1.8.1
+torchmetrics==0.2.0
 peewee==3.14.3
 scikit-learn==0.24.1
 # The version required by tensorflow. It didn't accept 1.20.

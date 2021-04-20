@@ -1,4 +1,4 @@
-import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators
+import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators, math
 from importlib import reload
 from datetime import datetime
 from time import sleep
@@ -26,6 +26,7 @@ from sklearn.preprocessing import *
 import keras
 from keras.models import load_model, Sequential
 from keras.callbacks import Callback
+from keras.utils import to_categorical
 # Progress bar.
 from tqdm import tqdm
 # Visualization.
@@ -37,6 +38,11 @@ from PIL import Image as Imaje
 from natsort import natsorted
 # Complex serialization.
 import dill as dill
+# Pytorch
+import torch
+import torch.nn as nn
+from torch import optim
+import torchmetrics #by PyTorchLightning
 
 
 name = "aiqc"
@@ -118,7 +124,7 @@ def check_permissions_folder():
 		if (os.name == 'nt'):
 			# Test write.
 			file_name = "aiqc_test_permissions.txt"
-
+			
 			def permissions_fail_info():
 				# We don't want an error here because it needs to return False.
 				print(
@@ -196,7 +202,7 @@ def grant_permissions_folder():
 				f"===================================\n"
 			)
 			raise
-
+		
 		permissions = check_permissions_folder()
 		if permissions:
 			print(f"\n=> Success - granted system permissions to read and write from file path:\n{app_dir}\n")
@@ -210,7 +216,7 @@ def get_config():
 		with open(default_config_path, 'r') as aiqc_config_file:
 			aiqc_config = json.load(aiqc_config_file)
 			return aiqc_config
-	else:
+	else: 
 		print("\n=> Welcome to AIQC.\nTo get started, run `aiqc.setup()`.\n")
 
 
@@ -234,7 +240,7 @@ def create_config():
 				, "platform.libc_ver()": platform.libc_ver()
 				, "platform.mac_ver()": platform.mac_ver()
 			}
-
+			
 			try:
 				with open(default_config_path, 'w') as aiqc_config_file:
 					json.dump(aiqc_config, aiqc_config_file)
@@ -268,7 +274,7 @@ def delete_config(confirm:bool=False):
 				)
 				raise
 			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")
-			reload(sys.modules[__name__])
+			reload(sys.modules[__name__])   
 		else:
 			print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
 
@@ -279,9 +285,9 @@ def update_config(kv:dict):
 		print("\n=> Info - there is no config file to update.\n")
 	else:
 		for k, v in kv.items():
-			aiqc_config[k] = v
+			aiqc_config[k] = v      
 		config_path = aiqc_config['config_path']
-
+		
 		try:
 			with open(config_path, 'w') as aiqc_config_file:
 				json.dump(aiqc_config, aiqc_config_file)
@@ -299,6 +305,9 @@ def update_config(kv:dict):
 # DATABASE
 #==================================================
 
+def printer():
+	print("12")
+
 def get_path_db():
 	"""
 	Originally, this code was in a child directory.
@@ -314,7 +323,7 @@ def get_path_db():
 
 def get_db():
 	"""
-	The `BaseModel` of the ORM calls this function.
+	The `BaseModel` of the ORM calls this function. 
 	"""
 	path = get_path_db()
 	if path is None:
@@ -352,11 +361,11 @@ def create_db():
 		db.create_tables([
 			File, Tabular, Image,
 			Dataset,
-			Label, Featureset,
-			Splitset, Foldset, Fold,
+			Label, Featureset, 
+			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Batch, Jobset, Job, Result
+			Queue, Jobset, Job, Result
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -434,16 +443,72 @@ def dill_serialize(objekt:object):
 	blob = blob.getvalue()
 	return blob
 
-
 def dill_deserialize(blob:bytes):
 	objekt = io.BytesIO(blob)
 	objekt = dill.load(objekt)
 	return objekt
+
+def dill_reveal_code(serialized_objekt:object, print_it:bool=True):
+	code_str = (
+		dill.source.getsource(
+			dill_deserialize(serialized_objekt).__code__
+		)
+	)
+	if (print_it == True):
+		print(dedent(code_str))
+	return code_str
+
+
+def torch_batcher(
+	features:object
+	, labels:object
+	, batch_size = 5
+	, enforce_sameSize:bool=False
+	, allow_1Sample:bool=False
+):
+	features = torch.split(features, batch_size)
+	labels = torch.split(labels, batch_size)
+	
+	features = torch_drop_invalid_batchSize(features)
+	labels = torch_drop_invalid_batchSize(labels)
+	return features, labels
+
+def torch_drop_invalid_batchSize(
+	batched_data:object
+	, batch_size = 5
+	, enforce_sameSize:bool=False
+	, allow_1Sample:bool=False
+):
+	if (batch_size == 1):
+		print("\nWarning - `batch_size==1` can lead to errors.\nE.g. running BatchNormalization on a single sample.\n")
+	# Similar to a % remainder, this will only apply to the last element in the batch.
+	last_batch_size = batched_data[-1].shape[0]
+	if (
+		((allow_1Sample == False) and (last_batch_size == 1))
+		or 
+		((enforce_sameSize == True) and (batched_data[0].shape[0] != last_batch_size))
+	):
+		# So if there is a problem, just trim the last split.
+		batched_data = batched_data[:-1]
+	return batched_data
+
+
+def tf_batcher(features:object, labels:object, batch_size = 5):
+	"""
+	- `np.array_split` allows for subarrays to be of different sizes, which is rare.
+	  https://numpy.org/doc/stable/reference/generated/numpy.array_split.html 
+	- If there is a remainder, it will evenly distribute samples into the other arrays.
+	- Have not tested this with >= 3D data yet.
+	"""
+	rows_per_batch = math.ceil(features.shape[0]/batch_size)
+
+	batched_features = np.array_split(features, rows_per_batch)
+	batched_features = np.array(batched_features, dtype=object)
+
+	batched_labels = np.array_split(labels, rows_per_batch)
+	batched_labels = np.array(batched_labels, dtype=object)
+	return batched_features, batched_labels
 # --------- END HELPERS ---------
-
-
-
-
 
 
 
@@ -467,7 +532,6 @@ class Dataset(BaseModel):
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # only includes file_types that match the dataset_type.
 	source_path = CharField(null=True)
-	#s3_path = CharField(null=True) # Write an order to check.
 
 
 	def make_label(id:int, columns:list):
@@ -537,8 +601,9 @@ class Dataset(BaseModel):
 
 	class Tabular():
 		"""
-		This does not use a subclass e.g. `class Tabular(Dataset):`
-		because the ORM would make a separate table.
+		- Does not inherit the Dataset class e.g. `class Tabular(Dataset):`
+		  because then ORM would make a separate table for it.
+		- It is just a collection of methods and default variables.
 		"""
 		dataset_type = 'tabular'
 		file_index = 0
@@ -596,7 +661,7 @@ class Dataset(BaseModel):
 
 			return dataset
 
-
+		
 		def from_pandas(
 			dataframe:object
 			, name:str = None
@@ -624,7 +689,7 @@ class Dataset(BaseModel):
 				)
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise
+				raise 
 			return dataset
 
 
@@ -649,7 +714,7 @@ class Dataset(BaseModel):
 				Yikes - Tabular Datasets only support 1D and 2D arrays.
 				Your array dimensions had <{dimensions}> dimensions.
 				"""))
-
+			
 			dataset = Dataset.create(
 				file_count = Dataset.Tabular.file_count
 				, name = name
@@ -665,7 +730,7 @@ class Dataset(BaseModel):
 				)
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise
+				raise 
 			return dataset
 
 
@@ -707,7 +772,7 @@ class Dataset(BaseModel):
 			tabular = file.tabulars[0]
 			return tabular
 
-
+	
 	class Image():
 		dataset_type = 'image'
 
@@ -729,11 +794,11 @@ class Dataset(BaseModel):
 				, source_path = source_path
 				, dataset_type = Dataset.Image.dataset_type
 			)
-
+			
 			#Make sure the shape and mode of each image are the same before writing the Dataset.
 			sizes = []
 			modes = []
-
+			
 			for i, path in enumerate(tqdm(
 					file_paths
 					, desc = "🖼️ Validating Images 🖼️"
@@ -768,7 +833,7 @@ class Dataset(BaseModel):
 					)
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise
+				raise       
 			return dataset
 
 
@@ -792,11 +857,11 @@ class Dataset(BaseModel):
 				, dataset_type = Dataset.Image.dataset_type
 				, source_path = source_path
 			)
-
+			
 			#Make sure the shape and mode of each image are the same before writing the Dataset.
 			sizes = []
 			modes = []
-
+			
 			for i, url in enumerate(tqdm(
 					urls
 					, desc = "🖼️ Validating Images 🖼️"
@@ -842,7 +907,7 @@ class Dataset(BaseModel):
 				"""
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise
+				raise       
 			return dataset
 
 
@@ -903,8 +968,8 @@ class Dataset(BaseModel):
 
 		def from_pandas(
 			dataframe:object,
-			name:str = None,
-			dtype:dict = None,
+			name:str = None, 
+			dtype:dict = None, 
 			column_names:list = None
 		):
 			if Dataset.Text.column_name not in dataframe.columns:
@@ -913,7 +978,7 @@ class Dataset(BaseModel):
 
 
 		def from_folder(
-			folder_path:str,
+			folder_path:str, 
 			name:str = None
 		):
 			if name is None:
@@ -922,7 +987,7 @@ class Dataset(BaseModel):
 
 			input_files = Dataset.sorted_file_list(source_path)
 			file_count = len(input_files)
-
+			
 			files_data = []
 			for input_file in input_files:
 				with open(input_file, 'r') as file_pointer:
@@ -932,19 +997,27 @@ class Dataset(BaseModel):
 
 
 		def to_pandas(
-			id:int,
-			columns:list = None,
+			id:int, 
+			columns:list = None, 
 			samples:list = None
 		):
 			return Dataset.Tabular.to_pandas(id, columns, samples)
 
 
 		def to_strings(
-			id:int,
+			id:int, 
 			samples:list = None
 		):
 			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
 			return data_df[Dataset.Text.column_name].tolist()
+
+		
+		def to_numpy(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			return Dataset.Tabular.to_numpy(id, columns, samples)
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
@@ -955,21 +1028,21 @@ class Dataset(BaseModel):
 class File(BaseModel):
 	"""
 	- Due to the fact that different types of Files have different attributes
-	(e.g. File.Tabular columns=JSON or File.Graph nodes=Blob, edges=Blob),
-	I am making each file type its own subclass and 1-1 table. This approach
+	(e.g. File.Tabular columns=JSON or File.Graph nodes=Blob, edges=Blob), 
+	I am making each file type its own subclass and 1-1 table. This approach 
 	allows for the creation of custom File types.
 	- If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
 	- Note that `dtype` does not require every column to be included as a key in the dictionary.
 	"""
 	blob = BlobField()
 	file_type = CharField()
-	file_format = CharField() # png, jpg, parquet
+	file_format = CharField() # png, jpg, parquet 
 	file_index = IntegerField() # image, sequence, graph
 	shape = JSONField()# images? could still get shape... graphs node_count and connection_count?
 	source_path = CharField(null=True)
 
 	dataset = ForeignKeyField(Dataset, backref='files')
-
+	
 	"""
 	Classes are much cleaner than a knot of if statements in every method,
 	and `=None` for every parameter.
@@ -1015,7 +1088,7 @@ class File(BaseModel):
 				)
 			except:
 				file.delete_instance() # Orphaned.
-				raise
+				raise 
 			return file
 
 
@@ -1082,15 +1155,22 @@ class File(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
+			"""
+			This function could be optimized to read columns and rows selectively
+			rather than dropping them after the fact.
+			https://stackoverflow.com/questions/64050609/pyarrow-read-parquet-via-column-index-or-order
+			"""
 			f = File.get_by_id(id)
-			blob = io.BytesIO(f.blob)
 			columns = listify(columns)
 			samples = listify(samples)
 			# Filters.
-			df = pd.read_parquet(blob, columns=columns)
+			df = pd.read_parquet(
+				io.BytesIO(f.blob) #saves memory?
+				, columns=columns
+			)
 			if samples is not None:
 				df = df.iloc[samples]
-
+			
 			# Accepts dict{'column_name':'dtype_str'} or a single str.
 			tab = f.tabulars[0]
 			df_dtypes = tab.dtypes
@@ -1116,7 +1196,7 @@ class File(BaseModel):
 			, samples:list = None
 		):
 			"""
-			This is the only place where to_numpy() relies on to_pandas().
+			This is the only place where to_numpy() relies on to_pandas(). 
 			It does so because pandas is good with the parquet and dtypes.
 			"""
 			columns = listify(columns)
@@ -1125,11 +1205,11 @@ class File(BaseModel):
 			arr = df.to_numpy()
 			return arr
 
-		#Future: Add to_tensor and from_tensor? Or will numpy suffice?
+		#Future: Add to_tensor and from_tensor? Or will numpy suffice?  
 
 		def pandas_stringify_columns(df, columns):
 			"""
-			I don't want both string and int-based column names for when calling columns programmatically,
+			I don't want both string and int-based column names for when calling columns programmatically, 
 			and more importantly, 'ValueError: parquet must have string column names'
 			"""
 			cols_raw = df.columns.to_list()
@@ -1140,7 +1220,7 @@ class File(BaseModel):
 				cols_str = columns
 			# dict from 2 lists
 			cols_dct = dict(zip(cols_raw, cols_str))
-
+			
 			df = df.rename(columns=cols_dct)
 			columns = df.columns.to_list()
 			return df, columns
@@ -1227,7 +1307,7 @@ class File(BaseModel):
 			Convert the classed `dtype('float64')` to a string so we can use it in `.to_pandas()`
 			"""
 			dtype = {k: str(v) for k, v in actual_dtypes}
-
+			
 			# Each object has the potential to be transformed so each object must be returned.
 			return dataframe, columns, shape, dtype
 
@@ -1256,11 +1336,11 @@ class File(BaseModel):
 			, skip_header_rows:int
 		):
 			"""
-			Previously, I was using pyarrow for all tabular/ sequence file formats.
+			Previously, I was using pyarrow for all tabular/ sequence file formats. 
 			However, it had worse support for missing column names and header skipping.
 			So I switched to pandas for handling csv/tsv, but read_parquet()
 			doesn't let you change column names easily, so using pyarrow for parquet.
-			"""
+			""" 
 			if not os.path.exists(path):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
 
@@ -1454,10 +1534,9 @@ class Label(BaseModel):
 	columns = JSONField()
 	column_count = IntegerField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
-	#probabilities = JSONField() #if you were to write back the result of unsupervised for semi-supervised learning.
-
+	
 	dataset = ForeignKeyField(Dataset, backref='labels')
-
+	
 	def from_dataset(dataset_id:int, columns:list):
 		d = Dataset.get_by_id(dataset_id)
 		columns = listify(columns)
@@ -1467,7 +1546,7 @@ class Label(BaseModel):
 			Yikes - Labels can only be created from `dataset_type='tabular'`.
 			But you provided `dataset_type`: <{d.dataset_type}>
 			"""))
-
+		
 		d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
 
 		# Check that the user-provided columns exist.
@@ -1512,8 +1591,8 @@ class Label(BaseModel):
 
 			for i in all_uniques:
 				if (
-					((i == 0) or (i == 1))
-					or
+					((i == 0) or (i == 1)) 
+					or 
 					((i == 0.) or (i == 1.))
 				):
 					pass
@@ -1524,7 +1603,7 @@ class Label(BaseModel):
 					The columns you provided contained these unique values: {all_uniques}
 					"""))
 			unique_classes = all_uniques
-
+			
 			del label_df
 			# Now check if each row in the labels is truly OHE.
 			label_arr = Dataset.to_numpy(id=dataset_id, columns=columns)
@@ -1624,7 +1703,7 @@ class Label(BaseModel):
 
 		label_dtypes = {}
 		for key,value in tabular_dtype.items():
-			for col in l_cols:
+			for col in l_cols:         
 				if (col == key):
 					label_dtypes[col] = value
 					# Exit `col` loop early becuase matching `col` found.
@@ -1770,10 +1849,10 @@ class Featureset(BaseModel):
 			for c in columns:
 				if c not in f_cols:
 					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Featureset.columns`.\n")
-			f_cols = columns
+			f_cols = columns	
 
 		dataset_id = f.dataset.id
-
+		
 		if (numpy_or_pandas == 'numpy'):
 			ff = Dataset.to_numpy(
 				id = dataset_id
@@ -1802,7 +1881,7 @@ class Featureset(BaseModel):
 
 		featureset_dtypes = {}
 		for key,value in tabular_dtype.items():
-			for col in f_cols:
+			for col in f_cols:         
 				if (col == key):
 					featureset_dtypes[col] = value
 					# Exit `col` loop early becuase matching `col` found.
@@ -1848,7 +1927,7 @@ class Splitset(BaseModel):
 
 	featureset = ForeignKeyField(Featureset, backref='splitsets')
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
-
+	
 
 	def from_featureset(
 		featureset_id:int
@@ -1862,7 +1941,7 @@ class Splitset(BaseModel):
 			if (size_test <= 0.0) or (size_test >= 1.0):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			# Don't handle `has_test` here. Need to check label first.
-
+		
 		if (size_validation is not None) and (size_test is None):
 			raise ValueError("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
 
@@ -1896,7 +1975,7 @@ class Splitset(BaseModel):
 		"""
 		row_count = arr_f.shape[0]
 		arr_idx = np.arange(row_count)
-
+		
 		samples = {}
 		sizes = {}
 
@@ -2015,7 +2094,7 @@ class Splitset(BaseModel):
 				size_train -= size_validation
 				count_validation = len(indices_lst_validation)
 				sizes["validation"] =  {"percent": size_validation, "count": count_validation}
-
+			
 			count_test = len(indices_lst_test)
 			count_train = len(indices_lst_train)
 			sizes["test"] = {"percent": size_test, "count": count_test}
@@ -2097,7 +2176,7 @@ class Splitset(BaseModel):
 		split_frames = {}
 		# Future: Optimize (switch to generators for memory usage).
 		# Here, split_names are: train, test, validation.
-
+		
 		# There are always featureset. It's just if you want to include them or not.
 		# Saves memory when you only want Labels by split.
 		if (include_featureset is None):
@@ -2123,7 +2202,7 @@ class Splitset(BaseModel):
 			split_frames[split_name] = {}
 			# Fetch the sample indices for the split
 			split_samples = s.samples[split_name]
-
+			
 			if (include_featureset == True):
 				if (numpy_or_pandas == 'numpy'):
 					ff = featureset.to_numpy(samples=split_samples, columns=feature_columns)
@@ -2260,7 +2339,7 @@ class Foldset(BaseModel):
 		# Bin the floats.
 		if (np.issubdtype(label_dtype, np.floating)):
 			if (bin_count is None):
-				bin_count = splitset.bin_count #Inherit.
+				bin_count = splitset.bin_count #Inherit. 
 			arr_train_labels = Splitset.label_values_to_bins(
 				array_to_bin = arr_train_labels
 				, bin_count = bin_count
@@ -2310,18 +2389,18 @@ class Foldset(BaseModel):
 		# Create the folds. Don't want the end user to run two commands.
 		skf = StratifiedKFold(n_splits=fold_count, shuffle=True, random_state=random_state)
 		splitz_gen = skf.split(arr_train_indices, arr_train_labels)
-
+				
 		i = -1
 		for index_folds_train, index_fold_validation in splitz_gen:
 			i+=1
 			fold_samples = {}
-
+			
 			fold_samples["folds_train_combined"] = index_folds_train.tolist()
 			fold_samples["fold_validation"] = index_fold_validation.tolist()
 
 			fold = Fold.create(
 				fold_index = i
-				, samples = fold_samples
+				, samples = fold_samples 
 				, foldset = foldset
 			)
 		return foldset
@@ -2464,13 +2543,13 @@ class Foldset(BaseModel):
 class Fold(BaseModel):
 	"""
 	- A Fold is 1 of many cross-validation sets generated as part of a Foldset.
-	- The `samples` attribute contains the indices of `folds_train_combined` and `fold_validation`,
+	- The `samples` attribute contains the indices of `folds_train_combined` and `fold_validation`, 
 	  where `fold_validation` is the rotating fold that gets left out.
 	"""
 	fold_index = IntegerField() # order within the Foldset.
 	samples = JSONField()
 	# contains_all_classes = BooleanField()
-
+	
 	foldset = ForeignKeyField(Foldset, backref='folds')
 
 
@@ -2479,7 +2558,7 @@ class Fold(BaseModel):
 class Encoderset(BaseModel):
 	"""
 	- Preprocessing should not happen prior to Dataset ingestion because you need to do it after the split to avoid bias.
-	  For example, encoder.fit() only on training split - then .transform() train, validation, and test.
+	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
 	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Featureset.
 	"""
@@ -2538,12 +2617,12 @@ class Encoderset(BaseModel):
 
 class Labelcoder(BaseModel):
 	"""
-	- `is_fit_train` toggles if the encoder is either `.fit(<training_split/fold>)` to
+	- `is_fit_train` toggles if the encoder is either `.fit(<training_split/fold>)` to 
 	  avoid bias or `.fit(<entire_dataset>)`.
-	- Categorical (ordinal and OHE) encoders are best applied to entire dataset in case
+	- Categorical (ordinal and OHE) encoders are best applied to entire dataset in case 
 	  there are classes missing in the split/folds of validation/ test data.
 	- Whereas numerical encoders are best fit only to the training data.
-	- Because there's only 1 encoder that runs and it uses all columns, Labelcoder
+	- Because there's only 1 encoder that runs and it uses all columns, Labelcoder 
 	  is much simpler to validate and run in comparison to Featurecoder.
 	"""
 	only_fit_train = BooleanField()
@@ -2567,10 +2646,10 @@ class Labelcoder(BaseModel):
 
 		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
 
-		# 2. Test Fit.
+		# 2. Test Fit. 
 		if (only_fit_train == True):
 			"""
-			- Foldset is tied to Batch. So just `fit()` on `train` split
+			- Foldset is tied to Queue. So just `fit()` on `train` split
 			  and don't worry about `folds_train_combined` for now.
 			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
 			  in which case user should be using `only_fit_train=False` anyways.
@@ -2601,7 +2680,7 @@ class Labelcoder(BaseModel):
 			elif (only_fit_train == True):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = splitset.label.to_numpy()
-
+			
 			encoded_samples = Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
@@ -2615,7 +2694,7 @@ class Labelcoder(BaseModel):
 			it is better to use `only_fit_train=False`.
 			"""))
 		else:
-			pass
+			pass    
 		lc = Labelcoder.create(
 			only_fit_train = only_fit_train
 			, sklearn_preprocess = sklearn_preprocess
@@ -2642,7 +2721,7 @@ class Labelcoder(BaseModel):
 			https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
 			\n"""))
 		elif ('sklearn.preprocessing' in coder_type):
-			if (not hasattr(sklearn_preprocess, 'fit')):
+			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError(dedent("""
 				Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
 				Please use one of the uppercase methods instead.
@@ -2676,7 +2755,7 @@ class Labelcoder(BaseModel):
 					Please try again with 'copy=False'.
 					For example, `StandardScaler(copy=False)`.
 					"""))
-
+			
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
 					raise ValueError(dedent(f"""
@@ -2703,7 +2782,7 @@ class Labelcoder(BaseModel):
 			  as opposed to OHE/Ordinal or binarizing.
 			"""
 			categorical_encoders = [
-				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder',
+				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
 				'Binarizer', 'MultiLabelBinarizer'
 			]
 			only_fit_train = True
@@ -2712,22 +2791,22 @@ class Labelcoder(BaseModel):
 					only_fit_train = False
 					break
 			return only_fit_train
-
-
+			
+		
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 		"""
 		- Future: optimize to make sure not duplicating numpy. especially append to lists + reshape after transpose.
-		- There are 17 uppercase sklearn encoders, and 10 different data types across float, str, int
+		- There are 17 uppercase sklearn encoders, and 10 different data types across float, str, int 
 		  when consider negatives, 2D multiple columns, 2D single columns.
 		- Different encoders work with different data types and dimensionality.
 		- This function normalizes that process by coercing the dimensionality that the encoder wants,
-		  and erroring if the wrong data type is used.
+		  and erroring if the wrong data type is used. 
 		"""
 		fitted_encoders = {}
 		incompatibilities = {
 			"string": [
-				"KBinsDiscretizer", "KernelCenterer", "MaxAbsScaler",
-				"MinMaxScaler", "PowerTransformer", "QuantileTransformer",
+				"KBinsDiscretizer", "KernelCenterer", "MaxAbsScaler", 
+				"MinMaxScaler", "PowerTransformer", "QuantileTransformer", 
 				"RobustScaler", "StandardScaler"
 			]
 			, "float": ["LabelBinarizer"]
@@ -2743,11 +2822,11 @@ class Labelcoder(BaseModel):
 					width = samples_to_fit.shape[1]
 					if (width > 1):
 						# Reshape "2D many columns" to “3D of 2D single columns.”
-						samples_to_fit = samples_to_fit[None].T
+						samples_to_fit = samples_to_fit[None].T                    
 						# "2D single column" already failed. Need it to fail again to trigger except.
 					elif (width == 1):
 						# Reshape "2D single columns" to “3D of 2D single columns.”
-						samples_to_fit = samples_to_fit.reshape(1, samples_to_fit.shape[0], 1)
+						samples_to_fit = samples_to_fit.reshape(1, samples_to_fit.shape[0], 1)    
 					# Fit against each 2D array within the 3D array.
 					for i, arr in enumerate(samples_to_fit):
 						fitted_encoders[i] = sklearn_preprocess.fit(arr)
@@ -2755,7 +2834,7 @@ class Labelcoder(BaseModel):
 					# At this point, "2D single column" has failed.
 					try:
 						# So reshape the "3D of 2D_singleColumn" into "2D of 1D for each column."
-						# This transformation is tested for both (width==1) as well as (width>1).
+						# This transformation is tested for both (width==1) as well as (width>1). 
 						samples_to_fit = samples_to_fit.transpose(2,0,1)[0]
 						# Fit against each column in 2D array.
 						for i, arr in enumerate(samples_to_fit):
@@ -2790,7 +2869,7 @@ class Labelcoder(BaseModel):
 	):
 		#with warnings.catch_warnings(record=True) as w:
 		if (encoding_dimension == '2D_multiColumn'):
-			# Our `to_numpy` method fetches data as 2D. So it has 1+ columns.
+			# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
 			encoded_samples = fitted_encoders[0].transform(samples_to_transform)
 			encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)
 		elif (encoding_dimension == '2D_singleColumn'):
@@ -2807,7 +2886,7 @@ class Labelcoder(BaseModel):
 				encoded_arrs = []
 				for i, arr in enumerate(encoded_samples):
 					encoded_arr = fitted_encoders[i].transform(arr)
-					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)
+					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)  
 					encoded_arrs.append(encoded_arr)
 				encoded_samples = np.array(encoded_arrs).T
 				del encoded_arrs
@@ -2821,13 +2900,13 @@ class Labelcoder(BaseModel):
 				encoded_samples = fitted_encoders[0].transform(encoded_samples)
 				# Some of these 1D encoders also output 1D.
 				# Need to put it back into 2D.
-				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)
+				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)  
 			elif (length > 1):
 				encoded_arrs = []
 				for i, arr in enumerate(encoded_samples):
 					encoded_arr = fitted_encoders[i].transform(arr)
 					# Check if it is 1D before appending.
-					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)
+					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)              
 					encoded_arrs.append(encoded_arr)
 				# From "3D of 2D_singleColumn" to "2D_multiColumn"
 				encoded_samples = np.array(encoded_arrs).T
@@ -2840,7 +2919,7 @@ class Labelcoder(BaseModel):
 class Featurecoder(BaseModel):
 	"""
 	- An Encoderset can have a chain of Featurecoders.
-	- Encoders are applied sequential, meaning the columns encoded by `featurecoder_index=0`
+	- Encoders are applied sequential, meaning the columns encoded by `featurecoder_index=0` 
 	  are not available to `featurecoder_index=1`.
 	- Much validation because real-life encoding errors are cryptic and deep for beginners.
 	"""
@@ -2867,7 +2946,7 @@ class Featurecoder(BaseModel):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		dtypes = listify(dtypes)
 		columns = listify(columns)
-
+		
 		splitset = encoderset.splitset
 		featureset = encoderset.splitset.featureset
 		featureset_cols = featureset.columns
@@ -2904,7 +2983,7 @@ class Featurecoder(BaseModel):
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
-
+		
 		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
 
 		if (dtypes is not None):
@@ -2914,7 +2993,7 @@ class Featurecoder(BaseModel):
 					Yikes - dtype '{typ}' was not found in remaining dtypes.
 					Remove '{typ}' from `dtypes` and try again.
 					"""))
-
+		
 		if (columns is not None):
 			for c in columns:
 				if (col not in initial_columns):
@@ -2922,12 +3001,12 @@ class Featurecoder(BaseModel):
 					Yikes - Column '{col}' was not found in remaining columns.
 					Remove '{col}' from `columns` and try again.
 					"""))
-
+		
 		# 3a. Figure out which columns the filters apply to.
 		if (include==True):
 			# Add to this empty list via inclusion.
 			matching_columns = []
-
+			
 			if ((dtypes is None) and (columns is None)):
 				raise ValueError("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
 
@@ -2957,7 +3036,7 @@ class Featurecoder(BaseModel):
 
 			if (dtypes is not None):
 				for typ in dtypes:
-					for key,value in initial_dtypes.items():
+					for key,value in initial_dtypes.items():                
 						if (value == typ):
 							matching_columns.remove(key)
 							# Don't `break`; there can be more than one match.
@@ -2996,7 +3075,7 @@ class Featurecoder(BaseModel):
 		# 4. Test fitting the encoder to matching columns.
 		if (only_fit_train == True):
 			"""
-			- Foldset is tied to Batch. So just `fit()` on `train` split
+			- Foldset is tied to Queue. So just `fit()` on `train` split
 			  and don't worry about `folds_train_combined` for now.
 			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
 			  in which case user should be using `only_fit_train=False` anyways.
@@ -3028,7 +3107,7 @@ class Featurecoder(BaseModel):
 			elif (only_fit_train == True):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = featureset.to_numpy(columns=matching_columns)
-
+			
 			encoded_samples = Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
@@ -3059,7 +3138,7 @@ class Featurecoder(BaseModel):
 		if (verbose == True):
 			print(
 				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n" \
-				f"{pp.pformat(matching_columns)}\n"
+				f"{pp.pformat(matching_columns)}\n" 
 			)
 			if (len(leftover_columns) == 0):
 				print(
@@ -3086,126 +3165,218 @@ class Algorithm(BaseModel):
 	"""
 	library = CharField()
 	analysis_type = CharField()#classification_multi, classification_binary, regression, clustering.
-	function_model_build = BlobField()
-	function_model_train = BlobField()
-	function_model_predict = BlobField()
-	function_model_loss = BlobField() # null? do unsupervised algs have loss?
-	description = CharField(null=True)
+	
+	fn_build = BlobField()
+	fn_lose = BlobField() # null? do unsupervised algs have loss?
+	fn_optimize = BlobField()
+	fn_train = BlobField()
+	fn_predict = BlobField()
 
+	# --- used by `select_fn_lose()` ---
+	def keras_regression_lose(**hp):
+		loser = keras.losses.MeanAbsoluteError()
+		return loser
+	
+	def keras_binary_lose(**hp):
+		loser = keras.losses.BinaryCrossentropy()
+		return loser
+	
+	def keras_multiclass_lose(**hp):
+		loser = keras.losses.CategoricalCrossentropy()
+		return loser
 
-	# --- used by `select_function_model_predict()` ---
-	def multiclass_model_predict(model, samples_predict):
+	def pytorch_binary_lose(**hp):
+		loser = nn.BCELoss()
+		return loser
+
+	def pytorch_multiclass_lose(**hp):
+		# ptrckblck says `nn.NLLLoss()` will work too.
+		loser = nn.CrossEntropyLoss()
+		return loser
+
+	def pytorch_regression_lose(**hp):
+		loser = nn.L1Loss()#mean absolute error.
+		return loser
+
+	# --- used by `select_fn_optimize()` ---
+	"""
+	- Eventually could help the user select an optimizer based on topology (e.g. depth),
+	  but Adamax works great for me everywhere.
+	 - `**hp` needs to be included because that's how it is called in training loop.
+	"""
+	def keras_optimize(**hp):
+		optimizer = keras.optimizers.Adamax(learning_rate=0.01)
+		return optimizer
+
+	def pytorch_optimize(model, **hp):
+		optimizer = optim.Adamax(model.parameters(),lr=0.01)
+		return optimizer
+
+	# --- used by `select_fn_predict()` ---
+	def keras_multiclass_predict(model, samples_predict):
+		# Shows the probabilities of each class coming out of softmax neurons:
+		# array([[9.9990356e-01, 9.6374511e-05, 3.3754202e-10]
 		probabilities = model.predict(samples_predict['features'])
 		# This is the official keras replacement for multiclass `.predict_classes()`
-		# Returns one ordinal array per sample: `[[0][1][2][3]]`
-		predictions = np.argmax(probabilities, axis=-1)
-		return predictions, probabilities
+		# Returns one ordinal array per sample: `[[0][1][2][3]]` 
+		prediction = np.argmax(probabilities, axis=-1)
+		return prediction, probabilities
 
-	def binary_model_predict(model, samples_predict):
-		probabilities = model.predict(samples_predict['features'])
-		# this is the official keras replacement for binary classes `.predict_classes()`
-		# Returns one array per sample: `[[0][1][0][1]]`
-		predictions = (probabilities > 0.5).astype("int32")
-		return predictions, probabilities
+	def keras_binary_predict(model, samples_predict):
+		# Sigmoid output is between 0 and 1.
+		# It's not technically a probability, but it is still easy to interpret.
+		probability = model.predict(samples_predict['features'])
+		# This is the official keras replacement for binary classes `.predict_classes()`.
+		# Returns one array per sample: `[[0][1][0][1]]`.
+		prediction = (probability > 0.5).astype("int32")
+		return prediction, probability
 
-	def regression_model_predict(model, samples_predict):
-		predictions = model.predict(samples_predict['features'])
-		return predictions
+	def keras_regression_predict(model, samples_predict):
+		prediction = model.predict(samples_predict['features'])
+		# ^ verified that output only produces a single value.
+		return prediction
 
-	# --- used by `select_function_model_loss()` ---
-	def keras_model_loss(model, samples_evaluate):
-		metrics = model.evaluate(samples_evaluate['features'], samples_evaluate['labels'], verbose=0)
-		if (isinstance(metrics, list)):
-			loss = metrics[0]
-		elif (isinstance(metrics, float)):
-			loss = metrics
-		else:
-			raise ValueError(f"\nYikes - The 'metrics' returned are neither a list nor a float:\n{metrics}\n")
-		return loss
+	def pytorch_binary_predict(model, samples_predict):
+		probability = model(samples_predict['features'])
+		# Convert tensor back to numpy for AIQC metrics.
+		probability = probability.detach().numpy()
+		prediction = (probability > 0.5).astype("int32")
+		# Both objects are numpy.
+		return prediction, probability
+
+	def pytorch_multiclass_predict(model, samples_predict):
+		probabilities = model(samples_predict['features'])
+		# Convert tensor back to numpy for AIQC metrics.
+		probabilities = probabilities.detach().numpy()
+		prediction = np.argmax(probabilities, axis=-1)
+		# Both objects are numpy.
+		return prediction, probabilities
+
+	def pytorch_regression_predict(model, samples_predict):
+		prediction = model(samples_predict['features']).detach().numpy()
+		return prediction
 
 
-	def select_function_model_predict(
+	def select_fn_lose(
+		library:str,
+		analysis_type:str
+	):      
+		fn_lose = None
+		if (library == 'keras'):
+			if (analysis_type == 'regression'):
+				fn_lose = Algorithm.keras_regression_lose
+			elif (analysis_type == 'classification_binary'):
+				fn_lose = Algorithm.keras_binary_lose
+			elif (analysis_type == 'classification_multi'):
+				fn_lose = Algorithm.keras_multiclass_lose
+		elif (library == 'pytorch'):
+			if (analysis_type == 'regression'):
+				fn_lose = Algorithm.pytorch_regression_lose
+			elif (analysis_type == 'classification_binary'):
+				fn_lose = Algorithm.pytorch_binary_lose
+			elif (analysis_type == 'classification_multi'):
+				fn_lose = Algorithm.pytorch_multiclass_lose
+		# After each of the predefined approaches above, check if it is still undefined.
+		if fn_lose is None:
+			raise ValueError(dedent("""
+			Yikes - You did not provide a `fn_lose`,
+			and we don't have an automated function for your combination of 'library' and 'analysis_type'
+			"""))
+		return fn_lose
+
+	def select_fn_optimize(library:str):
+		fn_optimize = None
+		if (library == 'keras'):
+			fn_optimize = Algorithm.keras_optimize
+		elif (library == 'pytorch'):
+			fn_optimize = Algorithm.pytorch_optimize
+		# After each of the predefined approaches above, check if it is still undefined.
+		if (fn_optimize is None):
+			raise ValueError(dedent("""
+			Yikes - You did not provide a `fn_optimize`,
+			and we don't have an automated function for your 'library'
+			"""))
+		return fn_optimize
+
+	def select_fn_predict(
 		library:str,
 		analysis_type:str
 	):
-		function_model_predict = None
+		fn_predict = None
 		if (library == 'keras'):
 			if (analysis_type == 'classification_multi'):
-				function_model_predict = Algorithm.multiclass_model_predict
+				fn_predict = Algorithm.keras_multiclass_predict
 			elif (analysis_type == 'classification_binary'):
-				function_model_predict = Algorithm.binary_model_predict
+				fn_predict = Algorithm.keras_binary_predict
 			elif (analysis_type == 'regression'):
-				function_model_predict = Algorithm.regression_model_predict
-		# After each of the predefined approaches above run, check if it is still undefined.
-		if function_model_predict is None:
+				fn_predict = Algorithm.keras_regression_predict
+		elif (library == 'pytorch'):
+			if (analysis_type == 'classification_multi'):
+				fn_predict = Algorithm.pytorch_multiclass_predict
+			elif (analysis_type == 'classification_binary'):
+				fn_predict = Algorithm.pytorch_binary_predict
+			elif (analysis_type == 'regression'):
+				fn_predict = Algorithm.pytorch_regression_predict
+
+		# After each of the predefined approaches above, check if it is still undefined.
+		if fn_predict is None:
 			raise ValueError(dedent("""
-			Yikes - You did not provide a `function_model_predict`,
+			Yikes - You did not provide a `fn_predict`,
 			and we don't have an automated function for your combination of 'library' and 'analysis_type'
 			"""))
-		return function_model_predict
-
-
-	def select_function_model_loss(
-		library:str,
-		analysis_type:str
-	):
-		function_model_loss = None
-		if (library == 'keras'):
-			function_model_loss = Algorithm.keras_model_loss
-		# After each of the predefined approaches above run, check if it is still undefined.
-		if function_model_loss is None:
-			raise ValueError(dedent("""
-			Yikes - You did not provide a `function_model_loss`,
-			and we don't have an automated function for your combination of 'library' and 'analysis_type'
-			"""))
-		return function_model_loss
+		return fn_predict
 
 
 	def make(
 		library:str
 		, analysis_type:str
-		, function_model_build:object
-		, function_model_train:object
-		, function_model_predict:object = None
-		, function_model_loss:object = None
+		, fn_build:object
+		, fn_train:object
+		, fn_predict:object = None
+		, fn_lose:object = None
+		, fn_optimize:object = None
 		, description:str = None
 	):
 		library = library.lower()
-		if (library != 'keras'):
-			raise ValueError("\nYikes - Right now, the only library we support is 'keras.' More to come soon!\n")
+		if ((library != 'keras') and (library != 'pytorch')):
+			raise ValueError("\nYikes - Right now, the only libraries we support are 'keras' and 'pytorch'\nMore to come soon!\n")
 
 		analysis_type = analysis_type.lower()
 		supported_analyses = ['classification_multi', 'classification_binary', 'regression']
 		if (analysis_type not in supported_analyses):
 			raise ValueError(f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n")
 
-		if (function_model_predict is None):
-			function_model_predict = Algorithm.select_function_model_predict(
+		if (fn_predict is None):
+			fn_predict = Algorithm.select_fn_predict(
 				library=library, analysis_type=analysis_type
 			)
-		if (function_model_loss is None):
-			function_model_loss = Algorithm.select_function_model_loss(
+		if (fn_optimize is None):
+			fn_optimize = Algorithm.select_fn_optimize(library=library)
+		if (fn_lose is None):
+			fn_lose = Algorithm.select_fn_lose(
 				library=library, analysis_type=analysis_type
 			)
 
-		funcs = [function_model_build, function_model_train, function_model_predict, function_model_loss]
+		funcs = [fn_build, fn_optimize, fn_train, fn_predict, fn_lose]
 		for i, f in enumerate(funcs):
 			is_func = callable(f)
 			if (not is_func):
 				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
 
-		function_model_build = dill_serialize(function_model_build)
-		function_model_train = dill_serialize(function_model_train)
-		function_model_predict = dill_serialize(function_model_predict)
-		function_model_loss = dill_serialize(function_model_loss)
+		fn_build = dill_serialize(fn_build)
+		fn_optimize = dill_serialize(fn_optimize)
+		fn_train = dill_serialize(fn_train)
+		fn_predict = dill_serialize(fn_predict)
+		fn_lose = dill_serialize(fn_lose)
 
 		algorithm = Algorithm.create(
 			library = library
 			, analysis_type = analysis_type
-			, function_model_build = function_model_build
-			, function_model_train = function_model_train
-			, function_model_predict = function_model_predict
-			, function_model_loss = function_model_loss
+			, fn_build = fn_build
+			, fn_optimize = fn_optimize
+			, fn_train = fn_train
+			, fn_predict = fn_predict
+			, fn_lose = fn_lose
 			, description = description
 		)
 		return algorithm
@@ -3224,7 +3395,7 @@ class Algorithm(BaseModel):
 		return hyperparamset
 
 
-	def make_batch(
+	def make_queue(
 		id:int
 		, splitset_id:int
 		, repeat_count:int = 1
@@ -3233,7 +3404,7 @@ class Algorithm(BaseModel):
 		, encoderset_id:int = None
 		, hide_test:bool = False
 	):
-		batch = Batch.from_algorithm(
+		queue = Queue.from_algorithm(
 			algorithm_id = id
 			, splitset_id = splitset_id
 			, hyperparamset_id = hyperparamset_id
@@ -3242,14 +3413,14 @@ class Algorithm(BaseModel):
 			, repeat_count = repeat_count
 			, hide_test = hide_test
 		)
-		return batch
+		return queue
 
 
 
 class Hyperparamset(BaseModel):
 	"""
 	- Not glomming this together with Algorithm and Preprocess because you can keep the Algorithm the same,
-	  while running many different batches of hyperparams.
+	  while running many different queues of hyperparams.
 	- An algorithm does not have to have a hyperparamset. It can used fixed parameters.
 	- `repeat_count` is the number of times to run a model, sometimes you just get stuck at local minimas.
 	- `param_count` is the number of paramets that are being hypertuned.
@@ -3273,20 +3444,25 @@ class Hyperparamset(BaseModel):
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 
-		# construct the hyperparameter combinations
+		# Construct the hyperparameter combinations
 		params_names = list(hyperparameters.keys())
 		params_lists = list(hyperparameters.values())
-		# from multiple lists, come up with every unique combination.
+
+		# Make sure they are actually lists.
+		for i, pl in enumerate(params_lists):
+			params_lists[i] = listify(pl)
+
+		# From multiple lists, come up with every unique combination.
 		params_combos = list(itertools.product(*params_lists))
 		hyperparamcombo_count = len(params_combos)
 
 		params_combos_dicts = []
-		# dictionary comprehension for making a dict from two lists.
+		# Dictionary comprehension for making a dict from two lists.
 		for params in params_combos:
-			params_combos_dict = {params_names[i]: params[i] for i in range(len(params_names))}
+			params_combos_dict = {params_names[i]: params[i] for i in range(len(params_names))} 
 			params_combos_dicts.append(params_combos_dict)
-
-		# now that we have the metadata about combinations
+		
+		# Now that we have the metadata about combinations
 		hyperparamset = Hyperparamset.create(
 			algorithm = algorithm
 			, description = description
@@ -3317,12 +3493,12 @@ class Hyperparamcombo(BaseModel):
 	def get_hyperparameters(id:int, as_pandas:bool=False):
 		hyperparamcombo = Hyperparamcombo.get_by_id(id)
 		hyperparameters = hyperparamcombo.hyperparameters
-
+		
 		params = []
 		for k,v in hyperparameters.items():
 			param = {"param":k, "value":v}
 			params.append(param)
-
+		
 		if (as_pandas==True):
 			df = pd.DataFrame.from_records(params, columns=['param','value'])
 			return df
@@ -3334,21 +3510,24 @@ class Hyperparamcombo(BaseModel):
 
 class Plot:
 	"""
-	Data is prepared in the Batch and Result classes
+	Data is prepared in the Queue and Result classes
 	before being fed into the methods below.
 	"""
 
-	plot_template = go.layout.Template()
+	plot_template = dict(layout = go.Layout(
+		font=dict(family='Avenir', color='#FAFAFA'),
+		plot_bgcolor='#181B1E',
+		paper_bgcolor='#181B1E',
+		hoverlabel=dict(
+			bgcolor="#0F0F0F",
+			font=dict(
+				family="Avenir",
+				size=15
+			)
+		)))
 
-	plot_template.layout.titlefont=dict(family='Avenir', color='#FAFAFA')
-	plot_template.layout.plot_bgcolor = "#181B1E"
-	plot_template.layout.paper_bgcolor = "#181B1E"
-	plot_template.layout.hoverlabel = dict(bgcolor = "#0F0F0F", font_size = 15 ,font_family = "Avenir")
-
-
-
-	def performance(dataframe:object):
-		# The 2nd metric is the last
+	def performance(self, dataframe:object):
+		# The 2nd metric is the last 
 		name_metric_2 = dataframe.columns.tolist()[-1]
 		if (name_metric_2 == "accuracy"):
 			display_metric_2 = "Accuracy"
@@ -3385,14 +3564,14 @@ class Plot:
 		fig.update_layout(
 			xaxis_title = "Loss"
 			, yaxis_title = display_metric_2
-			, template = Plot.plot_template
+			, template=self.plot_template
 		)
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
 
 
-	def learning_curve(dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
+	def learning_curve(self, dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
 		"""Dataframe rows are epochs and columns are metric names."""
 
 		# Spline seems to crash with too many points.
@@ -3417,8 +3596,8 @@ class Plot:
 			xaxis_title = "Epochs"
 			, yaxis_title = "Loss"
 			, legend_title = None
+			, template = self.plot_template
 			, height = 400
-			, template= Plot.plot_template
 			, yaxis = dict(
 				side = "right"
 				, tickmode = 'auto'# When loss is initially high, the 0.1 tickmarks are overwhelming.
@@ -3454,8 +3633,8 @@ class Plot:
 				xaxis_title = "epochs"
 				, yaxis_title = "accuracy"
 				, legend_title = None
+				, template = self.plot_template
 				, height = 400
-				, template = Plot.plot_template
 				, yaxis = dict(
 				side = "right"
 				, tickmode = 'linear'
@@ -3479,7 +3658,7 @@ class Plot:
 		fig_loss.show()
 
 
-	def confusion_matrix(cm_by_split):
+	def confusion_matrix(self, cm_by_split):
 		for split, cm in cm_by_split.items():
 			fig = px.imshow(
 				cm
@@ -3491,7 +3670,7 @@ class Plot:
 				, xaxis_title = "Predicted Label"
 				, yaxis_title = "Actual Label"
 				, legend_title = 'Sample Count'
-				, template = Plot.plot_template
+				, template = self.plot_template
 				, height = 225 # if too small, it won't render in Jupyter.
 				, yaxis = dict(
 					tickmode = 'linear'
@@ -3506,7 +3685,7 @@ class Plot:
 			fig.show()
 
 
-	def precision_recall(dataframe:object):
+	def precision_recall(self, dataframe:object):
 		fig = px.line(
 			dataframe
 			, x = 'recall'
@@ -3516,7 +3695,7 @@ class Plot:
 		)
 		fig.update_layout(
 			legend_title = None
-			, template = Plot.plot_template
+			, template = self.plot_template
 			, height = 500
 			, yaxis = dict(
 				side = "right"
@@ -3537,7 +3716,7 @@ class Plot:
 		fig.show()
 
 
-	def roc_curve(dataframe:object):
+	def roc_curve(self, dataframe:object):
 		fig = px.line(
 			dataframe
 			, x = 'fpr'
@@ -3548,7 +3727,7 @@ class Plot:
 		)
 		fig.update_layout(
 			legend_title = None
-			, template = Plot.plot_template
+			, template = self.plot_template
 			, height = 500
 			, xaxis = dict(
 				title = "False Positive Rate (FPR)"
@@ -3584,21 +3763,18 @@ class Plot:
 
 
 
-class Batch(BaseModel):
+class Queue(BaseModel):
 	repeat_count = IntegerField()
 	run_count = IntegerField()
 	hide_test = BooleanField()
 
-	algorithm = ForeignKeyField(Algorithm, backref='batches')
-	splitset = ForeignKeyField(Splitset, backref='batches')
+	algorithm = ForeignKeyField(Algorithm, backref='queues') 
+	splitset = ForeignKeyField(Splitset, backref='queues')
 
-	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
-	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
-	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='batches')
+	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
+	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
+	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 
-	# not sure how this got in here. delete it after testing.
-	#def __init__(self, *args, **kwargs):
-	#   super(Batch, self).__init__(*args, **kwargs)
 
 	def from_algorithm(
 		algorithm_id:int
@@ -3610,6 +3786,7 @@ class Batch(BaseModel):
 		, encoderset_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
+		library = algorithm.library
 		splitset = Splitset.get_by_id(splitset_id)
 
 		if (foldset_id is not None):
@@ -3620,20 +3797,20 @@ class Batch(BaseModel):
 			analysis_type = algorithm.analysis_type
 			label_col_count = splitset.label.column_count
 			label_dtypes = list(splitset.label.get_dtypes().values())
-
+			
 			if (label_col_count == 1):
 				label_dtype = label_dtypes[0]
-
-				if ('classification' in analysis_type):
+				
+				if ('classification' in analysis_type):	
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
-					if ('_binary' in analysis_type):
-						# Prevent OHE w classification_binary
-						if (encoderset_id is not None):
-							encoderset = Encoderset.get_by_id(encoderset_id)
-							labelcoder = encoderset.labelcoders[0]
-							stringified_coder = str(labelcoder.sklearn_preprocess)
+					if (encoderset_id is not None):
+						encoderset = Encoderset.get_by_id(encoderset_id)
+						labelcoder = encoderset.labelcoders[0]
+						stringified_coder = str(labelcoder.sklearn_preprocess)
+						if ('_binary' in analysis_type):
+							# Prevent OHE w classification_binary
 							if (stringified_coder.startswith("OneHotEncoder")):
 								raise ValueError(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
@@ -3642,12 +3819,23 @@ class Batch(BaseModel):
 								needs a single column output.
 								Go back and make a Labelcoder with single column output preprocess like `Binarizer()` instead.
 								"""))
-
+						elif ('_multi' in analysis_type):
+							if (library == 'pytorch'):
+								# Prevent OHE w pytorch.
+								if (stringified_coder.startswith("OneHotEncoder")):
+									raise ValueError(dedent("""
+									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
+									but `Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
+									This would result in a multi-column OHE output.
+									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
+									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
+									"""))
+									
 					if (splitset.bin_count is not None):
 						print(dedent("""
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
 							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
-						"""))
+						"""))				
 					if (foldset_id is not None):
 						# Not doing an `and` because foldset can't be accessed if it doesn't exist.
 						if (foldset.bin_count is not None):
@@ -3664,9 +3852,9 @@ class Batch(BaseModel):
 						(not np.issubdtype(label_dtype, np.signedinteger))
 					):
 						raise ValueError("Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
-
+					
 					if (splitset.bin_count is None):
-						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")
+						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")					
 					if (foldset_id is not None):
 						if (foldset.bin_count is None):
 							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Foldset.")
@@ -3675,7 +3863,7 @@ class Batch(BaseModel):
 						elif (foldset.bin_count is not None):
 							if (splitset.bin_count is None):
 								print("Warning - `bin_count` was set for Foldset, but not for Splitset. This leads to inconsistent stratification across samples.")
-
+					
 			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
@@ -3702,9 +3890,9 @@ class Batch(BaseModel):
 			# Just so we have an item to loop over as a null condition when creating Jobs.
 			combos = [None]
 			hyperparamset = None
-
+			
 		# Splitset can have multiple Encodersets for experimentation.
-		# So this relationship determines which one is tied to Batch.
+		# So this relationship determines which one is tied to Queue.
 		if (encoderset_id is not None):
 			encoderset = Encoderset.get_by_id(encoderset_id)
 		else:
@@ -3713,7 +3901,7 @@ class Batch(BaseModel):
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		run_count = len(combos) * len(folds) * repeat_count
 
-		b = Batch.create(
+		q = Queue.create(
 			run_count = run_count
 			, repeat_count = repeat_count
 			, algorithm = algorithm
@@ -3723,12 +3911,12 @@ class Batch(BaseModel):
 			, encoderset = encoderset
 			, hide_test = hide_test
 		)
-
+ 
 		for c in combos:
 			if (foldset is not None):
 				jobset = Jobset.create(
 					repeat_count = repeat_count
-					, batch = b
+					, queue = q
 					, hyperparamcombo = c
 					, foldset = foldset
 				)
@@ -3738,7 +3926,7 @@ class Batch(BaseModel):
 			try:
 				for f in folds:
 					Job.create(
-						batch = b
+						queue = q
 						, hyperparamcombo = c
 						, fold = f
 						, repeat_count = repeat_count
@@ -3748,18 +3936,18 @@ class Batch(BaseModel):
 				if (foldset is not None):
 					jobset.delete_instance() # Orphaned.
 					raise
-		return b
+		return q
 
 
 	def poll_statuses(id:int, as_pandas:bool=False):
-		batch = Batch.get_by_id(id)
-		repeat_count = batch.repeat_count
+		queue = Queue.get_by_id(id)
+		repeat_count = queue.repeat_count
 		statuses = []
 		for i in range(repeat_count):
-			for j in batch.jobs:
+			for j in queue.jobs:
 				# Check if there is a Result with a matching repeat_index
-				matching_result = Result.select().join(Job).join(Batch).where(
-					Batch.id==batch.id, Job.id==j.id, Result.repeat_index==i
+				matching_result = Result.select().join(Job).join(Queue).where(
+					Queue.id==queue.id, Job.id==j.id, Result.repeat_index==i
 				)
 				if (len(matching_result) == 1):
 					r_id = matching_result[0].id
@@ -3781,9 +3969,9 @@ class Batch(BaseModel):
 		- Could also be used for cloud jobs though.
 		"""
 		if (loop==False):
-			statuses = Batch.poll_statuses(id)
+			statuses = Queue.poll_statuses(id)
 			total = len(statuses)
-			done_count = len([s for s in statuses if s['result_id'] is not None])
+			done_count = len([s for s in statuses if s['result_id'] is not None]) 
 			percent_done = done_count / total
 
 			if (raw==True):
@@ -3801,9 +3989,9 @@ class Batch(BaseModel):
 				print(f"🔮 Training Models 🔮 {meter} {done_count}/{total} : {int(percent_done*100)}%")
 		elif (loop==True):
 			while (loop==True):
-				statuses = Batch.poll_statuses(id)
+				statuses = Queue.poll_statuses(id)
 				total = len(statuses)
-				done_count = len([s for s in statuses if s['result_id'] is not None])
+				done_count = len([s for s in statuses if s['result_id'] is not None]) 
 				percent_done = done_count / total
 				if (raw==True):
 					return percent_done
@@ -3828,27 +4016,27 @@ class Batch(BaseModel):
 
 
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		# Quick check to make sure all results aren't already complete.
-		run_count = batch.run_count
-		result_count = Result.select().join(Job).join(Batch).where(
-			Batch.id == batch.id).count()
+		run_count = queue.run_count
+		result_count = Result.select().join(Job).join(Queue).where(
+			Queue.id == queue.id).count()
 		if (run_count == result_count):
 			print("\nAll Jobs have already completed.\n")
 		else:
 			if (run_count > result_count > 0):
 				print("\nResuming Jobs...\n")
-			job_statuses = Batch.poll_statuses(id)
-
+			job_statuses = Queue.poll_statuses(id)
+			
 			if (in_background==True):
-				proc_name = "aiqc_batch_" + str(batch.id)
+				proc_name = "aiqc_queue_" + str(queue.id)
 				proc_names = [p.name for p in multiprocessing.active_children()]
 				if (proc_name in proc_names):
 					raise ValueError(
-						f"\nYikes - Cannot start this Batch because multiprocessing.Process.name '{proc_name}' is already running."
-						f"\nIf need be, you can kill the existing Process with `batch.stop_jobs()`.\n"
+						f"\nYikes - Cannot start this Queue because multiprocessing.Process.name '{proc_name}' is already running."
+						f"\nIf need be, you can kill the existing Process with `queue.stop_jobs()`.\n"
 					)
-
+				
 				# See notes at top of file about 'fork' vs 'spawn'
 				proc = multiprocessing.Process(
 					target = execute_jobs
@@ -3865,19 +4053,18 @@ class Batch(BaseModel):
 						, ncols = 100
 					):
 						if (j['result_id'] is None):
-
+							
 								Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
 					print("\nQueue was gracefully interrupted.\n")
-				os.system("say Model training completed")
 
 
 	def stop_jobs(id:int):
 		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
-		batch = Batch.get_by_id(id)
-
-		proc_name = f"aiqc_batch_{batch.id}"
+		queue = Queue.get_by_id(id)
+		
+		proc_name = f"aiqc_queue_{queue.id}"
 		current_procs = [p.name for p in multiprocessing.active_children()]
 		if (proc_name not in current_procs):
 			raise ValueError(f"\nYikes - Cannot terminate `multiprocessing.Process.name` '{proc_name}' because it is not running.\n")
@@ -3890,7 +4077,7 @@ class Batch(BaseModel):
 				except:
 					raise Exception(f"\nYikes - Failed to terminate `multiprocessing.Process` '{proc_name}.'\n")
 				else:
-					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from Batch <id:{batch.id}>\n")
+					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from aiqc.Queue <id:{queue.id}>\n")
 
 
 	def metrics_to_pandas(
@@ -3899,38 +4086,42 @@ class Batch(BaseModel):
 		, sort_by:list=None
 		, ascending:bool=False
 	):
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		selected_metrics = listify(selected_metrics)
 		sort_by = listify(sort_by)
-
-		batch_results = Result.select().join(Job).where(
-			Job.batch==id
+		
+		queue_results = Result.select().join(Job).where(
+			Job.queue==id
 		).order_by(Result.id)
-		batch_results = list(batch_results)
+		queue_results = list(queue_results)
 
-		if (not batch_results):
+		if (not queue_results):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
 
-		metric_names = list(list(batch.jobs[0].results[0].metrics.values())[0].keys())
+		metric_names = list(list(queue.jobs[0].results[0].metrics.values())[0].keys())#bad.
 		if (selected_metrics is not None):
 			for m in selected_metrics:
-				if m not in metric_names:
+				if (m not in metric_names):
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics`.
-					Note: the metrics available depend on the `Batch.analysis_type`.
+					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
 
-		# Unpack the split data from each Result and tag it with relevant Batch metadata.
+		# Unpack the split data from each Result and tag it with relevant Queue metadata.
 		split_metrics = []
-		for r in batch_results:
+		for r in queue_results:
 			for split_name,metrics in r.metrics.items():
 
 				split_metric = {}
-				split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
-				if (batch.foldset is not None):
+				if (r.job.hyperparamcombo is not None):
+					split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+				elif (r.job.hyperparamcombo is None):
+					split_metric['hyperparamcombo_id'] = None
+
+				if (queue.foldset is not None):
 					split_metric['jobset_id'] = r.job.jobset.id
 					split_metric['fold_index'] = r.job.fold.fold_index
 				split_metric['job_id'] = r.job.id
@@ -3947,16 +4138,16 @@ class Batch(BaseModel):
 
 				split_metrics.append(split_metric)
 
-		# Return relevant columns based on how the Batch was designed.
-		if (batch.foldset is not None):
-			if (batch.repeat_count > 1):
+		# Return relevant columns based on how the Queue was designed.
+		if (queue.foldset is not None):
+			if (queue.repeat_count > 1):
 				sort_list = ['hyperparamcombo_id','jobset_id','repeat_index','fold_index']
-			elif (batch.repeat_count == 1):
+			elif (queue.repeat_count == 1):
 				sort_list = ['hyperparamcombo_id','jobset_id','fold_index']
-		elif (batch.foldset is None):
-			if (batch.repeat_count > 1):
+		elif (queue.foldset is None):
+			if (queue.repeat_count > 1):
 				sort_list = ['hyperparamcombo_id','job_id','repeat_index']
-			elif (batch.repeat_count == 1):
+			elif (queue.repeat_count == 1):
 				sort_list = ['hyperparamcombo_id','job_id']
 
 		column_names = list(split_metrics[0].keys())
@@ -3979,21 +4170,21 @@ class Batch(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		batch = Batch.get_by_id(id)
+		queue = Queue.get_by_id(id)
 		selected_metrics = listify(selected_metrics)
 		selected_stats = listify(selected_stats)
 		sort_by = listify(sort_by)
 
-		batch_results = Result.select().join(Job).where(
-			Job.batch==id
+		queue_results = Result.select().join(Job).where(
+			Job.queue==id
 		).order_by(Result.id)
-		batch_results = list(batch_results)
+		queue_results = list(queue_results)
 
-		if (not batch_results):
+		if (not queue_results):
 			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
 			return None
 
-		metrics_aggregate = batch_results[0].metrics_aggregate
+		metrics_aggregate = queue_results[0].metrics_aggregate
 		metric_names = list(metrics_aggregate.keys())
 		stat_names = list(list(metrics_aggregate.values())[0].keys())
 
@@ -4002,7 +4193,7 @@ class Batch(BaseModel):
 				if m not in metric_names:
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.
-					Note: the metrics available depend on the `Batch.analysis_type`.
+					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
@@ -4015,7 +4206,7 @@ class Batch(BaseModel):
 			selected_stats = stat_names
 
 		results_stats = []
-		for r in batch_results:
+		for r in queue_results:
 			for metric, stats in r.metrics_aggregate.items():
 				# Check whitelist.
 				if metric in selected_metrics:
@@ -4062,23 +4253,23 @@ class Batch(BaseModel):
 	):
 		"""
 		Originally I had `min_metric_2` not `min_accuracy` and `min_r2`,
-		but that would be confusing for users, so I went with informative
+		but that would be confusing for users, so I went with informative 
 		erro messages instead.
 		"""
-		batch = Batch.get_by_id(id)
-		analysis_type = batch.algorithm.analysis_type
+		queue = Queue.get_by_id(id)
+		analysis_type = queue.algorithm.analysis_type
 
 		# Now we need to filter the df based on the specified criteria.
 		if ("classification" in analysis_type):
 			if (min_r2 is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in batch.analysis_type`.\n")
+				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in queue.analysis_type`.\n")
 			if (min_accuracy is None):
 				min_accuracy = 0.0
 			min_metric_2 = min_accuracy
 			name_metric_2 = "accuracy"
 		elif (analysis_type == 'regression'):
 			if (min_accuracy is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_accuracy` if `batch.analysis_type='regression'`.\n")
+				raise ValueError("\nYikes - Cannot use argument `min_accuracy` if `queue.analysis_type='regression'`.\n")
 			if (min_r2 is None):
 				min_r2 = -1.0
 			min_metric_2 = min_r2
@@ -4086,8 +4277,8 @@ class Batch(BaseModel):
 
 		if (max_loss is None):
 			max_loss = float('inf')
-
-		df = batch.metrics_to_pandas()
+			
+		df = queue.metrics_to_pandas()
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
 			return None
@@ -4111,26 +4302,26 @@ class Batch(BaseModel):
 class Jobset(BaseModel):
 	"""
 	- Used to group cross-fold Jobs.
-	- Union of Hyperparamcombo, Foldset, and Batch.
+	- Union of Hyperparamcombo, Foldset, and Queue.
 	"""
 	repeat_count = IntegerField
 
 	foldset = ForeignKeyField(Foldset, backref='jobsets')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='jobsets')
-	batch = ForeignKeyField(Batch, backref='jobsets')
+	queue = ForeignKeyField(Queue, backref='jobsets')
 
 
 
 
 class Job(BaseModel):
 	"""
-	- Gets its Algorithm through the Batch.
+	- Gets its Algorithm through the Queue.
 	- Saves its Model to a Result.
 	"""
 	repeat_count = IntegerField()
 	#log = CharField() #record failures
 
-	batch = ForeignKeyField(Batch, backref='jobs')
+	queue = ForeignKeyField(Queue, backref='jobs')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	fold = ForeignKeyField(Fold, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	jobset = ForeignKeyField(Jobset, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
@@ -4145,7 +4336,7 @@ class Job(BaseModel):
 			average = "weighted"
 			roc_average = "weighted"
 			roc_multi_class = "ovr"
-
+			
 		split_metrics = {}
 		# Let the classification_multi labels hit this metric in OHE format.
 		split_metrics['roc_auc'] = roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
@@ -4172,13 +4363,13 @@ class Job(BaseModel):
 		predictions = predictions.flatten()
 		probabilities = probabilities.flatten()
 		split_plot_data = {}
-
+		
 		if analysis_type == "classification_binary":
 			labels_processed = labels_processed.flatten()
 			split_plot_data['confusion_matrix'] = confusion_matrix(labels_processed, predictions)
 			fpr, tpr, _ = roc_curve(labels_processed, probabilities)
 			precision, recall, _ = precision_recall_curve(labels_processed, probabilities)
-
+		
 		elif analysis_type == "classification_multi":
 			# Flatten OHE labels for use with probabilities.
 			labels_flat = labels_processed.flatten()
@@ -4206,12 +4397,13 @@ class Job(BaseModel):
 		j = Job.get_by_id(id)
 		if verbose:
 			print(f"\nJob #{j.id} starting...")
-		batch = j.batch
-		algorithm = batch.algorithm
+		queue = j.queue
+		algorithm = queue.algorithm
 		analysis_type = algorithm.analysis_type
-		hide_test = batch.hide_test
-		splitset = batch.splitset
-		encoderset = batch.encoderset
+		library = algorithm.library
+		hide_test = queue.hide_test
+		splitset = queue.splitset
+		encoderset = queue.encoderset
 		hyperparamcombo = j.hyperparamcombo
 		fold = j.fold
 
@@ -4236,18 +4428,18 @@ class Job(BaseModel):
 				key_evaluation = 'test'
 			elif (hide_test == True):
 				key_evaluation = None
-
+			
 			if (splitset.has_validation):
 				samples['validation'] = splitset.to_numpy(splits=['validation'])['validation']
 				key_evaluation = 'validation'
-
+				
 			if (fold is not None):
 				foldset = fold.foldset
 				fold_index = fold.fold_index
 				fold_samples_np = foldset.to_numpy(fold_index=fold_index)[fold_index]
 				samples['folds_train_combined'] = fold_samples_np['folds_train_combined']
 				samples['fold_validation'] = fold_samples_np['fold_validation']
-
+				
 				key_train = "folds_train_combined"
 				key_evaluation = "fold_validation"
 			elif (fold is None):
@@ -4259,7 +4451,7 @@ class Job(BaseModel):
 		- encoding happens prior to training the model.
 		- Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
 		"""
-		if (encoderset is not None):
+		if (encoderset is not None):                
 			# 2a1. Fit labels.
 			if (len(encoderset.labelcoders) == 1):
 				labelcoder = encoderset.labelcoders[0]
@@ -4318,7 +4510,7 @@ class Job(BaseModel):
 								, include_label = False
 								, feature_columns = matching_columns
 							)[fold_index]['folds_train_combined']['features']
-
+						
 					elif (featurecoder.only_fit_train == False):
 						# Doesn't matter if folded, use all samples.
 						samples_to_fit = splitset.featureset.to_numpy(
@@ -4331,7 +4523,7 @@ class Job(BaseModel):
 					)
 					del samples_to_fit
 
-
+					
 					#2b2. Transform features. Populate `encoded_features` dict.
 					for split in samples.keys():
 
@@ -4399,51 +4591,98 @@ class Job(BaseModel):
 		3. Build and Train model.
 		- Now that encoding has taken place, we can determine the shapes.
 		"""
+		# The shape of the features and labels is a predefined argument
+		# of the Algorithm functions.
 		first_key = next(iter(samples))
 		features_shape = samples[first_key]['features'][0].shape
 		label_shape = samples[first_key]['labels'][0].shape
 
+		# Does not include the `batch_size`
+		input_shapes = {
+			"features_shape": features_shape
+			, "label_shape": label_shape
+		}
+
 		if (hyperparamcombo is not None):
-			hyperparameters = hyperparamcombo.hyperparameters
+			hp = hyperparamcombo.hyperparameters
 		elif (hyperparamcombo is None):
-			hyperparameters = None
+			hp = {} #`**` cannot be None.
 
-		function_model_build = dill_deserialize(algorithm.function_model_build)
-		if (splitset.supervision == "unsupervised"):
-			model = function_model_build(
-				features_shape,
-				**hyperparameters
-			)
-		elif (splitset.supervision == "supervised"):
-			model = function_model_build(
-				features_shape, label_shape,
-				**hyperparameters
-			)
+		fn_build = dill_deserialize(algorithm.fn_build)
+		if (splitset.supervision == "supervised"):
+			# pytorch multiclass has a single ordinal label.
+			if (analysis_type == 'classification_multi') and (library == 'pytorch'):
+				num_classes = len(splitset.label.unique_classes)
+				model = fn_build(features_shape, num_classes, **hp)
+			else:
+				model = fn_build(features_shape, label_shape, **hp)
+		elif (splitset.supervision == "unsupervised"):
+			model = fn_build(features_shape, **hp)
+		if (model is None):
+			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
+		
+		# The model and optimizer get combined during training.
+		fn_lose = dill_deserialize(algorithm.fn_lose)
+		fn_optimize = dill_deserialize(algorithm.fn_optimize)
+		fn_train = dill_deserialize(algorithm.fn_train)
 
-		function_model_train = dill_deserialize(algorithm.function_model_train)
+		loser = fn_lose(**hp)
+		if (loser is None):
+			raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+
+		if (library == 'keras'):
+			optimizer = fn_optimize(**hp)
+		elif (library == 'pytorch'):
+			optimizer = fn_optimize(model, **hp)
+		if (optimizer is None):
+			raise ValueError("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
+
+		
 		if (key_evaluation is not None):
-			model = function_model_train(
-				model = model
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples[key_evaluation]
-				, **hyperparameters
-			)
+			samples_eval = samples[key_evaluation]
 		elif (key_evaluation is None):
-			model = function_model_train(
+			samples_eval = None
+		
+		if (library == "keras"):
+			model = fn_train(
 				model = model
+				, loser = loser
+				, optimizer = optimizer
 				, samples_train = samples[key_train]
-				, samples_evaluate = None
-				, **hyperparameters
+				, samples_evaluate = samples_eval
+				, **hp
 			)
 
-		if (algorithm.library.lower() == "keras"):
+		elif (library == "pytorch"):
+			# Have to convert each array into a tensor.
+			samples[key_train]['features'] = torch.FloatTensor(samples[key_train]['features'])
+			samples[key_train]['labels'] = torch.FloatTensor(samples[key_train]['labels'])
+			samples_eval['features'] = torch.FloatTensor(samples_eval['features'])
+			samples_eval['labels'] = torch.FloatTensor(samples_eval['labels'])
+
+			model, history = fn_train(
+				model = model
+				, loser = loser
+				, optimizer = optimizer
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples_eval
+				, **hp
+			)
+			if (history is None):
+				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+		if (model is None):
+			raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+
+
+		# Save the artifacts of the trained model.
+		if (library == "keras"):
 			# If blank this value is `{}` not None.
 			history = model.history.history
 			"""
 			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
 			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
 			  https://github.com/keras-team/keras/issues/14411
-			- So let's switch to a real file in appdirs. This approach will generalize better.
+			- So let's switch to a real file in appdirs.
 			- Assuming `model.save()` will trigger OS-specific h5 drivers.
 			"""
 			# Write it.
@@ -4455,45 +4694,101 @@ class Job(BaseModel):
 			)
 			# Fetch the bytes ('rb': read binary)
 			with open(temp_file_name, 'rb') as file:
-				model_bytes = file.read()
+				model_blob = file.read()
 			os.remove(temp_file_name)
+		elif (library == 'pytorch'):
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
+			model_blob = io.BytesIO()
+			torch.save(
+				{
+					'model_state_dict': model.state_dict(),
+					'optimizer_state_dict': optimizer.state_dict()
+				},
+				model_blob
+			)
+			model_blob = model_blob.getvalue()
 
 		"""
-		4. Evaluation: predictions, metrics, charts.
+		4. Evaluation: predictions, metrics, charts for each split/fold.
 		"""
 		predictions = {}
 		probabilities = {}
 		metrics = {}
 		plot_data = {}
 
-		function_model_predict = dill_deserialize(algorithm.function_model_predict)
-		function_model_loss = dill_deserialize(algorithm.function_model_loss)
+		fn_predict = dill_deserialize(algorithm.fn_predict)
+
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
+				# Convert any remaining numpy splits into tensors.
+				if (library == 'pytorch'):
+					if (type(data) != torch.Tensor):
+						data['features'] = torch.FloatTensor(data['features'])
+						data['labels'] = torch.FloatTensor(data['labels'])
 
-				preds, probs = function_model_predict(model, data)
+				preds, probs = fn_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
+				# Outputs numpy.
+
+				# https://keras.io/api/losses/probabilistic_losses/
+				if (library == 'keras'):
+					loss = loser(data['labels'], probs)
+				elif (library == 'pytorch'):
+					tz_probs = torch.FloatTensor(probs)
+					if (algorithm.analysis_type == 'classification_binary'):
+						loss = loser(tz_probs, data['labels'])
+						# convert back to numpy for metrics and plots.
+						data['labels'] = data['labels'].detach().numpy()
+					elif (algorithm.analysis_type == 'classification_multi'):
+						flat_labels = data['labels'].flatten().to(torch.long)
+						loss = loser(tz_probs, flat_labels)
+						# convert back to *OHE* numpy for metrics and plots.
+						data['labels'] = data['labels'].detach().numpy()
+						data['labels'] = to_categorical(data['labels'])
+
 				metrics[split] = Job.split_classification_metrics(
-					data['labels'],
-					preds, probs, analysis_type
+					data['labels'], preds, probs, analysis_type
 				)
-				metrics[split]['loss'] = function_model_loss(model, data)
+				metrics[split]['loss'] = float(loss)
+
 				plot_data[split] = Job.split_classification_plots(
-					data['labels'],
-					preds, probs, analysis_type
-				)
-		elif analysis_type == "regression":
+					data['labels'], preds, probs, analysis_type
+				) 
+		elif (analysis_type == "regression"):
+			# The raw output values *is* the continuous prediction itself.
 			probabilities = None
 			for split, data in samples.items():
-				preds = function_model_predict(model, data)
+				
+				# Convert any remaining numpy splits into tensors.
+				# Do all of the tensor operations below before numpy operations.
+				if (library == 'pytorch'):
+					if (type(data) != torch.Tensor):
+						data['features'] = torch.FloatTensor(data['features'])
+						data['labels'] = torch.FloatTensor(data['labels'])
+
+				preds = fn_predict(model, data)
 				predictions[split] = preds
+				# Outputs numpy.
+
+				#https://keras.io/api/losses/regression_losses/
+				if (library == 'keras'):
+					loss = loser(data['labels'], preds)
+				elif (library == 'pytorch'):
+					tz_preds = torch.FloatTensor(preds)
+					loss = loser(tz_preds, data['labels'])
+					# After obtaining loss, make labels numpy again for metrics.
+					data['labels'] = data['labels'].detach().numpy()
+					# `preds` object is still numpy.
+
+				# Numpy inputs.
 				metrics[split] = Job.split_regression_metrics(
 					data['labels'], preds
 				)
-				metrics[split]['loss'] = function_model_loss(model, data)
+				metrics[split]['loss'] = float(loss)
 				plot_data = None
 
+		# 4b. Aggregate metrics across splits/ folds.
 		# Alphabetize metrics dictionary by key.
 		for k,v in metrics.items():
 			metrics[k] = dict(natsorted(v.items()))
@@ -4503,7 +4798,8 @@ class Job(BaseModel):
 		for metric in metric_names:
 			split_values = []
 			for split, split_metrics in metrics.items():
-				value = split_metrics[metric]
+				# ran into obscure errors with `pstdev` when not `float(value)`
+				value = float(split_metrics[metric])
 				split_values.append(value)
 
 			mean = statistics.mean(split_values)
@@ -4513,19 +4809,19 @@ class Job(BaseModel):
 			maximum = max(split_values)
 
 			metrics_aggregate[metric] = {
-				"mean":mean, "median":median, "pstdev":pstdev,
-				"minimum":minimum, "maximum":maximum
+				"mean":mean, "median":median, "pstdev":pstdev, 
+				"minimum":minimum, "maximum":maximum 
 			}
 		time_succeeded = datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
-		matching_result = Result.select().join(Job).join(Batch).where(
-			Batch.id==batch.id, Job.id==j.id, Result.repeat_index==repeat_index)
+		matching_result = Result.select().join(Job).join(Queue).where(
+			Queue.id==queue.id, Job.id==j.id, Result.repeat_index==repeat_index)
 		if (len(matching_result) > 0):
 			raise ValueError(
 				f"\nYikes - Duplicate run detected:" \
-				f"\nBatch<{batch.id}>, Job<{j.id}>, Job.repeat_index<{repeat_index}>.\n" \
+				f"\nQueue<{queue.id}>, Job<{j.id}>, Job.repeat_index<{repeat_index}>.\n" \
 				f"\nCancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing." \
 				f"\nNo action needed, the other instance will continue running to completion.\n"
 			)
@@ -4536,7 +4832,8 @@ class Job(BaseModel):
 			time_started = time_started
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
-			, model_file = model_bytes
+			, model_file = model_blob
+			, input_shapes = input_shapes
 			, history = history
 			, predictions = predictions
 			, probabilities = probabilities
@@ -4547,12 +4844,12 @@ class Job(BaseModel):
 			, repeat_index = repeat_index
 		)
 
-		# Just to be sure not held in memory or multiprocess forked on a 2nd Batch.
+		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
 		del samples
 		return j
 
 
-def execute_jobs(job_statuses:list, verbose:bool=False):
+def execute_jobs(job_statuses:list, verbose:bool=False):  
 	"""
 	- This needs to be a top level function, otherwise you get pickle attribute error.
 	- Alternatively, you can put this is a separate submodule file, and call it via
@@ -4581,6 +4878,7 @@ class Result(BaseModel):
 	time_succeeded = DateTimeField()
 	time_duration = IntegerField()
 	model_file = BlobField()
+	input_shapes = JSONField()
 	history = JSONField()
 	predictions = PickleField()
 	metrics = PickleField()
@@ -4588,23 +4886,42 @@ class Result(BaseModel):
 	plot_data = PickleField(null=True) # Regression only uses history.
 	probabilities = PickleField(null=True) # Not used for regression.
 
-
 	job = ForeignKeyField(Job, backref='results')
 
 
 	def get_model(id:int):
-		r = Result.get_by_id(id)
-		algorithm = r.job.batch.algorithm
-		model_bytes = r.model_file
+		result = Result.get_by_id(id)
+		algorithm = result.job.queue.algorithm
+		model_blob = result.model_file
 
-		if (algorithm.library.lower() == "keras"):
+		if (algorithm.library == "keras"):
 			temp_file_name = f"{app_dir}temp_keras_model"
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
-				f.write(model_bytes)
+				f.write(model_blob)
 				model = load_model(temp_file_name, compile=True)
 			os.remove(temp_file_name)
-		return model
+			return model
+		elif (algorithm.library == 'pytorch'):
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
+			# Need to initialize the classes first, which requires reconstructing them.
+			hp = result.job.hyperparamcombo.hyperparameters
+			features_shape = result.input_shapes['features_shape']
+			label_shape = result.input_shapes['label_shape']
+
+			fn_build = dill_deserialize(algorithm.fn_build)
+			fn_optimize = dill_deserialize(algorithm.fn_optimize)
+
+			model = fn_build(features_shape, label_shape, **hp)
+			optimizer = fn_optimize(model, **hp)
+
+			model_bytes = io.BytesIO(model_blob)
+			checkpoint = torch.load(model_bytes)
+			# Don't assign them: `model = model.load_state_dict ...`
+			model.load_state_dict(checkpoint['model_state_dict'])
+			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
+			return model, optimizer
 
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):
@@ -4614,10 +4931,10 @@ class Result(BaseModel):
 		hp = hyperparamcombo.get_hyperparameters(as_pandas=as_pandas)
 		return hp
 
-
+		
 	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
 		r = Result.get_by_id(id)
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 
 		history = r.history
@@ -4627,12 +4944,12 @@ class Result(BaseModel):
 			, analysis_type = analysis_type
 			, loss_skip_15pct = loss_skip_15pct
 		)
-
-
+		
+		
 	def plot_confusion_matrix(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
@@ -4640,15 +4957,15 @@ class Result(BaseModel):
 		cm_by_split = {}
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
-
+		
 		Plot.confusion_matrix(cm_by_split=cm_by_split)
-
+		
 
 
 	def plot_precision_recall(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
@@ -4673,7 +4990,7 @@ class Result(BaseModel):
 	def plot_roc_curve(id:int):
 		r = Result.get_by_id(id)
 		result_plot_data = r.plot_data
-		a = r.job.batch.algorithm
+		a = r.job.queue.algorithm
 		analysis_type = a.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
@@ -4733,8 +5050,8 @@ class TrainingCallback():
 				# Only stops training early if all user-specified metrics are satisfied.
 				# `above_or_below`: where 'above' means `>=` and 'below' means `<=`.
 				"""
-				super(TrainingCallback.Keras.MetricCutoff, self).__init__()
 				self.thresholds = thresholds
+				
 
 			def on_epoch_end(self, epoch, logs=None):
 				logs = logs or {}
@@ -4761,7 +5078,7 @@ class TrainingCallback():
 
 					if (statement == False):
 						break # Out of for loop.
-
+						
 				if (statement == False):
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
@@ -4775,7 +5092,7 @@ class TrainingCallback():
 
 
 #==================================================
-# HIGH LEVEL API
+# HIGH LEVEL API 
 #==================================================
 
 class Pipeline():
@@ -4905,7 +5222,7 @@ class Pipeline():
 				# Tabular-based Label.
 				label = dataset_tabular.make_label(columns=[label_column])
 				label_id = label.id
-
+			
 			splitset = featureset.make_splitset(
 				label_id = label_id
 				, size_test = size_test
@@ -4926,7 +5243,7 @@ class Pipeline():
 
 class Experiment():
 	"""
-	- Create Algorithm, Hyperparamset, Preprocess, and Batch.
+	- Create Algorithm, Hyperparamset, Preprocess, and Queue.
 	- Put Preprocess here because it's weird to encode labels before you know what your final training layer looks like.
 	  Also, it's optional, so you'd have to access it from splitset before passing it in.
 	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
@@ -4938,13 +5255,14 @@ class Experiment():
 	def make(
 		library:str
 		, analysis_type:str
-		, function_model_build:object
-		, function_model_train:object
+		, fn_build:object
+		, fn_train:object
 		, splitset_id:int
 		, repeat_count:int = 1
 		, hide_test:bool = False
-		, function_model_predict:object = None
-		, function_model_loss:object = None
+		, fn_optimize:object = None
+		, fn_predict:object = None
+		, fn_lose:object = None
 		, hyperparameters:dict = None
 		, foldset_id:int = None
 		, encoderset_id:int = None
@@ -4953,10 +5271,11 @@ class Experiment():
 		algorithm = Algorithm.make(
 			library = library
 			, analysis_type = analysis_type
-			, function_model_build = function_model_build
-			, function_model_train = function_model_train
-			, function_model_predict = function_model_predict
-			, function_model_loss = function_model_loss
+			, fn_build = fn_build
+			, fn_train = fn_train
+			, fn_optimize = fn_optimize
+			, fn_predict = fn_predict
+			, fn_lose = fn_lose
 		)
 
 		if (hyperparameters is not None):
@@ -4967,7 +5286,7 @@ class Experiment():
 		elif (hyperparameters is None):
 			hyperparamset_id = None
 
-		batch = algorithm.make_batch(
+		queue = algorithm.make_queue(
 			splitset_id = splitset_id
 			, repeat_count = repeat_count
 			, hide_test = hide_test
@@ -4975,4 +5294,4 @@ class Experiment():
 			, foldset_id = foldset_id
 			, encoderset_id = encoderset_id
 		)
-		return batch
+		return queue

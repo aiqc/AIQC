@@ -26,8 +26,10 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
-  notebooks/pytorch
-
+  notebooks/tensorflow_binary_classification
+  notebooks/pytorch_binary_classification
+  notebooks/pytorch_multi-label_classification
+  notebooks/pytorch_regression
 
 .. toctree::
   :maxdepth: 2
@@ -100,19 +102,26 @@ Overview
    formValidation();
    </script>
 
+.. |br| raw:: html
 
+  <br/>
 
-- AIQC is an open source Python framework that brings rapid & reproducible deep learning workflows to open science.
+.. centered::
+  **AIQC is a Python framework for rapid & reproducible deep learning.**
 
-  + `Mission = accelerate open science: <https://aiqc.readthedocs.io/en/latest/mission.html>`__ [1] Reduces the programming & data science know-how required to adopt deep learning. [2] Reproducibly records experiment workflows. [3] Provides a free alternative to walled gardens of expensive cloud SaaS.
-
-  + `Tech = easy-to-use Python package: <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ [1] Provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job). [2] Simplifies data preprocessing, model tuning, and model scoring. [3] Prevents data leakage and evaluation bias. [4] Reproducibly persists experiments in a SQLite database file.
-
-
-.. image:: images/framework_w_txt.png
+.. image:: images/framework_diagram_april16.png
   :width: 100%
   :align: center
   :alt: framework
+
+.. centered::
+  **On a mission to accelerate open science:**
+
++ Reduce the programming & data science know-how required to adopt deep learning.
++ Open source methodologies instead of walled garden SaaS apps.
++ Reproducibly record deep learning experiments & data preparation workflows.
++ Automated quality control protocols for data preparation and model performance.
++ Runs anywhere; most research happens on laptops & HPCs, not in expensive clouds.
 
 |
 
@@ -140,14 +149,14 @@ I. Rapidly prepare folded data for analysis without leakage.
 
 |
 
-II. Train many variations of an algorithm in a single batch.
-============================================================
+II. Train many variations of an algorithm in a queue.
+=====================================================
 
 .. image:: images/hyperparam_25sec_compress.gif
   :width: 100%
   :alt: hyperparameters.gif
 
-- Queue a batch a many training jobs; one job per hyperparameter combination.
+- Queue many training jobs for hyperparameter tuning & cross-validation.
 
 - Automatically passes param combinations into model functions as `**kwargs`.
 
@@ -180,19 +189,22 @@ IV. Effortlessly track, reproduce, & prove experiments.
 .. code-block:: python
 
    # Everything is saved. No more writing down parameters or screenshotting charts!
-   batch.jobs[0].hyperparamcombo.hyperparameters
+   queue.jobs[0].hyperparamcombo.hyperparameters
    {
        'include_nth_layer': True,
-       'initialization': 'he_normal',
+       'weight_init': 'he_normal',
        'batch_size': 8,
        'dense_neurons': 64
    }
 
-   # Recorded end-to-end:
-   batch.jobs[0].results[0].get_model() # trained model
-   batch.algorithm.function_model_build # model definition
-   batch.jobs[0].results[0].predictions['fold_validation'] # predictions
-   batch.jobs[0].fold.samples['fold_validation']['features'] # sample indeces by split
+   # Examples of what is recorded:
+   queue.jobs[0].results[0].get_model()
+
+   queue.algorithm.fn_build
+
+   queue.jobs[0].results[0].predictions['fold_validation']
+
+   queue.jobs[0].fold.samples['fold_validation']['features']
 
 
 * Automatically records experiments in a local SQLite database file.
@@ -214,8 +226,8 @@ V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials<
    aiqc.setup() # create & connect to the database.
 
 
-- Example datasets built into package. Example image datasets in github repo.
+- Example datasets built into package.
 
-- Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) & OS (win, mac, lin).
+- Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) & OS (Win, Mac, Lin).
 
-- Easy to learn with 2 step tutorials: make a `Pipeline` to feed an `Experiment`.
+- Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.

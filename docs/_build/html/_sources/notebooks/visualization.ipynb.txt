@@ -109,7 +109,7 @@
     }
    ],
    "source": [
-    "batch_multiclass = tests.make_test_batch('multiclass')"
+    "queue_multiclass = tests.make_test_queue('multiclass')"
    ]
   },
   {
@@ -126,7 +126,7 @@
     }
    ],
    "source": [
-    "batch_multiclass.run_jobs()"
+    "queue_multiclass.run_jobs()"
    ]
   },
   {
@@ -176,7 +176,7 @@
    "source": [
     "from pprint import pprint as p\n",
     "p(\n",
-    "    batch_multiclass.jobs[0].results[0].metrics\n",
+    "    queue_multiclass.jobs[0].results[0].metrics\n",
     ")"
    ]
   },
@@ -204,14 +204,14 @@
     }
    ],
    "source": [
-    "batch_multiclass.jobs[0].results[0].history.keys()"
+    "queue_multiclass.jobs[0].results[0].history.keys()"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Aggregate Batch Metrics"
+    "### Aggregate Queue Metrics"
    ]
   },
   {
@@ -638,7 +638,7 @@
     }
    ],
    "source": [
-    "batch_multiclass.metrics_to_pandas(\n",
+    "queue_multiclass.metrics_to_pandas(\n",
     "    selected_metrics=None\n",
     "    , sort_by=None\n",
     "\t, ascending=False\n",
@@ -649,14 +649,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Aggregate Batch Visualization"
+    "### Aggregate Queue Visualization"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "`plot_performance` aka the \"boomerang chart\" is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Batch is evaluated against all splits/ folds."
+    "`plot_performance` aka the \"boomerang chart\" is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds."
    ]
   },
   {
@@ -672,7 +672,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_multiclass.plot_performance(\n",
+    "queue_multiclass.plot_performance(\n",
     "    max_loss = 0.12, min_accuracy = 0.96\n",
     ")"
    ]
@@ -704,7 +704,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_multiclass.jobs[0].results[0].plot_learning_curve(loss_skip_15pct=True)"
+    "queue_multiclass.jobs[0].results[0].plot_learning_curve(loss_skip_15pct=True)"
    ]
   },
   {
@@ -738,7 +738,7 @@
     }
    ],
    "source": [
-    "batch_multiclass.jobs[0].results[0].plot_data['test'].keys()"
+    "queue_multiclass.jobs[0].results[0].plot_data['test'].keys()"
    ]
   },
   {
@@ -747,7 +747,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_multiclass.jobs[0].results[0].plot_roc_curve()"
+    "queue_multiclass.jobs[0].results[0].plot_roc_curve()"
    ]
   },
   {
@@ -763,7 +763,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_multiclass.jobs[0].results[0].plot_confusion_matrix()"
+    "queue_multiclass.jobs[0].results[0].plot_confusion_matrix()"
    ]
   },
   {
@@ -779,7 +779,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_multiclass.jobs[0].results[0].plot_precision_recall()"
+    "queue_multiclass.jobs[0].results[0].plot_precision_recall()"
    ]
   },
   {
@@ -834,7 +834,7 @@
     }
    ],
    "source": [
-    "batch_regression = tests.make_test_batch('regression')"
+    "queue_regression = tests.make_test_queue('regression')"
    ]
   },
   {
@@ -851,7 +851,7 @@
     }
    ],
    "source": [
-    "batch_regression.run_jobs()"
+    "queue_regression.run_jobs()"
    ]
   },
   {
@@ -895,7 +895,7 @@
    "source": [
     "from pprint import pprint as p\n",
     "p(\n",
-    "    batch_regression.jobs[0].results[0].metrics\n",
+    "    queue_regression.jobs[0].results[0].metrics\n",
     ")"
    ]
   },
@@ -923,14 +923,14 @@
     }
    ],
    "source": [
-    "batch_regression.jobs[0].results[0].history.keys()"
+    "queue_regression.jobs[0].results[0].history.keys()"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Aggregate Batch Metrics"
+    "### Aggregate Queue Metrics"
    ]
   },
   {
@@ -1142,14 +1142,14 @@
     }
    ],
    "source": [
-    "batch_regression.metrics_to_pandas()"
+    "queue_regression.metrics_to_pandas()"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Aggregate Batch Visualization"
+    "### Aggregate Queue Visualization"
    ]
   },
   {
@@ -1165,7 +1165,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_regression.plot_performance(\n",
+    "queue_regression.plot_performance(\n",
     "    max_loss=0.5, min_r2=0.60\n",
     ")"
    ]
@@ -1190,7 +1190,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "batch_regression.jobs[0].results[0].plot_learning_curve(loss_skip_15pct=True)"
+    "queue_regression.jobs[0].results[0].plot_learning_curve(loss_skip_15pct=True)"
    ]
   },
   {

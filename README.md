@@ -2,16 +2,22 @@
 
 <br />
 
-### [ReadTheDocs](https://aiqc.readthedocs.io/)
+### 📚 [Documentation](https://aiqc.readthedocs.io/)
 
-### [Community - how to contribute?](https://aiqc.readthedocs.io/en/latest/community.html)
+### 🧑‍💻 [Community - how to contribute?](https://aiqc.readthedocs.io/en/latest/community.html)
 
 ---
 
-### Overview
+<br />
 
-* AIQC is an open source Python framework that brings rapid & reproducible deep learning workflows to open science.
+<p align='center'><b>AIQC is a Python framework for rapid & reproducible deep learning.</b></p>
 
-  * [Mission = accelerate open science](https://aiqc.readthedocs.io/en/latest/mission.html): [1] Reduces the programming & data science know-how required to adopt deep learning. [2] Reproducibly records experiment workflows. [3] Provides a free alternative to walled gardens of expensive cloud SaaS.
+![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_diagram_april16.png)
 
-  * [Tech = easy-to-use Python package](https://aiqc.readthedocs.io/en/latest/notebooks/installation.html): [1] Provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job). [2] Simplifies data preprocessing, model tuning, and model scoring. [3] Prevents data leakage and evaluation bias. [4] Reproducibly persists experiments in a SQLite database file.
+<p align='center'><b>On a mission to accelerate open science:</b></p>
+
+* Reduce the programming & data science know-how required to adopt deep learning.
+* Reproducibly record deep learning experiments & data preparation workflows.
+* Open source methodologies instead of walled garden SaaS apps.
+* Automated quality control protocols for data preparation and model performance.
+* Runs anywhere; most research happens on laptops & HPCs, not in expensive clouds.

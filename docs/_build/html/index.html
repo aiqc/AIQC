@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/index.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="functionality banner, AIQC is an open source Python framework that brings rapid & reproducible deep learning workflows to open science.- Mission = accelerate open science:[1] Reduces the programmin..." />
+  <meta property="og:description" content="functionality banner, AIQC is a Python framework for rapid & reproducible deep learning., framework On a mission to accelerate open science:, Reduce the programming & data science know-how required..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -112,7 +112,10 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/keras_binary_classification.html">Keras: Classify Binary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/keras_multi-label_classification.html">Keras: Classify Multi-Label</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/keras_regression.html">Keras: Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch.html">PyTorch (coming soon)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch_binary_classification.html">PyTorch: Classify Binary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/pytorch_regression.html">PyTorch: Regression</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -224,15 +227,16 @@
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
-<ul class="simple">
-<li><p>AIQC is an open source Python framework that brings rapid &amp; reproducible deep learning workflows to open science.</p>
-<ul>
-<li><p><a class="reference external" href="https://aiqc.readthedocs.io/en/latest/mission.html">Mission = accelerate open science:</a> [1] Reduces the programming &amp; data science know-how required to adopt deep learning. [2] Reproducibly records experiment workflows. [3] Provides a free alternative to walled gardens of expensive cloud SaaS.</p></li>
-<li><p><a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Tech = easy-to-use Python package:</a> [1] Provides best-practice guardrails in the form of an object-oriented API (e.g. Label, Hyperparamset, Job). [2] Simplifies data preprocessing, model tuning, and model scoring. [3] Prevents data leakage and evaluation bias. [4] Reproducibly persists experiments in a SQLite database file.</p></li>
+<p class="centered">
+<strong><strong>AIQC is a Python framework for rapid &amp; reproducible deep learning.</strong></strong></p><a class="reference internal image-reference" href="_images/framework_diagram_april16.png"><img alt="framework" class="align-center" src="_images/framework_diagram_april16.png" style="width: 100%;" /></a>
+<p class="centered">
+<strong><strong>On a mission to accelerate open science:</strong></strong></p><ul class="simple">
+<li><p>Reduce the programming &amp; data science know-how required to adopt deep learning.</p></li>
+<li><p>Open source methodologies instead of walled garden SaaS apps.</p></li>
+<li><p>Reproducibly record deep learning experiments &amp; data preparation workflows.</p></li>
+<li><p>Automated quality control protocols for data preparation and model performance.</p></li>
+<li><p>Runs anywhere; most research happens on laptops &amp; HPCs, not in expensive clouds.</p></li>
 </ul>
-</li>
-</ul>
-<a class="reference internal image-reference" href="_images/framework_w_txt.png"><img alt="framework" class="align-center" src="_images/framework_w_txt.png" style="width: 100%;" /></a>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -253,11 +257,11 @@
 <div class="line"><br /></div>
 </div>
 </div>
-<div class="section" id="ii-train-many-variations-of-an-algorithm-in-a-single-batch">
-<h2>II. Train many variations of an algorithm in a single batch.<a class="headerlink" href="#ii-train-many-variations-of-an-algorithm-in-a-single-batch" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ii-train-many-variations-of-an-algorithm-in-a-queue">
+<h2>II. Train many variations of an algorithm in a queue.<a class="headerlink" href="#ii-train-many-variations-of-an-algorithm-in-a-queue" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="_images/hyperparam_25sec_compress.gif"><img alt="hyperparameters.gif" src="_images/hyperparam_25sec_compress.gif" style="width: 100%;" /></a>
 <ul class="simple">
-<li><p>Queue a batch a many training jobs; one job per hyperparameter combination.</p></li>
+<li><p>Queue many training jobs for hyperparameter tuning &amp; cross-validation.</p></li>
 <li><p>Automatically passes param combinations into model functions as <cite>**kwargs</cite>.</p></li>
 <li><p>Tweak the model topology as a param (<cite>params[‘extra_conv3D_layer’]=True</cite>).</p></li>
 <li><p>Repeat a job to to give it a chance to perform well (<cite>repeat_count=3</cite>).</p></li>
@@ -282,19 +286,22 @@
 <div class="section" id="iv-effortlessly-track-reproduce-prove-experiments">
 <h2>IV. Effortlessly track, reproduce, &amp; prove experiments.<a class="headerlink" href="#iv-effortlessly-track-reproduce-prove-experiments" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Everything is saved. No more writing down parameters or screenshotting charts!</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hyperparamcombo</span><span class="o">.</span><span class="n">hyperparameters</span>
 <span class="p">{</span>
     <span class="s1">&#39;include_nth_layer&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;initialization&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;weight_init&#39;</span><span class="p">:</span> <span class="s1">&#39;he_normal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
     <span class="s1">&#39;dense_neurons&#39;</span><span class="p">:</span> <span class="mi">64</span>
 <span class="p">}</span>
 
-<span class="c1"># Recorded end-to-end:</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span> <span class="c1"># trained model</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">function_model_build</span> <span class="c1"># model definition</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span> <span class="c1"># predictions</span>
-<span class="n">batch</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span> <span class="c1"># sample indeces by split</span>
+<span class="c1"># Examples of what is recorded:</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+<span class="n">queue</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_build</span>
+
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">]</span>
+
+<span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fold</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -316,9 +323,9 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Example datasets built into package. Example image datasets in github repo.</p></li>
-<li><p>Use any IDE (jupyter, rstudio, vscode, pycharm, spyder) &amp; OS (win, mac, lin).</p></li>
-<li><p>Easy to learn with 2 step tutorials: make a <cite>Pipeline</cite> to feed an <cite>Experiment</cite>.</p></li>
+<li><p>Example datasets built into package.</p></li>
+<li><p>Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) &amp; OS (Win, Mac, Lin).</p></li>
+<li><p>Easy to learn, 2-step tutorials: <cite>Pipeline</cite> that feeds into an <cite>Experiment</cite>.</p></li>
 </ul>
 </div>
 </div>
