@@ -82,13 +82,13 @@ def list_test_queues(format:str=None):
 	
 	formats_df = [None, 'pandas', 'df' ,'dataframe']
 	formats_lst = ['list', 'l']
-	if format in formats_df:
+	if (format in formats_df):
 		pd.set_option('display.max_column',100)
 		pd.set_option('display.max_colwidth', 500)
 		df = pd.DataFrame.from_records(queues)
 		return df
-	elif format in formats_lst:
-		return sub_dicts
+	elif (format in formats_lst):
+		return queues
 	else:
 		raise ValueError(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
 
@@ -728,7 +728,7 @@ def pytorch_multiclass_lose(**hp):
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batch_splitter(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=hp['batch_size'], enforce_sameSize=False, allow_1Sample=False
 	)
@@ -875,7 +875,7 @@ def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from torchmetrics.functional import explained_variance as expVar
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batch_splitter(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1039,7 +1039,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batch_splitter(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
