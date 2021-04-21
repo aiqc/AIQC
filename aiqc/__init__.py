@@ -3518,6 +3518,8 @@ class Plot():
 
 		self.plot_template = dict(layout=go.Layout(
 			font=dict(family='Avenir', color='#FAFAFA'),
+			title=dict(x=0.05, y=0.95),
+			titlefont=dict(family='Spectral'),
 			plot_bgcolor='#181B1E',
 			paper_bgcolor='#181B1E',
 			hoverlabel=dict(
