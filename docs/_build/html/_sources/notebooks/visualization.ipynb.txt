@@ -109,7 +109,7 @@
     }
    ],
    "source": [
-    "queue_multiclass = tests.make_test_queue('multiclass')"
+    "queue_multiclass = tests.make_test_queue('keras_multiclass')"
    ]
   },
   {
@@ -834,7 +834,7 @@
     }
    ],
    "source": [
-    "queue_regression = tests.make_test_queue('regression')"
+    "queue_regression = tests.make_test_queue('keras_regression')"
    ]
   },
   {
