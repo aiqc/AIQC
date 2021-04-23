@@ -4155,28 +4155,18 @@ class Queue(BaseModel):
 
 				split_metrics.append(split_metric)
 
-		# Return relevant columns based on how the Queue was designed.
-		if (queue.foldset is not None):
-			if (queue.repeat_count > 1):
-				sort_list = ['hyperparamcombo_id','jobset_id','repeat_index','fold_index']
-			elif (queue.repeat_count == 1):
-				sort_list = ['hyperparamcombo_id','jobset_id','fold_index']
-		elif (queue.foldset is None):
-			if (queue.repeat_count > 1):
-				sort_list = ['hyperparamcombo_id','job_id','repeat_index']
-			elif (queue.repeat_count == 1):
-				sort_list = ['hyperparamcombo_id','job_id']
-
 		column_names = list(split_metrics[0].keys())
 		if (sort_by is not None):
 			for name in sort_by:
-				if name not in column_names:
+				if (name not in column_names):
 					raise ValueError(f"\nYikes - Column '{name}' not found in metrics dataframe.\n")
 			df = pd.DataFrame.from_records(split_metrics).sort_values(
 				by=sort_by, ascending=ascending
 			)
 		elif (sort_by is None):
-			df = pd.DataFrame.from_records(split_metrics)
+			df = pd.DataFrame.from_records(split_metrics).sort_values(
+				by=['result_id'], ascending=ascending
+			)
 		return df
 
 
