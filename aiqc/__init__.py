@@ -3660,15 +3660,15 @@ class Plot():
 				, yaxis_title = "Actual Label"
 				, legend_title = 'Sample Count'
 				, template = self.plot_template
-				, height = 225 # if too small, it won't render in Jupyter.
+				, height = 500 # if too small, it won't render in Jupyter.
 				, yaxis = dict(
 					tickmode = 'linear'
 					, tick0 = 0.0
 					, dtick = 1.0
 				)
 				, margin = dict(
-					b = 50
-					, t = 150
+					b = 75
+					, t = 125
 				)
 			)
 			fig.show()
