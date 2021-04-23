@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torchmetrics
 
+from sklearn.preprocessing import *
+
 import aiqc
 from aiqc import *
 # Still required even with `*` above.

@@ -1,13 +1,13 @@
-import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators, math, time, pprint, datetime
+import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, \
+	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib
 # Python utils.
 from textwrap import dedent
-from importlib import reload
 # External utils.
 from tqdm import tqdm #progress bar.
 from natsort import natsorted #file sorting.
 import appdirs #os-agonistic folder.
 # ORM.
-from peewee import *
+from peewee import Model, CharField, IntegerField, BlobField, BooleanField, DateTimeField, ForeignKeyField
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.fields import PickleField
 import dill as dill #complex serialization.
@@ -16,10 +16,9 @@ import pyarrow
 import pandas as pd
 import numpy as np
 from PIL import Image as Imaje
-# Preprocessing.
-from sklearn.model_selection import train_test_split, StratifiedKFold
-from sklearn.preprocessing import *
-from sklearn.metrics import *
+# Preprocessing & metrics.
+import sklearn
+from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
 # Deep learning.
 import keras
 import torch
@@ -42,7 +41,7 @@ https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-method
 - Tried `concurrent.futures` but it only works with `.py` from command line.
 """
 if (os.name != 'nt'):
-	# If `force=False`, then `reload(aiqc)` triggers `RuntimeError: context already set`.
+	# If `force=False`, then `importlib.reload(aiqc)` triggers `RuntimeError: context already set`.
 	multiprocessing.set_start_method('fork', force=True)
 
 
@@ -234,7 +233,7 @@ def create_config():
 				)
 				raise
 			print(f"\n=> Success - created config file for settings at path:\n{default_config_path}\n")
-			reload(sys.modules[__name__])
+			importlib.reload(sys.modules[__name__])
 		else:
 			print(f"\n=> Info - skipping as config file already exists at path:\n{default_config_path}\n")
 	print("\n=> Next run `aiqc.create_db()`.\n")
@@ -256,7 +255,7 @@ def delete_config(confirm:bool=False):
 				)
 				raise
 			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")
-			reload(sys.modules[__name__])   
+			importlib.reload(sys.modules[__name__])   
 		else:
 			print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
 
@@ -280,7 +279,7 @@ def update_config(kv:dict):
 			)
 			raise
 		print(f"\n=> Success - updated configuration settings:\n{aiqc_config}\n")
-		reload(sys.modules[__name__])
+		importlib.reload(sys.modules[__name__])
 
 
 #==================================================
@@ -352,7 +351,7 @@ def create_db():
 		tables = db.get_tables()
 		table_count = len(tables)
 		if table_count > 0:
-			print(f"\n💾  Success - created all database tables.  💾\n")
+			print("\n💾  Success - created all database tables.  💾\n")
 		else:
 			print(
 				f"=> Yikes - failed to create tables.\n" \
@@ -376,7 +375,7 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
 		else:
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
-		reload(sys.modules[__name__])
+		importlib.reload(sys.modules[__name__])
 
 		if (rebuild==True):
 			create_db()
@@ -629,7 +628,7 @@ class Dataset(BaseModel):
 			)
 
 			try:
-				file = File.Tabular.from_file(
+				File.Tabular.from_file(
 					path = file_path
 					, source_file_format = source_file_format
 					, dtype = dtype
@@ -807,7 +806,7 @@ class Dataset(BaseModel):
 					, desc = "🖼️ Ingesting Images 🖼️"
 					, ncols = 85
 				)):
-					file = File.Image.from_file(
+					File.Image.from_file(
 						path = p
 						, pillow_save = pillow_save
 						, file_index = i
@@ -872,7 +871,7 @@ class Dataset(BaseModel):
 					, desc = "🖼️ Ingesting Images 🖼️"
 					, ncols = 85
 				)):
-					file = File.Image.from_url(
+					File.Image.from_url(
 						url = url
 						, pillow_save = pillow_save
 						, file_index = i
@@ -920,7 +919,6 @@ class Dataset(BaseModel):
 
 		def get_image_files(id:int, samples:list=None):
 			samples = listify(samples)
-			dataset = Dataset.get_by_id(id)
 			files = File.select().join(Dataset).where(
 				Dataset.id==id, File.file_type=='image'
 			).order_by(File.file_index)# Ascending by default.
@@ -966,10 +964,9 @@ class Dataset(BaseModel):
 			if name is None:
 				name = folder_path
 			source_path = os.path.abspath(folder_path)
-
-			input_files = Dataset.sorted_file_list(source_path)
-			file_count = len(input_files)
 			
+			input_files = Dataset.sorted_file_list(source_path)
+
 			files_data = []
 			for input_file in input_files:
 				with open(input_file, 'r') as file_pointer:
@@ -1063,7 +1060,7 @@ class File(BaseModel):
 			)
 
 			try:
-				tabular = Tabular.create(
+				Tabular.create(
 					columns = columns
 					, dtypes = dtype
 					, file_id = file.id
@@ -1412,7 +1409,7 @@ class File(BaseModel):
 				, dataset = dataset
 			)
 			try:
-				image = Image.create(
+				Image.create(
 					mode = img.mode
 					, file = file
 					, pillow_save = pillow_save
@@ -1456,7 +1453,7 @@ class File(BaseModel):
 				, dataset = dataset
 			)
 			try:
-				image = Image.create(
+				Image.create(
 					mode = img.mode
 					, file = file
 					, pillow_save = pillow_save
@@ -1999,12 +1996,13 @@ class Splitset(BaseModel):
 			label_array = l.to_numpy()
 			# check for OHE cols and reverse them so we can still stratify.
 			if (label_array.shape[1] > 1):
-				encoder = OneHotEncoder(sparse=False)
+				encoder = sklearn.preprocessing.OneHotEncoder(sparse=False)
 				label_array = encoder.fit_transform(label_array)
 				label_array = np.argmax(label_array, axis=1)
+				### [FLAG] don't this this is used. commenting it out for a while.
 				# argmax flattens the array, so reshape it to array of arrays.
-				count = label_array.shape[0]
-				l_cat_shaped = label_array.reshape(count, 1)
+				#count = label_array.shape[0]
+				#l_cat_shaped = label_array.reshape(count, 1)
 			# OHE dtype returns as int64
 			label_dtype = label_array.dtype
 
@@ -2369,7 +2367,11 @@ class Foldset(BaseModel):
 			, splitset = splitset
 		)
 		# Create the folds. Don't want the end user to run two commands.
-		skf = StratifiedKFold(n_splits=fold_count, shuffle=True, random_state=random_state)
+		skf = StratifiedKFold(
+			n_splits=fold_count
+			, shuffle=True
+			, random_state=random_state
+		)
 		splitz_gen = skf.split(arr_train_indices, arr_train_labels)
 				
 		i = -1
@@ -2380,7 +2382,7 @@ class Foldset(BaseModel):
 			fold_samples["folds_train_combined"] = index_folds_train.tolist()
 			fold_samples["fold_validation"] = index_fold_validation.tolist()
 
-			fold = Fold.create(
+			Fold.create(
 				fold_index = i
 				, samples = fold_samples 
 				, foldset = foldset
@@ -2618,7 +2620,6 @@ class Labelcoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
-		label_col_count = splitset.label.column_count
 
 		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
@@ -2663,7 +2664,7 @@ class Labelcoder(BaseModel):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = splitset.label.to_numpy()
 			
-			encoded_samples = Labelcoder.transform_dynamicDimensions(
+			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
@@ -3090,7 +3091,7 @@ class Featurecoder(BaseModel):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = featureset.to_numpy(columns=matching_columns)
 			
-			encoded_samples = Labelcoder.transform_dynamicDimensions(
+			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
@@ -3732,7 +3733,6 @@ class Plot:
 			, y = 'tpr'
 			, color = 'split'
 			, title = 'Receiver Operating Characteristic (ROC) Curves'
-			#, line_shape = 'spline'
 		)
 		fig.update_layout(
 			legend_title = None
@@ -4187,7 +4187,6 @@ class Queue(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		queue = Queue.get_by_id(id)
 		selected_metrics = listify(selected_metrics)
 		selected_stats = listify(selected_stats)
 		sort_by = listify(sort_by)
@@ -4356,23 +4355,23 @@ class Job(BaseModel):
 			
 		split_metrics = {}
 		# Let the classification_multi labels hit this metric in OHE format.
-		split_metrics['roc_auc'] = roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
+		split_metrics['roc_auc'] = sklearn.metrics.roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
 		# Then convert the classification_multi labels ordinal format.
 		if analysis_type == "classification_multi":
 			labels_processed = np.argmax(labels_processed, axis=1)
 
-		split_metrics['accuracy'] = accuracy_score(labels_processed, predictions)
-		split_metrics['precision'] = precision_score(labels_processed, predictions, average=average, zero_division=0)
-		split_metrics['recall'] = recall_score(labels_processed, predictions, average=average, zero_division=0)
-		split_metrics['f1'] = f1_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['accuracy'] = sklearn.metrics.accuracy_score(labels_processed, predictions)
+		split_metrics['precision'] = sklearn.metrics.precision_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['recall'] = sklearn.metrics.recall_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['f1'] = sklearn.metrics.f1_score(labels_processed, predictions, average=average, zero_division=0)
 		return split_metrics
 
 
 	def split_regression_metrics(labels, predictions):
 		split_metrics = {}
-		split_metrics['r2'] = r2_score(labels, predictions)
-		split_metrics['mse'] = mean_squared_error(labels, predictions)
-		split_metrics['explained_variance'] = explained_variance_score(labels, predictions)
+		split_metrics['r2'] = sklearn.metrics.r2_score(labels, predictions)
+		split_metrics['mse'] = sklearn.metrics.mean_squared_error(labels, predictions)
+		split_metrics['explained_variance'] = sklearn.metrics.explained_variance_score(labels, predictions)
 		return split_metrics
 
 
@@ -4383,19 +4382,19 @@ class Job(BaseModel):
 		
 		if analysis_type == "classification_binary":
 			labels_processed = labels_processed.flatten()
-			split_plot_data['confusion_matrix'] = confusion_matrix(labels_processed, predictions)
-			fpr, tpr, _ = roc_curve(labels_processed, probabilities)
-			precision, recall, _ = precision_recall_curve(labels_processed, probabilities)
+			split_plot_data['confusion_matrix'] = sklearn.metrics.confusion_matrix(labels_processed, predictions)
+			fpr, tpr, _ = sklearn.metrics.roc_curve(labels_processed, probabilities)
+			precision, recall, _ = sklearn.metrics.precision_recall_curve(labels_processed, probabilities)
 		
 		elif analysis_type == "classification_multi":
 			# Flatten OHE labels for use with probabilities.
 			labels_flat = labels_processed.flatten()
-			fpr, tpr, _ = roc_curve(labels_flat, probabilities)
-			precision, recall, _ = precision_recall_curve(labels_flat, probabilities)
+			fpr, tpr, _ = sklearn.metrics.roc_curve(labels_flat, probabilities)
+			precision, recall, _ = sklearn.metrics.precision_recall_curve(labels_flat, probabilities)
 
 			# Then convert unflat OHE to ordinal format for use with predictions.
 			labels_ordinal = np.argmax(labels_processed, axis=1)
-			split_plot_data['confusion_matrix'] = confusion_matrix(labels_ordinal, predictions)
+			split_plot_data['confusion_matrix'] = sklearn.metrics.confusion_matrix(labels_ordinal, predictions)
 
 		split_plot_data['roc_curve'] = {}
 		split_plot_data['roc_curve']['fpr'] = fpr
@@ -4845,7 +4844,7 @@ class Job(BaseModel):
 		"""
 		5. Save it to Result object.
 		"""
-		r = Result.create(
+		Result.create(
 			time_started = time_started
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
@@ -4863,6 +4862,7 @@ class Job(BaseModel):
 
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
 		del samples
+		del model
 		return j
 
 
@@ -5183,7 +5183,7 @@ class Pipeline():
 			)
 
 			if (fold_count is not None):
-				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 
 			if ((label_encoder is not None) or (feature_encoders is not None)):
 				encoderset = splitset.make_encoderset()
@@ -5254,7 +5254,7 @@ class Pipeline():
 				)
 
 			if (fold_count is not None):
-				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 			return splitset
 
 
