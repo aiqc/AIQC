@@ -1,6 +1,6 @@
-from aiqc import *
-
 import pkg_resources #importlib.resources was not working on Google Collab.
+import pandas as pd
+
 
 name = "datum"
 
@@ -119,7 +119,7 @@ def get_path(name:str):
 	"""
 	if (name == 'brain_tumor.csv'):
 		# 2nd aiqc is the repo, not the module.
-		full_path = f"https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/brain_tumor.csv"
+		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/brain_tumor.csv"
 	else:
 		short_path = f"data/{name}"
 		full_path = pkg_resources.resource_filename('aiqc', short_path)
