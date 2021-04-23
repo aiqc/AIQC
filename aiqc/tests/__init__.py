@@ -1,5 +1,17 @@
+import keras
+from keras import layers
+
+import torch
+import torch.nn as nn
+import torchmetrics
+
+from sklearn.preprocessing import *
+
+import aiqc
 from aiqc import *
-from aiqc import datum
+# Still required even with `*` above.
+from aiqc import datum 
+
 
 name = "tests"
 
@@ -102,14 +114,11 @@ Each test takes a slightly different approach to `fn_optimizer`.
 
 # ------------------------ KERAS MULTICLASS ------------------------
 def keras_multiclass_fn_build(features_shape, label_shape, **hp):
-	import keras
-	from keras.models import Sequential
-	from keras.layers import Dense, Dropout
 	model = keras.models.Sequential()
-	model.add(Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dropout(0.2))
-	model.add(Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dense(units=label_shape[0], activation='softmax'))
+	model.add(layers.Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dropout(0.2))
+	model.add(layers.Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dense(units=label_shape[0], activation='softmax'))
 	return model
 
 def keras_multiclass_fn_optimize(**hp):
@@ -117,7 +126,6 @@ def keras_multiclass_fn_optimize(**hp):
 	return optimizer
 
 def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	from keras.callbacks import History
 	model.compile(
 		loss = loser
 		, optimizer = optimizer
@@ -134,7 +142,7 @@ def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_ev
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, epochs = hp['epoch_count']
-		, callbacks=[History()]
+		, callbacks=[keras.callbacks.History()]
 	)
 	return model
 
@@ -223,21 +231,16 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS BINARY ------------------------
 def keras_binary_fn_build(features_shape, label_shape, **hp):
-	import keras
-	from keras.models import Sequential
-	from keras.layers import Dense, Dropout
-
 	model = keras.models.Sequential()
-	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dropout(0.30))
-	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dropout(0.30))
-	model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
+	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dropout(0.30))
+	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dropout(0.30))
+	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
 	return model
 
 def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	from keras.callbacks import History
 	model.compile(
 		loss=loser
 		, optimizer=optimizer
@@ -249,7 +252,7 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 		, verbose = 0
 		, batch_size = 3
 		, epochs = hp['epochs']
-		, callbacks = [History()]
+		, callbacks = [keras.callbacks.History()]
 	)
 	return model
 
@@ -328,15 +331,11 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS REGRESSION ------------------------
 def keras_regression_fn_build(features_shape, label_shape, **hp):
-	import keras
-	from keras.models import Sequential
-	from keras.layers import Dense, Dropout
-
 	model = keras.models.Sequential()
-	model.add(Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
-	model.add(Dropout(0.15))
-	model.add(Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
-	model.add(Dense(units=label_shape[0], kernel_initializer='normal'))
+	model.add(layers.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
+	model.add(layers.Dropout(0.15))
+	model.add(layers.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
+	model.add(layers.Dense(units=label_shape[0], kernel_initializer='normal'))
 	return model
 
 def keras_regression_fn_optimize(**hp):
@@ -344,8 +343,6 @@ def keras_regression_fn_optimize(**hp):
 	return optimizer
 
 def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	from keras.callbacks import History
-
 	model.compile(
 		loss=loser
 		, optimizer=optimizer
@@ -360,7 +357,7 @@ def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_ev
 		, verbose = 0
 		, batch_size = 3
 		, epochs = hp['epochs']
-		, callbacks = [History()]
+		, callbacks = [keras.callbacks.History()]
 	)
 	return model
 
@@ -450,32 +447,26 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS IMAGE BINARY ------------------------
 def keras_image_binary_fn_build(features_shape, label_shape, **hp):
-	import keras
-	from keras.models import Sequential
-	from keras.layers import Conv1D, Dense, MaxPooling1D, Dropout, Flatten
-
 	model = keras.models.Sequential()
 	
-	model.add(Conv1D(128*hp['neuron_multiply'], kernel_size=hp['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
-	model.add(MaxPooling1D(pool_size=hp['pool_size']))
-	model.add(Dropout(hp['dropout']))
+	model.add(layers.Conv1D(128*hp['neuron_multiply'], kernel_size=hp['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
+	model.add(layers.MaxPooling1D(pool_size=hp['pool_size']))
+	model.add(layers.Dropout(hp['dropout']))
 	
-	model.add(Conv1D(256*hp['neuron_multiply'], kernel_size=hp['kernel_size'], padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
-	model.add(MaxPooling1D(pool_size=hp['pool_size']))
-	model.add(Dropout(hp['dropout']))
+	model.add(layers.Conv1D(256*hp['neuron_multiply'], kernel_size=hp['kernel_size'], padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
+	model.add(layers.MaxPooling1D(pool_size=hp['pool_size']))
+	model.add(layers.Dropout(hp['dropout']))
 
-	model.add(Flatten())
-	model.add(Dense(hp['dense_neurons']*hp['neuron_multiply'], activation='relu'))
-	model.add(Dropout(0.2))
+	model.add(layers.Flatten())
+	model.add(layers.Dense(hp['dense_neurons']*hp['neuron_multiply'], activation='relu'))
+	model.add(layers.Dropout(0.2))
 	if hp['include_2nd_dense'] == True:
-		model.add(Dense(hp['2nd_dense_neurons'], activation='relu'))
+		model.add(layers.Dense(hp['2nd_dense_neurons'], activation='relu'))
 
-	model.add(Dense(units=label_shape[0], activation='sigmoid'))
+	model.add(layers.Dense(units=label_shape[0], activation='sigmoid'))
 	return model
 
 def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
-	from keras.callbacks import History
-
 	model.compile(
 		optimizer=optimizer
 		, loss=loser
@@ -488,7 +479,7 @@ def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_
 		{"metric":"val_loss", "cutoff":0.50, "above_or_below":"below"},
 		{"metric":"loss", "cutoff":0.50, "above_or_below":"below"}
 	]
-	cutoffs = TrainingCallback.Keras.MetricCutoff(metrics_cuttoffs)
+	cutoffs = aiqc.TrainingCallback.Keras.MetricCutoff(metrics_cuttoffs)
 	
 	model.fit(
 		samples_train["features"]
@@ -499,7 +490,7 @@ def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_
 		)
 		, verbose = 0
 		, batch_size = hp['batch_size']
-		, callbacks=[History(), cutoffs]
+		, callbacks=[keras.callbacks.History(), cutoffs]
 		, epochs = hp['epoch_count']
 	)
 	return model
@@ -574,8 +565,7 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ PYTORCH BINARY ------------------------
 def pytorch_binary_fn_build(features_shape, label_shape, **hp):
-	import torch.nn as nn
-	model = nn.Sequential(
+	model = torch.nn.Sequential(
 		nn.Linear(features_shape[0], 12),
 		nn.BatchNorm1d(12,12),
 		nn.ReLU(),
@@ -587,7 +577,7 @@ def pytorch_binary_fn_build(features_shape, label_shape, **hp):
 	return model
 
 def pytorch_binary_fn_optimize(model, **hp):
-	optimizer = optim.Adamax(
+	optimizer = torch.optim.Adamax(
 		model.parameters()
 		, lr=hp['learning_rate']
 	)
@@ -595,7 +585,7 @@ def pytorch_binary_fn_optimize(model, **hp):
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
+	batched_features, batched_labels = aiqc.torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -711,7 +701,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ PYTORCH MULTI ------------------------
 def pytorch_multiclass_fn_build(features_shape, num_classes, **hp):
-	model = nn.Sequential(
+	model = torch.nn.Sequential(
 		nn.Linear(features_shape[0], 12),
 		nn.BatchNorm1d(12,12),
 		nn.ReLU(),
@@ -728,7 +718,7 @@ def pytorch_multiclass_lose(**hp):
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
+	batched_features, batched_labels = aiqc.torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=hp['batch_size'], enforce_sameSize=False, allow_1Sample=False
 	)
@@ -857,7 +847,7 @@ def pytorch_regression_lose(**hp):
 	
 def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
 	nc = hp['neuron_count']
-	model = nn.Sequential(
+	model = torch.nn.Sequential(
 		nn.Linear(features_shape[0], nc),
 		nn.BatchNorm1d(nc,nc),
 		nn.ReLU(),
@@ -875,7 +865,7 @@ def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from torchmetrics.functional import explained_variance as expVar
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
+	batched_features, batched_labels = aiqc.torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1006,7 +996,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ PYTORCH IMAGE BINARY ------------------------
 def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
-	model = nn.Sequential(
+	model = torch.nn.Sequential(
 		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
 		nn.Conv1d(
 			in_channels=features_shape[0]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
@@ -1039,7 +1029,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
+	batched_features, batched_labels = aiqc.torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)

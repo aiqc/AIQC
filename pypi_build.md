@@ -1,10 +1,16 @@
 # PyPI Package
 
-### Steps to Build & Upload
+### Dependencies for build process.
 
 ```bash
 pip3 install --upgrade wheel twine
+```
 
+---
+
+### Steps to build & upload.
+
+```bash
 python3 setup.py sdist bdist_wheel
 
 python3 -m twine upload --repository pypi dist/*
@@ -16,6 +22,8 @@ rm -r build dist aiqc.egg-info
 
 # Within `setup.py` proactively update the minor version number for next time.
 ```
+
+---
 
 ### Testing a Fresh Install
 

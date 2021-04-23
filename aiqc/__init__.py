@@ -1,48 +1,30 @@
-import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators, math
-from importlib import reload
-from datetime import datetime
-from time import sleep
-from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
+import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, \
+	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib
+# Python utils.
 from textwrap import dedent
-from math import floor, log10
-import pprint as pp
-
-#OS agonstic system files.
-import appdirs
+# External utils.
+from tqdm import tqdm #progress bar.
+from natsort import natsorted #file sorting.
+import appdirs #os-agonistic folder.
 # ORM.
-from peewee import *
+from peewee import Model, CharField, IntegerField, BlobField, BooleanField, DateTimeField, ForeignKeyField
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.fields import PickleField
+import dill as dill #complex serialization.
 # ETL.
 import pyarrow
-from pyarrow import parquet
 import pandas as pd
 import numpy as np
-# Sample prep. Unsupervised learning.
-from sklearn.model_selection import train_test_split, StratifiedKFold
-from sklearn.metrics import *
-from sklearn.preprocessing import *
+from PIL import Image as Imaje
+# Preprocessing & metrics.
+import sklearn
+from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
 # Deep learning.
 import keras
-from keras.models import load_model, Sequential
-from keras.callbacks import Callback
-from keras.utils import to_categorical
-# Progress bar.
-from tqdm import tqdm
+import torch
 # Visualization.
 import plotly.graph_objects as go
 import plotly.express as px
-# Images.
-from PIL import Image as Imaje
-# File sorting.
-from natsort import natsorted
-# Complex serialization.
-import dill as dill
-# Pytorch
-import torch
-import torch.nn as nn
-from torch import optim
-import torchmetrics #by PyTorchLightning
 
 
 name = "aiqc"
@@ -60,7 +42,7 @@ https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-method
 - Tried `concurrent.futures` but it only works with `.py` from command line.
 """
 if (os.name != 'nt'):
-	# If `force=False`, then `reload(aiqc)` triggers `RuntimeError: context already set`.
+	# If `force=False`, then `importlib.reload(aiqc)` triggers `RuntimeError: context already set`.
 	multiprocessing.set_start_method('fork', force=True)
 
 
@@ -227,7 +209,7 @@ def create_config():
 		config_exists = os.path.exists(default_config_path)
 		if not config_exists:
 			aiqc_config = {
-				"created_at": str(datetime.now())
+				"created_at": str(datetime.datetime.now())
 				, "config_path": default_config_path
 				, "db_path": default_db_path
 				, "sys.version": sys.version
@@ -252,7 +234,7 @@ def create_config():
 				)
 				raise
 			print(f"\n=> Success - created config file for settings at path:\n{default_config_path}\n")
-			reload(sys.modules[__name__])
+			importlib.reload(sys.modules[__name__])
 		else:
 			print(f"\n=> Info - skipping as config file already exists at path:\n{default_config_path}\n")
 	print("\n=> Next run `aiqc.create_db()`.\n")
@@ -274,7 +256,7 @@ def delete_config(confirm:bool=False):
 				)
 				raise
 			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")
-			reload(sys.modules[__name__])   
+			importlib.reload(sys.modules[__name__])   
 		else:
 			print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
 
@@ -298,7 +280,7 @@ def update_config(kv:dict):
 			)
 			raise
 		print(f"\n=> Success - updated configuration settings:\n{aiqc_config}\n")
-		reload(sys.modules[__name__])
+		importlib.reload(sys.modules[__name__])
 
 
 #==================================================
@@ -370,7 +352,7 @@ def create_db():
 		tables = db.get_tables()
 		table_count = len(tables)
 		if table_count > 0:
-			print(f"\n💾  Success - created all database tables.  💾\n")
+			print("\n💾  Success - created all database tables.  💾\n")
 		else:
 			print(
 				f"=> Yikes - failed to create tables.\n" \
@@ -394,7 +376,7 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
 		else:
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
-		reload(sys.modules[__name__])
+		importlib.reload(sys.modules[__name__])
 
 		if (rebuild==True):
 			create_db()
@@ -647,7 +629,7 @@ class Dataset(BaseModel):
 			)
 
 			try:
-				file = File.Tabular.from_file(
+				File.Tabular.from_file(
 					path = file_path
 					, source_file_format = source_file_format
 					, dtype = dtype
@@ -825,7 +807,7 @@ class Dataset(BaseModel):
 					, desc = "🖼️ Ingesting Images 🖼️"
 					, ncols = 85
 				)):
-					file = File.Image.from_file(
+					File.Image.from_file(
 						path = p
 						, pillow_save = pillow_save
 						, file_index = i
@@ -890,7 +872,7 @@ class Dataset(BaseModel):
 					, desc = "🖼️ Ingesting Images 🖼️"
 					, ncols = 85
 				)):
-					file = File.Image.from_url(
+					File.Image.from_url(
 						url = url
 						, pillow_save = pillow_save
 						, file_index = i
@@ -938,7 +920,6 @@ class Dataset(BaseModel):
 
 		def get_image_files(id:int, samples:list=None):
 			samples = listify(samples)
-			dataset = Dataset.get_by_id(id)
 			files = File.select().join(Dataset).where(
 				Dataset.id==id, File.file_type=='image'
 			).order_by(File.file_index)# Ascending by default.
@@ -984,10 +965,9 @@ class Dataset(BaseModel):
 			if name is None:
 				name = folder_path
 			source_path = os.path.abspath(folder_path)
-
-			input_files = Dataset.sorted_file_list(source_path)
-			file_count = len(input_files)
 			
+			input_files = Dataset.sorted_file_list(source_path)
+
 			files_data = []
 			for input_file in input_files:
 				with open(input_file, 'r') as file_pointer:
@@ -1081,7 +1061,7 @@ class File(BaseModel):
 			)
 
 			try:
-				tabular = Tabular.create(
+				Tabular.create(
 					columns = columns
 					, dtypes = dtype
 					, file_id = file.id
@@ -1430,7 +1410,7 @@ class File(BaseModel):
 				, dataset = dataset
 			)
 			try:
-				image = Image.create(
+				Image.create(
 					mode = img.mode
 					, file = file
 					, pillow_save = pillow_save
@@ -1474,7 +1454,7 @@ class File(BaseModel):
 				, dataset = dataset
 			)
 			try:
-				image = Image.create(
+				Image.create(
 					mode = img.mode
 					, file = file
 					, pillow_save = pillow_save
@@ -2017,12 +1997,13 @@ class Splitset(BaseModel):
 			label_array = l.to_numpy()
 			# check for OHE cols and reverse them so we can still stratify.
 			if (label_array.shape[1] > 1):
-				encoder = OneHotEncoder(sparse=False)
+				encoder = sklearn.preprocessing.OneHotEncoder(sparse=False)
 				label_array = encoder.fit_transform(label_array)
 				label_array = np.argmax(label_array, axis=1)
+				### [FLAG] don't this this is used. commenting it out for a while.
 				# argmax flattens the array, so reshape it to array of arrays.
-				count = label_array.shape[0]
-				l_cat_shaped = label_array.reshape(count, 1)
+				#count = label_array.shape[0]
+				#l_cat_shaped = label_array.reshape(count, 1)
 			# OHE dtype returns as int64
 			label_dtype = label_array.dtype
 
@@ -2387,7 +2368,11 @@ class Foldset(BaseModel):
 			, splitset = splitset
 		)
 		# Create the folds. Don't want the end user to run two commands.
-		skf = StratifiedKFold(n_splits=fold_count, shuffle=True, random_state=random_state)
+		skf = StratifiedKFold(
+			n_splits=fold_count
+			, shuffle=True
+			, random_state=random_state
+		)
 		splitz_gen = skf.split(arr_train_indices, arr_train_labels)
 				
 		i = -1
@@ -2398,7 +2383,7 @@ class Foldset(BaseModel):
 			fold_samples["folds_train_combined"] = index_folds_train.tolist()
 			fold_samples["fold_validation"] = index_fold_validation.tolist()
 
-			fold = Fold.create(
+			Fold.create(
 				fold_index = i
 				, samples = fold_samples 
 				, foldset = foldset
@@ -2636,7 +2621,6 @@ class Labelcoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
-		label_col_count = splitset.label.column_count
 
 		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
@@ -2681,7 +2665,7 @@ class Labelcoder(BaseModel):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = splitset.label.to_numpy()
 			
-			encoded_samples = Labelcoder.transform_dynamicDimensions(
+			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
@@ -3108,7 +3092,7 @@ class Featurecoder(BaseModel):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = featureset.to_numpy(columns=matching_columns)
 			
-			encoded_samples = Labelcoder.transform_dynamicDimensions(
+			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
@@ -3138,7 +3122,7 @@ class Featurecoder(BaseModel):
 		if (verbose == True):
 			print(
 				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n" \
-				f"{pp.pformat(matching_columns)}\n" 
+				f"{pprint.pformat(matching_columns)}\n" 
 			)
 			if (len(leftover_columns) == 0):
 				print(
@@ -3148,7 +3132,7 @@ class Featurecoder(BaseModel):
 			elif (len(leftover_columns) > 0):
 				print(
 					f"=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n" \
-					f"{pp.pformat(initial_dtypes)}\n"
+					f"{pprint.pformat(initial_dtypes)}\n"
 				)
 		return featurecoder
 
@@ -3186,16 +3170,16 @@ class Algorithm(BaseModel):
 		return loser
 
 	def pytorch_binary_lose(**hp):
-		loser = nn.BCELoss()
+		loser = torch.nn.BCELoss()
 		return loser
 
 	def pytorch_multiclass_lose(**hp):
 		# ptrckblck says `nn.NLLLoss()` will work too.
-		loser = nn.CrossEntropyLoss()
+		loser = torch.nn.CrossEntropyLoss()
 		return loser
 
 	def pytorch_regression_lose(**hp):
-		loser = nn.L1Loss()#mean absolute error.
+		loser = torch.nn.L1Loss()#mean absolute error.
 		return loser
 
 	# --- used by `select_fn_optimize()` ---
@@ -3209,7 +3193,7 @@ class Algorithm(BaseModel):
 		return optimizer
 
 	def pytorch_optimize(model, **hp):
-		optimizer = optim.Adamax(model.parameters(),lr=0.01)
+		optimizer = torch.optim.Adamax(model.parameters(),lr=0.01)
 		return optimizer
 
 	# --- used by `select_fn_predict()` ---
@@ -3546,7 +3530,7 @@ class Plot():
 
 		fig = px.line(
 			dataframe
-			, title = '<i>Models Metrics by Split</i>'
+			, title = 'Models Metrics by Split'
 			, x = 'loss'
 			, y = name_metric_2
 			, color = 'result_id'
@@ -3593,7 +3577,7 @@ class Plot():
 
 		fig_loss = px.line(
 			df_loss
-			, title = '<i>Training History: Loss</i>'
+			, title = 'Training History: Loss'
 			, line_shape = line_shape
 		)
 		fig_loss.update_layout(
@@ -3630,11 +3614,11 @@ class Plot():
 
 			fig_acc = px.line(
 			df_acc
-				, title = '<i>Training History: Accuracy</i>'
+				, title = 'Training History: Accuracy'
 				, line_shape = line_shape
 			)
 			fig_acc.update_layout(
-				xaxis_title = "epochs"
+				xaxis_title = "Epochs"
 				, yaxis_title = "accuracy"
 				, legend_title = None
 				, height = 400
@@ -3670,7 +3654,7 @@ class Plot():
 				, labels=dict(x="Predicted Label", y="Actual Label")
 			)
 			fig.update_layout(
-				title = "<i>Confusion Matrix: " + split + "</i>"
+				title = f"Confusion Matrix: {split}"
 				, xaxis_title = "Predicted Label"
 				, yaxis_title = "Actual Label"
 				, legend_title = 'Sample Count'
@@ -3695,7 +3679,7 @@ class Plot():
 			, x = 'recall'
 			, y = 'precision'
 			, color = 'split'
-			, title = '<i>Precision-Recall Curves</i>'
+			, title = 'Precision-Recall Curves'
 		)
 		fig.update_layout(
 			legend_title = None
@@ -3726,8 +3710,7 @@ class Plot():
 			, x = 'fpr'
 			, y = 'tpr'
 			, color = 'split'
-			, title = '<i>Receiver Operating Characteristic (ROC) Curves</i>'
-			#, line_shape = 'spline'
+			, title = 'Receiver Operating Characteristic (ROC) Curves'
 		)
 		fig.update_layout(
 			legend_title = None
@@ -3981,7 +3964,7 @@ class Queue(BaseModel):
 			if (raw==True):
 				return percent_done
 			elif (raw==False):
-				done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(floor(log10(0.05))))
+				done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(math.floor(math.log10(0.05))))
 				bars_filled = int(done_pt05 * 20)
 				bars_blank = 20 - bars_filled
 				meter = '|'
@@ -4000,7 +3983,7 @@ class Queue(BaseModel):
 				if (raw==True):
 					return percent_done
 				elif (raw==False):
-					done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(floor(log10(0.05))))
+					done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(math.floor(math.log10(0.05))))
 					bars_filled = int(done_pt05 * 20)
 					bars_blank = 20 - bars_filled
 					meter = '|'
@@ -4016,7 +3999,7 @@ class Queue(BaseModel):
 					loop = False
 					os.system("say Model training completed")
 					break
-				sleep(loop_delay)
+				time.sleep(loop_delay)
 
 
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
@@ -4142,28 +4125,18 @@ class Queue(BaseModel):
 
 				split_metrics.append(split_metric)
 
-		# Return relevant columns based on how the Queue was designed.
-		if (queue.foldset is not None):
-			if (queue.repeat_count > 1):
-				sort_list = ['hyperparamcombo_id','jobset_id','repeat_index','fold_index']
-			elif (queue.repeat_count == 1):
-				sort_list = ['hyperparamcombo_id','jobset_id','fold_index']
-		elif (queue.foldset is None):
-			if (queue.repeat_count > 1):
-				sort_list = ['hyperparamcombo_id','job_id','repeat_index']
-			elif (queue.repeat_count == 1):
-				sort_list = ['hyperparamcombo_id','job_id']
-
 		column_names = list(split_metrics[0].keys())
 		if (sort_by is not None):
 			for name in sort_by:
-				if name not in column_names:
+				if (name not in column_names):
 					raise ValueError(f"\nYikes - Column '{name}' not found in metrics dataframe.\n")
 			df = pd.DataFrame.from_records(split_metrics).sort_values(
 				by=sort_by, ascending=ascending
 			)
 		elif (sort_by is None):
-			df = pd.DataFrame.from_records(split_metrics)
+			df = pd.DataFrame.from_records(split_metrics).sort_values(
+				by=['result_id'], ascending=ascending
+			)
 		return df
 
 
@@ -4174,7 +4147,6 @@ class Queue(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		queue = Queue.get_by_id(id)
 		selected_metrics = listify(selected_metrics)
 		selected_stats = listify(selected_stats)
 		sort_by = listify(sort_by)
@@ -4343,23 +4315,23 @@ class Job(BaseModel):
 			
 		split_metrics = {}
 		# Let the classification_multi labels hit this metric in OHE format.
-		split_metrics['roc_auc'] = roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
+		split_metrics['roc_auc'] = sklearn.metrics.roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
 		# Then convert the classification_multi labels ordinal format.
 		if analysis_type == "classification_multi":
 			labels_processed = np.argmax(labels_processed, axis=1)
 
-		split_metrics['accuracy'] = accuracy_score(labels_processed, predictions)
-		split_metrics['precision'] = precision_score(labels_processed, predictions, average=average, zero_division=0)
-		split_metrics['recall'] = recall_score(labels_processed, predictions, average=average, zero_division=0)
-		split_metrics['f1'] = f1_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['accuracy'] = sklearn.metrics.accuracy_score(labels_processed, predictions)
+		split_metrics['precision'] = sklearn.metrics.precision_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['recall'] = sklearn.metrics.recall_score(labels_processed, predictions, average=average, zero_division=0)
+		split_metrics['f1'] = sklearn.metrics.f1_score(labels_processed, predictions, average=average, zero_division=0)
 		return split_metrics
 
 
 	def split_regression_metrics(labels, predictions):
 		split_metrics = {}
-		split_metrics['r2'] = r2_score(labels, predictions)
-		split_metrics['mse'] = mean_squared_error(labels, predictions)
-		split_metrics['explained_variance'] = explained_variance_score(labels, predictions)
+		split_metrics['r2'] = sklearn.metrics.r2_score(labels, predictions)
+		split_metrics['mse'] = sklearn.metrics.mean_squared_error(labels, predictions)
+		split_metrics['explained_variance'] = sklearn.metrics.explained_variance_score(labels, predictions)
 		return split_metrics
 
 
@@ -4370,19 +4342,19 @@ class Job(BaseModel):
 		
 		if analysis_type == "classification_binary":
 			labels_processed = labels_processed.flatten()
-			split_plot_data['confusion_matrix'] = confusion_matrix(labels_processed, predictions)
-			fpr, tpr, _ = roc_curve(labels_processed, probabilities)
-			precision, recall, _ = precision_recall_curve(labels_processed, probabilities)
+			split_plot_data['confusion_matrix'] = sklearn.metrics.confusion_matrix(labels_processed, predictions)
+			fpr, tpr, _ = sklearn.metrics.roc_curve(labels_processed, probabilities)
+			precision, recall, _ = sklearn.metrics.precision_recall_curve(labels_processed, probabilities)
 		
 		elif analysis_type == "classification_multi":
 			# Flatten OHE labels for use with probabilities.
 			labels_flat = labels_processed.flatten()
-			fpr, tpr, _ = roc_curve(labels_flat, probabilities)
-			precision, recall, _ = precision_recall_curve(labels_flat, probabilities)
+			fpr, tpr, _ = sklearn.metrics.roc_curve(labels_flat, probabilities)
+			precision, recall, _ = sklearn.metrics.precision_recall_curve(labels_flat, probabilities)
 
 			# Then convert unflat OHE to ordinal format for use with predictions.
 			labels_ordinal = np.argmax(labels_processed, axis=1)
-			split_plot_data['confusion_matrix'] = confusion_matrix(labels_ordinal, predictions)
+			split_plot_data['confusion_matrix'] = sklearn.metrics.confusion_matrix(labels_ordinal, predictions)
 
 		split_plot_data['roc_curve'] = {}
 		split_plot_data['roc_curve']['fpr'] = fpr
@@ -4397,7 +4369,7 @@ class Job(BaseModel):
 		"""
 		Needs optimization = https://github.com/aiqc/aiqc/projects/1
 		"""
-		time_started = datetime.now()
+		time_started = datetime.datetime.now()
 		j = Job.get_by_id(id)
 		if verbose:
 			print(f"\nJob #{j.id} starting...")
@@ -4749,7 +4721,7 @@ class Job(BaseModel):
 						loss = loser(tz_probs, flat_labels)
 						# convert back to *OHE* numpy for metrics and plots.
 						data['labels'] = data['labels'].detach().numpy()
-						data['labels'] = to_categorical(data['labels'])
+						data['labels'] = keras.utils.to_categorical(data['labels'])
 
 				metrics[split] = Job.split_classification_metrics(
 					data['labels'], preds, probs, analysis_type
@@ -4816,7 +4788,7 @@ class Job(BaseModel):
 				"mean":mean, "median":median, "pstdev":pstdev, 
 				"minimum":minimum, "maximum":maximum 
 			}
-		time_succeeded = datetime.now()
+		time_succeeded = datetime.datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
@@ -4832,7 +4804,7 @@ class Job(BaseModel):
 		"""
 		5. Save it to Result object.
 		"""
-		r = Result.create(
+		Result.create(
 			time_started = time_started
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
@@ -4850,6 +4822,7 @@ class Job(BaseModel):
 
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
 		del samples
+		del model
 		return j
 
 
@@ -4903,7 +4876,7 @@ class Result(BaseModel):
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
-				model = load_model(temp_file_name, compile=True)
+				model = keras.models.load_model(temp_file_name, compile=True)
 			os.remove(temp_file_name)
 			return model
 		elif (algorithm.library == 'pytorch'):
@@ -5090,7 +5063,7 @@ class TrainingCallback():
 					print(
 						f"\n:: Epoch #{epoch} ::" \
 						f"\nCongrats. Stopped training early. Satisfied thresholds defined in `MetricCutoff` callback:" \
-						f"\n{pp.pformat(self.thresholds)}\n"
+						f"\n{pprint.pformat(self.thresholds)}\n"
 					)
 					self.model.stop_training = True
 
@@ -5170,7 +5143,7 @@ class Pipeline():
 			)
 
 			if (fold_count is not None):
-				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 
 			if ((label_encoder is not None) or (feature_encoders is not None)):
 				encoderset = splitset.make_encoderset()
@@ -5241,7 +5214,7 @@ class Pipeline():
 				)
 
 			if (fold_count is not None):
-				foldset = splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 			return splitset
 
 
