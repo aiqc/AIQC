@@ -3519,9 +3519,10 @@ class Plot():
 		self.plot_template = dict(layout=go.Layout(
 			font=dict(family='Avenir', color='#FAFAFA'),
 			title=dict(x=0.05, y=0.95),
-			titlefont=dict(family='Spectral'),
+			titlefont=dict(family='Avenir'),
 			plot_bgcolor='#181B1E',
 			paper_bgcolor='#181B1E',
+			hovermode='closest',
 			hoverlabel=dict(
 				bgcolor="#0F0F0F",
 				font=dict(
@@ -3682,8 +3683,8 @@ class Plot():
 					, dtick = 1.0
 				)
 				, margin = dict(
-					b = 0
-					, t = 75
+					b = 50
+					, t = 150
 				)
 			)
 			fig.show()
