@@ -7,7 +7,8 @@ import torchmetrics
 
 import aiqc
 from aiqc import *
-from aiqc import datum
+# Still required even with `*` above.
+from aiqc import datum 
 
 
 name = "tests"
