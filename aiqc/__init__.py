@@ -1,47 +1,30 @@
-import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators, math
-from importlib import reload
-from datetime import datetime
-from time import sleep
-from itertools import permutations # is this being used? or raw python combos? can it just be itertools.permutations?
+import os, sys, platform, json, operator, sqlite3, io, gzip, zlib, random, pickle, itertools, warnings, multiprocessing, h5py, statistics, inspect, requests, validators, math, time, pprint, datetime
+# Python utils.
 from textwrap import dedent
-from math import floor, log10
-import pprint as pp
-
-#OS agonstic system files.
-import appdirs
+from importlib import reload
+# External utils.
+from tqdm import tqdm #progress bar.
+from natsort import natsorted #file sorting.
+import appdirs #os-agonistic folder.
 # ORM.
 from peewee import *
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.fields import PickleField
+import dill as dill #complex serialization.
 # ETL.
 import pyarrow
-from pyarrow import parquet
 import pandas as pd
 import numpy as np
-# Sample prep. Unsupervised learning.
+from PIL import Image as Imaje
+# Preprocessing.
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from sklearn.metrics import *
 from sklearn.preprocessing import *
+from sklearn.metrics import *
 # Deep learning.
 import keras
-from keras.models import load_model, Sequential
-from keras.callbacks import Callback
-from keras.utils import to_categorical
-# Progress bar.
-from tqdm import tqdm
+import torch
 # Visualization.
 import plotly.express as px
-# Images.
-from PIL import Image as Imaje
-# File sorting.
-from natsort import natsorted
-# Complex serialization.
-import dill as dill
-# Pytorch
-import torch
-import torch.nn as nn
-from torch import optim
-import torchmetrics #by PyTorchLightning
 
 
 name = "aiqc"
@@ -226,7 +209,7 @@ def create_config():
 		config_exists = os.path.exists(default_config_path)
 		if not config_exists:
 			aiqc_config = {
-				"created_at": str(datetime.now())
+				"created_at": str(datetime.datetime.now())
 				, "config_path": default_config_path
 				, "db_path": default_db_path
 				, "sys.version": sys.version
@@ -3137,7 +3120,7 @@ class Featurecoder(BaseModel):
 		if (verbose == True):
 			print(
 				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n" \
-				f"{pp.pformat(matching_columns)}\n" 
+				f"{pprint.pformat(matching_columns)}\n" 
 			)
 			if (len(leftover_columns) == 0):
 				print(
@@ -3147,7 +3130,7 @@ class Featurecoder(BaseModel):
 			elif (len(leftover_columns) > 0):
 				print(
 					f"=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n" \
-					f"{pp.pformat(initial_dtypes)}\n"
+					f"{pprint.pformat(initial_dtypes)}\n"
 				)
 		return featurecoder
 
@@ -3185,16 +3168,16 @@ class Algorithm(BaseModel):
 		return loser
 
 	def pytorch_binary_lose(**hp):
-		loser = nn.BCELoss()
+		loser = torch.nn.BCELoss()
 		return loser
 
 	def pytorch_multiclass_lose(**hp):
 		# ptrckblck says `nn.NLLLoss()` will work too.
-		loser = nn.CrossEntropyLoss()
+		loser = torch.nn.CrossEntropyLoss()
 		return loser
 
 	def pytorch_regression_lose(**hp):
-		loser = nn.L1Loss()#mean absolute error.
+		loser = torch.nn.L1Loss()#mean absolute error.
 		return loser
 
 	# --- used by `select_fn_optimize()` ---
@@ -3208,7 +3191,7 @@ class Algorithm(BaseModel):
 		return optimizer
 
 	def pytorch_optimize(model, **hp):
-		optimizer = optim.Adamax(model.parameters(),lr=0.01)
+		optimizer = torch.optim.Adamax(model.parameters(),lr=0.01)
 		return optimizer
 
 	# --- used by `select_fn_predict()` ---
@@ -3528,7 +3511,7 @@ class Plot:
 
 		fig = px.line(
 			dataframe
-			, title = '<i>Models Metrics by Split</i>'
+			, title = 'Models Metrics by Split'
 			, x = 'loss'
 			, y = name_metric_2
 			, color = 'result_id'
@@ -3583,7 +3566,7 @@ class Plot:
 
 		fig_loss = px.line(
 			df_loss
-			, title = '<i>Training History: Loss</i>'
+			, title = 'Training History: Loss'
 			, line_shape = line_shape
 		)
 		fig_loss.update_layout(
@@ -3628,11 +3611,11 @@ class Plot:
 
 			fig_acc = px.line(
 			df_acc
-				, title = '<i>Training History: Accuracy</i>'
+				, title = 'Training History: Accuracy'
 				, line_shape = line_shape
 			)
 			fig_acc.update_layout(
-				xaxis_title = "epochs"
+				xaxis_title = "Epochs"
 				, yaxis_title = "accuracy"
 				, legend_title = None
 				, font_family = "Avenir"
@@ -3676,7 +3659,7 @@ class Plot:
 				, labels=dict(x="Predicted Label", y="Actual Label")
 			)
 			fig.update_layout(
-				title = "<i>Confusion Matrix: " + split + "</i>"
+				title = f"Confusion Matrix: {split}"
 				, xaxis_title = "Predicted Label"
 				, yaxis_title = "Actual Label"
 				, legend_title = 'Sample Count'
@@ -3709,7 +3692,7 @@ class Plot:
 			, x = 'recall'
 			, y = 'precision'
 			, color = 'split'
-			, title = '<i>Precision-Recall Curves</i>'
+			, title = 'Precision-Recall Curves'
 		)
 		fig.update_layout(
 			legend_title = None
@@ -3748,7 +3731,7 @@ class Plot:
 			, x = 'fpr'
 			, y = 'tpr'
 			, color = 'split'
-			, title = '<i>Receiver Operating Characteristic (ROC) Curves</i>'
+			, title = 'Receiver Operating Characteristic (ROC) Curves'
 			#, line_shape = 'spline'
 		)
 		fig.update_layout(
@@ -4011,7 +3994,7 @@ class Queue(BaseModel):
 			if (raw==True):
 				return percent_done
 			elif (raw==False):
-				done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(floor(log10(0.05))))
+				done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(math.floor(math.log10(0.05))))
 				bars_filled = int(done_pt05 * 20)
 				bars_blank = 20 - bars_filled
 				meter = '|'
@@ -4030,7 +4013,7 @@ class Queue(BaseModel):
 				if (raw==True):
 					return percent_done
 				elif (raw==False):
-					done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(floor(log10(0.05))))
+					done_pt05 = round(round(percent_done / 0.05) * 0.05, -int(math.floor(math.log10(0.05))))
 					bars_filled = int(done_pt05 * 20)
 					bars_blank = 20 - bars_filled
 					meter = '|'
@@ -4046,7 +4029,7 @@ class Queue(BaseModel):
 					loop = False
 					os.system("say Model training completed")
 					break
-				sleep(loop_delay)
+				time.sleep(loop_delay)
 
 
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
@@ -4427,7 +4410,7 @@ class Job(BaseModel):
 		"""
 		Needs optimization = https://github.com/aiqc/aiqc/projects/1
 		"""
-		time_started = datetime.now()
+		time_started = datetime.datetime.now()
 		j = Job.get_by_id(id)
 		if verbose:
 			print(f"\nJob #{j.id} starting...")
@@ -4779,7 +4762,7 @@ class Job(BaseModel):
 						loss = loser(tz_probs, flat_labels)
 						# convert back to *OHE* numpy for metrics and plots.
 						data['labels'] = data['labels'].detach().numpy()
-						data['labels'] = to_categorical(data['labels'])
+						data['labels'] = keras.utils.to_categorical(data['labels'])
 
 				metrics[split] = Job.split_classification_metrics(
 					data['labels'], preds, probs, analysis_type
@@ -4846,7 +4829,7 @@ class Job(BaseModel):
 				"mean":mean, "median":median, "pstdev":pstdev, 
 				"minimum":minimum, "maximum":maximum 
 			}
-		time_succeeded = datetime.now()
+		time_succeeded = datetime.datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
@@ -4933,7 +4916,7 @@ class Result(BaseModel):
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
-				model = load_model(temp_file_name, compile=True)
+				model = keras.models.load_model(temp_file_name, compile=True)
 			os.remove(temp_file_name)
 			return model
 		elif (algorithm.library == 'pytorch'):
@@ -5120,7 +5103,7 @@ class TrainingCallback():
 					print(
 						f"\n:: Epoch #{epoch} ::" \
 						f"\nCongrats. Stopped training early. Satisfied thresholds defined in `MetricCutoff` callback:" \
-						f"\n{pp.pformat(self.thresholds)}\n"
+						f"\n{pprint.pformat(self.thresholds)}\n"
 					)
 					self.model.stop_training = True
 
