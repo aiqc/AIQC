@@ -1264,11 +1264,15 @@ class File(BaseModel):
 							You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
 							"""))
 			"""
-			Rare types like np.uint8, np.double, 'bool', 
-			but not np.complex64 and np.float128 (aka np.longfloat) 
-			because `DataFrame.to_parquet(engine='auto')` fails.
-			- `StringArray.unique().tolist()` fails because stringarray doesnt have tolist()
-			^ can do unique().to_numpy().tolist() though.
+			- `DataFrame.to_parquet(engine='auto')` fails on:
+			  'complex', 'longfloat', 'float128'.
+			- `DataFrame.to_parquet(engine='auto')` succeeds on:
+			  'string', np.uint8, np.double, 'bool'.
+			
+			- But the new 'string' dtype is not a numpy type!
+			  so operations like `np.issubdtype` won't work on it.
+			- But the new 'string' series is not feature complete
+			  `StringArray.unique().tolist()` fails.
 			"""
 			excluded_types = ['string', 'complex', 'longfloat', 'float128']
 			actual_dtypes = dataframe.dtypes.to_dict().items()
