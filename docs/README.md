@@ -1,12 +1,19 @@
-### Overview. 
+## Overview. 
 
 This uses the `sphinx` framework with the help of `nbsphinx` for rendering `ipynb` files. 
 
 The user-facing documentation is hosted for free on `aiqc.readthedocs.io`. The admin portal is `readthedocs.org/projects/aiqc/`.
 
+
+#### Running the docs.
+
+Remember that the documentation is user-facing, so, if you want to run the documentation notebooks yourself, be sure to duplicate the `.ipynb` file you are running so that you don't change the final product. If you make new notebooks from within this folder e.g. `Untitled.ipynb`, or anywhere else, don't forget to either delete them or transfer them out before running the build process.
+
 ---
 
-### Dependencies. 
+## Building the documentation website.
+
+#### Dependencies. 
 
 - Pandoc CLI: https://pandoc.org/installing.html
 - Python packages in `docs/requirements.txt`.
@@ -14,11 +21,9 @@ The user-facing documentation is hosted for free on `aiqc.readthedocs.io`. The a
     - You'll notice that everything in `docs/requirements.txt` also appears in `aiqc/requirements_dev.txt`.
 
 
----
+#### Configuration files.
 
-### Configuration.
-
-These are the important files.
+These are the important files:
 
 - `docs/conf.py`: settings and extensions.
 - `docs/index.rst`: table of contents and homepage.
@@ -26,9 +31,8 @@ These are the important files.
 - `docs/requirements.txt`: uses by the yml file.
 - Everything else was boilerplate from when sphinx created the project.
 
----
 
-### Building the docs.
+#### Build process.
 After you make changes to the documentation files, you need to *build* the html pages.
 
 ```bash
@@ -40,9 +44,8 @@ You can preview the changes locally by opening the files in `aiqc/docs/_build/ht
 
 Alternatively, you can use `pip install sphinx-autobuild` to watch the files for changes and automatically build, but I've never done this.
 
----
 
-### Publishing the docs.
+#### Automated publishing.
 
 ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 
@@ -52,10 +55,9 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 
 ---
 
-### Quirks.
+## Quirks.
 
 - Don't forget to run `make html` if you want your changes to show up in the final documentation.
 - When adding/ removing/ renaming files to the toctrees, I have to run `make html` twice: once with with and without the `html_sidebars` line of `conf.py` uncommented and then again with it commented.
 - Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
 - When building, files get replicated. So if you change the name of files in `/docs`, `docs/notebooks`, `docs/images` - then the old files will need to be deleted from `/_build/html`.
-- If you make new notebooks from within this folder e.g. `Untitled.ipynb` don't forget to delete them.

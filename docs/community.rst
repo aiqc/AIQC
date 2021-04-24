@@ -24,6 +24,20 @@ Ultimately, we'd like to create specific preprocessing pipelines, pre-trained mo
 
 ----
 
+***********************
+How can I get involved?
+***********************
+
+- Create a post on the `discussion board <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
+
+  + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone. 
+
+  + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
+
+- Jump into the conversation in the `Slack group <https://aiqc.readthedocs.io/en/latest/links.html>`__.
+
+----
+
 **********************
 What can I contribute?
 **********************
@@ -47,34 +61,31 @@ What can I contribute?
 ----
 
 ***********************
-How can I get involved?
-***********************
-
-- Create a post on the `discussion board <https://github.com/aiqc/aiqc/discussions>`__ and introduce yourself so that we can help get you up to speed!
-
-  + If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone. 
-
-  + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
-
-- Jump into the conversation in the `Slack group <https://aiqc.readthedocs.io/en/latest/links.html>`__.
-
-----
-
-***********************
 Setting up environment.
 ***********************
 
-Have a read through the `Install section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
+Have a read through the `Installation section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
+
+Here is how you can clone the source code, install dependencies, and environment:
 
 .. code-block:: bash
 
-   git clone git@github.com:aiqc/aiqc.git
-   cd aiqc
+   git clone git@github.com:aiqc/AIQC.git
+   
+   cd AIQC
+   
    pip install --upgrade -r requirements_dev.txt
    pip install --upgrade -r requirements.txt
+   pip uninstall aiqc -y
 
+   git checkout -b my_feature
 
-If you want to make your own documentation then you will need to `install the pandoc binary <https://pandoc.org/installing.html>`__.
+   python
+   >>> import aiqc
+
+Before you begin developing, make sure that you do NOT have the `aiqc` package installed. This may be counterintuitive at first, but remember, you are building the package yourself. So if you imported the pip package, then you are running scripts against the pip package, not your source code.
+
+Also, have a look at the `Documentation's README <https://github.com/aiqc/AIQC/blob/main/docs/README.md>`__ for documentation building dependencies as well as some do's and don'ts.
 
 ----
 
@@ -82,7 +93,7 @@ If you want to make your own documentation then you will need to `install the pa
 Programming style.
 ******************
 
-- Prioritize human readability, maintainability, and simplicity over conciseness and performance.
+- Prioritize human readability, maintainability, and simplicity over conciseness, efficiency, and performance.
 
   + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
   
