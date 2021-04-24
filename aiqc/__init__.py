@@ -23,6 +23,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory
 import keras
 import torch
 # Visualization.
+import plotly.graph_objects as go
 import plotly.express as px
 
 
@@ -3491,12 +3492,30 @@ class Hyperparamcombo(BaseModel):
 
 
 
-class Plot:
+class Plot():
 	"""
 	Data is prepared in the Queue and Result classes
 	before being fed into the methods below.
 	"""
-	def performance(dataframe:object):
+
+	def __init__(self):
+
+		self.plot_template = dict(layout=go.Layout(
+			font=dict(family='Avenir', color='#FAFAFA'),
+			title=dict(x=0.05, y=0.95),
+			titlefont=dict(family='Avenir'),
+			plot_bgcolor='#181B1E',
+			paper_bgcolor='#181B1E',
+			hovermode='closest',
+			hoverlabel=dict(
+				bgcolor="#0F0F0F",
+				font=dict(
+					family="Avenir",
+					size=15
+				)
+			)))
+
+	def performance(self, dataframe:object):
 		# The 2nd metric is the last 
 		name_metric_2 = dataframe.columns.tolist()[-1]
 		if (name_metric_2 == "accuracy"):
@@ -3534,22 +3553,14 @@ class Plot:
 		fig.update_layout(
 			xaxis_title = "Loss"
 			, yaxis_title = display_metric_2
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
+			, template = self.plot_template
 		)
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
 
 
-	def learning_curve(dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
+	def learning_curve(self, dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
 		"""Dataframe rows are epochs and columns are metric names."""
 
 		# Spline seems to crash with too many points.
@@ -3574,16 +3585,8 @@ class Plot:
 			xaxis_title = "Epochs"
 			, yaxis_title = "Loss"
 			, legend_title = None
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
+			, template = self.plot_template
 			, height = 400
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
 			, yaxis = dict(
 				side = "right"
 				, tickmode = 'auto'# When loss is initially high, the 0.1 tickmarks are overwhelming.
@@ -3619,16 +3622,8 @@ class Plot:
 				xaxis_title = "Epochs"
 				, yaxis_title = "accuracy"
 				, legend_title = None
-				, font_family = "Avenir"
-				, font_color = "#FAFAFA"
-				, plot_bgcolor = "#181B1E"
-				, paper_bgcolor = "#181B1E"
 				, height = 400
-				, hoverlabel = dict(
-					bgcolor = "#0F0F0F"
-					, font_size = 15
-					, font_family = "Avenir"
-				)
+				, template = self.plot_template
 				, yaxis = dict(
 				side = "right"
 				, tickmode = 'linear'
@@ -3652,7 +3647,7 @@ class Plot:
 		fig_loss.show()
 
 
-	def confusion_matrix(cm_by_split):
+	def confusion_matrix(self, cm_by_split):
 		for split, cm in cm_by_split.items():
 			fig = px.imshow(
 				cm
@@ -3664,30 +3659,22 @@ class Plot:
 				, xaxis_title = "Predicted Label"
 				, yaxis_title = "Actual Label"
 				, legend_title = 'Sample Count'
-				, font_family = "Avenir"
-				, font_color = "#FAFAFA"
-				, plot_bgcolor = "#181B1E"
-				, paper_bgcolor = "#181B1E"
-				, height = 225 # if too small, it won't render in Jupyter.
-				, hoverlabel = dict(
-					bgcolor = "#0F0F0F"
-					, font_size = 15
-					, font_family = "Avenir"
-				)
+				, template = self.plot_template
+				, height = 500 # if too small, it won't render in Jupyter.
 				, yaxis = dict(
 					tickmode = 'linear'
 					, tick0 = 0.0
 					, dtick = 1.0
 				)
 				, margin = dict(
-					b = 0
-					, t = 75
+					b = 75
+					, t = 125
 				)
 			)
 			fig.show()
 
 
-	def precision_recall(dataframe:object):
+	def precision_recall(self, dataframe:object):
 		fig = px.line(
 			dataframe
 			, x = 'recall'
@@ -3697,16 +3684,8 @@ class Plot:
 		)
 		fig.update_layout(
 			legend_title = None
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
+			, template = self.plot_template
 			, height = 500
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
 			, yaxis = dict(
 				side = "right"
 				, tickmode = 'linear'
@@ -3726,7 +3705,7 @@ class Plot:
 		fig.show()
 
 
-	def roc_curve(dataframe:object):
+	def roc_curve(self, dataframe:object):
 		fig = px.line(
 			dataframe
 			, x = 'fpr'
@@ -3736,16 +3715,8 @@ class Plot:
 		)
 		fig.update_layout(
 			legend_title = None
-			, font_family = "Avenir"
-			, font_color = "#FAFAFA"
-			, plot_bgcolor = "#181B1E"
-			, paper_bgcolor = "#181B1E"
+			, template = self.plot_template
 			, height = 500
-			, hoverlabel = dict(
-				bgcolor = "#0F0F0F"
-				, font_size = 15
-				, font_family = "Avenir"
-			)
 			, xaxis = dict(
 				title = "False Positive Rate (FPR)"
 				, tick0 = 0.00
@@ -4300,7 +4271,7 @@ class Queue(BaseModel):
 		if dataframe.empty:
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			Plot.performance(dataframe=dataframe)
+			Plot().performance(dataframe=dataframe)
 
 
 
@@ -4946,7 +4917,7 @@ class Result(BaseModel):
 
 		history = r.history
 		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
-		Plot.learning_curve(
+		Plot().learning_curve(
 			dataframe = dataframe
 			, analysis_type = analysis_type
 			, loss_skip_15pct = loss_skip_15pct
@@ -4965,7 +4936,7 @@ class Result(BaseModel):
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
 		
-		Plot.confusion_matrix(cm_by_split=cm_by_split)
+		Plot().confusion_matrix(cm_by_split=cm_by_split)
 		
 
 
@@ -4991,7 +4962,7 @@ class Result(BaseModel):
 		dataframe = pd.concat(dfs, ignore_index=True)
 		dataframe = dataframe.round(3)
 
-		Plot.precision_recall(dataframe=dataframe)
+		Plot().precision_recall(dataframe=dataframe)
 
 
 	def plot_roc_curve(id:int):
@@ -5017,7 +4988,7 @@ class Result(BaseModel):
 		dataframe = pd.concat(dfs, ignore_index=True)
 		dataframe = dataframe.round(3)
 
-		Plot.roc_curve(dataframe=dataframe)
+		Plot().roc_curve(dataframe=dataframe)
 
 
 """
