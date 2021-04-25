@@ -2632,7 +2632,7 @@ class Labelcoder(BaseModel):
 		elif (len(encoderset.labelcoders) == 1):
 			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
 
-		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
+		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=True)
 
 		# 2. Test Fit. 
 		if (only_fit_train == True):
@@ -2691,8 +2691,8 @@ class Labelcoder(BaseModel):
 		return lc
 
 
-	def check_sklearn_attributes(sklearn_preprocess:object):
-		"""Used by Featurecoder too."""
+	def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
+		#This function is used by Featurecoder too, so don't put label-specific things in here.
 		coder_type = str(type(sklearn_preprocess))
 		stringified_coder = str(sklearn_preprocess)
 
@@ -2760,6 +2760,20 @@ class Labelcoder(BaseModel):
 					For example, `PolynomialFeatures(order='C')`.
 					"""))
 
+			if (
+				(is_label==True)
+				and
+				(not hasattr(sklearn_preprocess, 'inverse_transform'))
+			):
+				print(dedent("""
+					Warning - The following encoders do not have an `inverse_transform` method.
+					It is inadvisable to use them to encode Labels during training, 
+					because you may not be able to programmatically decode your raw predictions 
+					when it comes time for inference (aka non-training predictions):
+
+					[Binarizer, KernelCenterer, Normalizer, PolynomialFeatures]
+				"""))
+
 			"""
 			- Attempting to automatically set this. I was originally validating based on 
 			  whether or not the encoder was categorical. But I realized, if I am going to 
@@ -2779,6 +2793,8 @@ class Labelcoder(BaseModel):
 					only_fit_train = False
 					break
 			return only_fit_train
+
+
 			
 		
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
@@ -2972,7 +2988,7 @@ class Featurecoder(BaseModel):
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
-		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess)
+		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=False)
 
 		if (dtypes is not None):
 			for typ in dtypes:
