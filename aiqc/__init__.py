@@ -3141,12 +3141,12 @@ class Featurecoder(BaseModel):
 
 		if (verbose == True):
 			print(
-				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n" \
-				f"{pprint.pformat(matching_columns)}\n" 
+				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n\n" \
+				f"{matching_columns}\n" 
 			)
 			if (len(leftover_columns) == 0):
 				print(
-					f"=> Nice! Now all feature column(s) have encoder(s) associated with them.\n" \
+					f"=> Done. All feature column(s) have encoder(s) associated with them.\n" \
 					f"No more Featurecoders can be added to this Encoderset.\n"
 				)
 			elif (len(leftover_columns) > 0):
