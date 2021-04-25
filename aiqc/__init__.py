@@ -4893,13 +4893,16 @@ class Result(BaseModel):
 		model_blob = result.model_file
 
 		if (algorithm.library == "keras"):
+			#https://www.tensorflow.org/guide/keras/save_and_serialize
 			temp_file_name = f"{app_dir}temp_keras_model"
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
 				model = keras.models.load_model(temp_file_name, compile=True)
 			os.remove(temp_file_name)
+			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
+			
 		elif (algorithm.library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
 			# Need to initialize the classes first, which requires reconstructing them.
@@ -4919,6 +4922,7 @@ class Result(BaseModel):
 			model.load_state_dict(checkpoint['model_state_dict'])
 			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
+			# ^ but you don't need to pass any data into eval()
 			return model, optimizer
 
 

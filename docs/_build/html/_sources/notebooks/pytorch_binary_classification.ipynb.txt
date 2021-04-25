@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "fitted-country",
+   "id": "expensive-tongue",
    "metadata": {},
    "source": [
     "# PyTorch: Classify Binary"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "worldwide-gender",
+   "id": "stunning-oxygen",
    "metadata": {},
    "source": [
     "![houses](../images/mines.png)"
@@ -18,8 +18,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "subjective-violence",
+   "execution_count": 2,
+   "id": "labeled-techno",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "loaded-research",
+   "id": "altered-polymer",
    "metadata": {},
    "source": [
     "---"
@@ -44,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "acoustic-lottery",
+   "id": "honey-season",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -52,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "valid-tribune",
+   "id": "immediate-vienna",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -60,8 +60,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
-   "id": "reduced-caution",
+   "execution_count": 3,
+   "id": "gothic-rehabilitation",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -70,8 +70,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
-   "id": "surgical-latest",
+   "execution_count": 4,
+   "id": "attended-senate",
    "metadata": {},
    "outputs": [
     {
@@ -269,7 +269,7 @@
        "[5 rows x 61 columns]"
       ]
      },
-     "execution_count": 5,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -280,7 +280,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "searching-vinyl",
+   "id": "novel-preservation",
    "metadata": {},
    "source": [
     "---"
@@ -288,7 +288,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "nonprofit-chest",
+   "id": "august-parameter",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -296,7 +296,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "opposite-pipeline",
+   "id": "continued-kazakhstan",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -304,8 +304,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
-   "id": "eight-giving",
+   "execution_count": 5,
+   "id": "interracial-possession",
    "metadata": {},
    "outputs": [
     {
@@ -316,68 +316,10 @@
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
       "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
-      "['a',\n",
-      " 'b',\n",
-      " 'c',\n",
-      " 'd',\n",
-      " 'e',\n",
-      " 'f',\n",
-      " 'g',\n",
-      " 'h',\n",
-      " 'i',\n",
-      " 'j',\n",
-      " 'k',\n",
-      " 'l',\n",
-      " 'm',\n",
-      " 'n',\n",
-      " 'o',\n",
-      " 'p',\n",
-      " 'q',\n",
-      " 'r',\n",
-      " 's',\n",
-      " 't',\n",
-      " 'u',\n",
-      " 'v',\n",
-      " 'w',\n",
-      " 'x',\n",
-      " 'y',\n",
-      " 'z',\n",
-      " 'aa',\n",
-      " 'ab',\n",
-      " 'ac',\n",
-      " 'ad',\n",
-      " 'ae',\n",
-      " 'af',\n",
-      " 'ag',\n",
-      " 'ah',\n",
-      " 'ai',\n",
-      " 'aj',\n",
-      " 'ak',\n",
-      " 'al',\n",
-      " 'am',\n",
-      " 'an',\n",
-      " 'ao',\n",
-      " 'ap',\n",
-      " 'aq',\n",
-      " 'ar',\n",
-      " 'as',\n",
-      " 'at',\n",
-      " 'au',\n",
-      " 'av',\n",
-      " 'aw',\n",
-      " 'ax',\n",
-      " 'ay',\n",
-      " 'az',\n",
-      " 'ba',\n",
-      " 'bb',\n",
-      " 'bc',\n",
-      " 'bd',\n",
-      " 'be',\n",
-      " 'bf',\n",
-      " 'bg',\n",
-      " 'bh']\n",
       "\n",
-      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 'bh']\n",
+      "\n",
+      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -404,8 +346,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
-   "id": "potential-portal",
+   "execution_count": 6,
+   "id": "unusual-character",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -424,8 +366,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
-   "id": "private-overview",
+   "execution_count": 7,
+   "id": "dirty-mailman",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -475,7 +417,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "administrative-royalty",
+   "id": "artificial-eligibility",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -483,8 +425,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
-   "id": "banner-louisiana",
+   "execution_count": 8,
+   "id": "formal-sheep",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -498,8 +440,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
-   "id": "compatible-engine",
+   "execution_count": 9,
+   "id": "trying-recall",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -511,8 +453,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
-   "id": "exclusive-cassette",
+   "execution_count": 10,
+   "id": "entertaining-wayne",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -536,15 +478,15 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
-   "id": "permanent-arkansas",
+   "execution_count": 11,
+   "id": "concrete-medicaid",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:09<00:00,  2.35s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:10<00:00,  2.60s/it]\n"
      ]
     }
    ],
@@ -554,7 +496,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "incident-yesterday",
+   "id": "planned-payroll",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -562,7 +504,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "chronic-envelope",
+   "id": "welsh-campaign",
    "metadata": {},
    "source": [
     "---"
@@ -570,7 +512,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "chief-costs",
+   "id": "comfortable-provider",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -578,7 +520,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "median-match",
+   "id": "changed-arkansas",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
@@ -586,8 +528,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
-   "id": "packed-affairs",
+   "execution_count": 12,
+   "id": "saved-services",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -596,8 +538,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
-   "id": "otherwise-belarus",
+   "execution_count": 13,
+   "id": "entitled-beauty",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -606,8 +548,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
-   "id": "thirty-coupon",
+   "execution_count": 14,
+   "id": "informed-course",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -616,8 +558,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
-   "id": "divine-torture",
+   "execution_count": 15,
+   "id": "respected-gamma",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -626,8 +568,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
-   "id": "polar-drove",
+   "execution_count": 16,
+   "id": "overall-alaska",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -640,8 +582,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 18,
-   "id": "standard-blame",
+   "execution_count": 17,
+   "id": "bearing-prerequisite",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -650,8 +592,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 19,
-   "id": "bridal-scholar",
+   "execution_count": 18,
+   "id": "derived-patrol",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -662,8 +604,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 20,
-   "id": "better-reverse",
+   "execution_count": 19,
+   "id": "thousand-summit",
    "metadata": {},
    "outputs": [
     {
@@ -674,68 +616,10 @@
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
       "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
-      "['a',\n",
-      " 'b',\n",
-      " 'c',\n",
-      " 'd',\n",
-      " 'e',\n",
-      " 'f',\n",
-      " 'g',\n",
-      " 'h',\n",
-      " 'i',\n",
-      " 'j',\n",
-      " 'k',\n",
-      " 'l',\n",
-      " 'm',\n",
-      " 'n',\n",
-      " 'o',\n",
-      " 'p',\n",
-      " 'q',\n",
-      " 'r',\n",
-      " 's',\n",
-      " 't',\n",
-      " 'u',\n",
-      " 'v',\n",
-      " 'w',\n",
-      " 'x',\n",
-      " 'y',\n",
-      " 'z',\n",
-      " 'aa',\n",
-      " 'ab',\n",
-      " 'ac',\n",
-      " 'ad',\n",
-      " 'ae',\n",
-      " 'af',\n",
-      " 'ag',\n",
-      " 'ah',\n",
-      " 'ai',\n",
-      " 'aj',\n",
-      " 'ak',\n",
-      " 'al',\n",
-      " 'am',\n",
-      " 'an',\n",
-      " 'ao',\n",
-      " 'ap',\n",
-      " 'aq',\n",
-      " 'ar',\n",
-      " 'as',\n",
-      " 'at',\n",
-      " 'au',\n",
-      " 'av',\n",
-      " 'aw',\n",
-      " 'ax',\n",
-      " 'ay',\n",
-      " 'az',\n",
-      " 'ba',\n",
-      " 'bb',\n",
-      " 'bc',\n",
-      " 'bd',\n",
-      " 'be',\n",
-      " 'bf',\n",
-      " 'bg',\n",
-      " 'bh']\n",
       "\n",
-      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 'bh']\n",
+      "\n",
+      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -750,8 +634,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 21,
-   "id": "paperback-beach",
+   "execution_count": 20,
+   "id": "geological-windsor",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -770,8 +654,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 22,
-   "id": "statewide-notification",
+   "execution_count": 21,
+   "id": "streaming-college",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -821,7 +705,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "amended-nashville",
+   "id": "sublime-ultimate",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -829,8 +713,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 23,
-   "id": "reflected-luxembourg",
+   "execution_count": 22,
+   "id": "thorough-dover",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -844,8 +728,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 24,
-   "id": "therapeutic-company",
+   "execution_count": 23,
+   "id": "nasty-there",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -857,8 +741,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 25,
-   "id": "conventional-ideal",
+   "execution_count": 24,
+   "id": "speaking-union",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -873,8 +757,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 26,
-   "id": "statewide-cassette",
+   "execution_count": 25,
+   "id": "stupid-insert",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -885,8 +769,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 27,
-   "id": "married-benchmark",
+   "execution_count": 26,
+   "id": "australian-skill",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -900,15 +784,15 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 28,
-   "id": "massive-moldova",
+   "execution_count": 27,
+   "id": "historical-creature",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [00:04<00:00,  2.34s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [00:05<00:00,  2.70s/it]\n"
      ]
     }
    ],
@@ -918,7 +802,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "traditional-developer",
+   "id": "hidden-compatibility",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."

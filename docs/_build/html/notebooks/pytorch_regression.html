@@ -673,6 +673,7 @@ div.rendered_html tbody tr:hover {
 ___/ featurecoder_index: 0 \_________
 
 =&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
 [&#39;crim&#39;, &#39;zn&#39;, &#39;indus&#39;, &#39;nox&#39;, &#39;rm&#39;, &#39;age&#39;, &#39;dis&#39;, &#39;ptratio&#39;, &#39;lstat&#39;]
 
 =&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
@@ -682,9 +683,10 @@ ___/ featurecoder_index: 0 \_________
 ___/ featurecoder_index: 1 \_________
 
 =&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
 [&#39;chas&#39;, &#39;rad&#39;, &#39;tax&#39;]
 
-=&gt; Nice! Now all feature column(s) have encoder(s) associated with them.
+=&gt; Done. All feature column(s) have encoder(s) associated with them.
 No more Featurecoders can be added to this Encoderset.
 
 </pre></div></div>
@@ -835,7 +837,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:41&lt;00:00, 10.47s/it]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:43&lt;00:00, 10.97s/it]
 </pre></div></div>
 </div>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="visualization.html">Visualization &amp; Metrics</a> documentation.</p>
@@ -934,6 +936,7 @@ No more Featurecoders can be added to this Encoderset.
 ___/ featurecoder_index: 0 \_________
 
 =&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
 [&#39;crim&#39;, &#39;zn&#39;, &#39;indus&#39;, &#39;nox&#39;, &#39;rm&#39;, &#39;age&#39;, &#39;dis&#39;, &#39;ptratio&#39;, &#39;lstat&#39;]
 
 =&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
@@ -941,8 +944,37 @@ ___/ featurecoder_index: 0 \_________
 
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">featurecoder_1</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">make_featurecoder</span><span class="p">(</span>
+    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OrdinalEncoder</span><span class="p">()</span>
+    <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;int64&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+___/ featurecoder_index: 1 \_________
+
+=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
+[&#39;chas&#39;, &#39;rad&#39;, &#39;tax&#39;]
+
+=&gt; Done. All feature column(s) have encoder(s) associated with them.
+No more Featurecoders can be added to this Encoderset.
+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -968,7 +1000,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1024,7 +1056,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 <p>Optional, will be automatically selected based on <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> if left as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1038,7 +1070,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1053,7 +1085,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1065,7 +1097,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1076,7 +1108,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1090,7 +1122,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1103,7 +1135,7 @@ ___/ featurecoder_index: 0 \_________
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:41&lt;00:00, 10.32s/it]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:45&lt;00:00, 11.29s/it]
 </pre></div></div>
 </div>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="visualization.html">Visualization &amp; Metrics</a> documentation.</p>

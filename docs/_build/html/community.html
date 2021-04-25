@@ -102,8 +102,8 @@
 <li class="toctree-l1"><a class="reference internal" href="mission.html">Mission</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Community</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#what-can-i-contribute">What can I contribute?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-can-i-get-involved">How can I get involved?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-can-i-contribute">What can I contribute?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-environment">Setting up environment.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#programming-style">Programming style.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of conduct.</a></li>
@@ -238,6 +238,19 @@
 <p>Ultimately, we’d like to create specific preprocessing pipelines, pre-trained models, and visualizations for each major scientific domain in order to accelerate discovery.</p>
 </div>
 <hr class="docutils" />
+<div class="section" id="how-can-i-get-involved">
+<h2>How can I get involved?<a class="headerlink" href="#how-can-i-get-involved" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Create a post on the <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">discussion board</a> and introduce yourself so that we can help get you up to speed!</p>
+<ul>
+<li><p>If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.</p></li>
+<li><p>If you want to join the community calls, then be sure to include your timezone and email in your introduction.</p></li>
+</ul>
+</li>
+<li><p>Jump into the conversation in the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/links.html">Slack group</a>.</p></li>
+</ul>
+</div>
+<hr class="docutils" />
 <div class="section" id="what-can-i-contribute">
 <h2>What can I contribute?<a class="headerlink" href="#what-can-i-contribute" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -258,35 +271,32 @@
 </ul>
 </div>
 <hr class="docutils" />
-<div class="section" id="how-can-i-get-involved">
-<h2>How can I get involved?<a class="headerlink" href="#how-can-i-get-involved" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Create a post on the <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">discussion board</a> and introduce yourself so that we can help get you up to speed!</p>
-<ul>
-<li><p>If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.</p></li>
-<li><p>If you want to join the community calls, then be sure to include your timezone and email in your introduction.</p></li>
-</ul>
-</li>
-<li><p>Jump into the conversation in the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/links.html">Slack group</a>.</p></li>
-</ul>
-</div>
-<hr class="docutils" />
 <div class="section" id="setting-up-environment">
 <h2>Setting up environment.<a class="headerlink" href="#setting-up-environment" title="Permalink to this headline">¶</a></h2>
-<p>Have a read through the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Install section of the documentation</a> for information about OS, Python versions, and optional Jupyter extensions.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:aiqc/aiqc.git
-<span class="nb">cd</span> aiqc
+<p>Have a read through the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Installation section of the documentation</a> for information about OS, Python versions, and optional Jupyter extensions.</p>
+<p>Here is how you can clone the source code, install dependencies, and environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:aiqc/AIQC.git
+
+<span class="nb">cd</span> AIQC
+
 pip install --upgrade -r requirements_dev.txt
 pip install --upgrade -r requirements.txt
+pip uninstall aiqc -y
+
+git checkout -b my_feature
+
+python
+&gt;&gt;&gt; import aiqc
 </pre></div>
 </div>
-<p>If you want to make your own documentation then you will need to <a class="reference external" href="https://pandoc.org/installing.html">install the pandoc binary</a>.</p>
+<p>Before you begin developing, make sure that you do NOT have the <cite>aiqc</cite> package installed. This may be counterintuitive at first, but remember, you are building the package yourself. So if you imported the pip package, then you are running scripts against the pip package, not your source code.</p>
+<p>Also, have a look at the <a class="reference external" href="https://github.com/aiqc/AIQC/blob/main/docs/README.md">Documentation’s README</a> for documentation building dependencies as well as some do’s and don’ts.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="programming-style">
 <h2>Programming style.<a class="headerlink" href="#programming-style" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Prioritize human readability, maintainability, and simplicity over conciseness and performance.</p>
+<li><p>Prioritize human readability, maintainability, and simplicity over conciseness, efficiency, and performance.</p>
 <ul>
 <li><p>Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It’s better to move on to the next problem than making the current functionality “x%” better.</p></li>
 <li><p>Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren’t world class software engineers, and vice versa!</p></li>

@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "directed-pound",
+   "id": "thorough-absorption",
    "metadata": {},
    "source": [
     "# PyTorch: Classify Multi-Label"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "requested-vietnamese",
+   "id": "corresponding-burton",
    "metadata": {},
    "source": [
     "![houses](../images/iris.png)"
@@ -19,7 +19,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "received-entry",
+   "id": "complete-klein",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "polyphonic-duplicate",
+   "id": "charming-inflation",
    "metadata": {},
    "source": [
     "---"
@@ -44,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "limited-survival",
+   "id": "guilty-distributor",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -52,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "committed-zoning",
+   "id": "touched-venture",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -61,7 +61,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "refined-lambda",
+   "id": "dominican-baseball",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -71,7 +71,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "pleased-deviation",
+   "id": "military-stress",
    "metadata": {},
    "outputs": [
     {
@@ -109,7 +109,7 @@
        "      <td>3.5</td>\n",
        "      <td>1.4</td>\n",
        "      <td>0.2</td>\n",
-       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>1</th>\n",
@@ -117,7 +117,7 @@
        "      <td>3.0</td>\n",
        "      <td>1.4</td>\n",
        "      <td>0.2</td>\n",
-       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>2</th>\n",
@@ -125,7 +125,7 @@
        "      <td>3.2</td>\n",
        "      <td>1.3</td>\n",
        "      <td>0.2</td>\n",
-       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>3</th>\n",
@@ -133,7 +133,7 @@
        "      <td>3.1</td>\n",
        "      <td>1.5</td>\n",
        "      <td>0.2</td>\n",
-       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>4</th>\n",
@@ -141,19 +141,19 @@
        "      <td>3.6</td>\n",
        "      <td>1.4</td>\n",
        "      <td>0.2</td>\n",
-       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
        "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
        "</div>"
       ],
       "text/plain": [
-       "   sepal_length  sepal_width  petal_length  petal_width  species\n",
-       "0           5.1          3.5           1.4          0.2        0\n",
-       "1           4.9          3.0           1.4          0.2        0\n",
-       "2           4.7          3.2           1.3          0.2        0\n",
-       "3           4.6          3.1           1.5          0.2        0\n",
-       "4           5.0          3.6           1.4          0.2        0"
+       "   sepal_length  sepal_width  petal_length  petal_width species\n",
+       "0           5.1          3.5           1.4          0.2  setosa\n",
+       "1           4.9          3.0           1.4          0.2  setosa\n",
+       "2           4.7          3.2           1.3          0.2  setosa\n",
+       "3           4.6          3.1           1.5          0.2  setosa\n",
+       "4           5.0          3.6           1.4          0.2  setosa"
       ]
      },
      "execution_count": 4,
@@ -168,7 +168,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "demanding-imagination",
+   "id": "distributed-sword",
    "metadata": {},
    "outputs": [
     {
@@ -178,7 +178,7 @@
        "sepal_width     float64\n",
        "petal_length    float64\n",
        "petal_width     float64\n",
-       "species           int64\n",
+       "species          object\n",
        "dtype: object"
       ]
      },
@@ -193,7 +193,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dependent-merit",
+   "id": "organized-ordering",
    "metadata": {},
    "source": [
     "---"
@@ -201,7 +201,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "vanilla-extraction",
+   "id": "likely-michigan",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -209,7 +209,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "professional-organic",
+   "id": "bored-mathematics",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -218,7 +218,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "digital-middle",
+   "id": "typical-allowance",
    "metadata": {},
    "outputs": [
     {
@@ -229,9 +229,10 @@
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
       "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "\n",
       "['sepal_length', 'sepal_width', 'petal_length', 'petal_width']\n",
       "\n",
-      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -258,7 +259,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "apparent-generic",
+   "id": "ahead-water",
    "metadata": {},
    "source": [
     "Note that `num_classes` is unique to PyTorch multi-classification."
@@ -267,7 +268,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "diagnostic-washington",
+   "id": "authorized-season",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -287,7 +288,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "embedded-finnish",
+   "id": "healthy-worker",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -340,7 +341,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "consecutive-latin",
+   "id": "amateur-annotation",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -349,7 +350,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "christian-participation",
+   "id": "front-trinidad",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -361,7 +362,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "arranged-violin",
+   "id": "endangered-twelve",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -374,7 +375,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "assured-behalf",
+   "id": "incredible-draft",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -399,14 +400,14 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "subtle-closing",
+   "id": "rolled-generation",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:14<00:00,  3.56s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:15<00:00,  3.82s/it]\n"
      ]
     }
    ],
@@ -416,7 +417,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "casual-payday",
+   "id": "discrete-catch",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -424,7 +425,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "royal-leone",
+   "id": "determined-folder",
    "metadata": {},
    "source": [
     "---"
@@ -432,7 +433,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "present-camel",
+   "id": "advised-engineering",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -440,7 +441,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "western-aurora",
+   "id": "north-surface",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data, and defining an optimizer."
@@ -449,7 +450,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "medieval-recipient",
+   "id": "automotive-skill",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -461,7 +462,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "right-villa",
+   "id": "hourly-eating",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -471,7 +472,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "atomic-mission",
+   "id": "random-acceptance",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -481,7 +482,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "premier-purple",
+   "id": "yellow-royalty",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -491,7 +492,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "formal-queue",
+   "id": "gross-ultimate",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -501,7 +502,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "biological-jungle",
+   "id": "beneficial-suicide",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -515,7 +516,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "usual-building",
+   "id": "charitable-loading",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -525,7 +526,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "decimal-swiss",
+   "id": "amended-dictionary",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -537,7 +538,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "sporting-footage",
+   "id": "gentle-poverty",
    "metadata": {},
    "outputs": [
     {
@@ -548,9 +549,10 @@
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
       "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "\n",
       "['sepal_length', 'sepal_width', 'petal_length', 'petal_width']\n",
       "\n",
-      "=> Nice! Now all feature column(s) have encoder(s) associated with them.\n",
+      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -565,7 +567,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "hollywood-david",
+   "id": "beautiful-meter",
    "metadata": {},
    "source": [
     "Note that `num_classes` is unique to PyTorch multi-classification."
@@ -574,7 +576,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "secure-liechtenstein",
+   "id": "popular-prefix",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -594,7 +596,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "attached-blogger",
+   "id": "promotional-liability",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -647,7 +649,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "hindu-timer",
+   "id": "aggregate-interface",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -656,7 +658,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "increasing-camcorder",
+   "id": "chinese-history",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -668,7 +670,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "functioning-hawaiian",
+   "id": "adapted-graduate",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -681,7 +683,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "exposed-headquarters",
+   "id": "willing-mission",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -696,7 +698,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "convinced-saint",
+   "id": "deadly-bahrain",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -708,7 +710,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "fossil-rotation",
+   "id": "packed-payment",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -723,14 +725,14 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "cloudy-longitude",
+   "id": "secure-puppy",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:14<00:00,  3.73s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:15<00:00,  3.76s/it]\n"
      ]
     }
    ],
@@ -740,7 +742,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "hearing-iraqi",
+   "id": "extra-mystery",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
