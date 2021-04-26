@@ -2804,7 +2804,9 @@ class Labelcoder(BaseModel):
 		  when consider negatives, 2D multiple columns, 2D single columns.
 		- Different encoders work with different data types and dimensionality.
 		- This function normalizes that process by coercing the dimensionality that the encoder wants,
-		  and erroring if the wrong data type is used. 
+		  and erroring if the wrong data type is used.
+		- The rub lies in that if you have many columns and an encoder only fits 1 column, 
+		  then you return many fits for a single type of preprocess.
 		"""
 		fitted_encoders = {}
 		incompatibilities = {
@@ -2819,6 +2821,7 @@ class Labelcoder(BaseModel):
 		with warnings.catch_warnings(record=True) as w:
 			try:
 				# aiqc `to_numpy()` always fetches 2D.
+				# Remember, we are assembling `fitted_encoders` dict, not accesing it.
 				fitted_encoders[0] = sklearn_preprocess.fit(samples_to_fit)
 			except:
 				# At this point, "2D" failed. It had 1 or more columns.
@@ -3237,7 +3240,7 @@ class Algorithm(BaseModel):
 
 	def keras_regression_predict(model, samples_predict):
 		prediction = model.predict(samples_predict['features'])
-		# ^ verified that output only produces a single value.
+		# ^ Output is a single value, not `probability, prediction`
 		return prediction
 
 	def pytorch_binary_predict(model, samples_predict):
@@ -3434,7 +3437,6 @@ class Hyperparamset(BaseModel):
 	"""
 	description = CharField(null=True)
 	hyperparamcombo_count = IntegerField()
-	#repeat_count = IntegerField() # set to 1 by default.
 	#strategy = CharField() # set to all by default #all/ random. this would generate a different dict with less params to try that should be persisted for transparency.
 
 	hyperparameters = JSONField()
@@ -4301,7 +4303,7 @@ class Jobset(BaseModel):
 	- Used to group cross-fold Jobs.
 	- Union of Hyperparamcombo, Foldset, and Queue.
 	"""
-	repeat_count = IntegerField
+	repeat_count = IntegerField()
 
 	foldset = ForeignKeyField(Foldset, backref='jobsets')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='jobsets')
@@ -4316,7 +4318,7 @@ class Job(BaseModel):
 	- Saves its Model to a Result.
 	"""
 	repeat_count = IntegerField()
-	#log = CharField() #record failures
+	#log = CharField() #catch & record stacktrace of failures and warnings?
 
 	queue = ForeignKeyField(Queue, backref='jobs')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
@@ -4445,8 +4447,9 @@ class Job(BaseModel):
 
 		"""
 		2. Encodes the labels and features.
-		- encoding happens prior to training the model.
 		- Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
+		- Since all splits/folds are transformed, there is no original data remaining. 
+		  This means that metrics are entirely calculated on encoded data as opposed to original data.
 		"""
 		if (encoderset is not None):                
 			# 2a1. Fit labels.
@@ -4531,7 +4534,7 @@ class Job(BaseModel):
 								, fold_names = [split]
 								, include_label = False
 								, feature_columns = matching_columns
-							)[fold_index][split]['features']#<-- pay attention
+							)[fold_index][split]['features']
 
 						elif ("fold" not in split):
 							samples_to_encode = splitset.to_numpy(
@@ -4902,7 +4905,7 @@ class Result(BaseModel):
 			os.remove(temp_file_name)
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
-			
+
 		elif (algorithm.library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
 			# Need to initialize the classes first, which requires reconstructing them.
