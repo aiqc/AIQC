@@ -2550,6 +2550,8 @@ class Encoderset(BaseModel):
 	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
 	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Featureset.
+	- Although Encoderset seems uneccessary, you need something to sequentially group the Featurecoders onto.
+	- In future, maybe Labelcoder gets split out from Encoderset and it becomes Featurecoderset.
 	"""
 	encoder_count = IntegerField()
 	description = CharField(null=True)
@@ -2795,8 +2797,6 @@ class Labelcoder(BaseModel):
 			return only_fit_train
 
 
-			
-		
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 		"""
 		- Future: optimize to make sure not duplicating numpy. especially append to lists + reshape after transpose.
@@ -2804,8 +2804,11 @@ class Labelcoder(BaseModel):
 		  when consider negatives, 2D multiple columns, 2D single columns.
 		- Different encoders work with different data types and dimensionality.
 		- This function normalizes that process by coercing the dimensionality that the encoder wants,
-		  and erroring if the wrong data type is used.
-		- The rub lies in that if you have many columns and an encoder only fits 1 column, 
+		  and erroring if the wrong data type is used. The goal in doing so is to return 
+		  that dimensionality for future use.
+
+		- `samples_to_transform` is pre-filtered for the appropriate `matching_columns`.
+		- The rub lies in that if you have many columns, but the encoder only fits 1 column at a time, 
 		  then you return many fits for a single type of preprocess.
 		"""
 		fitted_encoders = {}
@@ -2874,7 +2877,6 @@ class Labelcoder(BaseModel):
 		, encoding_dimension:str
 		, samples_to_transform:object
 	):
-		#with warnings.catch_warnings(record=True) as w:
 		if (encoding_dimension == '2D_multiColumn'):
 			# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
 			encoded_samples = fitted_encoders[0].transform(samples_to_transform)
@@ -4448,8 +4450,12 @@ class Job(BaseModel):
 		"""
 		2. Encodes the labels and features.
 		- Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
-		- Since all splits/folds are transformed, there is no original data remaining. 
+		- It will apply all defined encoders to all splits/folds. So there may be no original data remaining. 
 		  This means that metrics are entirely calculated on encoded data as opposed to original data.
+		
+		- Refactoring for inference would require separating the fit from the transform,
+		  so that predictions could be made using the previously fitted encoders.
+		- It makes sense to encode for inference because it will not accept string data.
 		"""
 		if (encoderset is not None):                
 			# 2a1. Fit labels.
@@ -4710,6 +4716,7 @@ class Job(BaseModel):
 
 		"""
 		4. Evaluation: predictions, metrics, charts for each split/fold.
+		- Metrics are run against encoded data because they won't accept string data.
 		"""
 		predictions = {}
 		probabilities = {}
