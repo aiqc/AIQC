@@ -2810,8 +2810,9 @@ class Labelcoder(BaseModel):
 		- `samples_to_transform` is pre-filtered for the appropriate `matching_columns`.
 		- The rub lies in that if you have many columns, but the encoder only fits 1 column at a time, 
 		  then you return many fits for a single type of preprocess.
+		- Remember this is for a single Featurecoder that is potential returning multiple fits.
 		"""
-		fitted_encoders = {}
+		fitted_encoders = []
 		incompatibilities = {
 			"string": [
 				"KBinsDiscretizer", "KernelCenterer", "MaxAbsScaler", 
@@ -2825,7 +2826,8 @@ class Labelcoder(BaseModel):
 			try:
 				# aiqc `to_numpy()` always fetches 2D.
 				# Remember, we are assembling `fitted_encoders` dict, not accesing it.
-				fitted_encoders[0] = sklearn_preprocess.fit(samples_to_fit)
+				fit_encoder = sklearn_preprocess.fit(samples_to_fit)
+				fitted_encoders.append(fit_encoder)
 			except:
 				# At this point, "2D" failed. It had 1 or more columns.
 				try:
@@ -2839,7 +2841,8 @@ class Labelcoder(BaseModel):
 						samples_to_fit = samples_to_fit.reshape(1, samples_to_fit.shape[0], 1)    
 					# Fit against each 2D array within the 3D array.
 					for i, arr in enumerate(samples_to_fit):
-						fitted_encoders[i] = sklearn_preprocess.fit(arr)
+						fit_encoder = sklearn_preprocess.fit(arr)
+						fitted_encoders.append(fit_encoder)
 				except:
 					# At this point, "2D single column" has failed.
 					try:
@@ -2848,7 +2851,8 @@ class Labelcoder(BaseModel):
 						samples_to_fit = samples_to_fit.transpose(2,0,1)[0]
 						# Fit against each column in 2D array.
 						for i, arr in enumerate(samples_to_fit):
-							fitted_encoders[i] = sklearn_preprocess.fit(arr)
+							fit_encoder = sklearn_preprocess.fit(arr)
+							fitted_encoders.append(fit_encoder)
 					except:
 						raise ValueError(dedent(f"""
 							Yikes - Encoder failed to fit the columns you filtered.\n
@@ -2873,7 +2877,7 @@ class Labelcoder(BaseModel):
 
 
 	def transform_dynamicDimensions(
-		fitted_encoders:dict
+		fitted_encoders:list
 		, encoding_dimension:str
 		, samples_to_transform:object
 	):
@@ -4320,6 +4324,7 @@ class Job(BaseModel):
 	- Saves its Model to a Result.
 	"""
 	repeat_count = IntegerField()
+	fitted_encoders = PickleField(null=True)
 	#log = CharField() #catch & record stacktrace of failures and warnings?
 
 	queue = ForeignKeyField(Queue, backref='jobs')
@@ -4395,18 +4400,18 @@ class Job(BaseModel):
 		Needs optimization = https://github.com/aiqc/aiqc/projects/1
 		"""
 		time_started = datetime.datetime.now()
-		j = Job.get_by_id(id)
+		job = Job.get_by_id(id)
 		if verbose:
-			print(f"\nJob #{j.id} starting...")
-		queue = j.queue
+			print(f"\nJob #{job.id} starting...")
+		queue = job.queue
 		algorithm = queue.algorithm
 		analysis_type = algorithm.analysis_type
 		library = algorithm.library
 		hide_test = queue.hide_test
 		splitset = queue.splitset
 		encoderset = queue.encoderset
-		hyperparamcombo = j.hyperparamcombo
-		fold = j.fold
+		hyperparamcombo = job.hyperparamcombo
+		fold = job.fold
 
 		"""
 		1. Determines which splits/folds are needed.
@@ -4457,7 +4462,8 @@ class Job(BaseModel):
 		  so that predictions could be made using the previously fitted encoders.
 		- It makes sense to encode for inference because it will not accept string data.
 		"""
-		if (encoderset is not None):                
+		persisted_encoders = {}
+		if (encoderset is not None):
 			# 2a1. Fit labels.
 			if (len(encoderset.labelcoders) == 1):
 				labelcoder = encoderset.labelcoders[0]
@@ -4466,21 +4472,24 @@ class Job(BaseModel):
 
 				# Fit to either (train split/fold) or (all splits/folds).
 				if (labelcoder.only_fit_train == True):
-					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+					fitted_encoder, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 						sklearn_preprocess = preproc
 						, samples_to_fit = samples[key_train]['labels']
 					)
 				elif (labelcoder.only_fit_train == False):
 					# Optimize. Duplicate fetch of the data.
-					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+					fitted_encoder, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 						sklearn_preprocess = preproc
 						, samples_to_fit = splitset.label.to_numpy()
 					)
+				# Save the fit.
+				persisted_encoders['labelcoder'] = fitted_encoder
+
 				# 2a2. Transform labels.
 				# Once the fits are applied, perform the transform on the rest of the splits.
 				for split, split_data in samples.items():
 					samples[split]['labels'] = Labelcoder.transform_dynamicDimensions(
-						fitted_encoders = fitted_encoders
+						fitted_encoders = fitted_encoder
 						, encoding_dimension = encoding_dimension
 						, samples_to_transform = split_data['labels']
 					)
@@ -4530,7 +4539,7 @@ class Job(BaseModel):
 					del samples_to_fit
 
 					
-					#2b2. Transform features. Populate `encoded_features` dict.
+					#2b2. Transform features. Overwrites samples['split']['features'].
 					for split in samples.keys():
 
 						# Figure out which samples to encode.
@@ -4824,11 +4833,11 @@ class Job(BaseModel):
 
 		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
 		matching_result = Result.select().join(Job).join(Queue).where(
-			Queue.id==queue.id, Job.id==j.id, Result.repeat_index==repeat_index)
+			Queue.id==queue.id, Job.id==job.id, Result.repeat_index==repeat_index)
 		if (len(matching_result) > 0):
 			raise ValueError(
 				f"\nYikes - Duplicate run detected:" \
-				f"\nQueue<{queue.id}>, Job<{j.id}>, Job.repeat_index<{repeat_index}>.\n" \
+				f"\nQueue<{queue.id}>, Job<{job.id}>, Job.repeat_index<{repeat_index}>.\n" \
 				f"\nCancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing." \
 				f"\nNo action needed, the other instance will continue running to completion.\n"
 			)
@@ -4847,14 +4856,14 @@ class Job(BaseModel):
 			, metrics = metrics
 			, metrics_aggregate = metrics_aggregate
 			, plot_data = plot_data
-			, job = j
+			, job = job
 			, repeat_index = repeat_index
 		)
 
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
 		del samples
 		del model
-		return j
+		return job
 
 
 def execute_jobs(job_statuses:list, verbose:bool=False):  
