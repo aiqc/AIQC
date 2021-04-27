@@ -92,7 +92,7 @@ def create_folder():
 			# 	command = 'mkdir -p "' + app_dir + '"'
 			# 	os.system(command)
 		except:
-			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.mkdirs('{app_dir}')\n")
+			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.makedirs('{app_dir}')\n")
 		print(
 			f"=> Success - created folder at file path:\n{app_dir}\n\n" \
 			f"=> Next run `aiqc.create_config()`.\n"
@@ -4382,7 +4382,7 @@ class Job(BaseModel):
 		# Let the classification_multi labels hit this metric in OHE format.
 		split_metrics['roc_auc'] = sklearn.metrics.roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
 		# Then convert the classification_multi labels ordinal format.
-		if analysis_type == "classification_multi":
+		if (analysis_type == "classification_multi"):
 			labels_processed = np.argmax(labels_processed, axis=1)
 
 		split_metrics['accuracy'] = sklearn.metrics.accuracy_score(labels_processed, predictions)
@@ -4405,13 +4405,13 @@ class Job(BaseModel):
 		probabilities = probabilities.flatten()
 		split_plot_data = {}
 		
-		if analysis_type == "classification_binary":
+		if (analysis_type == "classification_binary"):
 			labels_processed = labels_processed.flatten()
 			split_plot_data['confusion_matrix'] = sklearn.metrics.confusion_matrix(labels_processed, predictions)
 			fpr, tpr, _ = sklearn.metrics.roc_curve(labels_processed, probabilities)
 			precision, recall, _ = sklearn.metrics.precision_recall_curve(labels_processed, probabilities)
 		
-		elif analysis_type == "classification_multi":
+		elif (analysis_type == "classification_multi"):
 			# Flatten OHE labels for use with probabilities.
 			labels_flat = labels_processed.flatten()
 			fpr, tpr, _ = sklearn.metrics.roc_curve(labels_flat, probabilities)
@@ -5021,6 +5021,48 @@ class Result(BaseModel):
 			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
 			# ^ but you don't need to pass any data into eval()
 			return model, optimizer
+
+	def export_model(id:int, file_path:str=None):
+		result = Result.get_by_id(id)
+		algorithm = result.job.queue.algorithm
+		
+		if (file_path is None):
+			dtime = datetime.datetime.now().strftime('%Y%b%d_%H:%M')
+			if (algorithm.library == "keras"):
+				ext = '.h5'
+			elif (algorithm.library == 'pytorch'):
+				ext = '.pt'
+			file_path = f"{app_dir}/models/result{result.id}_model({dtime}){ext}"
+		
+		file_path = os.path.abspath(file_path)
+		folder = f"{app_dir}/models"
+		os.makedirs(folder, exist_ok=True)
+
+		# We already have the bytes of the file we need to write.
+		model_blob = result.model_file
+		# trying `+` because directory may not exist yet.
+		with open(file_path, 'wb+') as f:
+			f.write(model_blob)
+			f.close()
+
+		os.path.exists(file_path)
+		print(dedent(
+			f"\nModel exported to the following absolute path:" \
+			f"\n{file_path}\n"
+		))
+
+		fitted_encoders = result.job.fitted_encoders
+		if (
+			('labelcoder' in fitted_encoders.keys())
+			or 
+			('featurecoders' in fitted_encoders.keys())
+		):
+			print(dedent("""
+				Make sure you also `Job.export_encoders` so that during inference you can:
+				(a) encode samples to be fed into the model, and 
+				(b) decode predictions coming out of the model.
+			"""))
+		return file_path
 
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):
