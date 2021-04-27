@@ -2784,10 +2784,11 @@ class Labelcoder(BaseModel):
 			  will place unseen observations outside bounds into existing min/max bin.
 			- Regarding a custom FunctionTransformer, assuming they wouldn't be numerical
 			  as opposed to OHE/Ordinal or binarizing.
+			- LabelBinarizer is not threshold-based, it's more like an OHE.
 			"""
 			categorical_encoders = [
 				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
-				'Binarizer', 'MultiLabelBinarizer'
+				'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
 			]
 			only_fit_train = True
 			for c in categorical_encoders:
@@ -2822,6 +2823,7 @@ class Labelcoder(BaseModel):
 			, "float": ["LabelBinarizer"]
 			, "numeric array without dimensions both odd and square (e.g. 3x3, 5x5)": ["KernelCenterer"]
 		}
+
 		with warnings.catch_warnings(record=True) as w:
 			try:
 				# aiqc `to_numpy()` always fetches 2D.
@@ -2893,7 +2895,7 @@ class Labelcoder(BaseModel):
 				encoded_samples = fitted_encoders[0].transform(samples_to_transform)
 				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)
 			elif (width > 1):
-				# Data must be fed into encoder as separate '2D_singleColumn' arrays, then recombined.
+				# Data must be fed into encoder as separate '2D_singleColumn' arrays.
 				# Reshape "2D many columns" to “3D of 2D singleColumns” so we can loop on it.
 				encoded_samples = samples_to_transform[None].T
 				encoded_arrs = []
@@ -2902,6 +2904,19 @@ class Labelcoder(BaseModel):
 					encoded_arr = Labelcoder.if_1d_make_2d(array=encoded_arr)  
 					encoded_arrs.append(encoded_arr)
 				encoded_samples = np.array(encoded_arrs).T
+
+				# From "3D of 2Ds" to "2D wide"
+				# When `encoded_samples` was accidentally a 3D shape, this fixed it:
+				"""
+				if (len(encoded_samples.shape) == 3):
+					encoded_samples = encoded_samples.transpose(
+						1,0,2
+					).reshape(
+						# where index represents dimension.
+						encoded_samples.shape[1],
+						encoded_samples.shape[0]*encoded_samples.shape[2]
+					)
+				"""
 				del encoded_arrs
 		elif (encoding_dimension == '1D'):
 			# From "2D_multiColumn" to "2D with 1D for each column"
@@ -3072,6 +3087,26 @@ class Featurecoder(BaseModel):
 			elif (include == False):
 				inex_str = "exclusion"
 			raise ValueError(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
+		elif (
+			(
+				(str(sklearn_preprocess).startswith("LabelBinarizer"))
+				or 
+				(str(sklearn_preprocess).startswith("LabelEncoder"))
+			)
+			and
+			(len(matching_columns) > 1)
+		):
+			raise ValueError(dedent("""
+				Yikes - `LabelBinarizer` or `LabelEncoder` cannot be run on 
+				multiple columns at once.
+
+				We have frequently observed inconsistent behavior where they 
+				often ouput incompatible array shapes that cannot be scalable 
+				concatenated, or they succeed in fiting, but fail at transforming.
+				
+				We recommend you either use these with 1 column at a 
+				time or switch to another encoder.
+			"""))
 
 		# 3b. Record the  output.
 		leftover_columns =  list(set(initial_columns) - set(matching_columns))
@@ -3120,7 +3155,7 @@ class Featurecoder(BaseModel):
 			elif (only_fit_train == True):
 				# Overwrite the specific split with all samples, so we can test it.
 				samples_to_encode = featureset.to_numpy(columns=matching_columns)
-			
+
 			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
@@ -3130,8 +3165,8 @@ class Featurecoder(BaseModel):
 			raise ValueError(dedent(f"""
 			During testing, the encoder was successfully `fit()` on features of {communicated_split},
 			but, it failed to `transform()` features of the dataset as a whole.\n
-			Tip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`,
-			it is better to use `only_fit_train=False`.
+			Tip - for categorical encoders like `OneHotEncoder(sparse=False)` and 
+			`OrdinalEncoder()`, it is better to use `only_fit_train=False`.
 			"""))
 		else:
 			pass
@@ -4472,24 +4507,24 @@ class Job(BaseModel):
 
 				# Fit to either (train split/fold) or (all splits/folds).
 				if (labelcoder.only_fit_train == True):
-					fitted_encoder, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 						sklearn_preprocess = preproc
 						, samples_to_fit = samples[key_train]['labels']
 					)
 				elif (labelcoder.only_fit_train == False):
 					# Optimize. Duplicate fetch of the data.
-					fitted_encoder, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 						sklearn_preprocess = preproc
 						, samples_to_fit = splitset.label.to_numpy()
 					)
 				# Save the fit.
-				persisted_encoders['labelcoder'] = fitted_encoder
+				persisted_encoders['labelcoder'] = fitted_encoders[0]#take out of list.
 
 				# 2a2. Transform labels.
 				# Once the fits are applied, perform the transform on the rest of the splits.
 				for split, split_data in samples.items():
 					samples[split]['labels'] = Labelcoder.transform_dynamicDimensions(
-						fitted_encoders = fitted_encoder
+						fitted_encoders = fitted_encoders
 						, encoding_dimension = encoding_dimension
 						, samples_to_transform = split_data['labels']
 					)
@@ -4505,6 +4540,8 @@ class Job(BaseModel):
 				for split in samples.keys():
 					samples[split]['features'] = None
 
+				# List of lists. One nested list per Featurecoder.
+				persisted_encoders['featurecoders'] = []
 				for featurecoder in featurecoders:
 					preproc = featurecoder.sklearn_preprocess
 					# Only encode these columns.
@@ -4536,6 +4573,7 @@ class Job(BaseModel):
 						sklearn_preprocess = preproc
 						, samples_to_fit = samples_to_fit
 					)
+					persisted_encoders['featurecoders'].append(fitted_encoders)
 					del samples_to_fit
 
 					
@@ -4601,7 +4639,8 @@ class Job(BaseModel):
 							(samples[split]['features'], leftover_features)
 							, axis = 1
 						)
-
+		job.fitted_encoders = persisted_encoders
+		job.save()
 		"""
 		3. Build and Train model.
 		- Now that encoding has taken place, we can determine the shapes.

@@ -212,6 +212,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#2.-queue.run_jobs(in_background=True);-experimental">2. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#3.-Future,-distributed-cloud-execution.">3. Future, distributed cloud execution.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Job.fitted_encoders"><code class="docutils literal notranslate"><span class="pre">Job.fitted_encoders</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2550,121 +2551,6 @@ No more Featurecoders can be added to this Encoderset.
 <blockquote>
 <div><p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then (a) the number of jobs is multiplied by the <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> and the <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>, (b) each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">poll_statuses(as_pandas:bool=False)</span></code> is used to determine which Job-repeats have been completed.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[67]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">poll_statuses</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[67]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>job_id</th>
-      <th>repeat_index</th>
-      <th>result_id</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>0</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2</td>
-      <td>0</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>3</td>
-      <td>0</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>4</td>
-      <td>0</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1</td>
-      <td>1</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>2</td>
-      <td>1</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>3</td>
-      <td>1</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>4</td>
-      <td>1</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>1</td>
-      <td>2</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>2</td>
-      <td>2</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>3</td>
-      <td>2</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>4</td>
-      <td>2</td>
-      <td>None</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
 </div>
 <div class="section" id="Execute-all-Jobs.">
 <h3>Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#Execute-all-Jobs." title="Permalink to this headline">¶</a></h3>
@@ -2721,6 +2607,13 @@ No more Featurecoders can be added to this Encoderset.
 <p>The queue is interuptable. You can stop the execution of a queue and resume it later.</p>
 <blockquote>
 <div><p>This also comes in handy if either your machine or Python kernel either crashes or are interupted by accident. Whatever the reason, rest easy, just <code class="docutils literal notranslate"><span class="pre">run_jobs()</span></code> again to pick up where you left off. Be aware that the <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> iteration time in the progress bar will be wrong because it will be divided by the jobs already ran.</p>
+</div></blockquote>
+</div>
+<div class="section" id="Job.fitted_encoders">
+<h4><code class="docutils literal notranslate"><span class="pre">Job.fitted_encoders</span></code><a class="headerlink" href="#Job.fitted_encoders" title="Permalink to this headline">¶</a></h4>
+<p>During the execution of a Job, one of the many things that happens is that the <code class="docutils literal notranslate"><span class="pre">Queue.encoderset_id</span></code> Labelcoders and Featurecoders are fit to the training data (dependent upon <code class="docutils literal notranslate"><span class="pre">only_fit_train:bool</span></code>). These <code class="docutils literal notranslate"><span class="pre">fitted_encoders</span></code> get saved to the Job in case they need to be used a later point in time to encode new samples during inference.</p>
+<blockquote>
+<div><p>See <code class="docutils literal notranslate"><span class="pre">Labelcoder.transform_dynamicDimensions(fitted_encoders:list,</span> <span class="pre">encoding_dimension:str,</span> <span class="pre">samples_to_transform:object)</span></code>.</p>
 </div></blockquote>
 </div>
 </div>

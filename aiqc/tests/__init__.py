@@ -415,7 +415,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 		, dtypes = ['int64']
 		, sklearn_preprocess = MinMaxScaler(copy=False)
 	)
-	# We expect double None to use all columns because nothing is excluded.
+	# We expect double None (dtypes,columns) to use all columns because nothing is excluded.
 	fc1 = encoderset.make_featurecoder(
 		include = False
 		, dtypes = None
