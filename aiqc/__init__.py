@@ -3263,7 +3263,7 @@ class Algorithm(BaseModel):
 	# --- used by `select_fn_predict()` ---
 	def keras_multiclass_predict(model, samples_predict):
 		# Shows the probabilities of each class coming out of softmax neurons:
-		# array([[9.9990356e-01, 9.6374511e-05, 3.3754202e-10]
+		# array([[9.9990356e-01, 9.6374511e-05, 3.3754202e-10],...])
 		probabilities = model.predict(samples_predict['features'])
 		# This is the official keras replacement for multiclass `.predict_classes()`
 		# Returns one ordinal array per sample: `[[0][1][2][3]]` 
@@ -4763,16 +4763,16 @@ class Job(BaseModel):
 			model_blob = model_blob.getvalue()
 
 		"""
-		4. Evaluation: predictions, metrics, charts for each split/fold.
+		4a. Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
 		"""
+
 		predictions = {}
 		probabilities = {}
 		metrics = {}
 		plot_data = {}
 
 		fn_predict = dill_deserialize(algorithm.fn_predict)
-
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
 				# Convert any remaining numpy splits into tensors.
@@ -4809,7 +4809,19 @@ class Job(BaseModel):
 
 				plot_data[split] = Job.split_classification_plots(
 					data['labels'], preds, probs, analysis_type
-				) 
+				)
+				
+				# During prediction Keras OHE output gets made ordinal for metrics.
+				# Use the probabilities to recreate the OHE so they can be inverse_transform'ed.
+				if (("multi" in analysis_type) and (library == 'keras')):
+					predictions[split] = []
+					for p in probs:
+						marker_position = np.argmax(p, axis=-1)
+						empty_arr = np.zeros(len(p))
+						empty_arr[marker_position] = 1
+						predictions[split].append(empty_arr)
+					predictions[split] = np.array(predictions[split])
+
 		elif (analysis_type == "regression"):
 			# The raw output values *is* the continuous prediction itself.
 			probabilities = None
@@ -4843,7 +4855,34 @@ class Job(BaseModel):
 				metrics[split]['loss'] = float(loss)
 				plot_data = None
 
-		# 4b. Aggregate metrics across splits/ folds.
+		# 4b. Format predictions for saving.
+		# Decode predictions before saving.
+		if (
+			('labelcoder' in persisted_encoders.keys())
+			and
+			(hasattr(persisted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			for split, data in predictions.items():
+				# OHE is arriving here as ordinal, not OHE.
+				data = Labelcoder.if_1d_make_2d(data)
+				fitted_labelcoder = persisted_encoders['labelcoder']
+				predictions[split] = fitted_labelcoder.inverse_transform(data)
+		elif(
+			('labelcoder' in persisted_encoders.keys())
+			and
+			(not hasattr(persisted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			print(dedent("""
+				Warning - `Result.predictions` are encoded. 
+				They cannot be decoded because the `sklearn.preprocessing`
+				encoder used does not have `inverse_transform`.
+			"""))
+		# Flatten.
+		for split, data in predictions.items():
+			if (data.ndim > 1):
+				predictions[split] = data.flatten()
+
+		# 4c. Aggregate metrics across splits/ folds.
 		# Alphabetize metrics dictionary by key.
 		for k,v in metrics.items():
 			metrics[k] = dict(natsorted(v.items()))
