@@ -289,9 +289,6 @@ def update_config(kv:dict):
 # DATABASE
 #==================================================
 
-def printer():
-	print("12")
-
 def get_path_db():
 	"""
 	Originally, this code was in a child directory.
@@ -5097,13 +5094,8 @@ class Result(BaseModel):
 		else:
 			raise ValueError("This Labelcoder is not yet being implemented in our confusion matrix.")
 
-
-		print(labels)
-
-
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
-			print(cm_by_split[split])
 
 		Plot().confusion_matrix(cm_by_split=cm_by_split, labels= labels)
 
