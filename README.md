@@ -16,6 +16,6 @@
 
 <p align='center'><b>On a mission to accelerate open science:</b></p>
 
-* Reduce the programming & machine learning know-how required to adopt deep learning.
-* Reproducibly record experiments & data preparation workflows.
-* Free & open tools; not walled garden SaaS apps & cloud services.
+* Write 95% less code. Easily integrate best practice deep learning into your research.
+* Reproducibly record your entire workflow: both training experiments & data lineage.
+* Free tools & open methods, not walled garden SaaS apps & cloud services.

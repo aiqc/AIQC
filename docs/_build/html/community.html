@@ -115,10 +115,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-environment">Setting up environment.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#programming-style">Programming style.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of conduct.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#guild-bylaws-aka-governance">Guild bylaws [aka Governance].</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#open-source">Open source.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#choosing-a-license">Choosing a license</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#open-core">Open core</a></li>
 </ul>
 </li>
 </ul>
@@ -566,7 +566,7 @@ python
 </div>
 <hr class="docutils" />
 <div class="section" id="guild-bylaws-aka-governance">
-<h2>Guild bylaws [aka Governance].<a class="headerlink" href="#guild-bylaws-aka-governance" title="Permalink to this headline">¶</a></h2>
+<h2>Guild bylaws (aka Governance).<a class="headerlink" href="#guild-bylaws-aka-governance" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.djangoproject.com/weblog/2020/mar/12/governance/">Based on advice from our friends at Django and Jupyter:</a></p>
 <blockquote>
 <div><ul class="simple">
@@ -612,6 +612,34 @@ python
 </div></blockquote>
 </div>
 <hr class="docutils" />
+<div class="section" id="aiqc-inc-open-core">
+<h2>AIQC, Inc. (open core).<a class="headerlink" href="#aiqc-inc-open-core" title="Permalink to this headline">¶</a></h2>
+<p>All AIQC functionality developed to date is open source. However, for the following reasons, AIQC is incorporated and will adhere to an <em>open core</em> business model in the long run:</p>
+<ul class="simple">
+<li><p>In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (creators of the internet), it is <em>required</em> to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&amp;D-intensive tasks (e.g. <a class="reference external" href="https://github.com/JuliaParallel/Dagger.jl#acknowledgements">Dagger.jl</a>).</p>
+<ul>
+<li><p>Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.</p></li>
+</ul>
+</li>
+<li><p>In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and paid contributors coming from corporate sponsors with which they collaborate.</p>
+<ul>
+<li><p>This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.</p></li>
+</ul>
+</li>
+<li><p>Many successful open source projects have championed the open core model while managing to remain free:</p>
+<ul>
+<li><p>Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled &amp; SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash &amp; Plotly - Plotly, MongoDB, RStudio.</p></li>
+</ul>
+</li>
+<li><p>In practice, when collaborating with large research institutes or R&amp;D teams, they typically need: technical support to get up and running, consulting to help it fit their use cases, or they want to evaluate the technology on their data through a trial consulting engagement.</p></li>
+<li><p>The most prominent AI labs, like OpenAI and DeepMind, have been able to champion open research in a corporate setting. That’s also where the best deep learning talent is going.</p></li>
+<li><p>The <a class="reference external" href="https://www.ga4gh.org/">Global Alliance for Genomics &amp; Health (GA4GH)]</a> eventually had to organize for legal protection.</p></li>
+<li><p>Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.</p></li>
+<li><p>It’s analogous to the <em>freemium</em> days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.</p></li>
+<li><p>To paraphrase Isaacson’s, <a class="reference external" href="https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703">The Innovators</a>,: <em>“The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution.”</em></p></li>
+</ul>
+</div>
+<hr class="docutils" />
 <div class="section" id="open-source">
 <h2>Open source.<a class="headerlink" href="#open-source" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="choosing-a-license">
@@ -626,31 +654,6 @@ python
 </div></blockquote>
 <p>The copyright section is modeled after the <a class="reference external" href="https://github.com/ipython/ipython/blob/master/LICENSE">IPython</a> project.</p>
 <p><em>Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent &amp; trademark rights.</em></p>
-</div>
-<div class="section" id="open-core">
-<h3>Open core<a class="headerlink" href="#open-core" title="Permalink to this headline">¶</a></h3>
-<p>For the following reasons, AIQC plans to adopt an <em>open core</em> model in the long run:</p>
-<ul class="simple">
-<li><p>Many successful open source projects have championed the open core model while managing to remain open:</p>
-<ul>
-<li><p>Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled &amp; SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash &amp; Plotly - Plotly, MongoDB, RStudio.</p></li>
-</ul>
-</li>
-<li><p>In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is <em>required</em> to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&amp;D-intensive tasks (e.g. <a class="reference external" href="https://github.com/JuliaParallel/Dagger.jl#acknowledgements">Dagger.jl)</a>.</p>
-<ul>
-<li><p>Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.</p></li>
-</ul>
-</li>
-<li><p>In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.</p>
-<ul>
-<li><p>This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.</p></li>
-</ul>
-</li>
-<li><p>The <a class="reference external" href="https://www.ga4gh.org/">Global Alliance for Genomics &amp; Health (GA4GH)]</a> eventually had to organize for legal protection.</p></li>
-<li><p>Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.</p></li>
-<li><p>It’s analogous to the <em>freemium</em> days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.</p></li>
-<li><p>To paraphrase Isaacson’s, <a class="reference external" href="https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703">The Innovators</a>,: <em>“The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution.”</em></p></li>
-</ul>
 </div>
 </div>
 </div>

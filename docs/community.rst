@@ -130,7 +130,7 @@ Code of conduct.
 ----
 
 ******************************
-Guild bylaws [aka Governance].
+Guild bylaws (aka Governance).
 ******************************
 
 `Based on advice from our friends at Django and Jupyter: <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
@@ -171,6 +171,38 @@ The vernacular is modeled after a D&D-like guild in order to make governance les
 
 ----
 
+***********************
+AIQC, Inc. (open core).
+***********************
+
+All AIQC functionality developed to date is open source. However, for the following reasons, AIQC is incorporated and will adhere to an *open core* business model in the long run:
+
+- In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (creators of the internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__).
+  
+  + Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.
+
+- In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and paid contributors coming from corporate sponsors with which they collaborate.
+  
+  + This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.
+
+- Many successful open source projects have championed the open core model while managing to remain free:
+  
+  + Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled & SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
+
+- In practice, when collaborating with large research institutes or R&D teams, they typically need: technical support to get up and running, consulting to help it fit their use cases, or they want to evaluate the technology on their data through a trial consulting engagement.
+
+- The most prominent AI labs, like OpenAI and DeepMind, have been able to champion open research in a corporate setting. That's also where the best deep learning talent is going.
+
+- The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
+
+- Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.
+
+- It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.
+
+- To paraphrase Isaacson's, `The Innovators <https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703>`__,: *"The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution."*
+
+----
+
 ************
 Open source.
 ************
@@ -195,29 +227,3 @@ BSD is seen as a *permissive* license, as opposed to *restrictive*. The major im
 The copyright section is modeled after the `IPython <https://github.com/ipython/ipython/blob/master/LICENSE>`__ project.
 
 *Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent & trademark rights.*
-
-
-Open core
-=========
-
-For the following reasons, AIQC plans to adopt an *open core* model in the long run:
-
-- Many successful open source projects have championed the open core model while managing to remain open:
-  
-  + Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled & SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash & Plotly - Plotly, MongoDB, RStudio.
-
-- In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (internet), it is *required* to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&D-intensive tasks (e.g. `Dagger.jl) <https://github.com/JuliaParallel/Dagger.jl#acknowledgements>`__.
-  
-  + Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.
-
-- In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and contributors coming from corporate sponsors with which they collaborate.
-  
-  + This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.
-
-- The `Global Alliance for Genomics & Health (GA4GH)] <https://www.ga4gh.org/>`__ eventually had to organize for legal protection.
-
-- Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.
-
-- It's analogous to the *freemium* days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.
-
-- To paraphrase Isaacson's, `The Innovators <https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703>`__,: *"The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution."*
