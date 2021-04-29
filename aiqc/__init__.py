@@ -3742,8 +3742,9 @@ class Plot():
 									xref="paper",
 									yref="paper"))
 
+
 			fig.update_layout(
-				title=f"Confusion Matrix: {split}"
+				title=f"Confusion Matrix: {split.capitalize()}"
 				, legend_title='Sample Count'
 				, template=self.plot_template
 				, height=500  # if too small, it won't render in Jupyter.
@@ -3752,17 +3753,19 @@ class Plot():
 					tickmode='linear'
 					, tick0=0.0
 					, dtick=1.0
-					# , scaleanchor='x'
 				)
 				, xaxis=dict(
 					categoryorder='category descending',
-					#side='bottom'
 				)
 				, margin=dict(
 					r=325
 					, l=325
 				)
 			)
+
+			fig.update_traces(hovertemplate =
+							  """x: %{x}<br>y: %{y}<br>count: %{z}<extra></extra>""")
+
 			fig.show()
 
 
@@ -5092,15 +5095,8 @@ class Result(BaseModel):
 			elif isinstance(lc, (MultiLabelBinarizer, LabelBinarizer, OrdinalEncoder)):
 				labels = lc.classes_.tolist()
 			else:
-				raise ValueError("This Labelcoder is not yet being implemented in our confusion matrix.")
-		else:
-<<<<<<< Updated upstream
-			raise ValueError("This Labelcoder is not yet being implemented in our confusion matrix.")
-=======
-			preds = res.predictions['train'].tolist()
-			labels = list(set(preds))
-
->>>>>>> Stashed changes
+				preds = res.predictions['train'].tolist()
+				labels = list(set(preds))
 
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
