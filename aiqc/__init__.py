@@ -3726,7 +3726,7 @@ class Plot():
 			# add custom xaxis title
 			fig.add_annotation(dict(font=dict(color="white", size=14),
 									x=0.5,
-									y=-0.15,
+									y=1.2,
 									showarrow=False,
 									text="Predicted Label",
 									xref="paper",
@@ -3756,7 +3756,7 @@ class Plot():
 				)
 				, xaxis=dict(
 					categoryorder='category descending',
-					side='bottom'
+					#side='bottom'
 				)
 				, margin=dict(
 					r=325
@@ -5085,14 +5085,22 @@ class Result(BaseModel):
 		# The confusion matrices are already provided in `plot_data`.
 		cm_by_split = {}
 
-		lc = enc['labelcoder']
-
-		if isinstance(lc, (LabelEncoder, OneHotEncoder)):
-			labels = list(lc.categories_[0])  # in order of the features in X
-		elif isinstance(lc, (MultiLabelBinarizer, LabelBinarizer, OrdinalEncoder)):
-			labels = lc.classes_.tolist()
+		if 'labelcoder' in enc.keys():
+			lc = enc['labelcoder']
+			if isinstance(lc, (LabelEncoder, OneHotEncoder)):
+				labels = list(lc.categories_[0])  # in order of the features in X
+			elif isinstance(lc, (MultiLabelBinarizer, LabelBinarizer, OrdinalEncoder)):
+				labels = lc.classes_.tolist()
+			else:
+				raise ValueError("This Labelcoder is not yet being implemented in our confusion matrix.")
 		else:
+<<<<<<< Updated upstream
 			raise ValueError("This Labelcoder is not yet being implemented in our confusion matrix.")
+=======
+			preds = res.predictions['train'].tolist()
+			labels = list(set(preds))
+
+>>>>>>> Stashed changes
 
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
