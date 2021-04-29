@@ -4,7 +4,7 @@
 
 ### 📚 [Documentation](https://aiqc.readthedocs.io/)
 
-### 🧑‍💻 [Community - how to contribute?](https://aiqc.readthedocs.io/en/latest/community.html)
+### 🧑‍💻 [Community](https://aiqc.readthedocs.io/en/latest/community.html)
 
 ---
 
@@ -16,8 +16,6 @@
 
 <p align='center'><b>On a mission to accelerate open science:</b></p>
 
-* Reduce the programming & data science know-how required to adopt deep learning.
-* Reproducibly record deep learning experiments & data preparation workflows.
-* Open source methodologies instead of walled garden SaaS apps.
-* Automated quality control protocols for data preparation and model performance.
-* Runs anywhere; most research happens on laptops & HPCs, not in expensive clouds.
+* Reduce the programming & machine learning know-how required to adopt deep learning.
+* Reproducibly record experiments & data preparation workflows.
+* Free & open tools; not walled garden SaaS apps & cloud services.

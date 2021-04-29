@@ -66,8 +66,10 @@ html_show_copyright = False
 html_title = 'AIQC'
 html_short_title = 'AIQC'
 html_theme_options = {
-	'logo_only': True,
-	'display_version': False
+	'logo_only': True
+	, 'display_version': False
+	, 'sticky_navigation': False
+	, 'collapse_navigation': False
 }
 
 hight_language = 'python3'
