@@ -7,7 +7,7 @@ Community
 
 ----
 
-.. image:: images/community_meeting.png
+.. image:: images/LARP.png
   :width: 100%
   :align: center
   :alt: community banner
