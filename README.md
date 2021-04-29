@@ -12,7 +12,7 @@
 
 <p align='center'><b>AIQC is a Python framework for rapid & reproducible deep learning.</b></p>
 
-![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_diagram_april16.png)
+![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_diagram_april29.png)
 
 <p align='center'><b>On a mission to accelerate open science:</b></p>
 
