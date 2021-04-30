@@ -944,7 +944,7 @@ class Dataset(BaseModel):
 
 			dataframe = pd.DataFrame(strings, columns = [Dataset.Text.column_name], dtype = "object")
 
-			return Dataset.Tabular.from_pandas(dataframe, name)
+			return Dataset.Text.from_pandas(dataframe, name)
 
 
 		def from_pandas(
@@ -953,9 +953,35 @@ class Dataset(BaseModel):
 			dtype:dict = None, 
 			column_names:list = None
 		):
-			if Dataset.Text.column_name not in dataframe.columns:
-				raise ValueError(r'TextData column not found in input df. Please rename the column containing the text data as "TextData"')
-			return Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
+			column_names = listify(column_names)
+
+			if (type(dataframe).__name__ != 'DataFrame'):
+				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
+
+			if len(dataframe.columns) != 1:
+				raise ValueError("\nYikes - The `dataframe` you provided contains more than one column: ambiguous input\n")
+
+			if dataframe.dtypes[dataframe.columns[0]] != 'O':
+				raise ValueError("\nYikes - The `dataframe` you provided contains column with incorrect dtype: column dtype != object\n")
+
+			dataset = Dataset.create(
+				file_count = Dataset.Text.file_count
+				, dataset_type = Dataset.Text.dataset_type
+				, name = name
+				, source_path = None
+			)
+
+			try:
+				File.Tabular.from_pandas(
+					dataframe = dataframe
+					, dtype = dtype
+					, column_names = column_names
+					, dataset_id = dataset.id
+				)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise 
+			return dataset
 
 
 		def from_folder(
