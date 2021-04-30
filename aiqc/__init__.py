@@ -5245,13 +5245,12 @@ class Result(BaseModel):
 		analysis_type = algo.analysis_type
 		if analysis_type == "regression":
 			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
-		# The confusion matrices are already provided in `plot_data`.
 		cm_by_split = {}
 
 		if 'labelcoder' in enc.keys():
 			lc = enc['labelcoder']
 			if hasattr(lc,'categories_'):
-				labels = list(lc.categories_[0])  # in order of the features in X
+				labels = list(lc.categories_[0])
 			elif hasattr(lc,'classes_'):
 				labels = lc.classes_.tolist()
 			else:
