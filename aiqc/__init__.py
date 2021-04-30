@@ -2761,7 +2761,7 @@ class Labelcoder(BaseModel):
 					"""))
 
 			if (hasattr(sklearn_preprocess, 'order')):
-				if (sklearn_preprocess.sparse_output == 'F'):
+				if (sklearn_preprocess.order == 'F'):
 					raise ValueError(dedent(f"""
 					Yikes - Detected `order=='F'` attribute of {sklearn_preprocess}.
 					Please try again with 'order='C'.
@@ -3102,7 +3102,7 @@ class Featurecoder(BaseModel):
 
 				We have frequently observed inconsistent behavior where they 
 				often ouput incompatible array shapes that cannot be scalable 
-				concatenated, or they succeed in fiting, but fail at transforming.
+				concatenated, or they succeed in fitting, but fail at transforming.
 				
 				We recommend you either use these with 1 column at a 
 				time or switch to another encoder.
