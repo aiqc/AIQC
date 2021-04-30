@@ -1,9 +1,13 @@
 <!-- This page is formatted for GitHub's markdown renderer -->
 ![AIQC (wide)](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png)
 
+<br />
+
 <h3 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h3>
 
 <h3 align='center'>🛡️&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/en/latest/community.html">Community</a></h3>
+
+<br />
 
 ---
 
@@ -11,7 +15,11 @@
 
 <p align='center'><b>AIQC is a Python framework for rapid & reproducible deep learning.</b></p>
 
+<br />
+
 ![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_diagram_april29.png)
+
+<br />
 
 <p align='center'><b>On a mission to accelerate open science:</b></p>
 
