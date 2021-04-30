@@ -942,7 +942,7 @@ class Dataset(BaseModel):
 				if type(expectedString) != 	str:
 					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
 
-			dataframe = pd.DataFrame(strings, columns = Dataset.Text.column_name, dtype = "string")
+			dataframe = pd.DataFrame(strings, columns = [Dataset.Text.column_name], dtype = "object")
 
 			return Dataset.Tabular.from_pandas(dataframe, name)
 
