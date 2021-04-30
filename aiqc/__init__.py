@@ -19,12 +19,14 @@ from PIL import Image as Imaje
 # Preprocessing & metrics.
 import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
+from sklearn.preprocessing import OneHotEncoder, LabelBinarizer, LabelEncoder, MultiLabelBinarizer, OrdinalEncoder
 # Deep learning.
 import keras
 import torch
 # Visualization.
 import plotly.graph_objects as go
 import plotly.express as px
+import plotly.figure_factory as ff
 
 
 name = "aiqc"
@@ -286,9 +288,6 @@ def update_config(kv:dict):
 #==================================================
 # DATABASE
 #==================================================
-
-def printer():
-	print("12")
 
 def get_path_db():
 	"""
@@ -3750,31 +3749,71 @@ class Plot():
 			fig_acc.show()
 		fig_loss.show()
 
+	def confusion_matrix(self, cm_by_split, labels):
 
-	def confusion_matrix(self, cm_by_split):
 		for split, cm in cm_by_split.items():
-			fig = px.imshow(
+			# change each element of z to type string for annotations
+			cm_text = [[str(y) for y in x] for x in cm]
+
+			# set up figure
+			fig = ff.create_annotated_heatmap(
 				cm
-				, color_continuous_scale = px.colors.sequential.BuGn
-				, labels=dict(x="Predicted Label", y="Actual Label")
-			)
+				, x=labels
+				, y=labels
+				, annotation_text=cm_text
+				, colorscale=px.colors.sequential.BuGn
+				, showscale=True
+				, colorbar={"title": 'Count'})
+
+			# add custom xaxis title
+			fig.add_annotation(dict(font=dict(color="white", size=12),
+									x=0.5,
+									y=1.2,
+									showarrow=False,
+									text="Predicted Label",
+									xref="paper",
+									yref="paper"))
+
+			# add custom yaxis title
+			fig.add_annotation(dict(font=dict(color="white", size=12),
+									x=-0.4,
+									y=0.5,
+									showarrow=False,
+									text="Actual Label",
+									textangle=-90,
+									xref="paper",
+									yref="paper"))
+
+
 			fig.update_layout(
-				title = f"Confusion Matrix: {split}"
-				, xaxis_title = "Predicted Label"
-				, yaxis_title = "Actual Label"
-				, legend_title = 'Sample Count'
-				, template = self.plot_template
-				, height = 500 # if too small, it won't render in Jupyter.
-				, yaxis = dict(
-					tickmode = 'linear'
-					, tick0 = 0.0
-					, dtick = 1.0
+				title=f"Confusion Matrix: {split.capitalize()}"
+				, legend_title='Sample Count'
+				, template=self.plot_template
+				, height=375  # if too small, it won't render in Jupyter.
+				, width=850
+				, yaxis=dict(
+					tickmode='linear'
+					, tick0=0.0
+					, dtick=1.0
+					, tickfont = dict(
+						size=10
+					)
 				)
-				, margin = dict(
-					b = 75
-					, t = 125
+				, xaxis=dict(
+					categoryorder='category descending'
+					, tickfont=dict(
+						size=10
+					)
+				)
+				, margin=dict(
+					r=325
+					, l=325
 				)
 			)
+
+			fig.update_traces(hovertemplate =
+							  """predicted: %{x}<br>actual: %{y}<br>count: %{z}<extra></extra>""")
+
 			fig.show()
 
 
@@ -5199,19 +5238,31 @@ class Result(BaseModel):
 		
 		
 	def plot_confusion_matrix(id:int):
-		r = Result.get_by_id(id)
-		result_plot_data = r.plot_data
-		a = r.job.queue.algorithm
-		analysis_type = a.analysis_type
+		res = Result.get_by_id(id)
+		result_plot_data = res.plot_data
+		algo = res.job.queue.algorithm
+		enc = res.job.fitted_encoders
+		analysis_type = algo.analysis_type
 		if analysis_type == "regression":
-			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
 		# The confusion matrices are already provided in `plot_data`.
 		cm_by_split = {}
+
+		if 'labelcoder' in enc.keys():
+			lc = enc['labelcoder']
+			if hasattr(lc,'categories_'):
+				labels = list(lc.categories_[0])  # in order of the features in X
+			elif hasattr(lc,'classes_'):
+				labels = lc.classes_.tolist()
+			else:
+				unique_classes = res.job.queue.splitset.label.unique_classes
+				labels = list(unique_classes)
+
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
-		
-		Plot().confusion_matrix(cm_by_split=cm_by_split)
-		
+
+		Plot().confusion_matrix(cm_by_split=cm_by_split, labels= labels)
+
 
 
 	def plot_precision_recall(id:int):
