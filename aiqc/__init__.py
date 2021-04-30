@@ -2639,7 +2639,7 @@ class Labelcoder(BaseModel):
 		elif (len(encoderset.labelcoders) == 1):
 			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
 
-		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=True)
+		sklearn_preprocess, only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=True)
 
 		# 2. Test Fit. 
 		if (only_fit_train == True):
@@ -2703,69 +2703,103 @@ class Labelcoder(BaseModel):
 
 		if (inspect.isclass(sklearn_preprocess)):
 			raise ValueError(dedent("""
-			Yikes - The encoder you provided is a class name, but it should be a class instance.\n
-			Class (incorrect): `OrdinalEncoder`
-			Instance (correct): `OrdinalEncoder()`
-			\n"""))
+				Yikes - The encoder you provided is a class name, but it should be a class instance.\n
+				Class (incorrect): `OrdinalEncoder`
+				Instance (correct): `OrdinalEncoder()`
+			"""))
 
 		# Encoder parent modules vary: `sklearn.preprocessing._data` vs `sklearn.preprocessing._label`
 		# Feels cleaner than this: https://stackoverflow.com/questions/14570802/python-check-if-object-is-instance-of-any-class-from-a-certain-module
 		coder_type = str(type(sklearn_preprocess))
 		if ('sklearn.preprocessing' not in coder_type):
 			raise ValueError(dedent("""
-			Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
-			https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
-			\n"""))
+				Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
+				https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
+			"""))
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError(dedent("""
-				Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
-				Please use one of the uppercase methods instead.
-				For example: use `RobustScaler` instead of `robust_scale`.
-				\n"""))
+					Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
+					Please use one of the uppercase methods instead.
+					For example: use `RobustScaler` instead of `robust_scale`.
+				"""))
 
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `sparse==True` attribute of {sklearn_preprocess}.
-					FYI `sparse` is True by default if left blank.
-					This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
-					Please try again with False. For example, `OneHotEncoder(sparse=False)`.
-					"""))
-
-			if (hasattr(sklearn_preprocess, 'encode')):
-				if (sklearn_preprocess.encode == 'onehot'):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `encode=='onehot'` attribute of {sklearn_preprocess}.
-					FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
-					which causes Keras training to fail.\n
-					Please try again with 'onehot-dense' or 'ordinal'.
-					For example, `KBinsDiscretizer(encode='onehot-dense')`.
-					"""))
+					try:
+						sklearn_preprocess.sparse = False
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+							   This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `sparse==True` attribute of {sklearn_preprocess}.
+							System attempted to override this to False, but failed.
+							FYI `sparse` is True by default if left blank.
+							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
+							Please try again with False. For example, `OneHotEncoder(sparse=False)`.
+						"""))
 
 			if (hasattr(sklearn_preprocess, 'copy')):
 				if (sklearn_preprocess.copy == True):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `copy==True` attribute of {sklearn_preprocess}.
-					FYI `copy` is True by default if left blank, which consumes memory.\n
-					Please try again with 'copy=False'.
-					For example, `StandardScaler(copy=False)`.
-					"""))
+					try:
+						sklearn_preprocess.copy = False
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+							   This saves memory when concatenating the output of many encoders.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `copy==True` attribute of {sklearn_preprocess}.
+							System attempted to override this to False, but failed.
+							FYI `copy` is True by default if left blank, which consumes memory.\n
+							Please try again with 'copy=False'.
+							For example, `StandardScaler(copy=False)`.
+						"""))
 			
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `sparse_output==True` attribute of {sklearn_preprocess}.
-					Please try again with 'sparse_output=False'.
-					For example, `LabelBinarizer(sparse_output=False)`.
-					"""))
+					try:
+						sklearn_preprocess.sparse_output = False
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.sparse_output=False`.
+							   This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `sparse_output==True` attribute of {sklearn_preprocess}.
+							System attempted to override this to True, but failed.
+							Please try again with 'sparse_output=False'.
+							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
+							For example, `LabelBinarizer(sparse_output=False)`.
+						"""))
 
 			if (hasattr(sklearn_preprocess, 'order')):
 				if (sklearn_preprocess.order == 'F'):
+					try:
+						sklearn_preprocess.order = 'C'
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.order='C'`.
+							   This changes the output shape of the 
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							System attempted to override this to 'C', but failed.
+							Yikes - Detected `order=='F'` attribute of {sklearn_preprocess}.
+							Please try again with 'order='C'.
+							For example, `PolynomialFeatures(order='C')`.
+						"""))
+
+			if (hasattr(sklearn_preprocess, 'encode')):
+				if (sklearn_preprocess.encode == 'onehot'):
+					# Multiple options here, so don't override user input.
 					raise ValueError(dedent(f"""
-					Yikes - Detected `order=='F'` attribute of {sklearn_preprocess}.
-					Please try again with 'order='C'.
-					For example, `PolynomialFeatures(order='C')`.
+						Yikes - Detected `encode=='onehot'` attribute of {sklearn_preprocess}.
+						FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
+						which causes Keras training to fail.\n
+						Please try again with 'onehot-dense' or 'ordinal'.
+						For example, `KBinsDiscretizer(encode='onehot-dense')`.
 					"""))
 
 			if (
@@ -2795,7 +2829,7 @@ class Labelcoder(BaseModel):
 				if (stringified_coder.startswith(c)):
 					only_fit_train = False
 					break
-			return only_fit_train
+			return sklearn_preprocess, only_fit_train
 
 
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
@@ -2812,6 +2846,9 @@ class Labelcoder(BaseModel):
 		- The rub lies in that if you have many columns, but the encoder only fits 1 column at a time, 
 		  then you return many fits for a single type of preprocess.
 		- Remember this is for a single Featurecoder that is potential returning multiple fits.
+
+		- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
+		  everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
 		"""
 		fitted_encoders = []
 		incompatibilities = {
@@ -2883,6 +2920,10 @@ class Labelcoder(BaseModel):
 		, encoding_dimension:str
 		, samples_to_transform:object
 	):
+		"""
+		- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
+		  everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
+		"""
 		if (encoding_dimension == '2D_multiColumn'):
 			# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
 			encoded_samples = fitted_encoders[0].transform(samples_to_transform)
@@ -3012,7 +3053,7 @@ class Featurecoder(BaseModel):
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
-		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=False)
+		sklearn_preprocess, only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=False)
 
 		if (dtypes is not None):
 			for typ in dtypes:
