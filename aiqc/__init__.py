@@ -3721,10 +3721,11 @@ class Plot():
 				, y=labels
 				, annotation_text=cm_text
 				, colorscale=px.colors.sequential.BuGn
-				, showscale=True)
+				, showscale=True
+				, colorbar={"title": 'Count'})
 
 			# add custom xaxis title
-			fig.add_annotation(dict(font=dict(color="white", size=14),
+			fig.add_annotation(dict(font=dict(color="white", size=12),
 									x=0.5,
 									y=1.2,
 									showarrow=False,
@@ -3733,7 +3734,7 @@ class Plot():
 									yref="paper"))
 
 			# add custom yaxis title
-			fig.add_annotation(dict(font=dict(color="white", size=14),
+			fig.add_annotation(dict(font=dict(color="white", size=12),
 									x=-0.4,
 									y=0.5,
 									showarrow=False,
@@ -3747,15 +3748,21 @@ class Plot():
 				title=f"Confusion Matrix: {split.capitalize()}"
 				, legend_title='Sample Count'
 				, template=self.plot_template
-				, height=500  # if too small, it won't render in Jupyter.
-				, width=950
+				, height=375  # if too small, it won't render in Jupyter.
+				, width=850
 				, yaxis=dict(
 					tickmode='linear'
 					, tick0=0.0
 					, dtick=1.0
+					, tickfont = dict(
+						size=10
+					)
 				)
 				, xaxis=dict(
-					categoryorder='category descending',
+					categoryorder='category descending'
+					, tickfont=dict(
+						size=10
+					)
 				)
 				, margin=dict(
 					r=325
@@ -3764,7 +3771,7 @@ class Plot():
 			)
 
 			fig.update_traces(hovertemplate =
-							  """x: %{x}<br>y: %{y}<br>count: %{z}<extra></extra>""")
+							  """predicted: %{x}<br>actual: %{y}<br>count: %{z}<extra></extra>""")
 
 			fig.show()
 
@@ -5132,13 +5139,13 @@ class Result(BaseModel):
 
 		if 'labelcoder' in enc.keys():
 			lc = enc['labelcoder']
-			if isinstance(lc, (LabelEncoder, OneHotEncoder)):
+			if hasattr(lc,'categories_'):
 				labels = list(lc.categories_[0])  # in order of the features in X
-			elif isinstance(lc, (MultiLabelBinarizer, LabelBinarizer, OrdinalEncoder)):
+			elif hasattr(lc,'classes_'):
 				labels = lc.classes_.tolist()
 			else:
-				preds = res.predictions['train'].tolist()
-				labels = list(set(preds))
+				unique_classes = res.job.queue.splitset.label.unique_classes
+				labels = list(unique_classes)
 
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
