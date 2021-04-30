@@ -394,6 +394,11 @@ def setup():
 # ORM
 #==================================================
 
+# --------- GLOBALS ---------
+categorical_encoders = [
+	'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
+	'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
+]
 
 # --------- HELPER FUNCTIONS ---------
 def listify(supposed_lst:object=None):
@@ -2695,8 +2700,6 @@ class Labelcoder(BaseModel):
 
 	def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 		#This function is used by Featurecoder too, so don't put label-specific things in here.
-		coder_type = str(type(sklearn_preprocess))
-		stringified_coder = str(sklearn_preprocess)
 
 		if (inspect.isclass(sklearn_preprocess)):
 			raise ValueError(dedent("""
@@ -2705,6 +2708,9 @@ class Labelcoder(BaseModel):
 			Instance (correct): `OrdinalEncoder()`
 			\n"""))
 
+		# Encoder parent modules vary: `sklearn.preprocessing._data` vs `sklearn.preprocessing._label`
+		# Feels cleaner than this: https://stackoverflow.com/questions/14570802/python-check-if-object-is-instance-of-any-class-from-a-certain-module
+		coder_type = str(type(sklearn_preprocess))
 		if ('sklearn.preprocessing' not in coder_type):
 			raise ValueError(dedent("""
 			Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
@@ -2721,7 +2727,7 @@ class Labelcoder(BaseModel):
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
 					raise ValueError(dedent(f"""
-					Yikes - Detected `sparse==True` attribute of {stringified_coder}.
+					Yikes - Detected `sparse==True` attribute of {sklearn_preprocess}.
 					FYI `sparse` is True by default if left blank.
 					This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
 					Please try again with False. For example, `OneHotEncoder(sparse=False)`.
@@ -2730,7 +2736,7 @@ class Labelcoder(BaseModel):
 			if (hasattr(sklearn_preprocess, 'encode')):
 				if (sklearn_preprocess.encode == 'onehot'):
 					raise ValueError(dedent(f"""
-					Yikes - Detected `encode=='onehot'` attribute of {stringified_coder}.
+					Yikes - Detected `encode=='onehot'` attribute of {sklearn_preprocess}.
 					FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
 					which causes Keras training to fail.\n
 					Please try again with 'onehot-dense' or 'ordinal'.
@@ -2740,7 +2746,7 @@ class Labelcoder(BaseModel):
 			if (hasattr(sklearn_preprocess, 'copy')):
 				if (sklearn_preprocess.copy == True):
 					raise ValueError(dedent(f"""
-					Yikes - Detected `copy==True` attribute of {stringified_coder}.
+					Yikes - Detected `copy==True` attribute of {sklearn_preprocess}.
 					FYI `copy` is True by default if left blank, which consumes memory.\n
 					Please try again with 'copy=False'.
 					For example, `StandardScaler(copy=False)`.
@@ -2749,7 +2755,7 @@ class Labelcoder(BaseModel):
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
 					raise ValueError(dedent(f"""
-					Yikes - Detected `sparse_output==True` attribute of {stringified_coder}.
+					Yikes - Detected `sparse_output==True` attribute of {sklearn_preprocess}.
 					Please try again with 'sparse_output=False'.
 					For example, `LabelBinarizer(sparse_output=False)`.
 					"""))
@@ -2757,7 +2763,7 @@ class Labelcoder(BaseModel):
 			if (hasattr(sklearn_preprocess, 'order')):
 				if (sklearn_preprocess.sparse_output == 'F'):
 					raise ValueError(dedent(f"""
-					Yikes - Detected `order=='F'` attribute of {stringified_coder}.
+					Yikes - Detected `order=='F'` attribute of {sklearn_preprocess}.
 					Please try again with 'order='C'.
 					For example, `PolynomialFeatures(order='C')`.
 					"""))
@@ -2777,20 +2783,14 @@ class Labelcoder(BaseModel):
 				"""))
 
 			"""
-			- Attempting to automatically set this. I was originally validating based on 
-			  whether or not the encoder was categorical. But I realized, if I am going to 
-			  rule them out and in... why not automatically set it?
 			- Binners like 'KBinsDiscretizer' and 'QuantileTransformer'
 			  will place unseen observations outside bounds into existing min/max bin.
-			- Regarding a custom FunctionTransformer, assuming they wouldn't be numerical
-			  as opposed to OHE/Ordinal or binarizing.
+			- I assume that someone won't use a custom FunctionTransformer, for categories
+			  when all of these categories are available.
 			- LabelBinarizer is not threshold-based, it's more like an OHE.
 			"""
-			categorical_encoders = [
-				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
-				'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
-			]
 			only_fit_train = True
+			stringified_coder = str(sklearn_preprocess)
 			for c in categorical_encoders:
 				if (stringified_coder.startswith(c)):
 					only_fit_train = False
@@ -3843,6 +3843,21 @@ class Queue(BaseModel):
 		if (foldset_id is not None):
 			foldset = Foldset.get_by_id(foldset_id)
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
+
+		if (encoderset_id is not None):
+			encoderset = Encoderset.get_by_id(encoderset_id)
+
+			if (
+				(len(splitset.encodersets[0].labelcoders) == 0)
+				and
+				(len(splitset.encodersets[0].featurecoders) == 0)
+			):
+				raise ValueError("\nYikes - That Encoderset has neither a Labelcoder nor Featurecoders.\n")
+
+		else:
+			has_labelcoder = False
+			encoder_is_categorical = None
+
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
@@ -3852,14 +3867,39 @@ class Queue(BaseModel):
 			if (label_col_count == 1):
 				label_dtype = label_dtypes[0]
 				
+				if (encoderset_id is not None):			
+					if (len(splitset.encodersets[0].labelcoders) > 0):
+						has_labelcoder = True
+						labelcoder = encoderset.labelcoders[0]
+						stringified_coder = str(labelcoder.sklearn_preprocess)
+					
+						for c in categorical_encoders:
+							if (stringified_coder.startswith(c)):
+								encoder_is_categorical = True
+								break
+							else:
+								encoder_is_categorical = False
+					else:
+						has_labelcoder = False
+						encoder_is_categorical = None
+				if (encoderset_id is None):	
+					has_labelcoder = False
+					encoder_is_categorical = None
+					stringified_coder = None
+
+
 				if ('classification' in analysis_type):	
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
-					if (encoderset_id is not None):
-						encoderset = Encoderset.get_by_id(encoderset_id)
-						labelcoder = encoderset.labelcoders[0]
-						stringified_coder = str(labelcoder.sklearn_preprocess)
+					if (has_labelcoder == True):
+						if (encoder_is_categorical == False):
+							raise ValueError(dedent(f"""
+								Yikes - `Algorithm.analysis_type=='classification_*'`, but 
+								`Labelcoder.sklearn_preprocess={stringified_coder}` was not found in known 'classification' encoders:
+								{categorical_encoders}
+							"""))
+
 						if ('_binary' in analysis_type):
 							# Prevent OHE w classification_binary
 							if (stringified_coder.startswith("OneHotEncoder")):
@@ -3881,7 +3921,28 @@ class Queue(BaseModel):
 									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
 									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
 									"""))
-									
+								elif (not stringified_coder.startswith("OrdinalEncoder")):
+									print(dedent("""
+										Warning - When `(analysis_type=='classification_multi') and (library == 'pytorch')`
+										We recommend you use `sklearn.preprocessing.OrdinalEncoder()` as a Labelcoder.
+									"""))
+							else:
+								if (not stringified_coder.startswith("OneHotEncoder")):
+									print(dedent("""
+										Warning - When performing non-PyTorch, multi-label classification on a single column,
+										we recommend you use `sklearn.preprocessing.OneHotEncoder()` as a Labelcoder.
+									"""))
+					elif (
+						((has_labelcoder == False) or (has_labelcoder == None))
+						and ('_multi' in analysis_type) and (library != 'pytorch')
+					):
+						print(dedent("""
+							Warning - When performing non-PyTorch, multi-label classification on a single column 
+							without using a Labelcoder, Algorithm must have user-defined `fn_lose`, 
+							`fn_optimize`, and `fn_predict`. We recommend you use 
+							`sklearn.preprocessing.OneHotEncoder()` as a Labelcoder instead.
+						"""))
+
 					if (splitset.bin_count is not None):
 						print(dedent("""
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
@@ -3895,6 +3956,15 @@ class Queue(BaseModel):
 								`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
 							"""))
 				elif (analysis_type == 'regression'):
+					if (encoderset_id is not None):
+						if (has_labelcoder == True):
+							if (encoder_is_categorical == True):
+								raise ValueError(dedent(f"""
+									Yikes - `Algorithm.analysis_type=='regression'`, but 
+									`Labelcoder.sklearn_preprocess={stringified_coder}` was found in known categorical encoders:
+									{categorical_encoders}
+								"""))
+
 					if (
 						(not np.issubdtype(label_dtype, np.floating))
 						and
@@ -3914,8 +3984,8 @@ class Queue(BaseModel):
 						elif (foldset.bin_count is not None):
 							if (splitset.bin_count is None):
 								print("Warning - `bin_count` was set for Foldset, but not for Splitset. This leads to inconsistent stratification across samples.")
-					
-			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
+				
+			# We already know how OHE columns are formatted from label creation, so skip dtype, bin, and encoder checks.
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
 					raise ValueError("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
