@@ -19,7 +19,7 @@ from PIL import Image as Imaje
 # Preprocessing & metrics.
 import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
-from sklearn.preprocessing import OneHotEncoder, LabelBinarizer, LabelEncoder, MultiLabelBinarizer, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
 # Deep learning.
 import keras
 import torch
@@ -3750,7 +3750,6 @@ class Plot():
 		fig_loss.show()
 
 	def confusion_matrix(self, cm_by_split, labels):
-
 		for split, cm in cm_by_split.items():
 			# change each element of z to type string for annotations
 			cm_text = [[str(y) for y in x] for x in cm]
@@ -3800,8 +3799,8 @@ class Plot():
 					)
 				)
 				, xaxis=dict(
-					categoryorder='category descending'
-					, tickfont=dict(
+					categoryorder='category descending',
+					 tickfont=dict(
 						size=10
 					)
 				)
@@ -5253,9 +5252,10 @@ class Result(BaseModel):
 				labels = list(lc.categories_[0])
 			elif hasattr(lc,'classes_'):
 				labels = lc.classes_.tolist()
-			else:
-				unique_classes = res.job.queue.splitset.label.unique_classes
-				labels = list(unique_classes)
+		else:
+			unique_classes = res.job.queue.splitset.label.unique_classes
+			labels = list(unique_classes)
+
 
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
