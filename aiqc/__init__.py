@@ -607,13 +607,13 @@ class Dataset(BaseModel):
 			column_names = listify(column_names)
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
-			if source_file_format not in accepted_formats:
+			if (source_file_format not in accepted_formats):
 				raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
 
-			if not os.path.exists(file_path):
+			if (not os.path.exists(file_path)):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
 
-			if not os.path.isfile(file_path):
+			if (not os.path.isfile(file_path)):
 				raise ValueError(dedent(
 					f"Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:" \
 					f"{file_path}"
@@ -621,7 +621,7 @@ class Dataset(BaseModel):
 				))
 
 			# Use the raw, not absolute path for the name.
-			if name is None:
+			if (name is None):
 				name = file_path
 
 			source_path = os.path.abspath(file_path)
@@ -1150,9 +1150,17 @@ class File(BaseModel):
 			samples = listify(samples)
 			# Filters.
 			df = pd.read_parquet(
-				io.BytesIO(f.blob) #saves memory?
+				io.BytesIO(f.blob) #one-liner saves memory?
 				, columns=columns
 			)
+			# Ensures columns are rearranged to be in the correct order.
+			if (
+				(columns is not None)
+				and 
+				(df.columns.to_list() != columns)
+			):
+				df = df.filter(columns)
+			# Specific rows.
 			if samples is not None:
 				df = df.iloc[samples]
 			
@@ -1218,7 +1226,7 @@ class File(BaseModel):
 			if (column_names is not None):
 				col_count = len(column_names)
 				structure_col_count = dataframe.shape[1]
-				if col_count != structure_col_count:
+				if (col_count != structure_col_count):
 					raise ValueError(dedent(f"""
 					Yikes - The dataframe you provided has <{structure_col_count}> columns,
 					but you provided <{col_count}> columns.
@@ -1243,7 +1251,10 @@ class File(BaseModel):
 			"""
 			if (dtype is not None):
 				# Accepts dict{'column_name':'dtype_str'} or a single str.
-				dataframe = dataframe.astype(dtype)
+				try:
+					dataframe = dataframe.astype(dtype)
+				except:
+					raise ValueError("\nYikes - Failed to apply the dtypes you specified to the data you provided.\n")
 				"""
 				Check if any user-provided dtype against actual dataframe dtypes to see if conversions failed.
 				Pandas dtype seems robust in comparing dtypes: 
@@ -1330,10 +1341,10 @@ class File(BaseModel):
 			So I switched to pandas for handling csv/tsv, but read_parquet()
 			doesn't let you change column names easily, so using pyarrow for parquet.
 			""" 
-			if not os.path.exists(path):
+			if (not os.path.exists(path)):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
 
-			if not os.path.isfile(path):
+			if (not os.path.isfile(path)):
 				raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
 
 			if (source_file_format == 'tsv') or (source_file_format == 'csv'):
@@ -1552,7 +1563,7 @@ class Label(BaseModel):
 				l_id = str(l.id)
 				l_cols = l.columns
 				l_cols_alpha = sorted(l_cols)
-				if cols_aplha == l_cols_alpha:
+				if (cols_aplha == l_cols_alpha):
 					raise ValueError(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
 
 		column_count = len(columns)
@@ -1742,7 +1753,7 @@ class Featureset(BaseModel):
 			if (include_columns is not None):
 				# check columns exist
 				all_cols_found = all(col in d_cols for col in include_columns)
-				if not all_cols_found:
+				if (not all_cols_found):
 					raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
 				# inclusion
 				columns = include_columns
@@ -1753,7 +1764,7 @@ class Featureset(BaseModel):
 
 			elif (exclude_columns is not None):
 				all_cols_found = all(col in d_cols for col in exclude_columns)
-				if not all_cols_found:
+				if (not all_cols_found):
 					raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
 				# exclusion
 				columns_excluded = exclude_columns
@@ -1761,7 +1772,7 @@ class Featureset(BaseModel):
 				columns = d_cols
 				for col in exclude_columns:
 					columns.remove(col)
-				if not columns:
+				if (not columns):
 					raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
 			else:
 				columns = d_cols
@@ -1781,11 +1792,11 @@ class Featureset(BaseModel):
 				for f in d_featuresets:
 					f_id = str(f.id)
 					f_cols = f.columns_excluded
-					if f_cols is not None:
+					if (f_cols is not None):
 						f_cols_alpha = sorted(f_cols)
 					else:
 						f_cols_alpha = None
-					if cols_aplha == f_cols_alpha:
+					if (cols_aplha == f_cols_alpha):
 						raise ValueError(dedent(f"""
 						Yikes - This Dataset already has Featureset <id:{f_id}> with the same columns.
 						Cannot create duplicate.
@@ -2623,6 +2634,8 @@ class Labelcoder(BaseModel):
 	"""
 	only_fit_train = BooleanField()
 	sklearn_preprocess = PickleField()
+	matching_columns = JSONField() # kinda unecessary, but maybe multi-label future.
+	encoding_dimension = CharField()
 
 	encoderset = ForeignKeyField(Encoderset, backref='labelcoders')
 
@@ -2632,6 +2645,7 @@ class Labelcoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
+		label = splitset.label
 
 		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
@@ -2655,7 +2669,7 @@ class Labelcoder(BaseModel):
 			)['train']['labels']
 			communicated_split = "the training split"
 		elif (only_fit_train == False):
-			samples_to_encode = splitset.label.to_numpy()
+			samples_to_encode = label.to_numpy()
 			communicated_split = "all samples"
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
@@ -2674,7 +2688,7 @@ class Labelcoder(BaseModel):
 				pass
 			elif (only_fit_train == True):
 				# Overwrite the specific split with all samples, so we can test it.
-				samples_to_encode = splitset.label.to_numpy()
+				samples_to_encode = label.to_numpy()
 			
 			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
@@ -2693,6 +2707,8 @@ class Labelcoder(BaseModel):
 		lc = Labelcoder.create(
 			only_fit_train = only_fit_train
 			, sklearn_preprocess = sklearn_preprocess
+			, encoding_dimension = encoding_dimension
+			, matching_columns = label.columns
 			, encoderset = encoderset
 		)
 		return lc
@@ -4651,6 +4667,7 @@ class Job(BaseModel):
 				for split in samples.keys():
 					samples[split]['features'] = None
 
+				# For each featurecoder: fetch, transform, & concatenate matching features.
 				# List of lists. One nested list per Featurecoder.
 				persisted_encoders['featurecoders'] = []
 				for featurecoder in featurecoders:
@@ -4691,7 +4708,7 @@ class Job(BaseModel):
 					#2b2. Transform features. Overwrites samples['split']['features'].
 					for split in samples.keys():
 
-						# Figure out which samples to encode.
+						# Fetch matching columns (from either a fold or split).
 						if ("fold" in split):
 							samples_to_encode = foldset.to_numpy(
 								fold_index = fold_index
@@ -4707,20 +4724,21 @@ class Job(BaseModel):
 								, feature_columns = matching_columns
 							)[split]['features']
 
+						# Transform matching columns.
 						if (featurecoder.featurecoder_index == 0):
-						# Nothing to concat with, so just overwite the None value.
+							# It's the first encoder. Nothing to concat with, so just overwite the None value.
 							samples[split]['features'] = Labelcoder.transform_dynamicDimensions(
 								fitted_encoders = fitted_encoders
 								, encoding_dimension = encoding_dimension
 								, samples_to_transform = samples_to_encode
 							)
 						elif (featurecoder.featurecoder_index > 0):
-						# Concatenate w previously encoded features.
 							samples_to_encode = Labelcoder.transform_dynamicDimensions(
 								fitted_encoders = fitted_encoders
 								, encoding_dimension = encoding_dimension
 								, samples_to_transform = samples_to_encode
 							)
+							# Concatenate w previously encoded features.
 							samples[split]['features'] = np.concatenate(
 								(samples[split]['features'], samples_to_encode)
 								, axis = 1
