@@ -86,13 +86,13 @@ def create_folder():
 			"""
 			os.makedirs(app_dir)
 			# if os.name == 'nt':
-			# 	# Windows: backslashes \ and double backslashes \\
-			# 	command = 'mkdir ' + app_dir
-			# 	os.system(command)
+			#   # Windows: backslashes \ and double backslashes \\
+			#   command = 'mkdir ' + app_dir
+			#   os.system(command)
 			# else:
-			# 	# posix (mac and linux)
-			# 	command = 'mkdir -p "' + app_dir + '"'
-			# 	os.system(command)
+			#   # posix (mac and linux)
+			#   command = 'mkdir -p "' + app_dir + '"'
+			#   os.system(command)
 		except:
 			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.makedirs('{app_dir}')\n")
 		print(
@@ -346,7 +346,7 @@ def create_db():
 			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Queue, Jobset, Job, Result
+			Queue, Jobset, Job, Result, Inference
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -943,7 +943,7 @@ class Dataset(BaseModel):
 			name: str = None
 		):
 			for expectedString in strings:
-				if type(expectedString) != 	str:
+				if type(expectedString) !=  str:
 					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
 
 			dataframe = pd.DataFrame(strings, columns = [Dataset.Text.column_name], dtype = "object")
@@ -1848,7 +1848,7 @@ class Featureset(BaseModel):
 			for c in columns:
 				if c not in f_cols:
 					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Featureset.columns`.\n")
-			f_cols = columns	
+			f_cols = columns    
 
 		dataset_id = f.dataset.id
 		
@@ -3962,7 +3962,7 @@ class Queue(BaseModel):
 			if (label_col_count == 1):
 				label_dtype = label_dtypes[0]
 				
-				if (encoderset_id is not None):			
+				if (encoderset_id is not None):         
 					if (len(splitset.encodersets[0].labelcoders) > 0):
 						has_labelcoder = True
 						labelcoder = encoderset.labelcoders[0]
@@ -3977,13 +3977,13 @@ class Queue(BaseModel):
 					else:
 						has_labelcoder = False
 						encoder_is_categorical = None
-				if (encoderset_id is None):	
+				if (encoderset_id is None): 
 					has_labelcoder = False
 					encoder_is_categorical = None
 					stringified_coder = None
 
 
-				if ('classification' in analysis_type):	
+				if ('classification' in analysis_type): 
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
@@ -4042,7 +4042,7 @@ class Queue(BaseModel):
 						print(dedent("""
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
 							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
-						"""))				
+						"""))               
 					if (foldset_id is not None):
 						# Not doing an `and` because foldset can't be accessed if it doesn't exist.
 						if (foldset.bin_count is not None):
@@ -4070,7 +4070,7 @@ class Queue(BaseModel):
 						raise ValueError("Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
 					
 					if (splitset.bin_count is None):
-						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")					
+						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")                   
 					if (foldset_id is not None):
 						if (foldset.bin_count is None):
 							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Foldset.")
@@ -4312,7 +4312,11 @@ class Queue(BaseModel):
 		queue_results = list(queue_results)
 
 		if (not queue_results):
-			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
+			print(dedent("""
+				~:: Patience, young Padawan ::~
+
+				Completed, your Jobs are not. So Results to be had, there are None.
+			"""))
 			return None
 
 		metric_names = list(list(queue.jobs[0].results[0].metrics.values())[0].keys())#bad.
@@ -4395,7 +4399,7 @@ class Queue(BaseModel):
 
 		if (selected_metrics is not None):
 			for m in selected_metrics:
-				if m not in metric_names:
+				if (m not in metric_names):
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.
 					Note: the metrics available depend on the `Queue.analysis_type`.
@@ -4405,7 +4409,7 @@ class Queue(BaseModel):
 
 		if (selected_stats is not None):
 			for s in selected_stats:
-				if s not in stat_names:
+				if (s not in stat_names):
 					raise ValueError(f"\nYikes - The statistic '{s}' does not exist in `Result.metrics_aggregate`.\n")
 		elif (selected_stats is None):
 			selected_stats = stat_names
@@ -4933,7 +4937,6 @@ class Job(BaseModel):
 		4a. Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
 		"""
-
 		predictions = {}
 		probabilities = {}
 		metrics = {}
@@ -5134,6 +5137,7 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 class Result(BaseModel):
 	"""
 	- Regarding metrics, the label encoder was fit on training split labels.
+	- May separate Result into TrainedAlgorithm and Predictions (training, inference).
 	"""
 	repeat_index = IntegerField()
 	time_started = DateTimeField()
@@ -5177,7 +5181,12 @@ class Result(BaseModel):
 			fn_build = dill_deserialize(algorithm.fn_build)
 			fn_optimize = dill_deserialize(algorithm.fn_optimize)
 
-			model = fn_build(features_shape, label_shape, **hp)
+			if (algorithm.analysis_type == 'classification_multi'):
+				num_classes = len(result.job.queue.splitset.label.unique_classes)
+				model = fn_build(features_shape, num_classes, **hp)
+			else:
+				model = fn_build(features_shape, label_shape, **hp)
+			
 			optimizer = fn_optimize(model, **hp)
 
 			model_bytes = io.BytesIO(model_blob)
@@ -5333,17 +5342,200 @@ class Result(BaseModel):
 		Plot().roc_curve(dataframe=dataframe)
 
 
-"""
-# maybe now i could dill the entire env/venv?
-class Environment(BaseModel)?
-	# Even in local envs, you can have different pyenvs.
-	# Check if they are imported or not at the start.
-	# Check if they are installed or not at the start.
-	
-	dependencies_packages = JSONField() # list to pip install
-	dependencies_import = JSONField() # list of strings to import
-	dependencies_py_vers = CharField() # e.g. '3.7.6' for tensorflow.
-"""
+
+
+class Inference(BaseModel):
+	"""
+	- Many-to-Many for making predictions after of the training experiment.
+	- May refactor preds, probs, and metrics out of Result into here.
+	  So don't write documentation for this yet.
+
+	- We use the low level API to create a Dataset because there's a lot of formatting 
+	  that happens during Dataset creation that we would lose out on with raw numpy/pandas 
+	  input: e.g. columns may need autocreation, and who knows what connectors we'll have 
+	  in the future. This forces us to  validate dtypes and columns after the fact.
+	"""
+	result = ForeignKeyField(Result)
+	dataset = ForeignKeyField(Dataset)
+
+	predictions = PickleField()
+	probabilities = PickleField(null=True)
+
+
+	def schema_matches_original(result_id:int, dataset_id:int):
+		result = Result.get_by_id(result_id)
+		dataset = Dataset.get_by_id(dataset_id)
+		dataset_type = dataset.dataset_type
+
+		if (dataset_type == 'tabular'):
+			tabular = dataset.Tabular.get_main_tabular(dataset.id)
+			tabular_types = tabular.dtypes
+			tabular_cols = tabular.columns
+
+			featureset = result.job.queue.splitset.featureset
+			fset_cols = featureset.columns
+			fset_types = featureset.get_dtypes()
+
+
+			if (not all(col in tabular_cols for col in fset_cols)):
+				raise ValueError(dedent(f"""
+					Yikes - Could not find all of the original Featureset columns in your new Dataset.
+					
+					`Featureset.columns`:
+					{fset_cols}
+					
+					New Dataset columns:
+					{tabular_cols}
+				"""))
+			print("=> Validated that the original Featureset columns are present in new Dataset.")
+
+			for col, typ in fset_types.items():
+				fsetTypes_match = False
+				if col in tabular_types.keys():
+					if (tabular_types[col] == typ):
+						fsetTypes_match = True
+				
+				if (fsetTypes_match == False):
+					raise ValueError(dedent(f"""
+						Yikes - The original Featureset dtypes did not match your new Dataset.
+
+						`Featureset.get_dtypes()`:
+						{fset_types}
+
+						New Dataset columns:
+						{tabular_types}
+
+						The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
+					"""))
+			print("=> Validated that the original Featureset dtypes are present in new Dataset.")
+
+
+	def encode_features(result_id:int, dataset_id:int):
+		result = Result.get_by_id(result_id)
+		dataset = Dataset.get_by_id(dataset_id)
+
+		# Encode new Featureset using original `fitted_encoders`.
+		encoderset = result.job.queue.encoderset
+		if (encoderset is not None):       
+			featurecoders = list(encoderset.featurecoders)
+			
+			if (len(featurecoders) > 0):
+				all_fitted_encoders = result.job.fitted_encoders    
+				# Overwrite this object with Features as the columns are encoded.
+				infer_features = None
+				for featurecoder in featurecoders:
+					idx = featurecoder.featurecoder_index
+					fitted_coders = all_fitted_encoders['featurecoders'][idx]# returns list
+					encoding_dimension = featurecoder.encoding_dimension
+					features_to_transform = dataset.to_numpy(columns=featurecoder.matching_columns)
+					
+					if (idx == 0):
+						# It's the first encoder. Nothing to concat with, so just overwite the None value.
+						infer_features = Labelcoder.transform_dynamicDimensions(
+							fitted_encoders = fitted_coders
+							, encoding_dimension = encoding_dimension
+							, samples_to_transform = features_to_transform
+						)
+					elif (idx > 0):
+						encoded_features = Labelcoder.transform_dynamicDimensions(
+							fitted_encoders = fitted_coders
+							, encoding_dimension = encoding_dimension
+							, samples_to_transform = features_to_transform
+						)
+						# Then concatenate w previously encoded features.
+						infer_features = np.concatenate(
+							(infer_features, encoded_features)
+							, axis = 1
+						)
+		elif (encoderset is None):
+			fset_cols = result.job.queue.splitset.featureset.columns
+			infer_features = dataset.to_numpy(columns=fset_cols)
+		return infer_features
+
+
+	def predict(result_id:int, samples:dict):
+		result = Result.get_by_id(result_id)
+		algorithm = result.job.queue.algorithm
+		
+		# Prepare the logic.
+		model = result.get_model()
+		if (algorithm.library == 'keras'):
+			model = result.get_model()
+		elif (algorithm.library == 'pytorch'):
+			# Returns tuple(model,optimizer)
+			model = result.get_model()
+			model = model[0].eval()
+		fn_predict = dill_deserialize(algorithm.fn_predict)
+
+		# Run the data through the logic.
+		preds = {}
+		probs = {}
+		if ("classification" in algorithm.analysis_type):
+			preds, probs = fn_predict(model, samples)
+			
+			# OHE formatting.
+			if (("multi" in algorithm.analysis_type) and (algorithm.library == 'keras')):
+				preds = []
+				for p in probs:
+					marker_position = np.argmax(p, axis=-1)
+					empty_arr = np.zeros(len(p))
+					empty_arr[marker_position] = 1
+					preds.append(empty_arr)
+				preds = np.array(preds)
+			
+		elif ("regression" in algorithm.analysis_type):
+			preds = fn_predict(model, samples)
+			probs = None
+
+		# Decode the predictions.
+		fitted_encoders = result.job.fitted_encoders
+		if (
+			('labelcoder' in fitted_encoders.keys())
+			and
+			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			# OHE is arriving here as ordinal, not OHE.
+			preds = Labelcoder.if_1d_make_2d(preds)
+			fitted_labelcoder = fitted_encoders['labelcoder']
+			preds = fitted_labelcoder.inverse_transform(preds)
+		elif(
+			('labelcoder' in fitted_encoders.keys())
+			and
+			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			print(dedent("""
+				Warning - `Result.predictions` are encoded. 
+				They cannot be decoded because the `sklearn.preprocessing`
+				encoder used does not have `inverse_transform`.
+			"""))
+		preds = preds.flatten()
+		if (probs is not None):
+			probs = probs.flatten()
+		return preds,probs
+
+
+	def infer(result_id:int, dataset_id:int):
+		result = Result.get_by_id(result_id)
+		dataset = Dataset.get_by_id(dataset_id)
+		Inference.schema_matches_original(result.id, dataset.id)        
+		algorithm = result.job.queue.algorithm
+
+		# Prepare the data.
+		infer_features = Inference.encode_features(result.id, dataset.id)
+		samples = {'features':infer_features}
+		if (algorithm.library == 'pytorch'):
+			if (type(samples['features']) != torch.Tensor):
+				samples['features'] = torch.FloatTensor(samples['features'])
+
+		preds, probs = Inference.predict(result_id, samples)
+
+		inference = Inference.create(
+			result = result
+			, dataset = dataset
+			, predictions = preds
+			, probabilities = probs
+		)
+		return inference
 
 
 #==================================================
