@@ -3276,6 +3276,7 @@ class Algorithm(BaseModel):
 	fn_train = BlobField()
 	fn_predict = BlobField()
 
+
 	# --- used by `select_fn_lose()` ---
 	def keras_regression_lose(**hp):
 		loser = keras.losses.MeanAbsoluteError()
@@ -5174,7 +5175,10 @@ class Result(BaseModel):
 		elif (algorithm.library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
 			# Need to initialize the classes first, which requires reconstructing them.
-			hp = result.job.hyperparamcombo.hyperparameters
+			if (result.job.hyperparamcombo is not None):
+				hp = result.job.hyperparamcombo.hyperparameters
+			elif (result.job.hyperparamcombo is None):
+				hp = {}
 			features_shape = result.input_shapes['features_shape']
 			label_shape = result.input_shapes['label_shape']
 
