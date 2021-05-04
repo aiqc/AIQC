@@ -5147,10 +5147,11 @@ class Result(BaseModel):
 	model_file = BlobField()
 	input_shapes = JSONField()
 	history = JSONField()
+
 	predictions = PickleField()
 	metrics = PickleField()
 	metrics_aggregate = PickleField()
-	plot_data = PickleField(null=True) # Regression only uses history.
+	plot_data = PickleField(null=True) # No regression-specific plots.
 	probabilities = PickleField(null=True) # Not used for regression.
 
 	job = ForeignKeyField(Job, backref='results')
@@ -5513,7 +5514,7 @@ class Inference(BaseModel):
 				encoder used does not have `inverse_transform`.
 			"""))
 		preds = preds.flatten()
-		if (probs is not None):
+		if ((probs is not None) and ("multi" not in algorithm.analysis_type)):
 			probs = probs.flatten()
 		return preds,probs
 
