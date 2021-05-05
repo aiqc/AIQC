@@ -4600,6 +4600,160 @@ class Job(BaseModel):
 		return split_plot_data
 
 
+	def encoder_fit_labels(
+		arr_labels:object, samples_train:list,
+		persisted_encoders:dict, encoderset:object
+	):
+		"""
+		- All Label columns are always used during encoding.
+		- Rows determine what fit happens.
+		"""
+		if (len(encoderset.labelcoders) == 1):
+			labelcoder = encoderset.labelcoders[0]
+			preproc = labelcoder.sklearn_preprocess
+
+			if (labelcoder.only_fit_train == True):
+				labels_to_fit = arr_labels[samples_train]
+			elif (labelcoder.only_fit_train == False):
+				labels_to_fit = arr_labels
+				
+			fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+				sklearn_preprocess = preproc
+				, samples_to_fit = labels_to_fit
+			)
+			# Save the fit.
+			persisted_encoders['labelcoder'] = fitted_encoders[0]#take out of list.
+		return persisted_encoders
+
+
+	def encoder_transform_labels(
+		arr_labels:object,
+		persisted_encoders:dict, encoderset:object 
+	):
+		if ('labelcoder' in persisted_encoders.keys()):
+			fitted_encoders = persisted_encoders['labelcoder']
+			encoding_dimension = encoderset.labelcoders[0].encoding_dimension
+			
+			arr_labels = Labelcoder.transform_dynamicDimensions(
+				fitted_encoders = [fitted_encoders] # `list(fitted_encoders)`, fails.
+				, encoding_dimension = encoding_dimension
+				, samples_to_transform = arr_labels
+			)
+		return arr_labels
+
+
+	def colIndices_from_colNames(column_names:list, desired_cols:list):
+		col_indices = [column_names.index(c) for c in desired_cols]
+		return col_indices
+
+	def cols_by_indices(arr:object, col_indices:list):
+		# Input and output 2D array. Fetches a subset of columns using their indices.
+		subset_arr = arr[:,col_indices]
+		return subset_arr
+
+
+	def encoder_fit_features(
+		arr_features:object, samples_train:list,
+		persisted_encoders:dict, encoderset:object
+	):
+		featurecoders = list(encoderset.featurecoders)
+		if (len(featurecoders) > 0):
+			persisted_encoders['featurecoders'] = []
+			fset_cols = encoderset.splitset.featureset.columns
+			
+			# For each featurecoder: fetch, transform, & concatenate matching features.
+			# One nested list per Featurecoder. List of lists.
+			for featurecoder in featurecoders:
+				preproc = featurecoder.sklearn_preprocess
+
+				if (featurecoder.only_fit_train == True):
+					features_to_fit = arr_features[samples_train]
+				elif (featurecoder.only_fit_train == False):
+					features_to_fit = arr_features
+				
+				# Only fit these columns.
+				matching_columns = featurecoder.matching_columns
+				# Get the indices of the desired columns.
+				col_indices = Job.colIndices_from_colNames(
+					column_names=fset_cols, desired_cols=matching_columns
+				)
+				# Filter the array using those indices.
+				features_to_fit = Job.cols_by_indices(arr_features, col_indices)
+				
+				# Fit the encoder on the subset.
+				fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+					sklearn_preprocess = preproc
+					, samples_to_fit = features_to_fit
+				)
+				persisted_encoders['featurecoders'].append(fitted_encoders)
+		return persisted_encoders
+
+
+	def encoder_transform_features(
+		arr_features:object,
+		persisted_encoders:dict, encoderset:object 
+	):
+		# Can't overwrite columns with data of different type, so they have to be pieced together.
+		featurecoders = list(encoderset.featurecoders)
+		if (len(featurecoders) > 0):
+			fset_cols = encoderset.splitset.featureset.columns
+			transformed_features = None
+			for featurecoder in featurecoders:
+				idx = featurecoder.featurecoder_index
+				fitted_encoders = persisted_encoders['featurecoders'][idx]# returns list
+				encoding_dimension = featurecoder.encoding_dimension
+				# Here dataset is the new dataset.
+				features_to_transform = arr_features
+				
+				# Only transform these columns.
+				matching_columns = featurecoder.matching_columns
+				# Get the indices of the desired columns.
+				col_indices = Job.colIndices_from_colNames(
+					column_names=fset_cols, desired_cols=matching_columns
+				)
+				# Filter the array using those indices.
+				features_to_transform = Job.cols_by_indices(arr_features, col_indices)
+				
+				if (idx == 0):
+					# It's the first encoder. Nothing to concat with, so just overwite the None value.
+					transformed_features = Labelcoder.transform_dynamicDimensions(
+						fitted_encoders = fitted_encoders
+						, encoding_dimension = encoding_dimension
+						, samples_to_transform = features_to_transform
+					)
+				elif (idx > 0):
+					encoded_features = Labelcoder.transform_dynamicDimensions(
+						fitted_encoders = fitted_encoders
+						, encoding_dimension = encoding_dimension
+						, samples_to_transform = features_to_transform
+					)
+					# Then concatenate w previously encoded features.
+					transformed_features = np.concatenate(
+						(transformed_features, encoded_features)
+						, axis = 1
+					)
+			
+			# After all featurecoders run, merge in leftover, unencoded columns.
+			leftover_columns = featurecoders[-1].leftover_columns
+			if (len(leftover_columns) > 0):
+				# Get the indices of the desired columns.
+				col_indices = Job.colIndices_from_colNames(
+					column_names=fset_cols, desired_cols=leftover_columns
+				)
+				# Filter the array using those indices.
+				leftover_features = Job.cols_by_indices(arr_features, col_indices)
+						
+				transformed_features = np.concatenate(
+					(transformed_features, leftover_features)
+					, axis = 1
+				)
+				
+		elif (len(featurecoders) == 0):
+			transformed_features = arr_features
+		
+		return transformed_features
+
+
 	def run(id:int, repeat_index:int, verbose:bool=False):
 		"""
 		Needs optimization = https://github.com/aiqc/aiqc/projects/1
@@ -4621,208 +4775,88 @@ class Job(BaseModel):
 		"""
 		1. Determines which splits/folds are needed.
 		
+		- Source of the training & evaluation data varies based on how Splitset and Foldset were designed.
 		- The rest of the tasks in Job.run() look to `samples:dict` for their data.
-		- Where the training and evaluation data should come from will vary based on how Splitset and Foldset were designed.
-		- The `key_*` variables are passed to downstream tasks.
+		- The `key_*` variables are passed to downstream tasks. `key_train` could be either
+		  'train' or 'folds_train_combined'.
 		"""
 		samples = {}
 		if (splitset.supervision == "unsupervised"):
-			samples['train'] = splitset.to_numpy(
-				splits = ['train']
-				, include_label = False
-			)['train']
+			samples['train'] = splitset.samples['train']
 			key_train = "train"
 			key_evaluation = None
+
 		elif (splitset.supervision == "supervised"):
 			if (hide_test == False):
-				samples['test'] = splitset.to_numpy(splits=['test'])['test']
+				samples['test'] = splitset.samples['test']
 				key_evaluation = 'test'
 			elif (hide_test == True):
 				key_evaluation = None
-			
+
 			if (splitset.has_validation):
-				samples['validation'] = splitset.to_numpy(splits=['validation'])['validation']
+				samples['validation'] = splitset.samples['validation']
 				key_evaluation = 'validation'
-				
+
 			if (fold is not None):
 				foldset = fold.foldset
 				fold_index = fold.fold_index
-				fold_samples_np = foldset.to_numpy(fold_index=fold_index)[fold_index]
-				samples['folds_train_combined'] = fold_samples_np['folds_train_combined']
-				samples['fold_validation'] = fold_samples_np['fold_validation']
-				
+				fold_samples = foldset.folds[fold_index].samples
+				samples['folds_train_combined'] = fold_samples['folds_train_combined']
+				samples['fold_validation'] = fold_samples['fold_validation']
+
 				key_train = "folds_train_combined"
 				key_evaluation = "fold_validation"
 			elif (fold is None):
-				samples['train'] = splitset.to_numpy(splits=['train'])['train']
+				samples['train'] = splitset.samples['train']
 				key_train = "train"
 
 		"""
 		2. Encodes the labels and features.
-		- Remember, you only `.fit()` on training data and then apply transforms to other splits/ folds.
-		- It will apply all defined encoders to all splits/folds. So there may be no original data remaining. 
-		  This means that metrics are entirely calculated on encoded data as opposed to original data.
-		
-		- Refactoring for inference would require separating the fit from the transform,
-		  so that predictions could be made using the previously fitted encoders.
-		- It makes sense to encode for inference because it will not accept string data.
+		- Remember, you only `.fit()` on either training data or all data (categoricals).
+		- Then you transform the entire dataset because downstream processes may need the entire dataset:
+		  e.g. fit imputer to training data, but then impute entire dataset so that encoders can use entire dataset.
 		"""
+		arr_features = splitset.featureset.to_numpy()
+		arr_labels = splitset.label.to_numpy()
 		persisted_encoders = {}
+
 		if (encoderset is not None):
-			# 2a1. Fit labels.
-			if (len(encoderset.labelcoders) == 1):
-				labelcoder = encoderset.labelcoders[0]
-				preproc = labelcoder.sklearn_preprocess
-				# All label columns are always used in encoding.
+			persisted_encoders = Job.encoder_fit_labels(
+				arr_labels=arr_labels, samples_train=samples[key_train],
+				persisted_encoders=persisted_encoders, encoderset=encoderset
+			)
+			
+			arr_labels = Job.encoder_transform_labels(
+				arr_labels=arr_labels,
+				persisted_encoders=persisted_encoders, encoderset=encoderset
+			)
 
-				# Fit to either (train split/fold) or (all splits/folds).
-				if (labelcoder.only_fit_train == True):
-					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-						sklearn_preprocess = preproc
-						, samples_to_fit = samples[key_train]['labels']
-					)
-				elif (labelcoder.only_fit_train == False):
-					# Optimize. Duplicate fetch of the data.
-					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-						sklearn_preprocess = preproc
-						, samples_to_fit = splitset.label.to_numpy()
-					)
-				# Save the fit.
-				persisted_encoders['labelcoder'] = fitted_encoders[0]#take out of list.
+			persisted_encoders = Job.encoder_fit_features(
+				arr_features=arr_features, samples_train=samples[key_train],
+				persisted_encoders=persisted_encoders, encoderset=encoderset
+			)
 
-				# 2a2. Transform labels.
-				# Once the fits are applied, perform the transform on the rest of the splits.
-				for split, split_data in samples.items():
-					samples[split]['labels'] = Labelcoder.transform_dynamicDimensions(
-						fitted_encoders = fitted_encoders
-						, encoding_dimension = encoding_dimension
-						, samples_to_transform = split_data['labels']
-					)
-
-			# 2b1. Fit features.
-			# Challenge here is selecting specific columns.
-			featurecoders = list(encoderset.featurecoders)
-			if (len(featurecoders) == 0):
-				pass
-			elif (len(featurecoders) > 0):
-				# Drop the existing data because we need to get column-specific.
-				# Each encoder is going to concatenate its features into those empty values.
-				for split in samples.keys():
-					samples[split]['features'] = None
-
-				# For each featurecoder: fetch, transform, & concatenate matching features.
-				# List of lists. One nested list per Featurecoder.
-				persisted_encoders['featurecoders'] = []
-				for featurecoder in featurecoders:
-					preproc = featurecoder.sklearn_preprocess
-					# Only encode these columns.
-					matching_columns = featurecoder.matching_columns
-
-					# Figure out which samples to fit against.
-					if (featurecoder.only_fit_train == True):
-						if (fold is None):
-							samples_to_fit = splitset.to_numpy(
-								splits = ['train']
-								, include_label = False
-								, feature_columns = matching_columns
-							)['train']['features']
-						elif (fold is not None):
-							samples_to_fit = foldset.to_numpy(
-								fold_index = fold_index
-								, fold_names = ['folds_train_combined']
-								, include_label = False
-								, feature_columns = matching_columns
-							)[fold_index]['folds_train_combined']['features']
-						
-					elif (featurecoder.only_fit_train == False):
-						# Doesn't matter if folded, use all samples.
-						samples_to_fit = splitset.featureset.to_numpy(
-							columns = matching_columns
-						)
-
-					fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-						sklearn_preprocess = preproc
-						, samples_to_fit = samples_to_fit
-					)
-					persisted_encoders['featurecoders'].append(fitted_encoders)
-					del samples_to_fit
-
-					
-					#2b2. Transform features. Overwrites samples['split']['features'].
-					for split in samples.keys():
-
-						# Fetch matching columns (from either a fold or split).
-						if ("fold" in split):
-							samples_to_encode = foldset.to_numpy(
-								fold_index = fold_index
-								, fold_names = [split]
-								, include_label = False
-								, feature_columns = matching_columns
-							)[fold_index][split]['features']
-
-						elif ("fold" not in split):
-							samples_to_encode = splitset.to_numpy(
-								splits = [split]
-								, include_label = False
-								, feature_columns = matching_columns
-							)[split]['features']
-
-						# Transform matching columns.
-						if (featurecoder.featurecoder_index == 0):
-							# It's the first encoder. Nothing to concat with, so just overwite the None value.
-							samples[split]['features'] = Labelcoder.transform_dynamicDimensions(
-								fitted_encoders = fitted_encoders
-								, encoding_dimension = encoding_dimension
-								, samples_to_transform = samples_to_encode
-							)
-						elif (featurecoder.featurecoder_index > 0):
-							samples_to_encode = Labelcoder.transform_dynamicDimensions(
-								fitted_encoders = fitted_encoders
-								, encoding_dimension = encoding_dimension
-								, samples_to_transform = samples_to_encode
-							)
-							# Concatenate w previously encoded features.
-							samples[split]['features'] = np.concatenate(
-								(samples[split]['features'], samples_to_encode)
-								, axis = 1
-							)
-							del samples_to_encode
-
-				# After all featurecoders run, merge in leftover, unencoded columns.
-				leftover_columns = featurecoders[-1].leftover_columns
-				if (len(leftover_columns) == 0):
-					pass
-				elif (len(leftover_columns) > 0):
-					for split in samples.keys():
-						if ("fold" in split):
-							leftover_features = foldset.to_numpy(
-								fold_index = fold_index
-								, fold_names = [split]
-								, include_label = False
-								, feature_columns = leftover_columns
-							)[fold_index][split]['features']
-						elif ("fold" not in split):
-							leftover_features = splitset.to_numpy(
-								splits = [split]
-								, include_label = False
-								, feature_columns = leftover_columns
-							)[split]['features']
-						samples[split]['features'] = np.concatenate(
-							(samples[split]['features'], leftover_features)
-							, axis = 1
-						)
+			arr_features = Job.encoder_transform_features(
+				arr_features=arr_features,
+				persisted_encoders=persisted_encoders, encoderset=encoderset
+			)
 		job.fitted_encoders = persisted_encoders
 		job.save()
+		
 		"""
 		3. Build and Train model.
-		- Now that encoding has taken place, we can determine the shapes.
+		- Input shapes can only be determined after encoding has taken place.
 		"""
 		# The shape of the features and labels is a predefined argument
 		# of the Algorithm functions.
-		first_key = next(iter(samples))
-		features_shape = samples[first_key]['features'][0].shape
-		label_shape = samples[first_key]['labels'][0].shape
-
+		for split, rows in samples.items():
+			samples[split] = {
+				"features": arr_features[rows]
+				, "labels": arr_labels[rows]
+			}
+	
+		features_shape = samples[key_train]['features'][0].shape
+		label_shape = samples[key_train]['labels'][0].shape
 		# Does not include the `batch_size`
 		input_shapes = {
 			"features_shape": features_shape
@@ -4933,6 +4967,12 @@ class Job(BaseModel):
 				model_blob
 			)
 			model_blob = model_blob.getvalue()
+
+
+
+		# --------------------- REFACTOR TRAINED MODEL ----------------------- 
+		# Job still is not complete until metrics are finished.
+
 
 		"""
 		4a. Evaluation: predictions, metrics, charts for each split/fold.
@@ -5145,7 +5185,7 @@ class Result(BaseModel):
 	time_succeeded = DateTimeField()
 	time_duration = IntegerField()
 	model_file = BlobField()
-	input_shapes = JSONField()
+	input_shapes = JSONField() # used by get_model()
 	history = JSONField()
 
 	predictions = PickleField()
@@ -5432,6 +5472,7 @@ class Inference(BaseModel):
 					idx = featurecoder.featurecoder_index
 					fitted_coders = all_fitted_encoders['featurecoders'][idx]# returns list
 					encoding_dimension = featurecoder.encoding_dimension
+					# Here dataset is the new dataset.
 					features_to_transform = dataset.to_numpy(columns=featurecoder.matching_columns)
 					
 					if (idx == 0):
@@ -5454,6 +5495,7 @@ class Inference(BaseModel):
 						)
 		elif (encoderset is None):
 			fset_cols = result.job.queue.splitset.featureset.columns
+			# Here dataset is the new dataset.
 			infer_features = dataset.to_numpy(columns=fset_cols)
 		return infer_features
 
