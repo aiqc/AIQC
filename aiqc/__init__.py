@@ -4602,7 +4602,7 @@ class Job(BaseModel):
 
 	def encoder_fit_labels(
 		arr_labels:object, samples_train:list,
-		persisted_encoders:dict, encoderset:object
+		fitted_encoders:dict, encoderset:object
 	):
 		"""
 		- All Label columns are always used during encoding.
@@ -4617,21 +4617,21 @@ class Job(BaseModel):
 			elif (labelcoder.only_fit_train == False):
 				labels_to_fit = arr_labels
 				
-			fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+			fitted_coders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 				sklearn_preprocess = preproc
 				, samples_to_fit = labels_to_fit
 			)
 			# Save the fit.
-			persisted_encoders['labelcoder'] = fitted_encoders[0]#take out of list.
-		return persisted_encoders
+			fitted_encoders['labelcoder'] = fitted_coders[0]#take out of list.
+		return fitted_encoders
 
 
 	def encoder_transform_labels(
 		arr_labels:object,
-		persisted_encoders:dict, encoderset:object 
+		fitted_encoders:dict, encoderset:object 
 	):
-		if ('labelcoder' in persisted_encoders.keys()):
-			fitted_encoders = persisted_encoders['labelcoder']
+		if ('labelcoder' in fitted_encoders.keys()):
+			fitted_encoders = fitted_encoders['labelcoder']
 			encoding_dimension = encoderset.labelcoders[0].encoding_dimension
 			
 			arr_labels = Labelcoder.transform_dynamicDimensions(
@@ -4654,11 +4654,11 @@ class Job(BaseModel):
 
 	def encoder_fit_features(
 		arr_features:object, samples_train:list,
-		persisted_encoders:dict, encoderset:object
+		fitted_encoders:dict, encoderset:object
 	):
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
-			persisted_encoders['featurecoders'] = []
+			fitted_encoders['featurecoders'] = []
 			fset_cols = encoderset.splitset.featureset.columns
 			
 			# For each featurecoder: fetch, transform, & concatenate matching features.
@@ -4681,17 +4681,17 @@ class Job(BaseModel):
 				features_to_fit = Job.cols_by_indices(arr_features, col_indices)
 				
 				# Fit the encoder on the subset.
-				fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+				fitted_coders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 					sklearn_preprocess = preproc
 					, samples_to_fit = features_to_fit
 				)
-				persisted_encoders['featurecoders'].append(fitted_encoders)
-		return persisted_encoders
+				fitted_encoders['featurecoders'].append(fitted_coders)
+		return fitted_encoders
 
 
 	def encoder_transform_features(
 		arr_features:object,
-		persisted_encoders:dict, encoderset:object 
+		fitted_encoders:dict, encoderset:object 
 	):
 		# Can't overwrite columns with data of different type, so they have to be pieced together.
 		featurecoders = list(encoderset.featurecoders)
@@ -4700,7 +4700,7 @@ class Job(BaseModel):
 			transformed_features = None
 			for featurecoder in featurecoders:
 				idx = featurecoder.featurecoder_index
-				fitted_encoders = persisted_encoders['featurecoders'][idx]# returns list
+				fitted_coders = fitted_encoders['featurecoders'][idx]# returns list
 				encoding_dimension = featurecoder.encoding_dimension
 				# Here dataset is the new dataset.
 				features_to_transform = arr_features
@@ -4717,13 +4717,13 @@ class Job(BaseModel):
 				if (idx == 0):
 					# It's the first encoder. Nothing to concat with, so just overwite the None value.
 					transformed_features = Labelcoder.transform_dynamicDimensions(
-						fitted_encoders = fitted_encoders
+						fitted_encoders = fitted_coders
 						, encoding_dimension = encoding_dimension
 						, samples_to_transform = features_to_transform
 					)
 				elif (idx > 0):
 					encoded_features = Labelcoder.transform_dynamicDimensions(
-						fitted_encoders = fitted_encoders
+						fitted_encoders = fitted_coders
 						, encoding_dimension = encoding_dimension
 						, samples_to_transform = features_to_transform
 					)
@@ -4818,29 +4818,29 @@ class Job(BaseModel):
 		"""
 		arr_features = splitset.featureset.to_numpy()
 		arr_labels = splitset.label.to_numpy()
-		persisted_encoders = {}
+		fitted_encoders = {}
 
 		if (encoderset is not None):
-			persisted_encoders = Job.encoder_fit_labels(
+			fitted_encoders = Job.encoder_fit_labels(
 				arr_labels=arr_labels, samples_train=samples[key_train],
-				persisted_encoders=persisted_encoders, encoderset=encoderset
+				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
 			
 			arr_labels = Job.encoder_transform_labels(
 				arr_labels=arr_labels,
-				persisted_encoders=persisted_encoders, encoderset=encoderset
+				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
 
-			persisted_encoders = Job.encoder_fit_features(
+			fitted_encoders = Job.encoder_fit_features(
 				arr_features=arr_features, samples_train=samples[key_train],
-				persisted_encoders=persisted_encoders, encoderset=encoderset
+				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
 
 			arr_features = Job.encoder_transform_features(
 				arr_features=arr_features,
-				persisted_encoders=persisted_encoders, encoderset=encoderset
+				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
-		job.fitted_encoders = persisted_encoders
+		job.fitted_encoders = fitted_encoders
 		job.save()
 		
 		"""
@@ -5069,19 +5069,19 @@ class Job(BaseModel):
 		# 4b. Format predictions for saving.
 		# Decode predictions before saving.
 		if (
-			('labelcoder' in persisted_encoders.keys())
+			('labelcoder' in fitted_encoders.keys())
 			and
-			(hasattr(persisted_encoders['labelcoder'], 'inverse_transform'))
+			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
 		):
 			for split, data in predictions.items():
 				# OHE is arriving here as ordinal, not OHE.
 				data = Labelcoder.if_1d_make_2d(data)
-				fitted_labelcoder = persisted_encoders['labelcoder']
+				fitted_labelcoder = fitted_encoders['labelcoder']
 				predictions[split] = fitted_labelcoder.inverse_transform(data)
 		elif(
-			('labelcoder' in persisted_encoders.keys())
+			('labelcoder' in fitted_encoders.keys())
 			and
-			(not hasattr(persisted_encoders['labelcoder'], 'inverse_transform'))
+			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
 		):
 			print(dedent("""
 				Warning - `Result.predictions` are encoded. 
@@ -5455,51 +5455,6 @@ class Inference(BaseModel):
 			print("=> Validated that the original Featureset dtypes are present in new Dataset.")
 
 
-	def encode_features(result_id:int, dataset_id:int):
-		result = Result.get_by_id(result_id)
-		dataset = Dataset.get_by_id(dataset_id)
-
-		# Encode new Featureset using original `fitted_encoders`.
-		encoderset = result.job.queue.encoderset
-		if (encoderset is not None):       
-			featurecoders = list(encoderset.featurecoders)
-			
-			if (len(featurecoders) > 0):
-				all_fitted_encoders = result.job.fitted_encoders    
-				# Overwrite this object with Features as the columns are encoded.
-				infer_features = None
-				for featurecoder in featurecoders:
-					idx = featurecoder.featurecoder_index
-					fitted_coders = all_fitted_encoders['featurecoders'][idx]# returns list
-					encoding_dimension = featurecoder.encoding_dimension
-					# Here dataset is the new dataset.
-					features_to_transform = dataset.to_numpy(columns=featurecoder.matching_columns)
-					
-					if (idx == 0):
-						# It's the first encoder. Nothing to concat with, so just overwite the None value.
-						infer_features = Labelcoder.transform_dynamicDimensions(
-							fitted_encoders = fitted_coders
-							, encoding_dimension = encoding_dimension
-							, samples_to_transform = features_to_transform
-						)
-					elif (idx > 0):
-						encoded_features = Labelcoder.transform_dynamicDimensions(
-							fitted_encoders = fitted_coders
-							, encoding_dimension = encoding_dimension
-							, samples_to_transform = features_to_transform
-						)
-						# Then concatenate w previously encoded features.
-						infer_features = np.concatenate(
-							(infer_features, encoded_features)
-							, axis = 1
-						)
-		elif (encoderset is None):
-			fset_cols = result.job.queue.splitset.featureset.columns
-			# Here dataset is the new dataset.
-			infer_features = dataset.to_numpy(columns=fset_cols)
-		return infer_features
-
-
 	def predict(result_id:int, samples:dict):
 		result = Result.get_by_id(result_id)
 		algorithm = result.job.queue.algorithm
@@ -5563,13 +5518,24 @@ class Inference(BaseModel):
 
 	def infer(result_id:int, dataset_id:int):
 		result = Result.get_by_id(result_id)
-		dataset = Dataset.get_by_id(dataset_id)
+		dataset = Dataset.get_by_id(dataset_id) # <-- new dataset for inference.
 		Inference.schema_matches_original(result.id, dataset.id)        
 		algorithm = result.job.queue.algorithm
 
-		# Prepare the data.
-		infer_features = Inference.encode_features(result.id, dataset.id)
-		samples = {'features':infer_features}
+		fset_cols = result.job.queue.splitset.featureset.columns
+		arr_features = dataset.to_numpy(columns=fset_cols)
+
+		encoderset = result.job.queue.encoderset
+		if (encoderset is not None):
+			fitted_encoders = result.job.fitted_encoders
+			arr_features = Job.encoder_transform_features(
+				arr_features=arr_features,
+				fitted_encoders=fitted_encoders, encoderset=encoderset
+			)
+		
+		# Pack into samples for the Algorithm functions.
+		samples = {'features':arr_features}
+
 		if (algorithm.library == 'pytorch'):
 			if (type(samples['features']) != torch.Tensor):
 				samples['features'] = torch.FloatTensor(samples['features'])
