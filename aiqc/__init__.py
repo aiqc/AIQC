@@ -19,6 +19,7 @@ from PIL import Image as Imaje
 # Preprocessing & metrics.
 import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import OneHotEncoder
 # Deep learning.
 import keras
@@ -546,10 +547,12 @@ class Dataset(BaseModel):
 		columns = listify(columns)
 		samples = listify(samples)
 
-		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text'):
+		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
 			raise ValueError("\nYikes - `Dataset.Image` class does not have a `to_pandas()` method.\n")
+		elif (dataset.dataset_type == 'text'):
+			df = Dataset.Text.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
@@ -564,7 +567,19 @@ class Dataset(BaseModel):
 			if (columns is not None):
 				raise ValueError("\nYikes - `Dataset.Image.to_numpy` does not accept a `columns` argument.\n")
 			arr = Dataset.Image.to_numpy(id=id, samples=samples)
+		elif (dataset.dataset_type == 'text'):
+			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
 		return arr
+
+
+	def to_strings(id:int, samples:list=None):	
+		dataset = Dataset.get_by_id(id)
+		samples = listify(samples)
+
+		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'image'):
+			raise ValueError("\nYikes - This Dataset class does not have a `to_strings()` method.\n")
+		elif (dataset.dataset_type == 'text'):
+			return Dataset.Text.to_strings(id=dataset.id, samples=samples)
 
 
 	def sorted_file_list(dir_path:str):
@@ -948,7 +963,7 @@ class Dataset(BaseModel):
 
 			dataframe = pd.DataFrame(strings, columns = [Dataset.Text.column_name], dtype = "object")
 
-			return Dataset.Tabular.from_pandas(dataframe, name)
+			return Dataset.Text.from_pandas(dataframe, name)
 
 
 		def from_pandas(
@@ -957,9 +972,17 @@ class Dataset(BaseModel):
 			dtype:dict = None, 
 			column_names:list = None
 		):
-			if Dataset.Text.column_name not in dataframe.columns:
-				raise ValueError(r'TextData column not found in input df. Please rename the column containing the text data as "TextData"')
-			return Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
+			if Dataset.Text.column_name not in list(dataframe.columns):
+				raise ValueError("\nYikes - The `dataframe` you provided doesn't contain 'TextData' column. Please rename the column containing text data to 'TextData'`\n")
+
+			if dataframe[Dataset.Text.column_name].dtypes != 'O':
+				raise ValueError("\nYikes - The `dataframe` you provided contains 'TextData' column with incorrect dtype: column dtype != object\n")
+
+			dataset = Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
+			dataset.dataset_type = Dataset.Text.dataset_type
+			dataset.save()
+
+			return dataset
 
 
 		def from_folder(
@@ -985,7 +1008,28 @@ class Dataset(BaseModel):
 			columns:list = None, 
 			samples:list = None
 		):
-			return Dataset.Tabular.to_pandas(id, columns, samples)
+			df = Dataset.Tabular.to_pandas(id, columns, samples)
+			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
+			df = pd.DataFrame(word_counts.todense(), columns = feature_names)
+			return df
+
+		
+		def to_numpy(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			df = Dataset.Tabular.to_pandas(id, columns, samples)
+			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
+			return word_counts, feature_names
+
+
+		def get_feature_matrix(
+			dataframe:object
+		):
+			count_vect = CountVectorizer()
+			word_counts = count_vect.fit_transform(dataframe[Dataset.Text.column_name].tolist())
+			return word_counts, count_vect.get_feature_names()
 
 
 		def to_strings(
@@ -995,13 +1039,6 @@ class Dataset(BaseModel):
 			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
 			return data_df[Dataset.Text.column_name].tolist()
 
-		
-		def to_numpy(
-			id:int, 
-			columns:list = None, 
-			samples:list = None
-		):
-			return Dataset.Tabular.to_numpy(id, columns, samples)
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
