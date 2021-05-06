@@ -19,6 +19,7 @@ from PIL import Image as Imaje
 # Preprocessing & metrics.
 import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
+from sklearn.feature_extraction.text import CountVectorizer
 # Deep learning.
 import keras
 import torch
@@ -1002,14 +1003,6 @@ class Dataset(BaseModel):
 			return Dataset.Text.from_strings(files_data, name)
 
 
-		def to_pandas(
-			id:int, 
-			columns:list = None, 
-			samples:list = None
-		):
-			return Dataset.Tabular.to_pandas(id, columns, samples)
-
-
 		def to_strings(
 			id:int, 
 			samples:list = None
@@ -1017,13 +1010,35 @@ class Dataset(BaseModel):
 			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
 			return data_df[Dataset.Text.column_name].tolist()
 
+
+		def to_pandas(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			df = Dataset.Tabular.to_pandas(id, columns, samples)
+			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
+			df = pd.DataFrame(word_counts, columns = feature_names)
+			return df
+
 		
 		def to_numpy(
 			id:int, 
 			columns:list = None, 
 			samples:list = None
 		):
-			return Dataset.Tabular.to_numpy(id, columns, samples)
+			df = Dataset.Tabular.to_pandas(id, columns, samples)
+			word_counts, _ = Dataset.Text.get_feature_matrix(df)
+			return word_counts
+
+
+		def get_feature_matrix(
+			dataframe:object
+		):
+			count_vect = CountVectorizer()
+			word_counts = count_vect.fit_transform(df[Dataset.Text.column_name].tolist())
+			return word_counts, count_vect.get_feature_names()
+
 
 	# Graph
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
