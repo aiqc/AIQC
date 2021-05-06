@@ -958,8 +958,11 @@ class Dataset(BaseModel):
 			if (type(dataframe).__name__ != 'DataFrame'):
 				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
 
-			if dataframe.dtypes[dataframe.columns[0]] != 'O':
-				raise ValueError("\nYikes - The `dataframe` you provided contains column with incorrect dtype: column dtype != object\n")
+			if Dataset.Text.column_name not in list(dataframe.columns):
+				raise ValueError("\nYikes - The `dataframe` you provided doesn't contain 'TextData' column. Please rename the column containing text data to 'TextData'`\n")
+
+			if dataframe[Dataset.Text.column_name].dtypes != 'O':
+				raise ValueError("\nYikes - The `dataframe` you provided contains 'TextData' column with incorrect dtype: column dtype != object\n")
 
 			dataset = Dataset.create(
 				file_count = Dataset.Text.file_count
