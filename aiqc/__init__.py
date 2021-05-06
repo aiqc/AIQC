@@ -572,6 +572,16 @@ class Dataset(BaseModel):
 		return arr
 
 
+	def to_strings(id:int, samples:list=None):	
+		dataset = Dataset.get_by_id(id)
+		samples = listify(samples)
+
+		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'image'):
+			raise ValueError("\nYikes - This Dataset class does not have a `to_strings()` method.\n")
+		elif (dataset.dataset_type == 'text'):
+			return Dataset.Text.to_strings(id=dataset.id, samples=samples)
+
+
 	def sorted_file_list(dir_path:str):
 		if not os.path.exists(dir_path):
 			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(dir_path)`:\n{dir_path}\n")
@@ -1020,6 +1030,14 @@ class Dataset(BaseModel):
 			count_vect = CountVectorizer()
 			word_counts = count_vect.fit_transform(dataframe[Dataset.Text.column_name].tolist())
 			return word_counts, count_vect.get_feature_names()
+
+
+		def to_strings(
+			id:int, 
+			samples:list = None
+		):
+			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
+			return data_df[Dataset.Text.column_name].tolist()
 
 
 	# Graph
