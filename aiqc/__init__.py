@@ -958,9 +958,6 @@ class Dataset(BaseModel):
 			if (type(dataframe).__name__ != 'DataFrame'):
 				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
 
-			if len(dataframe.columns) != 1:
-				raise ValueError("\nYikes - The `dataframe` you provided contains more than one column: ambiguous input\n")
-
 			if dataframe.dtypes[dataframe.columns[0]] != 'O':
 				raise ValueError("\nYikes - The `dataframe` you provided contains column with incorrect dtype: column dtype != object\n")
 
