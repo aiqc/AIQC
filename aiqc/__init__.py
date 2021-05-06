@@ -962,34 +962,16 @@ class Dataset(BaseModel):
 			dtype:dict = None, 
 			column_names:list = None
 		):
-			column_names = listify(column_names)
-
-			if (type(dataframe).__name__ != 'DataFrame'):
-				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
-
 			if Dataset.Text.column_name not in list(dataframe.columns):
 				raise ValueError("\nYikes - The `dataframe` you provided doesn't contain 'TextData' column. Please rename the column containing text data to 'TextData'`\n")
 
 			if dataframe[Dataset.Text.column_name].dtypes != 'O':
 				raise ValueError("\nYikes - The `dataframe` you provided contains 'TextData' column with incorrect dtype: column dtype != object\n")
 
-			dataset = Dataset.create(
-				file_count = Dataset.Text.file_count
-				, dataset_type = Dataset.Text.dataset_type
-				, name = name
-				, source_path = None
-			)
+			dataset = Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
+			dataset.dataset_type = Dataset.Text.dataset_type
+			dataset.save()
 
-			try:
-				File.Tabular.from_pandas(
-					dataframe = dataframe
-					, dtype = dtype
-					, column_names = column_names
-					, dataset_id = dataset.id
-				)
-			except:
-				dataset.delete_instance() # Orphaned.
-				raise 
 			return dataset
 
 
