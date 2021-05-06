@@ -4385,7 +4385,7 @@ class Queue(BaseModel):
 					split_metric['fold_index'] = predictor.job.fold.fold_index
 				split_metric['job_id'] = predictor.job.id
 				if (predictor.job.repeat_count > 1):
-					split_metric['repeat_index'] = prediction.repeat_index
+					split_metric['repeat_index'] = predictor.repeat_index
 
 				split_metric['predictor_id'] = prediction.id
 				split_metric['split'] = split_name
@@ -4462,7 +4462,7 @@ class Queue(BaseModel):
 					stats['metric'] = metric
 					stats['predictor_id'] = prediction.id
 					if (predictor.job.repeat_count > 1):
-						stats['repeat_index'] = prediction.repeat_index
+						stats['repeat_index'] = predictor.repeat_index
 					if (predictor.job.fold is not None):
 						stats['jobset_id'] = predictor.job.jobset.id
 						stats['fold_index'] = predictor.job.fold.fold_index
@@ -5720,12 +5720,11 @@ class TrainingCallback():
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
 					# However, if the for loop actually finishes, then all metrics are satisfied.
-					print(dedent(f"""
-						:: Epoch #{epoch} ::
-						Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-						
-						{pprint.pformat(self.thresholds)}
-					"""))
+					print(dedent(
+					f":: Epoch #{epoch} ::" \
+					f"Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:" \
+					f"{pprint.pformat(self.thresholds)}"
+					))
 					self.model.stop_training = True
 
 
