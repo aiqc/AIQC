@@ -30,7 +30,6 @@
 - [ ] I have updated the tests to include my changes.
 - [ ] I have included updates to the documentation.
 - [ ] I have built the documentation files `make html`.
-- [ ] I am pushing a *branch*, not my *main/ master*.
 
 > Describe the env you tested on: OS, Python version, shell type (e.g. cli, ide, notebook).
 

@@ -346,7 +346,7 @@ def create_db():
 			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Queue, Jobset, Job, Result, Inference
+			Queue, Jobset, Job, Predictor, Prediction
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -1301,7 +1301,7 @@ class File(BaseModel):
 						"""))
 
 			"""
-			Now, we take the all of the resulting dataframe dtypes and save them.
+			Now, we take the all of the predictoring dataframe dtypes and save them.
 			Regardless of whether or not they were user-provided.
 			Convert the classed `dtype('float64')` to a string so we can use it in `.to_pandas()`
 			"""
@@ -1970,7 +1970,7 @@ class Splitset(BaseModel):
 
 		"""
 		Simulate an index to be split alongside features and labels
-		in order to keep track of the samples being used in the resulting splits.
+		in order to keep track of the samples being used in the predictoring splits.
 		"""
 		row_count = arr_f.shape[0]
 		arr_idx = np.arange(row_count)
@@ -2356,7 +2356,7 @@ class Foldset(BaseModel):
 						Warning - Previously you set `Splitset.bin_count is None`
 						but now you are trying to set `Foldset.bin_count is not None`.
 						
-						This can result in incosistent stratification processes being 
+						This can predictor in incosistent stratification processes being 
 						used for training samples versus validation and test samples.
 					\n"""))
 				arr_train_labels = Splitset.label_values_to_bins(
@@ -2377,7 +2377,7 @@ class Foldset(BaseModel):
 			print(
 				f"Warning - The number of samples <{train_count}> in your training Split\n" \
 				f"is not evenly divisible by the `fold_count` <{fold_count}> you specified.\n" \
-				f"This can result in misleading performance metrics for the last Fold.\n"
+				f"This can predictor in misleading performance metrics for the last Fold.\n"
 			)
 
 		foldset = Foldset.create(
@@ -2811,7 +2811,7 @@ class Labelcoder(BaseModel):
 					# Multiple options here, so don't override user input.
 					raise ValueError(dedent(f"""
 						Yikes - Detected `encode=='onehot'` attribute of {sklearn_preprocess}.
-						FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
+						FYI `encode` is 'onehot' by default if left blank and it predictors in 'scipy.sparse.csr.csr_matrix',
 						which causes Keras training to fail.\n
 						Please try again with 'onehot-dense' or 'ordinal'.
 						For example, `KBinsDiscretizer(encode='onehot-dense')`.
@@ -3614,7 +3614,7 @@ class Hyperparamcombo(BaseModel):
 
 class Plot():
 	"""
-	Data is prepared in the Queue and Result classes
+	Data is prepared in the Queue and Predictor classes
 	before being fed into the methods below.
 	"""
 
@@ -3654,9 +3654,9 @@ class Plot():
 			, title = 'Models Metrics by Split'
 			, x = 'loss'
 			, y = name_metric_2
-			, color = 'result_id'
+			, color = 'predictor_id'
 			, height = 600
-			, hover_data = ['result_id', 'split', 'loss', name_metric_2]
+			, hover_data = ['predictor_id', 'split', 'loss', name_metric_2]
 			, line_shape='spline'
 		)
 		fig.update_traces(
@@ -4002,7 +4002,7 @@ class Queue(BaseModel):
 								raise ValueError(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
 								`Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
-								This would result in a multi-column output, but binary classification
+								This would predictor in a multi-column output, but binary classification
 								needs a single column output.
 								Go back and make a Labelcoder with single column output preprocess like `Binarizer()` instead.
 								"""))
@@ -4013,7 +4013,7 @@ class Queue(BaseModel):
 									raise ValueError(dedent("""
 									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
 									but `Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
-									This would result in a multi-column OHE output.
+									This would predictor in a multi-column OHE output.
 									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
 									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
 									"""))
@@ -4162,19 +4162,19 @@ class Queue(BaseModel):
 		statuses = []
 		for i in range(repeat_count):
 			for j in queue.jobs:
-				# Check if there is a Result with a matching repeat_index
-				matching_result = Result.select().join(Job).join(Queue).where(
-					Queue.id==queue.id, Job.id==j.id, Result.repeat_index==i
+				# Check if there is a Predictor with a matching repeat_index
+				matching_predictor = Predictor.select().join(Job).join(Queue).where(
+					Queue.id==queue.id, Job.id==j.id, Predictor.repeat_index==i
 				)
-				if (len(matching_result) == 1):
-					r_id = matching_result[0].id
-				elif (len(matching_result) == 0):
+				if (len(matching_predictor) == 1):
+					r_id = matching_predictor[0].id
+				elif (len(matching_predictor) == 0):
 					r_id = None
-				job_dct = {"job_id":j.id, "repeat_index":i, "result_id": r_id}
+				job_dct = {"job_id":j.id, "repeat_index":i, "predictor_id": r_id}
 				statuses.append(job_dct)
 
 		if (as_pandas==True):
-			df = pd.DataFrame.from_records(statuses, columns=['job_id', 'repeat_index', 'result_id'])
+			df = pd.DataFrame.from_records(statuses, columns=['job_id', 'repeat_index', 'predictor_id'])
 			return df.round()
 		elif (as_pandas==False):
 			return statuses
@@ -4188,7 +4188,7 @@ class Queue(BaseModel):
 		if (loop==False):
 			statuses = Queue.poll_statuses(id)
 			total = len(statuses)
-			done_count = len([s for s in statuses if s['result_id'] is not None]) 
+			done_count = len([s for s in statuses if s['predictor_id'] is not None]) 
 			percent_done = done_count / total
 
 			if (raw==True):
@@ -4208,7 +4208,7 @@ class Queue(BaseModel):
 			while (loop==True):
 				statuses = Queue.poll_statuses(id)
 				total = len(statuses)
-				done_count = len([s for s in statuses if s['result_id'] is not None]) 
+				done_count = len([s for s in statuses if s['predictor_id'] is not None]) 
 				percent_done = done_count / total
 				if (raw==True):
 					return percent_done
@@ -4234,14 +4234,14 @@ class Queue(BaseModel):
 
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
 		queue = Queue.get_by_id(id)
-		# Quick check to make sure all results aren't already complete.
+		# Quick check to make sure all predictors aren't already complete.
 		run_count = queue.run_count
-		result_count = Result.select().join(Job).join(Queue).where(
+		predictor_count = Predictor.select().join(Job).join(Queue).where(
 			Queue.id == queue.id).count()
-		if (run_count == result_count):
+		if (run_count == predictor_count):
 			print("\nAll Jobs have already completed.\n")
 		else:
-			if (run_count > result_count > 0):
+			if (run_count > predictor_count > 0):
 				print("\nResuming Jobs...\n")
 			job_statuses = Queue.poll_statuses(id)
 			
@@ -4269,7 +4269,7 @@ class Queue(BaseModel):
 						, desc = "🔮 Training Models 🔮"
 						, ncols = 100
 					):
-						if (j['result_id'] is None):
+						if (j['predictor_id'] is None):
 							
 								Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 				except (KeyboardInterrupt):
@@ -4307,49 +4307,50 @@ class Queue(BaseModel):
 		selected_metrics = listify(selected_metrics)
 		sort_by = listify(sort_by)
 		
-		queue_results = Result.select().join(Job).where(
-			Job.queue==id
-		).order_by(Result.id)
-		queue_results = list(queue_results)
+		queue_predictions = Prediction.select().join(
+			Predictor).join(Job).where(Job.queue==id
+		).order_by(Prediction.id)
+		queue_predictions = list(queue_predictions)
 
-		if (not queue_results):
+		if (not queue_predictions):
 			print(dedent("""
 				~:: Patience, young Padawan ::~
 
-				Completed, your Jobs are not. So Results to be had, there are None.
+				Completed, your Jobs are not. So Predictors to be had, there are None.
 			"""))
 			return None
 
-		metric_names = list(list(queue.jobs[0].results[0].metrics.values())[0].keys())#bad.
+		metric_names = list(list(queue_predictions[0].metrics.values())[0].keys())#bad.
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if (m not in metric_names):
 					raise ValueError(dedent(f"""
-					Yikes - The metric '{m}' does not exist in `Result.metrics`.
+					Yikes - The metric '{m}' does not exist in `Predictor.metrics`.
 					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
 		elif (selected_metrics is None):
 			selected_metrics = metric_names
 
-		# Unpack the split data from each Result and tag it with relevant Queue metadata.
+		# Unpack the split data from each Predictor and tag it with relevant Queue metadata.
 		split_metrics = []
-		for r in queue_results:
-			for split_name,metrics in r.metrics.items():
+		for prediction in queue_predictions:
+			predictor = prediction.predictor
+			for split_name,metrics in prediction.metrics.items():
 
 				split_metric = {}
-				if (r.job.hyperparamcombo is not None):
-					split_metric['hyperparamcombo_id'] = r.job.hyperparamcombo.id
-				elif (r.job.hyperparamcombo is None):
+				if (predictor.job.hyperparamcombo is not None):
+					split_metric['hyperparamcombo_id'] = predictor.job.hyperparamcombo.id
+				elif (predictor.job.hyperparamcombo is None):
 					split_metric['hyperparamcombo_id'] = None
 
 				if (queue.foldset is not None):
-					split_metric['jobset_id'] = r.job.jobset.id
-					split_metric['fold_index'] = r.job.fold.fold_index
-				split_metric['job_id'] = r.job.id
-				if (r.job.repeat_count > 1):
-					split_metric['repeat_index'] = r.repeat_index
+					split_metric['jobset_id'] = predictor.job.jobset.id
+					split_metric['fold_index'] = predictor.job.fold.fold_index
+				split_metric['job_id'] = predictor.job.id
+				if (predictor.job.repeat_count > 1):
+					split_metric['repeat_index'] = prediction.repeat_index
 
-				split_metric['result_id'] = r.id
+				split_metric['predictor_id'] = prediction.id
 				split_metric['split'] = split_name
 
 				for metric_name,metric_value in metrics.items():
@@ -4369,7 +4370,7 @@ class Queue(BaseModel):
 			)
 		elif (sort_by is None):
 			df = pd.DataFrame.from_records(split_metrics).sort_values(
-				by=['result_id'], ascending=ascending
+				by=['predictor_id'], ascending=ascending
 			)
 		return df
 
@@ -4385,16 +4386,16 @@ class Queue(BaseModel):
 		selected_stats = listify(selected_stats)
 		sort_by = listify(sort_by)
 
-		queue_results = Result.select().join(Job).where(
-			Job.queue==id
-		).order_by(Result.id)
-		queue_results = list(queue_results)
+		queue_predictions = Prediction.select().join(
+			Predictor).join(Job).where(Job.queue==id
+		).order_by(Prediction.id)
+		queue_predictions = list(queue_predictions)
 
-		if (not queue_results):
-			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
+		if (not queue_predictions):
+			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Predictors to be had.\n")
 			return None
 
-		metrics_aggregate = queue_results[0].metrics_aggregate
+		metrics_aggregate = queue_predictions[0].metrics_aggregate
 		metric_names = list(metrics_aggregate.keys())
 		stat_names = list(list(metrics_aggregate.values())[0].keys())
 
@@ -4402,7 +4403,7 @@ class Queue(BaseModel):
 			for m in selected_metrics:
 				if (m not in metric_names):
 					raise ValueError(dedent(f"""
-					Yikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.
+					Yikes - The metric '{m}' does not exist in `Predictor.metrics_aggregate`.
 					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
 		elif (selected_metrics is None):
@@ -4411,47 +4412,48 @@ class Queue(BaseModel):
 		if (selected_stats is not None):
 			for s in selected_stats:
 				if (s not in stat_names):
-					raise ValueError(f"\nYikes - The statistic '{s}' does not exist in `Result.metrics_aggregate`.\n")
+					raise ValueError(f"\nYikes - The statistic '{s}' does not exist in `Predictor.metrics_aggregate`.\n")
 		elif (selected_stats is None):
 			selected_stats = stat_names
 
-		results_stats = []
-		for r in queue_results:
-			for metric, stats in r.metrics_aggregate.items():
+		predictions_stats = []
+		for prediction in queue_predictions:
+			predictor = prediction.predictor
+			for metric, stats in prediction.metrics_aggregate.items():
 				# Check whitelist.
-				if metric in selected_metrics:
+				if (metric in selected_metrics):
 					stats['metric'] = metric
-					stats['result_id'] = r.id
-					if (r.job.repeat_count > 1):
-						stats['repeat_index'] = r.repeat_index
-					if (r.job.fold is not None):
-						stats['jobset_id'] = r.job.jobset.id
-						stats['fold_index'] = r.job.fold.fold_index
+					stats['predictor_id'] = prediction.id
+					if (predictor.job.repeat_count > 1):
+						stats['repeat_index'] = prediction.repeat_index
+					if (predictor.job.fold is not None):
+						stats['jobset_id'] = predictor.job.jobset.id
+						stats['fold_index'] = predictor.job.fold.fold_index
 					else:
-						stats['job_id'] = r.job.id
-					stats['hyperparamcombo_id'] = r.job.hyperparamcombo.id
+						stats['job_id'] = predictor.job.id
+					stats['hyperparamcombo_id'] = predictor.job.hyperparamcombo.id
 
-					results_stats.append(stats)
+					predictions_stats.append(stats)
 
 		# Cannot edit dictionary while key-values are being accessed.
 		for stat in stat_names:
-			if stat not in selected_stats:
-				for s in results_stats:
+			if (stat not in selected_stats):
+				for s in predictions_stats:
 					s.pop(stat)# Errors if not found.
 
 		#Reverse the order of the dictionary keys.
-		results_stats = [dict(reversed(list(d.items()))) for d in results_stats]
-		column_names = list(results_stats[0].keys())
+		predictions_stats = [dict(reversed(list(d.items()))) for d in predictions_stats]
+		column_names = list(predictions_stats[0].keys())
 
 		if (sort_by is not None):
 			for name in sort_by:
-				if name not in column_names:
+				if (name not in column_names):
 					raise ValueError(f"\nYikes - Column '{name}' not found in aggregate metrics dataframe.\n")
-			df = pd.DataFrame.from_records(results_stats).sort_values(
+			df = pd.DataFrame.from_records(predictions_stats).sort_values(
 				by=sort_by, ascending=ascending
 			)
 		elif (sort_by is None):
-			df = pd.DataFrame.from_records(results_stats)
+			df = pd.DataFrame.from_records(predictions_stats)
 		return df
 
 
@@ -4494,12 +4496,12 @@ class Queue(BaseModel):
 			return None
 		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, name_metric_2, min_metric_2)
 		failed = df.query(qry_str)
-		failed_runs = failed['result_id'].to_list()
+		failed_runs = failed['predictor_id'].to_list()
 		failed_runs_unique = list(set(failed_runs))
 		# Here the `~` inverts it to mean `.isNotIn()`
-		df_passed = df[~df['result_id'].isin(failed_runs_unique)]
+		df_passed = df[~df['predictor_id'].isin(failed_runs_unique)]
 		df_passed = df_passed.round(3)
-		dataframe = df_passed[['result_id', 'split', 'loss', name_metric_2]]
+		dataframe = df_passed[['predictor_id', 'split', 'loss', name_metric_2]]
 
 		if dataframe.empty:
 			print("Yikes - There are no models that met the criteria specified.")
@@ -4526,7 +4528,7 @@ class Jobset(BaseModel):
 class Job(BaseModel):
 	"""
 	- Gets its Algorithm through the Queue.
-	- Saves its Model to a Result.
+	- Saves its Model to a Predictor.
 	"""
 	repeat_count = IntegerField()
 	fitted_encoders = PickleField(null=True)
@@ -4754,6 +4756,221 @@ class Job(BaseModel):
 		return transformed_features
 
 
+	def predict(samples:dict, predictor_id:int, infer_dataset_id:int=None):
+		"""
+		4a. Evaluation: predictions, metrics, charts for each split/fold.
+		- Metrics are run against encoded data because they won't accept string data.
+		"""
+		predictor = Predictor.get_by_id(predictor_id)
+		hyperparamcombo = predictor.job.hyperparamcombo
+		algorithm = predictor.job.queue.algorithm
+		library = algorithm.library
+		analysis_type = algorithm.analysis_type
+
+		# Access the 2nd level of the `samples:dict` to determine if it has Labels.
+		first_key = list(samples.keys())[0]
+		if ('labels' in samples[first_key].keys()):
+			has_labels = True
+		else:
+			has_labels = False
+
+		# Prepare the logic.
+		model = predictor.get_model()
+		if (algorithm.library == 'keras'):
+			model = predictor.get_model()
+		elif (algorithm.library == 'pytorch'):
+			# Returns tuple(model,optimizer)
+			model = predictor.get_model()
+			model = model[0].eval()
+		fn_predict = dill_deserialize(algorithm.fn_predict)
+		
+		if (hyperparamcombo is not None):
+			hp = hyperparamcombo.hyperparameters
+		elif (hyperparamcombo is None):
+			hp = {} #`**` cannot be None.
+
+		if (has_labels == True):
+			fn_lose = dill_deserialize(algorithm.fn_lose)
+			loser = fn_lose(**hp)
+			if (loser is None):
+				raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+
+		predictions = {}
+		probabilities = {}
+		if (has_labels == True):
+			metrics = {}
+			plot_data = {}
+
+		if ("classification" in analysis_type):
+			for split, data in samples.items():
+				# Convert any remaining numpy splits into tensors.
+				if (library == 'pytorch'):
+					if (type(data) != torch.Tensor):
+						data['features'] = torch.FloatTensor(data['features'])
+						if (has_labels == True):
+							data['labels'] = torch.FloatTensor(data['labels'])
+
+				preds, probs = fn_predict(model, data)
+				predictions[split] = preds
+				probabilities[split] = probs
+				# Outputs numpy.
+
+				if (has_labels == True):
+					# https://keras.io/api/losses/probabilistic_losses/
+					if (library == 'keras'):
+						loss = loser(data['labels'], probs)
+					elif (library == 'pytorch'):
+						tz_probs = torch.FloatTensor(probs)
+						if (algorithm.analysis_type == 'classification_binary'):
+							loss = loser(tz_probs, data['labels'])
+							# convert back to numpy for metrics and plots.
+							data['labels'] = data['labels'].detach().numpy()
+						elif (algorithm.analysis_type == 'classification_multi'):
+							flat_labels = data['labels'].flatten().to(torch.long)
+							loss = loser(tz_probs, flat_labels)
+							# convert back to *OHE* numpy for metrics and plots.
+							data['labels'] = data['labels'].detach().numpy()
+							data['labels'] = keras.utils.to_categorical(data['labels'])
+
+					metrics[split] = Job.split_classification_metrics(
+						data['labels'], preds, probs, analysis_type
+					)
+					metrics[split]['loss'] = float(loss)
+
+					plot_data[split] = Job.split_classification_plots(
+						data['labels'], preds, probs, analysis_type
+					)
+				
+				# During prediction Keras OHE output gets made ordinal for metrics.
+				# Use the probabilities to recreate the OHE so they can be inverse_transform'ed.
+				if (("multi" in analysis_type) and (library == 'keras')):
+					predictions[split] = []
+					for p in probs:
+						marker_position = np.argmax(p, axis=-1)
+						empty_arr = np.zeros(len(p))
+						empty_arr[marker_position] = 1
+						predictions[split].append(empty_arr)
+					predictions[split] = np.array(predictions[split])
+
+		elif (analysis_type == "regression"):
+			# The raw output values *is* the continuous prediction itself.
+			probs = None
+			for split, data in samples.items():
+				
+				# Convert any remaining numpy splits into tensors.
+				# Do all of the tensor operations below before numpy operations.
+				if (library == 'pytorch'):
+					if (type(data) != torch.Tensor):
+						data['features'] = torch.FloatTensor(data['features'])
+						if (has_labels == True):
+							data['labels'] = torch.FloatTensor(data['labels'])
+
+				preds = fn_predict(model, data)
+				predictions[split] = preds
+				# Outputs numpy.
+
+				#https://keras.io/api/losses/regression_losses/
+				if (has_labels == True):
+					if (library == 'keras'):
+						loss = loser(data['labels'], preds)
+					elif (library == 'pytorch'):
+						tz_preds = torch.FloatTensor(preds)
+						loss = loser(tz_preds, data['labels'])
+						# After obtaining loss, make labels numpy again for metrics.
+						data['labels'] = data['labels'].detach().numpy()
+						# `preds` object is still numpy.
+
+					### if labels_present
+					# Numpy inputs.
+					metrics[split] = Job.split_regression_metrics(
+						data['labels'], preds
+					)
+					metrics[split]['loss'] = float(loss)
+				plot_data = None
+
+		"""
+		4b. Format predictions for saving.
+		- Decode predictions before saving.
+		- Doesn't use any Label data, but does use Labelcoder fit on the original Labels.
+		"""
+		fitted_encoders = predictor.job.fitted_encoders
+		if (
+			('labelcoder' in fitted_encoders.keys())
+			and
+			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			for split, data in predictions.items():
+				# OHE is arriving here as ordinal, not OHE.
+				data = Labelcoder.if_1d_make_2d(data)
+				fitted_labelcoder = fitted_encoders['labelcoder']
+				predictions[split] = fitted_labelcoder.inverse_transform(data)
+		elif(
+			('labelcoder' in fitted_encoders.keys())
+			and
+			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			print(dedent("""
+				Warning - `Predictor.predictions` are encoded. 
+				They cannot be decoded because the `sklearn.preprocessing`
+				encoder used does not have `inverse_transform`.
+			"""))
+		# Flatten.
+		for split, data in predictions.items():
+			if (data.ndim > 1):
+				predictions[split] = data.flatten()
+
+		if (has_labels == True):
+			# 4c. Aggregate metrics across splits/ folds.
+			# Alphabetize metrics dictionary by key.
+			for k,v in metrics.items():
+				metrics[k] = dict(natsorted(v.items()))
+			# Aggregate metrics across splits (e.g. mean, pstdev).
+			metric_names = list(list(metrics.values())[0].keys())
+			metrics_aggregate = {}
+			for metric in metric_names:
+				split_values = []
+				for split, split_metrics in metrics.items():
+					# ran into obscure errors with `pstdev` when not `float(value)`
+					value = float(split_metrics[metric])
+					split_values.append(value)
+
+				mean = statistics.mean(split_values)
+				median = statistics.median(split_values)
+				pstdev = statistics.pstdev(split_values)
+				minimum = min(split_values)
+				maximum = max(split_values)
+
+				metrics_aggregate[metric] = {
+					"mean":mean, "median":median, "pstdev":pstdev, 
+					"minimum":minimum, "maximum":maximum 
+				}
+		
+		if ((probs is not None) and ("multi" not in algorithm.analysis_type)):
+			# Don't flatten the softmax probabilities.
+			probabilities[split] = probabilities[split].flatten()
+
+		if (has_labels == False):
+			metrics = None
+			metrics_aggregate = None
+			plot_data = None
+
+		if (infer_dataset_id is not None):
+			dataset = Dataset.get_by_id(infer_dataset_id)
+		else:
+			dataset = None
+
+		prediction = Prediction.create(
+			predictions = predictions
+			, probabilities = probabilities
+			, metrics = metrics
+			, metrics_aggregate = metrics_aggregate
+			, plot_data = plot_data
+			, predictor = predictor
+			, dataset = dataset
+		)
+		return prediction
+
+
 	def run(id:int, repeat_index:int, verbose:bool=False):
 		"""
 		Needs optimization = https://github.com/aiqc/aiqc/projects/1
@@ -4771,10 +4988,8 @@ class Job(BaseModel):
 		encoderset = queue.encoderset
 		hyperparamcombo = job.hyperparamcombo
 		fold = job.fold
-
 		"""
 		1. Determines which splits/folds are needed.
-		
 		- Source of the training & evaluation data varies based on how Splitset and Foldset were designed.
 		- The rest of the tasks in Job.run() look to `samples:dict` for their data.
 		- The `key_*` variables are passed to downstream tasks. `key_train` could be either
@@ -4809,7 +5024,6 @@ class Job(BaseModel):
 			elif (fold is None):
 				samples['train'] = splitset.samples['train']
 				key_train = "train"
-
 		"""
 		2. Encodes the labels and features.
 		- Remember, you only `.fit()` on either training data or all data (categoricals).
@@ -4842,13 +5056,8 @@ class Job(BaseModel):
 			)
 		job.fitted_encoders = fitted_encoders
 		job.save()
-		
-		"""
-		3. Build and Train model.
-		- Input shapes can only be determined after encoding has taken place.
-		"""
-		# The shape of the features and labels is a predefined argument
-		# of the Algorithm functions.
+
+		# Stage preprocessed data for the remaining Job steps.
 		for split, rows in samples.items():
 			samples[split] = {
 				"features": arr_features[rows]
@@ -4857,12 +5066,18 @@ class Job(BaseModel):
 	
 		features_shape = samples[key_train]['features'][0].shape
 		label_shape = samples[key_train]['labels'][0].shape
-		# Does not include the `batch_size`
+		# - Shapes are used by `get_model()` to initialize it.
+		# - Input shapes can only be determined after encoding has taken place.
+		# - Does not impact the training loop's `batch_size`.
 		input_shapes = {
 			"features_shape": features_shape
 			, "label_shape": label_shape
 		}
-
+		"""
+		3. Build and Train model.
+		- This does not need to be modularized out of `Job.run()` because models are not
+		  trained anywhere else in the codebase.
+		"""
 		if (hyperparamcombo is not None):
 			hp = hyperparamcombo.hyperparameters
 		elif (hyperparamcombo is None):
@@ -4968,187 +5183,40 @@ class Job(BaseModel):
 			)
 			model_blob = model_blob.getvalue()
 
-
-
-		# --------------------- REFACTOR TRAINED MODEL ----------------------- 
-		# Job still is not complete until metrics are finished.
-
-
 		"""
-		4a. Evaluation: predictions, metrics, charts for each split/fold.
-		- Metrics are run against encoded data because they won't accept string data.
+		5. Save it to Predictor object.
 		"""
-		predictions = {}
-		probabilities = {}
-		metrics = {}
-		plot_data = {}
-
-		fn_predict = dill_deserialize(algorithm.fn_predict)
-		if ("classification" in analysis_type):
-			for split, data in samples.items():
-				# Convert any remaining numpy splits into tensors.
-				if (library == 'pytorch'):
-					if (type(data) != torch.Tensor):
-						data['features'] = torch.FloatTensor(data['features'])
-						data['labels'] = torch.FloatTensor(data['labels'])
-
-				preds, probs = fn_predict(model, data)
-				predictions[split] = preds
-				probabilities[split] = probs
-				# Outputs numpy.
-
-				# https://keras.io/api/losses/probabilistic_losses/
-				if (library == 'keras'):
-					loss = loser(data['labels'], probs)
-				elif (library == 'pytorch'):
-					tz_probs = torch.FloatTensor(probs)
-					if (algorithm.analysis_type == 'classification_binary'):
-						loss = loser(tz_probs, data['labels'])
-						# convert back to numpy for metrics and plots.
-						data['labels'] = data['labels'].detach().numpy()
-					elif (algorithm.analysis_type == 'classification_multi'):
-						flat_labels = data['labels'].flatten().to(torch.long)
-						loss = loser(tz_probs, flat_labels)
-						# convert back to *OHE* numpy for metrics and plots.
-						data['labels'] = data['labels'].detach().numpy()
-						data['labels'] = keras.utils.to_categorical(data['labels'])
-
-				metrics[split] = Job.split_classification_metrics(
-					data['labels'], preds, probs, analysis_type
-				)
-				metrics[split]['loss'] = float(loss)
-
-				plot_data[split] = Job.split_classification_plots(
-					data['labels'], preds, probs, analysis_type
-				)
-				
-				# During prediction Keras OHE output gets made ordinal for metrics.
-				# Use the probabilities to recreate the OHE so they can be inverse_transform'ed.
-				if (("multi" in analysis_type) and (library == 'keras')):
-					predictions[split] = []
-					for p in probs:
-						marker_position = np.argmax(p, axis=-1)
-						empty_arr = np.zeros(len(p))
-						empty_arr[marker_position] = 1
-						predictions[split].append(empty_arr)
-					predictions[split] = np.array(predictions[split])
-
-		elif (analysis_type == "regression"):
-			# The raw output values *is* the continuous prediction itself.
-			probabilities = None
-			for split, data in samples.items():
-				
-				# Convert any remaining numpy splits into tensors.
-				# Do all of the tensor operations below before numpy operations.
-				if (library == 'pytorch'):
-					if (type(data) != torch.Tensor):
-						data['features'] = torch.FloatTensor(data['features'])
-						data['labels'] = torch.FloatTensor(data['labels'])
-
-				preds = fn_predict(model, data)
-				predictions[split] = preds
-				# Outputs numpy.
-
-				#https://keras.io/api/losses/regression_losses/
-				if (library == 'keras'):
-					loss = loser(data['labels'], preds)
-				elif (library == 'pytorch'):
-					tz_preds = torch.FloatTensor(preds)
-					loss = loser(tz_preds, data['labels'])
-					# After obtaining loss, make labels numpy again for metrics.
-					data['labels'] = data['labels'].detach().numpy()
-					# `preds` object is still numpy.
-
-				# Numpy inputs.
-				metrics[split] = Job.split_regression_metrics(
-					data['labels'], preds
-				)
-				metrics[split]['loss'] = float(loss)
-				plot_data = None
-
-		# 4b. Format predictions for saving.
-		# Decode predictions before saving.
-		if (
-			('labelcoder' in fitted_encoders.keys())
-			and
-			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
-		):
-			for split, data in predictions.items():
-				# OHE is arriving here as ordinal, not OHE.
-				data = Labelcoder.if_1d_make_2d(data)
-				fitted_labelcoder = fitted_encoders['labelcoder']
-				predictions[split] = fitted_labelcoder.inverse_transform(data)
-		elif(
-			('labelcoder' in fitted_encoders.keys())
-			and
-			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
-		):
-			print(dedent("""
-				Warning - `Result.predictions` are encoded. 
-				They cannot be decoded because the `sklearn.preprocessing`
-				encoder used does not have `inverse_transform`.
-			"""))
-		# Flatten.
-		for split, data in predictions.items():
-			if (data.ndim > 1):
-				predictions[split] = data.flatten()
-
-		# 4c. Aggregate metrics across splits/ folds.
-		# Alphabetize metrics dictionary by key.
-		for k,v in metrics.items():
-			metrics[k] = dict(natsorted(v.items()))
-		# Aggregate metrics across splits (e.g. mean, pstdev).
-		metric_names = list(list(metrics.values())[0].keys())
-		metrics_aggregate = {}
-		for metric in metric_names:
-			split_values = []
-			for split, split_metrics in metrics.items():
-				# ran into obscure errors with `pstdev` when not `float(value)`
-				value = float(split_metrics[metric])
-				split_values.append(value)
-
-			mean = statistics.mean(split_values)
-			median = statistics.median(split_values)
-			pstdev = statistics.pstdev(split_values)
-			minimum = min(split_values)
-			maximum = max(split_values)
-
-			metrics_aggregate[metric] = {
-				"mean":mean, "median":median, "pstdev":pstdev, 
-				"minimum":minimum, "maximum":maximum 
-			}
 		time_succeeded = datetime.datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
 
-		# There's a chance that a duplicate job-repeat_index pair was running and finished first.
-		matching_result = Result.select().join(Job).join(Queue).where(
-			Queue.id==queue.id, Job.id==job.id, Result.repeat_index==repeat_index)
-		if (len(matching_result) > 0):
-			raise ValueError(
-				f"\nYikes - Duplicate run detected:" \
-				f"\nQueue<{queue.id}>, Job<{job.id}>, Job.repeat_index<{repeat_index}>.\n" \
-				f"\nCancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing." \
-				f"\nNo action needed, the other instance will continue running to completion.\n"
-			)
-		"""
-		5. Save it to Result object.
-		"""
-		Result.create(
+		# There's a chance that a duplicate job-repeat_index pair was running elsewhere and finished first.
+		matching_predictor = Predictor.select().join(Job).join(Queue).where(
+			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
+		if (len(matching_predictor) > 0):
+			raise ValueError(f"""
+				Yikes - Duplicate run detected:
+				Queue<{queue.id}>, Job<{job.id}>, Job.repeat_index<{repeat_index}>.
+				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
+				No action needed, the other instance will continue running to completion.
+			""")
+
+		predictor = Predictor.create(
 			time_started = time_started
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
 			, model_file = model_blob
 			, input_shapes = input_shapes
 			, history = history
-			, predictions = predictions
-			, probabilities = probabilities
-			, metrics = metrics
-			, metrics_aggregate = metrics_aggregate
-			, plot_data = plot_data
 			, job = job
 			, repeat_index = repeat_index
 		)
-
+		
+		try:
+			Job.predict(samples=samples, predictor_id=predictor.id)
+		except:
+			predictor.delete_instance()
+			raise
+		
 		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
 		del samples
 		del model
@@ -5171,14 +5239,16 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 		, desc = "🔮 Training Models 🔮"
 		, ncols = 100
 	):
-		if (j['result_id'] is None):
+		if (j['predictor_id'] is None):
 			Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 
 
-class Result(BaseModel):
+
+
+class Predictor(BaseModel):
 	"""
+	- This was refactored from "Predictor" to "Predictor"
 	- Regarding metrics, the label encoder was fit on training split labels.
-	- May separate Result into TrainedAlgorithm and Predictions (training, inference).
 	"""
 	repeat_index = IntegerField()
 	time_started = DateTimeField()
@@ -5188,19 +5258,13 @@ class Result(BaseModel):
 	input_shapes = JSONField() # used by get_model()
 	history = JSONField()
 
-	predictions = PickleField()
-	metrics = PickleField()
-	metrics_aggregate = PickleField()
-	plot_data = PickleField(null=True) # No regression-specific plots.
-	probabilities = PickleField(null=True) # Not used for regression.
-
-	job = ForeignKeyField(Job, backref='results')
+	job = ForeignKeyField(Job, backref='predictors')
 
 
 	def get_model(id:int):
-		result = Result.get_by_id(id)
-		algorithm = result.job.queue.algorithm
-		model_blob = result.model_file
+		predictor = Predictor.get_by_id(id)
+		algorithm = predictor.job.queue.algorithm
+		model_blob = predictor.model_file
 
 		if (algorithm.library == "keras"):
 			#https://www.tensorflow.org/guide/keras/save_and_serialize
@@ -5216,18 +5280,18 @@ class Result(BaseModel):
 		elif (algorithm.library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
 			# Need to initialize the classes first, which requires reconstructing them.
-			if (result.job.hyperparamcombo is not None):
-				hp = result.job.hyperparamcombo.hyperparameters
-			elif (result.job.hyperparamcombo is None):
+			if (predictor.job.hyperparamcombo is not None):
+				hp = predictor.job.hyperparamcombo.hyperparameters
+			elif (predictor.job.hyperparamcombo is None):
 				hp = {}
-			features_shape = result.input_shapes['features_shape']
-			label_shape = result.input_shapes['label_shape']
+			features_shape = predictor.input_shapes['features_shape']
+			label_shape = predictor.input_shapes['label_shape']
 
 			fn_build = dill_deserialize(algorithm.fn_build)
 			fn_optimize = dill_deserialize(algorithm.fn_optimize)
 
 			if (algorithm.analysis_type == 'classification_multi'):
-				num_classes = len(result.job.queue.splitset.label.unique_classes)
+				num_classes = len(predictor.job.queue.splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
 				model = fn_build(features_shape, label_shape, **hp)
@@ -5244,8 +5308,8 @@ class Result(BaseModel):
 			return model, optimizer
 
 	def export_model(id:int, file_path:str=None):
-		result = Result.get_by_id(id)
-		algorithm = result.job.queue.algorithm
+		predictor = Predictor.get_by_id(id)
+		algorithm = predictor.job.queue.algorithm
 		
 		if (file_path is None):
 			dtime = datetime.datetime.now().strftime('%Y%b%d_%H:%M')
@@ -5253,14 +5317,14 @@ class Result(BaseModel):
 				ext = '.h5'
 			elif (algorithm.library == 'pytorch'):
 				ext = '.pt'
-			file_path = f"{app_dir}/models/result{result.id}_model({dtime}){ext}"
+			file_path = f"{app_dir}/models/predictor{predictor.id}_model({dtime}){ext}"
 		
 		file_path = os.path.abspath(file_path)
 		folder = f"{app_dir}/models"
 		os.makedirs(folder, exist_ok=True)
 
 		# We already have the bytes of the file we need to write.
-		model_blob = result.model_file
+		model_blob = predictor.model_file
 		# trying `+` because directory may not exist yet.
 		with open(file_path, 'wb+') as f:
 			f.write(model_blob)
@@ -5272,7 +5336,7 @@ class Result(BaseModel):
 			f"\n{file_path}\n"
 		))
 
-		fitted_encoders = result.job.fitted_encoders
+		fitted_encoders = predictor.job.fitted_encoders
 		if (
 			('labelcoder' in fitted_encoders.keys())
 			or 
@@ -5288,143 +5352,53 @@ class Result(BaseModel):
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):
 		"""This is actually a method of `Hyperparamcombo` so we just pass through."""
-		r = Result.get_by_id(id)
-		hyperparamcombo = r.job.hyperparamcombo
+		predictor = Predictor.get_by_id(id)
+		hyperparamcombo = predictor.job.hyperparamcombo
 		hp = hyperparamcombo.get_hyperparameters(as_pandas=as_pandas)
 		return hp
 
 		
 	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
-		r = Result.get_by_id(id)
-		a = r.job.queue.algorithm
-		analysis_type = a.analysis_type
+		predictor = Predictor.get_by_id(id)
+		algorithm = predictor.job.queue.algorithm
+		analysis_type = algorithm.analysis_type
 
-		history = r.history
+		history = predictor.history
 		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
 		Plot().learning_curve(
 			dataframe = dataframe
 			, analysis_type = analysis_type
 			, loss_skip_15pct = loss_skip_15pct
 		)
-		
-		
-	def plot_confusion_matrix(id:int):
-		res = Result.get_by_id(id)
-		result_plot_data = res.plot_data
-		algo = res.job.queue.algorithm
-		enc = res.job.fitted_encoders
-		analysis_type = algo.analysis_type
-		if analysis_type == "regression":
-			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
-		cm_by_split = {}
-
-		if 'labelcoder' in enc.keys():
-			lc = enc['labelcoder']
-			if hasattr(lc,'categories_'):
-				labels = list(lc.categories_[0])
-			elif hasattr(lc,'classes_'):
-				labels = lc.classes_.tolist()
-		else:
-			unique_classes = res.job.queue.splitset.label.unique_classes
-			labels = list(unique_classes)
 
 
-		for split, data in result_plot_data.items():
-			cm_by_split[split] = data['confusion_matrix']
+	def newSchema_matches_ogSchema(id:int, infer_dataset_id:int):
+		predictor = Predictor.get_by_id(id)
+		original_dataset = predictor.job.queue.splitset.featureset.dataset
+		new_dataset = Dataset.get_by_id(infer_dataset_id)
 
-		Plot().confusion_matrix(cm_by_split=cm_by_split, labels= labels)
+		if (original_dataset.dataset_type != new_dataset.dataset_type):
+			raise ValueError(dedent(f"""
+				Yikes - `original_dataset.dataset_type != new_dataset.dataset_type
 
+				original_dataset.dataset_type = {original_dataset.dataset_type}
 
+				new_dataset.dataset_type = {new_dataset.dataset_type}
+			"""))
 
-	def plot_precision_recall(id:int):
-		r = Result.get_by_id(id)
-		result_plot_data = r.plot_data
-		a = r.job.queue.algorithm
-		analysis_type = a.analysis_type
-		if analysis_type == "regression":
-			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
-
-		pr_by_split = {}
-		for split, data in result_plot_data.items():
-			pr_by_split[split] = data['precision_recall_curve']
-
-		dfs = []
-		for split, data in pr_by_split.items():
-			df = pd.DataFrame()
-			df['precision'] = pd.Series(pr_by_split[split]['precision'])
-			df['recall'] = pd.Series(pr_by_split[split]['recall'])
-			df['split'] = split
-			dfs.append(df)
-		dataframe = pd.concat(dfs, ignore_index=True)
-		dataframe = dataframe.round(3)
-
-		Plot().precision_recall(dataframe=dataframe)
-
-
-	def plot_roc_curve(id:int):
-		r = Result.get_by_id(id)
-		result_plot_data = r.plot_data
-		a = r.job.queue.algorithm
-		analysis_type = a.analysis_type
-		if analysis_type == "regression":
-			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
-
-		roc_by_split = {}
-		for split, data in result_plot_data.items():
-			roc_by_split[split] = data['roc_curve']
-
-		dfs = []
-		for split, data in roc_by_split.items():
-			df = pd.DataFrame()
-			df['fpr'] = pd.Series(roc_by_split[split]['fpr'])
-			df['tpr'] = pd.Series(roc_by_split[split]['tpr'])
-			df['split'] = split
-			dfs.append(df)
-
-		dataframe = pd.concat(dfs, ignore_index=True)
-		dataframe = dataframe.round(3)
-
-		Plot().roc_curve(dataframe=dataframe)
-
-
-
-
-class Inference(BaseModel):
-	"""
-	- Many-to-Many for making predictions after of the training experiment.
-	- May refactor preds, probs, and metrics out of Result into here.
-	  So don't write documentation for this yet.
-
-	- We use the low level API to create a Dataset because there's a lot of formatting 
-	  that happens during Dataset creation that we would lose out on with raw numpy/pandas 
-	  input: e.g. columns may need autocreation, and who knows what connectors we'll have 
-	  in the future. This forces us to  validate dtypes and columns after the fact.
-	"""
-	result = ForeignKeyField(Result)
-	dataset = ForeignKeyField(Dataset)
-
-	predictions = PickleField()
-	probabilities = PickleField(null=True)
-
-
-	def schema_matches_original(result_id:int, dataset_id:int):
-		result = Result.get_by_id(result_id)
-		dataset = Dataset.get_by_id(dataset_id)
-		dataset_type = dataset.dataset_type
-
-		if (dataset_type == 'tabular'):
-			tabular = dataset.Tabular.get_main_tabular(dataset.id)
+		if (new_dataset.dataset_type == 'tabular'):
+			tabular = new_dataset.Tabular.get_main_tabular(infer_dataset_id)
 			tabular_types = tabular.dtypes
 			tabular_cols = tabular.columns
 
-			featureset = result.job.queue.splitset.featureset
+			#--- Verify Feature Columns ---
+			featureset = predictor.job.queue.splitset.featureset
 			fset_cols = featureset.columns
 			fset_types = featureset.get_dtypes()
 
-
 			if (not all(col in tabular_cols for col in fset_cols)):
 				raise ValueError(dedent(f"""
-					Yikes - Could not find all of the original Featureset columns in your new Dataset.
+					=> Yikes - Could not find all of the original Featureset columns in your new Dataset.
 					
 					`Featureset.columns`:
 					{fset_cols}
@@ -5442,7 +5416,7 @@ class Inference(BaseModel):
 				
 				if (fsetTypes_match == False):
 					raise ValueError(dedent(f"""
-						Yikes - The original Featureset dtypes did not match your new Dataset.
+						=> Yikes - The original Featureset dtypes did not match your new Dataset.
 
 						`Featureset.get_dtypes()`:
 						{fset_types}
@@ -5453,102 +5427,203 @@ class Inference(BaseModel):
 						The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 					"""))
 			print("=> Validated that the original Featureset dtypes are present in new Dataset.")
+			#--- Verify Label Columns ---
+			label = predictor.job.queue.splitset.label
+			if (label is not None):
+				label_cols = label.columns
+				label_types = label.get_dtypes()
+					
+				labelCols_match = all(col in tabular_cols for col in label_cols)
 
+				if (labelCols_match == False):
+					# Intentionally not an error.
+					print(dedent(f"""
+						=> Info - Could not find all of the original Label columns in your new Dataset.
 
-	def predict(result_id:int, samples:dict):
-		result = Result.get_by_id(result_id)
-		algorithm = result.job.queue.algorithm
-		
-		# Prepare the logic.
-		model = result.get_model()
-		if (algorithm.library == 'keras'):
-			model = result.get_model()
-		elif (algorithm.library == 'pytorch'):
-			# Returns tuple(model,optimizer)
-			model = result.get_model()
-			model = model[0].eval()
-		fn_predict = dill_deserialize(algorithm.fn_predict)
+						`Label.columns`:
+						{label_cols}
 
-		# Run the data through the logic.
-		preds = {}
-		probs = {}
-		if ("classification" in algorithm.analysis_type):
-			preds, probs = fn_predict(model, samples)
+						New Dataset columns:
+						{tabular_cols}
+						
+						=> Proceeding to conduct pure inference with no metrics.
+					"""))
+				elif (labelCols_match == True):
+					print("=> Validated that the original Label columns are present in new Dataset.")
+					
+					for col, typ in label_types.items():
+						labelTypes_match = False
+						if (col in tabular_types.keys()):
+							if (tabular_types[col] == typ):
+								labelTypes_match = True
+
+					if (labelTypes_match == False):
+						raise print(dedent(f"""
+							Warning - The original Label dtypes did not match your new Dataset.
+
+							`Featureset.get_dtypes()`:
+							{label_types}
+
+							New Dataset columns:
+							{tabular_types}
+
+							=> Proceeding to conduct pure inference with no metrics.
+						"""))
+					elif (labelTypes_match == True):
+						print("=> Validated that the original Label dtypes are present in new Dataset.")
+			else:
+				# Just setting this so that we can use `labelTypes_match` downstream.
+				labelTypes_match = None
+		else:
+			# This might be unecessary, just making sure something is returned.
+			labelTypes_match = None
+		return labelTypes_match
+
 			
-			# OHE formatting.
-			if (("multi" in algorithm.analysis_type) and (algorithm.library == 'keras')):
-				preds = []
-				for p in probs:
-					marker_position = np.argmax(p, axis=-1)
-					empty_arr = np.zeros(len(p))
-					empty_arr[marker_position] = 1
-					preds.append(empty_arr)
-				preds = np.array(preds)
-			
-		elif ("regression" in algorithm.analysis_type):
-			preds = fn_predict(model, samples)
-			probs = None
+	def infer(id:int, infer_dataset_id:int):
+		# Verifies both Features and Labels match original schema.
+		# Only errors if Features don't match.
+		labelTypes_match = Predictor.newSchema_matches_ogSchema(id, infer_dataset_id)
+		new_dataset = Dataset.get_by_id(infer_dataset_id)
+		predictor = Predictor.get_by_id(id)
 
-		# Decode the predictions.
-		fitted_encoders = result.job.fitted_encoders
-		if (
-			('labelcoder' in fitted_encoders.keys())
-			and
-			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
-		):
-			# OHE is arriving here as ordinal, not OHE.
-			preds = Labelcoder.if_1d_make_2d(preds)
-			fitted_labelcoder = fitted_encoders['labelcoder']
-			preds = fitted_labelcoder.inverse_transform(preds)
-		elif(
-			('labelcoder' in fitted_encoders.keys())
-			and
-			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
-		):
-			print(dedent("""
-				Warning - `Result.predictions` are encoded. 
-				They cannot be decoded because the `sklearn.preprocessing`
-				encoder used does not have `inverse_transform`.
-			"""))
-		preds = preds.flatten()
-		if ((probs is not None) and ("multi" not in algorithm.analysis_type)):
-			probs = probs.flatten()
-		return preds,probs
+		fset_cols = predictor.job.queue.splitset.featureset.columns
+		arr_features = new_dataset.to_numpy(columns=fset_cols)
+		if (labelTypes_match == True):
+			label_cols = predictor.job.queue.splitset.label.columns
+			arr_labels = new_dataset.to_numpy(columns=label_cols)
 
-
-	def infer(result_id:int, dataset_id:int):
-		result = Result.get_by_id(result_id)
-		dataset = Dataset.get_by_id(dataset_id) # <-- new dataset for inference.
-		Inference.schema_matches_original(result.id, dataset.id)        
-		algorithm = result.job.queue.algorithm
-
-		fset_cols = result.job.queue.splitset.featureset.columns
-		arr_features = dataset.to_numpy(columns=fset_cols)
-
-		encoderset = result.job.queue.encoderset
+		encoderset = predictor.job.queue.encoderset
 		if (encoderset is not None):
-			fitted_encoders = result.job.fitted_encoders
+			fitted_encoders = predictor.job.fitted_encoders
 			arr_features = Job.encoder_transform_features(
 				arr_features=arr_features,
 				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
-		
-		# Pack into samples for the Algorithm functions.
-		samples = {'features':arr_features}
+			if (labelTypes_match == True):
+				arr_labels = Job.encoder_transform_labels(
+					arr_labels=arr_labels,
+					fitted_encoders=fitted_encoders, encoderset=encoderset 
+				)
+		"""
+		- Pack into samples for the Algorithm functions.
+		- This is two levels deep to mirror how the training samples were structured 
+		  e.g. `samples[<trn,val,tst>]`
+		- str() id because int keys aren't JSON serializable.
+		"""
+		str_id = str(infer_dataset_id)
+		samples = {str_id: {"features": arr_features}}
+		if (labelTypes_match == True):
+			samples[str_id]['labels'] = arr_labels
 
-		if (algorithm.library == 'pytorch'):
-			if (type(samples['features']) != torch.Tensor):
-				samples['features'] = torch.FloatTensor(samples['features'])
-
-		preds, probs = Inference.predict(result_id, samples)
-
-		inference = Inference.create(
-			result = result
-			, dataset = dataset
-			, predictions = preds
-			, probabilities = probs
+		prediction = Job.predict(
+			samples=samples, predictor_id=id, infer_dataset_id=infer_dataset_id
 		)
-		return inference
+		return prediction
+
+
+
+
+class Prediction(BaseModel):
+	"""
+	- Many-to-Many for making predictions after of the training experiment.
+	- We use the low level API to create a Dataset because there's a lot of formatting 
+	  that happens during Dataset creation that we would lose out on with raw numpy/pandas 
+	  input: e.g. columns may need autocreation, and who knows what connectors we'll have 
+	  in the future. This forces us to  validate dtypes and columns after the fact.
+	"""
+	predictions = PickleField()
+	probabilities = PickleField(null=True) # Not used for regression.
+	metrics = PickleField(null=True) #inference
+	metrics_aggregate = PickleField(null=True) #inference.
+	plot_data = PickleField(null=True) # No regression-specific plots yet.
+
+	predictor = ForeignKeyField(Predictor, backref='predictions')
+	# dataset present if created for inference, v.s. null if from Original training set.
+	dataset = ForeignKeyField(Dataset, deferrable='INITIALLY DEFERRED', null=True, backref='dataset') 
+
+	"""
+	- I moved these plots out of Predictor into Prediction because it felt weird to access the
+	  Prediction via `predictions[0]`.
+	- If we ever do non-deterministic algorithms then we would not have a 1-1 mapping 
+	  between Predictor and Prediction.
+	"""
+	def plot_confusion_matrix(id:int):
+		prediction = Prediction.get_by_id(id)
+		prediction_plot_data = prediction.plot_data
+		algorithm = prediction.predictor.job.queue.algorithm
+		fitted_encoders = prediction.predictor.job.fitted_encoders
+		analysis_type = algorithm.analysis_type
+		if (analysis_type == "regression"):
+			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
+		cm_by_split = {}
+
+		if ('labelcoder' in fitted_encoders.keys()):
+			lc = fitted_encoders['labelcoder']
+			if hasattr(lc,'categories_'):
+				labels = list(lc.categories_[0])
+			elif hasattr(lc,'classes_'):
+				labels = lc.classes_.tolist()
+		else:
+			unique_classes = prediction.predictor.job.queue.splitset.label.unique_classes
+			labels = list(unique_classes)
+
+
+		for split, data in prediction_plot_data.items():
+			cm_by_split[split] = data['confusion_matrix']
+
+		Plot().confusion_matrix(cm_by_split=cm_by_split, labels= labels)
+
+
+	def plot_precision_recall(id:int):
+		prediction = Prediction.get_by_id(id)
+		predictor_plot_data = prediction.plot_data
+		algorithm = prediction.predictor.job.queue.algorithm
+		analysis_type = algorithm.analysis_type
+		if (analysis_type == "regression"):
+			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+
+		pr_by_split = {}
+		for split, data in predictor_plot_data.items():
+			pr_by_split[split] = data['precision_recall_curve']
+
+		dfs = []
+		for split, data in pr_by_split.items():
+			df = pd.DataFrame()
+			df['precision'] = pd.Series(pr_by_split[split]['precision'])
+			df['recall'] = pd.Series(pr_by_split[split]['recall'])
+			df['split'] = split
+			dfs.append(df)
+		dataframe = pd.concat(dfs, ignore_index=True)
+		dataframe = dataframe.round(3)
+
+		Plot().precision_recall(dataframe=dataframe)
+
+
+	def plot_roc_curve(id:int):
+		prediction = Prediction.get_by_id(id)
+		predictor_plot_data = prediction.plot_data
+		algorithm = prediction.predictor.job.queue.algorithm
+		analysis_type = algorithm.analysis_type
+		if (analysis_type == "regression"):
+			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+
+		roc_by_split = {}
+		for split, data in predictor_plot_data.items():
+			roc_by_split[split] = data['roc_curve']
+
+		dfs = []
+		for split, data in roc_by_split.items():
+			df = pd.DataFrame()
+			df['fpr'] = pd.Series(roc_by_split[split]['fpr'])
+			df['tpr'] = pd.Series(roc_by_split[split]['tpr'])
+			df['split'] = split
+			dfs.append(df)
+
+		dataframe = pd.concat(dfs, ignore_index=True)
+		dataframe = dataframe.round(3)
+
+		Plot().roc_curve(dataframe=dataframe)
 
 
 #==================================================
@@ -5608,11 +5683,12 @@ class TrainingCallback():
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
 					# However, if the for loop actually finishes, then all metrics are satisfied.
-					print(
-						f"\n:: Epoch #{epoch} ::" \
-						f"\nCongrats. Stopped training early. Satisfied thresholds defined in `MetricCutoff` callback:" \
-						f"\n{pprint.pformat(self.thresholds)}\n"
-					)
+					print(dedent(f"""
+						:: Epoch #{epoch} ::
+						Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+						
+						{pprint.pformat(self.thresholds)}
+					"""))
 					self.model.stop_training = True
 
 
