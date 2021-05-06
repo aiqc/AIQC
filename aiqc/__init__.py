@@ -20,12 +20,14 @@ from PIL import Image as Imaje
 import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import OneHotEncoder
 # Deep learning.
 import keras
 import torch
 # Visualization.
 import plotly.graph_objects as go
 import plotly.express as px
+import plotly.figure_factory as ff
 
 
 name = "aiqc"
@@ -85,13 +87,13 @@ def create_folder():
 			"""
 			os.makedirs(app_dir)
 			# if os.name == 'nt':
-			# 	# Windows: backslashes \ and double backslashes \\
-			# 	command = 'mkdir ' + app_dir
-			# 	os.system(command)
+			#   # Windows: backslashes \ and double backslashes \\
+			#   command = 'mkdir ' + app_dir
+			#   os.system(command)
 			# else:
-			# 	# posix (mac and linux)
-			# 	command = 'mkdir -p "' + app_dir + '"'
-			# 	os.system(command)
+			#   # posix (mac and linux)
+			#   command = 'mkdir -p "' + app_dir + '"'
+			#   os.system(command)
 		except:
 			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.makedirs('{app_dir}')\n")
 		print(
@@ -288,9 +290,6 @@ def update_config(kv:dict):
 # DATABASE
 #==================================================
 
-def printer():
-	print("12")
-
 def get_path_db():
 	"""
 	Originally, this code was in a child directory.
@@ -348,7 +347,7 @@ def create_db():
 			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Queue, Jobset, Job, Result
+			Queue, Jobset, Job, Result, Inference
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -395,6 +394,11 @@ def setup():
 # ORM
 #==================================================
 
+# --------- GLOBALS ---------
+categorical_encoders = [
+	'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
+	'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
+]
 
 # --------- HELPER FUNCTIONS ---------
 def listify(supposed_lst:object=None):
@@ -607,13 +611,13 @@ class Dataset(BaseModel):
 			column_names = listify(column_names)
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
-			if source_file_format not in accepted_formats:
+			if (source_file_format not in accepted_formats):
 				raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
 
-			if not os.path.exists(file_path):
+			if (not os.path.exists(file_path)):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
 
-			if not os.path.isfile(file_path):
+			if (not os.path.isfile(file_path)):
 				raise ValueError(dedent(
 					f"Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:" \
 					f"{file_path}"
@@ -621,7 +625,7 @@ class Dataset(BaseModel):
 				))
 
 			# Use the raw, not absolute path for the name.
-			if name is None:
+			if (name is None):
 				name = file_path
 
 			source_path = os.path.abspath(file_path)
@@ -944,7 +948,7 @@ class Dataset(BaseModel):
 			name: str = None
 		):
 			for expectedString in strings:
-				if type(expectedString) != 	str:
+				if type(expectedString) !=  str:
 					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
 
 			dataframe = pd.DataFrame(strings, columns = [Dataset.Text.column_name], dtype = "object")
@@ -1182,9 +1186,17 @@ class File(BaseModel):
 			samples = listify(samples)
 			# Filters.
 			df = pd.read_parquet(
-				io.BytesIO(f.blob) #saves memory?
+				io.BytesIO(f.blob) #one-liner saves memory?
 				, columns=columns
 			)
+			# Ensures columns are rearranged to be in the correct order.
+			if (
+				(columns is not None)
+				and 
+				(df.columns.to_list() != columns)
+			):
+				df = df.filter(columns)
+			# Specific rows.
 			if samples is not None:
 				df = df.iloc[samples]
 			
@@ -1250,7 +1262,7 @@ class File(BaseModel):
 			if (column_names is not None):
 				col_count = len(column_names)
 				structure_col_count = dataframe.shape[1]
-				if col_count != structure_col_count:
+				if (col_count != structure_col_count):
 					raise ValueError(dedent(f"""
 					Yikes - The dataframe you provided has <{structure_col_count}> columns,
 					but you provided <{col_count}> columns.
@@ -1275,7 +1287,10 @@ class File(BaseModel):
 			"""
 			if (dtype is not None):
 				# Accepts dict{'column_name':'dtype_str'} or a single str.
-				dataframe = dataframe.astype(dtype)
+				try:
+					dataframe = dataframe.astype(dtype)
+				except:
+					raise ValueError("\nYikes - Failed to apply the dtypes you specified to the data you provided.\n")
 				"""
 				Check if any user-provided dtype against actual dataframe dtypes to see if conversions failed.
 				Pandas dtype seems robust in comparing dtypes: 
@@ -1362,10 +1377,10 @@ class File(BaseModel):
 			So I switched to pandas for handling csv/tsv, but read_parquet()
 			doesn't let you change column names easily, so using pyarrow for parquet.
 			""" 
-			if not os.path.exists(path):
+			if (not os.path.exists(path)):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
 
-			if not os.path.isfile(path):
+			if (not os.path.isfile(path)):
 				raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
 
 			if (source_file_format == 'tsv') or (source_file_format == 'csv'):
@@ -1584,7 +1599,7 @@ class Label(BaseModel):
 				l_id = str(l.id)
 				l_cols = l.columns
 				l_cols_alpha = sorted(l_cols)
-				if cols_aplha == l_cols_alpha:
+				if (cols_aplha == l_cols_alpha):
 					raise ValueError(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
 
 		column_count = len(columns)
@@ -1774,7 +1789,7 @@ class Featureset(BaseModel):
 			if (include_columns is not None):
 				# check columns exist
 				all_cols_found = all(col in d_cols for col in include_columns)
-				if not all_cols_found:
+				if (not all_cols_found):
 					raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
 				# inclusion
 				columns = include_columns
@@ -1785,7 +1800,7 @@ class Featureset(BaseModel):
 
 			elif (exclude_columns is not None):
 				all_cols_found = all(col in d_cols for col in exclude_columns)
-				if not all_cols_found:
+				if (not all_cols_found):
 					raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
 				# exclusion
 				columns_excluded = exclude_columns
@@ -1793,7 +1808,7 @@ class Featureset(BaseModel):
 				columns = d_cols
 				for col in exclude_columns:
 					columns.remove(col)
-				if not columns:
+				if (not columns):
 					raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
 			else:
 				columns = d_cols
@@ -1813,11 +1828,11 @@ class Featureset(BaseModel):
 				for f in d_featuresets:
 					f_id = str(f.id)
 					f_cols = f.columns_excluded
-					if f_cols is not None:
+					if (f_cols is not None):
 						f_cols_alpha = sorted(f_cols)
 					else:
 						f_cols_alpha = None
-					if cols_aplha == f_cols_alpha:
+					if (cols_aplha == f_cols_alpha):
 						raise ValueError(dedent(f"""
 						Yikes - This Dataset already has Featureset <id:{f_id}> with the same columns.
 						Cannot create duplicate.
@@ -1870,7 +1885,7 @@ class Featureset(BaseModel):
 			for c in columns:
 				if c not in f_cols:
 					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Featureset.columns`.\n")
-			f_cols = columns	
+			f_cols = columns    
 
 		dataset_id = f.dataset.id
 		
@@ -2655,6 +2670,8 @@ class Labelcoder(BaseModel):
 	"""
 	only_fit_train = BooleanField()
 	sklearn_preprocess = PickleField()
+	matching_columns = JSONField() # kinda unecessary, but maybe multi-label future.
+	encoding_dimension = CharField()
 
 	encoderset = ForeignKeyField(Encoderset, backref='labelcoders')
 
@@ -2664,6 +2681,7 @@ class Labelcoder(BaseModel):
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		splitset = encoderset.splitset
+		label = splitset.label
 
 		# 1. Validation.
 		if (splitset.supervision == 'unsupervised'):
@@ -2671,7 +2689,7 @@ class Labelcoder(BaseModel):
 		elif (len(encoderset.labelcoders) == 1):
 			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
 
-		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=True)
+		sklearn_preprocess, only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=True)
 
 		# 2. Test Fit. 
 		if (only_fit_train == True):
@@ -2687,7 +2705,7 @@ class Labelcoder(BaseModel):
 			)['train']['labels']
 			communicated_split = "the training split"
 		elif (only_fit_train == False):
-			samples_to_encode = splitset.label.to_numpy()
+			samples_to_encode = label.to_numpy()
 			communicated_split = "all samples"
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
@@ -2706,7 +2724,7 @@ class Labelcoder(BaseModel):
 				pass
 			elif (only_fit_train == True):
 				# Overwrite the specific split with all samples, so we can test it.
-				samples_to_encode = splitset.label.to_numpy()
+				samples_to_encode = label.to_numpy()
 			
 			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
@@ -2725,6 +2743,8 @@ class Labelcoder(BaseModel):
 		lc = Labelcoder.create(
 			only_fit_train = only_fit_train
 			, sklearn_preprocess = sklearn_preprocess
+			, encoding_dimension = encoding_dimension
+			, matching_columns = label.columns
 			, encoderset = encoderset
 		)
 		return lc
@@ -2732,71 +2752,106 @@ class Labelcoder(BaseModel):
 
 	def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 		#This function is used by Featurecoder too, so don't put label-specific things in here.
-		coder_type = str(type(sklearn_preprocess))
-		stringified_coder = str(sklearn_preprocess)
 
 		if (inspect.isclass(sklearn_preprocess)):
 			raise ValueError(dedent("""
-			Yikes - The encoder you provided is a class name, but it should be a class instance.\n
-			Class (incorrect): `OrdinalEncoder`
-			Instance (correct): `OrdinalEncoder()`
-			\n"""))
+				Yikes - The encoder you provided is a class name, but it should be a class instance.\n
+				Class (incorrect): `OrdinalEncoder`
+				Instance (correct): `OrdinalEncoder()`
+			"""))
 
+		# Encoder parent modules vary: `sklearn.preprocessing._data` vs `sklearn.preprocessing._label`
+		# Feels cleaner than this: https://stackoverflow.com/questions/14570802/python-check-if-object-is-instance-of-any-class-from-a-certain-module
+		coder_type = str(type(sklearn_preprocess))
 		if ('sklearn.preprocessing' not in coder_type):
 			raise ValueError(dedent("""
-			Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
-			https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
-			\n"""))
+				Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
+				https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
+			"""))
 		elif ('sklearn.preprocessing' in coder_type):
 			if (not hasattr(sklearn_preprocess, 'fit')):    
 				raise ValueError(dedent("""
-				Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
-				Please use one of the uppercase methods instead.
-				For example: use `RobustScaler` instead of `robust_scale`.
-				\n"""))
+					Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
+					Please use one of the uppercase methods instead.
+					For example: use `RobustScaler` instead of `robust_scale`.
+				"""))
 
 			if (hasattr(sklearn_preprocess, 'sparse')):
 				if (sklearn_preprocess.sparse == True):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `sparse==True` attribute of {stringified_coder}.
-					FYI `sparse` is True by default if left blank.
-					This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
-					Please try again with False. For example, `OneHotEncoder(sparse=False)`.
-					"""))
-
-			if (hasattr(sklearn_preprocess, 'encode')):
-				if (sklearn_preprocess.encode == 'onehot'):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `encode=='onehot'` attribute of {stringified_coder}.
-					FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
-					which causes Keras training to fail.\n
-					Please try again with 'onehot-dense' or 'ordinal'.
-					For example, `KBinsDiscretizer(encode='onehot-dense')`.
-					"""))
+					try:
+						sklearn_preprocess.sparse = False
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+							   This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `sparse==True` attribute of {sklearn_preprocess}.
+							System attempted to override this to False, but failed.
+							FYI `sparse` is True by default if left blank.
+							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
+							Please try again with False. For example, `OneHotEncoder(sparse=False)`.
+						"""))
 
 			if (hasattr(sklearn_preprocess, 'copy')):
 				if (sklearn_preprocess.copy == True):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `copy==True` attribute of {stringified_coder}.
-					FYI `copy` is True by default if left blank, which consumes memory.\n
-					Please try again with 'copy=False'.
-					For example, `StandardScaler(copy=False)`.
-					"""))
+					try:
+						sklearn_preprocess.copy = False
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+							   This saves memory when concatenating the output of many encoders.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `copy==True` attribute of {sklearn_preprocess}.
+							System attempted to override this to False, but failed.
+							FYI `copy` is True by default if left blank, which consumes memory.\n
+							Please try again with 'copy=False'.
+							For example, `StandardScaler(copy=False)`.
+						"""))
 			
 			if (hasattr(sklearn_preprocess, 'sparse_output')):
 				if (sklearn_preprocess.sparse_output == True):
-					raise ValueError(dedent(f"""
-					Yikes - Detected `sparse_output==True` attribute of {stringified_coder}.
-					Please try again with 'sparse_output=False'.
-					For example, `LabelBinarizer(sparse_output=False)`.
-					"""))
+					try:
+						sklearn_preprocess.sparse_output = False
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.sparse_output=False`.
+							   This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `sparse_output==True` attribute of {sklearn_preprocess}.
+							System attempted to override this to True, but failed.
+							Please try again with 'sparse_output=False'.
+							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
+							For example, `LabelBinarizer(sparse_output=False)`.
+						"""))
 
 			if (hasattr(sklearn_preprocess, 'order')):
-				if (sklearn_preprocess.sparse_output == 'F'):
+				if (sklearn_preprocess.order == 'F'):
+					try:
+						sklearn_preprocess.order = 'C'
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.order='C'`.
+							   This changes the output shape of the 
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							System attempted to override this to 'C', but failed.
+							Yikes - Detected `order=='F'` attribute of {sklearn_preprocess}.
+							Please try again with 'order='C'.
+							For example, `PolynomialFeatures(order='C')`.
+						"""))
+
+			if (hasattr(sklearn_preprocess, 'encode')):
+				if (sklearn_preprocess.encode == 'onehot'):
+					# Multiple options here, so don't override user input.
 					raise ValueError(dedent(f"""
-					Yikes - Detected `order=='F'` attribute of {stringified_coder}.
-					Please try again with 'order='C'.
-					For example, `PolynomialFeatures(order='C')`.
+						Yikes - Detected `encode=='onehot'` attribute of {sklearn_preprocess}.
+						FYI `encode` is 'onehot' by default if left blank and it results in 'scipy.sparse.csr.csr_matrix',
+						which causes Keras training to fail.\n
+						Please try again with 'onehot-dense' or 'ordinal'.
+						For example, `KBinsDiscretizer(encode='onehot-dense')`.
 					"""))
 
 			if (
@@ -2814,25 +2869,19 @@ class Labelcoder(BaseModel):
 				"""))
 
 			"""
-			- Attempting to automatically set this. I was originally validating based on 
-			  whether or not the encoder was categorical. But I realized, if I am going to 
-			  rule them out and in... why not automatically set it?
 			- Binners like 'KBinsDiscretizer' and 'QuantileTransformer'
 			  will place unseen observations outside bounds into existing min/max bin.
-			- Regarding a custom FunctionTransformer, assuming they wouldn't be numerical
-			  as opposed to OHE/Ordinal or binarizing.
+			- I assume that someone won't use a custom FunctionTransformer, for categories
+			  when all of these categories are available.
 			- LabelBinarizer is not threshold-based, it's more like an OHE.
 			"""
-			categorical_encoders = [
-				'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
-				'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
-			]
 			only_fit_train = True
+			stringified_coder = str(sklearn_preprocess)
 			for c in categorical_encoders:
 				if (stringified_coder.startswith(c)):
 					only_fit_train = False
 					break
-			return only_fit_train
+			return sklearn_preprocess, only_fit_train
 
 
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
@@ -2849,6 +2898,9 @@ class Labelcoder(BaseModel):
 		- The rub lies in that if you have many columns, but the encoder only fits 1 column at a time, 
 		  then you return many fits for a single type of preprocess.
 		- Remember this is for a single Featurecoder that is potential returning multiple fits.
+
+		- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
+		  everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
 		"""
 		fitted_encoders = []
 		incompatibilities = {
@@ -2920,6 +2972,10 @@ class Labelcoder(BaseModel):
 		, encoding_dimension:str
 		, samples_to_transform:object
 	):
+		"""
+		- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
+		  everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
+		"""
 		if (encoding_dimension == '2D_multiColumn'):
 			# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
 			encoded_samples = fitted_encoders[0].transform(samples_to_transform)
@@ -3049,7 +3105,7 @@ class Featurecoder(BaseModel):
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
-		only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=False)
+		sklearn_preprocess, only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=False)
 
 		if (dtypes is not None):
 			for typ in dtypes:
@@ -3139,7 +3195,7 @@ class Featurecoder(BaseModel):
 
 				We have frequently observed inconsistent behavior where they 
 				often ouput incompatible array shapes that cannot be scalable 
-				concatenated, or they succeed in fiting, but fail at transforming.
+				concatenated, or they succeed in fitting, but fail at transforming.
 				
 				We recommend you either use these with 1 column at a 
 				time or switch to another encoder.
@@ -3256,6 +3312,7 @@ class Algorithm(BaseModel):
 	fn_optimize = BlobField()
 	fn_train = BlobField()
 	fn_predict = BlobField()
+
 
 	# --- used by `select_fn_lose()` ---
 	def keras_regression_lose(**hp):
@@ -3746,31 +3803,70 @@ class Plot():
 			fig_acc.show()
 		fig_loss.show()
 
-
-	def confusion_matrix(self, cm_by_split):
+	def confusion_matrix(self, cm_by_split, labels):
 		for split, cm in cm_by_split.items():
-			fig = px.imshow(
+			# change each element of z to type string for annotations
+			cm_text = [[str(y) for y in x] for x in cm]
+
+			# set up figure
+			fig = ff.create_annotated_heatmap(
 				cm
-				, color_continuous_scale = px.colors.sequential.BuGn
-				, labels=dict(x="Predicted Label", y="Actual Label")
-			)
+				, x=labels
+				, y=labels
+				, annotation_text=cm_text
+				, colorscale=px.colors.sequential.BuGn
+				, showscale=True
+				, colorbar={"title": 'Count'})
+
+			# add custom xaxis title
+			fig.add_annotation(dict(font=dict(color="white", size=12),
+									x=0.5,
+									y=1.2,
+									showarrow=False,
+									text="Predicted Label",
+									xref="paper",
+									yref="paper"))
+
+			# add custom yaxis title
+			fig.add_annotation(dict(font=dict(color="white", size=12),
+									x=-0.4,
+									y=0.5,
+									showarrow=False,
+									text="Actual Label",
+									textangle=-90,
+									xref="paper",
+									yref="paper"))
+
+
 			fig.update_layout(
-				title = f"Confusion Matrix: {split}"
-				, xaxis_title = "Predicted Label"
-				, yaxis_title = "Actual Label"
-				, legend_title = 'Sample Count'
-				, template = self.plot_template
-				, height = 500 # if too small, it won't render in Jupyter.
-				, yaxis = dict(
-					tickmode = 'linear'
-					, tick0 = 0.0
-					, dtick = 1.0
+				title=f"Confusion Matrix: {split.capitalize()}"
+				, legend_title='Sample Count'
+				, template=self.plot_template
+				, height=375  # if too small, it won't render in Jupyter.
+				, width=850
+				, yaxis=dict(
+					tickmode='linear'
+					, tick0=0.0
+					, dtick=1.0
+					, tickfont = dict(
+						size=10
+					)
 				)
-				, margin = dict(
-					b = 75
-					, t = 125
+				, xaxis=dict(
+					categoryorder='category descending',
+					 tickfont=dict(
+						size=10
+					)
+				)
+				, margin=dict(
+					r=325
+					, l=325
 				)
 			)
+
+			fig.update_traces(hovertemplate =
+							  """predicted: %{x}<br>actual: %{y}<br>count: %{z}<extra></extra>""")
+
 			fig.show()
 
 
@@ -3880,6 +3976,21 @@ class Queue(BaseModel):
 		if (foldset_id is not None):
 			foldset = Foldset.get_by_id(foldset_id)
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
+
+		if (encoderset_id is not None):
+			encoderset = Encoderset.get_by_id(encoderset_id)
+
+			if (
+				(len(splitset.encodersets[0].labelcoders) == 0)
+				and
+				(len(splitset.encodersets[0].featurecoders) == 0)
+			):
+				raise ValueError("\nYikes - That Encoderset has neither a Labelcoder nor Featurecoders.\n")
+
+		else:
+			has_labelcoder = False
+			encoder_is_categorical = None
+
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
@@ -3889,14 +4000,39 @@ class Queue(BaseModel):
 			if (label_col_count == 1):
 				label_dtype = label_dtypes[0]
 				
-				if ('classification' in analysis_type):	
+				if (encoderset_id is not None):         
+					if (len(splitset.encodersets[0].labelcoders) > 0):
+						has_labelcoder = True
+						labelcoder = encoderset.labelcoders[0]
+						stringified_coder = str(labelcoder.sklearn_preprocess)
+					
+						for c in categorical_encoders:
+							if (stringified_coder.startswith(c)):
+								encoder_is_categorical = True
+								break
+							else:
+								encoder_is_categorical = False
+					else:
+						has_labelcoder = False
+						encoder_is_categorical = None
+				if (encoderset_id is None): 
+					has_labelcoder = False
+					encoder_is_categorical = None
+					stringified_coder = None
+
+
+				if ('classification' in analysis_type): 
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
-					if (encoderset_id is not None):
-						encoderset = Encoderset.get_by_id(encoderset_id)
-						labelcoder = encoderset.labelcoders[0]
-						stringified_coder = str(labelcoder.sklearn_preprocess)
+					if (has_labelcoder == True):
+						if (encoder_is_categorical == False):
+							raise ValueError(dedent(f"""
+								Yikes - `Algorithm.analysis_type=='classification_*'`, but 
+								`Labelcoder.sklearn_preprocess={stringified_coder}` was not found in known 'classification' encoders:
+								{categorical_encoders}
+							"""))
+
 						if ('_binary' in analysis_type):
 							# Prevent OHE w classification_binary
 							if (stringified_coder.startswith("OneHotEncoder")):
@@ -3918,12 +4054,33 @@ class Queue(BaseModel):
 									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
 									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
 									"""))
-									
+								elif (not stringified_coder.startswith("OrdinalEncoder")):
+									print(dedent("""
+										Warning - When `(analysis_type=='classification_multi') and (library == 'pytorch')`
+										We recommend you use `sklearn.preprocessing.OrdinalEncoder()` as a Labelcoder.
+									"""))
+							else:
+								if (not stringified_coder.startswith("OneHotEncoder")):
+									print(dedent("""
+										Warning - When performing non-PyTorch, multi-label classification on a single column,
+										we recommend you use `sklearn.preprocessing.OneHotEncoder()` as a Labelcoder.
+									"""))
+					elif (
+						((has_labelcoder == False) or (has_labelcoder == None))
+						and ('_multi' in analysis_type) and (library != 'pytorch')
+					):
+						print(dedent("""
+							Warning - When performing non-PyTorch, multi-label classification on a single column 
+							without using a Labelcoder, Algorithm must have user-defined `fn_lose`, 
+							`fn_optimize`, and `fn_predict`. We recommend you use 
+							`sklearn.preprocessing.OneHotEncoder()` as a Labelcoder instead.
+						"""))
+
 					if (splitset.bin_count is not None):
 						print(dedent("""
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
 							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
-						"""))				
+						"""))               
 					if (foldset_id is not None):
 						# Not doing an `and` because foldset can't be accessed if it doesn't exist.
 						if (foldset.bin_count is not None):
@@ -3932,6 +4089,15 @@ class Queue(BaseModel):
 								`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
 							"""))
 				elif (analysis_type == 'regression'):
+					if (encoderset_id is not None):
+						if (has_labelcoder == True):
+							if (encoder_is_categorical == True):
+								raise ValueError(dedent(f"""
+									Yikes - `Algorithm.analysis_type=='regression'`, but 
+									`Labelcoder.sklearn_preprocess={stringified_coder}` was found in known categorical encoders:
+									{categorical_encoders}
+								"""))
+
 					if (
 						(not np.issubdtype(label_dtype, np.floating))
 						and
@@ -3942,7 +4108,7 @@ class Queue(BaseModel):
 						raise ValueError("Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
 					
 					if (splitset.bin_count is None):
-						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")					
+						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")                   
 					if (foldset_id is not None):
 						if (foldset.bin_count is None):
 							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Foldset.")
@@ -3951,8 +4117,8 @@ class Queue(BaseModel):
 						elif (foldset.bin_count is not None):
 							if (splitset.bin_count is None):
 								print("Warning - `bin_count` was set for Foldset, but not for Splitset. This leads to inconsistent stratification across samples.")
-					
-			# We already know how OHE columns are formatted from label creation, so skip dtype and bin validation
+				
+			# We already know how OHE columns are formatted from label creation, so skip dtype, bin, and encoder checks.
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
 					raise ValueError("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
@@ -4184,7 +4350,11 @@ class Queue(BaseModel):
 		queue_results = list(queue_results)
 
 		if (not queue_results):
-			print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Results to be had.\n")
+			print(dedent("""
+				~:: Patience, young Padawan ::~
+
+				Completed, your Jobs are not. So Results to be had, there are None.
+			"""))
 			return None
 
 		metric_names = list(list(queue.jobs[0].results[0].metrics.values())[0].keys())#bad.
@@ -4267,7 +4437,7 @@ class Queue(BaseModel):
 
 		if (selected_metrics is not None):
 			for m in selected_metrics:
-				if m not in metric_names:
+				if (m not in metric_names):
 					raise ValueError(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Result.metrics_aggregate`.
 					Note: the metrics available depend on the `Queue.analysis_type`.
@@ -4277,7 +4447,7 @@ class Queue(BaseModel):
 
 		if (selected_stats is not None):
 			for s in selected_stats:
-				if s not in stat_names:
+				if (s not in stat_names):
 					raise ValueError(f"\nYikes - The statistic '{s}' does not exist in `Result.metrics_aggregate`.\n")
 		elif (selected_stats is None):
 			selected_stats = stat_names
@@ -4577,6 +4747,7 @@ class Job(BaseModel):
 				for split in samples.keys():
 					samples[split]['features'] = None
 
+				# For each featurecoder: fetch, transform, & concatenate matching features.
 				# List of lists. One nested list per Featurecoder.
 				persisted_encoders['featurecoders'] = []
 				for featurecoder in featurecoders:
@@ -4617,7 +4788,7 @@ class Job(BaseModel):
 					#2b2. Transform features. Overwrites samples['split']['features'].
 					for split in samples.keys():
 
-						# Figure out which samples to encode.
+						# Fetch matching columns (from either a fold or split).
 						if ("fold" in split):
 							samples_to_encode = foldset.to_numpy(
 								fold_index = fold_index
@@ -4633,20 +4804,21 @@ class Job(BaseModel):
 								, feature_columns = matching_columns
 							)[split]['features']
 
+						# Transform matching columns.
 						if (featurecoder.featurecoder_index == 0):
-						# Nothing to concat with, so just overwite the None value.
+							# It's the first encoder. Nothing to concat with, so just overwite the None value.
 							samples[split]['features'] = Labelcoder.transform_dynamicDimensions(
 								fitted_encoders = fitted_encoders
 								, encoding_dimension = encoding_dimension
 								, samples_to_transform = samples_to_encode
 							)
 						elif (featurecoder.featurecoder_index > 0):
-						# Concatenate w previously encoded features.
 							samples_to_encode = Labelcoder.transform_dynamicDimensions(
 								fitted_encoders = fitted_encoders
 								, encoding_dimension = encoding_dimension
 								, samples_to_transform = samples_to_encode
 							)
+							# Concatenate w previously encoded features.
 							samples[split]['features'] = np.concatenate(
 								(samples[split]['features'], samples_to_encode)
 								, axis = 1
@@ -4803,7 +4975,6 @@ class Job(BaseModel):
 		4a. Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
 		"""
-
 		predictions = {}
 		probabilities = {}
 		metrics = {}
@@ -5004,6 +5175,7 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 class Result(BaseModel):
 	"""
 	- Regarding metrics, the label encoder was fit on training split labels.
+	- May separate Result into TrainedAlgorithm and Predictions (training, inference).
 	"""
 	repeat_index = IntegerField()
 	time_started = DateTimeField()
@@ -5012,10 +5184,11 @@ class Result(BaseModel):
 	model_file = BlobField()
 	input_shapes = JSONField()
 	history = JSONField()
+
 	predictions = PickleField()
 	metrics = PickleField()
 	metrics_aggregate = PickleField()
-	plot_data = PickleField(null=True) # Regression only uses history.
+	plot_data = PickleField(null=True) # No regression-specific plots.
 	probabilities = PickleField(null=True) # Not used for regression.
 
 	job = ForeignKeyField(Job, backref='results')
@@ -5040,14 +5213,22 @@ class Result(BaseModel):
 		elif (algorithm.library == 'pytorch'):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
 			# Need to initialize the classes first, which requires reconstructing them.
-			hp = result.job.hyperparamcombo.hyperparameters
+			if (result.job.hyperparamcombo is not None):
+				hp = result.job.hyperparamcombo.hyperparameters
+			elif (result.job.hyperparamcombo is None):
+				hp = {}
 			features_shape = result.input_shapes['features_shape']
 			label_shape = result.input_shapes['label_shape']
 
 			fn_build = dill_deserialize(algorithm.fn_build)
 			fn_optimize = dill_deserialize(algorithm.fn_optimize)
 
-			model = fn_build(features_shape, label_shape, **hp)
+			if (algorithm.analysis_type == 'classification_multi'):
+				num_classes = len(result.job.queue.splitset.label.unique_classes)
+				model = fn_build(features_shape, num_classes, **hp)
+			else:
+				model = fn_build(features_shape, label_shape, **hp)
+			
 			optimizer = fn_optimize(model, **hp)
 
 			model_bytes = io.BytesIO(model_blob)
@@ -5125,19 +5306,31 @@ class Result(BaseModel):
 		
 		
 	def plot_confusion_matrix(id:int):
-		r = Result.get_by_id(id)
-		result_plot_data = r.plot_data
-		a = r.job.queue.algorithm
-		analysis_type = a.analysis_type
+		res = Result.get_by_id(id)
+		result_plot_data = res.plot_data
+		algo = res.job.queue.algorithm
+		enc = res.job.fitted_encoders
+		analysis_type = algo.analysis_type
 		if analysis_type == "regression":
-			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
-		# The confusion matrices are already provided in `plot_data`.
+			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
 		cm_by_split = {}
+
+		if 'labelcoder' in enc.keys():
+			lc = enc['labelcoder']
+			if hasattr(lc,'categories_'):
+				labels = list(lc.categories_[0])
+			elif hasattr(lc,'classes_'):
+				labels = lc.classes_.tolist()
+		else:
+			unique_classes = res.job.queue.splitset.label.unique_classes
+			labels = list(unique_classes)
+
+
 		for split, data in result_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
-		
-		Plot().confusion_matrix(cm_by_split=cm_by_split)
-		
+
+		Plot().confusion_matrix(cm_by_split=cm_by_split, labels= labels)
+
 
 
 	def plot_precision_recall(id:int):
@@ -5191,17 +5384,200 @@ class Result(BaseModel):
 		Plot().roc_curve(dataframe=dataframe)
 
 
-"""
-# maybe now i could dill the entire env/venv?
-class Environment(BaseModel)?
-	# Even in local envs, you can have different pyenvs.
-	# Check if they are imported or not at the start.
-	# Check if they are installed or not at the start.
-	
-	dependencies_packages = JSONField() # list to pip install
-	dependencies_import = JSONField() # list of strings to import
-	dependencies_py_vers = CharField() # e.g. '3.7.6' for tensorflow.
-"""
+
+
+class Inference(BaseModel):
+	"""
+	- Many-to-Many for making predictions after of the training experiment.
+	- May refactor preds, probs, and metrics out of Result into here.
+	  So don't write documentation for this yet.
+
+	- We use the low level API to create a Dataset because there's a lot of formatting 
+	  that happens during Dataset creation that we would lose out on with raw numpy/pandas 
+	  input: e.g. columns may need autocreation, and who knows what connectors we'll have 
+	  in the future. This forces us to  validate dtypes and columns after the fact.
+	"""
+	result = ForeignKeyField(Result)
+	dataset = ForeignKeyField(Dataset)
+
+	predictions = PickleField()
+	probabilities = PickleField(null=True)
+
+
+	def schema_matches_original(result_id:int, dataset_id:int):
+		result = Result.get_by_id(result_id)
+		dataset = Dataset.get_by_id(dataset_id)
+		dataset_type = dataset.dataset_type
+
+		if (dataset_type == 'tabular'):
+			tabular = dataset.Tabular.get_main_tabular(dataset.id)
+			tabular_types = tabular.dtypes
+			tabular_cols = tabular.columns
+
+			featureset = result.job.queue.splitset.featureset
+			fset_cols = featureset.columns
+			fset_types = featureset.get_dtypes()
+
+
+			if (not all(col in tabular_cols for col in fset_cols)):
+				raise ValueError(dedent(f"""
+					Yikes - Could not find all of the original Featureset columns in your new Dataset.
+					
+					`Featureset.columns`:
+					{fset_cols}
+					
+					New Dataset columns:
+					{tabular_cols}
+				"""))
+			print("=> Validated that the original Featureset columns are present in new Dataset.")
+
+			for col, typ in fset_types.items():
+				fsetTypes_match = False
+				if col in tabular_types.keys():
+					if (tabular_types[col] == typ):
+						fsetTypes_match = True
+				
+				if (fsetTypes_match == False):
+					raise ValueError(dedent(f"""
+						Yikes - The original Featureset dtypes did not match your new Dataset.
+
+						`Featureset.get_dtypes()`:
+						{fset_types}
+
+						New Dataset columns:
+						{tabular_types}
+
+						The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
+					"""))
+			print("=> Validated that the original Featureset dtypes are present in new Dataset.")
+
+
+	def encode_features(result_id:int, dataset_id:int):
+		result = Result.get_by_id(result_id)
+		dataset = Dataset.get_by_id(dataset_id)
+
+		# Encode new Featureset using original `fitted_encoders`.
+		encoderset = result.job.queue.encoderset
+		if (encoderset is not None):       
+			featurecoders = list(encoderset.featurecoders)
+			
+			if (len(featurecoders) > 0):
+				all_fitted_encoders = result.job.fitted_encoders    
+				# Overwrite this object with Features as the columns are encoded.
+				infer_features = None
+				for featurecoder in featurecoders:
+					idx = featurecoder.featurecoder_index
+					fitted_coders = all_fitted_encoders['featurecoders'][idx]# returns list
+					encoding_dimension = featurecoder.encoding_dimension
+					features_to_transform = dataset.to_numpy(columns=featurecoder.matching_columns)
+					
+					if (idx == 0):
+						# It's the first encoder. Nothing to concat with, so just overwite the None value.
+						infer_features = Labelcoder.transform_dynamicDimensions(
+							fitted_encoders = fitted_coders
+							, encoding_dimension = encoding_dimension
+							, samples_to_transform = features_to_transform
+						)
+					elif (idx > 0):
+						encoded_features = Labelcoder.transform_dynamicDimensions(
+							fitted_encoders = fitted_coders
+							, encoding_dimension = encoding_dimension
+							, samples_to_transform = features_to_transform
+						)
+						# Then concatenate w previously encoded features.
+						infer_features = np.concatenate(
+							(infer_features, encoded_features)
+							, axis = 1
+						)
+		elif (encoderset is None):
+			fset_cols = result.job.queue.splitset.featureset.columns
+			infer_features = dataset.to_numpy(columns=fset_cols)
+		return infer_features
+
+
+	def predict(result_id:int, samples:dict):
+		result = Result.get_by_id(result_id)
+		algorithm = result.job.queue.algorithm
+		
+		# Prepare the logic.
+		model = result.get_model()
+		if (algorithm.library == 'keras'):
+			model = result.get_model()
+		elif (algorithm.library == 'pytorch'):
+			# Returns tuple(model,optimizer)
+			model = result.get_model()
+			model = model[0].eval()
+		fn_predict = dill_deserialize(algorithm.fn_predict)
+
+		# Run the data through the logic.
+		preds = {}
+		probs = {}
+		if ("classification" in algorithm.analysis_type):
+			preds, probs = fn_predict(model, samples)
+			
+			# OHE formatting.
+			if (("multi" in algorithm.analysis_type) and (algorithm.library == 'keras')):
+				preds = []
+				for p in probs:
+					marker_position = np.argmax(p, axis=-1)
+					empty_arr = np.zeros(len(p))
+					empty_arr[marker_position] = 1
+					preds.append(empty_arr)
+				preds = np.array(preds)
+			
+		elif ("regression" in algorithm.analysis_type):
+			preds = fn_predict(model, samples)
+			probs = None
+
+		# Decode the predictions.
+		fitted_encoders = result.job.fitted_encoders
+		if (
+			('labelcoder' in fitted_encoders.keys())
+			and
+			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			# OHE is arriving here as ordinal, not OHE.
+			preds = Labelcoder.if_1d_make_2d(preds)
+			fitted_labelcoder = fitted_encoders['labelcoder']
+			preds = fitted_labelcoder.inverse_transform(preds)
+		elif(
+			('labelcoder' in fitted_encoders.keys())
+			and
+			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
+		):
+			print(dedent("""
+				Warning - `Result.predictions` are encoded. 
+				They cannot be decoded because the `sklearn.preprocessing`
+				encoder used does not have `inverse_transform`.
+			"""))
+		preds = preds.flatten()
+		if ((probs is not None) and ("multi" not in algorithm.analysis_type)):
+			probs = probs.flatten()
+		return preds,probs
+
+
+	def infer(result_id:int, dataset_id:int):
+		result = Result.get_by_id(result_id)
+		dataset = Dataset.get_by_id(dataset_id)
+		Inference.schema_matches_original(result.id, dataset.id)        
+		algorithm = result.job.queue.algorithm
+
+		# Prepare the data.
+		infer_features = Inference.encode_features(result.id, dataset.id)
+		samples = {'features':infer_features}
+		if (algorithm.library == 'pytorch'):
+			if (type(samples['features']) != torch.Tensor):
+				samples['features'] = torch.FloatTensor(samples['features'])
+
+		preds, probs = Inference.predict(result_id, samples)
+
+		inference = Inference.create(
+			result = result
+			, dataset = dataset
+			, predictions = preds
+			, probabilities = probs
+		)
+		return inference
 
 
 #==================================================

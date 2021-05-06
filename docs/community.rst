@@ -60,9 +60,9 @@ What can I contribute?
 
 ----
 
-***********************
-Setting up environment.
-***********************
+***************************
+Setting up dev environment.
+***************************
 
 Have a read through the `Installation section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
 
@@ -95,7 +95,7 @@ Programming style.
 
 - Prioritize human readability, maintainability, and simplicity over conciseness, efficiency, and performance.
 
-  + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand an integrate and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
+  + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand, integrate, and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
   
   + Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren't world class software engineers, and vice versa!
   
