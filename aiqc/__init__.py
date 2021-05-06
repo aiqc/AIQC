@@ -543,10 +543,12 @@ class Dataset(BaseModel):
 		columns = listify(columns)
 		samples = listify(samples)
 
-		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text'):
+		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
 			raise ValueError("\nYikes - `Dataset.Image` class does not have a `to_pandas()` method.\n")
+		elif (dataset.dataset_type == 'text'):
+			df = Dataset.Text.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
@@ -561,6 +563,8 @@ class Dataset(BaseModel):
 			if (columns is not None):
 				raise ValueError("\nYikes - `Dataset.Image.to_numpy` does not accept a `columns` argument.\n")
 			arr = Dataset.Image.to_numpy(id=id, samples=samples)
+		elif (dataset.dataset_type == 'text'):
+			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
 		return arr
 
 
@@ -1003,14 +1007,6 @@ class Dataset(BaseModel):
 			return Dataset.Text.from_strings(files_data, name)
 
 
-		def to_strings(
-			id:int, 
-			samples:list = None
-		):
-			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
-			return data_df[Dataset.Text.column_name].tolist()
-
-
 		def to_pandas(
 			id:int, 
 			columns:list = None, 
@@ -1018,7 +1014,7 @@ class Dataset(BaseModel):
 		):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
 			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
-			df = pd.DataFrame(word_counts, columns = feature_names)
+			df = pd.DataFrame(word_counts.todense(), columns = feature_names)
 			return df
 
 		
@@ -1028,15 +1024,15 @@ class Dataset(BaseModel):
 			samples:list = None
 		):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
-			word_counts, _ = Dataset.Text.get_feature_matrix(df)
-			return word_counts
+			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
+			return word_counts, feature_names
 
 
 		def get_feature_matrix(
 			dataframe:object
 		):
 			count_vect = CountVectorizer()
-			word_counts = count_vect.fit_transform(df[Dataset.Text.column_name].tolist())
+			word_counts = count_vect.fit_transform(dataframe[Dataset.Text.column_name].tolist())
 			return word_counts, count_vect.get_feature_names()
 
 
