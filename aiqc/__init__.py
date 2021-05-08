@@ -5426,7 +5426,15 @@ class Predictor(BaseModel):
 				Yikes - New dtypes do not match original dtypes.
 				The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 			"""))
-	
+
+	def image_schemas_match(featureset_og, featureset_new):
+		image_og = featureset_og.dataset.files[0].images[0]
+		image_new = featureset_new.dataset.files[0].images[0]
+		if (image_og.size != image_new.size):
+			raise ValueError(f"\nYikes - The new image size:{image_new.size} did not match the original image size:{image_og.size}.\n")
+		if (image_og.mode != image_new.mode):
+			raise ValueError(f"\nYikes - The new image color mode:{image_new.mode} did not match the original image color mode:{image_og.mode}.\n")
+			
 
 	def newSchema_matches_ogSchema(id:int, infer_splitset_id:int):
 		predictor = Predictor.get_by_id(id)
@@ -5442,11 +5450,7 @@ class Predictor(BaseModel):
 		if (featureset_new_typ == 'tabular'):
 			Predictor.tabular_schemas_match(featureset_og, featureset_new)
 		elif (featureset_new_typ == 'image'):
-			pass
-		### Need to do Image here.
-		### Then function it out.
-
-
+			Predictor.image_schemas_match(featureset_og, featureset_new)
 
 		# Only verify Labels if the inference Splitset provides Labels.
 		# Otherwise, it may be conducting pure inference.
