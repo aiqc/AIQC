@@ -4793,7 +4793,7 @@ class Job(BaseModel):
 		return transformed_features
 
 
-	def predict(samples:dict, predictor_id:int, infer_dataset_id:int=None):
+	def predict(samples:dict, predictor_id:int, infer_splitset_id:int=None):
 		"""
 		4a. Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
@@ -4991,8 +4991,8 @@ class Job(BaseModel):
 			metrics_aggregate = None
 			plot_data = None
 
-		if (infer_dataset_id is not None):
-			dataset = Dataset.get_by_id(infer_dataset_id)
+		if (infer_splitset_id is not None):
+			dataset = Dataset.get_by_id(infer_splitset_id)
 		else:
 			dataset = None
 
@@ -5409,135 +5409,79 @@ class Predictor(BaseModel):
 		)
 
 
-	def newSchema_matches_ogSchema(id:int, infer_dataset_id:int):
-		predictor = Predictor.get_by_id(id)
-		original_dataset = predictor.job.queue.splitset.featureset.dataset
-		new_dataset = Dataset.get_by_id(infer_dataset_id)
+	def tabular_schemas_match(set_original, set_new):
+		# Set can be either Label or Featureset. Needs `columns` and `.get_dtypes`.
+		cols_og = set_original.columns
+		cols_new = set_new.columns
+		if (cols_new != cols_og):
+			raise ValueError("\nYikes - New columns do not match original columns.\n")
 
-		if (original_dataset.dataset_type != new_dataset.dataset_type):
-			raise ValueError(dedent(f"""
-				Yikes - `original_dataset.dataset_type != new_dataset.dataset_type
-
-				original_dataset.dataset_type = {original_dataset.dataset_type}
-
-				new_dataset.dataset_type = {new_dataset.dataset_type}
+		typs_og = set_original.get_dtypes()
+		typs_new = set_new.get_dtypes()
+		if (typs_new != typs_og):
+			raise ValueError(dedent("""
+				Yikes - New dtypes do not match original dtypes.
+				The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 			"""))
+	
 
-		if (new_dataset.dataset_type == 'tabular'):
-			tabular = new_dataset.Tabular.get_main_tabular(infer_dataset_id)
-			tabular_types = tabular.dtypes
-			tabular_cols = tabular.columns
+	def newSchema_matches_ogSchema(id:int, infer_splitset_id:int):
+		predictor = Predictor.get_by_id(id)
+		splitset_og = predictor.job.queue.splitset
+		splitset_new = Splitset.get_by_id(infer_splitset_id)
 
-			#--- Verify Feature Columns ---
-			featureset = predictor.job.queue.splitset.featureset
-			fset_cols = featureset.columns
-			fset_types = featureset.get_dtypes()
+		featureset_og = splitset_og.featureset
+		featureset_og_typ = featureset_og.dataset.dataset_type
+		featureset_new = splitset_new.featureset
+		featureset_new_typ = featureset_new.dataset.dataset_type
+		if (featureset_og_typ != featureset_new_typ):
+			raise ValueError("\nYikes - New Featureset and original Featureset come from different `dataset_types`.\n")
+		if (featureset_new_typ == 'tabular'):
+			Predictor.tabular_schemas_match(featureset_og, featureset_new)
+		### Need to do Image here.
 
-			if (not all(col in tabular_cols for col in fset_cols)):
-				raise ValueError(dedent(f"""
-					=> Yikes - Could not find all of the original Featureset columns in your new Dataset.
-					
-					`Featureset.columns`:
-					{fset_cols}
-					
-					New Dataset columns:
-					{tabular_cols}
-				"""))
-			print("=> Validated that the original Featureset columns are present in new Dataset.")
+		# Only verify Labels if the inference Splitset provides Labels.
+		# Otherwise, it may be conducting pure inference.
+		if (splitset_new.supervision == 'supervised'):
+			label_new = splitset_new.label
+			label_new_typ = label_new.dataset.dataset_type
 
-			for col, typ in fset_types.items():
-				fsetTypes_match = False
-				if col in tabular_types.keys():
-					if (tabular_types[col] == typ):
-						fsetTypes_match = True
-				
-				if (fsetTypes_match == False):
-					raise ValueError(dedent(f"""
-						=> Yikes - The original Featureset dtypes did not match your new Dataset.
+			if (splitset_og.supervision == 'supervised'):
+				label_og =  splitset_og.label
+				label_og_typ = label_og.dataset.dataset_type
+			elif (splitset_og.supervision == 'unsupervised'):
+				raise ValueError("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
+			if (label_og_typ != label_new_typ):
+				raise ValueError("\nYikes - New Label and original Label come from different `dataset_types`.\n")
+			if (label_new_typ == 'tabular'):
+				Predictor.tabular_schemas_match(label_og, label_new)
 
-						`Featureset.get_dtypes()`:
-						{fset_types}
-
-						New Dataset columns:
-						{tabular_types}
-
-						The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
-					"""))
-			print("=> Validated that the original Featureset dtypes are present in new Dataset.")
-			#--- Verify Label Columns ---
-			label = predictor.job.queue.splitset.label
-			if (label is not None):
-				label_cols = label.columns
-				label_types = label.get_dtypes()
-					
-				labelCols_match = all(col in tabular_cols for col in label_cols)
-
-				if (labelCols_match == False):
-					# Intentionally not an error.
-					print(dedent(f"""
-						=> Info - Could not find all of the original Label columns in your new Dataset.
-
-						`Label.columns`:
-						{label_cols}
-
-						New Dataset columns:
-						{tabular_cols}
-						
-						=> Proceeding to conduct pure inference with no metrics.
-					"""))
-				elif (labelCols_match == True):
-					print("=> Validated that the original Label columns are present in new Dataset.")
-					
-					for col, typ in label_types.items():
-						labelTypes_match = False
-						if (col in tabular_types.keys()):
-							if (tabular_types[col] == typ):
-								labelTypes_match = True
-
-					if (labelTypes_match == False):
-						raise print(dedent(f"""
-							Warning - The original Label dtypes did not match your new Dataset.
-
-							`Featureset.get_dtypes()`:
-							{label_types}
-
-							New Dataset columns:
-							{tabular_types}
-
-							=> Proceeding to conduct pure inference with no metrics.
-						"""))
-					elif (labelTypes_match == True):
-						print("=> Validated that the original Label dtypes are present in new Dataset.")
-			else:
-				# Just setting this so that we can use `labelTypes_match` downstream.
-				labelTypes_match = None
-		else:
-			# This might be unecessary, just making sure something is returned.
-			labelTypes_match = None
-		return labelTypes_match
 
 			
-	def infer(id:int, infer_dataset_id:int):
-		# Verifies both Features and Labels match original schema.
-		# Only errors if Features don't match.
-		labelTypes_match = Predictor.newSchema_matches_ogSchema(id, infer_dataset_id)
-		new_dataset = Dataset.get_by_id(infer_dataset_id)
+	def infer(id:int, infer_splitset_id:int):
+		"""
+		- Splitset is used because Labels and Featuresets can come from different types of Datasets.
+		- Verifies both Features and Labels match original schema.
+		"""
+		Predictor.newSchema_matches_ogSchema(id, infer_splitset_id)
 		predictor = Predictor.get_by_id(id)
+		splitset_new = Splitset.get_by_id(infer_splitset_id)
+		supervision = splitset_new.supervision
 
-		fset_cols = predictor.job.queue.splitset.featureset.columns
-		arr_features = new_dataset.to_numpy(columns=fset_cols)
-		if (labelTypes_match == True):
-			label_cols = predictor.job.queue.splitset.label.columns
-			arr_labels = new_dataset.to_numpy(columns=label_cols)
+		arr_features = splitset_new.featureset.to_numpy()
+		if (supervision == 'supervised'):
+			arr_labels = splitset_new.label.to_numpy()
 
 		encoderset = predictor.job.queue.encoderset
 		if (encoderset is not None):
+			# Don't need to check types because Encoderset creation protects
+			# against unencodable types.
 			fitted_encoders = predictor.job.fitted_encoders
 			arr_features = Job.encoder_transform_features(
 				arr_features=arr_features,
 				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
-			if (labelTypes_match == True):
+			if (supervision == 'supervised'):
 				arr_labels = Job.encoder_transform_labels(
 					arr_labels=arr_labels,
 					fitted_encoders=fitted_encoders, encoderset=encoderset 
@@ -5548,13 +5492,13 @@ class Predictor(BaseModel):
 		  e.g. `samples[<trn,val,tst>]`
 		- str() id because int keys aren't JSON serializable.
 		"""
-		str_id = str(infer_dataset_id)
+		str_id = str(infer_splitset_id)
 		samples = {str_id: {"features": arr_features}}
-		if (labelTypes_match == True):
+		if (supervision == 'supervised'):
 			samples[str_id]['labels'] = arr_labels
 
 		prediction = Job.predict(
-			samples=samples, predictor_id=id, infer_dataset_id=infer_dataset_id
+			samples=samples, predictor_id=id, infer_splitset_id=infer_splitset_id
 		)
 		return prediction
 
