@@ -1468,6 +1468,7 @@ class File(BaseModel):
 			try:
 				Image.create(
 					mode = img.mode
+					, size = img.size
 					, file = file
 					, pillow_save = pillow_save
 				)
@@ -1512,6 +1513,7 @@ class File(BaseModel):
 			try:
 				Image.create(
 					mode = img.mode
+					, size = img.size
 					, file = file
 					, pillow_save = pillow_save
 				)
@@ -1555,6 +1557,7 @@ class Tabular(BaseModel):
 class Image(BaseModel):
 	#https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
 	mode = CharField()
+	size = PickleField()
 	pillow_save = JSONField()
 
 	file = ForeignKeyField(File, backref='images')
@@ -5438,7 +5441,12 @@ class Predictor(BaseModel):
 			raise ValueError("\nYikes - New Featureset and original Featureset come from different `dataset_types`.\n")
 		if (featureset_new_typ == 'tabular'):
 			Predictor.tabular_schemas_match(featureset_og, featureset_new)
+		elif (featureset_new_typ == 'image'):
+			pass
 		### Need to do Image here.
+		### Then function it out.
+
+
 
 		# Only verify Labels if the inference Splitset provides Labels.
 		# Otherwise, it may be conducting pure inference.
