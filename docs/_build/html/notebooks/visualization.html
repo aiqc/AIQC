@@ -112,13 +112,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../community.html#purpose">Purpose.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#how-can-i-get-involved">How can I get involved?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#what-can-i-contribute">What can I contribute?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-environment">Setting up environment.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-dev-environment">Setting up dev environment.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#programming-style">Programming style.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#code-of-conduct">Code of conduct.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws [aka Governance].</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#open-source">Open source.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../community.html#choosing-a-license">Choosing a license</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../community.html#open-core">Open core</a></li>
 </ul>
 </li>
 </ul>
@@ -721,7 +721,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline">¶</a></h2>
-<p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, the <code class="docutils literal notranslate"><span class="pre">Result(s)</span></code> of each training <code class="docutils literal notranslate"><span class="pre">Job</span></code> are automatically populated with metrics for each split/ fold of samples evaluated against the model. The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
+<p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, the <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> and <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> of each training <code class="docutils literal notranslate"><span class="pre">Job</span></code> are automatically populated with metrics for each split/ fold of samples evaluated against the model. The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
 <ul class="simple">
 <li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, they go about producing these artifacts differently. For example, ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots.</p></li>
@@ -729,7 +729,7 @@ div.rendered_html tbody tr:hover {
 <hr class="docutils" />
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly create some examples.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -743,39 +743,15 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Classification">
 <h2>Classification<a class="headerlink" href="#Classification" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_multiclass&#39;</span><span class="p">)</span>
+<span></span><span class="o">%%capture</span>
+<span class="n">queue_multiclass</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_multiclass&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
-[&#39;petal_width&#39;]
-
-=&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
-{&#39;petal_length&#39;: &#39;float64&#39;, &#39;sepal_length&#39;: &#39;float64&#39;, &#39;sepal_width&#39;: &#39;float64&#39;}
-
-
-___/ featurecoder_index: 1 \_________
-
-=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
-[&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;]
-
-=&gt; Nice! Now all feature column(s) have encoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
-
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -791,20 +767,20 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:30&lt;00:00,  3.87s/it]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:28&lt;00:00,  3.54s/it]
 </pre></div></div>
 </div>
 <div class="section" id="Individual-Job-Metrics">
 <h3>Individual Job Metrics<a class="headerlink" href="#Individual-Job-Metrics" title="Permalink to this headline">¶</a></h3>
-<p>Each training <code class="docutils literal notranslate"><span class="pre">Result</span></code> contains the following metrics.</p>
+<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="k">as</span> <span class="n">p</span>
 <span class="n">p</span><span class="p">(</span>
-    <span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -816,19 +792,19 @@ No more Featurecoders can be added to this Encoderset.
 <div class="highlight"><pre>
 {&#39;test&#39;: {&#39;accuracy&#39;: 0.9629629629629629,
           &#39;f1&#39;: 0.9628482972136223,
-          &#39;loss&#39;: 0.07572123408317566,
+          &#39;loss&#39;: 0.17958050966262817,
           &#39;precision&#39;: 0.9666666666666667,
           &#39;recall&#39;: 0.9629629629629629,
-          &#39;roc_auc&#39;: 1.0},
- &#39;train&#39;: {&#39;accuracy&#39;: 0.9803921568627451,
-           &#39;f1&#39;: 0.9803921568627451,
-           &#39;loss&#39;: 0.07449501752853394,
-           &#39;precision&#39;: 0.9803921568627451,
-           &#39;recall&#39;: 0.9803921568627451,
-           &#39;roc_auc&#39;: 0.9988465974625144},
+          &#39;roc_auc&#39;: 0.9876543209876543},
+ &#39;train&#39;: {&#39;accuracy&#39;: 0.9705882352941176,
+           &#39;f1&#39;: 0.9705308775731311,
+           &#39;loss&#39;: 0.13190817832946777,
+           &#39;precision&#39;: 0.9729729729729729,
+           &#39;recall&#39;: 0.9705882352941176,
+           &#39;roc_auc&#39;: 0.9985582468281432},
  &#39;validation&#39;: {&#39;accuracy&#39;: 1.0,
                 &#39;f1&#39;: 1.0,
-                &#39;loss&#39;: 0.10631509870290756,
+                &#39;loss&#39;: 0.15124531090259552,
                 &#39;precision&#39;: 1.0,
                 &#39;recall&#39;: 1.0,
                 &#39;roc_auc&#39;: 1.0}}
@@ -836,16 +812,16 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <p>It also contains per-epoch <code class="docutils literal notranslate"><span class="pre">History</span></code> metrics calculated during model training.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -899,7 +875,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <th></th>
       <th>hyperparamcombo_id</th>
       <th>job_id</th>
-      <th>result_id</th>
+      <th>predictor_id</th>
       <th>split</th>
       <th>accuracy</th>
       <th>f1</th>
@@ -911,16 +887,276 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
+      <th>23</th>
+      <td>8</td>
+      <td>8</td>
+      <td>8</td>
+      <td>train</td>
+      <td>0.970588</td>
+      <td>0.970531</td>
+      <td>0.094776</td>
+      <td>0.972973</td>
+      <td>0.970588</td>
+      <td>0.999135</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>8</td>
+      <td>8</td>
+      <td>8</td>
+      <td>validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.059430</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>8</td>
+      <td>8</td>
+      <td>8</td>
       <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.075721</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
+      <td>0.888889</td>
+      <td>0.885714</td>
+      <td>0.158564</td>
+      <td>0.916667</td>
+      <td>0.888889</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+      <td>train</td>
+      <td>0.941176</td>
+      <td>0.940715</td>
+      <td>0.140597</td>
+      <td>0.950000</td>
+      <td>0.941176</td>
+      <td>0.998414</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+      <td>validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.090078</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+      <td>test</td>
+      <td>0.888889</td>
+      <td>0.885714</td>
+      <td>0.301731</td>
+      <td>0.916667</td>
+      <td>0.888889</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>6</td>
+      <td>6</td>
+      <td>6</td>
+      <td>train</td>
+      <td>0.960784</td>
+      <td>0.960648</td>
+      <td>0.100677</td>
+      <td>0.964912</td>
+      <td>0.960784</td>
+      <td>0.999135</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>6</td>
+      <td>6</td>
+      <td>6</td>
+      <td>validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.101051</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>6</td>
+      <td>6</td>
+      <td>6</td>
+      <td>test</td>
+      <td>0.888889</td>
+      <td>0.885714</td>
+      <td>0.205332</td>
+      <td>0.916667</td>
+      <td>0.888889</td>
+      <td>0.995885</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>validation</td>
+      <td>0.904762</td>
+      <td>0.902778</td>
+      <td>0.190586</td>
+      <td>0.925926</td>
+      <td>0.904762</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>train</td>
+      <td>0.911765</td>
+      <td>0.910192</td>
+      <td>0.211756</td>
+      <td>0.930233</td>
+      <td>0.911765</td>
+      <td>0.992647</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>test</td>
+      <td>0.851852</td>
+      <td>0.844156</td>
+      <td>0.253303</td>
+      <td>0.897436</td>
+      <td>0.851852</td>
+      <td>0.995885</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>4</td>
+      <td>4</td>
+      <td>4</td>
+      <td>train</td>
+      <td>0.980392</td>
+      <td>0.980375</td>
+      <td>0.075605</td>
+      <td>0.981481</td>
+      <td>0.980392</td>
+      <td>0.998847</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>4</td>
+      <td>4</td>
+      <td>4</td>
+      <td>validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.037085</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>4</td>
+      <td>4</td>
+      <td>4</td>
+      <td>test</td>
+      <td>0.888889</td>
+      <td>0.885714</td>
+      <td>0.113647</td>
+      <td>0.916667</td>
+      <td>0.888889</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>train</td>
+      <td>0.941176</td>
+      <td>0.940715</td>
+      <td>0.152959</td>
+      <td>0.950000</td>
+      <td>0.941176</td>
+      <td>0.998847</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>validation</td>
+      <td>0.904762</td>
+      <td>0.902778</td>
+      <td>0.176098</td>
+      <td>0.925926</td>
+      <td>0.904762</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>test</td>
+      <td>0.925926</td>
+      <td>0.925000</td>
+      <td>0.244709</td>
+      <td>0.939394</td>
+      <td>0.925926</td>
+      <td>0.981481</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>train</td>
+      <td>0.950980</td>
+      <td>0.950714</td>
+      <td>0.114393</td>
+      <td>0.957265</td>
+      <td>0.950980</td>
+      <td>0.998558</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>validation</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.080222</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>test</td>
+      <td>0.888889</td>
+      <td>0.885714</td>
+      <td>0.186216</td>
+      <td>0.916667</td>
+      <td>0.888889</td>
       <td>1.000000</td>
     </tr>
     <tr>
@@ -931,7 +1167,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>validation</td>
       <td>1.000000</td>
       <td>1.000000</td>
-      <td>0.106315</td>
+      <td>0.151245</td>
       <td>1.000000</td>
       <td>1.000000</td>
       <td>1.000000</td>
@@ -942,285 +1178,25 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>train</td>
-      <td>0.980392</td>
-      <td>0.980392</td>
-      <td>0.074495</td>
-      <td>0.980392</td>
-      <td>0.980392</td>
-      <td>0.998847</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.098543</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.091096</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>train</td>
-      <td>0.990196</td>
-      <td>0.990194</td>
-      <td>0.072704</td>
-      <td>0.990476</td>
-      <td>0.990196</td>
-      <td>0.999423</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.064860</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>validation</td>
-      <td>0.952381</td>
-      <td>0.952137</td>
-      <td>0.082596</td>
-      <td>0.958333</td>
-      <td>0.952381</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>train</td>
-      <td>0.980392</td>
-      <td>0.980375</td>
-      <td>0.069292</td>
-      <td>0.981481</td>
-      <td>0.980392</td>
-      <td>0.998847</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.122463</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
-      <td>0.997942</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>validation</td>
-      <td>0.952381</td>
-      <td>0.952137</td>
-      <td>0.117592</td>
-      <td>0.958333</td>
-      <td>0.952381</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>train</td>
-      <td>0.950980</td>
-      <td>0.950714</td>
-      <td>0.081781</td>
-      <td>0.957265</td>
-      <td>0.950980</td>
-      <td>0.999712</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.073990</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.088745</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>train</td>
-      <td>0.990196</td>
-      <td>0.990194</td>
-      <td>0.055657</td>
-      <td>0.990476</td>
-      <td>0.990196</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.111602</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.093202</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>train</td>
-      <td>0.980392</td>
-      <td>0.980392</td>
-      <td>0.092825</td>
-      <td>0.980392</td>
-      <td>0.980392</td>
-      <td>0.999423</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>test</td>
-      <td>0.962963</td>
-      <td>0.962848</td>
-      <td>0.111054</td>
-      <td>0.966667</td>
-      <td>0.962963</td>
-      <td>0.995885</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.110409</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>train</td>
       <td>0.970588</td>
       <td>0.970531</td>
-      <td>0.097484</td>
+      <td>0.131908</td>
       <td>0.972973</td>
       <td>0.970588</td>
-      <td>0.998847</td>
+      <td>0.998558</td>
     </tr>
     <tr>
-      <th>21</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
+      <th>0</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
       <td>test</td>
       <td>0.962963</td>
       <td>0.962848</td>
-      <td>0.136800</td>
+      <td>0.179581</td>
       <td>0.966667</td>
       <td>0.962963</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>validation</td>
-      <td>0.952381</td>
-      <td>0.952137</td>
-      <td>0.093341</td>
-      <td>0.958333</td>
-      <td>0.952381</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>train</td>
-      <td>0.941176</td>
-      <td>0.940715</td>
-      <td>0.083143</td>
-      <td>0.950000</td>
-      <td>0.941176</td>
-      <td>0.999423</td>
+      <td>0.987654</td>
     </tr>
   </tbody>
 </table>
@@ -1237,7 +1213,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
-    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">min_accuracy</span> <span class="o">=</span> <span class="mf">0.80</span>
+    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">min_accuracy</span> <span class="o">=</span> <span class="mf">0.70</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1252,7 +1228,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">loss_skip_15pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">loss_skip_15pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1263,7 +1239,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1281,7 +1257,7 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">()</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1291,17 +1267,17 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p><img alt="Plot Confusion" src="../_images/plot_confusion.png" /></p>
+<p><img alt="Plot Confusion" src="../_images/plot_confusion_matrix.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">()</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1311,42 +1287,18 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 </div>
 <div class="section" id="Regression">
 <h2>Regression<a class="headerlink" href="#Regression" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_regression&#39;</span><span class="p">)</span>
+<span></span><span class="o">%%capture</span>
+<span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_regression&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
-[&#39;crim&#39;, &#39;zn&#39;, &#39;indus&#39;, &#39;nox&#39;, &#39;rm&#39;, &#39;age&#39;, &#39;dis&#39;, &#39;ptratio&#39;, &#39;lstat&#39;]
-
-=&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
-{&#39;chas&#39;: &#39;int64&#39;, &#39;rad&#39;: &#39;int64&#39;, &#39;tax&#39;: &#39;int64&#39;}
-
-
-___/ featurecoder_index: 1 \_________
-
-=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
-[&#39;rad&#39;, &#39;chas&#39;, &#39;tax&#39;]
-
-=&gt; Nice! Now all feature column(s) have encoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
-
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1359,20 +1311,20 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:33&lt;00:00,  8.31s/it]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:32&lt;00:00,  8.03s/it]
 </pre></div></div>
 </div>
 <div class="section" id="id1">
 <h3>Individual Job Metrics<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Each training <code class="docutils literal notranslate"><span class="pre">Result</span></code> contains the following metrics.</p>
+<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="k">as</span> <span class="n">p</span>
 <span class="n">p</span><span class="p">(</span>
-    <span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1382,32 +1334,32 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;test&#39;: {&#39;explained_variance&#39;: 0.7456242137896081,
-          &#39;loss&#39;: 0.2185862511396408,
-          &#39;mse&#39;: 0.21858626188755587,
-          &#39;r2&#39;: 0.7455021802201329},
- &#39;train&#39;: {&#39;explained_variance&#39;: 0.7981549758441983,
-           &#39;loss&#39;: 0.20313556492328644,
-           &#39;mse&#39;: 0.20313555856135915,
-           &#39;r2&#39;: 0.7968644414386409},
- &#39;validation&#39;: {&#39;explained_variance&#39;: 0.8418251849670012,
-                &#39;loss&#39;: 0.1677088737487793,
-                &#39;mse&#39;: 0.16770889185282173,
-                &#39;r2&#39;: 0.8384872353457703}}
+{&#39;test&#39;: {&#39;explained_variance&#39;: 0.7894243409529155,
+          &#39;loss&#39;: 0.3433103561401367,
+          &#39;mse&#39;: 0.21202397973530798,
+          &#39;r2&#39;: 0.7865474072073684},
+ &#39;train&#39;: {&#39;explained_variance&#39;: 0.7772334144881416,
+           &#39;loss&#39;: 0.3257257640361786,
+           &#39;mse&#39;: 0.22540750832130774,
+           &#39;r2&#39;: 0.7745924916786923},
+ &#39;validation&#39;: {&#39;explained_variance&#39;: 0.70325979950094,
+                &#39;loss&#39;: 0.40005412697792053,
+                &#39;mse&#39;: 0.38639962177247694,
+                &#39;r2&#39;: 0.6802937337531519}}
 </pre></div></div>
 </div>
 <p>It also contains per-epoch metrics calculated during model training.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1419,7 +1371,7 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 <div class="section" id="id2">
 <h3>Aggregate Queue Metrics<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1428,7 +1380,7 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1452,7 +1404,7 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
       <th></th>
       <th>hyperparamcombo_id</th>
       <th>job_id</th>
-      <th>result_id</th>
+      <th>predictor_id</th>
       <th>split</th>
       <th>explained_variance</th>
       <th>loss</th>
@@ -1462,114 +1414,15 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>test</td>
-      <td>0.745624</td>
-      <td>0.218586</td>
-      <td>0.218586</td>
-      <td>0.745502</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>validation</td>
-      <td>0.841825</td>
-      <td>0.167709</td>
-      <td>0.167709</td>
-      <td>0.838487</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>train</td>
-      <td>0.798155</td>
-      <td>0.203136</td>
-      <td>0.203136</td>
-      <td>0.796864</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>10</td>
-      <td>10</td>
-      <td>10</td>
-      <td>test</td>
-      <td>0.749884</td>
-      <td>0.218382</td>
-      <td>0.218382</td>
-      <td>0.745740</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>10</td>
-      <td>10</td>
-      <td>10</td>
-      <td>validation</td>
-      <td>0.842932</td>
-      <td>0.169658</td>
-      <td>0.169658</td>
-      <td>0.836611</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>10</td>
-      <td>10</td>
-      <td>10</td>
-      <td>train</td>
-      <td>0.821700</td>
-      <td>0.183085</td>
-      <td>0.183085</td>
-      <td>0.816915</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>11</td>
-      <td>11</td>
-      <td>11</td>
-      <td>test</td>
-      <td>0.685934</td>
-      <td>0.352775</td>
-      <td>0.352775</td>
-      <td>0.589268</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>11</td>
-      <td>11</td>
-      <td>11</td>
-      <td>validation</td>
-      <td>0.813499</td>
-      <td>0.295778</td>
-      <td>0.295778</td>
-      <td>0.715150</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>11</td>
-      <td>11</td>
-      <td>11</td>
-      <td>train</td>
-      <td>0.804766</td>
-      <td>0.286330</td>
-      <td>0.286330</td>
-      <td>0.713670</td>
-    </tr>
-    <tr>
       <th>9</th>
       <td>12</td>
       <td>12</td>
       <td>12</td>
       <td>test</td>
-      <td>0.765050</td>
-      <td>0.262876</td>
-      <td>0.262876</td>
-      <td>0.693937</td>
+      <td>0.809494</td>
+      <td>0.423333</td>
+      <td>0.289514</td>
+      <td>0.708535</td>
     </tr>
     <tr>
       <th>10</th>
@@ -1577,10 +1430,10 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
       <td>12</td>
       <td>12</td>
       <td>validation</td>
-      <td>0.838108</td>
-      <td>0.211810</td>
-      <td>0.211810</td>
-      <td>0.796016</td>
+      <td>0.722865</td>
+      <td>0.480268</td>
+      <td>0.521585</td>
+      <td>0.568441</td>
     </tr>
     <tr>
       <th>11</th>
@@ -1588,10 +1441,109 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
       <td>12</td>
       <td>12</td>
       <td>train</td>
-      <td>0.813985</td>
-      <td>0.244257</td>
-      <td>0.244257</td>
-      <td>0.755743</td>
+      <td>0.795168</td>
+      <td>0.396511</td>
+      <td>0.321744</td>
+      <td>0.678256</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>11</td>
+      <td>11</td>
+      <td>11</td>
+      <td>test</td>
+      <td>0.779358</td>
+      <td>0.410134</td>
+      <td>0.274249</td>
+      <td>0.723904</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>11</td>
+      <td>11</td>
+      <td>11</td>
+      <td>validation</td>
+      <td>0.717331</td>
+      <td>0.432595</td>
+      <td>0.442124</td>
+      <td>0.634188</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>11</td>
+      <td>11</td>
+      <td>11</td>
+      <td>train</td>
+      <td>0.753201</td>
+      <td>0.379794</td>
+      <td>0.297251</td>
+      <td>0.702749</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>test</td>
+      <td>0.805824</td>
+      <td>0.353231</td>
+      <td>0.213114</td>
+      <td>0.785450</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>validation</td>
+      <td>0.733818</td>
+      <td>0.387297</td>
+      <td>0.368265</td>
+      <td>0.695298</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>train</td>
+      <td>0.784331</td>
+      <td>0.332360</td>
+      <td>0.234408</td>
+      <td>0.765592</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>9</td>
+      <td>9</td>
+      <td>9</td>
+      <td>test</td>
+      <td>0.789424</td>
+      <td>0.343310</td>
+      <td>0.212024</td>
+      <td>0.786547</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>9</td>
+      <td>9</td>
+      <td>9</td>
+      <td>validation</td>
+      <td>0.703260</td>
+      <td>0.400054</td>
+      <td>0.386400</td>
+      <td>0.680294</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>9</td>
+      <td>9</td>
+      <td>9</td>
+      <td>train</td>
+      <td>0.777233</td>
+      <td>0.325726</td>
+      <td>0.225408</td>
+      <td>0.774592</td>
     </tr>
   </tbody>
 </table>
@@ -1607,7 +1559,7 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
-    <span class="n">max_loss</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">min_r2</span><span class="o">=</span><span class="mf">0.60</span>
+    <span class="n">max_loss</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">min_r2</span><span class="o">=</span><span class="mf">0.65</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1621,7 +1573,7 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">loss_skip_15pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">loss_skip_15pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

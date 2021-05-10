@@ -157,7 +157,7 @@ The vernacular is modeled after a D&D-like guild in order to make governance les
   - If it becomes absolutely necessary, the team can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strike depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
   - The team can force any proposal submitted to the discussion board up to the council with a 2/3 vote (assuming there are at least 3 people on the team). However, rational discourse is preferred to forced votes.
 
-*Council of Warlocks [aka Technical Board]*:
+*Council of Warlocks [aka Steering Committee]*:
 
   - Anyone who has completed 5+ *sprints* (level V+).
   - Ability to approve PRs.
