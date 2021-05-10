@@ -107,7 +107,7 @@ Overview
   <br/>
 
 .. centered::
-  **AIQC is a Python framework for rapid & reproducible deep learning.**
+  **AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.**
 
 .. image:: images/framework_diagram_april29.png
   :width: 100%
