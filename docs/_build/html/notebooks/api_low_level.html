@@ -112,13 +112,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../community.html#purpose">Purpose.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#how-can-i-get-involved">How can I get involved?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#what-can-i-contribute">What can I contribute?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-environment">Setting up environment.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-dev-environment">Setting up dev environment.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#programming-style">Programming style.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#code-of-conduct">Code of conduct.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws [aka Governance].</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../community.html#open-source">Open source.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../community.html#choosing-a-license">Choosing a license</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../community.html#open-core">Open core</a></li>
 </ul>
 </li>
 </ul>
@@ -343,8 +343,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#10.-Assess-the-Results.">10. Assess the <code class="docutils literal notranslate"><span class="pre">Results</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#10.-Predictors-are-the-trained-models.">10. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#11.-Predictions-are-the-output-of-a-Predictor.">11. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>
@@ -356,16 +359,16 @@
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Classification">Classification</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Metrics">Individual Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Metrics">Aggregate Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Visualization">Aggregate Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Visualization">Queue Visualization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Visualization">Individual Job Visualization</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Regression">Regression</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="visualization.html#id1">Individual Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#id2">Aggregate Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#id3">Aggregate Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#id4">Individual Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Metrics">Aggregate Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Visualization">Aggregate Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id2">Individual Job Visualization</a></li>
 </ul>
 </li>
 </ul>
@@ -2699,9 +2702,7 @@ No more Featurecoders can be added to this Encoderset.
 <div class="section" id="Job-objects.">
 <h3><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#Job-objects." title="Permalink to this headline">¶</a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Queue represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
-<blockquote>
-<div><p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then (a) the number of jobs is multiplied by the <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> and the <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>, (b) each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p>
-</div></blockquote>
+<p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then: - The number of jobs = <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> * <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>. - Each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p>
 </div>
 <div class="section" id="Execute-all-Jobs.">
 <h3>Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#Execute-all-Jobs." title="Permalink to this headline">¶</a></h3>
@@ -2769,20 +2770,14 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 </div>
-<div class="section" id="10.-Assess-the-Results.">
-<h2>10. Assess the <code class="docutils literal notranslate"><span class="pre">Results</span></code>.<a class="headerlink" href="#10.-Assess-the-Results." title="Permalink to this headline">¶</a></h2>
-<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has a <code class="docutils literal notranslate"><span class="pre">Result</span></code>. The following attributes are automatically written to the <code class="docutils literal notranslate"><span class="pre">Result</span></code> after training.</p>
+<div class="section" id="10.-Predictors-are-the-trained-models.">
+<h2>10. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.<a class="headerlink" href="#10.-Predictors-are-the-trained-models." title="Permalink to this headline">¶</a></h2>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> trains a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>. The following attributes are automatically written to the <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> after training.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">model_file</span></code>: HDF5 bytes of the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_file</span></code>: serialization varies for Keras and Pytorch deep learning framework.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input_shapes</span></code>: used by <code class="docutils literal notranslate"><span class="pre">get_model()</span></code> during inference.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">history</span></code>: per epoch metrics recorded during training.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">predictions</span></code>: dictionary of predictions per split/ fold.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">probabilities</span></code>: dictionary of prediction probabilities per split/ fold.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">metrics</span></code>: dictionary of single-value metrics depending on the analysis_type.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_data</span></code>: metrics readily formatted for plotting.</p></li>
 </ul>
-<blockquote>
-<div><p>The dictionary attributes use split/ fold-based keys.</p>
-</div></blockquote>
 <div class="section" id="Fetching-the-trained-model.">
 <h3>Fetching the trained model.<a class="headerlink" href="#Fetching-the-trained-model." title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
@@ -2790,7 +2785,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">compiled_model</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span></span><span class="n">compiled_model</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
 <span class="n">compiled_model</span>
 </pre></div>
 </div>
@@ -2805,43 +2800,19 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div></div>
 </div>
 </div>
+</div>
+<div class="section" id="11.-Predictions-are-the-output-of-a-Predictor.">
+<h2>11. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.<a class="headerlink" href="#11.-Predictions-are-the-output-of-a-Predictor." title="Permalink to this headline">¶</a></h2>
+<p>When you feed samples through a Predictor, you get Predictions. During training, Predictions are automatically generated for every split/fold that was tied to the Queue.</p>
 <div class="section" id="Fetching-metrics.">
 <h3>Fetching metrics.<a class="headerlink" href="#Fetching-metrics." title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;test&#39;: {&#39;accuracy&#39;: 0.9666666666666667,
-  &#39;f1&#39;: 0.9665831244778613,
-  &#39;loss&#39;: 0.13921520113945007,
-  &#39;precision&#39;: 0.9696969696969696,
-  &#39;recall&#39;: 0.9666666666666667,
-  &#39;roc_auc&#39;: 0.9966666666666666},
- &#39;validation&#39;: {&#39;accuracy&#39;: 0.9444444444444444,
-  &#39;f1&#39;: 0.9440559440559441,
-  &#39;loss&#39;: 0.22046174108982086,
-  &#39;precision&#39;: 0.9523809523809523,
-  &#39;recall&#39;: 0.9444444444444444,
-  &#39;roc_auc&#39;: 0.976851851851852},
- &#39;train&#39;: {&#39;accuracy&#39;: 0.9607843137254902,
-  &#39;f1&#39;: 0.9607843137254902,
-  &#39;loss&#39;: 0.13327109813690186,
-  &#39;precision&#39;: 0.9607843137254902,
-  &#39;recall&#39;: 0.9607843137254902,
-  &#39;roc_auc&#39;: 0.9969723183391003}}
-</pre></div></div>
-</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">predictions</span></code>: dictionary of predictions per split/ fold. Values are <code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code>’ed if Labels were encoded during training.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">probabilities</span></code>: dictionary of prediction probabilities per split/ fold. <code class="docutils literal notranslate"><span class="pre">None</span></code> for regression.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics</span></code>: dictionary of metrics for each split/fold that vary based on the analysis_type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics_aggregate</span></code>: dictionary of aggregate statistics across all splits/folds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_data</span></code>: metrics readily formatted for plotting.</p></li>
+</ul>
 </div>
 </div>
 <div class="section" id="11.-Metrics-&amp;-Visualization">
