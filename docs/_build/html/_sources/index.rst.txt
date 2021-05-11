@@ -39,6 +39,7 @@
   notebooks/api_high_level
   notebooks/api_low_level
   notebooks/visualization
+  notebooks/inference
   compatibility
 
 

@@ -1954,7 +1954,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Similar to `splitset.to_numpy(splits:list)`, the `foldset.to_numpy(fold_names:list)` argument allows you to pluck the `['folds_train_combined]` and `['fold_validation]` slices. Just make sure you remember to specific all 3 levels of keys when accessing the result."
+    "Similar to `splitset.to_numpy(splits:list)`, the `foldset.to_numpy(fold_names:list)` argument allows you to pluck the `['folds_train_combined]` and `['fold_validation]` slices. Just make sure you remember to specify all 3 levels of keys when accessing the output."
    ]
   },
   {
@@ -2911,9 +2911,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "* `repeat_count:int` allows us to run the same `Job` multiple times. Normally, each `Job` has 1 `Result` object associated with it upon completion. However, when `repeat_count` (> 1 of course) is used, a single `Job` will have multiple `Results`.\n",
+    "* `repeat_count:int` allows us to run the same `Job` multiple times. Normally, each `Job` has 1 `Predictor` associated with it upon completion. However, when `repeat_count` (> 1 of course) is used, a single `Job` will have multiple `Predictors`.\n",
     "\n",
-    "> Due to the fact that training is a *nondeterministic* process, we are likely to get different results each time we train a model, even if we use the same set of parameters. Perhaps you've have the right topology and parameters, but, this time around, the model just didn't recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition. "
+    "> Due to the fact that training is a *nondeterministic* process, we get different weights each time we train a model, even if we use the same set of parameters. Perhaps you've have the right topology and parameters, but, this time around, the model just didn't recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition. "
    ]
   },
   {

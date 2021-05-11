@@ -373,6 +373,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../compatibility.html">Compatibility</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../compatibility.html#libraries-analyses">Libraries &amp; Analyses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compatibility.html#data-preparation">Data Preparation</a><ul>
@@ -2053,7 +2054,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 <div class="section" id="Foldset.to_pandas()">
 <h3><code class="docutils literal notranslate"><span class="pre">Foldset.to_pandas()</span></code><a class="headerlink" href="#Foldset.to_pandas()" title="Permalink to this headline">¶</a></h3>
-<p>Similar to <code class="docutils literal notranslate"><span class="pre">splitset.to_numpy(splits:list)</span></code>, the <code class="docutils literal notranslate"><span class="pre">foldset.to_numpy(fold_names:list)</span></code> argument allows you to pluck the <code class="docutils literal notranslate"><span class="pre">['folds_train_combined]</span></code> and <code class="docutils literal notranslate"><span class="pre">['fold_validation]</span></code> slices. Just make sure you remember to specific all 3 levels of keys when accessing the result.</p>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">splitset.to_numpy(splits:list)</span></code>, the <code class="docutils literal notranslate"><span class="pre">foldset.to_numpy(fold_names:list)</span></code> argument allows you to pluck the <code class="docutils literal notranslate"><span class="pre">['folds_train_combined]</span></code> and <code class="docutils literal notranslate"><span class="pre">['fold_validation]</span></code> slices. Just make sure you remember to specify all 3 levels of keys when accessing the output.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
@@ -2691,10 +2692,10 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">repeat_count:int</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Result</span></code> object associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> (&gt; 1 of course) is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Results</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">repeat_count:int</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> (&gt; 1 of course) is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Predictors</span></code>.</p></li>
 </ul>
 <blockquote>
-<div><p>Due to the fact that training is a <em>nondeterministic</em> process, we are likely to get different results each time we train a model, even if we use the same set of parameters. Perhaps you’ve have the right topology and parameters, but, this time around, the model just didn’t recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition.</p>
+<div><p>Due to the fact that training is a <em>nondeterministic</em> process, we get different weights each time we train a model, even if we use the same set of parameters. Perhaps you’ve have the right topology and parameters, but, this time around, the model just didn’t recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition.</p>
 </div></blockquote>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
