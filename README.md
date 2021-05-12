@@ -17,7 +17,7 @@
 
 <br />
 
-![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_diagram_april29.png)
+![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_may12.png)
 
 <br />
 

@@ -8,6 +8,14 @@
 	border-width: 2px;
 }
 
+/* 
+width auto was rendering 0px wide for .svg files
+https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
+*/
+.wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
+	width: 275px;
+}
+
 .wy-nav-side {
 	background-color: #060606;
 	background-image: linear-gradient(#060606, #252523);

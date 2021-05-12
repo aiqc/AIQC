@@ -20,7 +20,7 @@
 
 .. toctree::
   :maxdepth: 2
-  :caption: Tutorials
+  :caption: Workflows
   :hidden:
 
   notebooks/keras_binary_classification
@@ -36,9 +36,9 @@
   :caption: Documentation
   :hidden:
 
+  notebooks/visualization
   notebooks/api_high_level
   notebooks/api_low_level
-  notebooks/visualization
   notebooks/inference
   compatibility
 
@@ -110,7 +110,7 @@ Overview
 .. centered::
   **AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.**
 
-.. image:: images/framework_diagram_april29.png
+.. image:: images/framework_may12.png
   :width: 100%
   :align: center
   :alt: framework
@@ -157,7 +157,7 @@ II. Train many variations of an algorithm in a queue.
 
 - Queue many training jobs for hyperparameter tuning & cross-validation.
 
-- Automatically passes param combinations into model functions as `**kwargs`.
+- Automatically pass hyperparameters into training functions as `**kwargs`.
 
 - Tweak the model topology as a param (`params['extra_conv3D_layer']=True`).
 
@@ -172,13 +172,11 @@ III. Evaluate algorithm performance with metrics & charts.
    :width: 100%
    :alt: plots.gif
 
-- Automated performance metrics & visualization for every split/ fold.
-
-- Define multi-metric success criteria for early stopping.
+- Automated performance metrics & visualizations for every split/ fold.
 
 - Captures per-epoch history metrics for learning curves.
 
-- Aggregate metrics for sets of cross-folded jobs.
+- Define multi-metric success criteria for early stopping.
 
 |
 
@@ -187,45 +185,51 @@ IV. Effortlessly track, reproduce, & prove experiments.
 
 .. code-block:: python
 
-   # Everything is saved. No more writing down parameters or screenshotting charts!
+   ## All experiment artifacts are automatically saved.
    queue.jobs[0].hyperparamcombo.hyperparameters
    {
-       'include_nth_layer': True,
+       'include_4th_layer': True,
        'weight_init': 'he_normal',
        'batch_size': 8,
        'dense_neurons': 64
    }
 
-   # Examples of what is recorded:
-   queue.jobs[0].results[0].get_model()
-
+   ## A few examples:
+   # Trained model.
+   queue.jobs[0].predictors[0].get_model()
+   # Function used to build model.
    queue.algorithm.fn_build
+   # Predictions for the left-out cross-validation fold.
+   queue.jobs[0].predictors[0].predictions[0].predections['fold_validation']
+   # Indices of the cross-validation training fold.
+   queue.jobs[0].fold.samples['folds_train_combined']['features']
+   # Fitted encoders.
+   queue.jobs[0].fitted_encoders['featurecoders'][0]
 
-   queue.jobs[0].results[0].predictions['fold_validation']
 
-   queue.jobs[0].fold.samples['fold_validation']['features']
+- Automatically records experiments in a local SQLite database file.
 
+- Apply original preprocessing steps to new samples during inference. 
 
-* Automatically records experiments in a local SQLite database file.
-
-* No infrastructure hassle; `aiqc.setup()` creates the database for you.
+- No infrastructure hassle; `aiqc.setup()` creates the database for you.
 
 |
 
-V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials</notebooks/api_high_level.ipynb>` to guide you.
-===============================================================================================================================
+V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials</notebooks/keras_multi-label_classification.ipynb>` to guide you.
+=================================================================================================================================================
 
 .. code-block:: python
 
    # pip install --upgrade aiqc
 
    import aiqc
-   from aiqc import datum # data for tutorials.
-   
-   aiqc.setup() # create & connect to the database.
+   # Data for tutorials.
+   from aiqc import datum 
+   # Creates & connects to the database.
+   aiqc.setup() 
 
 
-- Example datasets built into package.
+- :ref:`Example datasets </notebooks/example_datasets.ipynb>` built into package.
 
 - Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) & OS (Win, Mac, Lin).
 
