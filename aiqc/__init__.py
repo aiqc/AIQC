@@ -4728,10 +4728,11 @@ class Job(BaseModel):
 		return transformed_features
 
 
-	def predict(samples:dict, predictor_id:int, infer_splitset_id:int=None):
+	def predict(samples:dict, predictor_id:int, splitset_id:int=None):
 		"""
-		4a. Evaluation: predictions, metrics, charts for each split/fold.
+		Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
+		- `splitset_id` refers to a splitset provided for inference, not training.
 		"""
 		predictor = Predictor.get_by_id(predictor_id)
 		hyperparamcombo = predictor.job.hyperparamcombo
@@ -4926,10 +4927,10 @@ class Job(BaseModel):
 			metrics_aggregate = None
 			plot_data = None
 
-		if (infer_splitset_id is not None):
-			dataset = Dataset.get_by_id(infer_splitset_id)
+		if (splitset_id is not None):
+			splitset = Splitset.get_by_id(splitset_id)
 		else:
-			dataset = None
+			splitset = None
 
 		prediction = Prediction.create(
 			predictions = predictions
@@ -4938,7 +4939,7 @@ class Job(BaseModel):
 			, metrics_aggregate = metrics_aggregate
 			, plot_data = plot_data
 			, predictor = predictor
-			, dataset = dataset
+			, splitset = splitset
 		)
 		return prediction
 
@@ -5370,14 +5371,12 @@ class Predictor(BaseModel):
 			raise ValueError(f"\nYikes - The new image color mode:{image_new.mode} did not match the original image color mode:{image_og.mode}.\n")
 			
 
-	def newSchema_matches_ogSchema(id:int, infer_splitset_id:int):
+	def newSchema_matches_ogSchema(id:int, featureset:object, label:object=None):
 		predictor = Predictor.get_by_id(id)
-		splitset_og = predictor.job.queue.splitset
-		splitset_new = Splitset.get_by_id(infer_splitset_id)
 
-		featureset_og = splitset_og.featureset
+		featureset_og = predictor.job.queue.splitset.featureset
 		featureset_og_typ = featureset_og.dataset.dataset_type
-		featureset_new = splitset_new.featureset
+		featureset_new = featureset
 		featureset_new_typ = featureset_new.dataset.dataset_type
 		if (featureset_og_typ != featureset_new_typ):
 			raise ValueError("\nYikes - New Featureset and original Featureset come from different `dataset_types`.\n")
@@ -5388,14 +5387,15 @@ class Predictor(BaseModel):
 
 		# Only verify Labels if the inference Splitset provides Labels.
 		# Otherwise, it may be conducting pure inference.
-		if (splitset_new.supervision == 'supervised'):
-			label_new = splitset_new.label
+		if (label is not None):
+			label_new = label
 			label_new_typ = label_new.dataset.dataset_type
 
-			if (splitset_og.supervision == 'supervised'):
-				label_og =  splitset_og.label
+			supervision_og = predictor.job.queue.splitset.supervision
+			if (supervision_og == 'supervised'):
+				label_og =  predictor.job.queue.splitset.label
 				label_og_typ = label_og.dataset.dataset_type
-			elif (splitset_og.supervision == 'unsupervised'):
+			elif (supervision_og == 'unsupervised'):
 				raise ValueError("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
 			if (label_og_typ != label_new_typ):
 				raise ValueError("\nYikes - New Label and original Label come from different `dataset_types`.\n")
@@ -5404,19 +5404,24 @@ class Predictor(BaseModel):
 
 
 			
-	def infer(id:int, infer_splitset_id:int):
+	def infer(id:int, splitset_id:int):
 		"""
 		- Splitset is used because Labels and Featuresets can come from different types of Datasets.
 		- Verifies both Features and Labels match original schema.
 		"""
-		Predictor.newSchema_matches_ogSchema(id, infer_splitset_id)
+		splitset = Splitset.get_by_id(splitset_id)
+		featureset = splitset.featureset
+		if (splitset.label is not None):
+			label = splitset.label
+		else:
+			label = None
+
+		Predictor.newSchema_matches_ogSchema(id, featureset, label)
 		predictor = Predictor.get_by_id(id)
-		splitset_new = Splitset.get_by_id(infer_splitset_id)
-		supervision = splitset_new.supervision
+
 		fitted_encoders = predictor.job.fitted_encoders
 
-		arr_features = splitset_new.featureset.to_numpy()
-
+		arr_features = featureset.to_numpy()
 		encoderset = predictor.job.queue.encoderset
 		if (encoderset is not None):
 			# Don't need to check types because Encoderset creation protects
@@ -5432,13 +5437,13 @@ class Predictor(BaseModel):
 		  e.g. `samples[<trn,val,tst>]`
 		- str() id because int keys aren't JSON serializable.
 		"""
-		str_id = str(infer_splitset_id)
+		str_id = str(splitset_id)
 		samples = {str_id: {"features": arr_features}}
 		
-		if (supervision == 'supervised'):
-			arr_labels = splitset_new.label.to_numpy()	
-			labelcoder = predictor.job.queue.labelcoder
+		if (label is not None):
+			arr_labels = label.to_numpy()	
 
+			labelcoder = predictor.job.queue.labelcoder
 			if (labelcoder is not None):
 				arr_labels = Job.encoder_transform_labels(
 					arr_labels=arr_labels,
@@ -5448,7 +5453,7 @@ class Predictor(BaseModel):
 			samples[str_id]['labels'] = arr_labels
 
 		prediction = Job.predict(
-			samples=samples, predictor_id=id, infer_splitset_id=infer_splitset_id
+			samples=samples, predictor_id=id, splitset_id=splitset_id
 		)
 		return prediction
 
@@ -5471,7 +5476,7 @@ class Prediction(BaseModel):
 
 	predictor = ForeignKeyField(Predictor, backref='predictions')
 	# dataset present if created for inference, v.s. null if from Original training set.
-	dataset = ForeignKeyField(Dataset, deferrable='INITIALLY DEFERRED', null=True, backref='dataset') 
+	splitset = ForeignKeyField(Splitset, deferrable='INITIALLY DEFERRED', null=True, backref='dataset') 
 
 	"""
 	- I moved these plots out of Predictor into Prediction because it felt weird to access the
@@ -5700,10 +5705,10 @@ class Pipeline():
 				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 
 			if (label_encoder is not None): 
-				splitset.label.make_labelcoder(sklearn_preprocess=label_encoder)
+				label.make_labelcoder(sklearn_preprocess=label_encoder)
 
 			if (feature_encoders is not None):					
-				encoderset = splitset.featureset.make_encoderset()
+				encoderset = featureset.make_encoderset()
 				for fc in feature_encoders:
 					encoderset.make_featurecoder(**fc)
 			return splitset
