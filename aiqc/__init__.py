@@ -1750,6 +1750,16 @@ class Label(BaseModel):
 		return label_dtypes
 
 
+	def make_labelcoder(
+		id:int
+		, sklearn_preprocess:object
+	):
+		lc = Labelcoder.from_label(
+			label_id = id
+			, sklearn_preprocess = sklearn_preprocess
+		)
+		return lc
+
 
 
 class Featureset(BaseModel):
@@ -1943,6 +1953,19 @@ class Featureset(BaseModel):
 			, bin_count = bin_count
 		)
 		return s
+
+
+	def make_encoderset(
+		id:int
+		, encoder_count:int = 0
+		, description:str = None
+	):
+		encoderset = Encoderset.from_featureset(
+			featureset_id = id
+			, encoder_count = 0
+			, description = description
+		)
+		return encoderset
 
 
 
@@ -2320,18 +2343,6 @@ class Splitset(BaseModel):
 		return foldset
 
 
-	def make_encoderset(
-		id:int
-		, encoder_count:int = 0
-		, description:str = None
-	):
-		e = Encoderset.from_splitset(
-			splitset_id = id
-			, encoder_count = 0
-			, description = description
-		)
-		return e
-
 
 
 class Foldset(BaseModel):
@@ -2611,31 +2622,20 @@ class Encoderset(BaseModel):
 	encoder_count = IntegerField()
 	description = CharField(null=True)
 
-	splitset = ForeignKeyField(Splitset, backref='encodersets')
+	featureset = ForeignKeyField(Featureset, backref='encodersets')
 
-	def from_splitset(
-		splitset_id:int
+	def from_featureset(
+		featureset_id:int
 		, encoder_count:int = 0
 		, description:str = None
 	):
-		s = Splitset.get_by_id(splitset_id)
-		e = Encoderset.create(
+		featureset = Featureset.get_by_id(featureset_id)
+		encoderset = Encoderset.create(
 			encoder_count = encoder_count
 			, description = description
-			, splitset = s
+			, featureset = featureset
 		)
-		return e
-
-
-	def make_labelcoder(
-		id:int
-		, sklearn_preprocess:object
-	):
-		lc = Labelcoder.from_encoderset(
-			encoderset_id = id
-			, sklearn_preprocess = sklearn_preprocess
-		)
-		return lc
+		return encoderset
 
 
 	def make_featurecoder(
@@ -2672,49 +2672,33 @@ class Labelcoder(BaseModel):
 	  is much simpler to validate and run in comparison to Featurecoder.
 	"""
 	only_fit_train = BooleanField()
+	is_categorical = BooleanField()
 	sklearn_preprocess = PickleField()
 	matching_columns = JSONField() # kinda unecessary, but maybe multi-label future.
 	encoding_dimension = CharField()
 
-	encoderset = ForeignKeyField(Encoderset, backref='labelcoders')
+	label = ForeignKeyField(Label, backref='labelcoders')
 
-	def from_encoderset(
-		encoderset_id:int
+	def from_label(
+		label_id:int
 		, sklearn_preprocess:object
 	):
-		encoderset = Encoderset.get_by_id(encoderset_id)
-		splitset = encoderset.splitset
-		label = splitset.label
+		label = Label.get_by_id(label_id)
 
-		# 1. Validation.
-		if (splitset.supervision == 'unsupervised'):
-			raise ValueError("\nYikes - `Splitset.supervision=='unsupervised'` therefore it cannot take on a Labelcoder.\n")
-		elif (len(encoderset.labelcoders) == 1):
-			raise ValueError("\nYikes - Encodersets cannot have more than 1 Labelcoder.\n")
-
-		sklearn_preprocess, only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=True)
-
-		# 2. Test Fit. 
-		if (only_fit_train == True):
-			"""
-			- Foldset is tied to Queue. So just `fit()` on `train` split
-			  and don't worry about `folds_train_combined` for now.
-			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
-			  in which case user should be using `only_fit_train=False` anyways.
-			"""
-			samples_to_encode = splitset.to_numpy(
-				splits = ['train']
-				, include_featureset = False
-			)['train']['labels']
-			communicated_split = "the training split"
-		elif (only_fit_train == False):
-			samples_to_encode = label.to_numpy()
-			communicated_split = "all samples"
-
-		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
-			sklearn_preprocess = sklearn_preprocess
-			, samples_to_fit = samples_to_encode
+		sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
+			sklearn_preprocess, is_label=True
 		)
+
+		samples_to_encode = label.to_numpy()
+		# 2. Test Fit.
+		try:
+			fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
+				sklearn_preprocess = sklearn_preprocess
+				, samples_to_fit = samples_to_encode
+			)
+		except:
+			print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}` on `label.to_numpy())`.\n")
+			raise
 
 		# 3. Test Transform/ Encode.
 		try:
@@ -2722,24 +2706,15 @@ class Labelcoder(BaseModel):
 			- During `Job.run`, it will touch every split/fold regardless of what it was fit on
 			  so just validate it on whole dataset.
 			"""
-			if (only_fit_train == False):
-				# All samples are already in memory.
-				pass
-			elif (only_fit_train == True):
-				# Overwrite the specific split with all samples, so we can test it.
-				samples_to_encode = label.to_numpy()
-			
 			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError(dedent(f"""
-			During testing, the encoder was successfully `fit()` on labels of {communicated_split},
-			but, it failed to `transform()` labels of the dataset as a whole.\n
-			Tip - for categorical encoders like `OneHotEncoder(sparse=False)` and `OrdinalEncoder()`,
-			it is better to use `only_fit_train=False`.
+			raise ValueError(dedent("""
+			During testing, the encoder was successfully `fit()` on the labels,
+			but, it failed to `transform()` labels of the dataset as a whole.
 			"""))
 		else:
 			pass    
@@ -2748,7 +2723,8 @@ class Labelcoder(BaseModel):
 			, sklearn_preprocess = sklearn_preprocess
 			, encoding_dimension = encoding_dimension
 			, matching_columns = label.columns
-			, encoderset = encoderset
+			, is_categorical = is_categorical
+			, label = label
 		)
 		return lc
 
@@ -2880,11 +2856,14 @@ class Labelcoder(BaseModel):
 			"""
 			only_fit_train = True
 			stringified_coder = str(sklearn_preprocess)
+			is_categorical = False
 			for c in categorical_encoders:
 				if (stringified_coder.startswith(c)):
 					only_fit_train = False
+					is_categorical = True
 					break
-			return sklearn_preprocess, only_fit_train
+
+			return sklearn_preprocess, only_fit_train, is_categorical
 
 
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
@@ -3055,6 +3034,7 @@ class Featurecoder(BaseModel):
 	original_filter = JSONField()
 	encoding_dimension = CharField()
 	only_fit_train = BooleanField()
+	is_categorical = BooleanField()
 
 	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
 
@@ -3071,8 +3051,7 @@ class Featurecoder(BaseModel):
 		dtypes = listify(dtypes)
 		columns = listify(columns)
 		
-		splitset = encoderset.splitset
-		featureset = encoderset.splitset.featureset
+		featureset = encoderset.featureset
 		featureset_cols = featureset.columns
 		featureset_dtypes = featureset.get_dtypes()
 		existing_featurecoders = list(encoderset.featurecoders)
@@ -3108,7 +3087,9 @@ class Featurecoder(BaseModel):
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
 		
-		sklearn_preprocess, only_fit_train = Labelcoder.check_sklearn_attributes(sklearn_preprocess, is_label=False)
+		sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
+			sklearn_preprocess, is_label=False
+		)
 
 		if (dtypes is not None):
 			for typ in dtypes:
@@ -3217,22 +3198,7 @@ class Featurecoder(BaseModel):
 		}
 
 		# 4. Test fitting the encoder to matching columns.
-		if (only_fit_train == True):
-			"""
-			- Foldset is tied to Queue. So just `fit()` on `train` split
-			  and don't worry about `folds_train_combined` for now.
-			- Only reason why it is likely to fail aside from NaNs is unseen categoricals, 
-			  in which case user should be using `only_fit_train=False` anyways.
-			"""
-			samples_to_encode = splitset.to_numpy(
-				splits=['train']
-				, include_label = False
-				, feature_columns = matching_columns
-			)['train']['features']
-			communicated_split = "the training split"
-		elif (only_fit_train == False):
-			samples_to_encode = featureset.to_numpy(columns=matching_columns)
-			communicated_split = "all samples"
+		samples_to_encode = featureset.to_numpy(columns=matching_columns)
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 			sklearn_preprocess = sklearn_preprocess
@@ -3241,28 +3207,15 @@ class Featurecoder(BaseModel):
 
 		# 5. Test encoding the whole dataset using fitted encoder on matching columns.
 		try:
-			"""
-			- During `Job.run`, it will touch every split/fold regardless of what it was fit on
-			  so just validate it on whole dataset.
-			"""
-			if (only_fit_train == False):
-				# All samples are already in memory.
-				pass
-			elif (only_fit_train == True):
-				# Overwrite the specific split with all samples, so we can test it.
-				samples_to_encode = featureset.to_numpy(columns=matching_columns)
-
 			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError(dedent(f"""
-			During testing, the encoder was successfully `fit()` on features of {communicated_split},
+			raise ValueError(dedent("""
+			During testing, the encoder was successfully `fit()` on the features,
 			but, it failed to `transform()` features of the dataset as a whole.\n
-			Tip - for categorical encoders like `OneHotEncoder(sparse=False)` and 
-			`OrdinalEncoder()`, it is better to use `only_fit_train=False`.
 			"""))
 		else:
 			pass
@@ -3270,6 +3223,7 @@ class Featurecoder(BaseModel):
 		featurecoder = Featurecoder.create(
 			featurecoder_index = featurecoder_index
 			, only_fit_train = only_fit_train
+			, is_categorical = is_categorical
 			, sklearn_preprocess = sklearn_preprocess
 			, matching_columns = matching_columns
 			, leftover_columns = leftover_columns
@@ -3547,6 +3501,7 @@ class Algorithm(BaseModel):
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, encoderset_id:int = None
+		, labelcoder_id:int = None
 		, hide_test:bool = False
 	):
 		queue = Queue.from_algorithm(
@@ -3555,6 +3510,7 @@ class Algorithm(BaseModel):
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
 			, encoderset_id = encoderset_id
+			, labelcoder_id = labelcoder_id
 			, repeat_count = repeat_count
 			, hide_test = hide_test
 		)
@@ -3961,6 +3917,7 @@ class Queue(BaseModel):
 	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
+	labelcoder = ForeignKeyField(Labelcoder, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 
 
 	def from_algorithm(
@@ -3971,6 +3928,7 @@ class Queue(BaseModel):
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, encoderset_id:int = None
+		, labelcoder_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		library = algorithm.library
@@ -3982,17 +3940,10 @@ class Queue(BaseModel):
 
 		if (encoderset_id is not None):
 			encoderset = Encoderset.get_by_id(encoderset_id)
-
-			if (
-				(len(splitset.encodersets[0].labelcoders) == 0)
-				and
-				(len(splitset.encodersets[0].featurecoders) == 0)
-			):
-				raise ValueError("\nYikes - That Encoderset has neither a Labelcoder nor Featurecoders.\n")
-
+			if (len(encoderset.featurecoders) == 0):
+				raise ValueError("\nYikes - That Encoderset has no Featurecoders.\n")
 		else:
-			has_labelcoder = False
-			encoder_is_categorical = None
+			encoderset = None
 
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
@@ -4000,45 +3951,32 @@ class Queue(BaseModel):
 			label_col_count = splitset.label.column_count
 			label_dtypes = list(splitset.label.get_dtypes().values())
 			
+			if (labelcoder_id is not None):
+				labelcoder = Labelcoder.get_by_id(labelcoder_id)
+				stringified_labelcoder = str(labelcoder.sklearn_preprocess)
+			else:
+				labelcoder = None
+				stringified_labelcoder = None
+
+
 			if (label_col_count == 1):
 				label_dtype = label_dtypes[0]
-				
-				if (encoderset_id is not None):         
-					if (len(splitset.encodersets[0].labelcoders) > 0):
-						has_labelcoder = True
-						labelcoder = encoderset.labelcoders[0]
-						stringified_coder = str(labelcoder.sklearn_preprocess)
-					
-						for c in categorical_encoders:
-							if (stringified_coder.startswith(c)):
-								encoder_is_categorical = True
-								break
-							else:
-								encoder_is_categorical = False
-					else:
-						has_labelcoder = False
-						encoder_is_categorical = None
-				if (encoderset_id is None): 
-					has_labelcoder = False
-					encoder_is_categorical = None
-					stringified_coder = None
-
 
 				if ('classification' in analysis_type): 
 					if (np.issubdtype(label_dtype, np.floating)):
 						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
-					if (has_labelcoder == True):
-						if (encoder_is_categorical == False):
+					if (labelcoder is not None):
+						if (labelcoder.is_categorical == False):
 							raise ValueError(dedent(f"""
 								Yikes - `Algorithm.analysis_type=='classification_*'`, but 
-								`Labelcoder.sklearn_preprocess={stringified_coder}` was not found in known 'classification' encoders:
+								`Labelcoder.sklearn_preprocess={stringified_labelcoder}` was not found in known 'classification' encoders:
 								{categorical_encoders}
 							"""))
 
 						if ('_binary' in analysis_type):
 							# Prevent OHE w classification_binary
-							if (stringified_coder.startswith("OneHotEncoder")):
+							if (stringified_labelcoder.startswith("OneHotEncoder")):
 								raise ValueError(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
 								`Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
@@ -4049,7 +3987,7 @@ class Queue(BaseModel):
 						elif ('_multi' in analysis_type):
 							if (library == 'pytorch'):
 								# Prevent OHE w pytorch.
-								if (stringified_coder.startswith("OneHotEncoder")):
+								if (stringified_labelcoder.startswith("OneHotEncoder")):
 									raise ValueError(dedent("""
 									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
 									but `Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
@@ -4057,20 +3995,19 @@ class Queue(BaseModel):
 									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
 									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
 									"""))
-								elif (not stringified_coder.startswith("OrdinalEncoder")):
+								elif (not stringified_labelcoder.startswith("OrdinalEncoder")):
 									print(dedent("""
 										Warning - When `(analysis_type=='classification_multi') and (library == 'pytorch')`
 										We recommend you use `sklearn.preprocessing.OrdinalEncoder()` as a Labelcoder.
 									"""))
 							else:
-								if (not stringified_coder.startswith("OneHotEncoder")):
+								if (not stringified_labelcoder.startswith("OneHotEncoder")):
 									print(dedent("""
 										Warning - When performing non-PyTorch, multi-label classification on a single column,
 										we recommend you use `sklearn.preprocessing.OneHotEncoder()` as a Labelcoder.
 									"""))
 					elif (
-						((has_labelcoder == False) or (has_labelcoder == None))
-						and ('_multi' in analysis_type) and (library != 'pytorch')
+						(labelcoder is None) and ('_multi' in analysis_type) and (library != 'pytorch')
 					):
 						print(dedent("""
 							Warning - When performing non-PyTorch, multi-label classification on a single column 
@@ -4092,14 +4029,13 @@ class Queue(BaseModel):
 								`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
 							"""))
 				elif (analysis_type == 'regression'):
-					if (encoderset_id is not None):
-						if (has_labelcoder == True):
-							if (encoder_is_categorical == True):
-								raise ValueError(dedent(f"""
-									Yikes - `Algorithm.analysis_type=='regression'`, but 
-									`Labelcoder.sklearn_preprocess={stringified_coder}` was found in known categorical encoders:
-									{categorical_encoders}
-								"""))
+					if (labelcoder is not None):
+						if (labelcoder.is_categorical == True):
+							raise ValueError(dedent(f"""
+								Yikes - `Algorithm.analysis_type=='regression'`, but 
+								`Labelcoder.sklearn_preprocess={stringified_labelcoder}` was found in known categorical encoders:
+								{categorical_encoders}
+							"""))
 
 					if (
 						(not np.issubdtype(label_dtype, np.floating))
@@ -4121,13 +4057,16 @@ class Queue(BaseModel):
 							if (splitset.bin_count is None):
 								print("Warning - `bin_count` was set for Foldset, but not for Splitset. This leads to inconsistent stratification across samples.")
 				
-			# We already know how OHE columns are formatted from label creation, so skip dtype, bin, and encoder checks.
+			# We already know these are OHE based on Label creation, so skip dtype, bin, and encoder checks.
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
 					raise ValueError("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
 
 		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
-			raise ValueError(f"\nYikes - Cannot have `hide_test==True` if `splitset.supervision != 'supervised'`.\n")
+			raise ValueError("\nYikes - Cannot have `hide_test==True` if `splitset.supervision != 'supervised'`.\n")
+		elif ((splitset.supervision == 'unsupervised') and (labelcoder_id is not None)):
+			raise ValueError("\nYikes - `splitset.supervision == 'unsupervised'`, but `labelcoder_id is not None`.\n")
+
 
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
@@ -4147,13 +4086,6 @@ class Queue(BaseModel):
 			# Just so we have an item to loop over as a null condition when creating Jobs.
 			combos = [None]
 			hyperparamset = None
-			
-		# Splitset can have multiple Encodersets for experimentation.
-		# So this relationship determines which one is tied to Queue.
-		if (encoderset_id is not None):
-			encoderset = Encoderset.get_by_id(encoderset_id)
-		else:
-			encoderset = None
 
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		run_count = len(combos) * len(folds) * repeat_count
@@ -4166,6 +4098,7 @@ class Queue(BaseModel):
 			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, encoderset = encoderset
+			, labelcoder = labelcoder
 			, hide_test = hide_test
 		)
  
@@ -4644,14 +4577,13 @@ class Job(BaseModel):
 
 	def encoder_fit_labels(
 		arr_labels:object, samples_train:list,
-		fitted_encoders:dict, encoderset:object
+		fitted_encoders:dict, labelcoder:object
 	):
 		"""
 		- All Label columns are always used during encoding.
 		- Rows determine what fit happens.
 		"""
-		if (len(encoderset.labelcoders) == 1):
-			labelcoder = encoderset.labelcoders[0]
+		if (labelcoder is not None):
 			preproc = labelcoder.sklearn_preprocess
 
 			if (labelcoder.only_fit_train == True):
@@ -4664,17 +4596,17 @@ class Job(BaseModel):
 				, samples_to_fit = labels_to_fit
 			)
 			# Save the fit.
-			fitted_encoders['labelcoder'] = fitted_coders[0]#take out of list.
+			fitted_encoders['labelcoder'] = fitted_coders[0]#take out of list before adding to dict.
 		return fitted_encoders
 
 
 	def encoder_transform_labels(
 		arr_labels:object,
-		fitted_encoders:dict, encoderset:object 
+		fitted_encoders:dict, labelcoder:object 
 	):
 		if ('labelcoder' in fitted_encoders.keys()):
 			fitted_encoders = fitted_encoders['labelcoder']
-			encoding_dimension = encoderset.labelcoders[0].encoding_dimension
+			encoding_dimension = labelcoder.encoding_dimension
 			
 			arr_labels = Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = [fitted_encoders] # `list(fitted_encoders)`, fails.
@@ -4701,7 +4633,7 @@ class Job(BaseModel):
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
 			fitted_encoders['featurecoders'] = []
-			fset_cols = encoderset.splitset.featureset.columns
+			fset_cols = encoderset.featureset.columns
 			
 			# For each featurecoder: fetch, transform, & concatenate matching features.
 			# One nested list per Featurecoder. List of lists.
@@ -4738,7 +4670,7 @@ class Job(BaseModel):
 		# Can't overwrite columns with data of different type, so they have to be pieced together.
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
-			fset_cols = encoderset.splitset.featureset.columns
+			fset_cols = encoderset.featureset.columns
 			transformed_features = None
 			for featurecoder in featurecoders:
 				idx = featurecoder.featurecoder_index
@@ -5025,6 +4957,7 @@ class Job(BaseModel):
 		library = algorithm.library
 		hide_test = queue.hide_test
 		splitset = queue.splitset
+		labelcoder = queue.labelcoder
 		encoderset = queue.encoderset
 		hyperparamcombo = job.hyperparamcombo
 		fold = job.fold
@@ -5072,19 +5005,20 @@ class Job(BaseModel):
 		"""
 		arr_features = splitset.featureset.to_numpy()
 		arr_labels = splitset.label.to_numpy()
-		fitted_encoders = {}
+		fitted_encoders = {} # keys get defined inside functions below.
 
-		if (encoderset is not None):
+		if (labelcoder is not None):
 			fitted_encoders = Job.encoder_fit_labels(
 				arr_labels=arr_labels, samples_train=samples[key_train],
-				fitted_encoders=fitted_encoders, encoderset=encoderset
+				fitted_encoders=fitted_encoders, labelcoder=labelcoder
 			)
 			
 			arr_labels = Job.encoder_transform_labels(
 				arr_labels=arr_labels,
-				fitted_encoders=fitted_encoders, encoderset=encoderset
+				fitted_encoders=fitted_encoders, labelcoder=labelcoder
 			)
 
+		if (encoderset is not None):
 			fitted_encoders = Job.encoder_fit_features(
 				arr_features=arr_features, samples_train=samples[key_train],
 				fitted_encoders=fitted_encoders, encoderset=encoderset
@@ -5479,25 +5413,19 @@ class Predictor(BaseModel):
 		predictor = Predictor.get_by_id(id)
 		splitset_new = Splitset.get_by_id(infer_splitset_id)
 		supervision = splitset_new.supervision
+		fitted_encoders = predictor.job.fitted_encoders
 
 		arr_features = splitset_new.featureset.to_numpy()
-		if (supervision == 'supervised'):
-			arr_labels = splitset_new.label.to_numpy()
 
 		encoderset = predictor.job.queue.encoderset
 		if (encoderset is not None):
 			# Don't need to check types because Encoderset creation protects
 			# against unencodable types.
-			fitted_encoders = predictor.job.fitted_encoders
 			arr_features = Job.encoder_transform_features(
 				arr_features=arr_features,
 				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
-			if (supervision == 'supervised'):
-				arr_labels = Job.encoder_transform_labels(
-					arr_labels=arr_labels,
-					fitted_encoders=fitted_encoders, encoderset=encoderset 
-				)
+
 		"""
 		- Pack into samples for the Algorithm functions.
 		- This is two levels deep to mirror how the training samples were structured 
@@ -5506,7 +5434,17 @@ class Predictor(BaseModel):
 		"""
 		str_id = str(infer_splitset_id)
 		samples = {str_id: {"features": arr_features}}
+		
 		if (supervision == 'supervised'):
+			arr_labels = splitset_new.label.to_numpy()	
+			labelcoder = predictor.job.queue.labelcoder
+
+			if (labelcoder is not None):
+				arr_labels = Job.encoder_transform_labels(
+					arr_labels=arr_labels,
+					fitted_encoders=fitted_encoders, labelcoder=labelcoder
+				)
+
 			samples[str_id]['labels'] = arr_labels
 
 		prediction = Job.predict(
@@ -5761,15 +5699,13 @@ class Pipeline():
 			if (fold_count is not None):
 				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 
-			if ((label_encoder is not None) or (feature_encoders is not None)):
-				encoderset = splitset.make_encoderset()
+			if (label_encoder is not None): 
+				splitset.label.make_labelcoder(sklearn_preprocess=label_encoder)
 
-				if (label_encoder is not None):
-					encoderset.make_labelcoder(sklearn_preprocess=label_encoder)
-
-				if (feature_encoders is not None):
-					for fc in feature_encoders:
-						encoderset.make_featurecoder(**fc)
+			if (feature_encoders is not None):					
+				encoderset = splitset.featureset.make_encoderset()
+				for fc in feature_encoders:
+					encoderset.make_featurecoder(**fc)
 			return splitset
 
 
@@ -5823,11 +5759,8 @@ class Pipeline():
 				, bin_count = bin_count
 			)
 
-			if (label_encoder is not None):
-				encoderset = splitset.make_encoderset()
-				encoderset.make_labelcoder(
-					sklearn_preprocess = label_encoder
-				)
+			if (label_encoder is not None): 
+				label.make_labelcoder(sklearn_preprocess=label_encoder)
 
 			if (fold_count is not None):
 				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
@@ -5859,6 +5792,7 @@ class Experiment():
 		, hyperparameters:dict = None
 		, foldset_id:int = None
 		, encoderset_id:int = None
+		, labelcoder_id:int = None
 	):
 
 		algorithm = Algorithm.make(
@@ -5886,5 +5820,6 @@ class Experiment():
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
 			, encoderset_id = encoderset_id
+			, labelcoder_id = labelcoder_id
 		)
 		return queue
