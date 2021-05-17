@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "thorough-absorption",
+   "id": "anonymous-triple",
    "metadata": {},
    "source": [
     "# PyTorch: Classify Multi-Label"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "corresponding-burton",
+   "id": "given-murray",
    "metadata": {},
    "source": [
     "![houses](../images/iris.png)"
@@ -19,7 +19,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "complete-klein",
+   "id": "celtic-disclaimer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "charming-inflation",
+   "id": "bored-gothic",
    "metadata": {},
    "source": [
     "---"
@@ -44,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "guilty-distributor",
+   "id": "danish-tamil",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -52,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "touched-venture",
+   "id": "british-grade",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -61,7 +61,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "dominican-baseball",
+   "id": "sensitive-night",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -71,7 +71,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "military-stress",
+   "id": "sensitive-pricing",
    "metadata": {},
    "outputs": [
     {
@@ -168,7 +168,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "distributed-sword",
+   "id": "electrical-chile",
    "metadata": {},
    "outputs": [
     {
@@ -193,7 +193,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "organized-ordering",
+   "id": "reported-price",
    "metadata": {},
    "source": [
     "---"
@@ -201,7 +201,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "likely-michigan",
+   "id": "failing-express",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -209,7 +209,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "bored-mathematics",
+   "id": "attended-importance",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -218,7 +218,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "typical-allowance",
+   "id": "corresponding-complexity",
    "metadata": {},
    "outputs": [
     {
@@ -259,7 +259,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ahead-water",
+   "id": "shared-harvard",
    "metadata": {},
    "source": [
     "Note that `num_classes` is unique to PyTorch multi-classification."
@@ -268,7 +268,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "authorized-season",
+   "id": "decimal-agreement",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -288,7 +288,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "healthy-worker",
+   "id": "connected-demonstration",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -341,7 +341,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "amateur-annotation",
+   "id": "falling-october",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -350,7 +350,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "front-trinidad",
+   "id": "portable-humidity",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -362,7 +362,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "endangered-twelve",
+   "id": "sorted-complex",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -375,7 +375,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "incredible-draft",
+   "id": "bizarre-heritage",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -385,7 +385,8 @@
     "    , fn_build = fn_build\n",
     "    , fn_train = fn_train\n",
     "    , splitset_id = splitset.id\n",
-    "    , encoderset_id = splitset.encodersets[0]\n",
+    "    , labelcoder_id = splitset.label.labelcoder.id\n",
+    "    , encoderset_id = splitset.featureset.encodersets[0].id\n",
     "    , repeat_count = 1\n",
     "    , hide_test = False\n",
     "    , hyperparameters = hyperparameters\n",
@@ -400,7 +401,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "rolled-generation",
+   "id": "breeding-firmware",
    "metadata": {},
    "outputs": [
     {
@@ -417,7 +418,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "discrete-catch",
+   "id": "absent-scottish",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -425,7 +426,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "determined-folder",
+   "id": "congressional-transfer",
    "metadata": {},
    "source": [
     "---"
@@ -433,7 +434,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "advised-engineering",
+   "id": "steady-transsexual",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -441,7 +442,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "north-surface",
+   "id": "engaged-cosmetic",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data, and defining an optimizer."
@@ -450,7 +451,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "automotive-skill",
+   "id": "pointed-contest",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -462,7 +463,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "hourly-eating",
+   "id": "european-agenda",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -472,7 +473,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "random-acceptance",
+   "id": "technological-priority",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -482,7 +483,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "yellow-royalty",
+   "id": "framed-restoration",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -491,8 +492,20 @@
   },
   {
    "cell_type": "code",
+   "execution_count": 20,
+   "id": "neutral-segment",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "labelcoder = label.make_labelcoder(\n",
+    "    sklearn_preprocess = OrdinalEncoder()\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
    "execution_count": 17,
-   "id": "gross-ultimate",
+   "id": "widespread-stadium",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -501,44 +514,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 18,
-   "id": "beneficial-suicide",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "splitset = featureset.make_splitset(\n",
-    "    label_id = label.id\n",
-    "    , size_test = 0.22\n",
-    "    , size_validation = 0.12\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
    "execution_count": 19,
-   "id": "charitable-loading",
+   "id": "mighty-anchor",
    "metadata": {},
    "outputs": [],
    "source": [
-    "encoderset = splitset.make_encoderset()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 20,
-   "id": "amended-dictionary",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "labelcoder = encoderset.make_labelcoder(\n",
-    "    sklearn_preprocess = OrdinalEncoder()\n",
-    ")"
+    "encoderset = featureset.make_encoderset()"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "gentle-poverty",
+   "id": "adaptive-marshall",
    "metadata": {},
    "outputs": [
     {
@@ -566,8 +553,22 @@
    ]
   },
   {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "sharing-sharp",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "splitset = featureset.make_splitset(\n",
+    "    label_id = label.id\n",
+    "    , size_test = 0.22\n",
+    "    , size_validation = 0.12\n",
+    ")"
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "beautiful-meter",
+   "id": "altered-seller",
    "metadata": {},
    "source": [
     "Note that `num_classes` is unique to PyTorch multi-classification."
@@ -576,7 +577,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "popular-prefix",
+   "id": "technical-authorization",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -596,7 +597,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "promotional-liability",
+   "id": "complicated-fusion",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -649,7 +650,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "aggregate-interface",
+   "id": "convinced-timer",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -658,7 +659,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "chinese-history",
+   "id": "coordinated-league",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -670,7 +671,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "adapted-graduate",
+   "id": "smoking-roller",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -683,7 +684,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "willing-mission",
+   "id": "subtle-belfast",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -698,7 +699,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "deadly-bahrain",
+   "id": "working-provincial",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -710,13 +711,14 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "packed-payment",
+   "id": "underlying-partnership",
    "metadata": {},
    "outputs": [],
    "source": [
     "queue = algorithm.make_queue(\n",
     "    splitset_id = splitset.id\n",
     "    , hyperparamset_id = hyperparamset.id\n",
+    "    , labelcoder_id = labelcoder.id\n",
     "    , encoderset_id  = encoderset.id\n",
     "    , repeat_count = 1\n",
     ")"
@@ -725,7 +727,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "secure-puppy",
+   "id": "potential-reply",
    "metadata": {},
    "outputs": [
     {
@@ -742,7 +744,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "extra-mystery",
+   "id": "proof-institution",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."

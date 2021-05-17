@@ -324,21 +324,18 @@
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Foldset.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Foldset.to_pandas()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Optionally,-stage-an-Encoderset-for-encoding.">6. Optionally, stage an <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> for encoding.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Optionally,-encode-labels-with-Labelcoder.">6. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Labelcoder">Labelcoder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Optionally,-encode-features-sequentially-with-Featurecoder(s).">7. Optionally, encode features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Background">Background</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Optionally,-set-a-single-Labelcoder.">7. Optionally, set a single <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id4">Background</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Optionally,-determine-a-sequence-of-Featurecoder(s).">8. Optionally, determine a sequence of <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>(s).</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id5">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Create-an-Algorithm-aka-model.">9. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id6">ORM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Create-an-Algorithm-aka-model.">8. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id4">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Model-Definition">Model Definition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Function-to-build-model">Function to build model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Optional,-function-to-calculate-loss.">Optional, function to calculate loss.</a></li>
@@ -350,8 +347,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Optional,-associate-a-Hyperparamset-with-your-model.">8. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Create-a-Queue-of-training-Jobs.">9. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Optional,-associate-a-Hyperparamset-with-your-model.">9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#10.-Create-a-Queue-of-training-Jobs.">10. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Execute-all-Jobs.">Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
@@ -362,15 +359,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#10.-Predictors-are-the-trained-models.">10. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Predictors-are-the-trained-models.">11. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Predictions-are-the-output-of-a-Predictor.">11. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#12.-Predictions-are-the-output-of-a-Predictor.">12. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Metrics-&amp;-Visualization">11. Metrics &amp; Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#13.-Metrics-&amp;-Visualization">13. Metrics &amp; Visualization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
@@ -976,7 +973,8 @@ No more Featurecoders can be added to this Encoderset.
     <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
     <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">labelcoder_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">labelcoder</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">featureset</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
@@ -1040,6 +1038,17 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">labelcoder</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">make_labelcoder</span><span class="p">(</span>
+    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -1049,35 +1058,11 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
-    <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.22</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">labelcoder</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">make_labelcoder</span><span class="p">(</span>
-    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="p">)</span>
+<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1109,6 +1094,19 @@ ___/ featurecoder_index: 0 \_________
 No more Featurecoders can be added to this Encoderset.
 
 </pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+    <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.22</span>
+    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
@@ -1211,6 +1209,7 @@ No more Featurecoders can be added to this Encoderset.
 <span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_queue</span><span class="p">(</span>
     <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">labelcoder_id</span> <span class="o">=</span> <span class="n">labelcoder</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">encoderset_id</span>  <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="p">)</span>

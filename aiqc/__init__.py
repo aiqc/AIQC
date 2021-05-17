@@ -1828,8 +1828,8 @@ class Featureset(BaseModel):
 				columns_excluded = None
 
 			"""
-			Check that this Dataset does not already have a Featureset that is exactly the same.
-			There are less entries in `excluded_columns` so maybe it's faster to compare that.
+			- Check that this Dataset does not already have a Featureset that is exactly the same.
+			- There are less entries in `excluded_columns` so maybe it's faster to compare that.
 			"""
 			if columns_excluded is not None:
 				cols_aplha = sorted(columns_excluded)
@@ -1837,7 +1837,7 @@ class Featureset(BaseModel):
 				cols_aplha = None
 			d_featuresets = d.featuresets
 			count = d_featuresets.count()
-			if count > 0:
+			if (count > 0):
 				for f in d_featuresets:
 					f_id = str(f.id)
 					f_cols = f.columns_excluded
@@ -2028,23 +2028,23 @@ class Splitset(BaseModel):
 		f_cols = f.columns
 
 		# Feature data to be split.
-		d = f.dataset
-		arr_f = Dataset.to_numpy(id=d.id, columns=f_cols)
+		dataset = f.dataset
+		featureset_array = Dataset.to_numpy(id=dataset.id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
 		in order to keep track of the samples being used in the predictoring splits.
 		"""
-		row_count = arr_f.shape[0]
+		row_count = featureset_array.shape[0]
 		arr_idx = np.arange(row_count)
 		
 		samples = {}
 		sizes = {}
 
-		if label_id is None:
+		if (label_id is None):
 			has_test = False
 			supervision = "unsupervised"
-			l = None
+			label = None
 			if (size_test is not None) or (size_validation is not None):
 				raise ValueError(dedent("""
 					Yikes - Unsupervised Featuresets support neither test nor validation splits.
@@ -2057,35 +2057,29 @@ class Splitset(BaseModel):
 
 		elif (label_id is not None):
 			# We don't need to prevent duplicate Label/Featureset combos because Splits generate different samples each time.
-			l = Label.get_by_id(label_id)
+			label = Label.get_by_id(label_id)
 
 			# Check number of samples in Label vs Featureset, because they can come from different Datasets.
-			l_dataset_id = l.dataset.id
+			l_dataset_id = label.dataset.id
 			l_length = Dataset.Tabular.get_main_file(l_dataset_id).shape['rows']
-			if (l_dataset_id != d.id):
-				if (d.dataset_type == 'tabular'):
-					f_length = Dataset.Tabular.get_main_file(d.id).shape['rows']
-				elif (d.dataset_type == 'image'):
+			if (l_dataset_id != dataset.id):
+				if (dataset.dataset_type == 'tabular'):
+					f_length = Dataset.Tabular.get_main_file(dataset.id).shape['rows']
+				elif (dataset.dataset_type == 'image'):
 					f_length = f.dataset.file_count
 				# Separate `if` to compare them.
 				if (l_length != f_length):
 					raise ValueError("\nYikes - The Datasets of your Label and Featureset do not contains the same number of samples.\n")
 
-			if size_test is None:
+			if (size_test is None):
 				size_test = 0.30
 			has_test = True
 			supervision = "supervised"
 
-			label_array = l.to_numpy()
-			# check for OHE cols and reverse them so we can still stratify.
+			label_array = label.to_numpy()
+			# check for OHE cols and reverse them so we can still stratify ordinally.
 			if (label_array.shape[1] > 1):
-				encoder = sklearn.preprocessing.OneHotEncoder(sparse=False)
-				label_array = encoder.fit_transform(label_array)
 				label_array = np.argmax(label_array, axis=1)
-				### [FLAG] don't this this is used. commenting it out for a while.
-				# argmax flattens the array, so reshape it to array of arrays.
-				#count = label_array.shape[0]
-				#l_cat_shaped = label_array.reshape(count, 1)
 			# OHE dtype returns as int64
 			label_dtype = label_array.dtype
 
@@ -2099,9 +2093,9 @@ class Splitset(BaseModel):
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
 			- Don't include the Dataset.Image.featureset pixel arrays in stratification.
 			"""
-			if (d.dataset_type == 'tabular'):
+			if (dataset.dataset_type == 'tabular'):
 				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
-					arr_f, label_array, arr_idx
+					featureset_array, label_array, arr_idx
 					, test_size = size_test
 					, stratify = stratifier1
 					, shuffle = True
@@ -2123,8 +2117,8 @@ class Splitset(BaseModel):
 					indices_lst_validation = indices_validation.tolist()
 					samples["validation"] = indices_lst_validation
 
-			elif (d.dataset_type == 'image'):
-				# Features not involved.
+			elif (dataset.dataset_type == 'image'):
+				# Differs in that the Features not fed into `train_test_split()`.
 				labels_train, labels_test, indices_train, indices_test = train_test_split(
 					label_array, arr_idx
 					, test_size = size_test
@@ -2153,7 +2147,7 @@ class Splitset(BaseModel):
 			samples["test"] = indices_lst_test
 
 			size_train = 1.0 - size_test
-			if size_validation is not None:
+			if (size_validation is not None):
 				size_train -= size_validation
 				count_validation = len(indices_lst_validation)
 				sizes["validation"] =  {"percent": size_validation, "count": count_validation}
@@ -2165,7 +2159,7 @@ class Splitset(BaseModel):
 
 		s = Splitset.create(
 			featureset = f
-			, label = l
+			, label = label
 			, samples = samples
 			, sizes = sizes
 			, supervision = supervision
@@ -5004,10 +4998,9 @@ class Job(BaseModel):
 		- Then you transform the entire dataset because downstream processes may need the entire dataset:
 		  e.g. fit imputer to training data, but then impute entire dataset so that encoders can use entire dataset.
 		"""
-		arr_features = splitset.featureset.to_numpy()
-		arr_labels = splitset.label.to_numpy()
 		fitted_encoders = {} # keys get defined inside functions below.
-
+		# Labels - fetch and encode.
+		arr_labels = splitset.label.to_numpy()
 		if (labelcoder is not None):
 			fitted_encoders = Job.encoder_fit_labels(
 				arr_labels=arr_labels, samples_train=samples[key_train],
@@ -5018,7 +5011,8 @@ class Job(BaseModel):
 				arr_labels=arr_labels,
 				fitted_encoders=fitted_encoders, labelcoder=labelcoder
 			)
-
+		# Featuresets - fetch and encode.
+		arr_features = splitset.featureset.to_numpy()
 		if (encoderset is not None):
 			fitted_encoders = Job.encoder_fit_features(
 				arr_features=arr_features, samples_train=samples[key_train],
@@ -5032,7 +5026,12 @@ class Job(BaseModel):
 		job.fitted_encoders = fitted_encoders
 		job.save()
 
-		# Stage preprocessed data for the remaining Job steps.
+		"""
+		- Stage preprocessed data to be passed into the remaining Job steps.
+		- Example samples dict entry: samples['train']['features']
+		- For each entry in the dict, fetch the rows from the encoded data.
+		- Going to have to loop on `splitset.featuresets` here.
+		""" 
 		for split, rows in samples.items():
 			samples[split] = {
 				"features": arr_features[rows]
