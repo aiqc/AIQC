@@ -177,8 +177,9 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 	)
@@ -284,8 +285,9 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 	)
@@ -390,8 +392,9 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 		, bin_count = 3
@@ -531,8 +534,9 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		,label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 	)
@@ -652,8 +656,9 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 	)
@@ -791,8 +796,9 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 	)
@@ -938,8 +944,9 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 		, bin_count = 3
@@ -1096,8 +1103,9 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = feature.make_splitset(
-		label_id = label.id
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
 	)

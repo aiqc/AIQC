@@ -337,14 +337,14 @@ def create_db():
 	# Create tables inside db.
 	tables = db.get_tables()
 	table_count = len(tables)
-	if table_count > 0:
+	if (table_count > 0):
 		print(f"\n=> Info - skipping table creation as the following tables already exist.{tables}\n")
 	else:
 		db.create_tables([
 			File, Tabular, Image,
 			Dataset,
 			Label, Feature, 
-			Splitset, Foldset, Fold, 
+			Splitset, Featureset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction
@@ -411,10 +411,7 @@ def listify(supposed_lst:object=None):
 		# If it was already a list, check it for emptiness and `None`.
 		elif (isinstance(supposed_lst, list)):
 			if (not supposed_lst):
-				raise ValueError(dedent(
-					f"Yikes - The list you provided contained `None` as an element." \
-					f"{supposed_lst}"
-				))
+				raise ValueError("Yikes - The list you provided is empty.")
 			if (None in supposed_lst):
 				raise ValueError(dedent(
 					f"Yikes - The list you provided contained `None` as an element." \
@@ -1986,19 +1983,20 @@ class Splitset(BaseModel):
 	has_validation = BooleanField()
 	bin_count = IntegerField(null=True)
 
-
-	feature = ForeignKeyField(Feature, backref='splitsets')
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
-	
+	# See also Featureset many-to-many relationship
 
-	def from_feature(
-		feature_id:int
+	def make(
+		feature_ids:list
 		, label_id:int = None
 		, size_test:float = None
 		, size_validation:float = None
 		, bin_count:float = None
 	):
-
+		"""
+		- The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
+		"""
+		# --- Verify splits ---
 		if (size_test is not None):
 			if (size_test <= 0.0) or (size_test >= 1.0):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
@@ -2024,12 +2022,29 @@ class Splitset(BaseModel):
 		else:
 			has_validation = False
 
-		feature = Feature.get_by_id(feature_id)
+		# --- Verify features ---
+		feature_ids = listify(feature_ids)
+		if (len(feature_ids) > 1):
+			feature_lengths = []
+			for f_id in feature_ids:
+				f = Feature.get_by_id(f_id)
+				f_dataset = f.dataset
+
+				if (f_dataset.dataset_type == 'tabular'):
+					f_length = Dataset.Tabular.get_main_file(f_dataset.id).shape['rows']
+				elif (f_dataset.dataset_type == 'image'):
+					f_length = f_dataset.file_count
+				feature_lengths.append(f_length)
+			if (len(set(feature_lengths)) != 1):
+				raise ValueError("Yikes - List of features you provided contain different amounts of samples.")
+
+		# --- Begin splitting ---
+		feature = Feature.get_by_id(feature_ids[0])
 		f_cols = feature.columns
 
 		# Feature data to be split.
-		dataset = feature.dataset
-		feature_array = Dataset.to_numpy(id=dataset.id, columns=f_cols)
+		f_dataset = feature.dataset
+		feature_array = Dataset.to_numpy(id=f_dataset.id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
@@ -2062,10 +2077,10 @@ class Splitset(BaseModel):
 			# Check number of samples in Label vs Feature, because they can come from different Datasets.
 			l_dataset_id = label.dataset.id
 			l_length = Dataset.Tabular.get_main_file(l_dataset_id).shape['rows']
-			if (l_dataset_id != dataset.id):
-				if (dataset.dataset_type == 'tabular'):
-					f_length = Dataset.Tabular.get_main_file(dataset.id).shape['rows']
-				elif (dataset.dataset_type == 'image'):
+			if (l_dataset_id != f_dataset.id):
+				if (f_dataset.dataset_type == 'tabular'):
+					f_length = Dataset.Tabular.get_main_file(f_dataset.id).shape['rows']
+				elif (f_dataset.dataset_type == 'image'):
 					f_length = feature.dataset.file_count
 				# Separate `if` to compare them.
 				if (l_length != f_length):
@@ -2093,7 +2108,7 @@ class Splitset(BaseModel):
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
 			- Don't include the Dataset.Image.feature pixel arrays in stratification.
 			"""
-			if (dataset.dataset_type == 'tabular'):
+			if (f_dataset.dataset_type == 'tabular'):
 				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
 					feature_array, label_array, arr_idx
 					, test_size = size_test
@@ -2117,7 +2132,7 @@ class Splitset(BaseModel):
 					indices_lst_validation = indices_validation.tolist()
 					samples["validation"] = indices_lst_validation
 
-			elif (dataset.dataset_type == 'image'):
+			elif (f_dataset.dataset_type == 'image'):
 				# Differs in that the Features not fed into `train_test_split()`.
 				labels_train, labels_test, indices_train, indices_test = train_test_split(
 					label_array, arr_idx
@@ -2157,9 +2172,8 @@ class Splitset(BaseModel):
 			sizes["test"] = {"percent": size_test, "count": count_test}
 			sizes["train"] = {"percent": size_train, "count": count_train}
 
-		s = Splitset.create(
-			feature = feature
-			, label = label
+		splitset = Splitset.create(
+			label = label
 			, samples = samples
 			, sizes = sizes
 			, supervision = supervision
@@ -2167,115 +2181,15 @@ class Splitset(BaseModel):
 			, has_validation = has_validation
 			, bin_count = bin_count
 		)
-		return s
 
-
-	def to_pandas(
-		id:int
-		, splits:list = None
-		, include_label:bool = None
-		, include_feature:bool = None
-		, feature_columns:list = None
-	):
-		splits = listify(splits)
-		feature_columns = listify(feature_columns)
-		split_frames = Splitset.get_splits(
-			id = id
-			, numpy_or_pandas = 'pandas'
-			, splits = splits
-			, include_label = include_label
-			, include_feature = include_feature
-			, feature_columns = feature_columns
-		)
-		return split_frames
-
-
-	def to_numpy(
-		id:int
-		, splits:list = None
-		, include_label:bool = None
-		, include_feature:bool = None
-		, feature_columns:list = None
-	):
-		splits = listify(splits)
-		feature_columns = listify(feature_columns)
-		split_arrs = Splitset.get_splits(
-			id = id
-			, numpy_or_pandas = 'numpy'
-			, splits = splits
-			, include_label = include_label
-			, include_feature = include_feature
-			, feature_columns = feature_columns
-		)
-		return split_arrs
-
-
-	def get_splits(id:int
-		, numpy_or_pandas:str # Machine set, so don't validate.
-		, splits:list = None
-		, include_label:bool = None # Unsupervised can't be True.
-		, include_feature:bool = None
-		, feature_columns:list = None
-	):
-		"""
-		Future: Optimize!
-		- Worried it's holding all dataframes and arrays in memory.
-		- Generators to access one [key][set] at a time?
-		"""
-		s = Splitset.get_by_id(id)
-		splits = listify(splits)
-		feature_columns = listify(feature_columns)
-
-		splits = list(s.samples.keys())
-		supervision = s.supervision
-		feature = s.feature
-
-		split_frames = {}
-		# Future: Optimize (switch to generators for memory usage).
-		# Here, split_names are: train, test, validation.
-		
-		# There are always feature. It's just if you want to include them or not.
-		# Saves memory when you only want Labels by split.
-		if (include_feature is None):
-			include_feature = True
-
-		if (supervision == "unsupervised"):
-			if (include_label is None):
-				include_label = False
-			elif (include_label == True):
-				raise ValueError("\nYikes - `include_label == True` but `Splitset.supervision=='unsupervised'`.\n")
-		elif (supervision == "supervised"):
-			if (include_label is None):
-				include_label = True
-
-		if ((include_feature == False) and (include_label == False)):
-			raise ValueError("\nYikes - Both `include_feature` and `include_label` cannot be False.\n")
-
-		if ((feature_columns is not None) and (include_feature != True)):
-			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
-
-		for split_name in splits:
-			# Placeholder for the frames/arrays.
-			split_frames[split_name] = {}
-			# Fetch the sample indices for the split
-			split_samples = s.samples[split_name]
-			
-			if (include_feature == True):
-				if (numpy_or_pandas == 'numpy'):
-					ff = feature.to_numpy(samples=split_samples, columns=feature_columns)
-				elif (numpy_or_pandas == 'pandas'):
-					ff = feature.to_pandas(samples=split_samples, columns=feature_columns)
-				split_frames[split_name]["features"] = ff
-
-			if (include_label == True):
-				l = s.label
-				if (numpy_or_pandas == 'numpy'):
-					lf = l.to_numpy(samples=split_samples)
-				elif (numpy_or_pandas == 'pandas'):
-					lf = l.to_pandas(samples=split_samples)
-				split_frames[split_name]["labels"] = lf
-
-		return split_frames
+		try:
+			for f_id in feature_ids:
+				feature = Feature.get_by_id(f_id)
+				Featureset.create(splitset=splitset, feature=feature)
+		except:
+			splitset.delete_instance() # Orphaned.
+			raise
+		return splitset
 
 
 	def label_values_to_bins(array_to_bin:object, bin_count:int):
@@ -2324,6 +2238,12 @@ class Splitset(BaseModel):
 		return stratifier, bin_count
 
 
+	def get_features(id:int):
+		splitset = Splitset.get_by_id(id)
+		features = list(Feature.select().join(Featureset).where(Featureset.splitset == splitset))
+		return features
+
+
 	def make_foldset(
 		id:int
 		, fold_count:int = None
@@ -2335,6 +2255,13 @@ class Splitset(BaseModel):
 			, bin_count = bin_count
 		)
 		return foldset
+
+
+
+
+class Featureset(BaseModel):
+    splitset = ForeignKeyField(Splitset, backref='featuresets')
+    feature = ForeignKeyField(Feature, backref='featuresets')
 
 
 
@@ -2401,7 +2328,7 @@ class Foldset(BaseModel):
 						Warning - Previously you set `Splitset.bin_count is None`
 						but now you are trying to set `Foldset.bin_count is not None`.
 						
-						This can predictor in incosistent stratification processes being 
+						This can result in incosistent stratification processes being 
 						used for training samples versus validation and test samples.
 					\n"""))
 				arr_train_labels = Splitset.label_values_to_bins(
@@ -2422,7 +2349,7 @@ class Foldset(BaseModel):
 			print(
 				f"Warning - The number of samples <{train_count}> in your training Split\n" \
 				f"is not evenly divisible by the `fold_count` <{fold_count}> you specified.\n" \
-				f"This can predictor in misleading performance metrics for the last Fold.\n"
+				f"This can result in misleading performance metrics for the last Fold.\n"
 			)
 
 		foldset = Foldset.create(
@@ -2453,138 +2380,6 @@ class Foldset(BaseModel):
 				, foldset = foldset
 			)
 		return foldset
-
-
-	def to_pandas(
-		id:int
-		, fold_index:int = None
-		, fold_names:list = None
-		, include_label:bool = None
-		, include_feature:bool = None
-		, feature_columns:list = None
-	):
-		fold_names = listify(fold_names)
-		feature_columns = listify(feature_columns)
-		fold_frames = Foldset.get_folds(
-			id = id
-			, numpy_or_pandas = 'pandas'
-			, fold_index = fold_index
-			, fold_names = fold_names
-			, include_label = include_label
-			, include_feature = include_feature
-			, feature_columns = feature_columns
-		)
-		return fold_frames
-
-
-	def to_numpy(
-		id:int
-		, fold_index:int = None
-		, fold_names:list = None
-		, include_label:bool = None
-		, include_feature:bool = None
-		, feature_columns:list = None
-	):
-		fold_names = listify(fold_names)
-		feature_columns = listify(feature_columns)
-		fold_arrs = Foldset.get_folds(
-			id = id
-			, numpy_or_pandas = 'numpy'
-			, fold_index = fold_index
-			, fold_names = fold_names
-			, include_label = include_label
-			, include_feature = include_feature
-			, feature_columns = feature_columns
-		)
-		return fold_arrs
-
-
-	def get_folds(
-		id:int
-		, numpy_or_pandas:str
-		, fold_index:int = None
-		, fold_names:list = None
-		, include_label:bool = None
-		, include_feature:bool = None
-		, feature_columns:list = None
-	):
-		fold_names = listify(fold_names)
-		feature_columns = listify(feature_columns)
-		foldset = Foldset.get_by_id(id)
-		fold_count = foldset.fold_count
-		folds = foldset.folds
-
-		if (fold_index is not None):
-			if (0 > fold_index) or (fold_index > fold_count):
-				raise ValueError(f"\nYikes - This Foldset <id:{id}> has fold indices between 0 and {fold_count-1}\n")
-
-		s = foldset.splitset
-		supervision = s.supervision
-		feature = s.feature
-
-		# There are always features, just whether to include or not.
-		# Saves memory when you only want Labels by split.
-		if (include_feature is None):
-			include_feature = True
-
-		if (supervision == "unsupervised"):
-			if (include_label is None):
-				include_label = False
-			elif (include_label == True):
-				raise ValueError("\nYikes - `include_label == True` but `Splitset.supervision=='unsupervised'`.\n")
-		elif (supervision == "supervised"):
-			if (include_label is None):
-				include_label = True
-
-		if ((include_feature == False) and (include_label == False)):
-			raise ValueError("\nYikes - Both `include_feature` and `include_label` cannot be False.\n")
-
-		if ((feature_columns is not None) and (include_feature != True)):
-			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
-
-		if (fold_names is None):
-			fold_names = list(folds[0].samples.keys())
-
-		fold_frames = {}
-		if (fold_index is not None):
-			# Just fetch one specific fold by index.
-			fold_frames[fold_index] = {}
-		elif (fold_index is None):
-			# Fetch all folds. Zero-based range.
-			for i in range(fold_count):
-				fold_frames[i] = {}
-
-		# Highest set of `.keys()` is the `fold_index`.
-		for i in fold_frames.keys():
-			fold = folds[i]
-			# At the next level down, `.keys()` are 'folds_train_combined' and 'fold_validation'
-			for fold_name in fold_names:
-				# Placeholder for the frames/arrays.
-				fold_frames[i][fold_name] = {}
-				# Fetch the sample indices for the split.
-				folds_samples = fold.samples[fold_name]
-
-				if (include_feature == True):
-					if (numpy_or_pandas == 'numpy'):
-						ff = feature.to_numpy(
-							samples = folds_samples
-							, columns = feature_columns
-						)
-					elif (numpy_or_pandas == 'pandas'):
-						ff = feature.to_pandas(
-							samples = folds_samples
-							, columns = feature_columns
-						)
-					fold_frames[i][fold_name]["features"] = ff
-
-				if (include_label == True):
-					l = s.label
-					if (numpy_or_pandas == 'numpy'):
-						lf = l.to_numpy(samples=folds_samples)
-					elif (numpy_or_pandas == 'pandas'):
-						lf = l.to_pandas(samples=folds_samples)
-					fold_frames[i][fold_name]["labels"] = lf
-		return fold_frames
 
 
 
@@ -3974,7 +3769,7 @@ class Queue(BaseModel):
 								raise ValueError(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
 								`Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
-								This would predictor in a multi-column output, but binary classification
+								This would result in a multi-column output, but binary classification
 								needs a single column output.
 								Go back and make a Labelcoder with single column output preprocess like `Binarizer()` instead.
 								"""))
@@ -3985,7 +3780,7 @@ class Queue(BaseModel):
 									raise ValueError(dedent("""
 									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
 									but `Labelcoder.sklearn_preprocess.startswith('OneHotEncoder')`.
-									This would predictor in a multi-column OHE output.
+									This would result in a multi-column OHE output.
 									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
 									Go back and make a Labelcoder with single column output preprocess like `OrdinalEncoder()` instead.
 									"""))
@@ -4770,13 +4565,6 @@ class Job(BaseModel):
 
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
-				# Convert any remaining numpy splits into tensors.
-				if (library == 'pytorch'):
-					if (type(data) != torch.Tensor):
-						data['features'] = torch.FloatTensor(data['features'])
-						if (has_labels == True):
-							data['labels'] = torch.FloatTensor(data['labels'])
-
 				preds, probs = fn_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
@@ -4823,15 +4611,6 @@ class Job(BaseModel):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
-				
-				# Convert any remaining numpy splits into tensors.
-				# Do all of the tensor operations below before numpy operations.
-				if (library == 'pytorch'):
-					if (type(data) != torch.Tensor):
-						data['features'] = torch.FloatTensor(data['features'])
-						if (has_labels == True):
-							data['labels'] = torch.FloatTensor(data['labels'])
-
 				preds = fn_predict(model, data)
 				predictions[split] = preds
 				# Outputs numpy.
@@ -4847,7 +4626,6 @@ class Job(BaseModel):
 						data['labels'] = data['labels'].detach().numpy()
 						# `preds` object is still numpy.
 
-					### if labels_present
 					# Numpy inputs.
 					metrics[split] = Job.split_regression_metrics(
 						data['labels'], preds
@@ -4994,9 +4772,12 @@ class Job(BaseModel):
 				key_train = "train"
 		"""
 		2. Encodes the labels and features.
-		- Remember, you only `.fit()` on either training data or all data (categoricals).
+		- Remember, you `.fit()` on either training data or all data (categoricals).
 		- Then you transform the entire dataset because downstream processes may need the entire dataset:
 		  e.g. fit imputer to training data, but then impute entire dataset so that encoders can use entire dataset.
+		- So we transform the entire dataset, then divide it into splits/ folds.
+		- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
+		  work the same in both numpy and torch.
 		"""
 		fitted_encoders = {} # keys get defined inside functions below.
 		# Labels - fetch and encode.
@@ -5011,41 +4792,80 @@ class Job(BaseModel):
 				arr_labels=arr_labels,
 				fitted_encoders=fitted_encoders, labelcoder=labelcoder
 			)
-		# Features - fetch and encode.
-		arr_features = splitset.feature.to_numpy()
-		if (encoderset is not None):
-			fitted_encoders = Job.encoder_fit_features(
-				arr_features=arr_features, samples_train=samples[key_train],
-				fitted_encoders=fitted_encoders, encoderset=encoderset
-			)
+		if (library == 'pytorch'):
+			arr_labels = torch.FloatTensor(arr_labels)
 
-			arr_features = Job.encoder_transform_features(
-				arr_features=arr_features,
-				fitted_encoders=fitted_encoders, encoderset=encoderset
-			)
+		# Features - fetch and encode.
+		featureset = splitset.get_features()
+		feature_count = len(featureset)
+		if (feature_count == 1):
+			arr_features = splitset.get_features()[0].to_numpy()
+			if (encoderset is not None):
+				fitted_encoders = Job.encoder_fit_features(
+					arr_features=arr_features, samples_train=samples[key_train],
+					fitted_encoders=fitted_encoders, encoderset=encoderset
+				)
+
+				arr_features = Job.encoder_transform_features(
+					arr_features=arr_features,
+					fitted_encoders=fitted_encoders, encoderset=encoderset
+				)
+			if (library == 'pytorch'):
+				arr_features = torch.FloatTensor(arr_features)
+
+		elif (feature_count > 1):
+			features = []# expecting different shapes so array won't do.
+			for i, feature in splitset.get_features():
+				arr_features = feature.to_numpy()
+				if (encoderset is not None):
+					fitted_encoders = Job.encoder_fit_features(
+						arr_features=arr_features, samples_train=samples[key_train],
+						fitted_encoders=fitted_encoders, encoderset=encoderset
+					)
+
+					arr_features = Job.encoder_transform_features(
+						arr_features=arr_features,
+						fitted_encoders=fitted_encoders, encoderset=encoderset
+					)
+				if (library == 'pytorch'):
+					arr_features = torch.FloatTensor(arr_features)
+				features.append(arr_features)
 		job.fitted_encoders = fitted_encoders
 		job.save()
 
 		"""
 		- Stage preprocessed data to be passed into the remaining Job steps.
-		- Example samples dict entry: samples['train']['features']
+		- Example samples dict entry: samples['train']['labels']
 		- For each entry in the dict, fetch the rows from the encoded data.
-		- Going to have to loop on `splitset.features` here.
+		- Keras multi-input models accept input as a list. Not using nested dict for multiple
+		  features because it would be hard to figure out feature.id-based keys on the fly.
 		""" 
 		for split, rows in samples.items():
-			samples[split] = {
-				"features": arr_features[rows]
-				, "labels": arr_labels[rows]
-			}
-	
-		features_shape = samples[key_train]['features'][0].shape
-		label_shape = samples[key_train]['labels'][0].shape
-		# - Shapes are used by `get_model()` to initialize it.
-		# - Input shapes can only be determined after encoding has taken place.
-		# - Does not impact the training loop's `batch_size`.
+			if (feature_count == 1):
+				samples[split] = {
+					"features": arr_features[rows]
+					, "labels": arr_labels[rows]
+				}
+			elif (feature_count > 1):
+				samples[split] = {
+					"features": [arr_features[rows] for arr_features in features]
+					, "labels": arr_labels[rows]
+				}
+		"""
+		- Input shapes can only be determined after encoding has taken place.
+		- `[0]` accessess the first sample in each array.
+		- Does not impact the training loop's `batch_size`.
+		- Shapes are used later by `get_model()` to initialize it.
+		"""
+		labels_shape = samples[key_train]['labels'][0].shape
+		if (feature_count == 1):
+			features_shape = samples[key_train]['features'][0].shape
+		elif (feature_count > 1):
+			features_shape = [arr_features[0].shape for arr_features in samples[key_train]['features']]
+
 		input_shapes = {
 			"features_shape": features_shape
-			, "label_shape": label_shape
+			, "labels_shape": labels_shape
 		}
 		"""
 		3. Build and Train model.
@@ -5064,7 +4884,7 @@ class Job(BaseModel):
 				num_classes = len(splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
-				model = fn_build(features_shape, label_shape, **hp)
+				model = fn_build(features_shape, labels_shape, **hp)
 		elif (splitset.supervision == "unsupervised"):
 			model = fn_build(features_shape, **hp)
 		if (model is None):
@@ -5101,30 +4921,10 @@ class Job(BaseModel):
 				, samples_evaluate = samples_eval
 				, **hp
 			)
+			if (model is None):
+				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
 
-		elif (library == "pytorch"):
-			# Have to convert each array into a tensor.
-			samples[key_train]['features'] = torch.FloatTensor(samples[key_train]['features'])
-			samples[key_train]['labels'] = torch.FloatTensor(samples[key_train]['labels'])
-			samples_eval['features'] = torch.FloatTensor(samples_eval['features'])
-			samples_eval['labels'] = torch.FloatTensor(samples_eval['labels'])
-
-			model, history = fn_train(
-				model = model
-				, loser = loser
-				, optimizer = optimizer
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples_eval
-				, **hp
-			)
-			if (history is None):
-				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
-		if (model is None):
-			raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
-
-
-		# Save the artifacts of the trained model.
-		if (library == "keras"):
+			# Save the artifacts of the trained model.
 			# If blank this value is `{}` not None.
 			history = model.history.history
 			"""
@@ -5145,7 +4945,21 @@ class Job(BaseModel):
 			with open(temp_file_name, 'rb') as file:
 				model_blob = file.read()
 			os.remove(temp_file_name)
-		elif (library == 'pytorch'):
+
+		elif (library == "pytorch"):
+			model, history = fn_train(
+				model = model
+				, loser = loser
+				, optimizer = optimizer
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples_eval
+				, **hp
+			)
+			if (model is None):
+				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+			if (history is None):
+				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+			# Save the artifacts of the trained model.
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
 			model_blob = io.BytesIO()
 			torch.save(
@@ -5156,9 +4970,8 @@ class Job(BaseModel):
 				model_blob
 			)
 			model_blob = model_blob.getvalue()
-
 		"""
-		5. Save it to Predictor object.
+		5. Save everything to Predictor object.
 		"""
 		time_succeeded = datetime.datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
@@ -5259,7 +5072,7 @@ class Predictor(BaseModel):
 			elif (predictor.job.hyperparamcombo is None):
 				hp = {}
 			features_shape = predictor.input_shapes['features_shape']
-			label_shape = predictor.input_shapes['label_shape']
+			labels_shape = predictor.input_shapes['labels_shape']
 
 			fn_build = dill_deserialize(algorithm.fn_build)
 			fn_optimize = dill_deserialize(algorithm.fn_optimize)
@@ -5268,7 +5081,7 @@ class Predictor(BaseModel):
 				num_classes = len(predictor.job.queue.splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
-				model = fn_build(features_shape, label_shape, **hp)
+				model = fn_build(features_shape, labels_shape, **hp)
 			
 			optimizer = fn_optimize(model, **hp)
 
@@ -5417,7 +5230,7 @@ class Predictor(BaseModel):
 
 		Predictor.newSchema_matches_ogSchema(id, feature, label)
 		predictor = Predictor.get_by_id(id)
-
+		library = predictor.job.queue.algorithm.library
 		fitted_encoders = predictor.job.fitted_encoders
 
 		arr_features = feature.to_numpy()
@@ -5429,7 +5242,8 @@ class Predictor(BaseModel):
 				arr_features=arr_features,
 				fitted_encoders=fitted_encoders, encoderset=encoderset
 			)
-
+		if (library == 'pytorch'):
+			arr_features = torch.FloatTensor(arr_features)
 		"""
 		- Pack into samples for the Algorithm functions.
 		- This is two levels deep to mirror how the training samples were structured 
@@ -5448,7 +5262,8 @@ class Predictor(BaseModel):
 					arr_labels=arr_labels,
 					fitted_encoders=fitted_encoders, labelcoder=labelcoder
 				)
-
+			if (library == 'pytorch'):
+				arr_labels = torch.FloatTensor(arr_labels)
 			samples[str_id]['labels'] = arr_labels
 
 		prediction = Job.predict(
@@ -5683,6 +5498,10 @@ class Pipeline():
 			if (label_column is not None):
 				label = dataset.make_label(columns=[label_column])
 				label_id = label.id
+
+				if (label_encoder is not None): 
+					label.make_labelcoder(sklearn_preprocess=label_encoder)
+
 			elif (label_column is None):
 				feature = dataset.make_feature()
 				label_id = None
@@ -5692,9 +5511,15 @@ class Pipeline():
 					feature = dataset.make_feature(exclude_columns=[label_column])
 			elif (features_excluded is not None):
 				feature = dataset.make_feature(exclude_columns=features_excluded)
+			
+			if (feature_encoders is not None):					
+				encoderset = feature.make_encoderset()
+				for fc in feature_encoders:
+					encoderset.make_featurecoder(**fc)
 
-			splitset = feature.make_splitset(
-				label_id = label_id
+			splitset = Splitset.make(
+				feature_ids = [feature.id]
+				, label_id = label_id
 				, size_test = size_test
 				, size_validation = size_validation
 				, bin_count = bin_count
@@ -5703,13 +5528,6 @@ class Pipeline():
 			if (fold_count is not None):
 				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
 
-			if (label_encoder is not None): 
-				label.make_labelcoder(sklearn_preprocess=label_encoder)
-
-			if (feature_encoders is not None):					
-				encoderset = feature.make_encoderset()
-				for fc in feature_encoders:
-					encoderset.make_featurecoder(**fc)
 			return splitset
 
 
@@ -5756,8 +5574,9 @@ class Pipeline():
 				label = dataset_tabular.make_label(columns=[label_column])
 				label_id = label.id
 			
-			splitset = feature.make_splitset(
-				label_id = label_id
+			splitset = Splitset.make(
+				feature_ids = [feature.id]
+				, label_id = label_id
 				, size_test = size_test
 				, size_validation = size_validation
 				, bin_count = bin_count
