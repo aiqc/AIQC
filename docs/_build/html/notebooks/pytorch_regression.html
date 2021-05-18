@@ -293,10 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Labels">Reading Labels</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Featureset-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Feature-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id1">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id2">Deriving Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Featuresets">Reading Featuresets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
@@ -1066,7 +1066,7 @@ No more Featurecoders can be added to this Encoderset.
     <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">labelcoder_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">labelcoder</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">featureset</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">feature</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
@@ -1145,7 +1145,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+<span></span><span class="n">feature</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1154,7 +1154,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
+<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1221,7 +1221,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
     <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.18</span>
     <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>

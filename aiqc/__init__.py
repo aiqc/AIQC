@@ -343,7 +343,7 @@ def create_db():
 		db.create_tables([
 			File, Tabular, Image,
 			Dataset,
-			Label, Featureset, 
+			Label, Feature, 
 			Splitset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder,
 			Algorithm, Hyperparamset, Hyperparamcombo,
@@ -527,19 +527,19 @@ class Dataset(BaseModel):
 		return l
 
 
-	def make_featureset(
+	def make_feature(
 		id:int
 		, include_columns:list = None
 		, exclude_columns:list = None
 	):
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
-		f = Featureset.from_dataset(
+		feature = Feature.from_dataset(
 			dataset_id = id
 			, include_columns = include_columns
 			, exclude_columns = exclude_columns
 		)
-		return f
+		return feature
 
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
@@ -1181,12 +1181,12 @@ class File(BaseModel):
 			rather than dropping them after the fact.
 			https://stackoverflow.com/questions/64050609/pyarrow-read-parquet-via-column-index-or-order
 			"""
-			f = File.get_by_id(id)
+			file = File.get_by_id(id)
 			columns = listify(columns)
 			samples = listify(samples)
 			# Filters.
 			df = pd.read_parquet(
-				io.BytesIO(f.blob) #one-liner saves memory?
+				io.BytesIO(file.blob) #one-liner saves memory?
 				, columns=columns
 			)
 			# Ensures columns are rearranged to be in the correct order.
@@ -1201,7 +1201,7 @@ class File(BaseModel):
 				df = df.iloc[samples]
 			
 			# Accepts dict{'column_name':'dtype_str'} or a single str.
-			tab = f.tabulars[0]
+			tab = file.tabulars[0]
 			df_dtypes = tab.dtypes
 			if (df_dtypes is not None):
 				if (isinstance(df_dtypes, dict)):
@@ -1762,16 +1762,16 @@ class Label(BaseModel):
 
 
 
-class Featureset(BaseModel):
+class Feature(BaseModel):
 	"""
-	- Remember, a Featureset is just a record of the columns being used.
+	- Remember, a Feature is just a record of the columns being used.
 	- Decided not to go w subclasses of Unsupervised and Supervised because that would complicate the SDK for the user,
 	  and it essentially forked every downstream model into two subclasses.
-	- PCA components vary across featuresets. When different columns are used those columns have different component values.
+	- PCA components vary across features. When different columns are used those columns have different component values.
 	"""
 	columns = JSONField(null=True)
 	columns_excluded = JSONField(null=True)
-	dataset = ForeignKeyField(Dataset, backref='featuresets')
+	dataset = ForeignKeyField(Dataset, backref='features')
 
 
 	def from_dataset(
@@ -1783,17 +1783,17 @@ class Featureset(BaseModel):
 		"""
 		As we get further away from the `Dataset.<Types>` they need less isolation.
 		"""
-		d = Dataset.get_by_id(dataset_id)
+		dataset = Dataset.get_by_id(dataset_id)
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
 
-		if (d.dataset_type == 'image'):
+		if (dataset.dataset_type == 'image'):
 			# Just passes the Dataset through for now.
 			if (include_columns is not None) or (exclude_columns is not None):
 				raise ValueError("\nYikes - The `Dataset.Image` classes supports neither the `include_columns` nor `exclude_columns` arguemnt.\n")
 			columns = None
 			columns_excluded = None
-		elif (d.dataset_type == 'tabular'):
+		elif (dataset.dataset_type == 'tabular'):
 			d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
 
 			if (include_columns is not None) and (exclude_columns is not None):
@@ -1828,17 +1828,17 @@ class Featureset(BaseModel):
 				columns_excluded = None
 
 			"""
-			- Check that this Dataset does not already have a Featureset that is exactly the same.
+			- Check that this Dataset does not already have a Feature that is exactly the same.
 			- There are less entries in `excluded_columns` so maybe it's faster to compare that.
 			"""
 			if columns_excluded is not None:
 				cols_aplha = sorted(columns_excluded)
 			else:
 				cols_aplha = None
-			d_featuresets = d.featuresets
-			count = d_featuresets.count()
+			d_features = dataset.features
+			count = d_features.count()
 			if (count > 0):
-				for f in d_featuresets:
+				for f in d_features:
 					f_id = str(f.id)
 					f_cols = f.columns_excluded
 					if (f_cols is not None):
@@ -1847,22 +1847,22 @@ class Featureset(BaseModel):
 						f_cols_alpha = None
 					if (cols_aplha == f_cols_alpha):
 						raise ValueError(dedent(f"""
-						Yikes - This Dataset already has Featureset <id:{f_id}> with the same columns.
+						Yikes - This Dataset already has Feature <id:{f_id}> with the same columns.
 						Cannot create duplicate.
 						"""))
 
-		f = Featureset.create(
-			dataset = d
+		feature = Feature.create(
+			dataset = dataset
 			, columns = columns
 			, columns_excluded = columns_excluded
 		)
-		return f
+		return feature
 
 
 	def to_pandas(id:int, samples:list=None, columns:list=None):
 		samples = listify(samples)
 		columns = listify(columns)
-		f_frame = Featureset.get_featureset(
+		f_frame = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'pandas'
 			, samples = samples
@@ -1874,7 +1874,7 @@ class Featureset(BaseModel):
 	def to_numpy(id:int, samples:list=None, columns:list=None):
 		samples = listify(samples)
 		columns = listify(columns)
-		f_arr = Featureset.get_featureset(
+		f_arr = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'numpy'
 			, samples = samples
@@ -1883,59 +1883,59 @@ class Featureset(BaseModel):
 		return f_arr
 
 
-	def get_featureset(
+	def get_feature(
 		id:int
 		, numpy_or_pandas:str
 		, samples:list = None
 		, columns:list = None
 	):
-		f = Featureset.get_by_id(id)
+		feature = Feature.get_by_id(id)
 		samples = listify(samples)
 		columns = listify(columns)
-		f_cols = f.columns
+		f_cols = feature.columns
 
 		if (columns is not None):
 			for c in columns:
 				if c not in f_cols:
-					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Featureset.columns`.\n")
+					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Feature.columns`.\n")
 			f_cols = columns    
 
-		dataset_id = f.dataset.id
+		dataset_id = feature.dataset.id
 		
 		if (numpy_or_pandas == 'numpy'):
-			ff = Dataset.to_numpy(
+			f_data = Dataset.to_numpy(
 				id = dataset_id
 				, columns = f_cols
 				, samples = samples
 			)
 		elif (numpy_or_pandas == 'pandas'):
-			ff = Dataset.to_pandas(
+			f_data = Dataset.to_pandas(
 				id = dataset_id
 				, columns = f_cols
 				, samples = samples
 			)
-		return ff
+		return f_data
 
 
 	def get_dtypes(
 		id:int
 	):
-		f = Featureset.get_by_id(id)
-		dataset = f.dataset
+		feature = Feature.get_by_id(id)
+		dataset = feature.dataset
 		if (dataset.dataset_type == 'image'):
-			raise ValueError("\nYikes - `featureset.dataset.dataset_type=='image'` does not have dtypes.\n")
+			raise ValueError("\nYikes - `feature.dataset.dataset_type=='image'` does not have dtypes.\n")
 
-		f_cols = f.columns
+		f_cols = feature.columns
 		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtypes
 
-		featureset_dtypes = {}
+		feature_dtypes = {}
 		for key,value in tabular_dtype.items():
 			for col in f_cols:         
 				if (col == key):
-					featureset_dtypes[col] = value
+					feature_dtypes[col] = value
 					# Exit `col` loop early becuase matching `col` found.
 					break
-		return featureset_dtypes
+		return feature_dtypes
 
 
 	def make_splitset(
@@ -1945,14 +1945,14 @@ class Featureset(BaseModel):
 		, size_validation:float = None
 		, bin_count:int = None
 	):
-		s = Splitset.from_featureset(
-			featureset_id = id
+		splitset = Splitset.from_feature(
+			feature_id = id
 			, label_id = label_id
 			, size_test = size_test
 			, size_validation = size_validation
 			, bin_count = bin_count
 		)
-		return s
+		return splitset
 
 
 	def make_encoderset(
@@ -1960,8 +1960,8 @@ class Featureset(BaseModel):
 		, encoder_count:int = 0
 		, description:str = None
 	):
-		encoderset = Encoderset.from_featureset(
-			featureset_id = id
+		encoderset = Encoderset.from_feature(
+			feature_id = id
 			, encoder_count = 0
 			, description = description
 		)
@@ -1972,8 +1972,8 @@ class Featureset(BaseModel):
 
 class Splitset(BaseModel):
 	"""
-	- Belongs to a Featureset, not a Dataset, because the samples selected vary based on the stratification of the features during the split,
-	  and a Featureset already has a Dataset anyways.
+	- Belongs to a Feature, not a Dataset, because the samples selected vary based on the stratification of the features during the split,
+	  and a Feature already has a Dataset anyways.
 	- Here the `samples_` attributes contain indices.
 
 	-ToDo: store and visualize distributions of each column in training split, including label.
@@ -1987,12 +1987,12 @@ class Splitset(BaseModel):
 	bin_count = IntegerField(null=True)
 
 
-	featureset = ForeignKeyField(Featureset, backref='splitsets')
+	feature = ForeignKeyField(Feature, backref='splitsets')
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
 	
 
-	def from_featureset(
-		featureset_id:int
+	def from_feature(
+		feature_id:int
 		, label_id:int = None
 		, size_test:float = None
 		, size_validation:float = None
@@ -2024,18 +2024,18 @@ class Splitset(BaseModel):
 		else:
 			has_validation = False
 
-		f = Featureset.get_by_id(featureset_id)
-		f_cols = f.columns
+		feature = Feature.get_by_id(feature_id)
+		f_cols = feature.columns
 
 		# Feature data to be split.
-		dataset = f.dataset
-		featureset_array = Dataset.to_numpy(id=dataset.id, columns=f_cols)
+		dataset = feature.dataset
+		feature_array = Dataset.to_numpy(id=dataset.id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
 		in order to keep track of the samples being used in the predictoring splits.
 		"""
-		row_count = featureset_array.shape[0]
+		row_count = feature_array.shape[0]
 		arr_idx = np.arange(row_count)
 		
 		samples = {}
@@ -2047,8 +2047,8 @@ class Splitset(BaseModel):
 			label = None
 			if (size_test is not None) or (size_validation is not None):
 				raise ValueError(dedent("""
-					Yikes - Unsupervised Featuresets support neither test nor validation splits.
-					Set both `size_test` and `size_validation` as `None` for this Featureset.
+					Yikes - Unsupervised Features support neither test nor validation splits.
+					Set both `size_test` and `size_validation` as `None` for this Feature.
 				"""))
 			else:
 				indices_lst_train = arr_idx.tolist()
@@ -2056,20 +2056,20 @@ class Splitset(BaseModel):
 				sizes["train"] = {"percent": 1.00, "count": row_count}
 
 		elif (label_id is not None):
-			# We don't need to prevent duplicate Label/Featureset combos because Splits generate different samples each time.
+			# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 			label = Label.get_by_id(label_id)
 
-			# Check number of samples in Label vs Featureset, because they can come from different Datasets.
+			# Check number of samples in Label vs Feature, because they can come from different Datasets.
 			l_dataset_id = label.dataset.id
 			l_length = Dataset.Tabular.get_main_file(l_dataset_id).shape['rows']
 			if (l_dataset_id != dataset.id):
 				if (dataset.dataset_type == 'tabular'):
 					f_length = Dataset.Tabular.get_main_file(dataset.id).shape['rows']
 				elif (dataset.dataset_type == 'image'):
-					f_length = f.dataset.file_count
+					f_length = feature.dataset.file_count
 				# Separate `if` to compare them.
 				if (l_length != f_length):
-					raise ValueError("\nYikes - The Datasets of your Label and Featureset do not contains the same number of samples.\n")
+					raise ValueError("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
 
 			if (size_test is None):
 				size_test = 0.30
@@ -2091,11 +2091,11 @@ class Splitset(BaseModel):
 			"""
 			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
-			- Don't include the Dataset.Image.featureset pixel arrays in stratification.
+			- Don't include the Dataset.Image.feature pixel arrays in stratification.
 			"""
 			if (dataset.dataset_type == 'tabular'):
 				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
-					featureset_array, label_array, arr_idx
+					feature_array, label_array, arr_idx
 					, test_size = size_test
 					, stratify = stratifier1
 					, shuffle = True
@@ -2158,7 +2158,7 @@ class Splitset(BaseModel):
 			sizes["train"] = {"percent": size_train, "count": count_train}
 
 		s = Splitset.create(
-			featureset = f
+			feature = feature
 			, label = label
 			, samples = samples
 			, sizes = sizes
@@ -2174,7 +2174,7 @@ class Splitset(BaseModel):
 		id:int
 		, splits:list = None
 		, include_label:bool = None
-		, include_featureset:bool = None
+		, include_feature:bool = None
 		, feature_columns:list = None
 	):
 		splits = listify(splits)
@@ -2184,7 +2184,7 @@ class Splitset(BaseModel):
 			, numpy_or_pandas = 'pandas'
 			, splits = splits
 			, include_label = include_label
-			, include_featureset = include_featureset
+			, include_feature = include_feature
 			, feature_columns = feature_columns
 		)
 		return split_frames
@@ -2194,7 +2194,7 @@ class Splitset(BaseModel):
 		id:int
 		, splits:list = None
 		, include_label:bool = None
-		, include_featureset:bool = None
+		, include_feature:bool = None
 		, feature_columns:list = None
 	):
 		splits = listify(splits)
@@ -2204,7 +2204,7 @@ class Splitset(BaseModel):
 			, numpy_or_pandas = 'numpy'
 			, splits = splits
 			, include_label = include_label
-			, include_featureset = include_featureset
+			, include_feature = include_feature
 			, feature_columns = feature_columns
 		)
 		return split_arrs
@@ -2214,7 +2214,7 @@ class Splitset(BaseModel):
 		, numpy_or_pandas:str # Machine set, so don't validate.
 		, splits:list = None
 		, include_label:bool = None # Unsupervised can't be True.
-		, include_featureset:bool = None
+		, include_feature:bool = None
 		, feature_columns:list = None
 	):
 		"""
@@ -2228,16 +2228,16 @@ class Splitset(BaseModel):
 
 		splits = list(s.samples.keys())
 		supervision = s.supervision
-		featureset = s.featureset
+		feature = s.feature
 
 		split_frames = {}
 		# Future: Optimize (switch to generators for memory usage).
 		# Here, split_names are: train, test, validation.
 		
-		# There are always featureset. It's just if you want to include them or not.
+		# There are always feature. It's just if you want to include them or not.
 		# Saves memory when you only want Labels by split.
-		if (include_featureset is None):
-			include_featureset = True
+		if (include_feature is None):
+			include_feature = True
 
 		if (supervision == "unsupervised"):
 			if (include_label is None):
@@ -2248,10 +2248,10 @@ class Splitset(BaseModel):
 			if (include_label is None):
 				include_label = True
 
-		if ((include_featureset == False) and (include_label == False)):
-			raise ValueError("\nYikes - Both `include_featureset` and `include_label` cannot be False.\n")
+		if ((include_feature == False) and (include_label == False)):
+			raise ValueError("\nYikes - Both `include_feature` and `include_label` cannot be False.\n")
 
-		if ((feature_columns is not None) and (include_featureset != True)):
+		if ((feature_columns is not None) and (include_feature != True)):
 			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
 
 		for split_name in splits:
@@ -2260,11 +2260,11 @@ class Splitset(BaseModel):
 			# Fetch the sample indices for the split
 			split_samples = s.samples[split_name]
 			
-			if (include_featureset == True):
+			if (include_feature == True):
 				if (numpy_or_pandas == 'numpy'):
-					ff = featureset.to_numpy(samples=split_samples, columns=feature_columns)
+					ff = feature.to_numpy(samples=split_samples, columns=feature_columns)
 				elif (numpy_or_pandas == 'pandas'):
-					ff = featureset.to_pandas(samples=split_samples, columns=feature_columns)
+					ff = feature.to_pandas(samples=split_samples, columns=feature_columns)
 				split_frames[split_name]["features"] = ff
 
 			if (include_label == True):
@@ -2460,7 +2460,7 @@ class Foldset(BaseModel):
 		, fold_index:int = None
 		, fold_names:list = None
 		, include_label:bool = None
-		, include_featureset:bool = None
+		, include_feature:bool = None
 		, feature_columns:list = None
 	):
 		fold_names = listify(fold_names)
@@ -2471,7 +2471,7 @@ class Foldset(BaseModel):
 			, fold_index = fold_index
 			, fold_names = fold_names
 			, include_label = include_label
-			, include_featureset = include_featureset
+			, include_feature = include_feature
 			, feature_columns = feature_columns
 		)
 		return fold_frames
@@ -2482,7 +2482,7 @@ class Foldset(BaseModel):
 		, fold_index:int = None
 		, fold_names:list = None
 		, include_label:bool = None
-		, include_featureset:bool = None
+		, include_feature:bool = None
 		, feature_columns:list = None
 	):
 		fold_names = listify(fold_names)
@@ -2493,7 +2493,7 @@ class Foldset(BaseModel):
 			, fold_index = fold_index
 			, fold_names = fold_names
 			, include_label = include_label
-			, include_featureset = include_featureset
+			, include_feature = include_feature
 			, feature_columns = feature_columns
 		)
 		return fold_arrs
@@ -2505,7 +2505,7 @@ class Foldset(BaseModel):
 		, fold_index:int = None
 		, fold_names:list = None
 		, include_label:bool = None
-		, include_featureset:bool = None
+		, include_feature:bool = None
 		, feature_columns:list = None
 	):
 		fold_names = listify(fold_names)
@@ -2520,12 +2520,12 @@ class Foldset(BaseModel):
 
 		s = foldset.splitset
 		supervision = s.supervision
-		featureset = s.featureset
+		feature = s.feature
 
 		# There are always features, just whether to include or not.
 		# Saves memory when you only want Labels by split.
-		if (include_featureset is None):
-			include_featureset = True
+		if (include_feature is None):
+			include_feature = True
 
 		if (supervision == "unsupervised"):
 			if (include_label is None):
@@ -2536,10 +2536,10 @@ class Foldset(BaseModel):
 			if (include_label is None):
 				include_label = True
 
-		if ((include_featureset == False) and (include_label == False)):
-			raise ValueError("\nYikes - Both `include_featureset` and `include_label` cannot be False.\n")
+		if ((include_feature == False) and (include_label == False)):
+			raise ValueError("\nYikes - Both `include_feature` and `include_label` cannot be False.\n")
 
-		if ((feature_columns is not None) and (include_featureset != True)):
+		if ((feature_columns is not None) and (include_feature != True)):
 			raise ValueError("\nYikes - `feature_columns` must be None if `include_label==False`.\n")
 
 		if (fold_names is None):
@@ -2564,14 +2564,14 @@ class Foldset(BaseModel):
 				# Fetch the sample indices for the split.
 				folds_samples = fold.samples[fold_name]
 
-				if (include_featureset == True):
+				if (include_feature == True):
 					if (numpy_or_pandas == 'numpy'):
-						ff = featureset.to_numpy(
+						ff = feature.to_numpy(
 							samples = folds_samples
 							, columns = feature_columns
 						)
 					elif (numpy_or_pandas == 'pandas'):
-						ff = featureset.to_pandas(
+						ff = feature.to_pandas(
 							samples = folds_samples
 							, columns = feature_columns
 						)
@@ -2609,25 +2609,25 @@ class Encoderset(BaseModel):
 	- Preprocessing should not happen prior to Dataset ingestion because you need to do it after the split to avoid bias.
 	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
-	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Featureset.
+	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Feature.
 	- Although Encoderset seems uneccessary, you need something to sequentially group the Featurecoders onto.
 	- In future, maybe Labelcoder gets split out from Encoderset and it becomes Featurecoderset.
 	"""
 	encoder_count = IntegerField()
 	description = CharField(null=True)
 
-	featureset = ForeignKeyField(Featureset, backref='encodersets')
+	feature = ForeignKeyField(Feature, backref='encodersets')
 
-	def from_featureset(
-		featureset_id:int
+	def from_feature(
+		feature_id:int
 		, encoder_count:int = 0
 		, description:str = None
 	):
-		featureset = Featureset.get_by_id(featureset_id)
+		feature = Feature.get_by_id(feature_id)
 		encoderset = Encoderset.create(
 			encoder_count = encoder_count
 			, description = description
-			, featureset = featureset
+			, feature = feature
 		)
 		return encoderset
 
@@ -3045,19 +3045,19 @@ class Featurecoder(BaseModel):
 		dtypes = listify(dtypes)
 		columns = listify(columns)
 		
-		featureset = encoderset.featureset
-		featureset_cols = featureset.columns
-		featureset_dtypes = featureset.get_dtypes()
+		feature = encoderset.feature
+		feature_cols = feature.columns
+		feature_dtypes = feature.get_dtypes()
 		existing_featurecoders = list(encoderset.featurecoders)
 
-		dataset = featureset.dataset
+		dataset = feature.dataset
 		dataset_type = dataset.dataset_type
 
 		# 1. Figure out which columns have yet to be encoded.
 		# Order-wise no need to validate filters if there are no columns left to filter.
-		# Remember Featureset columns are a subset of the Dataset columns.
+		# Remember Feature columns are a subset of the Dataset columns.
 		if (len(existing_featurecoders) == 0):
-			initial_columns = featureset_cols
+			initial_columns = feature_cols
 			featurecoder_index = 0
 		elif (len(existing_featurecoders) > 0):
 			# Get the leftover columns from the last one.
@@ -3067,7 +3067,7 @@ class Featurecoder(BaseModel):
 			if (len(initial_columns) == 0):
 				raise ValueError("\nYikes - All features already have encoders associated with them. Cannot add more Featurecoders to this Encoderset.\n")
 		initial_dtypes = {}
-		for key,value in featureset_dtypes.items():
+		for key,value in feature_dtypes.items():
 			for col in initial_columns:
 				if (col == key):
 					initial_dtypes[col] = value
@@ -3079,7 +3079,7 @@ class Featurecoder(BaseModel):
 
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
-			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Featureset.\n")
+			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
 		
 		sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
 			sklearn_preprocess, is_label=False
@@ -3192,7 +3192,7 @@ class Featurecoder(BaseModel):
 		}
 
 		# 4. Test fitting the encoder to matching columns.
-		samples_to_encode = featureset.to_numpy(columns=matching_columns)
+		samples_to_encode = feature.to_numpy(columns=matching_columns)
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 			sklearn_preprocess = sklearn_preprocess
@@ -4627,7 +4627,7 @@ class Job(BaseModel):
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
 			fitted_encoders['featurecoders'] = []
-			fset_cols = encoderset.featureset.columns
+			f_cols = encoderset.feature.columns
 			
 			# For each featurecoder: fetch, transform, & concatenate matching features.
 			# One nested list per Featurecoder. List of lists.
@@ -4643,7 +4643,7 @@ class Job(BaseModel):
 				matching_columns = featurecoder.matching_columns
 				# Get the indices of the desired columns.
 				col_indices = Job.colIndices_from_colNames(
-					column_names=fset_cols, desired_cols=matching_columns
+					column_names=f_cols, desired_cols=matching_columns
 				)
 				# Filter the array using those indices.
 				features_to_fit = Job.cols_by_indices(arr_features, col_indices)
@@ -4664,7 +4664,7 @@ class Job(BaseModel):
 		# Can't overwrite columns with data of different type, so they have to be pieced together.
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
-			fset_cols = encoderset.featureset.columns
+			f_cols = encoderset.feature.columns
 			transformed_features = None
 			for featurecoder in featurecoders:
 				idx = featurecoder.featurecoder_index
@@ -4677,7 +4677,7 @@ class Job(BaseModel):
 				matching_columns = featurecoder.matching_columns
 				# Get the indices of the desired columns.
 				col_indices = Job.colIndices_from_colNames(
-					column_names=fset_cols, desired_cols=matching_columns
+					column_names=f_cols, desired_cols=matching_columns
 				)
 				# Filter the array using those indices.
 				features_to_transform = Job.cols_by_indices(arr_features, col_indices)
@@ -4706,7 +4706,7 @@ class Job(BaseModel):
 			if (len(leftover_columns) > 0):
 				# Get the indices of the desired columns.
 				col_indices = Job.colIndices_from_colNames(
-					column_names=fset_cols, desired_cols=leftover_columns
+					column_names=f_cols, desired_cols=leftover_columns
 				)
 				# Filter the array using those indices.
 				leftover_features = Job.cols_by_indices(arr_features, col_indices)
@@ -5011,8 +5011,8 @@ class Job(BaseModel):
 				arr_labels=arr_labels,
 				fitted_encoders=fitted_encoders, labelcoder=labelcoder
 			)
-		# Featuresets - fetch and encode.
-		arr_features = splitset.featureset.to_numpy()
+		# Features - fetch and encode.
+		arr_features = splitset.feature.to_numpy()
 		if (encoderset is not None):
 			fitted_encoders = Job.encoder_fit_features(
 				arr_features=arr_features, samples_train=samples[key_train],
@@ -5030,7 +5030,7 @@ class Job(BaseModel):
 		- Stage preprocessed data to be passed into the remaining Job steps.
 		- Example samples dict entry: samples['train']['features']
 		- For each entry in the dict, fetch the rows from the encoded data.
-		- Going to have to loop on `splitset.featuresets` here.
+		- Going to have to loop on `splitset.features` here.
 		""" 
 		for split, rows in samples.items():
 			samples[split] = {
@@ -5347,7 +5347,7 @@ class Predictor(BaseModel):
 
 
 	def tabular_schemas_match(set_original, set_new):
-		# Set can be either Label or Featureset. Needs `columns` and `.get_dtypes`.
+		# Set can be either Label or Feature. Needs `columns` and `.get_dtypes`.
 		cols_og = set_original.columns
 		cols_new = set_new.columns
 		if (cols_new != cols_og):
@@ -5361,28 +5361,28 @@ class Predictor(BaseModel):
 				The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 			"""))
 
-	def image_schemas_match(featureset_og, featureset_new):
-		image_og = featureset_og.dataset.files[0].images[0]
-		image_new = featureset_new.dataset.files[0].images[0]
+	def image_schemas_match(feature_og, feature_new):
+		image_og = feature_og.dataset.files[0].images[0]
+		image_new = feature_new.dataset.files[0].images[0]
 		if (image_og.size != image_new.size):
 			raise ValueError(f"\nYikes - The new image size:{image_new.size} did not match the original image size:{image_og.size}.\n")
 		if (image_og.mode != image_new.mode):
 			raise ValueError(f"\nYikes - The new image color mode:{image_new.mode} did not match the original image color mode:{image_og.mode}.\n")
 			
 
-	def newSchema_matches_ogSchema(id:int, featureset:object, label:object=None):
+	def newSchema_matches_ogSchema(id:int, feature:object, label:object=None):
 		predictor = Predictor.get_by_id(id)
 
-		featureset_og = predictor.job.queue.splitset.featureset
-		featureset_og_typ = featureset_og.dataset.dataset_type
-		featureset_new = featureset
-		featureset_new_typ = featureset_new.dataset.dataset_type
-		if (featureset_og_typ != featureset_new_typ):
-			raise ValueError("\nYikes - New Featureset and original Featureset come from different `dataset_types`.\n")
-		if (featureset_new_typ == 'tabular'):
-			Predictor.tabular_schemas_match(featureset_og, featureset_new)
-		elif (featureset_new_typ == 'image'):
-			Predictor.image_schemas_match(featureset_og, featureset_new)
+		feature_og = predictor.job.queue.splitset.feature
+		feature_og_typ = feature_og.dataset.dataset_type
+		feature_new = feature
+		feature_new_typ = feature_new.dataset.dataset_type
+		if (feature_og_typ != feature_new_typ):
+			raise ValueError("\nYikes - New Feature and original Feature come from different `dataset_types`.\n")
+		if (feature_new_typ == 'tabular'):
+			Predictor.tabular_schemas_match(feature_og, feature_new)
+		elif (feature_new_typ == 'image'):
+			Predictor.image_schemas_match(feature_og, feature_new)
 
 		# Only verify Labels if the inference Splitset provides Labels.
 		# Otherwise, it may be conducting pure inference.
@@ -5405,22 +5405,22 @@ class Predictor(BaseModel):
 			
 	def infer(id:int, splitset_id:int):
 		"""
-		- Splitset is used because Labels and Featuresets can come from different types of Datasets.
+		- Splitset is used because Labels and Features can come from different types of Datasets.
 		- Verifies both Features and Labels match original schema.
 		"""
 		splitset = Splitset.get_by_id(splitset_id)
-		featureset = splitset.featureset
+		feature = splitset.feature
 		if (splitset.label is not None):
 			label = splitset.label
 		else:
 			label = None
 
-		Predictor.newSchema_matches_ogSchema(id, featureset, label)
+		Predictor.newSchema_matches_ogSchema(id, feature, label)
 		predictor = Predictor.get_by_id(id)
 
 		fitted_encoders = predictor.job.fitted_encoders
 
-		arr_features = featureset.to_numpy()
+		arr_features = feature.to_numpy()
 		encoderset = predictor.job.queue.encoderset
 		if (encoderset is not None):
 			# Don't need to check types because Encoderset creation protects
@@ -5631,7 +5631,7 @@ class TrainingCallback():
 #==================================================
 
 class Pipeline():
-	"""Create Dataset, Featureset, Label, Splitset, and Foldset."""
+	"""Create Dataset, Feature, Label, Splitset, and Foldset."""
 	def parse_tabular_input(dataFrame_or_filePath:object, dtype:dict=None):
 		"""Create the dataset from either df or file."""
 		d = dataFrame_or_filePath
@@ -5684,16 +5684,16 @@ class Pipeline():
 				label = dataset.make_label(columns=[label_column])
 				label_id = label.id
 			elif (label_column is None):
-				featureset = dataset.make_featureset()
+				feature = dataset.make_feature()
 				label_id = None
 
 			if (features_excluded is None):
 				if (label_column is not None):
-					featureset = dataset.make_featureset(exclude_columns=[label_column])
+					feature = dataset.make_feature(exclude_columns=[label_column])
 			elif (features_excluded is not None):
-				featureset = dataset.make_featureset(exclude_columns=features_excluded)
+				feature = dataset.make_feature(exclude_columns=features_excluded)
 
-			splitset = featureset.make_splitset(
+			splitset = feature.make_splitset(
 				label_id = label_id
 				, size_test = size_test
 				, size_validation = size_validation
@@ -5707,7 +5707,7 @@ class Pipeline():
 				label.make_labelcoder(sklearn_preprocess=label_encoder)
 
 			if (feature_encoders is not None):					
-				encoderset = featureset.make_encoderset()
+				encoderset = feature.make_encoderset()
 				for fc in feature_encoders:
 					encoderset.make_featurecoder(**fc)
 			return splitset
@@ -5736,8 +5736,8 @@ class Pipeline():
 					urls = folderPath_or_urls
 					, pillow_save = pillow_save
 				)
-			# Image-based Featureset.
-			featureset = dataset_image.make_featureset()
+			# Image-based Feature.
+			feature = dataset_image.make_feature()
 
 			if (
 				((tabularDF_or_path is None) and (label_column is not None))
@@ -5756,7 +5756,7 @@ class Pipeline():
 				label = dataset_tabular.make_label(columns=[label_column])
 				label_id = label.id
 			
-			splitset = featureset.make_splitset(
+			splitset = feature.make_splitset(
 				label_id = label_id
 				, size_test = size_test
 				, size_validation = size_validation
@@ -5779,7 +5779,7 @@ class Experiment():
 	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
 
 
-	`encoder_featureset`: List of dictionaries describing each encoder to run along with filters for different feature columns.
+	`encoder_feature`: List of dictionaries describing each encoder to run along with filters for different feature columns.
 	`encoder_label`: Single instantiation of an sklearn encoder: e.g. `OneHotEncoder()` that gets applied to the full label array.
 	"""
 	def make(

@@ -252,7 +252,7 @@
    "id": "limited-cotton",
    "metadata": {},
    "source": [
-    "During `infer`, it will validate that the schema of your new Splitset's `Featureset` and `Label` match the schema of the original training Splitset. It will also ignore any splits that you make, fetching the entire Featureset and Label."
+    "During `infer`, it will validate that the schema of your new Splitset's `Feature` and `Label` match the schema of the original training Splitset. It will also ignore any splits that you make, fetching the entire Feature and Label."
    ]
   },
   {

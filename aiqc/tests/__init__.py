@@ -168,7 +168,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	label_column = 'species'
 	label = dataset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -177,7 +177,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -191,7 +191,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = featureset.make_encoderset()
+	encoderset = feature.make_encoderset()
 
 	labelcoder = label.make_labelcoder(
 		sklearn_preprocess = OneHotEncoder(sparse=False)
@@ -275,7 +275,7 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 	label_column = 'object'
 	label = dataset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -284,7 +284,7 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -298,7 +298,7 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = featureset.make_encoderset()
+	encoderset = feature.make_encoderset()
 
 	labelcoder = label.make_labelcoder(
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
@@ -381,7 +381,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	label_column = 'price'
 	label = dataset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -390,7 +390,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -406,7 +406,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = featureset.make_encoderset()
+	encoderset = feature.make_encoderset()
 
 	labelcoder = label.make_labelcoder(
 		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
@@ -522,7 +522,7 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
 	dataset_image = Dataset.Image.from_urls(urls = image_urls)
-	featureset = dataset_image.make_featureset()
+	feature = dataset_image.make_feature()
 	
 	if (fold_count is not None):
 		size_test = 0.25
@@ -531,7 +531,7 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -643,7 +643,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 	label_column = 'object'
 	label = dataset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -652,7 +652,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -666,7 +666,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = featureset.make_encoderset()
+	encoderset = feature.make_encoderset()
 
 	labelcoder = label.make_labelcoder(
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
@@ -782,7 +782,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	label_column = 'species'
 	label = dataset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -791,7 +791,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -805,7 +805,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = featureset.make_encoderset()
+	encoderset = feature.make_encoderset()
 
 	labelcoder = label.make_labelcoder(
 		sklearn_preprocess = OrdinalEncoder()
@@ -929,7 +929,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	label_column = 'price'
 	label = dataset.make_label(columns=[label_column])
 
-	featureset = dataset.make_featureset(exclude_columns=[label_column])
+	feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -938,7 +938,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
@@ -954,7 +954,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = featureset.make_encoderset()
+	encoderset = feature.make_encoderset()
 
 	labelcoder = label.make_labelcoder(
 		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
@@ -1087,7 +1087,7 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
 	dataset_image = Dataset.Image.from_urls(urls = image_urls)
-	featureset = dataset_image.make_featureset()
+	feature = dataset_image.make_feature()
 	
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1096,7 +1096,7 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = featureset.make_splitset(
+	splitset = feature.make_splitset(
 		label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation

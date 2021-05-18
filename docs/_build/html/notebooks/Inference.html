@@ -293,10 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Labels">Reading Labels</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Featureset-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Feature-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id1">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id2">Deriving Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Featuresets">Reading Featuresets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
@@ -877,7 +877,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Run-Inference">
 <h2>Run Inference<a class="headerlink" href="#Run-Inference" title="Permalink to this headline">¶</a></h2>
 <p>Then pass that <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> to <code class="docutils literal notranslate"><span class="pre">Predictor.infer()</span></code>.</p>
-<p>During <code class="docutils literal notranslate"><span class="pre">infer</span></code>, it will validate that the schema of your new Splitset’s <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> and <code class="docutils literal notranslate"><span class="pre">Label</span></code> match the schema of the original training Splitset. It will also ignore any splits that you make, fetching the entire Featureset and Label.</p>
+<p>During <code class="docutils literal notranslate"><span class="pre">infer</span></code>, it will validate that the schema of your new Splitset’s <code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Label</span></code> match the schema of the original training Splitset. It will also ignore any splits that you make, fetching the entire Feature and Label.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> schema includes column ordering and dtype.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> schema includes Pillow size (height/width) and mode (color dimensions).</p></li>

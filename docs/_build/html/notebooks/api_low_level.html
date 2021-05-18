@@ -293,10 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#Reading-Labels">Reading Labels</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#3.-Select-the-Featureset-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Select-the-Feature-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Deriving Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Reading-Featuresets">Reading Featuresets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
@@ -996,17 +996,17 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">image_featureset</span> <span class="o">=</span> <span class="n">image_dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">()</span>
+<span></span><span class="n">image_feature</span> <span class="o">=</span> <span class="n">image_dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>Skipping forward a bit, we bring the heterogenous <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> and <code class="docutils literal notranslate"><span class="pre">Label</span></code> together in the <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>, and they can be used as normal. You can even construct a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> from this splitset.</p>
+<p>Skipping forward a bit, we bring the heterogenous <code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Label</span></code> together in the <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>, and they can be used as normal. You can even construct a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> from this splitset.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">image_splitset</span> <span class="o">=</span> <span class="n">image_featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+<span></span><span class="n">image_splitset</span> <span class="o">=</span> <span class="n">image_feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
     <span class="n">label_id</span> <span class="o">=</span> <span class="n">tabular_label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.24</span>
     <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
@@ -1060,7 +1060,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">image_featureset</span> <span class="o">=</span> <span class="n">image_dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">()</span>
+<span></span><span class="n">image_feature</span> <span class="o">=</span> <span class="n">image_dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1069,7 +1069,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">image_splitset</span> <span class="o">=</span> <span class="n">image_featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+<span></span><span class="n">image_splitset</span> <span class="o">=</span> <span class="n">image_feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
     <span class="n">label_id</span> <span class="o">=</span> <span class="n">tabular_label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.24</span>
     <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
@@ -1488,18 +1488,18 @@ array([[0],
 </div>
 </div>
 </div>
-<div class="section" id="3.-Select-the-Featureset-column(s).">
-<h2>3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).<a class="headerlink" href="#3.-Select-the-Featureset-column(s)." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="3.-Select-the-Feature-column(s).">
+<h2>3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).<a class="headerlink" href="#3.-Select-the-Feature-column(s)." title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
 <h3>ORM<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Creating a Featureset won’t duplicate your data! It simply records the Dataset <code class="docutils literal notranslate"><span class="pre">columns</span></code> to be used as features during training.</p>
+<p>Creating a Feature won’t duplicate your data! It simply records the Dataset <code class="docutils literal notranslate"><span class="pre">columns</span></code> to be used as features during training.</p>
 <p>There are three ways to define which columns you want to use as features:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">exclude_columns=[]</span></code> e.g. use all columns except the label column.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">include_columns=[]</span></code> e.g. only use these columns that I think are informative.</p></li>
 <li><p>Leave both of the above blank and all columns will be used (e.g. images or unsupervised leanring).</p></li>
 </ul>
-<p>For structured data, since the Featureset is far removed from the <code class="docutils literal notranslate"><span class="pre">File.Tabular</span></code> that it is derived from, there is a <code class="docutils literal notranslate"><span class="pre">Featureset.get_dtypes()</span></code> method. This will come in handy when we are selecting dtypes/columns to include/ exclude in our <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>(s).</p>
+<p>For structured data, since the Feature is far removed from the <code class="docutils literal notranslate"><span class="pre">File.Tabular</span></code> that it is derived from, there is a <code class="docutils literal notranslate"><span class="pre">Feature.get_dtypes()</span></code> method. This will come in handy when we are selecting dtypes/columns to include/ exclude in our <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>(s).</p>
 </div>
 <div class="section" id="id2">
 <h3>Deriving Labels<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
@@ -1522,7 +1522,7 @@ array([[0],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">(</span><span class="n">include_columns</span><span class="o">=</span><span class="n">include_columns</span><span class="p">)</span>
+<span></span><span class="n">feature</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">include_columns</span><span class="o">=</span><span class="n">include_columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1532,7 +1532,7 @@ array([[0],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+<span></span><span class="n">feature</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1541,7 +1541,7 @@ array([[0],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">columns</span>
+<span></span><span class="n">feature</span><span class="o">.</span><span class="n">columns</span>
 </pre></div>
 </div>
 </div>
@@ -1560,7 +1560,7 @@ array([[0],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">columns_excluded</span>
+<span></span><span class="n">feature</span><span class="o">.</span><span class="n">columns_excluded</span>
 </pre></div>
 </div>
 </div>
@@ -1573,16 +1573,16 @@ array([[0],
 [&#39;species&#39;]
 </pre></div></div>
 </div>
-<p>Again, for images, just perform <code class="docutils literal notranslate"><span class="pre">Dataset.Image.make_featureset()</span></code> since you’ll likely want to include all pixels and your label column is in a separate, coupled Dataset.</p>
+<p>Again, for images, just perform <code class="docutils literal notranslate"><span class="pre">Dataset.Image.make_feature()</span></code> since you’ll likely want to include all pixels and your label column is in a separate, coupled Dataset.</p>
 </div>
-<div class="section" id="Reading-Featuresets">
-<h3>Reading Featuresets<a class="headerlink" href="#Reading-Featuresets" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Reading-Features">
+<h3>Reading Features<a class="headerlink" href="#Reading-Features" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:</span><span class="mi">4</span><span class="p">]</span>
+<span></span><span class="n">feature</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:</span><span class="mi">4</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1603,7 +1603,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featureset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+<span></span><span class="n">feature</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1673,7 +1673,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 <div class="section" id="4.-Slice-samples-with-a-Splitset.">
 <h2>4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#4.-Slice-samples-with-a-Splitset." title="Permalink to this headline">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides a the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Featureset</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides a the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
 <p>Both contiuous and categorical <code class="docutils literal notranslate"><span class="pre">Labels</span></code> are automatically stratified.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1708,7 +1708,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span><span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span><span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1720,7 +1720,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
     <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.30</span>
 <span class="p">)</span>
@@ -1735,7 +1735,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
     <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.20</span>
     <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
@@ -1751,7 +1751,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset_unsupervised</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">()</span>
+<span></span><span class="n">splitset_unsupervised</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1850,7 +1850,7 @@ array([[5. , 3.5, 1.3, 0.3],
 <div class="section" id="Splitset.to_pandas()">
 <h3><code class="docutils literal notranslate"><span class="pre">Splitset.to_pandas()</span></code><a class="headerlink" href="#Splitset.to_pandas()" title="Permalink to this headline">¶</a></h3>
 <p>Getting more fine-tuned, both the numpy and pandas methods support a few optional filters for the sake of memory-efficiency when fetching larger splits.</p>
-<p>For example, imagine you are fetching data to specifically encode the only float column in the featureset of the test split. You don’t need the labels and you don’t need the other columns.</p>
+<p>For example, imagine you are fetching data to specifically encode the only float column in the feature of the test split. You don’t need the labels and you don’t need the other columns.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
@@ -1859,7 +1859,7 @@ array([[5. , 3.5, 1.3, 0.3],
 <span></span><span class="n">splitset</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span>
     <span class="n">splits</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">include_label</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">,</span> <span class="n">include_featureset</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">,</span> <span class="n">include_feature</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">,</span> <span class="n">feature_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sepal_width&#39;</span><span class="p">]</span>
 <span class="p">)[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;features&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
@@ -1950,7 +1950,7 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">big_label</span> <span class="o">=</span> <span class="n">big_dataset</span><span class="o">.</span><span class="n">make_label</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
-<span class="n">big_fset</span> <span class="o">=</span> <span class="n">big_dataset</span><span class="o">.</span><span class="n">make_featureset</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
+<span class="n">big_fset</span> <span class="o">=</span> <span class="n">big_dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
 <span class="n">big_splits</span> <span class="o">=</span> <span class="n">big_fset</span><span class="o">.</span><span class="n">make_splitset</span><span class="p">(</span>
     <span class="n">label_id</span> <span class="o">=</span> <span class="n">big_label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.30</span>
@@ -2066,7 +2066,7 @@ array([[5.1, 3.5, 1.4, 0.2],
     <span class="n">fold_index</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">,</span> <span class="n">fold_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;folds_train_combined&#39;</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">include_label</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">,</span> <span class="n">include_featureset</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">include_feature</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;folds_train_combined&#39;</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -2193,9 +2193,9 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 <li><p>Commonly used encoders such a <code class="docutils literal notranslate"><span class="pre">OneHotEncoder</span></code> can ouput multiple columns from a single column input. Therefore, the <em>shape</em> of the features can change during encoding.</p></li>
 <li><p>And finally, throughout this entire process, we need to avoid data leakage.</p></li>
 </ul>
-<p>For these reasons, <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>’s are applied sequentially; in an ordered chain, one after the other. After an encoder is applied, its columns are removed from the raw featureset and placed into an intermediary cache specific to each split/ fold.</p>
+<p>For these reasons, <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>’s are applied sequentially; in an ordered chain, one after the other. After an encoder is applied, its columns are removed from the raw feature and placed into an intermediary cache specific to each split/ fold.</p>
 <blockquote>
-<div><p>Right now, <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code> cannot be created for <code class="docutils literal notranslate"><span class="pre">Dataset.Image.Featureset</span></code>. I’m not opposed to changing this, but I would just have to account for 3D arrays.</p>
+<div><p>Right now, <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code> cannot be created for <code class="docutils literal notranslate"><span class="pre">Dataset.Image.Feature</span></code>. I’m not opposed to changing this, but I would just have to account for 3D arrays.</p>
 </div></blockquote>
 </div>
 <div class="section" id="Filtering-feature-columns">
@@ -2223,7 +2223,7 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">featureset</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
+<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -2549,7 +2549,7 @@ No more Featurecoders can be added to this Encoderset.
 <div class="section" id="9.-Optional,-associate-a-Hyperparamset-with-your-model.">
 <h2>9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.<a class="headerlink" href="#9.-Optional,-associate-a-Hyperparamset-with-your-model." title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument we saw earlier.</p>
-<p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hp['neuron_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;neuron_count&quot;:</span> <span class="pre">[9,</span> <span class="pre">12]</span></code> seen below. Where “model A” would have 9 neurons and “model B” would have 12 neurons.</p>
+<p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hp['epoch_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;epoch_count&quot;:</span> <span class="pre">[30,</span> <span class="pre">60]</span></code> seen below. Where “model A” would have 30 epochs and “model B” would have 60 epochs.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
 </pre></div>
@@ -2572,7 +2572,7 @@ No more Featurecoders can be added to this Encoderset.
 <div><p>The number of unique combinations escalates quickly, so in the future, we will provide different strategies for generating and selecting parameters to experiment with.</p>
 </div></blockquote>
 <p>Each unique combination of hyperparameters is recorded as a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
-<p>Ultimately, a training <code class="docutils literal notranslate"><span class="pre">Job</span></code> will be constructed for each unique combinanation of hyperparameters aka <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
+<p>Ultimately, a training <code class="docutils literal notranslate"><span class="pre">Job</span></code> is constructed for each unique combinanation of hyperparameters aka <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[63]:
 </pre></div>
