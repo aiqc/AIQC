@@ -345,9 +345,10 @@ def create_db():
 			Dataset,
 			Label, Feature, 
 			Splitset, Featureset, Foldset, Fold, 
-			Encoderset, Labelcoder, Featurecoder,
+			Encoderset, Labelcoder, Featurecoder, 
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Queue, Jobset, Job, Predictor, Prediction
+			Queue, Jobset, Job, Predictor, Prediction,
+			FittedEncoderset, FittedLabelcoder
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -1758,6 +1759,17 @@ class Label(BaseModel):
 		return lc
 
 
+	def get_latest_labelcoder(id:int):
+		label = Label.get_by_id(id)
+		labelcoders = list(label.labelcoders)
+		# Check if list empty.
+		if (not labelcoders):
+			return None
+		else:
+			return labelcoders[-1]
+
+
+
 
 class Feature(BaseModel):
 	"""
@@ -1964,6 +1976,15 @@ class Feature(BaseModel):
 		)
 		return encoderset
 
+
+	def get_latest_encoderset(id:int):
+		feature = Feature.get_by_id(id)
+		encodersets = list(feature.encodersets)
+		# Check if list empty.
+		if (not encodersets):
+			return None
+		else:
+			return encodersets[-1]
 
 
 
@@ -2260,8 +2281,8 @@ class Splitset(BaseModel):
 
 
 class Featureset(BaseModel):
-    splitset = ForeignKeyField(Splitset, backref='featuresets')
-    feature = ForeignKeyField(Feature, backref='featuresets')
+	splitset = ForeignKeyField(Splitset, backref='featuresets')
+	feature = ForeignKeyField(Feature, backref='featuresets')
 
 
 
@@ -3289,8 +3310,6 @@ class Algorithm(BaseModel):
 		, repeat_count:int = 1
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
-		, encoderset_id:int = None
-		, labelcoder_id:int = None
 		, hide_test:bool = False
 	):
 		queue = Queue.from_algorithm(
@@ -3298,8 +3317,6 @@ class Algorithm(BaseModel):
 			, splitset_id = splitset_id
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
-			, encoderset_id = encoderset_id
-			, labelcoder_id = labelcoder_id
 			, repeat_count = repeat_count
 			, hide_test = hide_test
 		)
@@ -3705,8 +3722,6 @@ class Queue(BaseModel):
 
 	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
-	encoderset = ForeignKeyField(Encoderset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
-	labelcoder = ForeignKeyField(Labelcoder, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 
 
 	def from_algorithm(
@@ -3716,8 +3731,6 @@ class Queue(BaseModel):
 		, hide_test:bool=False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
-		, encoderset_id:int = None
-		, labelcoder_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		library = algorithm.library
@@ -3726,27 +3739,18 @@ class Queue(BaseModel):
 		if (foldset_id is not None):
 			foldset = Foldset.get_by_id(foldset_id)
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
-
-		if (encoderset_id is not None):
-			encoderset = Encoderset.get_by_id(encoderset_id)
-			if (len(encoderset.featurecoders) == 0):
-				raise ValueError("\nYikes - That Encoderset has no Featurecoders.\n")
-		else:
-			encoderset = None
-
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
 			label_col_count = splitset.label.column_count
 			label_dtypes = list(splitset.label.get_dtypes().values())
 			
-			if (labelcoder_id is not None):
-				labelcoder = Labelcoder.get_by_id(labelcoder_id)
+			labelcoder = splitset.label.get_latest_labelcoder()
+
+			if (labelcoder is not None):
 				stringified_labelcoder = str(labelcoder.sklearn_preprocess)
 			else:
-				labelcoder = None
 				stringified_labelcoder = None
-
 
 			if (label_col_count == 1):
 				label_dtype = label_dtypes[0]
@@ -3853,9 +3857,6 @@ class Queue(BaseModel):
 
 		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
 			raise ValueError("\nYikes - Cannot have `hide_test==True` if `splitset.supervision != 'supervised'`.\n")
-		elif ((splitset.supervision == 'unsupervised') and (labelcoder_id is not None)):
-			raise ValueError("\nYikes - `splitset.supervision == 'unsupervised'`, but `labelcoder_id is not None`.\n")
-
 
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
@@ -3886,8 +3887,6 @@ class Queue(BaseModel):
 			, splitset = splitset
 			, foldset = foldset
 			, hyperparamset = hyperparamset
-			, encoderset = encoderset
-			, labelcoder = labelcoder
 			, hide_test = hide_test
 		)
  
@@ -4293,7 +4292,6 @@ class Job(BaseModel):
 	- Saves its Model to a Predictor.
 	"""
 	repeat_count = IntegerField()
-	fitted_encoders = PickleField(null=True)
 	#log = CharField() #catch & record stacktrace of failures and warnings?
 
 	queue = ForeignKeyField(Queue, backref='jobs')
@@ -4366,7 +4364,7 @@ class Job(BaseModel):
 
 	def encoder_fit_labels(
 		arr_labels:object, samples_train:list,
-		fitted_encoders:dict, labelcoder:object
+		labelcoder:object
 	):
 		"""
 		- All Label columns are always used during encoding.
@@ -4385,23 +4383,21 @@ class Job(BaseModel):
 				, samples_to_fit = labels_to_fit
 			)
 			# Save the fit.
-			fitted_encoders['labelcoder'] = fitted_coders[0]#take out of list before adding to dict.
+			fitted_encoders = fitted_coders[0]#take out of list before adding to dict.
 		return fitted_encoders
 
 
 	def encoder_transform_labels(
 		arr_labels:object,
-		fitted_encoders:dict, labelcoder:object 
+		fitted_encoders:object, labelcoder:object 
 	):
-		if ('labelcoder' in fitted_encoders.keys()):
-			fitted_encoders = fitted_encoders['labelcoder']
-			encoding_dimension = labelcoder.encoding_dimension
-			
-			arr_labels = Labelcoder.transform_dynamicDimensions(
-				fitted_encoders = [fitted_encoders] # `list(fitted_encoders)`, fails.
-				, encoding_dimension = encoding_dimension
-				, samples_to_transform = arr_labels
-			)
+		encoding_dimension = labelcoder.encoding_dimension
+		
+		arr_labels = Labelcoder.transform_dynamicDimensions(
+			fitted_encoders = [fitted_encoders] # `list(fitted_encoders)`, fails.
+			, encoding_dimension = encoding_dimension
+			, samples_to_transform = arr_labels
+		)
 		return arr_labels
 
 
@@ -4417,11 +4413,11 @@ class Job(BaseModel):
 
 	def encoder_fit_features(
 		arr_features:object, samples_train:list,
-		fitted_encoders:dict, encoderset:object
+		encoderset:object
 	):
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
-			fitted_encoders['featurecoders'] = []
+			fitted_encoders = []
 			f_cols = encoderset.feature.columns
 			
 			# For each featurecoder: fetch, transform, & concatenate matching features.
@@ -4448,13 +4444,13 @@ class Job(BaseModel):
 					sklearn_preprocess = preproc
 					, samples_to_fit = features_to_fit
 				)
-				fitted_encoders['featurecoders'].append(fitted_coders)
+				fitted_encoders.append(fitted_coders)
 		return fitted_encoders
 
 
 	def encoder_transform_features(
 		arr_features:object,
-		fitted_encoders:dict, encoderset:object 
+		fitted_encoders:list, encoderset:object 
 	):
 		# Can't overwrite columns with data of different type, so they have to be pieced together.
 		featurecoders = list(encoderset.featurecoders)
@@ -4463,7 +4459,7 @@ class Job(BaseModel):
 			transformed_features = None
 			for featurecoder in featurecoders:
 				idx = featurecoder.featurecoder_index
-				fitted_coders = fitted_encoders['featurecoders'][idx]# returns list
+				fitted_coders = fitted_encoders[idx]# returns list
 				encoding_dimension = featurecoder.encoding_dimension
 				# Here dataset is the new dataset.
 				features_to_transform = arr_features
@@ -4638,22 +4634,16 @@ class Job(BaseModel):
 		- Decode predictions before saving.
 		- Doesn't use any Label data, but does use Labelcoder fit on the original Labels.
 		"""
-		fitted_encoders = predictor.job.fitted_encoders
-		if (
-			('labelcoder' in fitted_encoders.keys())
-			and
-			(hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
-		):
+		labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
+			job=predictor.job, label=predictor.job.queue.splitset.label
+		)
+
+		if ((fitted_encoders is not None) and (hasattr(fitted_encoders, 'inverse_transform'))):
 			for split, data in predictions.items():
 				# OHE is arriving here as ordinal, not OHE.
 				data = Labelcoder.if_1d_make_2d(data)
-				fitted_labelcoder = fitted_encoders['labelcoder']
-				predictions[split] = fitted_labelcoder.inverse_transform(data)
-		elif(
-			('labelcoder' in fitted_encoders.keys())
-			and
-			(not hasattr(fitted_encoders['labelcoder'], 'inverse_transform'))
-		):
+				predictions[split] = fitted_encoders.inverse_transform(data)
+		elif((fitted_encoders is not None) and (not hasattr(fitted_encoders, 'inverse_transform'))):
 			print(dedent("""
 				Warning - `Predictor.predictions` are encoded. 
 				They cannot be decoded because the `sklearn.preprocessing`
@@ -4730,8 +4720,6 @@ class Job(BaseModel):
 		library = algorithm.library
 		hide_test = queue.hide_test
 		splitset = queue.splitset
-		labelcoder = queue.labelcoder
-		encoderset = queue.encoderset
 		hyperparamcombo = job.hyperparamcombo
 		fold = job.fold
 		"""
@@ -4779,60 +4767,48 @@ class Job(BaseModel):
 		- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
 		  work the same in both numpy and torch.
 		"""
-		fitted_encoders = {} # keys get defined inside functions below.
 		# Labels - fetch and encode.
 		arr_labels = splitset.label.to_numpy()
+		labelcoder = splitset.label.get_latest_labelcoder()
 		if (labelcoder is not None):
 			fitted_encoders = Job.encoder_fit_labels(
 				arr_labels=arr_labels, samples_train=samples[key_train],
-				fitted_encoders=fitted_encoders, labelcoder=labelcoder
+				labelcoder=labelcoder
 			)
 			
 			arr_labels = Job.encoder_transform_labels(
 				arr_labels=arr_labels,
 				fitted_encoders=fitted_encoders, labelcoder=labelcoder
 			)
+			FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=job, labelcoder=labelcoder)
 		if (library == 'pytorch'):
 			arr_labels = torch.FloatTensor(arr_labels)
 
 		# Features - fetch and encode.
 		featureset = splitset.get_features()
 		feature_count = len(featureset)
-		if (feature_count == 1):
-			arr_features = splitset.get_features()[0].to_numpy()
+		features = []# expecting diff array shapes inside so it has to be list, not array.
+		
+		for feature in featureset:
+			arr_features = feature.to_numpy()
+			encoderset = feature.get_latest_encoderset()
+
 			if (encoderset is not None):
 				fitted_encoders = Job.encoder_fit_features(
 					arr_features=arr_features, samples_train=samples[key_train],
-					fitted_encoders=fitted_encoders, encoderset=encoderset
+					encoderset=encoderset
 				)
 
 				arr_features = Job.encoder_transform_features(
 					arr_features=arr_features,
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
+				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=job, encoderset=encoderset)
 			if (library == 'pytorch'):
 				arr_features = torch.FloatTensor(arr_features)
-
-		elif (feature_count > 1):
-			features = []# expecting different shapes so array won't do.
-			for i, feature in splitset.get_features():
-				arr_features = feature.to_numpy()
-				if (encoderset is not None):
-					fitted_encoders = Job.encoder_fit_features(
-						arr_features=arr_features, samples_train=samples[key_train],
-						fitted_encoders=fitted_encoders, encoderset=encoderset
-					)
-
-					arr_features = Job.encoder_transform_features(
-						arr_features=arr_features,
-						fitted_encoders=fitted_encoders, encoderset=encoderset
-					)
-				if (library == 'pytorch'):
-					arr_features = torch.FloatTensor(arr_features)
-				features.append(arr_features)
-		job.fitted_encoders = fitted_encoders
-		job.save()
-
+			# Don't use the list if you don't have to.
+			if (feature_count > 1):
+				features.append(arr_features)			
 		"""
 		- Stage preprocessed data to be passed into the remaining Job steps.
 		- Example samples dict entry: samples['train']['labels']
@@ -4880,7 +4856,7 @@ class Job(BaseModel):
 		fn_build = dill_deserialize(algorithm.fn_build)
 		if (splitset.supervision == "supervised"):
 			# pytorch multiclass has a single ordinal label.
-			if (analysis_type == 'classification_multi') and (library == 'pytorch'):
+			if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
 				num_classes = len(splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
@@ -5032,6 +5008,33 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 
 
 
+class FittedEncoderset(BaseModel):
+	"""
+	- Job uses this to save the fitted_encoders, which are later used for inference.
+	- Useful for accessing featurecoders for matching_columns, dimensions.
+	- When I added support for multiple Features, updating `Job.fitted_encoders` during
+	  `Job.run()` started to get unmanageable. Especially when you consider that not every
+	  Feature type is guaranteed to have an Encoderset.
+	"""
+	fitted_encoders = PickleField()
+
+	job = ForeignKeyField(Job, backref='fittedencodersets')
+	encoderset = ForeignKeyField(Encoderset, backref='fittedencodersets')
+
+
+
+
+class FittedLabelcoder(BaseModel):
+	"""
+	- See notes about FittedEncoderset.
+	"""
+	fitted_encoders = PickleField()
+
+	job = ForeignKeyField(Job, backref='fittedlabelcoders')
+	labelcoder = ForeignKeyField(Labelcoder, backref='fittedlabelcoders')
+
+
+
 class Predictor(BaseModel):
 	"""
 	- This was refactored from "Predictor" to "Predictor"
@@ -5122,18 +5125,6 @@ class Predictor(BaseModel):
 			f"\nModel exported to the following absolute path:" \
 			f"\n{file_path}\n"
 		))
-
-		fitted_encoders = predictor.job.fitted_encoders
-		if (
-			('labelcoder' in fitted_encoders.keys())
-			or 
-			('featurecoders' in fitted_encoders.keys())
-		):
-			print(dedent("""
-				Make sure you also `Job.export_encoders` so that during inference you can:
-				(a) encode samples to be fed into the model, and 
-				(b) decode predictions coming out of the model.
-			"""))
 		return file_path
 
 
@@ -5215,6 +5206,38 @@ class Predictor(BaseModel):
 				Predictor.tabular_schemas_match(label_og, label_new)
 
 
+	def get_fitted_encoderset(job:object, feature:object):
+		"""
+		- Given a Feature, you want to know if it needs to be transformed,
+		  and, if so, how to transform it.
+		"""
+		fitted_encodersets = FittedEncoderset.select().join(Encoderset).where(
+			FittedEncoderset.job==job, FittedEncoderset.encoderset.feature==feature
+		)
+
+		if (not fitted_encodersets):
+			return None, None
+		else:
+			encoderset = fitted_encodersets[0].encoderset
+			fitted_encoders = fitted_encodersets[0].fitted_encoders
+			return encoderset, fitted_encoders
+
+
+	def get_fitted_labelcoder(job:object, label:object):
+		"""
+		- Given a Feature, you want to know if it needs to be transformed,
+		  and, if so, how to transform it.
+		"""
+		fitted_labelcoders = FittedLabelcoder.select().join(Labelcoder).where(
+			FittedLabelcoder.job==job, FittedLabelcoder.labelcoder.label==label
+		)
+		if (not fitted_labelcoders):
+			return None, None
+		else:
+			labelcoder = fitted_labelcoders[0].labelcoder
+			fitted_encoders = fitted_labelcoders[0].fitted_encoders
+			return labelcoder, fitted_encoders
+
 			
 	def infer(id:int, splitset_id:int):
 		"""
@@ -5231,19 +5254,29 @@ class Predictor(BaseModel):
 		Predictor.newSchema_matches_ogSchema(id, feature, label)
 		predictor = Predictor.get_by_id(id)
 		library = predictor.job.queue.algorithm.library
-		fitted_encoders = predictor.job.fitted_encoders
 
-		arr_features = feature.to_numpy()
-		encoderset = predictor.job.queue.encoderset
-		if (encoderset is not None):
-			# Don't need to check types because Encoderset creation protects
-			# against unencodable types.
-			arr_features = Job.encoder_transform_features(
-				arr_features=arr_features,
-				fitted_encoders=fitted_encoders, encoderset=encoderset
+		featureset = splitset.get_features()
+		feature_count = len(featureset)
+		features = []# expecting diff array shapes inside so it has to be list, not array.
+		for feature in featureset:
+			arr_features = feature.to_numpy()
+			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+				job=predictor.job, feature=feature
 			)
-		if (library == 'pytorch'):
-			arr_features = torch.FloatTensor(arr_features)
+			if (encoderset is not None):
+				# Don't need to check types because Encoderset creation protects
+				# against unencodable types.
+				arr_features = Job.encoder_transform_features(
+					arr_features=arr_features,
+					fitted_encoders=fitted_encoders, encoderset=encoderset
+				)
+			if (library == 'pytorch'):
+				arr_features = torch.FloatTensor(arr_features)
+			if (feature_count > 1):
+				features.append(arr_features)
+			else:
+				# We don't need to do any row filtering so it can just be overwritten.
+				features = arr_features
 		"""
 		- Pack into samples for the Algorithm functions.
 		- This is two levels deep to mirror how the training samples were structured 
@@ -5251,12 +5284,12 @@ class Predictor(BaseModel):
 		- str() id because int keys aren't JSON serializable.
 		"""
 		str_id = str(splitset_id)
-		samples = {str_id: {"features": arr_features}}
-		
-		if (label is not None):
+		samples = {str_id: {'features':features}}
+
+		if (label is not None):			
 			arr_labels = label.to_numpy()	
 
-			labelcoder = predictor.job.queue.labelcoder
+			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(job=predictor.job, label=label)
 			if (labelcoder is not None):
 				arr_labels = Job.encoder_transform_labels(
 					arr_labels=arr_labels,
@@ -5301,19 +5334,20 @@ class Prediction(BaseModel):
 	def plot_confusion_matrix(id:int):
 		prediction = Prediction.get_by_id(id)
 		prediction_plot_data = prediction.plot_data
-		algorithm = prediction.predictor.job.queue.algorithm
-		fitted_encoders = prediction.predictor.job.fitted_encoders
-		analysis_type = algorithm.analysis_type
+		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
 		if (analysis_type == "regression"):
 			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
 		cm_by_split = {}
 
-		if ('labelcoder' in fitted_encoders.keys()):
-			lc = fitted_encoders['labelcoder']
-			if hasattr(lc,'categories_'):
-				labels = list(lc.categories_[0])
-			elif hasattr(lc,'classes_'):
-				labels = lc.classes_.tolist()
+		labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
+			job=prediction.predictor.job, label=prediction.predictor.job.queue.splitset.label
+		)
+
+		if (labelcoder is not None):
+			if hasattr(fitted_encoders,'categories_'):
+				labels = list(fitted_encoders.categories_[0])
+			elif hasattr(fitted_encoders,'classes_'):
+				labels = fitted_encoders.classes_.tolist()
 		else:
 			unique_classes = prediction.predictor.job.queue.splitset.label.unique_classes
 			labels = list(unique_classes)
@@ -5328,8 +5362,7 @@ class Prediction(BaseModel):
 	def plot_precision_recall(id:int):
 		prediction = Prediction.get_by_id(id)
 		predictor_plot_data = prediction.plot_data
-		algorithm = prediction.predictor.job.queue.algorithm
-		analysis_type = algorithm.analysis_type
+		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
 		if (analysis_type == "regression"):
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
 
@@ -5353,8 +5386,7 @@ class Prediction(BaseModel):
 	def plot_roc_curve(id:int):
 		prediction = Prediction.get_by_id(id)
 		predictor_plot_data = prediction.plot_data
-		algorithm = prediction.predictor.job.queue.algorithm
-		analysis_type = algorithm.analysis_type
+		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
 		if (analysis_type == "regression"):
 			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
 
@@ -5614,8 +5646,6 @@ class Experiment():
 		, fn_lose:object = None
 		, hyperparameters:dict = None
 		, foldset_id:int = None
-		, encoderset_id:int = None
-		, labelcoder_id:int = None
 	):
 
 		algorithm = Algorithm.make(
@@ -5642,7 +5672,5 @@ class Experiment():
 			, hide_test = hide_test
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
-			, encoderset_id = encoderset_id
-			, labelcoder_id = labelcoder_id
 		)
 		return queue

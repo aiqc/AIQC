@@ -223,8 +223,6 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
-		, labelcoder_id = labelcoder.id
-		, encoderset_id = encoderset.id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
 	)
@@ -326,8 +324,6 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, labelcoder_id = labelcoder.id
-		, encoderset_id  = encoderset.id
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -444,8 +440,6 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, labelcoder_id = labelcoder.id
-		, encoderset_id = encoderset.id
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -564,8 +558,6 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, labelcoder_id = None
-		, encoderset_id  = None
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -702,8 +694,6 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, labelcoder_id = labelcoder.id
-		, encoderset_id  = encoderset.id
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -841,8 +831,6 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	queue = algorithm.make_queue(
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
-		, labelcoder_id = labelcoder.id
-		, encoderset_id = encoderset.id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
 	)
@@ -1001,8 +989,6 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
-		, labelcoder_id = labelcoder.id
-		, encoderset_id = encoderset.id
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -1129,8 +1115,6 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 		splitset_id = splitset.id
 		, foldset_id = foldset_id
 		, hyperparamset_id = None #network takes a while.
-		, labelcoder_id = None
-		, encoderset_id  = None
 		, repeat_count = repeat_count
 	)
 	return queue
