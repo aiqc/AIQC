@@ -5152,58 +5152,65 @@ class Predictor(BaseModel):
 
 	def tabular_schemas_match(set_original, set_new):
 		# Set can be either Label or Feature. Needs `columns` and `.get_dtypes`.
-		cols_og = set_original.columns
+		cols_old = set_original.columns
 		cols_new = set_new.columns
-		if (cols_new != cols_og):
+		if (cols_new != cols_old):
 			raise ValueError("\nYikes - New columns do not match original columns.\n")
 
-		typs_og = set_original.get_dtypes()
+		typs_old = set_original.get_dtypes()
 		typs_new = set_new.get_dtypes()
-		if (typs_new != typs_og):
+		if (typs_new != typs_old):
 			raise ValueError(dedent("""
 				Yikes - New dtypes do not match original dtypes.
 				The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 			"""))
 
-	def image_schemas_match(feature_og, feature_new):
-		image_og = feature_og.dataset.files[0].images[0]
+	def image_schemas_match(feature_old, feature_new):
+		image_old = feature_old.dataset.files[0].images[0]
 		image_new = feature_new.dataset.files[0].images[0]
-		if (image_og.size != image_new.size):
-			raise ValueError(f"\nYikes - The new image size:{image_new.size} did not match the original image size:{image_og.size}.\n")
-		if (image_og.mode != image_new.mode):
-			raise ValueError(f"\nYikes - The new image color mode:{image_new.mode} did not match the original image color mode:{image_og.mode}.\n")
+		if (image_old.size != image_new.size):
+			raise ValueError(f"\nYikes - The new image size:{image_new.size} did not match the original image size:{image_old.size}.\n")
+		if (image_old.mode != image_new.mode):
+			raise ValueError(f"\nYikes - The new image color mode:{image_new.mode} did not match the original image color mode:{image_old.mode}.\n")
 			
 
-	def newSchema_matches_ogSchema(id:int, feature:object, label:object=None):
-		predictor = Predictor.get_by_id(id)
+	def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
+		# Get the new and old featuresets. Loop over them by index.
+		features_new = splitset_new.get_features()
+		features_old = splitset_old.get_features()
 
-		feature_og = predictor.job.queue.splitset.feature
-		feature_og_typ = feature_og.dataset.dataset_type
-		feature_new = feature
-		feature_new_typ = feature_new.dataset.dataset_type
-		if (feature_og_typ != feature_new_typ):
-			raise ValueError("\nYikes - New Feature and original Feature come from different `dataset_types`.\n")
-		if (feature_new_typ == 'tabular'):
-			Predictor.tabular_schemas_match(feature_og, feature_new)
-		elif (feature_new_typ == 'image'):
-			Predictor.image_schemas_match(feature_og, feature_new)
+		if (len(features_new) != len(features_old)):
+			raise ValueError("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
 
-		# Only verify Labels if the inference Splitset provides Labels.
+		for i, feature_new in enumerate(features_new):
+			feature_old = features_old[i]
+			feature_old_typ = feature_old.dataset.dataset_type
+			feature_new_typ = feature_new.dataset.dataset_type
+			if (feature_old_typ != feature_new_typ):
+				raise ValueError(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
+			if (feature_new_typ == 'tabular'):
+				Predictor.tabular_schemas_match(feature_old, feature_new)
+			elif (feature_new_typ == 'image'):
+				Predictor.image_schemas_match(feature_old, feature_new)
+
+		# Only verify Labels if the inference new Splitset provides Labels.
 		# Otherwise, it may be conducting pure inference.
+		label = splitset_new.label
 		if (label is not None):
 			label_new = label
 			label_new_typ = label_new.dataset.dataset_type
 
-			supervision_og = predictor.job.queue.splitset.supervision
-			if (supervision_og == 'supervised'):
-				label_og =  predictor.job.queue.splitset.label
-				label_og_typ = label_og.dataset.dataset_type
-			elif (supervision_og == 'unsupervised'):
+			if (splitset_old.supervision == 'unsupervised'):
 				raise ValueError("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
-			if (label_og_typ != label_new_typ):
+
+			elif (splitset_old.supervision == 'supervised'):
+				label_old =  splitset_old.label
+				label_old_typ = label_old.dataset.dataset_type
+			
+			if (label_old_typ != label_new_typ):
 				raise ValueError("\nYikes - New Label and original Label come from different `dataset_types`.\n")
 			if (label_new_typ == 'tabular'):
-				Predictor.tabular_schemas_match(label_og, label_new)
+				Predictor.tabular_schemas_match(label_old, label_new)
 
 
 	def get_fitted_encoderset(job:object, feature:object):
@@ -5244,24 +5251,21 @@ class Predictor(BaseModel):
 		- Splitset is used because Labels and Features can come from different types of Datasets.
 		- Verifies both Features and Labels match original schema.
 		"""
-		splitset = Splitset.get_by_id(splitset_id)
-		feature = splitset.feature
-		if (splitset.label is not None):
-			label = splitset.label
-		else:
-			label = None
-
-		Predictor.newSchema_matches_ogSchema(id, feature, label)
+		splitset_new = Splitset.get_by_id(splitset_id)
 		predictor = Predictor.get_by_id(id)
+		splitset_old = predictor.job.queue.splitset
+
+		Predictor.schemaNew_matches_schemaOld(splitset_new, splitset_old)
 		library = predictor.job.queue.algorithm.library
 
-		featureset = splitset.get_features()
-		feature_count = len(featureset)
+		featureset_new = splitset_new.get_features()
+		featureset_old = splitset_old.get_features()
+		feature_count = len(featureset_new)
 		features = []# expecting diff array shapes inside so it has to be list, not array.
-		for feature in featureset:
-			arr_features = feature.to_numpy()
+		for i, feature_new in enumerate(featureset_new):
+			arr_features = feature_new.to_numpy()
 			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
-				job=predictor.job, feature=feature
+				job=predictor.job, feature=featureset_old[i]
 			)
 			if (encoderset is not None):
 				# Don't need to check types because Encoderset creation protects
@@ -5286,10 +5290,19 @@ class Predictor(BaseModel):
 		str_id = str(splitset_id)
 		samples = {str_id: {'features':features}}
 
-		if (label is not None):			
-			arr_labels = label.to_numpy()	
+		if (splitset_new.label is not None):
+			label_new = splitset_new.label
+			label_old = splitset_old.label
+		else:
+			label_new = None
+			label_old = None
 
-			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(job=predictor.job, label=label)
+		if (label_new is not None):			
+			arr_labels = label_new.to_numpy()	
+
+			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
+				job=predictor.job, label=label_old
+			)
 			if (labelcoder is not None):
 				arr_labels = Job.encoder_transform_labels(
 					arr_labels=arr_labels,

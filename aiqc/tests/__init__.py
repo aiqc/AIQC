@@ -1043,7 +1043,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	}
 
 	## --- Training loop ---
-	epochs = 40
+	epochs = 25
 	for epoch in range(epochs):
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):
