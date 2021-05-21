@@ -293,10 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Labels">Reading Labels</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Featureset-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> column(s).</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Feature-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id1">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id2">Deriving Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Featuresets">Reading Featuresets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Specifying-Features">Specifying Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
@@ -304,41 +304,34 @@
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#d)-Taking-the-whole-dataset-as-a-training-split.">d) Taking the whole dataset as a training split.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#e)-Stratification-of-continuous-labels.">e) Stratification of continuous labels.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitset.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Splitset.to_numpy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitset.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Splitset.to_pandas()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Optionally,-create-a-Foldset-for-cross-validation.">5. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id3">ORM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id2">ORM</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Deriving-Foldsets">Deriving Foldsets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Foldset.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Foldset.to_numpy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Foldset.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Foldset.to_pandas()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Optionally,-stage-an-Encoderset-for-encoding.">6. Optionally, stage an <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> for encoding.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Optionally,-encode-labels-with-Labelcoder.">6. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Labelcoder">Labelcoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">7. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Background">Background</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Optionally,-set-a-single-Labelcoder.">7. Optionally, set a single <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id4">Background</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Optionally,-determine-a-sequence-of-Featurecoder(s).">8. Optionally, determine a sequence of <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>(s).</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id5">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Creating-an-Encoderset-and-attaching-multiple-Featurecoders-to-it.">Creating an <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> and attaching multiple <code class="docutils literal notranslate"><span class="pre">Featurecoders</span></code> to it.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Create-an-Algorithm-aka-model.">9. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id6">ORM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Create-an-Algorithm-aka-model.">8. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id3">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Model-Definition">Model Definition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Function-to-build-model">Function to build model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Optional,-function-to-calculate-loss.">Optional, function to calculate loss.</a></li>
@@ -350,27 +343,27 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Optional,-associate-a-Hyperparamset-with-your-model.">8. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Create-a-Queue-of-training-Jobs.">9. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Optional,-associate-a-Hyperparamset-with-your-model.">9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#10.-Create-a-Queue-of-training-Jobs.">10. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Execute-all-Jobs.">Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#2.-queue.run_jobs(in_background=True);-experimental">2. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#3.-Future,-distributed-cloud-execution.">3. Future, distributed cloud execution.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Job.fitted_encoders"><code class="docutils literal notranslate"><span class="pre">Job.fitted_encoders</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#10.-Predictors-are-the-trained-models.">10. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Preprocessing-during-Job-is-recorded">11. Preprocessing during Job is recorded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#12.-Predictors-are-the-trained-models.">12. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Predictions-are-the-output-of-a-Predictor.">11. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#13.-Predictions-are-the-output-of-a-Predictor.">13. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Metrics-&amp;-Visualization">11. Metrics &amp; Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#13.-Metrics-&amp;-Visualization">13. Metrics &amp; Visualization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
@@ -734,7 +727,7 @@ div.rendered_html tbody tr:hover {
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>If you’ve already completed the instructions on the <a class="reference external" href="installation.html">Installation</a> page, then let’s get started.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -754,7 +747,7 @@ div.rendered_html tbody tr:hover {
 <div><p>By default it returns a Pandas DataFrame, but you can <code class="docutils literal notranslate"><span class="pre">list_datums(format='list')</span></code> to change that.</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -763,7 +756,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -888,9 +881,21 @@ div.rendered_html tbody tr:hover {
       <td>classification_binary</td>
       <td>status</td>
       <td>2</td>
-      <td>1 color x 160 wide x 120 tall</td>
+      <td>1 color x 160 tall x 120 wide</td>
       <td>80</td>
       <td>csv acts as label and manifest of image urls.</td>
+      <td>remote</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>galaxy_morphology.tsv</td>
+      <td>image</td>
+      <td>classification_binary</td>
+      <td>morphology</td>
+      <td>2</td>
+      <td>3 colors x 240 tall x 300 wide</td>
+      <td>40</td>
+      <td>tsv acts as label and manifest of image urls.</td>
       <td>remote</td>
     </tr>
   </tbody>
@@ -902,7 +907,7 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>Using the value of the <code class="docutils literal notranslate"><span class="pre">name</span></code> column, you can fetch that file via <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -912,7 +917,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1036,7 +1041,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Alternatively, if you prefer to work directly with the file itself, then you can obtain the location of the file via the <code class="docutils literal notranslate"><span class="pre">get_demo_file_path()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1045,12 +1050,12 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;/Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3/lib/python3.8/site-packages/aiqc/data/houses.csv&#39;
+&#39;/Users/layne/Desktop/AIQC/aiqc/data/houses.csv&#39;
 </pre></div></div>
 </div>
 <hr class="docutils" />
@@ -1065,7 +1070,7 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">brain_tumor.csv</span></code> file as an example.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1075,7 +1080,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1098,6 +1103,9 @@ div.rendered_html tbody tr:hover {
     <tr style="text-align: right;">
       <th></th>
       <th>status</th>
+      <th>size</th>
+      <th>count</th>
+      <th>symmetry</th>
       <th>url</th>
     </tr>
   </thead>
@@ -1105,27 +1113,42 @@ div.rendered_html tbody tr:hover {
     <tr>
       <th>0</th>
       <td>0</td>
-      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_0.jpg</td>
     </tr>
     <tr>
       <th>1</th>
       <td>0</td>
-      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_1.jpg</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0</td>
-      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_2.jpg</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0</td>
-      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_3.jpg?raw=true</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_3.jpg</td>
     </tr>
     <tr>
       <th>4</th>
       <td>0</td>
-      <td>https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_4.jpg?raw=true</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_4.jpg</td>
     </tr>
   </tbody>
 </table>
@@ -1137,7 +1160,7 @@ div.rendered_html tbody tr:hover {
 <li><p>Meanwhile, the <code class="docutils literal notranslate"><span class="pre">'url'</span></code> column acts as a manifest in that it contains the URL of the image file for that sample. We’ll construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from this.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1147,14 +1170,14 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_0.jpg?raw=true&#39;,
- &#39;https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_1.jpg?raw=true&#39;,
- &#39;https://github.com/aiqc/aiqc/blob/file_schema/remote_datum/image/brain_tumor/images/healthy_2.jpg?raw=true&#39;]
+[&#39;https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_0.jpg&#39;,
+ &#39;https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_1.jpg&#39;,
+ &#39;https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_2.jpg&#39;]
 </pre></div></div>
 </div>
 <p>At this point, you can use either the <a class="reference external" href="api_high_level.html">high</a> or <a class="reference external" href="api_low_level.html">low</a> level AIQC APIs [e.g. <code class="docutils literal notranslate"><span class="pre">aiqc.Dataset.Image.from_ulrs()</span></code>] to ingest that data and work with it as normal.</p>

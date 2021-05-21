@@ -295,7 +295,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Select-the-Feature-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id1">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id2">Deriving Labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Specifying-Features">Specifying Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
@@ -304,38 +304,34 @@
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#d)-Taking-the-whole-dataset-as-a-training-split.">d) Taking the whole dataset as a training split.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#e)-Stratification-of-continuous-labels.">e) Stratification of continuous labels.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitset.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Splitset.to_numpy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitset.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Splitset.to_pandas()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Optionally,-create-a-Foldset-for-cross-validation.">5. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id3">ORM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id2">ORM</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Deriving-Foldsets">Deriving Foldsets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Foldset.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Foldset.to_numpy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Foldset.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Foldset.to_pandas()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Optionally,-encode-labels-with-Labelcoder.">6. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Labelcoder">Labelcoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Optionally,-encode-features-sequentially-with-Featurecoder(s).">7. Optionally, encode features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">7. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Background">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Creating-an-Encoderset-and-attaching-multiple-Featurecoders-to-it.">Creating an <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> and attaching multiple <code class="docutils literal notranslate"><span class="pre">Featurecoders</span></code> to it.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Create-an-Algorithm-aka-model.">8. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id4">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id3">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Model-Definition">Model Definition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Function-to-build-model">Function to build model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Optional,-function-to-calculate-loss.">Optional, function to calculate loss.</a></li>
@@ -354,16 +350,16 @@
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#2.-queue.run_jobs(in_background=True);-experimental">2. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#3.-Future,-distributed-cloud-execution.">3. Future, distributed cloud execution.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Job.fitted_encoders"><code class="docutils literal notranslate"><span class="pre">Job.fitted_encoders</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Predictors-are-the-trained-models.">11. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Preprocessing-during-Job-is-recorded">11. Preprocessing during Job is recorded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#12.-Predictors-are-the-trained-models.">12. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#12.-Predictions-are-the-output-of-a-Predictor.">12. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#13.-Predictions-are-the-output-of-a-Predictor.">13. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>
@@ -757,25 +753,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>If you’ve already completed the instructions on the <a class="reference external" href="installation.html">Installation</a> page, then let’s get started.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">cd</span> <span class="o">../..</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-/Users/layne/Desktop/AIQC
-</pre></div></div>
-</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -792,7 +771,7 @@ div.rendered_html tbody tr:hover {
 <p>Tabular/ delimited/ flat-file <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> can be created from either Pandas DataFrames or flat files (CSV/ TSV or Parquet).</p>
 <p>Let’s grab one of AIQC’s built-in datasets from the <code class="docutils literal notranslate"><span class="pre">datum</span></code> module that we imported above. This module is described in the ‘Built-In Examples - Datasets’ section of the documentation.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -806,7 +785,7 @@ div.rendered_html tbody tr:hover {
 <div><p>Reference the <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> section of the low-level API for more detail on how to include/ exclude specific <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> columns by name/dtype. The <code class="docutils literal notranslate"><span class="pre">feature_encoders</span></code> argument seen below takes a list of dictionaries as input, where each dictionary contains the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> for a <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>.</p>
 </div></blockquote>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -819,7 +798,7 @@ div.rendered_html tbody tr:hover {
 <div><p>Don’t use <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> unless your (total sample count / fold_count) still gives you an accurate representation of your sample population. You can try it with the ‘iris_10x.tsv’ datum.</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -850,9 +829,10 @@ div.rendered_html tbody tr:hover {
 ___/ featurecoder_index: 0 \_________
 
 =&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
 [&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;, &#39;petal_width&#39;]
 
-=&gt; Nice! Now all feature column(s) have encoder(s) associated with them.
+=&gt; Done. All feature column(s) have encoder(s) associated with them.
 No more Featurecoders can be added to this Encoderset.
 
 </pre></div></div>
@@ -874,7 +854,7 @@ No more Featurecoders can be added to this Encoderset.
 </ul>
 <p>Again, we’ll use the built-in data found in the <code class="docutils literal notranslate"><span class="pre">datum</span></code> module that we imported above.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -884,7 +864,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -908,8 +888,8 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🖼️ Validating Images 🖼️: 100%|███████████████████████| 80/80 [00:32&lt;00:00,  2.42it/s]
-🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:26&lt;00:00,  3.07it/s]
+🖼️ Validating Images 🖼️: 100%|███████████████████████| 80/80 [00:16&lt;00:00,  4.83it/s]
+🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:09&lt;00:00,  8.36it/s]
 </pre></div></div>
 </div>
 </div>
@@ -921,7 +901,7 @@ No more Featurecoders can be added to this Encoderset.
 <div><p>You can find great examples of machine learning cookbooks on this blog: <a class="reference external" href="https://machinelearningmastery.com/multi-label-classification-with-deep-learning/">MachineLearningMastery.com “Multi-Label Classification”</a></p>
 </div></blockquote>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -948,7 +928,7 @@ No more Featurecoders can be added to this Encoderset.
 <div class="section" id="fn_build">
 <h4><code class="docutils literal notranslate"><span class="pre">fn_build</span></code><a class="headerlink" href="#fn_build" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -971,7 +951,7 @@ No more Featurecoders can be added to this Encoderset.
 <div class="section" id="fn_train">
 <h4><code class="docutils literal notranslate"><span class="pre">fn_train</span></code><a class="headerlink" href="#fn_train" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1008,7 +988,7 @@ No more Featurecoders can be added to this Encoderset.
 <p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument we saw earlier.</p>
 <p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hp['neuron_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;neuron_count&quot;:</span> <span class="pre">[9,</span> <span class="pre">12]</span></code> seen below. Where model A will have 9 neurons and model B will have 12 neurons.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1029,7 +1009,7 @@ No more Featurecoders can be added to this Encoderset.
 <h3><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code><a class="headerlink" href="#Experiment.make()" title="Permalink to this headline">¶</a></h3>
 <p>Now it’s time to bring together the data and logic into an <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1043,8 +1023,6 @@ No more Featurecoders can be added to this Encoderset.
     <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">labelcoder_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">labelcoder</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">feature</span><span class="o">.</span><span class="n">encodersets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
     <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
     <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
@@ -1053,7 +1031,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1066,7 +1044,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|████████████████████████████████████████| 16/16 [01:11&lt;00:00,  4.48s/it]
+🔮 Training Models 🔮: 100%|████████████████████████████████████████| 16/16 [01:11&lt;00:00,  4.45s/it]
 </pre></div></div>
 </div>
 <hr class="docutils" />

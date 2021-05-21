@@ -1415,18 +1415,6 @@ class File(BaseModel):
 			if (ndarray.size == 0):
 				raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
 
-			dimensions = len(ndarray.shape)
-			if (dimensions == 1) and (all(np.isnan(ndarray))):
-				raise ValueError("\nYikes - Your entire 1D array consists of `NaN` values.\n")
-			elif (dimensions > 1) and (all(np.isnan(ndarray[0]))):
-				# Sometimes when coverting headered structures numpy will NaN them out.
-				ndarray = np.delete(ndarray, 0, axis=0)
-				print(dedent("""
-				Warning - The entire first row of your array is 'NaN',
-				which commonly happens in NumPy when headers are read into a numeric array,
-				so we deleted this row during ingestion.
-				"""))
-
 
 	class Image():
 		file_type = 'image'
@@ -2261,7 +2249,7 @@ class Splitset(BaseModel):
 
 	def get_features(id:int):
 		splitset = Splitset.get_by_id(id)
-		features = list(Feature.select().join(Featureset).where(Featureset.splitset == splitset))
+		features = list(Feature.select().join(Featureset).where(Featureset.splitset==splitset))
 		return features
 
 
@@ -4031,8 +4019,7 @@ class Queue(BaseModel):
 						, ncols = 100
 					):
 						if (j['predictor_id'] is None):
-							
-								Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
+							Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
 					print("\nQueue was gracefully interrupted.\n")
@@ -4833,7 +4820,7 @@ class Job(BaseModel):
 		- Does not impact the training loop's `batch_size`.
 		- Shapes are used later by `get_model()` to initialize it.
 		"""
-		labels_shape = samples[key_train]['labels'][0].shape
+		label_shape = samples[key_train]['labels'][0].shape
 		if (feature_count == 1):
 			features_shape = samples[key_train]['features'][0].shape
 		elif (feature_count > 1):
@@ -4841,7 +4828,7 @@ class Job(BaseModel):
 
 		input_shapes = {
 			"features_shape": features_shape
-			, "labels_shape": labels_shape
+			, "label_shape": label_shape
 		}
 		"""
 		3. Build and Train model.
@@ -4860,7 +4847,7 @@ class Job(BaseModel):
 				num_classes = len(splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
-				model = fn_build(features_shape, labels_shape, **hp)
+				model = fn_build(features_shape, label_shape, **hp)
 		elif (splitset.supervision == "unsupervised"):
 			model = fn_build(features_shape, **hp)
 		if (model is None):
@@ -5075,7 +5062,7 @@ class Predictor(BaseModel):
 			elif (predictor.job.hyperparamcombo is None):
 				hp = {}
 			features_shape = predictor.input_shapes['features_shape']
-			labels_shape = predictor.input_shapes['labels_shape']
+			label_shape = predictor.input_shapes['label_shape']
 
 			fn_build = dill_deserialize(algorithm.fn_build)
 			fn_optimize = dill_deserialize(algorithm.fn_optimize)
@@ -5084,7 +5071,7 @@ class Predictor(BaseModel):
 				num_classes = len(predictor.job.queue.splitset.label.unique_classes)
 				model = fn_build(features_shape, num_classes, **hp)
 			else:
-				model = fn_build(features_shape, labels_shape, **hp)
+				model = fn_build(features_shape, label_shape, **hp)
 			
 			optimizer = fn_optimize(model, **hp)
 
@@ -5478,11 +5465,11 @@ class TrainingCallback():
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
 					# However, if the for loop actually finishes, then all metrics are satisfied.
-					print(dedent(
-					f":: Epoch #{epoch} ::" \
-					f"Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:" \
-					f"{pprint.pformat(self.thresholds)}"
-					))
+					print(dedent(f"""
+					:: Epoch #{epoch} ::
+					Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+					{pprint.pformat(self.thresholds)}
+					"""))
 					self.model.stop_training = True
 
 

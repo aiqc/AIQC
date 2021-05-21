@@ -95,6 +95,17 @@ def list_datums(format:str=None):
 			, 'samples': 80
 			, 'description': 'csv acts as label and manifest of image urls.'
 			, 'location': 'remote'
+		},
+		{
+			'name': 'galaxy_morphology.tsv'
+			, 'dataset_type': 'image'
+			, 'analysis_type': 'classification_binary'
+			, 'label': 'morphology'
+			, 'label_classes': 2
+			, 'features': '3 colors x 240 tall x 300 wide'
+			, 'samples': 40
+			, 'description': 'tsv acts as label and manifest of image urls.'
+			, 'location': 'remote'
 		}
 	]
 
@@ -120,6 +131,8 @@ def get_path(name:str):
 	if (name == 'brain_tumor.csv'):
 		# 2nd aiqc is the repo, not the module.
 		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/brain_tumor.csv"
+	elif (name == 'galaxies.tsv'):
+		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/galaxy_morphology/galaxies.tsv"
 	else:
 		short_path = f"data/{name}"
 		full_path = pkg_resources.resource_filename('aiqc', short_path)
@@ -129,7 +142,7 @@ def get_path(name:str):
 def to_pandas(name:str):
 	file_path = get_path(name)
 
-	if ('.tsv' in name) or ('.csv' in name):
+	if (('.tsv' in name) or ('.csv' in name)):
 		if ('.tsv' in name):
 			separator = '\t'
 		elif ('.csv' in name):

@@ -845,7 +845,7 @@ def pytorch_regression_lose(**hp):
 		loser = nn.MSELoss()
 	return loser	
 	
-def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
+def pytorch_regression_fn_build(features_shape, label_shape, **hp):
 	nc = hp['neuron_count']
 	model = torch.nn.Sequential(
 		nn.Linear(features_shape[0], nc),
@@ -858,7 +858,7 @@ def pytorch_regression_fn_build(features_shape, labels_shape, **hp):
 		nn.ReLU(),
 		nn.Dropout(p=0.4),
 
-		nn.Linear(nc, labels_shape[0])
+		nn.Linear(nc, label_shape[0])
 	)
 	return model
 

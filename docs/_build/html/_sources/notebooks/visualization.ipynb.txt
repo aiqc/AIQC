@@ -79,13 +79,10 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": 5,
+   "cell_type": "markdown",
    "metadata": {},
-   "outputs": [],
    "source": [
-    "%%capture\n",
-    "queue_multiclass = tests.make_test_queue('keras_multiclass')"
+    "Below we're just quickly generating some trained models to work with."
    ]
   },
   {
@@ -102,6 +99,8 @@
     }
    ],
    "source": [
+    "%%capture\n",
+    "queue_multiclass = tests.make_test_queue('keras_multiclass')\n",
     "queue_multiclass.run_jobs()"
    ]
   },
