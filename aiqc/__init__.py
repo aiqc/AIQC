@@ -5342,7 +5342,6 @@ class Prediction(BaseModel):
 		labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
 			job=prediction.predictor.job, label=prediction.predictor.job.queue.splitset.label
 		)
-
 		if (labelcoder is not None):
 			if hasattr(fitted_encoders,'categories_'):
 				labels = list(fitted_encoders.categories_[0])
@@ -5351,7 +5350,6 @@ class Prediction(BaseModel):
 		else:
 			unique_classes = prediction.predictor.job.queue.splitset.label.unique_classes
 			labels = list(unique_classes)
-
 
 		for split, data in prediction_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
