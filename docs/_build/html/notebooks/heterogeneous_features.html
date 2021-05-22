@@ -9,7 +9,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/heterogeneous_features.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata. banner_galaxy Mixed data analysis is one of the areas where deep learning really sets itself apart from tradi..." />
+  <meta property="og:description" content="Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata. bannerGalaxy Mixed data analysis is one of the areas where deep learning really sets itself apart from tradit..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -21,8 +21,6 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
@@ -40,15 +38,14 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -734,7 +731,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Heterogeneous/-Multi-Modal">
 <h1>Heterogeneous/ Multi-Modal<a class="headerlink" href="#Heterogeneous/-Multi-Modal" title="Permalink to this headline">¶</a></h1>
 <p><em>Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata.</em></p>
-<p><img alt="banner_galaxy" src="../_images/banner_galaxy.png" /></p>
+<p><img alt="bannerGalaxy" src="../_images/banner_galaxy.png" /></p>
 <p>Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) all-the-while converging toward the minimization a single <em>loss</em> metric. This leads to rich experiments that resemble real-world scenarios; aka man-machine symbiosis. For example, consider combining a doctor’s
 diagnosis notes with electronic medical records and histology imagery.</p>
 <hr class="docutils" />
@@ -1569,7 +1566,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 </div>
-<p><img alt="galaxy_boomerang" src="../_images/galaxy_boomerang.png" /></p>
+<p><img alt="galaxyBoomerang" src="../_images/galaxy_boomerang.png" /></p>
 <p>Let’s dig into that green model with precise loss.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[132]:
@@ -1676,7 +1673,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 </div>
-<p><img alt="galaxy_learn" src="../_images/galaxy_learn.png" /></p>
+<p><img alt="galaxyLearn" src="../_images/galaxy_learn.png" /></p>
 <p>The charts below show how it performed when running predictions against each split in the dataset.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[140]:
@@ -1696,7 +1693,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 </div>
-<p><img alt="galaxy_roc" src="../_images/galaxy_roc.png" /></p>
+<p><img alt="galaxyRoc" src="../_images/galaxy_roc.png" /></p>
 <p>Interestingly enough, the model is performing poorly on the <em>training</em> split. I guess that’s what you get when you set <code class="docutils literal notranslate"><span class="pre">dropout=0.5</span></code>. You can tell that it hasn’t learned all of the spiral patterns yet.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -1707,7 +1704,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 </div>
-<p><img alt="galaxy_confusion" src="../_images/galaxy_confusion.png" /></p>
+<p><img alt="galaxyConfusion" src="../_images/galaxy_confusion.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -1717,7 +1714,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 </div>
-<p><img alt="galaxy_pr" src="../_images/galaxy_pr.png" /></p>
+<p><img alt="galaxyPr" src="../_images/galaxy_pr.png" /></p>
 <p>We have all of the metrics for every run precalculated and at our disposal.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[161]:

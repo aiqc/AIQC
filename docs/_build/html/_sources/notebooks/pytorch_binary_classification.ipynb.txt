@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "corrected-devon",
+   "id": "minor-deployment",
    "metadata": {},
    "source": [
     "# PyTorch: Classify Binary"
@@ -10,16 +10,16 @@
   },
   {
    "cell_type": "markdown",
-   "id": "christian-rehabilitation",
+   "id": "mechanical-showcase",
    "metadata": {},
    "source": [
-    "![houses](../images/mines.png)"
+    "![mines](../images/mines.png)"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "sonic-ballet",
+   "id": "usual-convertible",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "extensive-announcement",
+   "id": "affecting-legend",
    "metadata": {},
    "source": [
     "---"
@@ -44,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dangerous-boring",
+   "id": "iraqi-paradise",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -52,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "mathematical-taylor",
+   "id": "billion-commander",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -61,7 +61,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "chinese-brook",
+   "id": "wrapped-internet",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -71,7 +71,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "informed-whale",
+   "id": "gentle-introduction",
    "metadata": {},
    "outputs": [
     {
@@ -280,7 +280,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "broken-warren",
+   "id": "powered-philosophy",
    "metadata": {},
    "source": [
     "---"
@@ -288,7 +288,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "strategic-advantage",
+   "id": "civilian-element",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -296,7 +296,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "close-increase",
+   "id": "handed-penguin",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -305,7 +305,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "indonesian-vancouver",
+   "id": "quarterly-cooler",
    "metadata": {},
    "outputs": [
     {
@@ -347,7 +347,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "ranking-mississippi",
+   "id": "valuable-challenge",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -367,7 +367,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "binding-employment",
+   "id": "developed-buying",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -417,7 +417,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dedicated-preserve",
+   "id": "honest-access",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -426,7 +426,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "ancient-principal",
+   "id": "naval-turkey",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -441,7 +441,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "federal-seating",
+   "id": "arctic-bullet",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -454,7 +454,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "alleged-coordination",
+   "id": "coordinated-setting",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -478,7 +478,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "single-testimony",
+   "id": "informed-nebraska",
    "metadata": {},
    "outputs": [
     {
@@ -495,7 +495,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fitted-trustee",
+   "id": "alike-great",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -503,7 +503,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cordless-skirt",
+   "id": "measured-citizenship",
    "metadata": {},
    "source": [
     "---"
@@ -511,7 +511,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "explicit-winter",
+   "id": "generic-craps",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -519,7 +519,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "stainless-portland",
+   "id": "preliminary-wireless",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
@@ -528,7 +528,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "unusual-genesis",
+   "id": "noble-roller",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -538,7 +538,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "comfortable-tablet",
+   "id": "liked-state",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -548,7 +548,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "comprehensive-sponsorship",
+   "id": "atlantic-ocean",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -558,7 +558,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "unexpected-draft",
+   "id": "assisted-corrections",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -570,7 +570,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "amended-integral",
+   "id": "present-elevation",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -580,7 +580,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "religious-literature",
+   "id": "sufficient-collection",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -590,7 +590,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "amber-bacteria",
+   "id": "informative-coordination",
    "metadata": {},
    "outputs": [
     {
@@ -620,7 +620,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "published-directive",
+   "id": "bronze-twelve",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -635,7 +635,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "conservative-chile",
+   "id": "renewable-employer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -655,7 +655,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "extraordinary-bahrain",
+   "id": "soviet-biotechnology",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -705,7 +705,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "criminal-failure",
+   "id": "lasting-decrease",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -714,7 +714,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "invalid-exploration",
+   "id": "earned-doubt",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -729,7 +729,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "alpha-integrity",
+   "id": "another-filename",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -742,7 +742,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "scheduled-standard",
+   "id": "vanilla-climb",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -758,7 +758,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "engaging-plymouth",
+   "id": "conditional-chase",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -770,7 +770,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "informative-triumph",
+   "id": "distant-celebrity",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -784,7 +784,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "fossil-coordination",
+   "id": "protected-catalyst",
    "metadata": {},
    "outputs": [
     {
@@ -801,7 +801,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "active-qualification",
+   "id": "bibliographic-illustration",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."

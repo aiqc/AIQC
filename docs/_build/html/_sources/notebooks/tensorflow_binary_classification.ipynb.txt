@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "spare-running",
+   "id": "comprehensive-globe",
    "metadata": {},
    "source": [
     "# TensorFlow2: Training Loop."
@@ -10,15 +10,15 @@
   },
   {
    "cell_type": "markdown",
-   "id": "protective-eclipse",
+   "id": "forty-radio",
    "metadata": {},
    "source": [
-    "![houses](../images/gradient_descent.png)"
+    "![gradient](../images/gradient_descent.png)"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "thrown-finance",
+   "id": "filled-armstrong",
    "metadata": {},
    "source": [
     "Although Keras is suitable for the vast majority of use cases, in the following scenarios, it may make sense to forgo `model.fit()` to manually define a training loop:\n",
@@ -35,7 +35,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "still-drawing",
+   "id": "atlantic-alfred",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -51,7 +51,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "directed-angel",
+   "id": "changing-hampton",
    "metadata": {},
    "source": [
     "---"
@@ -59,7 +59,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "rolled-montana",
+   "id": "amended-hypothesis",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -67,7 +67,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "biological-administration",
+   "id": "european-textbook",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -76,7 +76,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "verified-house",
+   "id": "round-adrian",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -86,7 +86,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "complex-berry",
+   "id": "completed-prefix",
    "metadata": {},
    "outputs": [
     {
@@ -295,7 +295,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "worth-google",
+   "id": "confidential-bumper",
    "metadata": {},
    "source": [
     "---"
@@ -303,7 +303,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "certain-genome",
+   "id": "separate-rebate",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -311,7 +311,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "expired-folder",
+   "id": "married-companion",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -320,7 +320,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "acquired-commissioner",
+   "id": "brave-meeting",
    "metadata": {},
    "outputs": [
     {
@@ -362,7 +362,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "instructional-athletics",
+   "id": "undefined-editing",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -380,7 +380,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "fourth-remove",
+   "id": "tutorial-tuesday",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -392,7 +392,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "adult-vertical",
+   "id": "leading-participant",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -404,7 +404,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "multiple-salem",
+   "id": "thermal-principle",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -461,7 +461,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "miniature-technical",
+   "id": "through-ministry",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -474,7 +474,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "mechanical-anger",
+   "id": "current-livestock",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -498,7 +498,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "imposed-stocks",
+   "id": "federal-chemical",
    "metadata": {},
    "outputs": [
     {
@@ -515,7 +515,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "governing-punishment",
+   "id": "atomic-senate",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -523,7 +523,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "incredible-sucking",
+   "id": "social-acceptance",
    "metadata": {},
    "source": [
     "---"
@@ -531,7 +531,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "honest-halifax",
+   "id": "acknowledged-cheese",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -539,7 +539,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "activated-monitoring",
+   "id": "german-interstate",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
@@ -548,7 +548,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "greater-teacher",
+   "id": "herbal-nepal",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -558,7 +558,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "palestinian-upgrade",
+   "id": "lightweight-royalty",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -568,7 +568,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "stainless-backing",
+   "id": "induced-interval",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -578,7 +578,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "alternative-humidity",
+   "id": "similar-career",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -590,7 +590,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "first-tractor",
+   "id": "unsigned-stadium",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -600,7 +600,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "virgin-guide",
+   "id": "brown-circle",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -610,7 +610,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "champion-mozambique",
+   "id": "therapeutic-wisconsin",
    "metadata": {},
    "outputs": [
     {
@@ -640,7 +640,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "injured-terry",
+   "id": "instrumental-perfume",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -655,7 +655,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "immune-motel",
+   "id": "persistent-conspiracy",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -673,7 +673,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "sacred-clear",
+   "id": "regional-baking",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -685,7 +685,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "intelligent-excitement",
+   "id": "biological-ministry",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -697,7 +697,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "partial-celebration",
+   "id": "returning-preview",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -754,7 +754,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "ordered-class",
+   "id": "typical-apple",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -771,7 +771,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "chemical-criminal",
+   "id": "immediate-venice",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -784,7 +784,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "quiet-tractor",
+   "id": "comfortable-booth",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -797,7 +797,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "wooden-dancing",
+   "id": "composite-dairy",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -809,7 +809,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "suspended-organization",
+   "id": "wrapped-stone",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -823,7 +823,7 @@
   {
    "cell_type": "code",
    "execution_count": 30,
-   "id": "magnetic-hearts",
+   "id": "advisory-specification",
    "metadata": {},
    "outputs": [
     {
@@ -840,7 +840,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "streaming-assignment",
+   "id": "informed-cisco",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
