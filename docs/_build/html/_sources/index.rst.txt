@@ -26,10 +26,11 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
-  notebooks/tensorflow_binary_classification
   notebooks/pytorch_binary_classification
   notebooks/pytorch_multi-label_classification
   notebooks/pytorch_regression
+  notebooks/tensorflow_binary_classification
+  notebooks/heterogenous_features
 
 .. toctree::
   :maxdepth: 2

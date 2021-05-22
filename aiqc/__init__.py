@@ -3983,6 +3983,7 @@ class Queue(BaseModel):
 
 	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
 		queue = Queue.get_by_id(id)
+
 		# Quick check to make sure all predictors aren't already complete.
 		run_count = queue.run_count
 		predictor_count = Predictor.select().join(Job).join(Queue).where(
@@ -5463,11 +5464,11 @@ class TrainingCallback():
 					pass # Thresholds not satisfied, so move on to the next epoch.
 				elif (statement == True):
 					# However, if the for loop actually finishes, then all metrics are satisfied.
-					print(dedent(f"""
-					:: Epoch #{epoch} ::
-					Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-					{pprint.pformat(self.thresholds)}
-					"""))
+					print(
+						f":: Epoch #{epoch} ::\n" \
+						f"Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:\n"\
+						f"{pprint.pformat(self.thresholds)}\n"
+					)
 					self.model.stop_training = True
 
 
