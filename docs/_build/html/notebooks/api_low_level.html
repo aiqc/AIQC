@@ -44,6 +44,8 @@
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -1802,11 +1804,11 @@ dict_keys([&#39;validation&#39;, &#39;train&#39;, &#39;test&#39;])
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">.keys()</span></code> of 1st layer are referred to as “split_name” in the source code: e.g. ‘train’ as well as, optionally, ‘validation’ and ‘test’.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Splitset.samples</span></code> on disk:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indices</span><span class="o">&gt;</span><span class="p">],</span>
-    <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indices</span><span class="o">&gt;</span><span class="p">],</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">sample_indices</span><span class="o">&gt;</span><span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    &#39;train&#39;: [&lt;sample_indices&gt;],
+    &#39;validation&#39;: [&lt;sample_indices&gt;],
+    &#39;test&#39;: [&lt;sample_indices&gt;]
+}
 </pre></div>
 </div>
 <p>You can also verify the actual size of your splits.</p>

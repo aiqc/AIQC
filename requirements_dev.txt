@@ -5,7 +5,7 @@ wheel
 twine
 # Documentation:
 ipython==7.19.0
-nbsphinx==0.8.0
+nbsphinx==0.8.5
 sphinx_copybutton==0.3.1
 sphinx_rtd_theme==0.5.0
 sphinxext-opengraph==0.4.1
