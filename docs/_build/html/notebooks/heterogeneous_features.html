@@ -732,10 +732,13 @@ div.rendered_html tbody tr:hover {
 <h1>Heterogeneous/ Multi-Modal<a class="headerlink" href="#Heterogeneous/-Multi-Modal" title="Permalink to this headline">¶</a></h1>
 <p><em>Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata.</em></p>
 <p><img alt="bannerGalaxy" src="../_images/banner_galaxy.png" /></p>
-<p>Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) all-the-while converging toward the minimization a single <em>loss</em> metric. This leads to rich experiments that resemble real-world scenarios; aka man-machine symbiosis. For example, consider combining a doctor’s
-diagnosis notes with electronic medical records and histology imagery.</p>
+<p>Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional forms of statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) within the same analysis while converging toward the minimization a single <em>loss</em> metric. This leads to rich experiments that resemble real-world scenarios like a cooperative man-machine symbiosis. For
+example, consider combining a doctor’s diagnosis notes with electronic medical records and histology imagery.</p>
 <hr class="docutils" />
-<p><em>This is an advanced example put together for a demo that builds upon the documentation of the Low-Level API and the example workflows for binary classification.</em></p>
+<blockquote>
+<div><p><em>This example was put together for a demo that builds upon the documentation of the Low-Level API and the example workflows for binary classification. Due to the fact that these images were captured by different instruments that represent color differently, I removed the noisy 3-channel color information and proceeded with grayscale. Since the shapes of the features are dynamically passed into the model, the only difference between a single versus multi-channel workflow is changing the actual
+layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
+</div></blockquote>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -1109,7 +1112,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 </div>
-<p>We have only 40 samples, so we’ll keep our validation and test <em>splits</em> on the smaller size, and definitely forgo cross-validation.</p>
+<p>We have only 40 samples, so we’ll keep our validation and test <em>splits</em> small, and definitely forgo cross-validation.</p>
 <p>Notice how we pass in both the <em>tabular</em> and <em>image</em> Features.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
@@ -1144,7 +1147,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <p>Hyperparameters are passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> <em>kwargs</em>, which allows you to tweak both the topology and the params alike.</p>
-<p>Below we see two towers, feedforward and convolutional, that are eventually concatenated together.</p>
+<p>Below we see two towers, feedforward for tabular data and convolutional for image data, that are eventually concatenated together.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
@@ -1271,7 +1274,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 </div>
-<p>Define the params that will be passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> argument in the functions above.</p>
+<p>Define the parameters that will be passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> argument in the functions above.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[110]:
 </pre></div>
@@ -1309,7 +1312,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="section" id="Train-Models">
 <h2>Train Models<a class="headerlink" href="#Train-Models" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> runs the same model/params multiple times to help rule chance out of [or into] these non-deterministic analyses.</p>
+<p><code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> runs the same model multiple times due to the fact that neural networks are non-deterministic.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[112]:
 </pre></div>
@@ -1694,7 +1697,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </div>
 </div>
 <p><img alt="galaxyRoc" src="../_images/galaxy_roc.png" /></p>
-<p>Interestingly enough, the model is performing poorly on the <em>training</em> split. I guess that’s what you get when you set <code class="docutils literal notranslate"><span class="pre">dropout=0.5</span></code>. You can tell that it hasn’t learned all of the spiral patterns yet.</p>
+<p>Interestingly enough, the model is performing poorly on the <em>training</em> split. I guess that’s what you get when you set <code class="docutils literal notranslate"><span class="pre">dropout=0.5</span></code>. You can tell that it hasn’t learned all of the spiral patterns yet by examining the matrix.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>

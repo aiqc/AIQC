@@ -60,4 +60,6 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 - Don't forget to run `make html` if you want your changes to show up in the final documentation.
 - When adding/ removing/ renaming files to the toctrees, I have to run `make html` twice: once with with and without the `html_sidebars` line of `conf.py` uncommented and then again with it commented.
 - Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
-- When building, files get replicated. So if you change the name of files in `/docs`, `docs/notebooks`, `docs/images` - then the old files will need to be deleted from `/_build/html`.
+- When building, files get replicated. So if you change the name of files in `/docs`, `docs/notebooks`, `docs/images` then the old files will need to be deleted from `/_build/html`.
+- When I ran into problems with broken image references on ReadTheDocs, I ran `make clean` to delete the `/_build` folder and then `make html`.
+- `nbsphinx` does not work with Jinja2(v3) so I had to add `jinja2==2.11.2` to ReadTheDocs `requirements.txt`.
