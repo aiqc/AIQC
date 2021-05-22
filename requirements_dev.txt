@@ -13,3 +13,5 @@ sphinxext-opengraph==0.4.1
 # IDE 
 jupyterlab
 ipywidgets>=7.5
+# jinja2 v3.0 breaks nbsphinx.
+jinja2=2.11.2
