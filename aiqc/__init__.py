@@ -597,6 +597,22 @@ class Dataset(BaseModel):
 		file_paths = natsorted(file_paths)
 		return file_paths
 
+	def get_main_file(id:int):
+		dataset = Dataset.get_by_id(id)
+
+		if (dataset.dataset_type == 'image'):
+			raise ValueError("\n Dataset class does not support get_main_file() method for `image` data type,\n")
+
+		file = File.select().join(Dataset).where(
+			Dataset.id==id, File.file_type=='tabular', File.file_index==0
+		)[0]
+		return file
+
+
+	def get_main_tabular(id:int):
+		file = Dataset.get_main_file(id)
+		return file.tabulars[0]
+
 
 	class Tabular():
 		"""
@@ -757,19 +773,6 @@ class Dataset(BaseModel):
 			df = dataset.to_pandas(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
 			return ndarray
-
-
-		def get_main_file(id:int):
-			file = File.select().join(Dataset).where(
-				Dataset.id==id, File.file_type=='tabular', File.file_index==0
-			)[0]
-			return file
-
-
-		def get_main_tabular(id:int):
-			file = Dataset.Tabular.get_main_file(id)
-			tabular = file.tabulars[0]
-			return tabular
 
 	
 	class Image():
@@ -1566,13 +1569,13 @@ class Label(BaseModel):
 		d = Dataset.get_by_id(dataset_id)
 		columns = listify(columns)
 
-		if (d.dataset_type != 'tabular' and d.dataset_type = 'text'):
+		if (d.dataset_type != 'tabular' and d.dataset_type != 'text'):
 			raise ValueError(dedent(f"""
 			Yikes - Labels can only be created from `dataset_type='tabular' or 'text'`.
 			But you provided `dataset_type`: <{d.dataset_type}>
 			"""))
 		
-		d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
+		d_cols = Dataset.get_main_tabular(dataset_id).columns
 
 		# Check that the user-provided columns exist.
 		all_cols_found = all(col in d_cols for col in columns)
@@ -1724,7 +1727,7 @@ class Label(BaseModel):
 
 		dataset = l.dataset
 		l_cols = l.columns
-		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtypes
+		tabular_dtype = Dataset.get_main_tabular(dataset.id).dtypes
 
 		label_dtypes = {}
 		for key,value in tabular_dtype.items():
@@ -1784,14 +1787,14 @@ class Feature(BaseModel):
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
 
-		if (dataset.dataset_type == 'image' or dataset.dataset_type == 'text'):
+		if (dataset.dataset_type == 'image'):
 			# Just passes the Dataset through for now.
 			if (include_columns is not None) or (exclude_columns is not None):
 				raise ValueError("\nYikes - The `Dataset.Image` classes supports neither the `include_columns` nor `exclude_columns` arguemnt.\n")
 			columns = None
 			columns_excluded = None
-		elif (dataset.dataset_type == 'tabular'):
-			d_cols = Dataset.Tabular.get_main_tabular(dataset_id).columns
+		elif (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text'):
+			d_cols = Dataset.get_main_tabular(dataset_id).columns
 
 			if (include_columns is not None) and (exclude_columns is not None):
 				raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
@@ -1923,7 +1926,7 @@ class Feature(BaseModel):
 			raise ValueError("\nYikes - `feature.dataset.dataset_type=='image'` does not have dtypes.\n")
 
 		f_cols = feature.columns
-		tabular_dtype = Dataset.Tabular.get_main_tabular(dataset.id).dtypes
+		tabular_dtype = Dataset.get_main_tabular(dataset.id).dtypes
 
 		feature_dtypes = {}
 		for key,value in tabular_dtype.items():

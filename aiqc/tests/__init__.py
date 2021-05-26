@@ -256,25 +256,40 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 	)
 	return model
 
-def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, tabular_data:bool=True):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
 	}
 
-	file_path = datum.get_path('sonar.csv')
+	if tabular_data:
+		file_path = datum.get_path('sonar.csv')
 
-	dataset = Dataset.Tabular.from_path(
-		file_path = file_path
-		, source_file_format = 'csv'
-		, name = 'rocks n radio'
-		, dtype = None
-	)
-	
-	label_column = 'object'
-	label = dataset.make_label(columns=[label_column])
+		dataset = Dataset.Tabular.from_path(
+			file_path = file_path
+			, source_file_format = 'csv'
+			, name = 'rocks n radio'
+			, dtype = None
+		)
+		
+		label_column = 'object'
+		label = dataset.make_label(columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+		feature = dataset.make_feature(exclude_columns=[label_column])
+	else:
+		file_path = datum.get_path('spam.csv')
+
+		dataset = Dataset.Text.from_path(
+			file_path = file_path
+			, source_file_format = 'csv'
+			, name = 'spam'
+			, dtype = None
+		)
+		
+		label_column = 'v1'
+		label = dataset.make_label(columns=[label_column])
+
+		feature = dataset.make_feature(exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
