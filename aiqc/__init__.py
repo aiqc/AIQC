@@ -1566,9 +1566,9 @@ class Label(BaseModel):
 		d = Dataset.get_by_id(dataset_id)
 		columns = listify(columns)
 
-		if (d.dataset_type != 'tabular'):
+		if (d.dataset_type != 'tabular' and d.dataset_type = 'text'):
 			raise ValueError(dedent(f"""
-			Yikes - Labels can only be created from `dataset_type='tabular'`.
+			Yikes - Labels can only be created from `dataset_type='tabular' or 'text'`.
 			But you provided `dataset_type`: <{d.dataset_type}>
 			"""))
 		
@@ -1784,7 +1784,7 @@ class Feature(BaseModel):
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
 
-		if (dataset.dataset_type == 'image'):
+		if (dataset.dataset_type == 'image' or dataset.dataset_type == 'text'):
 			# Just passes the Dataset through for now.
 			if (include_columns is not None) or (exclude_columns is not None):
 				raise ValueError("\nYikes - The `Dataset.Image` classes supports neither the `include_columns` nor `exclude_columns` arguemnt.\n")
