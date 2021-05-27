@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "indian-bibliography",
+   "id": "fleet-fiber",
    "metadata": {},
    "source": [
     "# Heterogeneous/ Multi-Modal"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "pursuant-awareness",
+   "id": "announced-visibility",
    "metadata": {},
    "source": [
     "*Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata.*"
@@ -18,7 +18,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "automated-progressive",
+   "id": "clinical-feelings",
    "metadata": {},
    "source": [
     "![bannerGalaxy](../images/banner_galaxy.png)"
@@ -26,15 +26,15 @@
   },
   {
    "cell_type": "markdown",
-   "id": "frequent-structure",
+   "id": "sharp-athens",
    "metadata": {},
    "source": [
-    "Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional forms of statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) within the same analysis while converging toward the minimization a single *loss* metric. This leads to rich experiments that resemble real-world scenarios like a cooperative man-machine symbiosis. For example, consider combining a doctor's diagnosis notes with electronic medical records and histology imagery."
+    "Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional forms of statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) within the same analysis while converging toward the minimization a single *loss* metric. This leads to rich experiments that resemble real-world scenarios that resemble man-machine symbiosis. For example, consider combining a doctor's annotations with electronic medical records and histology imagery."
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "occupational-glory",
+   "id": "designed-boulder",
    "metadata": {},
    "source": [
     "---"
@@ -42,7 +42,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "legal-lewis",
+   "id": "fabulous-rescue",
    "metadata": {},
    "source": [
     "> *This example was put together for a demo that builds upon the documentation of the Low-Level API and the example workflows for binary classification. Due to the fact that these images were captured by different instruments that represent color differently, I removed the noisy 3-channel color information and proceeded with grayscale. Since the shapes of the features are dynamically passed into the model, the only difference between a single versus multi-channel workflow is changing the actual layers (e.g. `Conv1D` to `Conv2D`).*"
@@ -51,7 +51,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "temporal-nerve",
+   "id": "related-conversation",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -61,7 +61,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "biblical-decision",
+   "id": "christian-bangkok",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -72,7 +72,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "afraid-phone",
+   "id": "dominican-listing",
    "metadata": {},
    "source": [
     "---"
@@ -80,7 +80,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "patent-lawsuit",
+   "id": "signal-hygiene",
    "metadata": {},
    "source": [
     "## Ingesting Example Galaxy Data"
@@ -88,7 +88,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "balanced-treasury",
+   "id": "verified-musical",
    "metadata": {},
    "source": [
     "### Tabular Data"
@@ -97,7 +97,7 @@
   {
    "cell_type": "code",
    "execution_count": 199,
-   "id": "former-broadcasting",
+   "id": "reduced-buyer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -107,7 +107,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "satisfactory-essence",
+   "id": "competitive-exhibit",
    "metadata": {},
    "source": [
     "Using the built-in structured data about 40 galaxies, we'll derive:\n",
@@ -120,7 +120,7 @@
   {
    "cell_type": "code",
    "execution_count": 200,
-   "id": "cutting-magic",
+   "id": "english-brighton",
    "metadata": {},
    "outputs": [
     {
@@ -199,7 +199,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "liked-ocean",
+   "id": "special-breakfast",
    "metadata": {},
    "source": [
     "From a single `Dataset.Tabular` we'll specify a `Label` and `Feature` before encoding them."
@@ -208,7 +208,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "talented-harassment",
+   "id": "random-needle",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -218,7 +218,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "indonesian-longitude",
+   "id": "chronic-budget",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -228,7 +228,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "frozen-guess",
+   "id": "breathing-genome",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -238,7 +238,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "ordered-notice",
+   "id": "falling-gabriel",
    "metadata": {},
    "outputs": [
     {
@@ -259,7 +259,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "monetary-catalyst",
+   "id": "global-compilation",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -269,7 +269,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "quality-missile",
+   "id": "martial-absolute",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -279,7 +279,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "continuing-french",
+   "id": "binary-excitement",
    "metadata": {},
    "outputs": [
     {
@@ -323,7 +323,7 @@
   {
    "cell_type": "code",
    "execution_count": 30,
-   "id": "novel-physiology",
+   "id": "synthetic-importance",
    "metadata": {},
    "outputs": [
     {
@@ -366,7 +366,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "intellectual-borough",
+   "id": "legendary-cooperative",
    "metadata": {},
    "source": [
     "### Image Data"
@@ -374,7 +374,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "complimentary-novel",
+   "id": "binary-gauge",
    "metadata": {},
    "source": [
     "Construct a `Dataset.Image` from that manifest and use it as a 2nd `Feature`."
@@ -383,7 +383,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "entire-season",
+   "id": "junior-robertson",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -393,7 +393,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "dangerous-italy",
+   "id": "material-ancient",
    "metadata": {},
    "outputs": [
     {
@@ -412,7 +412,7 @@
   {
    "cell_type": "code",
    "execution_count": 173,
-   "id": "amateur-sculpture",
+   "id": "reflected-national",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -421,7 +421,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "julian-adolescent",
+   "id": "instrumental-memorial",
    "metadata": {},
    "source": [
     "**Bar galaxies**"
@@ -430,7 +430,7 @@
   {
    "cell_type": "code",
    "execution_count": 189,
-   "id": "wicked-blocking",
+   "id": "delayed-excuse",
    "metadata": {},
    "outputs": [
     {
@@ -452,7 +452,7 @@
   {
    "cell_type": "code",
    "execution_count": 218,
-   "id": "swiss-cherry",
+   "id": "other-rubber",
    "metadata": {},
    "outputs": [
     {
@@ -473,7 +473,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "buried-installation",
+   "id": "urban-progressive",
    "metadata": {},
    "source": [
     "Although it is easy enough to distinguish between the two types with the naked eye, you start to realize that a *bar* galaxy is almost like a degraded *spiral* galaxy. Like anything else, there is a gray area in whether or not the band of stars/ rectangle of light connecting the two main galactic arms is to be considered a \"bar\" or more of an oval."
@@ -481,7 +481,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "light-software",
+   "id": "initial-settle",
    "metadata": {},
    "source": [
     "**Spiral galaxies**"
@@ -490,7 +490,7 @@
   {
    "cell_type": "code",
    "execution_count": 192,
-   "id": "fallen-rotation",
+   "id": "instructional-kingdom",
    "metadata": {},
    "outputs": [
     {
@@ -512,7 +512,7 @@
   {
    "cell_type": "code",
    "execution_count": 193,
-   "id": "considerable-devil",
+   "id": "dried-turtle",
    "metadata": {},
    "outputs": [
     {
@@ -534,7 +534,7 @@
   {
    "cell_type": "code",
    "execution_count": 31,
-   "id": "aquatic-triumph",
+   "id": "continued-structure",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -543,7 +543,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "automatic-fitting",
+   "id": "consolidated-prompt",
    "metadata": {},
    "source": [
     "We have only 40 samples, so we'll keep our validation and test *splits* small, and definitely forgo cross-validation.\n",
@@ -554,7 +554,7 @@
   {
    "cell_type": "code",
    "execution_count": 32,
-   "id": "convinced-eagle",
+   "id": "touched-sound",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -563,13 +563,12 @@
     "\t, label_id = label.id\n",
     "    , size_validation = 0.125\n",
     "\t, size_test = 0.175\n",
-    "    , fold_count = None\n",
     ")"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "judicial-notebook",
+   "id": "arranged-prescription",
    "metadata": {},
    "source": [
     "---"
@@ -577,7 +576,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "conditional-desert",
+   "id": "partial-compact",
    "metadata": {},
    "source": [
     "## Defining a Model"
@@ -585,7 +584,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "exempt-commodity",
+   "id": "foster-merit",
    "metadata": {},
    "source": [
     "AIQC makes it easy to compartmentalize both Keras/TensorFlow and PyTorch models. See `Algorithm` in the Low-Level API documentation."
@@ -594,7 +593,7 @@
   {
    "cell_type": "code",
    "execution_count": 33,
-   "id": "impressive-watson",
+   "id": "expected-weekend",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -605,7 +604,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cooperative-purse",
+   "id": "potential-oliver",
    "metadata": {},
    "source": [
     "Hyperparameters are passed in as the `hp**` *kwargs*, which allows you to tweak both the topology and the params alike.\n",
@@ -616,7 +615,7 @@
   {
    "cell_type": "code",
    "execution_count": 35,
-   "id": "derived-manhattan",
+   "id": "sporting-portland",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -687,7 +686,7 @@
   {
    "cell_type": "code",
    "execution_count": 108,
-   "id": "buried-speaking",
+   "id": "attempted-semester",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -724,7 +723,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "desperate-michigan",
+   "id": "closed-enzyme",
    "metadata": {},
    "source": [
     "You can also customize the functions for loss, optimization, and prediction - but we'll just run with the defaults for binary classification analysis."
@@ -733,7 +732,7 @@
   {
    "cell_type": "code",
    "execution_count": 109,
-   "id": "significant-surveillance",
+   "id": "successful-tours",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -751,7 +750,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "integrated-basis",
+   "id": "blond-myanmar",
    "metadata": {},
    "source": [
     "Define the parameters that will be passed in as the `hp**` argument in the functions above."
@@ -760,7 +759,7 @@
   {
    "cell_type": "code",
    "execution_count": 110,
-   "id": "integral-politics",
+   "id": "missing-designer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -783,7 +782,7 @@
   {
    "cell_type": "code",
    "execution_count": 111,
-   "id": "offshore-visiting",
+   "id": "hispanic-speech",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -794,7 +793,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "instrumental-civilization",
+   "id": "challenging-miracle",
    "metadata": {},
    "source": [
     "---"
@@ -802,7 +801,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "electric-adventure",
+   "id": "identified-locator",
    "metadata": {},
    "source": [
     "## Train Models"
@@ -810,7 +809,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "sorted-indiana",
+   "id": "federal-welcome",
    "metadata": {},
    "source": [
     "`repeat_count` runs the same model multiple times due to the fact that neural networks are non-deterministic."
@@ -819,7 +818,7 @@
   {
    "cell_type": "code",
    "execution_count": 112,
-   "id": "urban-classic",
+   "id": "corrected-career",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -833,7 +832,7 @@
   {
    "cell_type": "code",
    "execution_count": 113,
-   "id": "ambient-digit",
+   "id": "popular-poker",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -844,7 +843,7 @@
   {
    "cell_type": "code",
    "execution_count": 114,
-   "id": "small-waters",
+   "id": "marked-navigation",
    "metadata": {},
    "outputs": [
     {
@@ -1041,7 +1040,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "parental-darkness",
+   "id": "approximate-highlight",
    "metadata": {},
    "source": [
     "---"
@@ -1049,7 +1048,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "sunset-restriction",
+   "id": "herbal-question",
    "metadata": {},
    "source": [
     "## Interpret Results"
@@ -1057,7 +1056,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "tested-dragon",
+   "id": "functional-breach",
    "metadata": {},
    "source": [
     "The *boomerang* chart shows how each model performed across all of its splits [and or folds]."
@@ -1066,7 +1065,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "radical-sociology",
+   "id": "logical-rating",
    "metadata": {
     "tags": []
    },
@@ -1079,7 +1078,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "progressive-humanity",
+   "id": "reflected-perspective",
    "metadata": {
     "tags": []
    },
@@ -1089,7 +1088,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "consistent-crystal",
+   "id": "military-german",
    "metadata": {},
    "source": [
     "Let's dig into that green model with precise loss."
@@ -1098,7 +1097,7 @@
   {
    "cell_type": "code",
    "execution_count": 132,
-   "id": "integrated-auction",
+   "id": "cutting-fountain",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1108,7 +1107,7 @@
   {
    "cell_type": "code",
    "execution_count": 133,
-   "id": "demanding-cambridge",
+   "id": "british-estimate",
    "metadata": {},
    "outputs": [
     {
@@ -1210,7 +1209,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "adult-mother",
+   "id": "brutal-checklist",
    "metadata": {},
    "source": [
     "Not exactly the smoothest curve, and it seems like we could have learned more with a bit of patience, but, then again, it always seems that way."
@@ -1219,7 +1218,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "maritime-healing",
+   "id": "fewer-brick",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1228,7 +1227,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "naked-prince",
+   "id": "cooked-pharmaceutical",
    "metadata": {},
    "source": [
     "![galaxyLearn](../images/galaxy_learn.png)"
@@ -1236,7 +1235,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "revolutionary-denial",
+   "id": "primary-attendance",
    "metadata": {},
    "source": [
     "The charts below show how it performed when running predictions against each split in the dataset."
@@ -1245,7 +1244,7 @@
   {
    "cell_type": "code",
    "execution_count": 140,
-   "id": "constitutional-firmware",
+   "id": "aquatic-expansion",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1255,7 +1254,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "diverse-homework",
+   "id": "metallic-dimension",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1264,7 +1263,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "located-bronze",
+   "id": "inside-benchmark",
    "metadata": {},
    "source": [
     "![galaxyRoc](../images/galaxy_roc.png)"
@@ -1272,7 +1271,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "normal-contractor",
+   "id": "renewable-desire",
    "metadata": {},
    "source": [
     "Interestingly enough, the model is performing poorly on the *training* split. I guess that's what you get when you set `dropout=0.5`. You can tell that it hasn't learned all of the spiral patterns yet by examining the matrix."
@@ -1281,7 +1280,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "private-product",
+   "id": "excessive-binding",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1290,7 +1289,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "electric-growing",
+   "id": "occupied-registrar",
    "metadata": {},
    "source": [
     "![galaxyConfusion](../images/galaxy_confusion.png)"
@@ -1299,7 +1298,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "polished-albert",
+   "id": "continued-static",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1308,7 +1307,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "historical-wayne",
+   "id": "interpreted-clear",
    "metadata": {},
    "source": [
     "![galaxyPr](../images/galaxy_pr.png)"
@@ -1316,7 +1315,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "reliable-thing",
+   "id": "biblical-terrain",
    "metadata": {},
    "source": [
     "We have all of the metrics for every run precalculated and at our disposal."
@@ -1325,7 +1324,7 @@
   {
    "cell_type": "code",
    "execution_count": 161,
-   "id": "opposed-qatar",
+   "id": "paperback-nightmare",
    "metadata": {},
    "outputs": [
     {
@@ -2284,7 +2283,7 @@
   {
    "cell_type": "code",
    "execution_count": 162,
-   "id": "sealed-bride",
+   "id": "earned-earthquake",
    "metadata": {},
    "outputs": [
     {
@@ -2823,7 +2822,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "structural-might",
+   "id": "comparative-chapter",
    "metadata": {},
    "source": [
     "We can also inspect the actual predictions for each split, which have been automatically `inverse_transform`'ed back from their encoded values."
@@ -2832,7 +2831,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "conventional-designer",
+   "id": "potential-element",
    "metadata": {},
    "outputs": [
     {
@@ -2858,7 +2857,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "expanded-reading",
+   "id": "elementary-christmas",
    "metadata": {},
    "source": [
     "Let's dig into our recorded experiment to pull out the samples within the training set that were misclassified by comparing them to their actual labels."
@@ -2867,7 +2866,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "absent-invalid",
+   "id": "offensive-germany",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2877,7 +2876,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "stupid-virgin",
+   "id": "increased-india",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2887,7 +2886,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "embedded-columbus",
+   "id": "native-hydrogen",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2897,7 +2896,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "mental-patrol",
+   "id": "circular-sellers",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2907,7 +2906,17 @@
   {
    "cell_type": "code",
    "execution_count": 34,
-   "id": "indian-wells",
+   "id": "coated-quest",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "coastal-passenger",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2917,7 +2926,7 @@
   {
    "cell_type": "code",
    "execution_count": 35,
-   "id": "sufficient-ending",
+   "id": "universal-diversity",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2927,7 +2936,7 @@
   {
    "cell_type": "code",
    "execution_count": 48,
-   "id": "attended-attention",
+   "id": "collect-worst",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2936,7 +2945,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "protective-forestry",
+   "id": "incredible-savage",
    "metadata": {},
    "source": [
     "Here is an example of a spiral that was missclassified as a bar."
@@ -2945,7 +2954,7 @@
   {
    "cell_type": "code",
    "execution_count": 62,
-   "id": "falling-canal",
+   "id": "musical-saturday",
    "metadata": {},
    "outputs": [
     {
