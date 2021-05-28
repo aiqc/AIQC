@@ -4255,7 +4255,7 @@ class Queue(BaseModel):
 		if dataframe.empty:
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			fig = Plot().performance(dataframe=dataframe)
+			Plot().performance(dataframe=dataframe)
 
 
 class Jobset(BaseModel):
