@@ -3468,7 +3468,7 @@ class Plot():
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
-		return fig
+
 
 	def learning_curve(self, dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
 		"""Dataframe rows are epochs and columns are metric names."""
@@ -4256,8 +4256,6 @@ class Queue(BaseModel):
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
 			fig = Plot().performance(dataframe=dataframe)
-
-			return fig
 
 
 class Jobset(BaseModel):
