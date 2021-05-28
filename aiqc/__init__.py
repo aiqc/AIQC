@@ -754,7 +754,7 @@ class Dataset(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
-			file = Dataset.Tabular.get_main_file(id)
+			file = Dataset.get_main_file(id)
 			columns = listify(columns)
 			samples = listify(samples)
 			df = file.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
@@ -986,6 +986,21 @@ class Dataset(BaseModel):
 			return dataset
 
 
+		def from_path(
+			file_path:str
+			, source_file_format:str
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
+			, skip_header_rows:int = 'infer'
+		):
+			dataset = Dataset.Tabular.from_path(file_path, source_file_format, name, dtype, column_names, skip_header_rows)
+			dataset.dataset_type = Dataset.Text.dataset_type
+			dataset.save()
+
+			return dataset
+
+
 		def from_folder(
 			folder_path:str, 
 			name:str = None
@@ -1010,6 +1025,10 @@ class Dataset(BaseModel):
 			samples:list = None
 		):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
+
+			if Dataset.Text.column_name not in columns:
+				return df
+
 			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
 			df = pd.DataFrame(word_counts.todense(), columns = feature_names)
 			return df
@@ -1021,14 +1040,18 @@ class Dataset(BaseModel):
 			samples:list = None
 		):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
+
+			if Dataset.Text.column_name not in columns:
+				return df.to_numpy()
+
 			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
-			return word_counts, feature_names
+			return word_counts.todense()
 
 
 		def get_feature_matrix(
 			dataframe:object
 		):
-			count_vect = CountVectorizer()
+			count_vect = CountVectorizer(max_features = 200)
 			word_counts = count_vect.fit_transform(dataframe[Dataset.Text.column_name].tolist())
 			return word_counts, count_vect.get_feature_names()
 
@@ -1901,7 +1924,7 @@ class Feature(BaseModel):
 			f_cols = columns    
 
 		dataset_id = feature.dataset.id
-		
+
 		if (numpy_or_pandas == 'numpy'):
 			f_data = Dataset.to_numpy(
 				id = dataset_id
@@ -2042,8 +2065,8 @@ class Splitset(BaseModel):
 				f = Feature.get_by_id(f_id)
 				f_dataset = f.dataset
 
-				if (f_dataset.dataset_type == 'tabular'):
-					f_length = Dataset.Tabular.get_main_file(f_dataset.id).shape['rows']
+				if (f_dataset.dataset_type == 'tabular' or f_dataset.dataset_type == 'text'):
+					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
 				elif (f_dataset.dataset_type == 'image'):
 					f_length = f_dataset.file_count
 				feature_lengths.append(f_length)
@@ -2088,10 +2111,10 @@ class Splitset(BaseModel):
 
 			# Check number of samples in Label vs Feature, because they can come from different Datasets.
 			l_dataset_id = label.dataset.id
-			l_length = Dataset.Tabular.get_main_file(l_dataset_id).shape['rows']
+			l_length = Dataset.get_main_file(l_dataset_id).shape['rows']
 			if (l_dataset_id != f_dataset.id):
-				if (f_dataset.dataset_type == 'tabular'):
-					f_length = Dataset.Tabular.get_main_file(f_dataset.id).shape['rows']
+				if (f_dataset.dataset_type == 'tabular' or f_dataset.dataset_type == 'text'):
+					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
 				elif (f_dataset.dataset_type == 'image'):
 					f_length = feature.dataset.file_count
 				# Separate `if` to compare them.
@@ -2120,7 +2143,7 @@ class Splitset(BaseModel):
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
 			- Don't include the Dataset.Image.feature pixel arrays in stratification.
 			"""
-			if (f_dataset.dataset_type == 'tabular'):
+			if (f_dataset.dataset_type == 'tabular' or f_dataset.dataset_type == 'text'):
 				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
 					feature_array, label_array, arr_idx
 					, test_size = size_test
@@ -4407,8 +4430,8 @@ class Job(BaseModel):
 		encoderset:object
 	):
 		featurecoders = list(encoderset.featurecoders)
+		fitted_encoders = []
 		if (len(featurecoders) > 0):
-			fitted_encoders = []
 			f_cols = encoderset.feature.columns
 			
 			# For each featurecoder: fetch, transform, & concatenate matching features.

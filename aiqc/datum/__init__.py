@@ -106,6 +106,17 @@ def list_datums(format:str=None):
 			, 'samples': 40
 			, 'description': 'tsv acts as label and manifest of image urls.'
 			, 'location': 'remote'
+		},
+		{
+			'name': 'spam.csv'
+			, 'dataset_type': 'text'
+			, 'analysis_type': 'classification_binary'
+			, 'label': 'v1'
+			, 'label_classes': 2
+			, 'features': 'text data'
+			, 'samples': 5572
+			, 'description': 'collection of spam/ ham (not spam) messages'
+			, 'location': 'local'
 		}
 	]
 
