@@ -3468,7 +3468,7 @@ class Plot():
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
-
+		return fig
 
 	def learning_curve(self, dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
 		"""Dataframe rows are epochs and columns are metric names."""
@@ -4255,9 +4255,9 @@ class Queue(BaseModel):
 		if dataframe.empty:
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			Plot().performance(dataframe=dataframe)
+			fig = Plot().performance(dataframe=dataframe)
 
-
+			return fig
 
 
 class Jobset(BaseModel):
@@ -4899,7 +4899,7 @@ class Job(BaseModel):
 			- Assuming `model.save()` will trigger OS-specific h5 drivers.
 			"""
 			# Write it.
-			temp_file_name = f"{app_dir}temp_keras_model"
+			temp_file_name = f"{app_dir}temp_keras_model.h5"
 			model.save(
 				temp_file_name
 				, include_optimizer = True
@@ -5046,11 +5046,13 @@ class Predictor(BaseModel):
 
 		if (algorithm.library == "keras"):
 			#https://www.tensorflow.org/guide/keras/save_and_serialize
-			temp_file_name = f"{app_dir}temp_keras_model"
+			temp_file_name = f"{app_dir}temp_keras_model.h5"
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
-				model = keras.models.load_model(temp_file_name, compile=True)
+			import h5py
+			g = h5py.File(temp_file_name, 'r')
+			model = keras.models.load_model(g, compile=True)
 			os.remove(temp_file_name)
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
