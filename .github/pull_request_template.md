@@ -56,18 +56,21 @@ q2.run_jobs()
 q3 = tests.make_test_queue('keras_regression')
 q3.run_jobs()
 
-q4 = tests.make_test_queue('keras_image_binary')
+q4 = tests.make_test_queue('keras_text_binary')
 q4.run_jobs()
 
-q5 = tests.make_test_queue('pytorch_binary')
+q5 = tests.make_test_queue('keras_image_binary')
 q5.run_jobs()
 
-q6 = tests.make_test_queue('pytorch_multiclass')
+q6 = tests.make_test_queue('pytorch_binary')
 q6.run_jobs()
 
-q7 = tests.make_test_queue('pytorch_regression')
+q7 = tests.make_test_queue('pytorch_multiclass')
 q7.run_jobs()
 
-q8 = tests.make_test_queue('pytorch_image_binary')
+q8 = tests.make_test_queue('pytorch_regression')
 q8.run_jobs()
+
+q9 = tests.make_test_queue('pytorch_image_binary')
+q9.run_jobs()
 ```

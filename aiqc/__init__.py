@@ -610,6 +610,9 @@ class Dataset(BaseModel):
 
 
 	def get_main_tabular(id:int):
+		"""
+		Works on both `Dataset.Tabular` and `Dataset.Text`
+		"""
 		file = Dataset.get_main_file(id)
 		return file.tabulars[0]
 
