@@ -329,6 +329,79 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 	return queue
 
 
+def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
+	hyperparameters = {
+		"neuron_count": [25, 50]
+		, "epochs": [75, 150]
+	}
+
+	file_path = datum.get_path('spam.csv')
+
+	dataset = Dataset.Text.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
+		, name = 'text test dataset'
+		, dtype = None
+	)
+	
+	label_column = 'label'
+	label = dataset.make_label(columns=[label_column])
+
+	feature = dataset.make_feature(exclude_columns=[label_column])
+
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.18
+		size_validation = 0.14
+
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
+		, size_test = size_test
+		, size_validation = size_validation
+	)
+
+	if (fold_count is not None):
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+
+	encoderset = feature.make_encoderset()
+
+	labelcoder = label.make_labelcoder(
+		sklearn_preprocess = LabelBinarizer(sparse_output=False)
+	)
+
+	fc0 = encoderset.make_featurecoder(
+		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
+		, dtypes = ['object']
+	)
+
+	algorithm = Algorithm.make(
+		library = "keras"
+		, analysis_type = "classification_binary"
+		, fn_build = keras_binary_fn_build
+		, fn_train = keras_binary_fn_train
+	)
+
+	hyperparamset = algorithm.make_hyperparamset(
+		hyperparameters = hyperparameters
+	)
+
+	queue = algorithm.make_queue(
+		splitset_id = splitset.id
+		, foldset_id = foldset_id
+		, hyperparamset_id = hyperparamset.id
+		, repeat_count = repeat_count
+	)
+	return queue
+
+
 # ------------------------ KERAS REGRESSION ------------------------
 def keras_regression_fn_build(features_shape, label_shape, **hp):
 	model = keras.models.Sequential()
@@ -1125,6 +1198,8 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 		queue = make_test_queue_keras_multiclass(repeat_count, fold_count)
 	elif (name == 'keras_binary'):
 		queue = make_test_queue_keras_binary(repeat_count, fold_count)
+	elif (name == 'keras_text_binary'):
+		queue = make_test_queue_keras_text_binary(repeat_count, fold_count)
 	elif (name == 'keras_regression'):
 		queue = make_test_queue_keras_regression(repeat_count, fold_count)
 	elif (name == 'keras_image_binary'):
