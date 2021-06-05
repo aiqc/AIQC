@@ -24,5 +24,5 @@
 <p align='center'><b>On a mission to accelerate open science:</b></p>
 
 * Write 95% less code. Easily integrate best practice deep learning into your research.
-* Reproducibly record your entire workflow: both training experiments & preprocessing.
+* Record your entire workflow. Reproducible experiments & preprocessing.
 * Free tools & open methods, not walled garden SaaS apps & cloud services.
