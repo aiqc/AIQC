@@ -62,4 +62,4 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 - Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
 - When building, files get replicated. So if you change the name of files in `/docs`, `docs/notebooks`, `docs/images` then the old files will need to be deleted from `/_build/html`.
 - When I ran into problems with broken image references on ReadTheDocs, I ran `make clean` to delete the `/_build` folder and then `make html`.
-- `nbsphinx` does not work with Jinja2(v3) so I had to add `jinja2==2.11.2` to ReadTheDocs `requirements.txt`.
+- The `nbsphinx==0.8.6` maintainer fixed a bug where it was not working with Jinja2(v3). 

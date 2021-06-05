@@ -246,12 +246,34 @@
    "metadata": {},
    "source": [
     "### Plotting\n",
+    "AIQC uses Plotly for interactive charts."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pip install --upgrade plotly"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Optional - Plotly in JupyterLab\n",
+    "This requires the following dependencies:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* Python packages: [`ipywidgets`, `plotly`]\n",
+    "* JupyterLab Extension: [`jupyterlab-plotly`].\n",
     "\n",
-    "AIQC uses Plotly for interactive charts.\n",
-    "\n",
-    "> https://github.com/plotly/plotly.py#jupyterlab-support\n",
-    "\n",
-    "If you want to render Plotly graphs withing within JupyterLab, then you need the `jupyterlab-plotly` extension. Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it."
+    "> https://github.com/plotly/plotly.py#jupyterlab-support"
    ]
   },
   {
@@ -264,29 +286,17 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": null,
+   "cell_type": "markdown",
    "metadata": {},
-   "outputs": [],
    "source": [
-    "!jupyter labextension install jupyterlab-plotly"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 8,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "jupyterlab-plotly:\u001b[32menabled\u001b[0m\n"
-     ]
-    }
-   ],
-   "source": [
-    "!jupyter labextension check jupyterlab-plotly"
+    "##### New: simplified, pre-built extension for plotly>=5.0.0\n",
+    "The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.\n",
+    "\n",
+    "> However, I suspect that it may get moved to a package extra (e.g. *plotly[jupyterlab]*) in order to avoid long plotly install times.\n",
+    "\n",
+    "\n",
+    "##### *Deprecated:* manually building extension process for plotly<=5.0.0\n",
+    "*Deprecated:* If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it."
    ]
   },
   {
@@ -295,6 +305,9 @@
    "metadata": {},
    "outputs": [],
    "source": [
+    "# Deprecated\n",
+    "!jupyter labextension install jupyterlab-plotly\n",
+    "!jupyter labextension check jupyterlab-plotly\n",
     "!jupyter lab build"
    ]
   },
@@ -302,7 +315,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel)."
+    "*Deprecated:* After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel)."
    ]
   },
   {
@@ -638,7 +651,7 @@
     "\n",
     "> We have attempted to support both Windows (`icacls` permissions and backslashes `C:\\\\`) as well as POSIX including Mac and Linux including containers & Google Colab (`chmod letters` permissions and slashes `/`). Note: due to variations in the ordering of appdirs author and app directories in different OS', we do not make use of the appdirs `appauthor` directory, only the `appname` directory.\n",
     "\n",
-    "#### Config & Database Location Based on OS\n",
+    "### Location Based on OS\n",
     "\n",
     "Test it for yourself: <br/>\n",
     "`import appdirs; appdirs.user_data_dir('aiqc');`\n",
@@ -669,6 +682,13 @@
    "metadata": {},
    "source": [
     "If, for whatever reason, you find that you need to destroy your SQLite database file and start from scratch, then you can do so without having to manually find and `rm` the database file. In order to reduce the chance of an accident, `confirm:bool=False` by default."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Bear in mind that if you are on either a server or shared OS, then this database may contain more than just your data."
    ]
   },
   {

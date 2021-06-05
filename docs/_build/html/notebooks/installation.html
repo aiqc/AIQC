@@ -103,9 +103,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#to-expedite-earth-saving-scientific-discoveries">1. To expedite Earth-saving scientific discoveries.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#to-bring-the-scientific-method-to-data-science">2. To bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#to-break-down-walled-gardens-science-should-be-open">3. To break down walled gardens - science should be open.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 </ul>
@@ -138,7 +138,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
@@ -153,7 +156,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#Config-File">Config File</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Location-Based-on-OS">Location Based on OS</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a)-One-Liner">a) One-Liner</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
@@ -883,10 +889,25 @@ v14.7.0
 <div class="section" id="Plotting">
 <h3>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h3>
 <p>AIQC uses Plotly for interactive charts.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">plotly</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Optional---Plotly-in-JupyterLab">
+<h4>Optional - Plotly in JupyterLab<a class="headerlink" href="#Optional---Plotly-in-JupyterLab" title="Permalink to this headline">¶</a></h4>
+<p>This requires the following dependencies:</p>
+<ul class="simple">
+<li><p>Python packages: [<code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code>, <code class="docutils literal notranslate"><span class="pre">plotly</span></code>]</p></li>
+<li><p>JupyterLab Extension: [<code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code>].</p></li>
+</ul>
 <blockquote>
 <div><p><a class="reference external" href="https://github.com/plotly/plotly.py#jupyterlab-support">https://github.com/plotly/plotly.py#jupyterlab-support</a></p>
 </div></blockquote>
-<p>If you want to render Plotly graphs withing within JupyterLab, then you need the <code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code> extension. Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -896,42 +917,31 @@ v14.7.0
 </pre></div>
 </div>
 </div>
+<div class="section" id="New:-simplified,-pre-built-extension-for-plotly&gt;=5.0.0">
+<h5>New: simplified, pre-built extension for plotly&gt;=5.0.0<a class="headerlink" href="#New:-simplified,-pre-built-extension-for-plotly>=5.0.0" title="Permalink to this headline">¶</a></h5>
+<p>The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.</p>
+<blockquote>
+<div><p>However, I suspect that it may get moved to a package extra (e.g. <em>plotly[jupyterlab]</em>) in order to avoid long plotly install times.</p>
+</div></blockquote>
+</div>
+<div class="section" id="Deprecated:-manually-building-extension-process-for-plotly&lt;=5.0.0">
+<h5><em>Deprecated:</em> manually building extension process for plotly&lt;=5.0.0<a class="headerlink" href="#Deprecated:-manually-building-extension-process-for-plotly<=5.0.0" title="Permalink to this headline">¶</a></h5>
+<p><em>Deprecated:</em> If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">!</span>jupyter labextension install jupyterlab-plotly
+<span></span><span class="c1"># Deprecated</span>
+<span class="o">!</span>jupyter labextension install jupyterlab-plotly
+<span class="o">!</span>jupyter labextension check jupyterlab-plotly
+<span class="o">!</span>jupyter lab build
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">!</span>jupyter labextension check jupyterlab-plotly
-</pre></div>
+<p><em>Deprecated:</em> After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</p>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">!</span>jupyter lab build
-</pre></div>
-</div>
-</div>
-<p>After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</p>
 </div>
 <div class="section" id="Optional---Swap-Space-for-Failover-Memory">
 <h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline">¶</a></h3>
@@ -1155,6 +1165,8 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 <blockquote>
 <div><p>We have attempted to support both Windows (<code class="docutils literal notranslate"><span class="pre">icacls</span></code> permissions and backslashes <code class="docutils literal notranslate"><span class="pre">C:\\</span></code>) as well as POSIX including Mac and Linux including containers &amp; Google Colab (<code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">letters</span></code> permissions and slashes <code class="docutils literal notranslate"><span class="pre">/</span></code>). Note: due to variations in the ordering of appdirs author and app directories in different OS’, we do not make use of the appdirs <code class="docutils literal notranslate"><span class="pre">appauthor</span></code> directory, only the <code class="docutils literal notranslate"><span class="pre">appname</span></code> directory.</p>
 </div></blockquote>
+<div class="section" id="Location-Based-on-OS">
+<h3>Location Based on OS<a class="headerlink" href="#Location-Based-on-OS" title="Permalink to this headline">¶</a></h3>
 <p>Test it for yourself: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">appdirs;</span> <span class="pre">appdirs.user_data_dir('aiqc');</span></code></p>
 <ul class="simple">
 <li><p>Mac: <code class="docutils literal notranslate"><span class="pre">/Users/Username/Library/Application</span> <span class="pre">Support/aiqc</span></code></p></li>
@@ -1163,9 +1175,13 @@ jupyterlab-plotly:<span class="ansi-green-fg">enabled</span>
 </ul>
 <hr class="docutils" />
 </div>
+</div>
 <div class="section" id="Optional---Deleting-the-Database">
 <h2>Optional - Deleting the Database<a class="headerlink" href="#Optional---Deleting-the-Database" title="Permalink to this headline">¶</a></h2>
 <p>If, for whatever reason, you find that you need to destroy your SQLite database file and start from scratch, then you can do so without having to manually find and <code class="docutils literal notranslate"><span class="pre">rm</span></code> the database file. In order to reduce the chance of an accident, <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> by default.</p>
+<blockquote>
+<div><p>Bear in mind that if you are on either a server or shared OS, then this database may contain more than just your data.</p>
+</div></blockquote>
 <div class="section" id="a)-One-Liner">
 <h3>a) One-Liner<a class="headerlink" href="#a)-One-Liner" title="Permalink to this headline">¶</a></h3>
 <p>Both <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> and <code class="docutils literal notranslate"><span class="pre">rebuild:bool=False</span></code>, so it only does what you command it to do.</p>
