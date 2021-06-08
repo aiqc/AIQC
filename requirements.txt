@@ -14,6 +14,7 @@ numpy==1.19.5
 pandas==1.2.3
 Pillow==8.1.2
 pyarrow==3.0.0
+fastparquet==0.6.3
 plotly==4.14.3
 appdirs==1.4.4
 natsort==7.1.1

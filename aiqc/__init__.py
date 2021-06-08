@@ -547,10 +547,10 @@ class Dataset(BaseModel):
 
 		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
-		elif (dataset.dataset_type == 'image'):
-			raise ValueError("\nYikes - `Dataset.Image` class does not have a `to_pandas()` method.\n")
 		elif (dataset.dataset_type == 'text'):
 			df = Dataset.Text.to_pandas(id=dataset.id, columns=columns, samples=samples)
+		elif ((dataset.dataset_type == 'image') or (dataset.dataset_type == 'sequence')):
+			raise ValueError("\nYikes - `dataset_type={dataset.dataset_type}` does not have a `to_pandas()` method.\n")
 		return df
 
 
@@ -567,6 +567,8 @@ class Dataset(BaseModel):
 			arr = Dataset.Image.to_numpy(id=id, samples=samples)
 		elif (dataset.dataset_type == 'text'):
 			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
+		elif (dataset.dataset_type == 'sequence'):
+			arr = Dataset.Sequence.to_numpy(id=id, columns=columns, samples=samples)
 		return arr
 
 
@@ -597,6 +599,7 @@ class Dataset(BaseModel):
 		file_paths = natsorted(file_paths)
 		return file_paths
 
+
 	def get_main_file(id:int):
 		dataset = Dataset.get_by_id(id)
 
@@ -608,13 +611,25 @@ class Dataset(BaseModel):
 		)[0]
 		return file
 
-
 	def get_main_tabular(id:int):
 		"""
 		Works on both `Dataset.Tabular` and `Dataset.Text`
 		"""
 		file = Dataset.get_main_file(id)
 		return file.tabulars[0]
+
+
+	def arr_validate(ndarray):
+		if (type(ndarray).__name__ != 'ndarray'):
+			raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
+		if (ndarray.dtype.names is not None):
+			raise ValueError(dedent("""
+			Yikes - Sorry, we do not support NumPy Structured Arrays.
+			However, you can use the `dtype` dict and `column_names` to handle each column specifically.
+			"""))
+		if (ndarray.size == 0):
+			raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
+
 
 
 	class Tabular():
@@ -718,13 +733,7 @@ class Dataset(BaseModel):
 			, column_names:list = None
 		):
 			column_names = listify(column_names)
-			if (type(ndarray).__name__ != 'ndarray'):
-				raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
-			elif (ndarray.dtype.names is not None):
-				raise ValueError(dedent("""
-				Yikes - Sorry, we do not support NumPy Structured Arrays.
-				However, you can use the `dtype` dict and `columns_names` to handle each column specifically.
-				"""))
+			Dataset.arr_validate(ndarray)
 
 			dimensions = len(ndarray.shape)
 			if (dimensions > 2) or (dimensions < 1):
@@ -805,9 +814,9 @@ class Dataset(BaseModel):
 			modes = []
 			
 			for i, path in enumerate(tqdm(
-					file_paths
-					, desc = "🖼️ Validating Images 🖼️"
-					, ncols = 85
+				file_paths
+				, desc = "🖼️ Validating Images 🖼️"
+				, ncols = 85
 			)):
 				img = Imaje.open(path)
 				sizes.append(img.size)
@@ -838,7 +847,7 @@ class Dataset(BaseModel):
 					)
 			except:
 				dataset.delete_instance() # Orphaned.
-				raise       
+				raise
 			return dataset
 
 
@@ -1067,7 +1076,82 @@ class Dataset(BaseModel):
 			return data_df[Dataset.Text.column_name].tolist()
 
 
+	class Sequence():
+		dataset_type = 'sequence'
+
+		def from_numpy(
+			ndarray:object
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
+		):
+			column_names = listify(column_names)
+			Dataset.arr_validate(ndarray)
+
+			dimensions = len(ndarray.shape)
+			if (dimensions != 3):
+				raise ValueError(dedent(f"""
+				Yikes - Sequence Datasets can only be constructed from 3D arrays.
+				Your array dimensions had <{dimensions}> dimensions.
+				"""))
+
+			file_count = len(ndarray)
+			dataset = Dataset.create(
+				file_count = file_count
+				, name = name
+				, dataset_type = Dataset.Sequence.dataset_type
+			)
+
+			#Make sure the shape and mode of each image are the same before writing the Dataset.
+			shapes = []
+			for i, arr in enumerate(tqdm(
+				ndarray
+				, desc = "⏱️ Validating Sequences 🧬"
+				, ncols = 85
+			)):
+				shapes.append(arr.shape)
+
+			if (len(set(shapes)) > 1):
+				raise ValueError(dedent(f"""
+				Yikes - All 2D arrays in the Dataset must be of the shape.
+				`ndarray.shape`\nHere are the unique sizes you provided:\n{set(shapes)}
+				"""))
+
+			try:
+				for i, arr in enumerate(tqdm(
+					ndarray
+					, desc = "⏱️ Ingesting Sequences 🧬"
+					, ncols = 85
+				)):
+					File.Tabular.from_numpy(
+						ndarray = arr
+						, dataset_id = dataset.id
+						, column_names = column_names
+						, dtype = dtype
+						, _file_index = i
+					)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise
+			return dataset
+
+
+		def to_numpy(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			dataset = Dataset.get_by_id(id)
+			columns = listify(columns)
+			samples = listify(samples)
+			files = dataset.files
+			arrs_2D = [f.to_numpy(columns=columns, samples=samples) for f in files]
+			arr_3D = np.array(arrs_2D)
+			return arr_3D
+
+
 	# Graph
+	# handle nodes and edges as separate tabular types?
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
 	# the only unique thing is an edge_data for each Graph file.
 	# attach multiple file types to a file File(id=1).tabular, File(id=1).graph?
@@ -1095,10 +1179,22 @@ class File(BaseModel):
 	Classes are much cleaner than a knot of if statements in every method,
 	and `=None` for every parameter.
 	"""
+
+	def to_numpy(id:int, columns:list=None, samples:list=None):
+		file = File.get_by_id(id)
+		columns = listify(columns)
+		samples = listify(samples)
+
+		if (file.file_type == 'tabular'):
+			arr = File.Tabular.to_numpy(id=id, columns=columns, samples=samples)
+		elif (file.file_type == 'image'):
+			arr = File.Image.to_numpy(id=id, columns=columns, samples=samples)
+		return arr
+
+
 	class Tabular():
 		file_type = 'tabular'
 		file_format = 'parquet'
-		file_index = 0 # If Sequence needs this in future, just 'if None then 0'.
 
 		def from_pandas(
 			dataframe:object
@@ -1106,6 +1202,7 @@ class File(BaseModel):
 			, dtype:dict = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
 			, column_names:list = None
 			, source_path:str = None # passed in via from_file
+			, _file_index:int = 0
 		):
 			column_names = listify(column_names)
 			File.Tabular.df_validate(dataframe, column_names)
@@ -1122,7 +1219,7 @@ class File(BaseModel):
 				blob = blob
 				, file_type = File.Tabular.file_type
 				, file_format = File.Tabular.file_format
-				, file_index = File.Tabular.file_index
+				, file_index = _file_index
 				, shape = shape
 				, source_path = source_path
 				, dataset = dataset
@@ -1145,6 +1242,7 @@ class File(BaseModel):
 			, dataset_id:int
 			, column_names:list = None
 			, dtype:dict = None #Or single string.
+			, _file_index:int = 0
 		):
 			column_names = listify(column_names)
 			"""
@@ -1156,18 +1254,19 @@ class File(BaseModel):
 			Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
 			Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
 			"""
-			File.Tabular.arr_validate(ndarray)
+			Dataset.arr_validate(ndarray)
 			"""
-			DataFrame method only accepts a single dtype str, or infers if None.
-			So deferring the dict-based dtype to our `from_pandas()` method.
-			Also deferring column_names since it runs there anyways.
+			column_names and dict-based dtype will be handled by our `from_pandas()` method.
+			`pd.DataFrame` method only accepts a single dtype str, or infers if None.
 			"""
 			df = pd.DataFrame(data=ndarray)
 			file = File.Tabular.from_pandas(
 				dataframe = df
 				, dataset_id = dataset_id
 				, dtype = dtype
-				, column_names = column_names # Doesn't overwrite first row of homogenous array.
+				# Setting `column_names` will not overwrite the first row of homogenous array:
+				, column_names = column_names
+				, _file_index = _file_index
 			)
 			return file
 
@@ -1304,13 +1403,17 @@ class File(BaseModel):
 			shape = {}
 			shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 
-			# Passes in user-defined columns in case they are specified.
-			# Auto-assigned int based columns return a range when `df.columns` called so convert them to str.
+			"""
+			- Passes in user-defined columns in case they are specified.
+			- Pandas auto-assigns int-based columns return a range when `df.columns`, 
+			  but this forces each column name to be its own str.
+			 """
 			dataframe, columns = File.Tabular.pandas_stringify_columns(df=dataframe, columns=column_names)
 
 			"""
-			At this point, user-provided `dtype` can be a dict or a singular string/ class.
-			But a Pandas dataframe in-memory only has `dtypes` dict not a singular `dtype` str.
+			- At this point, user-provided `dtype` can be either a dict or a singular string/ class.
+			- But a Pandas dataframe in-memory only has `dtypes` dict not a singular `dtype` str.
+			- So we will ensure that there is 1 dtype per column.
 			"""
 			if (dtype is not None):
 				# Accepts dict{'column_name':'dtype_str'} or a single str.
@@ -1343,15 +1446,14 @@ class File(BaseModel):
 							You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
 							"""))
 			"""
+			Testing outlandish dtypes:
 			- `DataFrame.to_parquet(engine='auto')` fails on:
 			  'complex', 'longfloat', 'float128'.
 			- `DataFrame.to_parquet(engine='auto')` succeeds on:
 			  'string', np.uint8, np.double, 'bool'.
 			
 			- But the new 'string' dtype is not a numpy type!
-			  so operations like `np.issubdtype` won't work on it.
-			- But the new 'string' series is not feature complete
-			  `StringArray.unique().tolist()` fails.
+			  so operations like `np.issubdtype` and `StringArray.unique().tolist()` fail.
 			"""
 			excluded_types = ['string', 'complex', 'longfloat', 'float128']
 			actual_dtypes = dataframe.dtypes.to_dict().items()
@@ -1365,7 +1467,7 @@ class File(BaseModel):
 						"""))
 
 			"""
-			Now, we take the all of the predictoring dataframe dtypes and save them.
+			Now, we take the all of the resulting dataframe dtypes and save them.
 			Regardless of whether or not they were user-provided.
 			Convert the classed `dtype('float64')` to a string so we can use it in `.to_pandas()`
 			"""
@@ -1377,19 +1479,33 @@ class File(BaseModel):
 
 		def df_to_compressed_parquet_bytes(dataframe:object):
 			"""
-			Parquet naturally preserves pandas/numpy dtypes.
-			fastparquet engine preserves timedelta dtype, alas it does not work with bytes!
+			The Parquet file format naturally preserves pandas/numpy dtypes.
+			Originally, we were using the `pyarrow` engine, but it has poor timedelta support.
+			Although `fastparquet` engine preserves timedelta dtype, it does not work with byte streams!
+			So in order to add support for `Dataset.Sequence` write fastparquet to disk then fetch it.
+			I don't want to pass a `_dataset_type` arg through all of the `from_*` functions just to handle this scenario.
 			https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
 			"""
+			""" 
+			# Deprecated
 			blob = io.BytesIO()
 			dataframe.to_parquet(
-				blob
-				, engine = 'pyarrow'
-				, compression = 'gzip'
-				, index = False
+				blob, engine = 'pyarrow'
+				, compression = 'gzip', index = False
 			)
 			blob = blob.getvalue()
+			"""
+			temp_file_name = f"{app_dir}temp.parquet"
+			dataframe.to_parquet(
+				temp_file_name, engine = 'fastparquet'
+				, compression = 'gzip', index = False	
+			)
+			# Fetch the bytes ('rb': read binary)
+			with open(temp_file_name, 'rb') as file:
+				blob = file.read()
+			os.remove(temp_file_name)
 			return blob
+
 
 
 		def path_to_df(
@@ -1435,14 +1551,6 @@ class File(BaseModel):
 				# At this point, still need to work with metadata in df.
 				df = tbl.to_pandas()
 			return df
-
-
-		def arr_validate(ndarray):
-			if (ndarray.dtype.names is not None):
-				raise ValueError("\nYikes - Sorry, we don't support structured arrays.\n")
-
-			if (ndarray.size == 0):
-				raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
 
 
 	class Image():
@@ -1819,10 +1927,10 @@ class Feature(BaseModel):
 				raise ValueError("\nYikes - The `Dataset.Image` classes supports neither the `include_columns` nor `exclude_columns` arguemnt.\n")
 			columns = None
 			columns_excluded = None
-		elif (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text'):
+		elif (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text' or dataset.dataset_type == 'sequence'):
 			d_cols = Dataset.get_main_tabular(dataset_id).columns
 
-			if (include_columns is not None) and (exclude_columns is not None):
+			if ((include_columns is not None) and (exclude_columns is not None)):
 				raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
 
 			if (include_columns is not None):
@@ -2007,10 +2115,7 @@ class Feature(BaseModel):
 
 class Splitset(BaseModel):
 	"""
-	- Belongs to a Feature, not a Dataset, because the samples selected vary based on the stratification of the features during the split,
-	  and a Feature already has a Dataset anyways.
 	- Here the `samples_` attributes contain indices.
-
 	-ToDo: store and visualize distributions of each column in training split, including label.
 	-Future: is it useful to specify the size of only test for unsupervised learning?
 	"""
@@ -2031,20 +2136,18 @@ class Splitset(BaseModel):
 		, size_validation:float = None
 		, bin_count:float = None
 	):
-		"""
-		- The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
-		"""
+		# The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
 		# --- Verify splits ---
 		if (size_test is not None):
-			if (size_test <= 0.0) or (size_test >= 1.0):
+			if ((size_test <= 0.0) or (size_test >= 1.0)):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			# Don't handle `has_test` here. Need to check label first.
 		
-		if (size_validation is not None) and (size_test is None):
+		if ((size_validation is not None) and (size_test is None)):
 			raise ValueError("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
 
 		if (size_validation is not None):
-			if (size_validation <= 0.0) or (size_validation >= 1.0):
+			if ((size_validation <= 0.0) or (size_validation >= 1.0)):
 				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			sum_test_val = size_validation + size_test
 			if sum_test_val >= 1.0:
@@ -2062,34 +2165,38 @@ class Splitset(BaseModel):
 
 		# --- Verify features ---
 		feature_ids = listify(feature_ids)
-		if (len(feature_ids) > 1):
-			feature_lengths = []
-			for f_id in feature_ids:
-				f = Feature.get_by_id(f_id)
-				f_dataset = f.dataset
+		feature_lengths = []
+		for f_id in feature_ids:
+			f = Feature.get_by_id(f_id)
+			f_dataset = f.dataset
+			f_dset_type = f_dataset.dataset_type
 
-				if (f_dataset.dataset_type == 'tabular' or f_dataset.dataset_type == 'text'):
-					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
-				elif (f_dataset.dataset_type == 'image'):
-					f_length = f_dataset.file_count
-				feature_lengths.append(f_length)
-			if (len(set(feature_lengths)) != 1):
-				raise ValueError("Yikes - List of features you provided contain different amounts of samples.")
+			if (f_dset_type == 'tabular' or f_dset_type == 'text'):
+				f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
+			elif (f_dset_type == 'image' or f_dset_type == 'sequence'):
+				f_length = f_dataset.file_count
+			feature_lengths.append(f_length)
+		if (len(set(feature_lengths)) != 1):
+			raise ValueError("Yikes - List of features you provided contain different amounts of samples: {set(feature_lengths)}")
 
 		# --- Begin splitting ---
 		feature = Feature.get_by_id(feature_ids[0])
+		f_dataset = feature.dataset
+		f_dset_type = f_dataset.dataset_type
 		f_cols = feature.columns
 
 		# Feature data to be split.
-		f_dataset = feature.dataset
-		feature_array = Dataset.to_numpy(id=f_dataset.id, columns=f_cols)
 
 		"""
 		Simulate an index to be split alongside features and labels
-		in order to keep track of the samples being used in the predictoring splits.
+		in order to keep track of the samples being used in the resulting splits.
 		"""
-		row_count = feature_array.shape[0]
-		arr_idx = np.arange(row_count)
+		if (f_dset_type=='tabular' or f_dset_type=='text'):
+			feature_array = f_dataset.to_numpy(columns=f_cols) #Used below for stratification.
+			sample_count = feature_array.shape[0]
+		elif (f_dset_type=='image' or f_dset_type=='sequence'):
+			sample_count = f_dataset.file_count
+		arr_idx = np.arange(sample_count)
 		
 		samples = {}
 		sizes = {}
@@ -2106,7 +2213,7 @@ class Splitset(BaseModel):
 			else:
 				indices_lst_train = arr_idx.tolist()
 				samples["train"] = indices_lst_train
-				sizes["train"] = {"percent": 1.00, "count": row_count}
+				sizes["train"] = {"percent": 1.00, "count": sample_count}
 
 		elif (label_id is not None):
 			# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
@@ -2116,9 +2223,9 @@ class Splitset(BaseModel):
 			l_dataset_id = label.dataset.id
 			l_length = Dataset.get_main_file(l_dataset_id).shape['rows']
 			if (l_dataset_id != f_dataset.id):
-				if (f_dataset.dataset_type == 'tabular' or f_dataset.dataset_type == 'text'):
+				if (f_dset_type=='tabular' or f_dset_type=='text'):
 					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
-				elif (f_dataset.dataset_type == 'image'):
+				elif (f_dset_type=='image' or f_dset_type=='sequence'):
 					f_length = feature.dataset.file_count
 				# Separate `if` to compare them.
 				if (l_length != f_length):
@@ -2146,7 +2253,7 @@ class Splitset(BaseModel):
 			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
 			- Don't include the Dataset.Image.feature pixel arrays in stratification.
 			"""
-			if (f_dataset.dataset_type == 'tabular' or f_dataset.dataset_type == 'text'):
+			if (f_dset_type=='tabular' or f_dset_type=='text'):
 				features_train, features_test, labels_train, labels_test, indices_train, indices_test = train_test_split(
 					feature_array, label_array, arr_idx
 					, test_size = size_test
@@ -2170,7 +2277,7 @@ class Splitset(BaseModel):
 					indices_lst_validation = indices_validation.tolist()
 					samples["validation"] = indices_lst_validation
 
-			elif (f_dataset.dataset_type == 'image'):
+			elif (f_dset_type=='image' or f_dset_type=='sequence'):
 				# Differs in that the Features not fed into `train_test_split()`.
 				labels_train, labels_test, indices_train, indices_test = train_test_split(
 					label_array, arr_idx

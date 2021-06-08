@@ -103,9 +103,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#to-expedite-earth-saving-scientific-discoveries">1. To expedite Earth-saving scientific discoveries.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#to-bring-the-scientific-method-to-data-science">2. To bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#to-break-down-walled-gardens-science-should-be-open">3. To break down walled gardens - science should be open.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 </ul>
@@ -138,7 +138,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Plotting">Plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Plotting">Plotting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
@@ -153,7 +156,10 @@
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Liner">a) One-Liner</a></li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
@@ -313,6 +319,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Split-Strategies">Split Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b)-Specifying-test-size.">b) Specifying test size.</a></li>
@@ -328,7 +335,10 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Specifying-Foldsets">Specifying Foldsets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Reading-Foldsets">Reading Foldsets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Reading-Foldsets">Reading Foldsets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Sample-indices-of-each-Fold:">Sample indices of each Fold:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#6.-Optionally,-encode-labels-with-Labelcoder.">6. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
@@ -356,7 +366,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#9.-Optional,-associate-a-Hyperparamset-with-your-model.">9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Optional,-associate-a-Hyperparamset-with-your-model.">9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#10.-Create-a-Queue-of-training-Jobs.">10. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Execute-all-Jobs.">Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
@@ -1724,14 +1737,20 @@ array([[5.1, 3.5, 1.4, 0.2],
 <blockquote>
 <div><p>Again, creating a Splitset won’t duplicate your data. It simply denotes the sample indices (aka rows) to be used in the splits that you specify!</p>
 </div></blockquote>
+<div class="section" id="Stratification-of-continuous-labels.">
+<h3>Stratification of continuous labels.<a class="headerlink" href="#Stratification-of-continuous-labels." title="Permalink to this headline">¶</a></h3>
 <p>All splits are stratified by default in that they contain similar distributions of unique label classes so that each split is a statistically accurate representation of the population as a whole.</p>
 <p>In order to support this process for continuous labels, binning/ discretization is utilized. For example, if 4 bins are used, values from <em>0.0 to 1.0</em> would be binned as <em>[0.0-0.25, 0.25-0.50, 0.50-0.75, 0.75-1.0]</em>. This is controlled by the <code class="docutils literal notranslate"><span class="pre">bin_count:int</span></code> argument.</p>
 <blockquote>
 <div><p>Reference the handy <code class="docutils literal notranslate"><span class="pre">Pandas.qcut()</span></code> and the source code <code class="docutils literal notranslate"><span class="pre">pd.qcut(x=array_to_bin,</span> <span class="pre">q=bin_count,</span> <span class="pre">labels=False,</span> <span class="pre">duplicates='drop')</span></code> for more detail.</p>
 </div></blockquote>
+</div>
 <div class="section" id="Split-Strategies">
 <h3>Split Strategies<a class="headerlink" href="#Split-Strategies" title="Permalink to this headline">¶</a></h3>
-<p>Notice that the <code class="docutils literal notranslate"><span class="pre">feature_ids:list</span></code> is plural. We can pass a Splitset multiple Features for mixed-data analysis (e.g. using both Tabular and Image data).</p>
+<p>Notice that the <code class="docutils literal notranslate"><span class="pre">feature_ids:list</span></code> is plural. That’s because we can pass a Splitset multiple Features for mixed-data analysis (e.g. using both Tabular and Image data).</p>
+<blockquote>
+<div><p>If you have a feature that is capable of stratification (e.g. <code class="docutils literal notranslate"><span class="pre">dataset_type='tabular'</span></code> or <code class="docutils literal notranslate"><span class="pre">dataset_type='tabular'</span></code>), then you should make that <code class="docutils literal notranslate"><span class="pre">feature_id</span></code> the first element in the list. Only the first list element will be checked for the purposes of stratification.</p>
+</div></blockquote>
 <div class="section" id="a)-Default-supervised-70-30-split.">
 <h4>a) Default supervised 70-30 split.<a class="headerlink" href="#a)-Default-supervised-70-30-split." title="Permalink to this headline">¶</a></h4>
 <p>If you only provide a Label, then 70:30 train:test splits will be generated.</p>
@@ -1909,6 +1928,8 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </div>
 <div class="section" id="Reading-Foldsets">
 <h3>Reading Foldsets<a class="headerlink" href="#Reading-Foldsets" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Sample-indices-of-each-Fold:">
+<h4>Sample indices of each Fold:<a class="headerlink" href="#Sample-indices-of-each-Fold:" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
@@ -1944,6 +1965,7 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <div class="highlight"><pre>
 [11, 20, 25, 29, 36, 44, 52, 53, 58, 59]
 </pre></div></div>
+</div>
 </div>
 </div>
 </div>
@@ -2438,6 +2460,8 @@ No more Featurecoders can be added to this Encoderset.
 <blockquote>
 <div><p>The number of unique combinations escalates quickly, so in the future, we will provide different strategies for generating and selecting parameters to experiment with.</p>
 </div></blockquote>
+<div class="section" id="Hyperparamcombo-objects.">
+<h3><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.<a class="headerlink" href="#Hyperparamcombo-objects." title="Permalink to this headline">¶</a></h3>
 <p>Each unique combination of hyperparameters is recorded as a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
 <p>Ultimately, a training <code class="docutils literal notranslate"><span class="pre">Job</span></code> is constructed for each unique combinanation of hyperparameters aka <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
 <div class="nbinput docutils container">
@@ -2536,6 +2560,7 @@ No more Featurecoders can be added to this Encoderset.
   </tbody>
 </table>
 </div></div>
+</div>
 </div>
 </div>
 <div class="section" id="10.-Create-a-Queue-of-training-Jobs.">
