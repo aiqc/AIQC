@@ -117,6 +117,17 @@ def list_datums(format:str=None):
 			, 'samples': 5572
 			, 'description': 'collection of spam/ ham (not spam) messages'
 			, 'location': 'local'
+		},
+		{
+			'name': 'epilepsy.parquet'
+			, 'dataset_type': 'sequence'
+			, 'analysis_type': 'classification_binary'
+			, 'label': 'seizure'
+			, 'label_classes': 2
+			, 'features': '1 x 178 readings'
+			, 'samples': 1000
+			, 'description': "<https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition> Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`"
+			, 'location': 'local'
 		}
 	]
 

@@ -2414,6 +2414,7 @@ class Featureset(BaseModel):
 class Foldset(BaseModel):
 	"""
 	- Contains aggregate summary statistics and evaluate metrics for all Folds.
+	- Works the same for all dataset types because only the labels are used for stratification.
 	"""
 	fold_count = IntegerField()
 	random_state = IntegerField()
