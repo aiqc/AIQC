@@ -4595,21 +4595,29 @@ class Job(BaseModel):
 		return fitted_encoders
 
 
-	def encoder_transform_features(
+	def encoderset_transform_features(
 		arr_features:object,
 		fitted_encoders:list, encoderset:object 
 	):
-		# Can't overwrite columns with data of different type, so they have to be pieced together.
+		"""
+		- Can't overwrite columns with data of different type (e.g. encoding object to int), 
+		  so they have to be pieced together.
+		"""
+
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
+			# Handle Sequence (part 1): reshape 3D to tall 2D for transformation.
+			features_shape = arr_features.shape
+			if (len(features_shape)==3):
+				rows_2D = features_shape[0] * features_shape[1]
+				arr_features = arr_features.reshape(rows_2D,1)
+
 			f_cols = encoderset.feature.columns
-			transformed_features = None
+			transformed_features = None #Used as a placeholder for `np.concatenate`.
 			for featurecoder in featurecoders:
 				idx = featurecoder.featurecoder_index
 				fitted_coders = fitted_encoders[idx]# returns list
 				encoding_dimension = featurecoder.encoding_dimension
-				# Here dataset is the new dataset.
-				features_to_transform = arr_features
 				
 				# Only transform these columns.
 				matching_columns = featurecoder.matching_columns
@@ -4618,20 +4626,20 @@ class Job(BaseModel):
 					column_names=f_cols, desired_cols=matching_columns
 				)
 				# Filter the array using those indices.
-				features_to_transform = Job.cols_by_indices(arr_features, col_indices)
-				
+				arr_features = Job.cols_by_indices(arr_features, col_indices)
+
 				if (idx == 0):
 					# It's the first encoder. Nothing to concat with, so just overwite the None value.
 					transformed_features = Labelcoder.transform_dynamicDimensions(
 						fitted_encoders = fitted_coders
 						, encoding_dimension = encoding_dimension
-						, samples_to_transform = features_to_transform
+						, samples_to_transform = arr_features
 					)
 				elif (idx > 0):
 					encoded_features = Labelcoder.transform_dynamicDimensions(
 						fitted_encoders = fitted_coders
 						, encoding_dimension = encoding_dimension
-						, samples_to_transform = features_to_transform
+						, samples_to_transform = arr_features
 					)
 					# Then concatenate w previously encoded features.
 					transformed_features = np.concatenate(
@@ -4652,6 +4660,13 @@ class Job(BaseModel):
 				transformed_features = np.concatenate(
 					(transformed_features, leftover_features)
 					, axis = 1
+				)
+			# Handle Sequence (part 2): reshape 3D to tall 2D for transformation.
+			if (len(features_shape)==3):
+				transformed_features = arr_features.reshape(
+					features_shape[0],
+					features_shape[1],
+					features_shape[2]
 				)
 				
 		elif (len(featurecoders) == 0):
@@ -4947,7 +4962,7 @@ class Job(BaseModel):
 					encoderset=encoderset
 				)
 
-				arr_features = Job.encoder_transform_features(
+				arr_features = Job.encoderset_transform_features(
 					arr_features=arr_features,
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
@@ -5418,7 +5433,7 @@ class Predictor(BaseModel):
 			if (encoderset is not None):
 				# Don't need to check types because Encoderset creation protects
 				# against unencodable types.
-				arr_features = Job.encoder_transform_features(
+				arr_features = Job.encoderset_transform_features(
 					arr_features=arr_features,
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
