@@ -3145,6 +3145,11 @@ class Featurecoder(BaseModel):
 
 		# 4. Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
+		# Handles `Dataset.Sequence` by stacking the 2D arrays into a tall 2D array.
+		features_shape = samples_to_encode.shape
+		if (len(features_shape)==3):
+			rows_2D = features_shape[0] * features_shape[1]
+			samples_to_encode = samples_to_encode.reshape(rows_2D,1)
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 			sklearn_preprocess = sklearn_preprocess
@@ -4547,7 +4552,7 @@ class Job(BaseModel):
 		return subset_arr
 
 
-	def encoder_fit_features(
+	def encoderset_fit_features(
 		arr_features:object, samples_train:list,
 		encoderset:object
 	):
@@ -4566,6 +4571,12 @@ class Job(BaseModel):
 				elif (featurecoder.only_fit_train == False):
 					features_to_fit = arr_features
 				
+				# Handles `Dataset.Sequence` by stacking the 2D arrays into a tall 2D array.
+				features_shape = features_to_fit.shape
+				if (len(features_shape)==3):
+					rows_2D = features_shape[0] * features_shape[1]
+					features_to_fit = features_to_fit.reshape(rows_2D,1)
+
 				# Only fit these columns.
 				matching_columns = featurecoder.matching_columns
 				# Get the indices of the desired columns.
@@ -4573,8 +4584,8 @@ class Job(BaseModel):
 					column_names=f_cols, desired_cols=matching_columns
 				)
 				# Filter the array using those indices.
-				features_to_fit = Job.cols_by_indices(arr_features, col_indices)
-				
+				features_to_fit = Job.cols_by_indices(features_to_fit, col_indices)
+
 				# Fit the encoder on the subset.
 				fitted_coders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 					sklearn_preprocess = preproc
@@ -4930,7 +4941,8 @@ class Job(BaseModel):
 			encoderset = feature.get_latest_encoderset()
 
 			if (encoderset is not None):
-				fitted_encoders = Job.encoder_fit_features(
+				# This takes the entire array because it handles all features and splits.
+				fitted_encoders = Job.encoderset_fit_features(
 					arr_features=arr_features, samples_train=samples[key_train],
 					encoderset=encoderset
 				)
