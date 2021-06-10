@@ -1144,9 +1144,20 @@ class Dataset(BaseModel):
 			dataset = Dataset.get_by_id(id)
 			columns = listify(columns)
 			samples = listify(samples)
-			files = dataset.files
-			arrs_2D = [f.to_numpy(columns=columns, samples=samples) for f in files]
-			arr_3D = np.array(arrs_2D)
+			
+			if (samples is None):
+				files = dataset.files
+			elif (samples is not None):
+				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
+				# So run a query to get those files: `<<` means `in`.
+				files = File.select().join(Dataset).where(
+					Dataset.id==dataset.id, File.file_index<<samples
+				)
+			files = list(files)
+			# Then call them with the column filter.
+			# So don't pass `samples=samples` to the file.
+			list_2D = [f.to_numpy(columns=columns) for f in files]
+			arr_3D = np.array(list_2D)
 			return arr_3D
 
 
