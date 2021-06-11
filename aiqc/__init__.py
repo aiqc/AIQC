@@ -613,7 +613,7 @@ class Dataset(BaseModel):
 
 	def get_main_tabular(id:int):
 		"""
-		Works on both `Dataset.Tabular` and `Dataset.Text`
+		Works on both `Dataset.Tabular`, `Dataset.Sequence`, and `Dataset.Text`
 		"""
 		file = Dataset.get_main_file(id)
 		return file.tabulars[0]
@@ -5350,7 +5350,7 @@ class Predictor(BaseModel):
 			feature_new_typ = feature_new.dataset.dataset_type
 			if (feature_old_typ != feature_new_typ):
 				raise ValueError(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
-			if (feature_new_typ == 'tabular'):
+			if ((feature_new_typ == 'tabular') or (feature_new_typ == 'sequence')):
 				Predictor.tabular_schemas_match(feature_old, feature_new)
 			elif (feature_new_typ == 'image'):
 				Predictor.image_schemas_match(feature_old, feature_new)
@@ -5423,7 +5423,7 @@ class Predictor(BaseModel):
 		featureset_new = splitset_new.get_features()
 		featureset_old = splitset_old.get_features()
 		feature_count = len(featureset_new)
-		features = []# expecting diff array shapes inside so it has to be list, not array.
+		features = []# expecting different array shapes so it has to be list, not array.
 		for i, feature_new in enumerate(featureset_new):
 			arr_features = feature_new.to_numpy()
 			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
