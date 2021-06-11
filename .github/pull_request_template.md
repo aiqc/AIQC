@@ -40,7 +40,7 @@
 ---
 
 ## How to run the tests.
-The source code for tests is located in `aiqc/aiqc/tests/__init__.py`. 
+The source code for tests is located in `aiqc/aiqc/tests/__init__.py`. The `run_jobs()` is called manually because we often need to inspect the `Queue` object.
 
 Once we are confident that our schema handles all data types and analysis types, we will invest more rigorous testing.
 ```python
@@ -62,15 +62,18 @@ q4.run_jobs()
 q5 = tests.make_test_queue('keras_image_binary')
 q5.run_jobs()
 
-q6 = tests.make_test_queue('pytorch_binary')
+q6 = tests.make_test_queue('keras_sequence_binary')
 q6.run_jobs()
 
-q7 = tests.make_test_queue('pytorch_multiclass')
+q7 = tests.make_test_queue('pytorch_binary')
 q7.run_jobs()
 
-q8 = tests.make_test_queue('pytorch_regression')
+q8 = tests.make_test_queue('pytorch_multiclass')
 q8.run_jobs()
 
-q9 = tests.make_test_queue('pytorch_image_binary')
+q9 = tests.make_test_queue('pytorch_regression')
 q9.run_jobs()
+
+q10 = tests.make_test_queue('pytorch_image_binary')
+q10.run_jobs()
 ```

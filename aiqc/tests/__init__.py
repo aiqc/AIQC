@@ -50,13 +50,13 @@ def list_test_queues(format:str=None):
 			, 'sub_analysis': 'binary'
 			, 'datum': 'brain_tumor.csv'	
 		},
-				{
-			'queue_name': 'keras_multiclass'
-			, 'data_type': 'tabular'
+		{
+			'queue_name': 'keras_sequence_multiclass'
+			, 'data_type': 'sequence'
 			, 'supervision': 'supervised'
 			, 'analysis': 'classification'
-			, 'sub_analysis': 'multi label'
-			, 'datum': 'iris.tsv'
+			, 'sub_analysis': 'binary'
+			, 'datum': 'epilepsy.parquet'
 		},
 		{
 			'queue_name': 'pytorch_multiclass'
@@ -112,7 +112,7 @@ For example when creating an `def test_method()... Algorithm.fn_build`
 Each test takes a slightly different approach to `fn_optimizer`.
 """
 
-# ------------------------ KERAS MULTICLASS ------------------------
+# ------------------------ KERAS TABULAR MULTICLASS ------------------------
 def keras_multiclass_fn_build(features_shape, label_shape, **hp):
 	model = keras.models.Sequential()
 	model.add(layers.Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
@@ -198,12 +198,12 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = OneHotEncoder(sparse=False)
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler(copy=False)
 		, columns = ['petal_width']
 	)
 
-	fc1 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
 	)
@@ -229,7 +229,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	return queue
 
 
-# ------------------------ KERAS BINARY ------------------------
+# ------------------------ KERAS TABULAR BINARY ------------------------
 def keras_binary_fn_build(features_shape, label_shape, **hp):
 	model = keras.models.Sequential()
 	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
@@ -304,7 +304,7 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['float64']
 	)
@@ -377,7 +377,7 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['object']
 	)
@@ -402,7 +402,7 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 	return queue
 
 
-# ------------------------ KERAS REGRESSION ------------------------
+# ------------------------ KERAS TABULAR REGRESSION ------------------------
 def keras_regression_fn_build(features_shape, label_shape, **hp):
 	model = keras.models.Sequential()
 	model.add(layers.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
@@ -484,13 +484,13 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		include = False
 		, dtypes = ['int64']
 		, sklearn_preprocess = MinMaxScaler(copy=False)
 	)
 	# We expect double None (dtypes,columns) to use all columns because nothing is excluded.
-	fc1 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		include = False
 		, dtypes = None
 		, columns = None
@@ -636,7 +636,96 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	return queue
 
 
-# ------------------------ PYTORCH BINARY ------------------------
+# ------------------------ KERAS SEQUENCE BINARY ------------------------
+def keras_sequence_binary_build(features_shape, label_shape, **hp):    
+    model = keras.models.Sequential()
+    model.add(keras.layers.LSTM(
+        hp['neuron_count']
+        , input_shape=(features_shape[0], features_shape[1])
+    ))
+    model.add(keras.layers.Dense(units=label_shape[0], activation='sigmoid'))
+    return model
+
+def keras_sequence_binary_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+    model.compile(
+        loss=loser
+        , optimizer=optimizer
+        , metrics=['accuracy']
+    )
+    model.fit(
+        samples_train['features'], samples_train['labels']
+        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
+        , verbose = 0
+        , batch_size = hp['batch_size']
+        , epochs = hp['epochs']
+        , callbacks = [keras.callbacks.History()]
+    )
+    return model
+
+def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=None):
+	df = datum.to_pandas('epilepsy.parquet')
+	
+	label_df = df[['seizure']]
+	dataset_tab = aiqc.Dataset.Tabular.from_pandas(label_df)
+	label = dataset_tab.make_label(columns='seizure')
+
+	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
+	sensor_dataset = aiqc.Dataset.Sequence.from_numpy(sensor_arr3D)
+	feature = sensor_dataset.make_feature()
+	encoderset = feature.make_encoderset()
+	encoderset = encoderset.make_featurecoder(
+		sklearn_preprocess = StandardScaler()
+		, columns = ['0']
+	)
+	
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.22
+		size_validation = 0.12
+
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = label.id
+		, size_test = size_test
+		, size_validation = size_validation
+	)
+
+	if (fold_count is not None):
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+	
+	algorithm = aiqc.Algorithm.make(
+		library = "keras"
+		, analysis_type = "classification_binary"
+		, fn_build = keras_sequence_binary_build
+		, fn_train = keras_sequence_binary_train
+	)
+	
+	hyperparameters = {
+		"neuron_count": [25]
+		, "batch_size": [8]
+		, "epochs": [5]
+	}
+	
+	hyperparamset = algorithm.make_hyperparamset(
+		hyperparameters = hyperparameters
+	)
+
+	queue = algorithm.make_queue(
+		splitset_id = splitset.id
+		, hyperparamset_id = hyperparamset.id
+		, repeat_count = repeat_count
+		, foldset_id = foldset_id
+	)
+	return queue
+
+# ------------------------ PYTORCH TABULAR BINARY ------------------------
 def pytorch_binary_fn_build(features_shape, label_shape, **hp):
 	model = torch.nn.Sequential(
 		nn.Linear(features_shape[0], 12),
@@ -742,7 +831,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['float64']
 	)
@@ -772,7 +861,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 	return queue
 
 
-# ------------------------ PYTORCH MULTI ------------------------
+# ------------------------ PYTORCH TABULAR MULTI ------------------------
 def pytorch_multiclass_fn_build(features_shape, num_classes, **hp):
 	model = torch.nn.Sequential(
 		nn.Linear(features_shape[0], 12),
@@ -880,7 +969,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = OrdinalEncoder()
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
 	)
@@ -910,7 +999,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	return queue
 
 
-# ------------------------ PYTORCH REGRESSION ------------------------
+# ------------------------ PYTORCH TABULAR REGRESSION ------------------------
 def pytorch_regression_lose(**hp):
 	if (hp['loss_type'] == 'mae'):
 		loser = nn.L1Loss()#mean absolute error.
@@ -1028,13 +1117,13 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
 	)
 
-	fc0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		include = False
 		, dtypes = ['int64']
 		, sklearn_preprocess = MinMaxScaler(copy=False)
 	)
 	# We expect double None to use all columns because nothing is excluded.
-	fc1 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		include = False
 		, dtypes = None
 		, columns = None
@@ -1204,6 +1293,8 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 		queue = make_test_queue_keras_regression(repeat_count, fold_count)
 	elif (name == 'keras_image_binary'):
 		queue = make_test_queue_keras_image_binary(repeat_count, fold_count)
+	elif (name == 'keras_sequence_binary'):
+		queue = make_test_queue_keras_sequence_binary(repeat_count, fold_count)
 	elif (name == 'pytorch_binary'):
 		queue = make_test_queue_pytorch_binary(repeat_count, fold_count)
 	elif (name == 'pytorch_multiclass'):
@@ -1213,5 +1304,5 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 	elif (name == 'pytorch_image_binary'):
 		queue = make_test_queue_pytorch_image_binary(repeat_count, fold_count)
 	else:
-		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'datum.list_test_queues()'.\n")
+		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'tests.list_test_queues()'.\n")
 	return queue

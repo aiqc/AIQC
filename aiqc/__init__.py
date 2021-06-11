@@ -4603,7 +4603,6 @@ class Job(BaseModel):
 		- Can't overwrite columns with data of different type (e.g. encoding object to int), 
 		  so they have to be pieced together.
 		"""
-
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
 			# Handle Sequence (part 1): reshape 3D to tall 2D for transformation.
@@ -4626,20 +4625,20 @@ class Job(BaseModel):
 					column_names=f_cols, desired_cols=matching_columns
 				)
 				# Filter the array using those indices.
-				arr_features = Job.cols_by_indices(arr_features, col_indices)
+				features_to_transform = Job.cols_by_indices(arr_features, col_indices)
 
 				if (idx == 0):
 					# It's the first encoder. Nothing to concat with, so just overwite the None value.
 					transformed_features = Labelcoder.transform_dynamicDimensions(
 						fitted_encoders = fitted_coders
 						, encoding_dimension = encoding_dimension
-						, samples_to_transform = arr_features
+						, samples_to_transform = features_to_transform
 					)
 				elif (idx > 0):
 					encoded_features = Labelcoder.transform_dynamicDimensions(
 						fitted_encoders = fitted_coders
 						, encoding_dimension = encoding_dimension
-						, samples_to_transform = arr_features
+						, samples_to_transform = features_to_transform
 					)
 					# Then concatenate w previously encoded features.
 					transformed_features = np.concatenate(
