@@ -1080,22 +1080,22 @@ class Dataset(BaseModel):
 		dataset_type = 'sequence'
 
 		def from_numpy(
-			ndarray:object
+			ndarray_3D:object
 			, name:str = None
 			, dtype:dict = None
 			, column_names:list = None
 		):
 			column_names = listify(column_names)
-			Dataset.arr_validate(ndarray)
+			Dataset.arr_validate(ndarray_3D)
 
-			dimensions = len(ndarray.shape)
+			dimensions = len(ndarray_3D.shape)
 			if (dimensions != 3):
 				raise ValueError(dedent(f"""
 				Yikes - Sequence Datasets can only be constructed from 3D arrays.
 				Your array dimensions had <{dimensions}> dimensions.
 				"""))
 
-			file_count = len(ndarray)
+			file_count = len(ndarray_3D)
 			dataset = Dataset.create(
 				file_count = file_count
 				, name = name
@@ -1105,7 +1105,7 @@ class Dataset(BaseModel):
 			#Make sure the shape and mode of each image are the same before writing the Dataset.
 			shapes = []
 			for i, arr in enumerate(tqdm(
-				ndarray
+				ndarray_3D
 				, desc = "⏱️ Validating Sequences 🧬"
 				, ncols = 85
 			)):
@@ -1119,7 +1119,7 @@ class Dataset(BaseModel):
 
 			try:
 				for i, arr in enumerate(tqdm(
-					ndarray
+					ndarray_3D
 					, desc = "⏱️ Ingesting Sequences 🧬"
 					, ncols = 85
 				)):
@@ -5706,9 +5706,8 @@ class Pipeline():
 
 				if (label_encoder is not None): 
 					label.make_labelcoder(sklearn_preprocess=label_encoder)
-
 			elif (label_column is None):
-				feature = dataset.make_feature()
+				# Needs to know if label exists so that it can exlcude it.
 				label_id = None
 
 			if (features_excluded is None):
@@ -5721,6 +5720,78 @@ class Pipeline():
 				encoderset = feature.make_encoderset()
 				for fc in feature_encoders:
 					encoderset.make_featurecoder(**fc)
+
+			splitset = Splitset.make(
+				feature_ids = [feature.id]
+				, label_id = label_id
+				, size_test = size_test
+				, size_validation = size_validation
+				, bin_count = bin_count
+			)
+
+			if (fold_count is not None):
+				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)
+
+			return splitset
+
+
+	class Sequence():
+		def make(
+			seq_ndarray3D:object
+			, seq_dtype:dict = None
+			, seq_features_excluded:list = None
+			, seq_feature_encoders:list = None
+			
+			, tab_DF_or_path:object = None
+			, tab_dtype:dict = None
+			, tab_label_column:str = None
+			, tab_label_encoder:object = None
+			
+			, size_test:float = None
+			, size_validation:float = None
+			, fold_count:int = None
+			, bin_count:int = None
+		):
+			seq_features_excluded = listify(seq_features_excluded)
+			seq_feature_encoders = listify(seq_feature_encoders)
+
+			# ------ SEQUENCE FEATURE ------
+			seq_dataset = Dataset.Sequence.from_numpy(
+				ndarray_3D=seq_ndarray3D,
+				dtype=seq_dtype
+			)
+
+			if (seq_features_excluded is not None):
+				feature = seq_dataset.make_feature(exclude_columns=seq_features_excluded)
+			elif (seq_features_excluded is None):
+				feature = seq_dataset.make_feature()
+			
+			if (seq_feature_encoders is not None):					
+				encoderset = feature.make_encoderset()
+				for fc in seq_feature_encoders:
+					encoderset.make_featurecoder(**fc)
+
+			# ------ TABULAR LABEL ------
+			if (
+				((tab_DF_or_path is None) and (tab_label_column is not None))
+				or
+				((tab_DF_or_path is not None) and (tab_label_column is None))
+			):
+				raise ValueError("\nYikes - `tabularDF_or_path` and `label_column` are either used together or not at all.\n")
+
+			if (tab_DF_or_path is not None):
+				dataset_tabular = Pipeline.parse_tabular_input(
+					dataFrame_or_filePath = tab_DF_or_path
+					, dtype = tab_dtype
+				)
+				# Tabular-based Label.
+				label = dataset_tabular.make_label(columns=[tab_label_column])
+				label_id = label.id
+
+				if (tab_label_encoder is not None): 
+					label.make_labelcoder(sklearn_preprocess=tab_label_encoder)
+			elif (tab_DF_or_path is None):
+				label_id = None
 
 			splitset = Splitset.make(
 				feature_ids = [feature.id]
@@ -5778,6 +5849,11 @@ class Pipeline():
 				# Tabular-based Label.
 				label = dataset_tabular.make_label(columns=[label_column])
 				label_id = label.id
+
+				if (label_encoder is not None): 
+					label.make_labelcoder(sklearn_preprocess=label_encoder)
+			elif (tabularDF_or_path is None):
+				label_id = None
 			
 			splitset = Splitset.make(
 				feature_ids = [feature.id]
@@ -5786,9 +5862,6 @@ class Pipeline():
 				, size_validation = size_validation
 				, bin_count = bin_count
 			)
-
-			if (label_encoder is not None): 
-				label.make_labelcoder(sklearn_preprocess=label_encoder)
 
 			if (fold_count is not None):
 				splitset.make_foldset(fold_count=fold_count, bin_count=bin_count)

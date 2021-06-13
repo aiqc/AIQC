@@ -30,7 +30,9 @@
   notebooks/pytorch_multi-label_classification
   notebooks/pytorch_regression
   notebooks/tensorflow_binary_classification
+  notebooks/sequence_classification
   notebooks/heterogeneous_features
+
 
 .. toctree::
   :maxdepth: 2
