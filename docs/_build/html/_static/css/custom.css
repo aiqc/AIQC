@@ -1,0 +1,48 @@
+.wy-side-nav-search {
+	background-color: #060606;
+}
+
+.wy-side-nav-search input[type=text] {
+	width: 80%;
+	border-color: #2b1f03;
+	border-width: 2px;
+}
+
+/* 
+width auto was rendering 0px wide for .svg files
+https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
+*/
+.wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
+	width: 275px;
+}
+
+.wy-nav-side {
+	background-color: #060606;
+	background-image: linear-gradient(#060606, #252523);
+}
+
+/* margin is for the advert on free version of RTD*/
+.wy-menu-vertical {
+	padding-left: 8px;
+	margin-bottom: 150px;
+}
+
+/* sidebar captions aka sections*/
+.wy-menu > .caption > span.caption-text {
+	color: #cca439;
+	font-size: 11.5px;
+}
+
+/* the '.simple' points to body lists, and avoids the sidebar lists */
+ul.simple li ul li {
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+
+img {
+	border-radius: 15px;
+}
+
+iframe {
+	border-radius: 15px;
+}
