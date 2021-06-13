@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "endangered-screw",
+   "id": "arbitrary-plenty",
    "metadata": {},
    "source": [
     "# Times Series/ Sequence"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "original-slovak",
+   "id": "current-enhancement",
    "metadata": {},
    "source": [
     "*Binary Detection of Epileptic Seizures Using a Sequence of Electroencephalography (EEG) Readings.*"
@@ -18,15 +18,15 @@
   },
   {
    "cell_type": "markdown",
-   "id": "preceding-barrier",
+   "id": "embedded-night",
    "metadata": {},
    "source": [
-    "![brain_waves](../images/brain_series.png)"
+    "![brain_series](../images/brain_series.png)"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "fluid-virtue",
+   "id": "suffering-upset",
    "metadata": {},
    "source": [
     "Sequence data structures contain many observations (rows) for each sample (e.g. site, sensor, or patient). They are often used for grouping time-based observations into what is called a time series. However, sequences can also represent biological sequences like DNA and RNA.\n",
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "enclosed-violence",
+   "id": "numeric-dragon",
    "metadata": {},
    "source": [
     "---"
@@ -45,7 +45,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "female-corps",
+   "id": "increasing-freedom",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -55,7 +55,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "antique-strap",
+   "id": "similar-trader",
    "metadata": {},
    "source": [
     "---"
@@ -63,7 +63,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "searching-seven",
+   "id": "atlantic-statement",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -72,7 +72,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "brazilian-shoot",
+   "id": "laughing-payment",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -82,7 +82,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "placed-verification",
+   "id": "adopted-learning",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -92,7 +92,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "assigned-reduction",
+   "id": "knowing-sleeping",
    "metadata": {},
    "outputs": [
     {
@@ -308,7 +308,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "younger-offense",
+   "id": "enhanced-juice",
    "metadata": {},
    "source": [
     "---"
@@ -316,7 +316,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "canadian-nancy",
+   "id": "expanded-apparatus",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -324,7 +324,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "renewable-habitat",
+   "id": "narrative-customs",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information."
@@ -333,7 +333,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "ordinary-promotion",
+   "id": "balanced-folder",
    "metadata": {
     "tags": []
    },
@@ -345,7 +345,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "entitled-graphic",
+   "id": "democratic-seventh",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -355,7 +355,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "elementary-noise",
+   "id": "cutting-yacht",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -365,7 +365,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "conservative-destiny",
+   "id": "christian-transcription",
    "metadata": {},
    "outputs": [
     {
@@ -417,7 +417,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "august-funeral",
+   "id": "surgical-drain",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -430,7 +430,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "psychological-cancer",
+   "id": "purple-pursuit",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -447,7 +447,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "artificial-printer",
+   "id": "indian-danish",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -471,7 +471,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "chubby-remains",
+   "id": "tracked-trick",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -485,7 +485,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "diagnostic-psychiatry",
+   "id": "tested-armor",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -509,7 +509,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "ordered-cartoon",
+   "id": "varied-bouquet",
    "metadata": {},
    "outputs": [
     {
@@ -526,7 +526,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "digital-isolation",
+   "id": "dominican-aggregate",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -534,7 +534,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "searching-distance",
+   "id": "tropical-velvet",
    "metadata": {},
    "source": [
     "---"
@@ -542,7 +542,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "compliant-president",
+   "id": "fiscal-methodology",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -551,7 +551,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "republican-carter",
+   "id": "developing-recorder",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -561,7 +561,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "patent-venture",
+   "id": "generic-crime",
    "metadata": {
     "tags": []
    },
@@ -573,7 +573,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "fleet-dallas",
+   "id": "advised-montreal",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -583,7 +583,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "ordinary-garden",
+   "id": "every-heritage",
    "metadata": {
     "tags": []
    },
@@ -595,7 +595,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "charged-pickup",
+   "id": "compact-copper",
    "metadata": {
     "tags": []
    },
@@ -607,7 +607,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "hawaiian-spectacular",
+   "id": "prescription-handling",
    "metadata": {},
    "outputs": [
     {
@@ -626,7 +626,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "clear-speech",
+   "id": "conscious-search",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -636,7 +636,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "amateur-cream",
+   "id": "apparent-serbia",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -646,7 +646,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "communist-nowhere",
+   "id": "basic-cameroon",
    "metadata": {},
    "outputs": [
     {
@@ -680,7 +680,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "recovered-brake",
+   "id": "laughing-turner",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -695,7 +695,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "charitable-acquisition",
+   "id": "diverse-antique",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -712,7 +712,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "declared-designer",
+   "id": "cathedral-beast",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -736,7 +736,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "sublime-sponsorship",
+   "id": "international-stand",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -751,7 +751,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "average-ontario",
+   "id": "extraordinary-treasurer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -765,7 +765,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "polished-allah",
+   "id": "third-break",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -777,7 +777,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "severe-looking",
+   "id": "worse-details",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -791,7 +791,7 @@
   {
    "cell_type": "code",
    "execution_count": 30,
-   "id": "unusual-ambassador",
+   "id": "subsequent-italic",
    "metadata": {},
    "outputs": [
     {
@@ -808,7 +808,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "vietnamese-australia",
+   "id": "injured-burning",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
