@@ -23,7 +23,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 2,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -223,6 +223,157 @@
    "metadata": {},
    "source": [
     "> If you leave `name` blank, it will default to a human-readble timestamp with the appropriate file extension (e.g. '2020_10_13-01_28_13_PM.tsv')."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Sequence Datasets"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The sequence dataset is a 3 dimensional structure intended for multi-observations per sample to enable time series analysis. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sequence datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they require a loosely coupled `Dataset.Tabular` that contains their labels."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = datum.to_pandas('epilepsy.parquet')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `['seizure']` column of this dataframe serves as the Label of that sample. We'll construct a `Dataset.Tabular` from this."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "label_df = df[['seizure']]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "dataset_tabular = aiqc.Dataset.Tabular.from_pandas(label_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "tabular_label = dataset_tabular.make_label(columns='seizure')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### `Dataset.Sequence.from_numpy()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`from_numpy(ndarray_3D:object)` requires a 3D NumPy array where each 2D array represents a sample. So we'll drop our seizure column from our DataFrame and reshape it into a 3D array."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "⏱️ Validating Sequences 🧬: 100%|████████████| 1000/1000 [00:00<00:00, 759287.47it/s]\n",
+      "⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:09<00:00, 105.99it/s]\n"
+     ]
+    }
+   ],
+   "source": [
+    "dataset_sequence = aiqc.Dataset.Sequence.from_numpy(\n",
+    "    ndarray_3D = seq_ndarray3D\n",
+    "    , column_names = ['EEG']\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sequence_feature = dataset_sequence.make_feature()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Skipping forward a bit, we bring the heterogenous `Feature` and `Label` together in the `Splitset`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sequence_splitset = aiqc.Splitset.make(\n",
+    "    feature_ids = [sequence_feature.id]\n",
+    "    , label_id = tabular_label.id\n",
+    "    , size_test = 0.24\n",
+    "    , size_validation = 0.12\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> It is also possible to create a `Foldset` from this splitset."
    ]
   },
   {
@@ -432,7 +583,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Skipping forward a bit, we bring the heterogenous `Feature` and `Label` together in the `Splitset`, and they can be used as normal. You can even construct a `Foldset` from this splitset."
+    "Skipping forward a bit, we bring the heterogenous `Feature` and `Label` together in the `Splitset`."
    ]
   },
   {
@@ -447,6 +598,13 @@
     "    , size_test = 0.24\n",
     "    , size_validation = 0.12\n",
     ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> It is also possible to create a `Foldset` from this splitset."
    ]
   },
   {

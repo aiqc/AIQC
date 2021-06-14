@@ -20,22 +20,6 @@
 
 .. toctree::
   :maxdepth: 2
-  :caption: Workflows
-  :hidden:
-
-  notebooks/keras_binary_classification
-  notebooks/keras_multi-label_classification
-  notebooks/keras_regression
-  notebooks/pytorch_binary_classification
-  notebooks/pytorch_multi-label_classification
-  notebooks/pytorch_regression
-  notebooks/tensorflow_binary_classification
-  notebooks/sequence_classification
-  notebooks/heterogeneous_features
-
-
-.. toctree::
-  :maxdepth: 2
   :caption: Documentation
   :hidden:
 
@@ -46,21 +30,26 @@
   compatibility
 
 
-.. image:: images/aiqc_logo_banner_narrow.png
-  :width: 100%
-  :align: center
-  :alt: functionality banner
+.. toctree::
+  :maxdepth: 2
+  :caption: Workflows
+  :hidden:
 
-|
+  notebooks/keras_binary_classification
+  notebooks/keras_multi-label_classification
+  notebooks/keras_regression
+  notebooks/pytorch_binary_classification
+  notebooks/pytorch_multi-label_classification
+  notebooks/pytorch_regression
+  notebooks/tensorflow_binary_classification
+  notebooks/image_classification
+  notebooks/sequence_classification
+  notebooks/heterogeneous_features
 
-########
-Overview
-########
 
 ..
-  Without this comment, `make html` throws warning about page beginning w horizontal line below.
+  Without this comment, `make html` throws warning about page beginning improperly.
 
-----
 
 .. 
    nick wrote this when we were talking about how to get his custom google form
@@ -106,24 +95,117 @@ Overview
    formValidation();
    </script>
 
-.. |br| raw:: html
 
-  <br/>
+.. raw:: html
+  
+  </br>
+  <center>
+    <b>→ AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.</b>
+    </br></br>
+    <i>On a mission to accelerate open science by making best practice deep learning more accessible.</i>
+  </center>
+  </br>
+  </br>
 
-.. centered::
-  **AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.**
 
-.. image:: images/framework_jun11.png
+.. image:: images/framework_june14.png
   :width: 100%
   :align: center
   :alt: framework
 
-.. centered::
-  **On a mission to accelerate open science:**
 
-+ Write 95% less code. Easily integrate best practice deep learning into your research.
-+ Record your entire workflow. Reproducible experiments & preprocessing.
-+ Free tools & open methods, not walled garden SaaS apps.
+.. raw:: html
+  
+  </br></br>
+  <ul style="text-align: center;">
+    <li class="extra-bullets">Achieve end-to-end reproducibility by recording both data preparation & training experiments.</li>
+    <li class="extra-bullets">Easily orchestrate parameterized protocols for data preprocessing & model evalaution.</li>
+  </ul>
+  </br>
+
+
+----
+
+
+.. raw:: html
+  
+  </br>
+  <center>
+    <b>→ Write 95% less code by integrating these best practice workflows into your research:</b>
+  </center>
+  </br></br>
+
+
+.. raw:: html
+  
+  <table class="compatibility" valign="center">
+    <tr class="tbl-head">
+      <td id="top-left"></td>
+      <td class="tbl-head">Tabular</br><small>(array, df, file)</small></td>
+      <td class="tbl-head">Sequence</br><small>(3D, files, time series)</small></td>
+      <td class="tbl-head">Image</br><small>(png, jpg)</small></td>
+    </tr>
+    <tr>
+      <td class="tbl-head">Classification</br><small>(binary, multi)</small></td>
+      <td class="done">
+        Keras<br/>
+        (<a href='notebooks/keras_binary_classification.html'>binary</a>,
+        <a href='notebooks/keras_multi-label_classification.html'>multi</a>)<br/><br/>
+        PyTorch<br/>
+        (<a href='notebooks/pytorch_binary_classification.html'>binary</a>,
+        <a href='notebooks/pytorch_multi-label_classification.html'>multi</a>)
+      </td>
+      <td class="done">
+        Keras<br/>
+        (<a href='notebooks/sequence_classification.html'>binary</a>,
+        multi</a>)<br/><br/>
+        PyTorch<br/>
+        (binary, multi)
+      </td>
+      <td class="done">
+        Keras<br/>
+        (<a href='notebooks/image_classification.html'>binary</a>,
+        multi</a>)<br/><br/>
+        PyTorch<br/>
+        (binary, multi) 
+      </td>
+    </tr>
+    <tr>
+      <td class="tbl-head">Quantification</br><small>(regression)</small></td>
+      <td class="done">
+        <a href='notebooks/keras_regression.html'>Keras</a></br></br>
+        <a href='notebooks/pytorch_regression.html'>PyTorch</a>
+      </td>
+      <td class="done">Keras</br></br>PyTorch</td>
+      <td class="done">Keras</br></br>PyTorch</td>
+    </tr>
+    <tr>
+      <td class="tbl-head">Generation</br><small>(forecast, synthetic)</small></td>
+      <td>Coming soon.</td>
+      <td>Coming soon.</td>
+      <td>Coming soon.</td>
+    </tr>
+  </table>
+
+  </br></br>
+
+  <ul style="text-align: center;">
+    <li class="extra-bullets">
+      <a href='notebooks/tensorflow_binary_classification.html'>
+        Compatible with TensorFlow 2 for model maintenance and training loop customization.
+      </a>
+    </li>
+    <li class="extra-bullets">
+      <a href='notebooks/heterogeneous_features.html'>
+        Enables multi-modal analysis (e.g. combine histology images with medical records and doctor's notes).
+      </a>
+    </li>
+  </ul>
+
+  </br>
+
+
+----
 
 |
 
@@ -133,6 +215,15 @@ Overview
   :alt: pydata banner
 
 |
+
+----
+
+|
+
+########
+Overview
+########
+
 
 I. Rapidly prepare folded data for analysis without leakage.
 ============================================================
@@ -210,9 +301,9 @@ IV. Effortlessly track, reproduce, & prove experiments.
    queue.jobs[0].fitted_encoders['featurecoders'][0]
 
 
-- Automatically records experiments in a local SQLite database file.
+- Automatically records all workflow steps in a local SQLite database file.
 
-- Apply original preprocessing steps to new samples during inference. 
+- During inference, original preprocessing is automatically applied to new samples.
 
 - No infrastructure hassle; `aiqc.setup()` creates the database for you.
 

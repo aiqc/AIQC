@@ -15,14 +15,14 @@
 
 <p align='center'><b>AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.</b></p>
 
-<br />
-
-![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_jun11.png)
+<p align='center'><i>On a mission to accelerate open science by making deep learning more accessible.</i></p>
 
 <br />
 
-<p align='center'><b>On a mission to accelerate open science:</b></p>
+![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_june14.png)
 
-* Write 95% less code. Easily integrate best practice deep learning into your research.
-* Record your entire workflow. Reproducible experiments & preprocessing.
-* Free tools & open methods, not walled garden SaaS apps & cloud services.
+<br />
+
+
+* Achieve end-to-end reproducibility by recording both data preparation & training experiments.
+* Easily orchestrate parameterized protocols for data preprocessing & model evalaution.

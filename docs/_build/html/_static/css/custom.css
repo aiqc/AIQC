@@ -46,3 +46,49 @@ img {
 iframe {
 	border-radius: 15px;
 }
+
+/* --- Start: table index page --- */
+.compatibility {
+	width:			100%; 
+	border: 		2px solid black;
+	table-layout: 	fixed;
+	text-align:		center;
+}
+
+.compatibility td {
+	vertical-align: middle;
+	border: 		2.5px solid #fbfbfb;
+	background: 	#EFEFEF;
+	height: 		100px;
+	font-size: 	85%;	
+}
+
+.compatibility td small {
+	color: gray;
+}
+
+.tbl-head {
+	background: #131313FF !important;
+	color: 		white;
+	font-size: 	100% !important;
+}
+
+.done {
+	background: #bcf5bc !important;
+	color: 		#000;
+}
+
+.extra-bullets {
+	font-size: 		95%;
+	list-style:		circle; 
+	margin-bottom: 	10px;
+}
+
+.last {
+	visibility: hidden;
+}
+
+#top-left {
+	background: #fcfcfc;
+}
+/* --- End: table index page --- */
