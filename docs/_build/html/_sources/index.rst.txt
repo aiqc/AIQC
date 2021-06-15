@@ -102,7 +102,7 @@
   <center>
     <b>→ AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.</b>
     </br></br>
-    <i>On a mission to accelerate open science by making best practice deep learning more accessible.</i>
+    <i style="color: #505050;">On a mission to accelerate open science by making best practice deep learning more accessible.</i>
   </center>
   </br>
   </br>
@@ -117,15 +117,15 @@
 .. raw:: html
   
   </br></br>
-  <ul style="text-align: center;">
+  <ul style="text-align: center; list-style-position: inside;">
     <li class="extra-bullets">Achieve end-to-end reproducibility by recording both data preparation & training experiments.</li>
     <li class="extra-bullets">Easily orchestrate parameterized protocols for data preprocessing & model evalaution.</li>
   </ul>
   </br>
 
+|
 
 ----
-
 
 .. raw:: html
   
@@ -150,7 +150,8 @@
       <td class="done">
         Keras<br/>
         (<a href='notebooks/keras_binary_classification.html'>binary</a>,
-        <a href='notebooks/keras_multi-label_classification.html'>multi</a>)<br/><br/>
+        <a href='notebooks/keras_multi-label_classification.html'>multi</a>)
+        <br/>✓<br/>
         PyTorch<br/>
         (<a href='notebooks/pytorch_binary_classification.html'>binary</a>,
         <a href='notebooks/pytorch_multi-label_classification.html'>multi</a>)
@@ -158,14 +159,16 @@
       <td class="done">
         Keras<br/>
         (<a href='notebooks/sequence_classification.html'>binary</a>,
-        multi</a>)<br/><br/>
+        multi</a>)
+        <br/>✓<br/>
         PyTorch<br/>
         (binary, multi)
       </td>
       <td class="done">
         Keras<br/>
         (<a href='notebooks/image_classification.html'>binary</a>,
-        multi</a>)<br/><br/>
+        multi</a>)
+        <br/>✓<br/>
         PyTorch<br/>
         (binary, multi) 
       </td>
@@ -173,11 +176,12 @@
     <tr>
       <td class="tbl-head">Quantification</br><small>(regression)</small></td>
       <td class="done">
-        <a href='notebooks/keras_regression.html'>Keras</a></br></br>
+        <a href='notebooks/keras_regression.html'>Keras</a>
+        <br/>✓<br/>
         <a href='notebooks/pytorch_regression.html'>PyTorch</a>
       </td>
-      <td class="done">Keras</br></br>PyTorch</td>
-      <td class="done">Keras</br></br>PyTorch</td>
+      <td class="done">Keras<br/>✓<br/>PyTorch</td>
+      <td class="done">Keras<br/>✓<br/>PyTorch</td>
     </tr>
     <tr>
       <td class="tbl-head">Generation</br><small>(forecast, synthetic)</small></td>
@@ -189,7 +193,7 @@
 
   </br></br>
 
-  <ul style="text-align: center;">
+  <ul style="text-align: center; list-style-position: inside;">
     <li class="extra-bullets">
       <a href='notebooks/tensorflow_binary_classification.html'>
         Compatible with TensorFlow 2 for model maintenance and training loop customization.
@@ -208,12 +212,15 @@
 ----
 
 |
+|
 
 .. image:: images/pydata_banner_w_tf.png
   :width: 100%
   :align: center
   :alt: pydata banner
 
+|
+|
 |
 
 ----
