@@ -646,7 +646,8 @@ class Dataset(BaseModel):
 			, name:str = None
 			, dtype:dict = None
 			, column_names:list = None
-			, skip_header_rows:int = 'infer'
+			, skip_header_rows:object = 'infer'
+			, ingest:bool = True
 		):
 			column_names = listify(column_names)
 
@@ -660,7 +661,7 @@ class Dataset(BaseModel):
 			if (not os.path.isfile(file_path)):
 				raise ValueError(dedent(
 					f"Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:" \
-					f"{file_path}"
+					f"{file_path}" \
 					f"But `dataset_type=='tabular'` only supports a single file, not an entire directory.`"
 				))
 
@@ -684,6 +685,7 @@ class Dataset(BaseModel):
 					, dtype = dtype
 					, column_names = column_names
 					, skip_header_rows = skip_header_rows
+					, ingest = ingest
 					, dataset_id = dataset.id
 				)
 			except:
@@ -792,7 +794,10 @@ class Dataset(BaseModel):
 			folder_path:str
 			, name:str = None
 			, pillow_save:dict = {}
+			, ingest:bool = True
 		):
+			if ((pillow_save!={}) and (ingest==False)):
+				raise ValueError("\nYikes - `pillow_save` cannot be defined if `ingest==False`.\n")
 			if name is None:
 				name = folder_path
 			source_path = os.path.abspath(folder_path)
@@ -841,6 +846,7 @@ class Dataset(BaseModel):
 						path = p
 						, pillow_save = pillow_save
 						, file_index = i
+						, ingest = ingest
 						, dataset_id = dataset.id
 					)
 			except:
@@ -854,7 +860,10 @@ class Dataset(BaseModel):
 			, pillow_save:dict = {}
 			, name:str = None
 			, source_path:str = None
+			, ingest:bool = True
 		):
+			if ((pillow_save!={}) and (ingest==False)):
+				raise ValueError("\nYikes - `pillow_save` cannot be defined if `ingest==False`.\n")
 			urls = listify(urls)
 			for u in urls:
 				validation = validators.url(u)
@@ -906,6 +915,7 @@ class Dataset(BaseModel):
 						url = url
 						, pillow_save = pillow_save
 						, file_index = i
+						, ingest = ingest
 						, dataset_id = dataset.id
 					)
 				"""
@@ -1006,7 +1016,7 @@ class Dataset(BaseModel):
 			, name:str = None
 			, dtype:dict = None
 			, column_names:list = None
-			, skip_header_rows:int = 'infer'
+			, skip_header_rows:object = 'infer'
 		):
 			dataset = Dataset.Tabular.from_path(file_path, source_file_format, name, dtype, column_names, skip_header_rows)
 			dataset.dataset_type = Dataset.Text.dataset_type
@@ -1172,18 +1182,20 @@ class Dataset(BaseModel):
 class File(BaseModel):
 	"""
 	- Due to the fact that different types of Files have different attributes
-	(e.g. File.Tabular columns=JSON or File.Graph nodes=Blob, edges=Blob), 
-	I am making each file type its own subclass and 1-1 table. This approach 
-	allows for the creation of custom File types.
+	  (e.g. File.Tabular columns=JSON or File.Graph nodes=Blob, edges=Blob), 
+	  I am making each file type its own subclass and 1-1 table. This approach 
+	  allows for the creation of custom File types.
 	- If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
 	- Note that `dtype` does not require every column to be included as a key in the dictionary.
 	"""
-	blob = BlobField()
 	file_type = CharField()
-	file_format = CharField() # png, jpg, parquet 
-	file_index = IntegerField() # image, sequence, graph
-	shape = JSONField()# images? could still get shape... graphs node_count and connection_count?
-	source_path = CharField(null=True)
+	file_format = CharField() # png, jpg, parquet.
+	file_index = IntegerField() # image, sequence, graph.
+	shape = JSONField()
+	is_ingested = BooleanField()
+	skip_header_rows = PickleField(null=True) #Image does not have.
+	source_path = CharField(null=True) # when `from_numpy` or `from_pandas`.
+	blob = BlobField(null=True) # when `is_ingested==False`.
 
 	dataset = ForeignKeyField(Dataset, backref='files')
 	
@@ -1206,7 +1218,6 @@ class File(BaseModel):
 
 	class Tabular():
 		file_type = 'tabular'
-		file_format = 'parquet'
 
 		def from_pandas(
 			dataframe:object
@@ -1214,26 +1225,35 @@ class File(BaseModel):
 			, dtype:dict = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
 			, column_names:list = None
 			, source_path:str = None # passed in via from_file
-			, _file_index:int = 0
+			, ingest:str = True # from_file() method overwrites this.
+			, file_format:str = 'parquet' # from_file() method overwrites this.
+			, skip_header_rows:int = 'infer'
+			, _file_index:int = 0 # Dataset.Sequence overwrites this.
 		):
 			column_names = listify(column_names)
 			File.Tabular.df_validate(dataframe, column_names)
 
+			# We need this metadata whether ingested or not.
 			dataframe, columns, shape, dtype = File.Tabular.df_set_metadata(
 				dataframe=dataframe, column_names=column_names, dtype=dtype
 			)
 
-			blob = File.Tabular.df_to_compressed_parquet_bytes(dataframe)
+			if (ingest==True):
+				blob = File.Tabular.df_to_compressed_parquet_bytes(dataframe)
+			elif (ingest==False):
+				blob = None
 
 			dataset = Dataset.get_by_id(dataset_id)
 
 			file = File.create(
 				blob = blob
 				, file_type = File.Tabular.file_type
-				, file_format = File.Tabular.file_format
+				, file_format = file_format
 				, file_index = _file_index
 				, shape = shape
 				, source_path = source_path
+				, skip_header_rows = skip_header_rows
+				, is_ingested = ingest
 				, dataset = dataset
 			)
 
@@ -1289,7 +1309,8 @@ class File(BaseModel):
 			, dataset_id:int
 			, dtype:dict = None
 			, column_names:list = None
-			, skip_header_rows:int = 'infer'
+			, skip_header_rows:object = 'infer'
+			, ingest:bool = True
 		):
 			column_names = listify(column_names)
 			df = File.Tabular.path_to_df(
@@ -1305,6 +1326,9 @@ class File(BaseModel):
 				, dtype = dtype
 				, column_names = None # See docstring above.
 				, source_path = path
+				, file_format = source_file_format
+				, skip_header_rows = skip_header_rows
+				, ingest = ingest
 			)
 			return file
 
@@ -1323,20 +1347,25 @@ class File(BaseModel):
 			columns = listify(columns)
 			samples = listify(samples)
 
-			# Filters.
-			df = pd.read_parquet(
-				io.BytesIO(file.blob)
-				, columns=columns
-			)
+
+			if (file.is_ingested==False):
+				# future: check if `query_fetcher` defined.
+				df = File.Tabular.path_to_df(
+					path = file.source_path
+					, source_file_format = file.file_format
+					, column_names = columns
+					, skip_header_rows = file.skip_header_rows
+				)
+			elif (file.is_ingested==True):
+				df = pd.read_parquet(
+					io.BytesIO(file.blob)
+					, columns=columns
+				)
 			# Ensures columns are rearranged to be in the correct order.
-			if (
-				(columns is not None)
-				and 
-				(df.columns.to_list() != columns)
-			):
+			if ((columns is not None) and (df.columns.to_list() != columns)):
 				df = df.filter(columns)
 			# Specific rows.
-			if samples is not None:
+			if (samples is not None):
 				df = df.iloc[samples]
 			
 			# Accepts dict{'column_name':'dtype_str'} or a single str.
@@ -1519,7 +1548,7 @@ class File(BaseModel):
 			path:str
 			, source_file_format:str
 			, column_names:list
-			, skip_header_rows:int
+			, skip_header_rows:object
 		):
 			"""
 			Previously, I was using pyarrow for all tabular/ sequence file formats. 
@@ -1565,6 +1594,7 @@ class File(BaseModel):
 			, file_index:int
 			, dataset_id:int
 			, pillow_save:dict = {}
+			, ingest:bool = True
 		):
 			if not os.path.exists(path):
 				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
@@ -1573,15 +1603,18 @@ class File(BaseModel):
 			path = os.path.abspath(path)
 
 			img = Imaje.open(path)
-
 			shape = {
 				'width': img.size[0]
 				, 'height':img.size[1]
 			}
 
-			blob = io.BytesIO()
-			img.save(blob, format=img.format, **pillow_save)
-			blob = blob.getvalue()
+			if (ingest==True):
+				blob = io.BytesIO()
+				img.save(blob, format=img.format, **pillow_save)
+				blob = blob.getvalue()
+			elif (ingest==False):
+				blob = None
+
 			dataset = Dataset.get_by_id(dataset_id)
 			file = File.create(
 				blob = blob
@@ -1590,6 +1623,7 @@ class File(BaseModel):
 				, file_index = file_index
 				, shape = shape
 				, source_path = path
+				, is_ingested = ingest
 				, dataset = dataset
 			)
 			try:
@@ -1610,6 +1644,7 @@ class File(BaseModel):
 			, file_index:int
 			, dataset_id:int
 			, pillow_save:dict = {}
+			, ingest:bool = True
 		):
 			# URL format is validated in `from_urls`.
 			try:
@@ -1618,15 +1653,18 @@ class File(BaseModel):
 				)
 			except:
 				raise ValueError(f"\nYikes - Could not open file at this url with Pillow library:\n{url}\n")
-
 			shape = {
 				'width': img.size[0]
 				, 'height':img.size[1]
 			}
 
-			blob = io.BytesIO()
-			img.save(blob, format=img.format, **pillow_save)
-			blob = blob.getvalue()
+			if (ingest==True):
+				blob = io.BytesIO()
+				img.save(blob, format=img.format, **pillow_save)
+				blob = blob.getvalue()
+			elif (ingest==False):
+				blob = None
+
 			dataset = Dataset.get_by_id(dataset_id)
 			file = File.create(
 				blob = blob
@@ -1635,6 +1673,7 @@ class File(BaseModel):
 				, file_index = file_index
 				, shape = shape
 				, source_path = url
+				, is_ingested = ingest
 				, dataset = dataset
 			)
 			try:
@@ -1659,8 +1698,19 @@ class File(BaseModel):
 				Yikes - Only `file.file_type='image' can be converted to Pillow images.
 				But you provided `file.file_type`: <{file.file_type}>
 				"""))
-			img_bytes = io.BytesIO(file.blob)
-			img = Imaje.open(img_bytes)
+			#`mode` must be 'r'": https://pillow.readthedocs.io/en/stable/reference/Image.html
+			if (file.is_ingested==True):
+				img_bytes = io.BytesIO(file.blob)
+				img = Imaje.open(img_bytes, mode='r')
+			elif (file.is_ingested==False):
+				# Future: store `is_url`.
+				try:
+					img = Imaje.open(file.source_path, mode='r')
+				except:
+					img = Imaje.open(
+						requests.get(file.source_path, stream=True).raw
+						, mode='r'
+					)
 			return img
 
 
