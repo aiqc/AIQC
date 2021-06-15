@@ -766,10 +766,10 @@ class Dataset(BaseModel):
 			, columns:list = None
 			, samples:list = None
 		):
-			file = Dataset.get_main_file(id)
+			file = Dataset.get_main_file(id)#`id` belongs to dataset, not file
 			columns = listify(columns)
 			samples = listify(samples)
-			df = file.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
+			df = File.Tabular.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
 
@@ -980,8 +980,7 @@ class Dataset(BaseModel):
 				if type(expectedString) !=  str:
 					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
 
-			dataframe = pd.DataFrame(strings, columns = [Dataset.Text.column_name], dtype = "object")
-
+			dataframe = pd.DataFrame(strings, columns=[Dataset.Text.column_name], dtype="object")
 			return Dataset.Text.from_pandas(dataframe, name)
 
 
@@ -1000,7 +999,6 @@ class Dataset(BaseModel):
 			dataset = Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
 			dataset.dataset_type = Dataset.Text.dataset_type
 			dataset.save()
-
 			return dataset
 
 
@@ -1015,7 +1013,6 @@ class Dataset(BaseModel):
 			dataset = Dataset.Tabular.from_path(file_path, source_file_format, name, dtype, column_names, skip_header_rows)
 			dataset.dataset_type = Dataset.Text.dataset_type
 			dataset.save()
-
 			return dataset
 
 
@@ -1327,9 +1324,19 @@ class File(BaseModel):
 			file = File.get_by_id(id)
 			columns = listify(columns)
 			samples = listify(samples)
+
+			"""
+			if (file.ingested==False):
+				# future: check if `query_fetcher` defined.
+				trigger the parser based on the file format
+				parser(file., file.source_path)
+			elif (file.ingested==True):
+				#
+			"""
+
 			# Filters.
 			df = pd.read_parquet(
-				io.BytesIO(file.blob) #one-liner saves memory?
+				io.BytesIO(file.blob)
 				, columns=columns
 			)
 			# Ensures columns are rearranged to be in the correct order.
@@ -1381,11 +1388,14 @@ class File(BaseModel):
 
 		def pandas_stringify_columns(df, columns):
 			"""
-			I don't want both string and int-based column names for when calling columns programmatically, 
-			and more importantly, 'ValueError: parquet must have string column names'
+			- `columns` is user-defined.
+			- Pandas will assign a range of int-based columns if there are no column names.
+			  So I want to coerce them to strings because I don't want both string and int-based 
+			  column names for when calling columns programmatically, 
+			  and more importantly, 'ValueError: parquet must have string column names'
 			"""
 			cols_raw = df.columns.to_list()
-			if columns is None:
+			if (columns is None):
 				# in case the columns were a range of ints.
 				cols_str = [str(c) for c in cols_raw]
 			else:
@@ -1562,11 +1572,11 @@ class File(BaseModel):
 					Yikes - The argument `skip_header_rows` is not supported for `source_file_format='parquet'`
 					because Parquet stores column names as metadata.\n
 					"""))
-				tbl = pyarrow.parquet.read_table(path)
-				if (column_names is not None):
-					tbl = tbl.rename_columns(column_names)
-				# At this point, still need to work with metadata in df.
-				df = tbl.to_pandas()
+				df = pd.read_parquet(
+					path = path
+					, engine = 'fastparquet'
+				)
+				df, columns = File.Tabular.pandas_stringify_columns(df=df, columns=column_names)
 			return df
 
 
