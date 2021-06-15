@@ -1,5 +1,5 @@
 import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, \
-	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib
+	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec
 # Python utils.
 from textwrap import dedent
 # External utils.
@@ -12,7 +12,6 @@ from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.fields import PickleField
 import dill as dill #complex serialization.
 # ETL.
-import pyarrow
 import pandas as pd
 import numpy as np
 from PIL import Image as Imaje
@@ -20,7 +19,6 @@ from PIL import Image as Imaje
 import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import OneHotEncoder
 # Deep learning.
 import keras
 import torch
@@ -1506,33 +1504,24 @@ class File(BaseModel):
 
 		def df_to_compressed_parquet_bytes(dataframe:object):
 			"""
-			The Parquet file format naturally preserves pandas/numpy dtypes.
-			Originally, we were using the `pyarrow` engine, but it has poor timedelta support.
-			Although `fastparquet` engine preserves timedelta dtype, it does not work with byte streams!
-			So in order to add support for `Dataset.Sequence` write fastparquet to disk then fetch it.
-			I don't want to pass a `_dataset_type` arg through all of the `from_*` functions just to handle this scenario.
-			https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+			- The Parquet file format naturally preserves pandas/numpy dtypes.
+			  Originally, we were using the `pyarrow` engine, but it has poor timedelta dtype support.
+			  https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+			
+			- Although `fastparquet` engine preserves timedelta dtype, but it does not work with BytesIO.
+			  https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
 			"""
-			""" 
-			# Deprecated
-			blob = io.BytesIO()
+			fs = fsspec.filesystem("memory")
+			temp_path = "memory://temp.parq"
 			dataframe.to_parquet(
-				blob, engine = 'pyarrow'
-				, compression = 'gzip', index = False
+				temp_path
+				, engine = "fastparquet"
+				, compression = "gzip"
+				, index = False
 			)
-			blob = blob.getvalue()
-			"""
-			temp_file_name = f"{app_dir}temp.parquet"
-			dataframe.to_parquet(
-				temp_file_name, engine = 'fastparquet'
-				, compression = 'gzip', index = False	
-			)
-			# Fetch the bytes ('rb': read binary)
-			with open(temp_file_name, 'rb') as file:
-				blob = file.read()
-			os.remove(temp_file_name)
+			blob = fs.cat(temp_path)
+			fs.delete(temp_path)
 			return blob
-
 
 
 		def path_to_df(
@@ -1572,10 +1561,7 @@ class File(BaseModel):
 					Yikes - The argument `skip_header_rows` is not supported for `source_file_format='parquet'`
 					because Parquet stores column names as metadata.\n
 					"""))
-				df = pd.read_parquet(
-					path = path
-					, engine = 'fastparquet'
-				)
+				df = pd.read_parquet(path=path, engine='fastparquet')
 				df, columns = File.Tabular.pandas_stringify_columns(df=df, columns=column_names)
 			return df
 
@@ -5935,7 +5921,7 @@ class Experiment():
 		, fn_lose:object = None
 		, hyperparameters:dict = None
 		, pick_count = None
-    	, pick_percent = None
+		, pick_percent = None
 		, foldset_id:int = None
 	):
 
@@ -5953,7 +5939,7 @@ class Experiment():
 			hyperparamset = algorithm.make_hyperparamset(
 				hyperparameters = hyperparameters
 				, pick_count = pick_count
-    			, pick_percent = pick_percent
+				, pick_percent = pick_percent
 			)
 			hyperparamset_id = hyperparamset.id
 		elif (hyperparameters is None):
