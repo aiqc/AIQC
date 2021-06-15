@@ -304,6 +304,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Optional,-associate-a-Hyperparamset-with-your-model.">9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Parameters-are-fed-into-Algorithm-functions.">Parameters are fed into Algorithm functions.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Grid-search-strategy.">Grid search strategy.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Random-selection-strategy.">Random selection strategy.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Bayesian-selection-strategy.">Bayesian selection strategy.</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
 </ul>
 </li>
@@ -934,7 +941,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">seq_splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
 
     <span class="n">seq_ndarray3D</span> <span class="o">=</span> <span class="n">seq_ndarray3D</span>
     <span class="p">,</span> <span class="n">seq_feature_encoders</span> <span class="o">=</span> <span class="p">[{</span>
@@ -1170,6 +1177,8 @@ No more Featurecoders can be added to this Encoderset.
     <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
     <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
     <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated.</span>
+    <span class="p">,</span> <span class="n">pick_count</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">pick_percent</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
 </div>

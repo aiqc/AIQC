@@ -2676,9 +2676,64 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "### Parameters are fed into Algorithm functions.\n",
+    "\n",
     "The `hyperparameters` below will be automatically fed into the functions above as `**kwargs` via the `**hp` argument we saw earlier.\n",
     "\n",
     "For example, wherever you see `hp['epoch_count']`, it will pull from the *key:value* pair `\"epoch_count\": [30, 60]` seen below. Where \"model A\" would have 30 epochs and \"model B\" would have 60 epochs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "hyperparameters = {\n",
+    "\t\"neuron_count\": [12]\n",
+    "\t, \"epoch_count\": [30, 60]\n",
+    "    , \"learning_rate\": [0.01, 0.03]\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Hyperparameter Selection Strategies."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Grid search strategy.\n",
+    "\n",
+    "By default AIQC will generate all possible combinations.\n",
+    "\n",
+    "> With enough practice, practitioners will get a feel for what parameters and topologies make sense so you'll rely on shotgun-style approaches less and less. If you limit your experiments to 1-2 parameters at a time then it's easy to see their effect as an *independent variable*. You should really start with high-level things such as topologies (# of layers, # neurons per layer) and batch size before moving on to tuning the intra-layer nuances (activation methods, weight initialization). You're essentially testing high/ medium/ low or default/ edge case scenarios for each parameter."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Random selection strategy.\n",
+    "\n",
+    "Testing many different combinations in your initial runs can be a good way to get a feel for the parameter space. Although if you are doing this you'll find that many of your combinations are a bit too similar. So randomly sampling (with replacement) a few of them is a less computationally expensive way to go about this.\n",
+    "\n",
+    "* `pick_count:int` the fixed # of combinations to sample.\n",
+    "\n",
+    "* `pick_percent:float` a % of combinations to sample."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Bayesian selection strategy.\n",
+    "\n",
+    "\"TPE (Tree-structured Parzen Estimator)\" via `hyperopt` has been suggested as a future area to explore."
    ]
   },
   {
@@ -2687,23 +2742,12 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "hyperparameters = {\n",
-    "\t\"neuron_count\": [12]\n",
-    "\t, \"epoch_count\": [30, 60]\n",
-    "    , \"learning_rate\": [0.01, 0.03]\n",
-    "}\n",
-    "\n",
     "hyperparamset = aiqc.Hyperparamset.from_algorithm(\n",
     "\talgorithm_id = algorithm.id\n",
     "\t, hyperparameters = hyperparameters\n",
+    "    , pick_count = None\n",
+    "    , pick_percent = None\n",
     ")"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "> The number of unique combinations escalates quickly, so in the future, we will provide different strategies for generating and selecting parameters to experiment with. "
    ]
   },
   {

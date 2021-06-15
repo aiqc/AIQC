@@ -3436,11 +3436,15 @@ class Algorithm(BaseModel):
 		id:int
 		, hyperparameters:dict
 		, description:str = None
+		, pick_count:int = None
+		, pick_percent:float = None
 	):
 		hyperparamset = Hyperparamset.from_algorithm(
 			algorithm_id = id
 			, hyperparameters = hyperparameters
 			, description = description
+			, pick_count = pick_count
+			, pick_percent = pick_percent
 		)
 		return hyperparamset
 
@@ -3488,7 +3492,12 @@ class Hyperparamset(BaseModel):
 		algorithm_id:int
 		, hyperparameters:dict
 		, description:str = None
+		, pick_count:int = None
+		, pick_percent:float = None
 	):
+		if ((pick_count is not None) and (pick_percent is not None)):
+			raise ValueError("Yikes - Either `pick_count` or `pick_percent` can be provided, but not both.")
+
 		algorithm = Algorithm.get_by_id(algorithm_id)
 
 		# Construct the hyperparameter combinations
@@ -3509,6 +3518,24 @@ class Hyperparamset(BaseModel):
 			params_combos_dict = {params_names[i]: params[i] for i in range(len(params_names))} 
 			params_combos_dicts.append(params_combos_dict)
 		
+		# These are the random selection strategies.
+		if (pick_count is not None):
+			if (pick_count < 1):
+				raise ValueError(f"\nYikes - pick_count:<{pick_count}> cannot be less than 1.\n")
+			elif (pick_count > hyperparamcombo_count):
+				print(f"\nInfo - pick_count:<{pick_count}> greater than the number of hyperparameter combinations:<{hyperparamcombo_count}>.\nProceeding with all combinations.\n")
+			else:
+				# `sample` handles replacement.
+				params_combos_dicts = random.sample(params_combos_dicts, pick_count)
+				hyperparamcombo_count = len(params_combos_dicts)
+		elif (pick_percent is not None):
+			if ((pick_percent > 1.0) or (pick_percent <= 0.0)):
+				raise ValueError(f"\nYikes - pick_percent:<{pick_percent}> must be between 0.0 and 1.0.\n")
+			else:
+				select_count = math.ceil(hyperparamcombo_count * pick_percent)
+				params_combos_dicts = random.sample(params_combos_dicts, select_count)
+				hyperparamcombo_count = len(params_combos_dicts)
+
 		# Now that we have the metadata about combinations
 		hyperparamset = Hyperparamset.create(
 			algorithm = algorithm
@@ -5891,6 +5918,8 @@ class Experiment():
 		, fn_predict:object = None
 		, fn_lose:object = None
 		, hyperparameters:dict = None
+		, pick_count = None
+    	, pick_percent = None
 		, foldset_id:int = None
 	):
 
@@ -5907,6 +5936,8 @@ class Experiment():
 		if (hyperparameters is not None):
 			hyperparamset = algorithm.make_hyperparamset(
 				hyperparameters = hyperparameters
+				, pick_count = pick_count
+    			, pick_percent = pick_percent
 			)
 			hyperparamset_id = hyperparamset.id
 		elif (hyperparameters is None):
