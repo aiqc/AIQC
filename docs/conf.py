@@ -1,5 +1,5 @@
 # *** REFRESHING SIDEBAR MENU ***
-# When you change menu/ page tiles. Run `make html` both with and without line above commented:
+# When you change menu/ page tiles. Run `make html` with this line uncommented and again with it commented:
 #html_sidebars = { '**': ['globaltoc.html'] }
 
 

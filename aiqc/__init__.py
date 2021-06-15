@@ -947,6 +947,12 @@ class Dataset(BaseModel):
 			images = Dataset.Image.to_pillow(id, samples=samples)
 			images = [np.array(img) for img in images]
 			images = np.array(images)
+			"""
+			- Pixel values range from 0-255.
+			- `np.set_printoptions(threshold=99999)` to inspect for yourself.
+			- It will look like some are all 0, but that's just the black edges.
+			"""
+			images = images/255
 			return images
 
 
