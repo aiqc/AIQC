@@ -1323,15 +1323,6 @@ class File(BaseModel):
 			columns = listify(columns)
 			samples = listify(samples)
 
-			"""
-			if (file.ingested==False):
-				# future: check if `query_fetcher` defined.
-				trigger the parser based on the file format
-				parser(file., file.source_path)
-			elif (file.ingested==True):
-				#
-			"""
-
 			# Filters.
 			df = pd.read_parquet(
 				io.BytesIO(file.blob)
