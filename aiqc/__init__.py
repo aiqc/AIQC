@@ -1,4 +1,4 @@
-import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, \
+import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, h5py, \
 	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec
 # Python utils.
 from textwrap import dedent
@@ -5192,7 +5192,7 @@ class Job(BaseModel):
 			- Assuming `model.save()` will trigger OS-specific h5 drivers.
 			"""
 			# Write it.
-			temp_file_name = f"{app_dir}temp_keras_model"
+			temp_file_name = f"{app_dir}temp_keras_model.h5"
 			model.save(
 				temp_file_name
 				, include_optimizer = True
@@ -5339,11 +5339,12 @@ class Predictor(BaseModel):
 
 		if (algorithm.library == "keras"):
 			#https://www.tensorflow.org/guide/keras/save_and_serialize
-			temp_file_name = f"{app_dir}temp_keras_model"
+			temp_file_name = f"{app_dir}temp_keras_model.h5"
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
-				model = keras.models.load_model(temp_file_name, compile=True)
+			h5 = h5py.File(temp_file_name, 'r')
+			model = keras.models.load_model(h5, compile=True)
 			os.remove(temp_file_name)
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
