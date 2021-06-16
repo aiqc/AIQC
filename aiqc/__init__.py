@@ -581,7 +581,7 @@ class Dataset(BaseModel):
 
 
 	def sorted_file_list(dir_path:str):
-		if not os.path.exists(dir_path):
+		if (not os.path.exists(dir_path)):
 			raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(dir_path)`:\n{dir_path}\n")
 		path = os.path.abspath(dir_path)
 		if (os.path.isdir(path) == False):
@@ -644,7 +644,7 @@ class Dataset(BaseModel):
 			file_path:str
 			, source_file_format:str
 			, name:str = None
-			, dtype:dict = None
+			, dtype:object = None
 			, column_names:list = None
 			, skip_header_rows:object = 'infer'
 			, ingest:bool = True
@@ -698,7 +698,7 @@ class Dataset(BaseModel):
 		def from_pandas(
 			dataframe:object
 			, name:str = None
-			, dtype:dict = None
+			, dtype:object = None
 			, column_names:list = None
 		):
 			column_names = listify(column_names)
@@ -729,7 +729,7 @@ class Dataset(BaseModel):
 		def from_numpy(
 			ndarray:object
 			, name:str = None
-			, dtype:dict = None
+			, dtype:object = None
 			, column_names:list = None
 		):
 			column_names = listify(column_names)
@@ -798,7 +798,7 @@ class Dataset(BaseModel):
 		):
 			if ((pillow_save!={}) and (ingest==False)):
 				raise ValueError("\nYikes - `pillow_save` cannot be defined if `ingest==False`.\n")
-			if name is None:
+			if (name is None):
 				name = folder_path
 			source_path = os.path.abspath(folder_path)
 
@@ -826,11 +826,13 @@ class Dataset(BaseModel):
 				modes.append(img.mode)
 
 			if (len(set(sizes)) > 1):
+				dataset.delete_instance()# Orphaned.
 				raise ValueError(dedent(f"""
 				Yikes - All images in the Dataset must be of the same width and height.
 				`PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}
 				"""))
 			elif (len(set(modes)) > 1):
+				dataset.delete_instance()# Orphaned.
 				raise ValueError(dedent(f"""
 				Yikes - All images in the Dataset must be of the same mode aka colorscale.
 				`PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}
@@ -850,7 +852,7 @@ class Dataset(BaseModel):
 						, dataset_id = dataset.id
 					)
 			except:
-				dataset.delete_instance() # Orphaned.
+				dataset.delete_instance()
 				raise
 			return dataset
 
@@ -995,7 +997,7 @@ class Dataset(BaseModel):
 		def from_pandas(
 			dataframe:object,
 			name:str = None, 
-			dtype:dict = None, 
+			dtype:object = None, 
 			column_names:list = None
 		):
 			if Dataset.Text.column_name not in list(dataframe.columns):
@@ -1014,7 +1016,7 @@ class Dataset(BaseModel):
 			file_path:str
 			, source_file_format:str
 			, name:str = None
-			, dtype:dict = None
+			, dtype:object = None
 			, column_names:list = None
 			, skip_header_rows:object = 'infer'
 		):
@@ -1091,11 +1093,34 @@ class Dataset(BaseModel):
 		dataset_type = 'sequence'
 
 		def from_numpy(
-			ndarray_3D:object
+			ndarray3D_or_npyPath:object
 			, name:str = None
-			, dtype:dict = None
+			, dtype:object = None
 			, column_names:list = None
+			, ingest:bool = True
 		):
+			if ((ingest==False) and (isinstance(dtype, dict))):
+				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
+			# Fetch array from .npy if it is not an in-memory array.
+			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
+				if (not isinstance(ndarray3D_or_npyPath, str)):
+					raise ValueError("\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n")
+				if (not os.path.exists(ndarray3D_or_npyPath)):
+					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
+				if (not os.path.isfile(ndarray3D_or_npyPath)):
+					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+				source_path = ndarray3D_or_npyPath
+				try:
+					# `allow_pickle=False` prevented it from reading the file.
+					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
+				except:
+					print("\nYikes - Failed to `np.load(file=ndarray3D_or_npyPath)` with your `ndarray3D_or_npyPath`:\n")
+					print(f"{ndarray3D_or_npyPath}\n")
+					raise
+			elif (str(ndarray3D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
+				source_path = None
+				ndarray_3D = ndarray3D_or_npyPath 
+
 			column_names = listify(column_names)
 			Dataset.arr_validate(ndarray_3D)
 
@@ -1111,6 +1136,7 @@ class Dataset(BaseModel):
 				file_count = file_count
 				, name = name
 				, dataset_type = Dataset.Sequence.dataset_type
+				, source_path = source_path
 			)
 
 			#Make sure the shape and mode of each image are the same before writing the Dataset.
@@ -1123,6 +1149,7 @@ class Dataset(BaseModel):
 				shapes.append(arr.shape)
 
 			if (len(set(shapes)) > 1):
+				dataset.delete_instance()# Orphaned.
 				raise ValueError(dedent(f"""
 				Yikes - All 2D arrays in the Dataset must be of the shape.
 				`ndarray.shape`\nHere are the unique sizes you provided:\n{set(shapes)}
@@ -1140,6 +1167,7 @@ class Dataset(BaseModel):
 						, column_names = column_names
 						, dtype = dtype
 						, _file_index = i
+						, ingest = ingest
 					)
 			except:
 				dataset.delete_instance() # Orphaned.
@@ -1222,10 +1250,10 @@ class File(BaseModel):
 		def from_pandas(
 			dataframe:object
 			, dataset_id:int
-			, dtype:dict = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
+			, dtype:object = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
 			, column_names:list = None
-			, source_path:str = None # passed in via from_file
-			, ingest:str = True # from_file() method overwrites this.
+			, source_path:str = None # passed in via from_file, but not from_numpy.
+			, ingest:bool = True # from_file() method overwrites this.
 			, file_format:str = 'parquet' # from_file() method overwrites this.
 			, skip_header_rows:int = 'infer'
 			, _file_index:int = 0 # Dataset.Sequence overwrites this.
@@ -1273,8 +1301,9 @@ class File(BaseModel):
 			ndarray:object
 			, dataset_id:int
 			, column_names:list = None
-			, dtype:dict = None #Or single string.
+			, dtype:object = None #Or single string.
 			, _file_index:int = 0
+			, ingest:bool = True
 		):
 			column_names = listify(column_names)
 			"""
@@ -1299,6 +1328,7 @@ class File(BaseModel):
 				# Setting `column_names` will not overwrite the first row of homogenous array:
 				, column_names = column_names
 				, _file_index = _file_index
+				, ingest = ingest
 			)
 			return file
 
@@ -1307,7 +1337,7 @@ class File(BaseModel):
 			path:str
 			, source_file_format:str
 			, dataset_id:int
-			, dtype:dict = None
+			, dtype:object = None
 			, column_names:list = None
 			, skip_header_rows:object = 'infer'
 			, ingest:bool = True
@@ -1398,8 +1428,27 @@ class File(BaseModel):
 			"""
 			columns = listify(columns)
 			samples = listify(samples)
-			df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
-			arr = df.to_numpy()
+			file = File.get_by_id(id)
+			# Handles when Dataset.Sequence is stored as a single .npy file
+			if ((file.dataset.dataset_type=='sequence') and (file.is_ingested==False)):
+				# Subsetting a File via `samples` is irrelevant here because the entire File is 1 sample.
+				# Subset the columns:
+				if (columns is not None):
+					col_indices = Job.colIndices_from_colNames(
+						column_names = file.tabulars[0].columns
+						, desired_cols = columns
+					)
+				dtype = list(file.tabulars[0].dtypes.values())[0] #`ingest==False` only allows singular dtype.
+				# Verified that it is lazy via `sys.getsizeof()`				
+				lazy_load = np.load(file.dataset.source_path)
+				if (columns is not None):
+					# First accessor[] gets the 2D. Second accessor[] gets the 2D.
+					arr = lazy_load[file.file_index][:,col_indices].astype(dtype)
+				else:
+					arr = lazy_load[file.file_index].astype(dtype)
+			else:
+				df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
+				arr = df.to_numpy()
 			return arr
 
 		#Future: Add to_tensor and from_tensor? Or will numpy suffice?  
@@ -1443,7 +1492,7 @@ class File(BaseModel):
 		def df_set_metadata(
 			dataframe:object
 			, column_names:list = None
-			, dtype:dict = None
+			, dtype:object = None
 		):
 			shape = {}
 			shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
@@ -3192,7 +3241,7 @@ class Featurecoder(BaseModel):
 		features_shape = samples_to_encode.shape
 		if (len(features_shape)==3):
 			rows_2D = features_shape[0] * features_shape[1]
-			samples_to_encode = samples_to_encode.reshape(rows_2D,1)
+			samples_to_encode = samples_to_encode.reshape(rows_2D, features_shape[2])
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 			sklearn_preprocess = sklearn_preprocess
@@ -4645,7 +4694,7 @@ class Job(BaseModel):
 				features_shape = features_to_fit.shape
 				if (len(features_shape)==3):
 					rows_2D = features_shape[0] * features_shape[1]
-					features_to_fit = features_to_fit.reshape(rows_2D,1)
+					features_to_fit = features_to_fit.reshape(rows_2D, features_shape[2])
 
 				# Only fit these columns.
 				matching_columns = featurecoder.matching_columns
@@ -4679,7 +4728,7 @@ class Job(BaseModel):
 			features_shape = arr_features.shape
 			if (len(features_shape)==3):
 				rows_2D = features_shape[0] * features_shape[1]
-				arr_features = arr_features.reshape(rows_2D,1)
+				arr_features = arr_features.reshape(rows_2D, features_shape[2])
 
 			f_cols = encoderset.feature.columns
 			transformed_features = None #Used as a placeholder for `np.concatenate`.
@@ -5722,7 +5771,7 @@ class TrainingCallback():
 
 class Pipeline():
 	"""Create Dataset, Feature, Label, Splitset, and Foldset."""
-	def parse_tabular_input(dataFrame_or_filePath:object, dtype:dict=None):
+	def parse_tabular_input(dataFrame_or_filePath:object, dtype:object=None):
 		"""Create the dataset from either df or file."""
 		d = dataFrame_or_filePath
 		data_type = str(type(d))
@@ -5753,7 +5802,7 @@ class Pipeline():
 	class Tabular():
 		def make(
 			dataFrame_or_filePath:object
-			, dtype:dict = None
+			, dtype:object = None
 			, label_column:str = None
 			, features_excluded:list = None
 			, label_encoder:object = None
@@ -5808,12 +5857,12 @@ class Pipeline():
 	class Sequence():
 		def make(
 			seq_ndarray3D:object
-			, seq_dtype:dict = None
+			, seq_dtype:object = None
 			, seq_features_excluded:list = None
 			, seq_feature_encoders:list = None
 			
 			, tab_DF_or_path:object = None
-			, tab_dtype:dict = None
+			, tab_dtype:object = None
 			, tab_label_column:str = None
 			, tab_label_encoder:object = None
 			
@@ -5882,7 +5931,7 @@ class Pipeline():
 			pillow_save:dict = {}
 			, folderPath_or_urls:str = None
 			, tabularDF_or_path:object = None
-			, tabular_dtype:dict = None
+			, tabular_dtype:object = None
 			, label_column:str = None
 			, label_encoder:object = None
 			, size_test:float = None
