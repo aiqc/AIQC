@@ -1008,7 +1008,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 <h4>Image Datasets<a class="headerlink" href="#Image-Datasets" title="Permalink to this headline">¶</a></h4>
 <p>Image datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they require a loosely coupled <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that contains their labels.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1018,7 +1018,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1094,7 +1094,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">['status']</span></code> column of this dataframe serves as the Label of that sample. We’ll construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> from this.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1103,7 +1103,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1120,7 +1120,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">from_urls(urls:list)</span></code> needs a list of urls. In order to perform supervised learning, the order of this list must line up with the samples in your Tabular dataset. &gt; We happen to have this list prepared in the <code class="docutils literal notranslate"><span class="pre">['url']</span></code> column of the dataframe above. acts as a manifest in that it contains the URL of the image file for that sample, solely for the purposes of initial ingestion. We’ll construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from this.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1129,7 +1129,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1142,8 +1142,8 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🖼️ Validating Images 🖼️: 100%|███████████████████████| 80/80 [00:08&lt;00:00,  9.17it/s]
-🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:09&lt;00:00,  8.48it/s]
+🖼️ Validating Images 🖼️: 100%|███████████████████████| 80/80 [00:14&lt;00:00,  5.35it/s]
+🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:07&lt;00:00, 10.36it/s]
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1458,7 +1458,7 @@ array([[5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;],
 <h3><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_pillow()</span></code><a class="headerlink" href="#Dataset.Image.to_pillow()" title="Permalink to this headline">¶</a></h3>
 <p>Returns a list of <code class="docutils literal notranslate"><span class="pre">PIL.Image</span></code>’s. You can actually see the image when you call them.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1468,7 +1468,7 @@ array([[5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;],
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1479,8 +1479,12 @@ array([[5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;],
 <div class="section" id="Dataset.Image.to_numpy()">
 <h3><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_numpy()</span></code><a class="headerlink" href="#Dataset.Image.to_numpy()" title="Permalink to this headline">¶</a></h3>
 <p>This simply performs <code class="docutils literal notranslate"><span class="pre">np.array(Pillow.Image)</span></code>. Returns an N-dimensional array where the dimensions vary based on the <code class="docutils literal notranslate"><span class="pre">mode</span></code> aka colorscale of the image. For example, it returns ‘3D of 2Ds for black and white’ or ‘4D of 3Ds for colored’ - which would change the class of convultional layer you would use (<code class="docutils literal notranslate"><span class="pre">Conv1D</span></code>:<code class="docutils literal notranslate"><span class="pre">Conv3D</span></code>).</p>
+<blockquote>
+<div><p>By default, the returned arrays will be scaled by 255 because <a class="reference external" href="https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes">Pillow pixel values range from 0-255</a>.</p>
+</div></blockquote>
+<p>Let’s check out one of the 2D color channels of a grayscale image.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1490,23 +1494,26 @@ array([[5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;],
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([[11, 11, 11, ..., 18, 18, 18],
-       [ 4,  4,  4, ..., 18, 18, 18],
-       [ 0,  0,  0, ..., 18, 18, 18],
+array([[0.04313725, 0.04313725, 0.04313725, ..., 0.07058824, 0.07058824,
+        0.07058824],
+       [0.01568627, 0.01568627, 0.01568627, ..., 0.07058824, 0.07058824,
+        0.07058824],
+       [0.        , 0.        , 0.        , ..., 0.07058824, 0.07058824,
+        0.07058824],
        ...,
-       [18, 18, 18, ..., 18, 18, 18],
-       [18, 18, 18, ..., 18, 18, 18],
-       [18, 18, 18, ..., 18, 18, 18]], dtype=uint8)
+       [0.07058824, 0.07058824, 0.07058824, ..., 0.07058824, 0.07058824,
+        0.07058824],
+       [0.07058824, 0.07058824, 0.07058824, ..., 0.07058824, 0.07058824,
+        0.07058824],
+       [0.07058824, 0.07058824, 0.07058824, ..., 0.07058824, 0.07058824,
+        0.07058824]])
 </pre></div></div>
 </div>
-<blockquote>
-<div><p>At the moment, we haven’t found it necessary to provide a <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code> method for images as they have no need for column names, the dtypes are homogenous, images are used as a whole so there is no filtering, Pandas isn’t great with 3D data, and Pillow is integrated with NumPy.</p>
-</div></blockquote>
 </div>
 </div>
 <div class="section" id="2.-Select-the-Label-column(s).">
