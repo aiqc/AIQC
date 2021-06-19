@@ -207,10 +207,10 @@
 |
 |
 
-.. image:: images/pydata_banner.png
+.. image:: images/pydata.png
   :width: 100%
   :align: center
-  :alt: pydata banner
+  :alt: pydata
 
 |
 |
