@@ -1,21 +1,27 @@
 .. toctree::
   :maxdepth: 2
-  :caption: About
-  :hidden:
-
-  self
-  mission
-  community
-  links
-
-
-.. toctree::
-  :maxdepth: 2
-  :caption: Start
+  :caption: Getting Started
   :hidden:
 
   notebooks/installation
   notebooks/example_datasets
+
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Workflows
+  :hidden:
+
+  notebooks/keras_binary_classification
+  notebooks/keras_multi-label_classification
+  notebooks/keras_regression
+  notebooks/image_classification
+  notebooks/sequence_classification
+  notebooks/pytorch_binary_classification
+  notebooks/pytorch_multi-label_classification
+  notebooks/pytorch_regression
+  notebooks/tensorflow_binary_classification
+  notebooks/heterogeneous_features
 
 
 .. toctree::
@@ -31,20 +37,12 @@
 
 .. toctree::
   :maxdepth: 2
-  :caption: Workflows
+  :caption: About
   :hidden:
 
-  notebooks/keras_binary_classification
-  notebooks/keras_multi-label_classification
-  notebooks/keras_regression
-  notebooks/pytorch_binary_classification
-  notebooks/pytorch_multi-label_classification
-  notebooks/pytorch_regression
-  notebooks/tensorflow_binary_classification
-  notebooks/image_classification
-  notebooks/sequence_classification
-  notebooks/heterogeneous_features
-
+  mission
+  community
+  links
 
 ..
   Without this comment, `make html` throws warning about page beginning improperly.
@@ -209,7 +207,7 @@
 |
 |
 
-.. image:: images/pydata_banner_w_tf.png
+.. image:: images/pydata_banner.png
   :width: 100%
   :align: center
   :alt: pydata banner

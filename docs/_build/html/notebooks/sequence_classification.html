@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   
-  <meta property="og:title" content="Times Series/ Sequence" />
+  <meta property="og:title" content="Keras: Classify Binary Times Series" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/sequence_classification.html" />
   <meta property="og:site_name" content="AIQC" />
@@ -15,7 +15,7 @@
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Times Series/ Sequence &mdash; AIQC</title>
+  <title>Keras: Classify Binary Times Series &mdash; AIQC</title>
   
 
   
@@ -52,8 +52,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Heterogeneous/ Multi-Modal" href="heterogeneous_features.html" />
-    <link rel="prev" title="Image Classification" href="image_classification.html" /> 
+    <link rel="next" title="PyTorch: Classify Binary" href="pytorch_binary_classification.html" />
+    <link rel="prev" title="Keras: Classify Binary Image" href="image_classification.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -98,38 +98,9 @@
               
             
             
-              <p class="caption"><span class="caption-text">About</span></p>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#purpose">Purpose.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#how-can-i-get-involved">How can I get involved?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#what-can-i-contribute">What can I contribute?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-dev-environment">Setting up dev environment.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#programming-style">Programming style.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#code-of-conduct">Code of conduct.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../community.html#open-source">Open source.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../community.html#choosing-a-license">Choosing a license</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Start</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#TLDR">TLDR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Environment">Environment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Python-Version">Python Version</a><ul>
@@ -171,10 +142,88 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Data</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Remote-Data">Remote Data</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#a)-High-Level-API">a) High-Level API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Preprocess-Data">Preprocess Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Build-Model">Build Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#b)-Low-Level-API">b) Low-Level API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id1">Preprocess Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id2">Build Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id3">Stage Experiment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="image_classification.html">Keras: Classify Binary Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Load-Data">Load Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Build-Model">Build Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Keras: Classify Binary Times Series</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="heterogeneous_features.html">Heterogeneous/ Multi-Modal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Ingesting-Example-Galaxy-Data">Ingesting Example Galaxy Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Tabular-Data">Tabular Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Image-Data">Image Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Defining-a-Model">Defining a Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Train-Models">Train Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Interpret-Results">Interpret Results</a></li>
 </ul>
 </li>
 </ul>
@@ -343,83 +392,33 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Workflows</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#a)-High-Level-API">a) High-Level API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Preprocess-Data">Preprocess Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Build-Model">Build Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Stage-Experiment">Stage Experiment</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#b)-Low-Level-API">b) Low-Level API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id1">Preprocess Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id2">Build Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id3">Stage Experiment</a></li>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#purpose">Purpose.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#how-can-i-get-involved">How can I get involved?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#what-can-i-contribute">What can I contribute?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-dev-environment">Setting up dev environment.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#programming-style">Programming style.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#code-of-conduct">Code of conduct.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#open-source">Open source.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../community.html#choosing-a-license">Choosing a license</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="image_classification.html">Image Classification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Load-Data">Load Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Build-Model">Build Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Stage-Experiment">Stage Experiment</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Times Series/ Sequence</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="heterogeneous_features.html">Heterogeneous/ Multi-Modal</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Ingesting-Example-Galaxy-Data">Ingesting Example Galaxy Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Tabular-Data">Tabular Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Image-Data">Image Data</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Defining-a-Model">Defining a Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Train-Models">Train Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Interpret-Results">Interpret Results</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
 </ul>
 
             
@@ -466,7 +465,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Times Series/ Sequence</li>
+      <li>Keras: Classify Binary Times Series</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -755,8 +754,8 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Times-Series/-Sequence">
-<h1>Times Series/ Sequence<a class="headerlink" href="#Times-Series/-Sequence" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Keras:-Classify-Binary-Times-Series">
+<h1>Keras: Classify Binary Times Series<a class="headerlink" href="#Keras:-Classify-Binary-Times-Series" title="Permalink to this headline">¶</a></h1>
 <p><em>Binary Detection of Epileptic Seizures Using a Cohort of Sequence of Electroencephalography (EEG) Readings.</em></p>
 <p><img alt="waves" src="../_images/waves.png" /></p>
 <p>Sequence data structures contain many observations (rows) for each sample (e.g. site, sensor, or patient). They are often used for grouping time-based observations into what is called a time series. However, sequences can also represent biological sequences like DNA and RNA.</p>
@@ -1417,10 +1416,10 @@ No more Featurecoders can be added to this Encoderset.
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="heterogeneous_features.html" class="btn btn-neutral float-right" title="Heterogeneous/ Multi-Modal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pytorch_binary_classification.html" class="btn btn-neutral float-right" title="PyTorch: Classify Binary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="image_classification.html" class="btn btn-neutral float-left" title="Image Classification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="image_classification.html" class="btn btn-neutral float-left" title="Keras: Classify Binary Image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
