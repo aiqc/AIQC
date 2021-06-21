@@ -346,7 +346,8 @@ def create_db():
 			Encoderset, Labelcoder, Featurecoder, 
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction,
-			FittedEncoderset, FittedLabelcoder
+			FittedEncoderset, FittedLabelcoder,
+			Window
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -2215,6 +2216,76 @@ class Feature(BaseModel):
 			return encodersets[-1]
 
 
+	def make_window(id:int, size_window:int, size_shift:int):
+		feature = Feature.get_by_id(id)
+		window = Window.from_feature(
+			size_window = size_window
+			, size_shift = size_shift
+			, feature_id = feature.id
+		)
+		return window
+
+
+
+
+class Window(BaseModel):
+	size_window = IntegerField()
+	size_shift = IntegerField()
+	feature = ForeignKeyField(Feature, backref='windows')
+
+
+	def from_feature(
+		feature_id:int
+		, size_window:int
+		, size_shift:int
+	):
+		feature = Feature.get_by_id(feature_id)
+		file_count = feature.dataset.file_count
+
+		if ((size_window < 1) or (size_window > (file_count - size_shift))):
+			raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (file_count - size_shift)`.\n")
+		if ((size_shift < 1) or (size_shift > (file_count - size_window))):
+			raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (file_count - size_window)`.\n")
+
+		window = Window.create(
+			size_window = size_window
+			, size_shift = size_shift
+			, feature_id = feature.id
+		)
+		return window
+
+
+	def shift_window_arrs(id:int, ndarray:object):
+		window = Window.get_by_id(id)
+		file_count = window.feature.dataset.file_count
+		size_window = window.size_window
+		size_shift = window.size_shift
+
+		total_intervals = math.floor((file_count - size_shift) / size_window)
+
+		#prune_shifted_lag = 0
+		prune_shifted_lead = file_count - (total_intervals * size_window)
+		prune_unshifted_lag = -(size_shift)
+		prune_unshifted_lead = file_count - (total_intervals * size_window) - size_shift
+
+		arr_shifted = arr_shifted = ndarray[prune_shifted_lead:]#:prune_shifted_lag
+		arr_unshifted = ndarray[prune_unshifted_lead:prune_unshifted_lag]
+
+		arr_shifted_shapes = arr_shifted.shape
+		arr_shifted = arr_shifted.reshape(
+			total_intervals#3D
+			, arr_shifted_shapes[1]*math.floor(arr_shifted_shapes[0] / total_intervals)#rows
+			, arr_shifted_shapes[2]#cols
+		)
+		arr_unshifted = arr_unshifted.reshape(
+			total_intervals#3D
+			, arr_shifted_shapes[1]*math.floor(arr_shifted_shapes[0] / total_intervals)#rows
+			, arr_shifted_shapes[2]#cols
+		)
+		return arr_shifted, arr_unshifted
+
+
+
 
 class Splitset(BaseModel):
 	"""
@@ -2309,6 +2380,7 @@ class Splitset(BaseModel):
 			supervision = "unsupervised"
 			label = None
 			if (size_test is not None) or (size_validation is not None):
+				## this is wrong. it's sample-based, not label-based:
 				raise ValueError(dedent("""
 					Yikes - Unsupervised Features support neither test nor validation splits.
 					Set both `size_test` and `size_validation` as `None` for this Feature.

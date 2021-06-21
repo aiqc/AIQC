@@ -306,10 +306,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Split-Strategies">Split Strategies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Splitting-Strategies">Splitting Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b)-Specifying-test-size.">b) Specifying test size.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d)-Specifying-validation-size.">d) Specifying validation size.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Reading-Splitsets">Reading Splitsets</a></li>
@@ -903,6 +904,11 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 <div class="section" id="Sequence-Datasets">
 <h4>Sequence Datasets<a class="headerlink" href="#Sequence-Datasets" title="Permalink to this headline">¶</a></h4>
 <p>The sequence dataset is a 3 dimensional structure intended for multi-observations per sample to enable time series analysis.</p>
+<p>Observations must be ordered in an <em>ascending</em> manner, which means:</p>
+<ul class="simple">
+<li><p>Time-based data must be ordered from earlier to later (2010 - 2020).</p></li>
+<li><p>Position-based data must be ordered from beginning to end (start - stop).</p></li>
+</ul>
 <p>Sequence datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they require a loosely coupled <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that contains their labels.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -1832,8 +1838,8 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 <div class="section" id="4.-Slice-samples-with-a-Splitset.">
 <h2>4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#4.-Slice-samples-with-a-Splitset." title="Permalink to this headline">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides a the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
-<p>Both contiuous and categorical <code class="docutils literal notranslate"><span class="pre">Labels</span></code> are automatically stratified.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
+<p>Both continuous and categorical <code class="docutils literal notranslate"><span class="pre">Labels</span></code> are automatically stratified.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -1861,7 +1867,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 <p>If you want more control over stratification of continuous splits, specify the number of <code class="docutils literal notranslate"><span class="pre">continuous_bin_count</span></code> for grouping.</p>
 </div></blockquote>
 <blockquote>
-<div><p>Again, creating a Splitset won’t duplicate your data. It simply denotes the sample indices (aka rows) to be used in the splits that you specify!</p>
+<div><p>Again, creating a Splitset won’t duplicate your data. It simply points to the sample indices to be used in the splits that you specify!</p>
 </div></blockquote>
 <div class="section" id="Stratification-of-continuous-labels.">
 <h3>Stratification of continuous labels.<a class="headerlink" href="#Stratification-of-continuous-labels." title="Permalink to this headline">¶</a></h3>
@@ -1871,15 +1877,15 @@ array([[5.1, 3.5, 1.4, 0.2],
 <div><p>Reference the handy <code class="docutils literal notranslate"><span class="pre">Pandas.qcut()</span></code> and the source code <code class="docutils literal notranslate"><span class="pre">pd.qcut(x=array_to_bin,</span> <span class="pre">q=bin_count,</span> <span class="pre">labels=False,</span> <span class="pre">duplicates='drop')</span></code> for more detail.</p>
 </div></blockquote>
 </div>
-<div class="section" id="Split-Strategies">
-<h3>Split Strategies<a class="headerlink" href="#Split-Strategies" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Splitting-Strategies">
+<h3>Splitting Strategies<a class="headerlink" href="#Splitting-Strategies" title="Permalink to this headline">¶</a></h3>
 <p>Notice that the <code class="docutils literal notranslate"><span class="pre">feature_ids:list</span></code> is plural. That’s because we can pass a Splitset multiple Features for mixed-data analysis (e.g. using both Tabular and Image data).</p>
 <blockquote>
 <div><p>If you have a feature that is capable of stratification (e.g. <code class="docutils literal notranslate"><span class="pre">dataset_type='tabular'</span></code> or <code class="docutils literal notranslate"><span class="pre">dataset_type='tabular'</span></code>), then you should make that <code class="docutils literal notranslate"><span class="pre">feature_id</span></code> the first element in the list. Only the first list element will be checked for the purposes of stratification.</p>
 </div></blockquote>
 <div class="section" id="a)-Default-supervised-70-30-split.">
 <h4>a) Default supervised 70-30 split.<a class="headerlink" href="#a)-Default-supervised-70-30-split." title="Permalink to this headline">¶</a></h4>
-<p>If you only provide a Label, then 70:30 train:test splits will be generated.</p>
+<p>If a Label is provided, then a 70:30 train:test splits will automatically be generated.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
@@ -1903,7 +1909,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 <span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
     <span class="p">,</span><span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.30</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.22</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1911,6 +1917,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 <div class="section" id="c)-Specifying-validation-size.">
 <h4>c) Specifying validation size.<a class="headerlink" href="#c)-Specifying-validation-size." title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">size_validation</span></code> cannot be specified without a <code class="docutils literal notranslate"><span class="pre">size_test</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
@@ -1925,6 +1932,9 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 </div>
+</div>
+<div class="section" id="d)-Specifying-validation-size.">
+<h4>d) Specifying validation size.<a class="headerlink" href="#d)-Specifying-validation-size." title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 <div class="section" id="Reading-Splitsets">
@@ -2751,7 +2761,11 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <div class="section" id="Job-objects.">
 <h3><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#Job-objects." title="Permalink to this headline">¶</a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Queue represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
-<p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then: - The number of jobs = <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> * <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>. - Each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then:</p>
+<ul class="simple">
+<li><p>The number of jobs = <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> * <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>.</p></li>
+<li><p>Each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p></li>
+</ul>
 </div>
 <div class="section" id="Execute-all-Jobs.">
 <h3>Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#Execute-all-Jobs." title="Permalink to this headline">¶</a></h3>
@@ -2827,7 +2841,11 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </ul>
 </li>
 </ul>
-<p>This process is critical for: - <code class="docutils literal notranslate"><span class="pre">inverse_transform()</span></code>’ing aka decoding predictions. - Encoding new data during inference exactly the same was as the samples that the model was trained on.</p>
+<p>This process is critical for:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inverse_transform()</span></code>’ing aka decoding predictions.</p></li>
+<li><p>Encoding new data during inference exactly the same was as the samples that the model was trained on.</p></li>
+</ul>
 <p>It takes a lot of joins to fetch the fitted encoders after the fact. So these methods are used behind the scenes to make it a bit easier:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_encoderset(job,</span> <span class="pre">label)</span></code></p></li>

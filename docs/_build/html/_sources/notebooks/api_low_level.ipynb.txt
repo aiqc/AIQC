@@ -236,7 +236,12 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The sequence dataset is a 3 dimensional structure intended for multi-observations per sample to enable time series analysis. "
+    "The sequence dataset is a 3 dimensional structure intended for multi-observations per sample to enable time series analysis. \n",
+    "\n",
+    "Observations must be ordered in an *ascending* manner, which means:\n",
+    "\n",
+    "- Time-based data must be ordered from earlier to later (2010 - 2020).\n",
+    "- Position-based data must be ordered from beginning to end (start - stop)."
    ]
   },
   {
@@ -1531,14 +1536,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "A `Splitset` divides a the samples of the Dataset into the following *splits* in the table below. It is the central object of the data preparation side of the ORM in that it touches `Label`, `Feature`, `Foldset`, and `Encoderset`. It is the only mandatory data preparation object required by the training `Queue`."
+    "A `Splitset` divides the samples of the Dataset into the following *splits* in the table below. It is the central object of the data preparation side of the ORM in that it touches `Label`, `Feature`, `Foldset`, and `Encoderset`. It is the only mandatory data preparation object required by the training `Queue`."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Both contiuous and categorical `Labels` are automatically stratified."
+    "Both continuous and categorical `Labels` are automatically stratified."
    ]
   },
   {
@@ -1565,7 +1570,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> Again, creating a Splitset won't duplicate your data. It simply denotes the sample indices (aka rows) to be used in the splits that you specify!"
+    "> Again, creating a Splitset won't duplicate your data. It simply points to the sample indices to be used in the splits that you specify!"
    ]
   },
   {
@@ -1590,7 +1595,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Split Strategies"
+    "### Splitting Strategies"
    ]
   },
   {
@@ -1613,7 +1618,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "If you only provide a Label, then 70:30 train:test splits will be generated."
+    "If a Label is provided, then a 70:30 train:test splits will automatically be generated."
    ]
   },
   {
@@ -1644,7 +1649,7 @@
     "splitset = aiqc.Splitset.make(\n",
     "    feature_ids = [feature.id]\n",
     "    ,label_id = label.id\n",
-    "    , size_test = 0.30\n",
+    "    , size_test = 0.22\n",
     ")"
    ]
   },
@@ -1653,6 +1658,13 @@
    "metadata": {},
    "source": [
     "#### c) Specifying validation size."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`size_validation` cannot be specified without a `size_test`."
    ]
   },
   {
@@ -1667,6 +1679,13 @@
     "\t, size_test = 0.20\n",
     "\t, size_validation = 0.12\n",
     ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### d) Specifying validation size."
    ]
   },
   {
@@ -2947,6 +2966,7 @@
     "Each `Job` in the Queue represents a `Hyperparamcombo` that needs to be trained.\n",
     "\n",
     "If a `Foldset` is used during `Queue` creation, then: \n",
+    "\n",
     "- The number of jobs = `hyperparamcombo_count` * `fold_count`.\n",
     "- Each Job will have a `Fold`. Additionally, a superficial `Jobset` will be used to keep track of all Jobs related to that Foldset."
    ]
@@ -3042,6 +3062,7 @@
     "  - `fitted_encoders:list` to store the `fit`(s).\n",
     "\n",
     "This process is critical for:\n",
+    "\n",
     "- `inverse_transform()`'ing aka decoding predictions.\n",
     "- Encoding new data during inference exactly the same was as the samples that the model was trained on."
    ]
