@@ -201,6 +201,24 @@
 
   </br>
 
+----
+
+
+.. raw:: html
+  
+  </br>
+  <center>
+    <i style="color:gray;">Thank you to our sponsor:</i>
+  </center>
+  </br></br>
+
+.. image:: images/psf_wide.png
+  :width: 36%
+  :align: center
+  :alt: framework
+  :target: https://wiki.python.org/psf/ScientificWG/Charter_v3
+
+|
 
 ----
 
