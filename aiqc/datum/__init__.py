@@ -128,6 +128,17 @@ def list_datums(format:str=None):
 			, 'samples': 1000
 			, 'description': "<https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition> Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`"
 			, 'location': 'local'
+		},
+		{
+			'name': 'dehli_climate.parquet'
+			, 'dataset_type': 'sequence'
+			, 'analysis_type': 'forecasting'
+			, 'label': 'N/A'
+			, 'label_classes': 'N/A'
+			, 'features': '3'
+			, 'samples': 1575
+			, 'description': "<https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data>. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'"
+			, 'location': 'local'
 		}
 	]
 

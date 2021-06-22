@@ -39,15 +39,6 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "import os; os.chdir('/Users/layne/desktop/AIQC');"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
-   "metadata": {},
-   "outputs": [],
-   "source": [
     "import aiqc\n",
     "from aiqc import datum"
    ]
@@ -77,7 +68,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 3,
    "metadata": {},
    "outputs": [
     {
@@ -245,6 +236,18 @@
        "      <td>&lt;https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition&gt; Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`</td>\n",
        "      <td>local</td>\n",
        "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>dehli_climate.parquet</td>\n",
+       "      <td>sequence</td>\n",
+       "      <td>forecasting</td>\n",
+       "      <td>N/A</td>\n",
+       "      <td>N/A</td>\n",
+       "      <td>3</td>\n",
+       "      <td>1575</td>\n",
+       "      <td>&lt;https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data&gt;. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'</td>\n",
+       "      <td>local</td>\n",
+       "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
        "</div>"
@@ -262,6 +265,7 @@
        "8   galaxy_morphology.tsv        image  classification_binary    morphology   \n",
        "9                spam.csv         text  classification_binary            v1   \n",
        "10       epilepsy.parquet     sequence  classification_binary       seizure   \n",
+       "11  dehli_climate.parquet     sequence            forecasting           N/A   \n",
        "\n",
        "   label_classes                        features  samples  \\\n",
        "0            N/A                               8      433   \n",
@@ -275,6 +279,7 @@
        "8              2  3 colors x 240 tall x 300 wide       40   \n",
        "9              2                       text data     5572   \n",
        "10             2                1 x 178 readings     1000   \n",
+       "11           N/A                               3     1575   \n",
        "\n",
        "                                                                                                                                                                                                                            description  \\\n",
        "0                                                                                                                                                                                                     Predict temperature of exoplanet.   \n",
@@ -288,6 +293,7 @@
        "8                                                                                                                                                                                         tsv acts as label and manifest of image urls.   \n",
        "9                                                                                                                                                                                           collection of spam/ ham (not spam) messages   \n",
        "10  <https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition> Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`   \n",
+       "11                <https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data>. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'   \n",
        "\n",
        "   location  \n",
        "0     local  \n",
@@ -300,10 +306,11 @@
        "7    remote  \n",
        "8    remote  \n",
        "9     local  \n",
-       "10    local  "
+       "10    local  \n",
+       "11    local  "
       ]
      },
-     "execution_count": 4,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -328,7 +335,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 4,
    "metadata": {},
    "outputs": [
     {
@@ -468,7 +475,7 @@
        "4   5.33   36.2  "
       ]
      },
-     "execution_count": 5,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -487,7 +494,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 5,
    "metadata": {},
    "outputs": [
     {
@@ -496,7 +503,7 @@
        "'/Users/layne/Desktop/AIQC/aiqc/data/houses.csv'"
       ]
      },
-     "execution_count": 6,
+     "execution_count": 5,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -546,7 +553,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 6,
    "metadata": {},
    "outputs": [
     {
@@ -638,7 +645,7 @@
        "4  https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_4.jpg  "
       ]
      },
-     "execution_count": 7,
+     "execution_count": 6,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -661,7 +668,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 7,
    "metadata": {},
    "outputs": [
     {
@@ -672,7 +679,7 @@
        " 'https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/images/healthy_2.jpg']"
       ]
      },
-     "execution_count": 8,
+     "execution_count": 7,
      "metadata": {},
      "output_type": "execute_result"
     }

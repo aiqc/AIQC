@@ -306,10 +306,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Split-Strategies">Split Strategies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitting-Strategies">Splitting Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#d)-Specifying-validation-size.">d) Specifying validation size.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
@@ -770,15 +771,6 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;/Users/layne/desktop/AIQC&#39;</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">aiqc</span>
 <span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
 </pre></div>
@@ -795,7 +787,7 @@ div.rendered_html tbody tr:hover {
 <div><p>By default it returns a Pandas DataFrame, but you can <code class="docutils literal notranslate"><span class="pre">list_datums(format='list')</span></code> to change that.</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -804,7 +796,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -970,6 +962,18 @@ div.rendered_html tbody tr:hover {
       <td>&lt;https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition&gt; Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`</td>
       <td>local</td>
     </tr>
+    <tr>
+      <th>11</th>
+      <td>dehli_climate.parquet</td>
+      <td>sequence</td>
+      <td>forecasting</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>3</td>
+      <td>1575</td>
+      <td>&lt;https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data&gt;. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'</td>
+      <td>local</td>
+    </tr>
   </tbody>
 </table>
 </div></div>
@@ -979,7 +983,7 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>Using the value of the <code class="docutils literal notranslate"><span class="pre">name</span></code> column, you can fetch that file via <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -989,7 +993,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1113,7 +1117,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Alternatively, if you prefer to work directly with the file itself, then you can obtain the location of the file via the <code class="docutils literal notranslate"><span class="pre">get_demo_file_path()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1122,7 +1126,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1142,7 +1146,7 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">brain_tumor.csv</span></code> file as an example.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1152,7 +1156,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1232,7 +1236,7 @@ div.rendered_html tbody tr:hover {
 <li><p>Meanwhile, the <code class="docutils literal notranslate"><span class="pre">'url'</span></code> column acts as a manifest in that it contains the URL of the image file for that sample. We’ll construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from this.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1242,7 +1246,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
