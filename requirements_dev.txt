@@ -1,4 +1,12 @@
-# pip install --upgrade -r requirements_dev.txt 
+"""
+These dependencies are needed to:
+	1) Build the PyPI package. 
+	2) Build the documentation.
+	3) Make sure JupyterLab compatible functionality works.
+
+Run this to avoid typos:
+	pip install --upgrade -r requirements_dev.txt 
+"""
 # Packaging:
 pip
 wheel
