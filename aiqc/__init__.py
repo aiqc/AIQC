@@ -17,7 +17,7 @@ import numpy as np
 from PIL import Image as Imaje
 # Preprocessing & metrics.
 import sklearn
-from sklearn.model_selection import train_test_split, StratifiedKFold #mandatory separate import.
+from sklearn.model_selection import train_test_split, StratifiedKFold, KFold #mandatory separate import.
 from sklearn.feature_extraction.text import CountVectorizer
 # Deep learning.
 import keras
@@ -2434,7 +2434,7 @@ class Splitset(BaseModel):
 			elif (unsupervised_stratify_col is None):
 				if (bin_count is not None):
 		 			raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
-				stratify_arr = None
+				stratify_arr = None#Used in if statements below.
 
 
 		# ------ Stratified vs Unstratified ------		
@@ -2568,7 +2568,7 @@ class Splitset(BaseModel):
 		return splitset
 
 
-	def label_values_to_bins(array_to_bin:object, bin_count:int):
+	def values_to_bins(array_to_bin:object, bin_count:int):
 		"""
 		Overwites continuous Label values with bin numbers for statification & folding.
 		Switched to `pd.qcut` because `np.digitize` never had enough samples in the up the leftmost/right bin.
@@ -2589,7 +2589,7 @@ class Splitset(BaseModel):
 		if np.issubdtype(stratify_dtype, np.floating):
 			if (bin_count is None):
 				bin_count = 3
-			stratifier = Splitset.label_values_to_bins(array_to_bin=stratify_arr, bin_count=bin_count)
+			stratifier = Splitset.values_to_bins(array_to_bin=stratify_arr, bin_count=bin_count)
 		# Allow ints to pass either binned or unbinned.
 		elif (
 			(np.issubdtype(stratify_dtype, np.signedinteger))
@@ -2597,7 +2597,7 @@ class Splitset(BaseModel):
 			(np.issubdtype(stratify_dtype, np.unsignedinteger))
 		):
 			if (bin_count is not None):
-				stratifier = Splitset.label_values_to_bins(array_to_bin=stratify_arr, bin_count=bin_count)
+				stratifier = Splitset.values_to_bins(array_to_bin=stratify_arr, bin_count=bin_count)
 			elif (bin_count is None):
 				# Assumes the int is for classification.
 				stratifier = stratify_arr
@@ -2682,48 +2682,69 @@ class Foldset(BaseModel):
 
 		# Get the training indices. The actual values of the features don't matter, only label values needed for stratification.
 		arr_train_indices = splitset.samples["train"]
-		arr_train_labels = splitset.label.to_numpy(samples=arr_train_indices)
-
+		if (splitset.supervision=="supervised"):
+			stratify_arr = splitset.label.to_numpy(samples=arr_train_indices)
+			stratify_dtype = stratify_arr.dtype
+		elif (splitset.supervision=="unsupervised"):
+			if (splitset.unsupervised_stratify_col is not None):
+				stratify_arr = splitset.get_features()[0].to_numpy(
+					columns = splitset.unsupervised_stratify_col,
+					samples = arr_train_indices
+				)
+				stratify_dtype = stratify_arr.dtype
+				if (stratify_arr.shape[1] > 1):
+					# We need a single value, so take the median or mode of each 1D array.
+					if (np.issubdtype(stratify_dtype, np.number) == True):
+						stratify_arr = np.median(stratify_arr, axis=1)
+					if (np.issubdtype(stratify_dtype, np.number) == False):
+						modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
+						stratify_arr = np.array(modes)
+					# Now both are 1D so reshape to 2D.
+					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
+			elif (splitset.unsupervised_stratify_col is None):
+				if (bin_count is not None):
+					raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
+				stratify_arr = None#Used in if statements below.
+			
 		# If the Labels are binned *overwite* the values w bin numbers. Otherwise untouched.
-		label_dtype = arr_train_labels.dtype
-		# Bin the floats.
-		if (np.issubdtype(label_dtype, np.floating)):
-			if (bin_count is None):
-				bin_count = splitset.bin_count #Inherit. 
-			arr_train_labels = Splitset.label_values_to_bins(
-				array_to_bin = arr_train_labels
-				, bin_count = bin_count
-			)
-		# Allow ints to pass either binned or unbinned.
-		elif (
-			(np.issubdtype(label_dtype, np.signedinteger))
-			or
-			(np.issubdtype(label_dtype, np.unsignedinteger))
-		):
-			if (bin_count is not None):
-				if (splitset.bin_count is None):
-					print(dedent("""
-						Warning - Previously you set `Splitset.bin_count is None`
-						but now you are trying to set `Foldset.bin_count is not None`.
-						
-						This can result in incosistent stratification processes being 
-						used for training samples versus validation and test samples.
-					\n"""))
-				arr_train_labels = Splitset.label_values_to_bins(
-					array_to_bin = arr_train_labels
+		if (stratify_arr is not None):
+			# Bin the floats.
+			if (np.issubdtype(stratify_dtype, np.floating)):
+				if (bin_count is None):
+					bin_count = splitset.bin_count #Inherit. 
+				stratify_arr = Splitset.values_to_bins(
+					array_to_bin = stratify_arr
 					, bin_count = bin_count
 				)
-		else:
-			if (bin_count is not None):
-				raise ValueError(dedent("""
-					Yikes - Your Label is not numeric (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
-					Therefore, you cannot provide a value for `bin_count`.
-				\n"""))
-
+			# Allow ints to pass either binned or unbinned.
+			elif (
+				(np.issubdtype(stratify_dtype, np.signedinteger))
+				or
+				(np.issubdtype(stratify_dtype, np.unsignedinteger))
+			):
+				if (bin_count is not None):
+					if (splitset.bin_count is None):
+						print(dedent("""
+							Warning - Previously you set `Splitset.bin_count is None`
+							but now you are trying to set `Foldset.bin_count is not None`.
+							
+							This can result in incosistent stratification processes being 
+							used for training samples versus validation and test samples.
+						\n"""))
+					stratify_arr = Splitset.values_to_bins(
+						array_to_bin = stratify_arr
+						, bin_count = bin_count
+					)
+			else:
+				if (bin_count is not None):
+					raise ValueError(dedent("""
+						Yikes - The column you are stratifying by is not a numeric dtype (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
+						Therefore, you cannot provide a value for `bin_count`.
+					\n"""))
 
 		train_count = len(arr_train_indices)
 		remainder = train_count % fold_count
-		if remainder != 0:
+		if (remainder != 0):
 			print(
 				f"Warning - The number of samples <{train_count}> in your training Split\n" \
 				f"is not evenly divisible by the `fold_count` <{fold_count}> you specified.\n" \
@@ -2736,27 +2757,40 @@ class Foldset(BaseModel):
 			, bin_count = bin_count
 			, splitset = splitset
 		)
-		# Create the folds. Don't want the end user to run two commands.
-		skf = StratifiedKFold(
-			n_splits=fold_count
-			, shuffle=True
-			, random_state=random_state
-		)
-		splitz_gen = skf.split(arr_train_indices, arr_train_labels)
-				
-		i = -1
-		for index_folds_train, index_fold_validation in splitz_gen:
-			i+=1
-			fold_samples = {}
-			
-			fold_samples["folds_train_combined"] = index_folds_train.tolist()
-			fold_samples["fold_validation"] = index_fold_validation.tolist()
+		try:
+			# Stratified vs Unstratified.
+			if (stratify_arr is None):
+				# Nothing to stratify with.
+				kf = KFold(
+					n_splits=fold_count
+					, shuffle=True
+					, random_state=random_state
+				)
+				splitz_gen = kf.split(arr_train_indices)
+			elif (stratify_arr is not None):
+				skf = StratifiedKFold(
+					n_splits=fold_count
+					, shuffle=True
+					, random_state=random_state
+				)
+				splitz_gen = skf.split(arr_train_indices, stratify_arr)
 
-			Fold.create(
-				fold_index = i
-				, samples = fold_samples 
-				, foldset = foldset
-			)
+			i = -1
+			for index_folds_train, index_fold_validation in splitz_gen:
+				i+=1
+				fold_samples = {}
+				
+				fold_samples["folds_train_combined"] = index_folds_train.tolist()
+				fold_samples["fold_validation"] = index_fold_validation.tolist()
+
+				Fold.create(
+					fold_index = i
+					, samples = fold_samples 
+					, foldset = foldset
+				)
+		except:
+			foldset.delete_instance() # Orphaned.
+			raise
 		return foldset
 
 
@@ -5141,34 +5175,28 @@ class Job(BaseModel):
 		  'train' or 'folds_train_combined'.
 		"""
 		samples = {}
-		if (splitset.supervision == "unsupervised"):
-			samples['train'] = splitset.samples['train']
-			key_train = "train"
+		if (hide_test == False):
+			samples['test'] = splitset.samples['test']
+			key_evaluation = 'test'
+		elif (hide_test == True):
 			key_evaluation = None
 
-		elif (splitset.supervision == "supervised"):
-			if (hide_test == False):
-				samples['test'] = splitset.samples['test']
-				key_evaluation = 'test'
-			elif (hide_test == True):
-				key_evaluation = None
+		if (splitset.has_validation):
+			samples['validation'] = splitset.samples['validation']
+			key_evaluation = 'validation'
 
-			if (splitset.has_validation):
-				samples['validation'] = splitset.samples['validation']
-				key_evaluation = 'validation'
+		if (fold is not None):
+			foldset = fold.foldset
+			fold_index = fold.fold_index
+			fold_samples = foldset.folds[fold_index].samples
+			samples['folds_train_combined'] = fold_samples['folds_train_combined']
+			samples['fold_validation'] = fold_samples['fold_validation']
 
-			if (fold is not None):
-				foldset = fold.foldset
-				fold_index = fold.fold_index
-				fold_samples = foldset.folds[fold_index].samples
-				samples['folds_train_combined'] = fold_samples['folds_train_combined']
-				samples['fold_validation'] = fold_samples['fold_validation']
-
-				key_train = "folds_train_combined"
-				key_evaluation = "fold_validation"
-			elif (fold is None):
-				samples['train'] = splitset.samples['train']
-				key_train = "train"
+			key_train = "folds_train_combined"
+			key_evaluation = "fold_validation"
+		elif (fold is None):
+			samples['train'] = splitset.samples['train']
+			key_train = "train"
 		"""
 		2. Encodes the labels and features.
 		- Remember, you `.fit()` on either training data or all data (categoricals).
@@ -5179,21 +5207,22 @@ class Job(BaseModel):
 		  work the same in both numpy and torch.
 		"""
 		# Labels - fetch and encode.
-		arr_labels = splitset.label.to_numpy()
-		labelcoder = splitset.label.get_latest_labelcoder()
-		if (labelcoder is not None):
-			fitted_encoders = Job.encoder_fit_labels(
-				arr_labels=arr_labels, samples_train=samples[key_train],
-				labelcoder=labelcoder
-			)
-			
-			arr_labels = Job.encoder_transform_labels(
-				arr_labels=arr_labels,
-				fitted_encoders=fitted_encoders, labelcoder=labelcoder
-			)
-			FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=job, labelcoder=labelcoder)
-		if (library == 'pytorch'):
-			arr_labels = torch.FloatTensor(arr_labels)
+		if (splitset.supervision == "supervised"):
+			arr_labels = splitset.label.to_numpy()
+			labelcoder = splitset.label.get_latest_labelcoder()
+			if (labelcoder is not None):
+				fitted_encoders = Job.encoder_fit_labels(
+					arr_labels=arr_labels, samples_train=samples[key_train],
+					labelcoder=labelcoder
+				)
+				
+				arr_labels = Job.encoder_transform_labels(
+					arr_labels=arr_labels,
+					fitted_encoders=fitted_encoders, labelcoder=labelcoder
+				)
+				FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=job, labelcoder=labelcoder)
+			if (library == 'pytorch'):
+				arr_labels = torch.FloatTensor(arr_labels)
 
 		# Features - fetch and encode.
 		featureset = splitset.get_features()
