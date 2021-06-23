@@ -2390,11 +2390,10 @@ class Splitset(BaseModel):
 			# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 			label = Label.get_by_id(label_id)
 			# Check number of samples in Label vs Feature, because they can come from different Datasets.
-			l_dataset_id = label.dataset.id
 			stratify_arr = label.to_numpy()
-			l_length = Dataset.get_main_file(l_dataset_id).shape['rows']
+			l_length = label.dataset.get_main_file().shape['rows']
 			
-			if (l_dataset_id != f_dataset.id):
+			if (label.dataset.id != f_dataset.id):
 				if (l_length != sample_count):
 					raise ValueError("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
 
@@ -2417,9 +2416,9 @@ class Splitset(BaseModel):
 				if (f_dset_type=='image'):
 					raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be used with `dataset_type=='image'`.\n")
 
-				column_names = Dataset.get_main_tabular(f_dataset.id).columns
-				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])
-				stratify_arr = feature_array[:,col_index]
+				column_names = f_dataset.get_main_tabular().columns
+				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
+				stratify_arr = feature_array[:,:,col_index]
 				stratify_dtype = stratify_arr.dtype
 				if (f_dset_type=='sequence'):	
 					if (stratify_arr.shape[1] > 1):
@@ -2429,14 +2428,12 @@ class Splitset(BaseModel):
 						if (np.issubdtype(stratify_dtype, np.number) == False):
 							modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
 							stratify_arr = np.array(modes)
-				# Now both are 1D so reshape to 2D.
-				stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
+						# Now both are 1D so reshape to 2D.
+						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
 			elif (unsupervised_stratify_col is None):
 				if (bin_count is not None):
 		 			raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
-				stratifier1 = None
-				stratifier2 = None
 				stratify_arr = None
 
 
@@ -2453,6 +2450,7 @@ class Splitset(BaseModel):
 				stratify_arr = stratify_arr,
 				bin_count = bin_count
 			)
+
 			if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
 				features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
 					feature_array, stratify_arr, arr_idx
@@ -4799,6 +4797,7 @@ class Job(BaseModel):
 
 	def cols_by_indices(arr:object, col_indices:list):
 		# Input and output 2D array. Fetches a subset of columns using their indices.
+		# In the future if this needs to be adjusted to handle 3D array `[:,col_indices,:]`.
 		subset_arr = arr[:,col_indices]
 		return subset_arr
 
