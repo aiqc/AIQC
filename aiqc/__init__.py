@@ -288,106 +288,135 @@ def update_config(kv:dict):
 # DATABASE
 #==================================================
 
-def get_path_db():
-	"""
-	Originally, this code was in a child directory.
-	"""
-	aiqc_config = get_config()
-	if aiqc_config is None:
-		# get_config() will print a null condition.
-		pass
-	else:
-		db_path = aiqc_config['db_path']
-		return db_path
 
 
-def get_db():
-	"""
-	The `BaseModel` of the ORM calls this function. 
-	"""
-	path = get_path_db()
-	if path is None:
-		print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
-	else:
-		db = SqliteExtDatabase(path)
-		return db
+class Database():
 
 
-def create_db():
-	# Future: Could let the user specify their own db name, for import tutorials. Could check if passed as an argument to create_config?
-	db_path = get_path_db()
-	db_exists = os.path.exists(db_path)
-	if db_exists:
-		print(f"\n=> Skipping database file creation as a database file already exists at path:\n{db_path}\n")
-	else:
-		# Create sqlite file for db.
-		try:
-			db = get_db()
-		except:
-			print(
-				f"=> Yikes - failed to create database file at path:\n{db_path}\n\n" \
-				f"===================================\n"
-			)
-			raise
-		print(f"\n=> Success - created database file at path:\n{db_path}\n")
+	def __init__(self):
+		aiqc_config = get_config()
 
-	db = get_db()
-	# Create tables inside db.
-	tables = db.get_tables()
-	table_count = len(tables)
-	if (table_count > 0):
-		print(f"\n=> Info - skipping table creation as the following tables already exist.{tables}\n")
-	else:
-		db.create_tables([
-			File, Tabular, Image,
-			Dataset,
-			Label, Feature, 
-			Splitset, Featureset, Foldset, Fold, 
-			Encoderset, Labelcoder, Featurecoder, 
-			Algorithm, Hyperparamset, Hyperparamcombo,
-			Queue, Jobset, Job, Predictor, Prediction,
-			FittedEncoderset, FittedLabelcoder,
-			Window
-		])
-		tables = db.get_tables()
-		table_count = len(tables)
-		if table_count > 0:
-			print("\n💾  Success - created all database tables.  💾\n")
+		if aiqc_config is None:
+			# get_config() will print a null condition.
+			pass
 		else:
-			print(
-				f"=> Yikes - failed to create tables.\n" \
-				f"Please see README file section titled: 'Deleting & Recreating the Database'\n"
-			)
+			db_path = aiqc_config['db_path']
+
+		self.db_path = db_path
 
 
-def destroy_db(confirm:bool=False, rebuild:bool=False):
-	if (confirm==True):
-		db_path = get_path_db()
-		db_exists = os.path.exists(db_path)
+	def get_path_db(self):
+		"""
+		Originally, this code was in a child directory.
+		"""
+		aiqc_config = get_config()
+		if aiqc_config is None:
+			# get_config() will print a null condition.
+			pass
+		else:
+			db_path = aiqc_config['db_path']
+			return db_path
+
+
+	def get_db(self):
+		"""
+		The `BaseModel` of the ORM calls this function.
+		"""
+		if self.db_path is None:
+			print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
+		else:
+			db = SqliteExtDatabase(self.db_path)
+			return db
+
+
+	def create_db(self):
+		# Future: Could let the user specify their own db name, for import tutorials. Could check if passed as an argument to create_config?
+		db_exists = os.path.exists(self.db_path)
 		if db_exists:
+			print(f"\n=> Skipping database file creation as a database file already exists at path:\n{self.db_path}\n")
+		else:
+			# Create sqlite file for db.
 			try:
-				os.remove(db_path)
+				db = self.get_db()
 			except:
 				print(
-					f"=> Yikes - failed to delete database file at path:\n{db_path}\n\n" \
+					f"=> Yikes - failed to create database file at path:\n{self.db_path}\n\n" \
 					f"===================================\n"
 				)
 				raise
-			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
-		else:
-			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
-		importlib.reload(sys.modules[__name__])
+			print(f"\n=> Success - created database file at path:\n{self.db_path}\n")
 
-		if (rebuild==True):
-			create_db()
-	else:
-		print("\n=> Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
+		db = self.get_db()
+		# Create tables inside db.
+		tables = db.get_tables()
+		table_count = len(tables)
+		if (table_count > 0):
+			print(f"\n=> Info - skipping table creation as the following tables already exist.{tables}\n")
+		else:
+			db.create_tables([
+				File, Tabular, Image,
+				Dataset,
+				Label, Feature,
+				Splitset, Featureset, Foldset, Fold,
+				Encoderset, Labelcoder, Featurecoder,
+				Algorithm, Hyperparamset, Hyperparamcombo,
+				Queue, Jobset, Job, Predictor, Prediction,
+				FittedEncoderset, FittedLabelcoder,
+				Window
+			])
+			tables = db.get_tables()
+			table_count = len(tables)
+			if table_count > 0:
+				print("\n💾  Success - created all database tables.  💾\n")
+			else:
+				print(
+					f"=> Yikes - failed to create tables.\n" \
+					f"Please see README file section titled: 'Deleting & Recreating the Database'\n"
+				)
+
+
+	def new_db(self, db_name:str):
+		old_db_name = self.db_path.replace(app_dir, '')
+
+		if "experiment" in old_db_name:
+			experiment_nr = str(int(old_db_name.split('_')[1]) + 1)
+			new_db_path = app_dir + "experiment_" + experiment_nr + "_" + db_name + ".sqlite3"
+		else:
+			new_db_path = app_dir + "experiment_0_" + db_name + ".sqlite3"
+
+		update_config({"db_path": new_db_path})
+
+		self.db_path = new_db_path
+		self.create_db()
+
+
+	def destroy_db(self, confirm:bool=False, rebuild:bool=False):
+		if (confirm==True):
+			db_exists = os.path.exists(self.db_path)
+			if db_exists:
+				try:
+					os.remove(self.db_path)
+				except:
+					print(
+						f"=> Yikes - failed to delete database file at path:\n{self.db_path}\n\n" \
+						f"===================================\n"
+					)
+					raise
+				print(f"\n=> Success - deleted database file at path:\n{self.db_path}\n")
+			else:
+				print(f"\n=> Info - there is no file to delete at path:\n{self.db_path}\n")
+			importlib.reload(sys.modules[__name__])
+
+			if (rebuild==True):
+				self.create_db()
+		else:
+			print("\n=> Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
 
 
 def setup():
 	create_folder()
 	create_config()
-	create_db()
+	Database().create_db()
 
 
 #==================================================
@@ -503,7 +532,7 @@ class BaseModel(Model):
 	- ORM: by inheritting the BaseModel class, each Model class does not have to set Meta.
 	"""
 	class Meta:
-		database = get_db()
+		database = Database().get_db()
 
 
 
@@ -5437,7 +5466,7 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 	- Also you have to get a separate database connection for the separate process.
 	"""
 	BaseModel._meta.database.close()
-	BaseModel._meta.database = get_db()
+	BaseModel._meta.database = Database().get_db()
 	for j in tqdm(
 		job_statuses
 		, desc = "🔮 Training Models 🔮"
