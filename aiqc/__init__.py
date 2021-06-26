@@ -47,6 +47,11 @@ if (os.name != 'nt'):
 	# If `force=False`, then `importlib.reload(aiqc)` triggers `RuntimeError: context already set`.
 	multiprocessing.set_start_method('fork', force=True)
 
+app_dir_no_trailing_slash = appdirs.user_data_dir("aiqc")
+# Adds either a trailing slash or backslashes depending on OS.
+app_dir = os.path.join(app_dir_no_trailing_slash, '')
+default_config_path = app_dir + "config.json"
+default_db_path = app_dir + "aiqc.sqlite3"
 
 #==================================================
 # CONFIGURATION
