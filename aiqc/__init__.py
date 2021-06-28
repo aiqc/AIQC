@@ -1140,7 +1140,7 @@ class Dataset(BaseModel):
 				, source_path = source_path
 			)
 
-			#Make sure the shape and mode of each image are the same before writing the Dataset.
+			# 'ragged nested sequences' still have a .__class__ ndarray.
 			shapes = []
 			for i, arr in enumerate(tqdm(
 				ndarray_3D
@@ -2233,6 +2233,9 @@ class Feature(BaseModel):
 class Window(BaseModel):
 	size_window = IntegerField()
 	size_shift = IntegerField()
+	window_count = IntegerField()#number of windows in the dataset.
+	samples_unshifted = JSONField()#raw sample indices of each window.
+	samples_shifted = JSONField()#raw sample indices of each window.
 	feature = ForeignKeyField(Feature, backref='windows')
 
 
@@ -2249,42 +2252,45 @@ class Window(BaseModel):
 		if ((size_shift < 1) or (size_shift > (file_count - size_window))):
 			raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (file_count - size_window)`.\n")
 
+		# See diagrams in documentation.
+		window_count = math.floor((file_count - size_shift) / size_window)
+		prune_unshifted_lead = file_count - (window_count * size_window) - size_shift
+		prune_shifted_lead = prune_unshifted_lead + size_shift
+
+		prune_unshifted_lead = file_count - (window_count * size_window) - size_shift
+		prune_shifted_lead = prune_unshifted_lead + size_shift
+
+
+		# Now group the samples into shifted and unshifted windows.
+		file_indices = list(range(file_count))
+		window_indices = list(range(window_count))
+
+		samples_unshifted = []
+		samples_shifted = []
+
+		for i in window_indices:
+			unshifted_start = prune_unshifted_lead + (i*size_window)
+			unshifted_stop = prune_unshifted_lead + ((i+1)*size_window)
+
+			shifted_start = prune_shifted_lead + (i*size_window)
+			shifted_stop = prune_shifted_lead + ((i+1)*size_window)
+
+			unshifted_samples = file_indices[unshifted_start:unshifted_stop]
+			shifted_samples = file_indices[shifted_start:shifted_stop]
+
+			samples_unshifted.append(unshifted_samples)
+			samples_shifted.append(shifted_samples)
+			# These indices will be used to fetch from the encoded data.
+
 		window = Window.create(
 			size_window = size_window
 			, size_shift = size_shift
+			, window_count = window_count
+			, samples_unshifted = samples_unshifted
+			, samples_shifted = samples_shifted
 			, feature_id = feature.id
 		)
-		return window
-
-
-	def shift_window_arrs(id:int, ndarray:object):
-		window = Window.get_by_id(id)
-		file_count = window.feature.dataset.file_count
-		size_window = window.size_window
-		size_shift = window.size_shift
-
-		total_intervals = math.floor((file_count - size_shift) / size_window)
-
-		#prune_shifted_lag = 0
-		prune_shifted_lead = file_count - (total_intervals * size_window)
-		prune_unshifted_lag = -(size_shift)
-		prune_unshifted_lead = file_count - (total_intervals * size_window) - size_shift
-
-		arr_shifted = arr_shifted = ndarray[prune_shifted_lead:]#:prune_shifted_lag
-		arr_unshifted = ndarray[prune_unshifted_lead:prune_unshifted_lag]
-
-		arr_shifted_shapes = arr_shifted.shape
-		arr_shifted = arr_shifted.reshape(
-			total_intervals#3D
-			, arr_shifted_shapes[1]*math.floor(arr_shifted_shapes[0] / total_intervals)#rows
-			, arr_shifted_shapes[2]#cols
-		)
-		arr_unshifted = arr_unshifted.reshape(
-			total_intervals#3D
-			, arr_shifted_shapes[1]*math.floor(arr_shifted_shapes[0] / total_intervals)#rows
-			, arr_shifted_shapes[2]#cols
-		)
-		return arr_shifted, arr_unshifted
+		return window		
 
 
 
@@ -2352,7 +2358,11 @@ class Splitset(BaseModel):
 			if (f_dset_type == 'tabular' or f_dset_type == 'text'):
 				f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
 			elif (f_dset_type == 'image' or f_dset_type == 'sequence'):
-				f_length = f_dataset.file_count
+				if (len(f.windows)!=0):
+					window = f.windows[-1]
+					f_length = window.window_count
+				else:
+					f_length = f_dataset.file_count
 			feature_lengths.append(f_length)
 		if (len(set(feature_lengths)) != 1):
 			raise ValueError("Yikes - List of features you provided contain different amounts of samples: {set(feature_lengths)}")
@@ -2369,10 +2379,11 @@ class Splitset(BaseModel):
 		if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
 			# Could get the row count via `f_dataset.get_main_file().shape['rows']`, but need array later.
 			feature_array = f_dataset.to_numpy(columns=f_cols) #Used below for splitting.
-			# Works on both 2D and 3D data.
-			sample_count = feature_array.shape[0]
-		elif (f_dset_type=='image'):
-			sample_count = f_dataset.file_count
+			if (len(feature.windows)!=0):
+				window = feature.windows[-1]
+				feature_array, _ = window.shift_window_arrs(ndarray=feature_array)
+		# Could take the shape of array, but we already have this.
+		sample_count = feature_lengths[0]
 		arr_idx = np.arange(sample_count)
 		
 		samples = {}
@@ -2406,6 +2417,9 @@ class Splitset(BaseModel):
 
 
 		elif (label_id is None):
+			if (len(feature_ids) > 1):
+				raise ValueError("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
+
 			has_test = False
 			supervision = "unsupervised"
 			label = None
@@ -2418,8 +2432,15 @@ class Splitset(BaseModel):
 
 				column_names = f_dataset.get_main_tabular().columns
 				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
-				stratify_arr = feature_array[:,:,col_index]
+				
+				if (len(feature_array.shape)==4):# I haven't tried any 4D yet.
+					stratify_arr = feature_array[:,:,:,col_index]
+				elif (len(feature_array.shape)==3):
+					stratify_arr = feature_array[:,:,col_index]
+				elif (len(feature_array.shape)==2):
+					stratify_arr = feature_array[:,col_index]
 				stratify_dtype = stratify_arr.dtype
+				
 				if (f_dset_type=='sequence'):	
 					if (stratify_arr.shape[1] > 1):
 						# We need a single value, so take the median or mode of each 1D array.
@@ -2971,6 +2992,20 @@ class Labelcoder(BaseModel):
 							FYI `sparse` is True by default if left blank.
 							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.\n
 							Please try again with False. For example, `OneHotEncoder(sparse=False)`.
+						"""))
+
+			if (hasattr(sklearn_preprocess, 'drop')):
+				if (sklearn_preprocess.drop is not None):
+					try:
+						sklearn_preprocess.drop = None
+						print(dedent("""
+							=> Info - System overriding user input to set `sklearn_preprocess.drop`.
+							   System cannot handle `drop` yet when dynamically inverse_transforming predictions.
+						"""))
+					except:
+						raise ValueError(dedent(f"""
+							Yikes - Detected `drop is not None` attribute of {sklearn_preprocess}.
+							System attempted to override this to None, but failed.
 						"""))
 
 			if (hasattr(sklearn_preprocess, 'copy')):
@@ -4278,8 +4313,9 @@ class Queue(BaseModel):
 				if (analysis_type != 'classification_multi'):
 					raise ValueError("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
 
-		elif ((splitset.supervision != 'supervised') and (hide_test==True)):
-			raise ValueError("\nYikes - Cannot have `hide_test==True` if `splitset.supervision != 'supervised'`.\n")
+		elif ((splitset.supervision=='unsupervised') and (algorithm.analysis_type!='regression')):
+			raise ValueError("\nYikes - AIQC only supports unsupervised analysis with `analysis_type=='regression'`.\n")
+
 
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
@@ -4303,7 +4339,7 @@ class Queue(BaseModel):
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		run_count = len(combos) * len(folds) * repeat_count
 
-		q = Queue.create(
+		queue = Queue.create(
 			run_count = run_count
 			, repeat_count = repeat_count
 			, algorithm = algorithm
@@ -4312,32 +4348,35 @@ class Queue(BaseModel):
 			, hyperparamset = hyperparamset
 			, hide_test = hide_test
 		)
- 
-		for c in combos:
-			if (foldset is not None):
-				jobset = Jobset.create(
-					repeat_count = repeat_count
-					, queue = q
-					, hyperparamcombo = c
-					, foldset = foldset
-				)
-			elif (foldset is None):
-				jobset = None
-
-			try:
-				for f in folds:
-					Job.create(
-						queue = q
-						, hyperparamcombo = c
-						, fold = f
-						, repeat_count = repeat_count
-						, jobset = jobset
-					)
-			except:
+		try:
+			for c in combos:
 				if (foldset is not None):
-					jobset.delete_instance() # Orphaned.
-					raise
-		return q
+					jobset = Jobset.create(
+						repeat_count = repeat_count
+						, queue = queue
+						, hyperparamcombo = c
+						, foldset = foldset
+					)
+				elif (foldset is None):
+					jobset = None
+
+				try:
+					for f in folds:
+						Job.create(
+							queue = queue
+							, hyperparamcombo = c
+							, fold = f
+							, repeat_count = repeat_count
+							, jobset = jobset
+						)
+				except:
+					if (foldset is not None):
+						jobset.delete_instance() # Orphaned.
+						raise
+		except:
+			queue.delete_instance() # Orphaned.
+			raise
+		return queue
 
 
 	def poll_statuses(id:int, as_pandas:bool=False):
@@ -4694,7 +4733,6 @@ class Queue(BaseModel):
 
 
 
-
 class Jobset(BaseModel):
 	"""
 	- Used to group cross-fold Jobs.
@@ -4747,11 +4785,17 @@ class Job(BaseModel):
 		return split_metrics
 
 
-	def split_regression_metrics(labels, predictions):
+	def split_regression_metrics(data, predictions):
 		split_metrics = {}
-		split_metrics['r2'] = sklearn.metrics.r2_score(labels, predictions)
-		split_metrics['mse'] = sklearn.metrics.mean_squared_error(labels, predictions)
-		split_metrics['explained_variance'] = sklearn.metrics.explained_variance_score(labels, predictions)
+		data_shape = data.shape
+		# Unsupervised sequences and images.
+		if (len(data_shape) == 3):
+			data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
+			predictions = predictions.reshape(data_shape[0]*data_shape[1], data_shape[2])
+
+		split_metrics['r2'] = sklearn.metrics.r2_score(data, predictions)
+		split_metrics['mse'] = sklearn.metrics.mean_squared_error(data, predictions)
+		split_metrics['explained_variance'] = sklearn.metrics.explained_variance_score(data, predictions)
 		return split_metrics
 
 
@@ -4969,8 +5013,10 @@ class Job(BaseModel):
 		algorithm = predictor.job.queue.algorithm
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
+		supervision = predictor.job.queue.splitset.supervision
 
-		# Access the 2nd level of the `samples:dict` to determine if it has Labels.
+		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
+		# During inference it is optional to provide labels.
 		first_key = list(samples.keys())[0]
 		if ('labels' in samples[first_key].keys()):
 			has_labels = True
@@ -4992,7 +5038,9 @@ class Job(BaseModel):
 		elif (hyperparamcombo is None):
 			hp = {} #`**` cannot be None.
 
-		if (has_labels == True):
+		### unsupervised needs to run this.
+		# `has_labels` is used for pure inference.
+		if ((has_labels==True) or (supervision=='unsupervised')):
 			fn_lose = dill_deserialize(algorithm.fn_lose)
 			loser = fn_lose(**hp)
 			if (loser is None):
@@ -5000,10 +5048,11 @@ class Job(BaseModel):
 
 		predictions = {}
 		probabilities = {}
-		if (has_labels == True):
+		if ((has_labels==True) or (supervision=='unsupervised')):
 			metrics = {}
 			plot_data = {}
 
+		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
 			for split, data in samples.items():
 				preds, probs = fn_predict(model, data)
@@ -5048,6 +5097,7 @@ class Job(BaseModel):
 						predictions[split].append(empty_arr)
 					predictions[split] = np.array(predictions[split])
 
+		# Used by both supervised and unsupervised.
 		elif (analysis_type == "regression"):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
@@ -5057,49 +5107,137 @@ class Job(BaseModel):
 				# Outputs numpy.
 
 				#https://keras.io/api/losses/regression_losses/
-				if (has_labels == True):
+				if ((has_labels==True) or (supervision=='unsupervised')):
+					if (has_labels==True):
+						key = 'labels'
+					elif (supervision=='unsupervised'):
+						key = 'features'
+
 					if (library == 'keras'):
-						loss = loser(data['labels'], preds)
+						loss = loser(data[key], preds)
 					elif (library == 'pytorch'):
 						tz_preds = torch.FloatTensor(preds)
-						loss = loser(tz_preds, data['labels'])
+						loss = loser(tz_preds, data[key])
 						# After obtaining loss, make labels numpy again for metrics.
-						data['labels'] = data['labels'].detach().numpy()
+						data[key] = data[key].detach().numpy()
 						# `preds` object is still numpy.
 
 					# Numpy inputs.
-					metrics[split] = Job.split_regression_metrics(
-						data['labels'], preds
-					)
+					metrics[split] = Job.split_regression_metrics(data[key], preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
-
 		"""
 		4b. Format predictions for saving.
 		- Decode predictions before saving.
 		- Doesn't use any Label data, but does use Labelcoder fit on the original Labels.
 		"""
-		labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
-			job=predictor.job, label=predictor.job.queue.splitset.label
-		)
+		if (supervision=='supervised'):
+			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
+				job=predictor.job, label=predictor.job.queue.splitset.label
+			)
 
-		if ((fitted_encoders is not None) and (hasattr(fitted_encoders, 'inverse_transform'))):
-			for split, data in predictions.items():
-				# OHE is arriving here as ordinal, not OHE.
-				data = Labelcoder.if_1d_make_2d(data)
-				predictions[split] = fitted_encoders.inverse_transform(data)
-		elif((fitted_encoders is not None) and (not hasattr(fitted_encoders, 'inverse_transform'))):
-			print(dedent("""
-				Warning - `Predictor.predictions` are encoded. 
-				They cannot be decoded because the `sklearn.preprocessing`
-				encoder used does not have `inverse_transform`.
-			"""))
+			if ((fitted_encoders is not None) and (hasattr(fitted_encoders, 'inverse_transform'))):
+				for split, data in predictions.items():
+					# OHE is arriving here as ordinal, not OHE.
+					data = Labelcoder.if_1d_make_2d(data)
+					predictions[split] = fitted_encoders.inverse_transform(data)
+			elif((fitted_encoders is not None) and (not hasattr(fitted_encoders, 'inverse_transform'))):
+				print(dedent("""
+					Warning - `Predictor.predictions` are encoded. 
+					They cannot be decoded because the `sklearn.preprocessing`
+					encoder used does not have `inverse_transform`.
+				"""))
+		
+		elif (supervision=='unsupervised'):
+			"""
+			- Decode the unsupervised predictions back into features.
+			- Unsupervised prevents multiple features.
+			"""
+			# Remember `fitted_encoders` is a list of lists.
+			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+				job = predictor.job
+				, feature = predictor.job.queue.splitset.get_features()[0]
+			)
+
+			if (encoderset is not None):
+				for split, data in predictions.items():
+					# Make sure it is 2D
+					data_shape = data.shape
+					originally_3d = False
+					originally_4d = False
+					if (len(data_shape)==3):
+						data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
+						originally_3d = True
+					elif (len(data_shape)==4):
+						originally_4d = True
+						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
+
+					# Figure out the order in which columns were encoded.
+					encoded_column_names = []
+					for i, fc in enumerate(encoderset.featurecoders):
+						fitted_encoder = fitted_encoders[i][0]
+						stringified_encoder = str(fitted_encoder)
+						matching_columns = fc.matching_columns
+						[encoded_column_names.append(mc) for mc in matching_columns]
+						# Fetch the columns that it encoded.
+						if ("OneHotEncoder" in stringified_encoder):
+							num_matching_columns = 0
+							for c in fitted_encoder.categories_:
+								num_matching_columns += len(c)
+						else:
+							num_matching_columns = len(matching_columns)
+						data_subset = data[:,:num_matching_columns]
+						
+						# Decode that slice.
+						data_subset = Labelcoder.if_1d_make_2d(data_subset)
+						data_subset = fitted_encoder.inverse_transform(data_subset)
+						# Then concatenate w previously decoded columns.
+						if (i==0):
+							decoded_data = data_subset
+						else:
+							decoded_data = np.concatenate((decoded_data, data_subset), axis=1)
+						# Delete those columns from the original data.
+						# So that we can continue to access columns via index.
+						print(num_matching_columns)
+						data = np.delete(data, np.s_[0:num_matching_columns], axis=1)
+					# Check for and merge any leftover columns.
+					leftover_columns = encoderset.featurecoders[-1].leftover_columns
+					if (len(leftover_columns)!=0):
+						encoded_column_names.append(leftover_columns)
+						decoded_data = np.concatenate((decoded_data, data), axis=1)
+					
+					# Map encoded indices against original indices.
+					original_columns = predictor.job.queue.splitset.get_features()[0].dataset.get_main_tabular().columns
+					original_dict = {}
+					for i, name in enumerate(original_columns):
+						original_dict[i] = name
+					encoded_indices = []
+					for name in encoded_column_names:
+						for idx, n in original_dict.items():
+							if (name == n):
+								encoded_indices.append(idx)
+								break
+					# Rearrange columns by index.
+					placeholder = np.empty_like(encoded_indices)
+					placeholder[encoded_indices] = np.arange(len(encoded_indices))
+					decoded_data = decoded_data[:, placeholder]
+
+					# Restore original shape.
+					# Due to inverse OHE, the number of columns may have decreased.
+					new_col_count = decoded_data.shape[1]
+					if (originally_3d==True):
+						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], new_col_count)
+					elif (originally_4d==True):
+						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], data_shape[2], new_col_count)
+
+					predictions[split] = decoded_data
+
 		# Flatten.
 		for split, data in predictions.items():
-			if (data.ndim > 1):
+			if ((data.ndim > 1) and (supervision!='unsupervised')):
 				predictions[split] = data.flatten()
 
-		if (has_labels == True):
+		if ((has_labels==True) or (supervision=='unsupervised')):
 			# 4c. Aggregate metrics across splits/ folds.
 			# Alphabetize metrics dictionary by key.
 			for k,v in metrics.items():
@@ -5129,7 +5267,7 @@ class Job(BaseModel):
 			# Don't flatten the softmax probabilities.
 			probabilities[split] = probabilities[split].flatten()
 
-		if (has_labels == False):
+		if ((has_labels==False) and (supervision!='unsupervised')):
 			metrics = None
 			metrics_aggregate = None
 			plot_data = None
@@ -5245,6 +5383,11 @@ class Job(BaseModel):
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
 				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=job, encoderset=encoderset)
+			"""
+			if (len(feature.windows) > 0):
+				window = feature.windows[-1]
+				arr_train_shifted, arr_train_unshifted = window.shift_window_arrs(ndarray=arr_features)
+			"""
 			if (library == 'pytorch'):
 				arr_features = torch.FloatTensor(arr_features)
 			# Don't use the list if you don't have to.
@@ -5259,31 +5402,29 @@ class Job(BaseModel):
 		""" 
 		for split, rows in samples.items():
 			if (feature_count == 1):
-				samples[split] = {
-					"features": arr_features[rows]
-					, "labels": arr_labels[rows]
-				}
+				samples[split] = {"features": arr_features[rows]}
 			elif (feature_count > 1):
-				samples[split] = {
-					"features": [arr_features[rows] for arr_features in features]
-					, "labels": arr_labels[rows]
-				}
+				samples[split] = {"features": [arr_features[rows] for arr_features in features]}
+			
+			if (splitset.supervision == "supervised"):
+				samples[split]['labels'] = arr_labels[rows]
+
 		"""
 		- Input shapes can only be determined after encoding has taken place.
 		- `[0]` accessess the first sample in each array.
 		- Does not impact the training loop's `batch_size`.
 		- Shapes are used later by `get_model()` to initialize it.
 		"""
-		label_shape = samples[key_train]['labels'][0].shape
 		if (feature_count == 1):
 			features_shape = samples[key_train]['features'][0].shape
 		elif (feature_count > 1):
 			features_shape = [arr_features[0].shape for arr_features in samples[key_train]['features']]
+		input_shapes = {"features_shape": features_shape}
 
-		input_shapes = {
-			"features_shape": features_shape
-			, "label_shape": label_shape
-		}
+		if (splitset.supervision == "supervised"):
+			label_shape = samples[key_train]['labels'][0].shape
+			input_shapes["label_shape"] = label_shape
+
 		"""
 		3. Build and Train model.
 		- This does not need to be modularized out of `Job.run()` because models are not
@@ -5415,6 +5556,7 @@ class Job(BaseModel):
 			, repeat_index = repeat_index
 		)
 		
+		# 6. Use the predictor object to make predictions and obtain metrics.
 		try:
 			Job.predict(samples=samples, predictor_id=predictor.id)
 		except:
