@@ -2290,7 +2290,7 @@ class Window(BaseModel):
 			, samples_shifted = samples_shifted
 			, feature_id = feature.id
 		)
-		return window		
+		return window
 
 
 
@@ -2381,7 +2381,9 @@ class Splitset(BaseModel):
 			feature_array = f_dataset.to_numpy(columns=f_cols) #Used below for splitting.
 			if (len(feature.windows)!=0):
 				window = feature.windows[-1]
-				feature_array, _ = window.shift_window_arrs(ndarray=feature_array)
+				# Returns 4D: (20 samples, 75 timesteps, 1 row, 5 columns)
+				# Shifted and unshifted point to the same sample.
+				feature_array = np.array([feature_array[w] for w in window.samples_unshifted]) 
 		# Could take the shape of array, but we already have this.
 		sample_count = feature_lengths[0]
 		arr_idx = np.arange(sample_count)
@@ -2433,7 +2435,8 @@ class Splitset(BaseModel):
 				column_names = f_dataset.get_main_tabular().columns
 				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
 				
-				if (len(feature_array.shape)==4):# I haven't tried any 4D yet.
+				if (len(feature_array.shape)==4):
+					# Used by 4D windowed sequence. Returns 3D: (20 samples, 75 timesteps, 1 column)
 					stratify_arr = feature_array[:,:,:,col_index]
 				elif (len(feature_array.shape)==3):
 					stratify_arr = feature_array[:,:,col_index]
@@ -2443,7 +2446,7 @@ class Splitset(BaseModel):
 				
 				if (f_dset_type=='sequence'):	
 					if (stratify_arr.shape[1] > 1):
-						# We need a single value, so take the median or mode of each 1D array.
+						# We need a single value for each sample.
 						if (np.issubdtype(stratify_dtype, np.number) == True):
 							stratify_arr = np.median(stratify_arr, axis=1)
 						if (np.issubdtype(stratify_dtype, np.number) == False):

@@ -208,7 +208,7 @@
   
   </br>
   <center>
-    <i style="color:gray;">Thank you to our sponsor:</i>
+    <i style="color:gray;">Provided in part by the support and sponsorship of:</i>
   </center>
   </br></br>
 
