@@ -2231,11 +2231,15 @@ class Feature(BaseModel):
 
 
 class Window(BaseModel):
+	"""
+	- Although Window could be related to Dataset, they really have nothing to do with Labels, 
+	  and they are used a lot when fetching Features.
+	"""
 	size_window = IntegerField()
 	size_shift = IntegerField()
 	window_count = IntegerField()#number of windows in the dataset.
 	samples_unshifted = JSONField()#raw sample indices of each window.
-	samples_shifted = JSONField()#raw sample indices of each window.
+	samples_shifted = JSONField(null=True)#raw sample indices of each window.
 	feature = ForeignKeyField(Feature, backref='windows')
 
 
@@ -2245,24 +2249,28 @@ class Window(BaseModel):
 		, size_shift:int
 	):
 		feature = Feature.get_by_id(feature_id)
-		file_count = feature.dataset.file_count
+		dataset_type = feature.dataset.dataset_type
+		if (dataset_type=='tabular' or dataset_type=='sequence'):
+			sample_count = feature.dataset.get_main_file().shape['rows']
+		elif (dataset_type=='image'):
+			sample_count = feature.dataset.file_count
 
-		if ((size_window < 1) or (size_window > (file_count - size_shift))):
-			raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (file_count - size_shift)`.\n")
-		if ((size_shift < 1) or (size_shift > (file_count - size_window))):
-			raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (file_count - size_window)`.\n")
+		if ((size_window < 1) or (size_window > (sample_count - size_shift))):
+			raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
+		if ((size_shift < 1) or (size_shift > (sample_count - size_window))):
+			raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
 
 		# See diagrams in documentation.
-		window_count = math.floor((file_count - size_shift) / size_window)
-		prune_unshifted_lead = file_count - (window_count * size_window) - size_shift
+		window_count = math.floor((sample_count - size_shift) / size_window)
+		prune_unshifted_lead = sample_count - (window_count * size_window) - size_shift
 		prune_shifted_lead = prune_unshifted_lead + size_shift
 
-		prune_unshifted_lead = file_count - (window_count * size_window) - size_shift
+		prune_unshifted_lead = sample_count - (window_count * size_window) - size_shift
 		prune_shifted_lead = prune_unshifted_lead + size_shift
 
 
 		# Now group the samples into shifted and unshifted windows.
-		file_indices = list(range(file_count))
+		file_indices = list(range(sample_count))
 		window_indices = list(range(window_count))
 
 		samples_unshifted = []
@@ -2355,17 +2363,17 @@ class Splitset(BaseModel):
 			f_dataset = f.dataset
 			f_dset_type = f_dataset.dataset_type
 
-			if (f_dset_type == 'tabular' or f_dset_type == 'text'):
-				f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
-			elif (f_dset_type == 'image' or f_dset_type == 'sequence'):
-				if (len(f.windows)!=0):
-					window = f.windows[-1]
-					f_length = window.window_count
-				else:
-					f_length = f_dataset.file_count
+			if (len(f.windows)!=0):
+				window = f.windows[-1]
+				f_length = window.window_count
+			elif (len(f.windows)==0):
+				if (f_dset_type == 'tabular' or f_dset_type == 'text'):
+					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
+				elif (f_dset_type == 'image' or f_dset_type == 'sequence'):
+					f_length = f_dataset.file_count					
 			feature_lengths.append(f_length)
 		if (len(set(feature_lengths)) != 1):
-			raise ValueError("Yikes - List of features you provided contain different amounts of samples: {set(feature_lengths)}")
+			raise ValueError("Yikes - List of Features you provided contain different amounts of samples.")
 
 		# --- Prepare for splitting ---
 		feature = Feature.get_by_id(feature_ids[0])
@@ -2373,15 +2381,16 @@ class Splitset(BaseModel):
 		f_dset_type = f_dataset.dataset_type
 		f_cols = feature.columns
 		"""
-		Simulate an index to be split alongside features and labels
-		in order to keep track of the samples being used in the resulting splits.
+		- Simulate an index to be split alongside features and labels
+		  in order to keep track of the samples being used in the resulting splits.
+		- If it's windowed, the samples become the windows instead of the rows.
 		"""
 		if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
 			# Could get the row count via `f_dataset.get_main_file().shape['rows']`, but need array later.
 			feature_array = f_dataset.to_numpy(columns=f_cols) #Used below for splitting.
 			if (len(feature.windows)!=0):
 				window = feature.windows[-1]
-				# Returns 4D: (20 samples, 75 timesteps, 1 row, 5 columns)
+				# Returns 3D: e.g. (50 samples, 28 timesteps, 5 columns)
 				# Shifted and unshifted point to the same sample.
 				feature_array = np.array([feature_array[w] for w in window.samples_unshifted]) 
 		# Could take the shape of array, but we already have this.
@@ -2420,6 +2429,7 @@ class Splitset(BaseModel):
 
 		elif (label_id is None):
 			if (len(feature_ids) > 1):
+				# Mainly because it would require multiple labels.
 				raise ValueError("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
 
 			has_test = False
@@ -2432,28 +2442,29 @@ class Splitset(BaseModel):
 				if (f_dset_type=='image'):
 					raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be used with `dataset_type=='image'`.\n")
 
+				# Get the column for stratification.
 				column_names = f_dataset.get_main_tabular().columns
 				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
 				
 				if (len(feature_array.shape)==4):
-					# Used by 4D windowed sequence. Returns 3D: (20 samples, 75 timesteps, 1 column)
+					# Used by windowed sequence. Reduces to 3D with 1 column.
 					stratify_arr = feature_array[:,:,:,col_index]
 				elif (len(feature_array.shape)==3):
+					# Used by windowed tabular. Reduces to 2D with 1 column.
 					stratify_arr = feature_array[:,:,col_index]
 				elif (len(feature_array.shape)==2):
 					stratify_arr = feature_array[:,col_index]
 				stratify_dtype = stratify_arr.dtype
 				
-				if (f_dset_type=='sequence'):	
-					if (stratify_arr.shape[1] > 1):
-						# We need a single value for each sample.
-						if (np.issubdtype(stratify_dtype, np.number) == True):
-							stratify_arr = np.median(stratify_arr, axis=1)
-						if (np.issubdtype(stratify_dtype, np.number) == False):
-							modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
-							stratify_arr = np.array(modes)
-						# Now both are 1D so reshape to 2D.
-						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
+				if (stratify_arr.shape[1] > 1):
+					# We need a single value for each sample.
+					if (np.issubdtype(stratify_dtype, np.number) == True):
+						stratify_arr = np.median(stratify_arr, axis=1)
+					if (np.issubdtype(stratify_dtype, np.number) == False):
+						modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
+						stratify_arr = np.array(modes)
+					# Now reshape from 1D to 2D.
+					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
 			elif (unsupervised_stratify_col is None):
 				if (bin_count is not None):
@@ -2716,6 +2727,8 @@ class Foldset(BaseModel):
 					samples = arr_train_indices
 				)
 				stratify_dtype = stratify_arr.dtype
+
+				# Handles sequence.
 				if (stratify_arr.shape[1] > 1):
 					# We need a single value, so take the median or mode of each 1D array.
 					if (np.issubdtype(stratify_dtype, np.number) == True):
@@ -2729,7 +2742,7 @@ class Foldset(BaseModel):
 				if (bin_count is not None):
 					raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
 				stratify_arr = None#Used in if statements below.
-			
+
 		# If the Labels are binned *overwite* the values w bin numbers. Otherwise untouched.
 		if (stratify_arr is not None):
 			# Bin the floats.
@@ -2759,6 +2772,8 @@ class Foldset(BaseModel):
 						array_to_bin = stratify_arr
 						, bin_count = bin_count
 					)
+				elif (bin_count is not None):
+					print("\nInfo - Attempting to use ordinal bins as no `bin_count` was provided. This may fail if there are to many unique ordinal values.\n")
 			else:
 				if (bin_count is not None):
 					raise ValueError(dedent("""
@@ -2797,6 +2812,7 @@ class Foldset(BaseModel):
 					, shuffle=True
 					, random_state=random_state
 				)
+
 				splitz_gen = skf.split(arr_train_indices, stratify_arr)
 
 			i = -1
@@ -5153,7 +5169,7 @@ class Job(BaseModel):
 		
 		elif (supervision=='unsupervised'):
 			"""
-			- Decode the unsupervised predictions back into features.
+			- Decode the unsupervised predictions back into original Features.
 			- Unsupervised prevents multiple features.
 			"""
 			# Remember `fitted_encoders` is a list of lists.
@@ -5166,13 +5182,13 @@ class Job(BaseModel):
 				for split, data in predictions.items():
 					# Make sure it is 2D
 					data_shape = data.shape
-					originally_3d = False
-					originally_4d = False
 					if (len(data_shape)==3):
 						data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
 						originally_3d = True
+						originally_4d = False
 					elif (len(data_shape)==4):
 						originally_4d = True
+						originally_3d = False
 						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
 
 					# Figure out the order in which columns were encoded.
@@ -5201,12 +5217,11 @@ class Job(BaseModel):
 							decoded_data = np.concatenate((decoded_data, data_subset), axis=1)
 						# Delete those columns from the original data.
 						# So that we can continue to access columns via index.
-						print(num_matching_columns)
 						data = np.delete(data, np.s_[0:num_matching_columns], axis=1)
 					# Check for and merge any leftover columns.
 					leftover_columns = encoderset.featurecoders[-1].leftover_columns
 					if (len(leftover_columns)!=0):
-						encoded_column_names.append(leftover_columns)
+						[encoded_column_names.append(c) for c in leftover_columns]
 						decoded_data = np.concatenate((decoded_data, data), axis=1)
 					
 					# Map encoded indices against original indices.
@@ -5386,11 +5401,17 @@ class Job(BaseModel):
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
 				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=job, encoderset=encoderset)
-			"""
+
 			if (len(feature.windows) > 0):
 				window = feature.windows[-1]
-				arr_train_shifted, arr_train_unshifted = window.shift_window_arrs(ndarray=arr_features)
-			"""
+				# Need to do the target first in order to access the unwindowed `arr_features`.
+				# During pure inference, there may be no shifted samples.
+				if (window.samples_shifted is not None):
+					arr_labels = np.array([arr_features[w] for w in window.samples_shifted])
+					if (library == 'pytorch'):
+						arr_labels = torch.FloatTensor(arr_labels)
+				arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
+			
 			if (library == 'pytorch'):
 				arr_features = torch.FloatTensor(arr_features)
 			# Don't use the list if you don't have to.
@@ -5403,15 +5424,12 @@ class Job(BaseModel):
 		- Keras multi-input models accept input as a list. Not using nested dict for multiple
 		  features because it would be hard to figure out feature.id-based keys on the fly.
 		""" 
-		for split, rows in samples.items():
+		for split, indices in samples.items():
 			if (feature_count == 1):
-				samples[split] = {"features": arr_features[rows]}
+				samples[split] = {"features": arr_features[indices]}
 			elif (feature_count > 1):
-				samples[split] = {"features": [arr_features[rows] for arr_features in features]}
-			
-			if (splitset.supervision == "supervised"):
-				samples[split]['labels'] = arr_labels[rows]
-
+				samples[split] = {"features": [arr_features[indices] for arr_features in features]}
+			samples[split]['labels'] = arr_labels[indices]
 		"""
 		- Input shapes can only be determined after encoding has taken place.
 		- `[0]` accessess the first sample in each array.
@@ -5424,9 +5442,8 @@ class Job(BaseModel):
 			features_shape = [arr_features[0].shape for arr_features in samples[key_train]['features']]
 		input_shapes = {"features_shape": features_shape}
 
-		if (splitset.supervision == "supervised"):
-			label_shape = samples[key_train]['labels'][0].shape
-			input_shapes["label_shape"] = label_shape
+		label_shape = samples[key_train]['labels'][0].shape
+		input_shapes["label_shape"] = label_shape
 
 		"""
 		3. Build and Train model.
@@ -5439,15 +5456,12 @@ class Job(BaseModel):
 			hp = {} #`**` cannot be None.
 
 		fn_build = dill_deserialize(algorithm.fn_build)
-		if (splitset.supervision == "supervised"):
-			# pytorch multiclass has a single ordinal label.
-			if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
-				num_classes = len(splitset.label.unique_classes)
-				model = fn_build(features_shape, num_classes, **hp)
-			else:
-				model = fn_build(features_shape, label_shape, **hp)
-		elif (splitset.supervision == "unsupervised"):
-			model = fn_build(features_shape, **hp)
+		# pytorch multiclass has a single ordinal label.
+		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
+			num_classes = len(splitset.label.unique_classes)
+			model = fn_build(features_shape, num_classes, **hp)
+		else:
+			model = fn_build(features_shape, label_shape, **hp)
 		if (model is None):
 			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
 		
