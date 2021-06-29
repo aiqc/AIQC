@@ -2218,12 +2218,18 @@ class Feature(BaseModel):
 			return encodersets[-1]
 
 
-	def make_window(id:int, size_window:int, size_shift:int):
+	def make_window(
+		id:int
+		, size_window:int
+		, size_shift:int
+		, record_shifted:bool=True
+	):
 		feature = Feature.get_by_id(id)
 		window = Window.from_feature(
 			size_window = size_window
 			, size_shift = size_shift
 			, feature_id = feature.id
+			, record_shifted = record_shifted
 		)
 		return window
 
@@ -2238,8 +2244,8 @@ class Window(BaseModel):
 	size_window = IntegerField()
 	size_shift = IntegerField()
 	window_count = IntegerField()#number of windows in the dataset.
-	samples_unshifted = JSONField()#raw sample indices of each window.
-	samples_shifted = JSONField(null=True)#raw sample indices of each window.
+	samples_unshifted = JSONField()#underlying sample indices of each window.
+	samples_shifted = JSONField(null=True)#underlying sample indices of each window.
 	feature = ForeignKeyField(Feature, backref='windows')
 
 
@@ -2247,6 +2253,7 @@ class Window(BaseModel):
 		feature_id:int
 		, size_window:int
 		, size_shift:int
+		, record_shifted:bool=True
 	):
 		feature = Feature.get_by_id(feature_id)
 		dataset_type = feature.dataset.dataset_type
@@ -2255,40 +2262,51 @@ class Window(BaseModel):
 		elif (dataset_type=='image'):
 			sample_count = feature.dataset.file_count
 
-		if ((size_window < 1) or (size_window > (sample_count - size_shift))):
-			raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
-		if ((size_shift < 1) or (size_shift > (sample_count - size_window))):
-			raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
 
-		# See diagrams in documentation.
-		window_count = math.floor((sample_count - size_shift) / size_window)
-		prune_unshifted_lead = sample_count - (window_count * size_window) - size_shift
-		prune_shifted_lead = prune_unshifted_lead + size_shift
-
-		prune_unshifted_lead = sample_count - (window_count * size_window) - size_shift
-		prune_shifted_lead = prune_unshifted_lead + size_shift
+		if (record_shifted==True):
+			if ((size_window < 1) or (size_window > (sample_count - size_shift))):
+				raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
+			if ((size_shift < 1) or (size_shift > (sample_count - size_window))):
+				raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
 
 
-		# Now group the samples into shifted and unshifted windows.
-		file_indices = list(range(sample_count))
-		window_indices = list(range(window_count))
+			window_count = math.floor((sample_count - size_window) / size_shift)
+			prune_shifted_lead = sample_count - ((window_count - 1)*size_shift + size_window)
+			prune_unshifted_lead = prune_shifted_lead - size_shift
 
-		samples_unshifted = []
-		samples_shifted = []
+			samples_shifted = []
+			samples_unshifted = []
+			file_indices = list(range(sample_count))
+			window_indices = list(range(window_count))
 
-		for i in window_indices:
-			unshifted_start = prune_unshifted_lead + (i*size_window)
-			unshifted_stop = prune_unshifted_lead + ((i+1)*size_window)
+			for i in window_indices:
+				unshifted_start = prune_unshifted_lead + (i*size_shift)
+				unshifted_stop = unshifted_start + size_window
+				unshifted_samples = file_indices[unshifted_start:unshifted_stop]
+				samples_unshifted.append(unshifted_samples)
 
-			shifted_start = prune_shifted_lead + (i*size_window)
-			shifted_stop = prune_shifted_lead + ((i+1)*size_window)
+				shifted_start = unshifted_start + size_shift
+				shifted_stop = shifted_start + size_window
+				shifted_samples = file_indices[shifted_start:shifted_stop]
+				samples_shifted.append(shifted_samples)
 
-			unshifted_samples = file_indices[unshifted_start:unshifted_stop]
-			shifted_samples = file_indices[shifted_start:shifted_stop]
 
-			samples_unshifted.append(unshifted_samples)
-			samples_shifted.append(shifted_samples)
-			# These indices will be used to fetch from the encoded data.
+		# This is for pure inference. Just taking as many Windows as you can.
+		if (record_shifted==False):
+			window_count = math.floor((sample_count - size_window) / size_shift) + 1
+			prune_unshifted_lead = sample_count - ((window_count - 1)*size_shift + size_window)
+
+			samples_unshifted = []
+			window_indices = list(range(window_count))
+			file_indices = list(range(sample_count))
+
+			for i in window_indices:
+				unshifted_start = prune_unshifted_lead + (i*size_shift)
+				unshifted_stop = unshifted_start + size_window
+				unshifted_samples = file_indices[unshifted_start:unshifted_stop]
+				samples_unshifted.append(unshifted_samples)
+			samples_shifted = None
+
 
 		window = Window.create(
 			size_window = size_window
@@ -4807,7 +4825,8 @@ class Job(BaseModel):
 	def split_regression_metrics(data, predictions):
 		split_metrics = {}
 		data_shape = data.shape
-		# Unsupervised sequences and images.
+		# Unsupervised sequences and images have many data points for a single sample.
+		# These metrics don't work with 3D data, so reshape to 2D.
 		if (len(data_shape) == 3):
 			data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
 			predictions = predictions.reshape(data_shape[0]*data_shape[1], data_shape[2])
@@ -5059,7 +5078,7 @@ class Job(BaseModel):
 
 		### unsupervised needs to run this.
 		# `has_labels` is used for pure inference.
-		if ((has_labels==True) or (supervision=='unsupervised')):
+		if ((has_labels==True)):
 			fn_lose = dill_deserialize(algorithm.fn_lose)
 			loser = fn_lose(**hp)
 			if (loser is None):
@@ -5067,7 +5086,7 @@ class Job(BaseModel):
 
 		predictions = {}
 		probabilities = {}
-		if ((has_labels==True) or (supervision=='unsupervised')):
+		if ((has_labels==True)):
 			metrics = {}
 			plot_data = {}
 
@@ -5255,7 +5274,7 @@ class Job(BaseModel):
 			if ((data.ndim > 1) and (supervision!='unsupervised')):
 				predictions[split] = data.flatten()
 
-		if ((has_labels==True) or (supervision=='unsupervised')):
+		if ((has_labels==True)):
 			# 4c. Aggregate metrics across splits/ folds.
 			# Alphabetize metrics dictionary by key.
 			for k,v in metrics.items():
@@ -5794,6 +5813,23 @@ class Predictor(BaseModel):
 			elif (feature_new_typ == 'image'):
 				Predictor.image_schemas_match(feature_old, feature_new)
 
+			if (
+				((len(feature_old.windows)>0) and (len(feature_new.windows)==0))
+				or
+				((len(feature_new.windows)>0) and (len(feature_old.windows)==0))
+			):
+				raise ValueError("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
+
+			if (((len(feature_old.windows)>0) and (len(feature_new.windows)>0))):
+				window_old = feature_old.windows[-1]
+				window_new = feature_new.windows[-1]
+				if (
+					window_old.size_window != window_new.size_window
+					or
+					window_old.size_shift != window_new.size_shift
+				):
+					raise ValueError("\nYikes - New Window and old Window schemas do not match.\n")
+
 		# Only verify Labels if the inference new Splitset provides Labels.
 		# Otherwise, it may be conducting pure inference.
 		label = splitset_new.label
@@ -5875,6 +5911,26 @@ class Predictor(BaseModel):
 					arr_features=arr_features,
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
+			# We can use Window confidently because we know the schemas match.
+			if (len(feature_new.windows) > 0):
+				window = feature_new.windows[-1]
+				
+				# do the label before 
+
+				arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
+
+				
+				# should just do the label part here.
+				# only compare the shift if the new one has a shift.
+				# if it does not have a shift then it does not have a label
+
+
+
+
+				# raise error on label if new splitset has a window.
+
+
+
 			if (library == 'pytorch'):
 				arr_features = torch.FloatTensor(arr_features)
 			if (feature_count > 1):
