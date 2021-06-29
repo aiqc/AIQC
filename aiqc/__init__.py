@@ -2422,10 +2422,13 @@ class Splitset(BaseModel):
 
 		# ------ Stratification prep ------
 		if (label_id is not None):
-			has_test = True
-			supervision = "supervised"
 			if (unsupervised_stratify_col is not None):
 				raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n")
+			if (len(feature.windows)>0):
+				raise ValueError("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
+
+			has_test = True
+			supervision = "supervised"
 
 			# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 			label = Label.get_by_id(label_id)
@@ -5045,6 +5048,7 @@ class Job(BaseModel):
 		Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
 		- `splitset_id` refers to a splitset provided for inference, not training.
+		- `has_labels` is used by inference process. Unsupervised also uses it for self-supervision.
 		"""
 		predictor = Predictor.get_by_id(predictor_id)
 		hyperparamcombo = predictor.job.hyperparamcombo
@@ -5076,8 +5080,6 @@ class Job(BaseModel):
 		elif (hyperparamcombo is None):
 			hp = {} #`**` cannot be None.
 
-		### unsupervised needs to run this.
-		# `has_labels` is used for pure inference.
 		if ((has_labels==True)):
 			fn_lose = dill_deserialize(algorithm.fn_lose)
 			loser = fn_lose(**hp)
@@ -5086,7 +5088,7 @@ class Job(BaseModel):
 
 		predictions = {}
 		probabilities = {}
-		if ((has_labels==True)):
+		if (has_labels==True):
 			metrics = {}
 			plot_data = {}
 
@@ -5126,7 +5128,7 @@ class Job(BaseModel):
 				
 				# During prediction Keras OHE output gets made ordinal for metrics.
 				# Use the probabilities to recreate the OHE so they can be inverse_transform'ed.
-				if (("multi" in analysis_type) and (library == 'keras')):
+				if (("multi" in analysis_type) and (library=='keras')):
 					predictions[split] = []
 					for p in probs:
 						marker_position = np.argmax(p, axis=-1)
@@ -5136,7 +5138,7 @@ class Job(BaseModel):
 					predictions[split] = np.array(predictions[split])
 
 		# Used by both supervised and unsupervised.
-		elif (analysis_type == "regression"):
+		elif (analysis_type=="regression"):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
@@ -5145,23 +5147,18 @@ class Job(BaseModel):
 				# Outputs numpy.
 
 				#https://keras.io/api/losses/regression_losses/
-				if ((has_labels==True) or (supervision=='unsupervised')):
-					if (has_labels==True):
-						key = 'labels'
-					elif (supervision=='unsupervised'):
-						key = 'features'
-
+				if (has_labels==True):
 					if (library == 'keras'):
-						loss = loser(data[key], preds)
+						loss = loser(data['labels'], preds)
 					elif (library == 'pytorch'):
 						tz_preds = torch.FloatTensor(preds)
-						loss = loser(tz_preds, data[key])
+						loss = loser(tz_preds, data['labels'])
 						# After obtaining loss, make labels numpy again for metrics.
-						data[key] = data[key].detach().numpy()
+						data['labels'] = data['labels'].detach().numpy()
 						# `preds` object is still numpy.
 
-					# Numpy inputs.
-					metrics[split] = Job.split_regression_metrics(data[key], preds)
+					# These take numpy inputs.
+					metrics[split] = Job.split_regression_metrics(data['labels'], preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
 		"""
@@ -5218,6 +5215,7 @@ class Job(BaseModel):
 						matching_columns = fc.matching_columns
 						[encoded_column_names.append(mc) for mc in matching_columns]
 						# Fetch the columns that it encoded.
+						# This will need to be adjusted to handle text feature extraction.
 						if ("OneHotEncoder" in stringified_encoder):
 							num_matching_columns = 0
 							for c in fitted_encoder.categories_:
@@ -5270,11 +5268,12 @@ class Job(BaseModel):
 					predictions[split] = decoded_data
 
 		# Flatten.
-		for split, data in predictions.items():
-			if ((data.ndim > 1) and (supervision!='unsupervised')):
-				predictions[split] = data.flatten()
+		if (supervision=='supervised'):
+			for split, data in predictions.items():
+				if (data.ndim > 1):
+					predictions[split] = data.flatten()
 
-		if ((has_labels==True)):
+		if (has_labels==True):
 			# 4c. Aggregate metrics across splits/ folds.
 			# Alphabetize metrics dictionary by key.
 			for k,v in metrics.items():
@@ -5304,7 +5303,7 @@ class Job(BaseModel):
 			# Don't flatten the softmax probabilities.
 			probabilities[split] = probabilities[split].flatten()
 
-		if ((has_labels==False) and (supervision!='unsupervised')):
+		if ((has_labels==False) and (supervision=='supervised')):
 			metrics = None
 			metrics_aggregate = None
 			plot_data = None
@@ -5899,6 +5898,9 @@ class Predictor(BaseModel):
 		featureset_old = splitset_old.get_features()
 		feature_count = len(featureset_new)
 		features = []# expecting different array shapes so it has to be list, not array.
+		
+		# Right now only 1 Feature can be windowed.
+		windowed_label = False
 		for i, feature_new in enumerate(featureset_new):
 			arr_features = feature_new.to_numpy()
 			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
@@ -5915,21 +5917,13 @@ class Predictor(BaseModel):
 			if (len(feature_new.windows) > 0):
 				window = feature_new.windows[-1]
 				
-				# do the label before 
-
-				arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
-
+				if (window.samples_shifted is not None):
+					windowed_label = True
+					arr_labels = np.array([arr_features[w] for w in window.samples_shifted])
+					if (library == 'pytorch'):
+						arr_labels = torch.FloatTensor(arr_labels)
 				
-				# should just do the label part here.
-				# only compare the shift if the new one has a shift.
-				# if it does not have a shift then it does not have a label
-
-
-
-
-				# raise error on label if new splitset has a window.
-
-
+				arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
 
 			if (library == 'pytorch'):
 				arr_features = torch.FloatTensor(arr_features)
@@ -5955,7 +5949,7 @@ class Predictor(BaseModel):
 			label_old = None
 
 		if (label_new is not None):			
-			arr_labels = label_new.to_numpy()	
+			arr_labels = label_new.to_numpy()
 
 			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
 				job=predictor.job, label=label_old
@@ -5968,6 +5962,10 @@ class Predictor(BaseModel):
 			if (library == 'pytorch'):
 				arr_labels = torch.FloatTensor(arr_labels)
 			samples[str_id]['labels'] = arr_labels
+		
+		elif (windowed_label == True):
+			samples[str_id]['labels'] = arr_labels
+
 
 		prediction = Job.predict(
 			samples=samples, predictor_id=id, splitset_id=splitset_id
