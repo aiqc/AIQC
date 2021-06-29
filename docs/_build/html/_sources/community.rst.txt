@@ -98,6 +98,8 @@ Programming style.
   + Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand, integrate, and adapt your code. It's better to move on to the next problem than making the current functionality "x%" better.
   
   + Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren't world class software engineers, and vice versa!
+
+  + If the code is not used in multiple places, then do not make it a function just for the sake of it. It's better to read code top to bottom rather than reverse engineering a DAG of someone else's functions.
   
   + When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.
 
@@ -159,7 +161,7 @@ The vernacular is modeled after a D&D-like guild in order to make governance les
 
 *Council of Warlocks [aka Steering Committee]*:
 
-  - Anyone who has completed 5+ *sprints* (level V+).
+  - Anyone who has completed 5+ *sprints* (level V+). With at least 2 sprints being related to core deep learning functionality.
   - Ability to approve PRs.
   - Ability to release software (e.g. PyPI).
   - Design sprints for new members.

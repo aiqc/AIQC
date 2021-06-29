@@ -59,6 +59,14 @@ def list_test_queues(format:str=None):
 			, 'datum': 'epilepsy.parquet'
 		},
 		{
+			'queue_name': 'keras_tabular_forecast'
+			, 'data_type': 'tabular'
+			, 'supervision': 'unsupervised'
+			, 'analysis': 'regression'
+			, 'sub_analysis': 'windowed'
+			, 'datum': 'dehli_climate.parquet'	
+		},
+		{
 			'queue_name': 'pytorch_multiclass'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
@@ -637,30 +645,30 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 
 
 # ------------------------ KERAS SEQUENCE BINARY ------------------------
-def keras_sequence_binary_build(features_shape, label_shape, **hp):    
-    model = keras.models.Sequential()
-    model.add(keras.layers.LSTM(
-        hp['neuron_count']
-        , input_shape=(features_shape[0], features_shape[1])
-    ))
-    model.add(keras.layers.Dense(units=label_shape[0], activation='sigmoid'))
-    return model
+def keras_sequence_binary_fn_build(features_shape, label_shape, **hp):    
+	model = keras.models.Sequential()
+	model.add(keras.layers.LSTM(
+		hp['neuron_count']
+		, input_shape=(features_shape[0], features_shape[1])
+	))
+	model.add(keras.layers.Dense(units=label_shape[0], activation='sigmoid'))
+	return model
 
-def keras_sequence_binary_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-    model.compile(
-        loss=loser
-        , optimizer=optimizer
-        , metrics=['accuracy']
-    )
-    model.fit(
-        samples_train['features'], samples_train['labels']
-        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
-        , verbose = 0
-        , batch_size = hp['batch_size']
-        , epochs = hp['epochs']
-        , callbacks = [keras.callbacks.History()]
-    )
-    return model
+def keras_sequence_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+	model.compile(
+		loss=loser
+		, optimizer=optimizer
+		, metrics=['accuracy']
+	)
+	model.fit(
+		samples_train['features'], samples_train['labels']
+		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
+		, verbose = 0
+		, batch_size = hp['batch_size']
+		, epochs = hp['epochs']
+		, callbacks = [keras.callbacks.History()]
+	)
+	return model
 
 def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas('epilepsy.parquet')
@@ -703,8 +711,8 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	algorithm = aiqc.Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
-		, fn_build = keras_sequence_binary_build
-		, fn_train = keras_sequence_binary_train
+		, fn_build = keras_sequence_binary_fn_build
+		, fn_train = keras_sequence_binary_fn_train
 	)
 	
 	hyperparameters = {
@@ -724,6 +732,124 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 		, foldset_id = foldset_id
 	)
 	return queue
+
+
+# ------------------------ KERAS TABULAR FORECAST ------------------------
+def keras_tabular_forecast_fn_build(features_shape, label_shape, **hp):
+	model = keras.models.Sequential()
+	model.add(keras.layers.GRU(
+			hp['neuron_count']
+			, input_shape=(features_shape[0], features_shape[1])
+			, return_sequences=False
+	))
+	# Automatically flattens.
+	model.add(keras.layers.Dense(label_shape[0]*label_shape[1]*hp['dense_multiplier'], activation='relu'))
+	model.add(keras.layers.Dropout(0.3))
+	model.add(keras.layers.Dense(label_shape[0]*label_shape[1], activation='relu'))
+	model.add(keras.layers.Dropout(0.3))
+	# Reshape to be 3D.
+	model.add(keras.layers.Reshape((label_shape[0], label_shape[1])))
+	
+	return model
+
+def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+	model.compile(
+		loss=loser
+		, optimizer=optimizer
+		, metrics=['mean_squared_error']
+	)
+		
+	model.fit(
+		samples_train['features'], samples_train['features']
+		, validation_data = (samples_evaluate['features'], samples_evaluate['features'])
+		, verbose = 0
+		, batch_size = hp['batch_size']
+		, epochs = hp['epochs']
+		, callbacks = [keras.callbacks.History()]
+	)
+	return model
+
+def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=None):
+	file_path = datum.get_path('delhi_climate.parquet')
+
+	dataset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'parquet'
+	)
+
+	feature = dataset.make_feature()
+
+	window = feature.make_window(size_window=28, size_shift=14)
+
+	encoderset = feature.make_encoderset()
+
+	featurecoder_0 = encoderset.make_featurecoder(
+		sklearn_preprocess = RobustScaler(copy=False)
+		, columns = ['wind', 'pressure']
+	)
+
+	featurecoder_1 = encoderset.make_featurecoder(
+		sklearn_preprocess = StandardScaler()
+		, dtypes = ['float64', 'int64']
+	)
+
+	if (fold_count is not None):
+		size_test = 0.25
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.17
+		size_validation = 0.16
+
+	splitset = aiqc.Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = None
+		, size_test = 0.17
+		, size_validation = 0.16
+		, bin_count = None
+		, unsupervised_stratify_col = 'day_of_year'
+	)
+
+	splitset = Splitset.make(
+		feature_ids = [feature.id]
+		, label_id = None
+		, size_test = size_test
+		, size_validation = size_validation
+	)
+
+	if (fold_count is not None):
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+
+	algorithm = aiqc.Algorithm.make(
+		library = "keras"
+		, analysis_type = "regression"
+		, fn_build = keras_tabular_forecast_fn_build
+		, fn_train = keras_tabular_forecast_fn_train
+	)
+
+	hyperparameters = {
+		"neuron_count": [8,10]
+		, "batch_size": [8]
+		, "epochs": [100]
+		, "dense_multiplier": [1]
+	}
+
+	hyperparamset = algorithm.make_hyperparamset(
+		hyperparameters = hyperparameters
+	)
+
+	queue = algorithm.make_queue(
+		splitset_id = splitset.id
+		, foldset_id = foldset_id
+		, hyperparamset_id = hyperparamset.id
+		, repeat_count = repeat_count
+	)
+	return queue
+
 
 # ------------------------ PYTORCH TABULAR BINARY ------------------------
 def pytorch_binary_fn_build(features_shape, label_shape, **hp):
@@ -1295,6 +1421,8 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 		queue = make_test_queue_keras_image_binary(repeat_count, fold_count)
 	elif (name == 'keras_sequence_binary'):
 		queue = make_test_queue_keras_sequence_binary(repeat_count, fold_count)
+	elif('keras_tabular_forecast'):
+		queue = make_test_queue_keras_tabular_forecast(repeat_count, fold_count)
 	elif (name == 'pytorch_binary'):
 		queue = make_test_queue_pytorch_binary(repeat_count, fold_count)
 	elif (name == 'pytorch_multiclass'):

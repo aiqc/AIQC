@@ -5298,15 +5298,14 @@ class Job(BaseModel):
 					"mean":mean, "median":median, "pstdev":pstdev, 
 					"minimum":minimum, "maximum":maximum 
 				}
+		elif (has_labels==False):
+			metrics = None
+			metrics_aggregate = None
+			plot_data = None
 		
 		if ((probs is not None) and ("multi" not in algorithm.analysis_type)):
 			# Don't flatten the softmax probabilities.
 			probabilities[split] = probabilities[split].flatten()
-
-		if ((has_labels==False) and (supervision=='supervised')):
-			metrics = None
-			metrics_aggregate = None
-			plot_data = None
 
 		if (splitset_id is not None):
 			splitset = Splitset.get_by_id(splitset_id)

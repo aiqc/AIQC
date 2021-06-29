@@ -130,7 +130,7 @@ def list_datums(format:str=None):
 			, 'location': 'local'
 		},
 		{
-			'name': 'dehli_climate.parquet'
+			'name': 'delhi_climate.parquet'
 			, 'dataset_type': 'sequence'
 			, 'analysis_type': 'forecasting'
 			, 'label': 'N/A'
