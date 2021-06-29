@@ -166,9 +166,9 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'species'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset = dataset, columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset = dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -272,9 +272,9 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'object'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset = dataset, columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset = dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -345,9 +345,9 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'label'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset = dataset, columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset = dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -450,9 +450,9 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'price'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset = dataset, columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset = dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -587,12 +587,12 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 
 	# Dataset.Tabular
 	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
-	label = dataset_tabular.make_label(columns=['status'])
+	label = make_label(dataset = dataset_tabular, columns=['status'])
 
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
 	dataset_image = Dataset.Image.from_urls(urls = image_urls)
-	feature = dataset_image.make_feature()
+	feature = make_feature(dataset=dataset_image)
 	
 	if (fold_count is not None):
 		size_test = 0.25
@@ -667,11 +667,11 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	
 	label_df = df[['seizure']]
 	dataset_tab = aiqc.Dataset.Tabular.from_pandas(label_df)
-	label = dataset_tab.make_label(columns='seizure')
+	label = make_label(dataset=dataset_tab, columns='seizure')
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
 	sensor_dataset = aiqc.Dataset.Sequence.from_numpy(sensor_arr3D)
-	feature = sensor_dataset.make_feature()
+	feature = make_feature(dataset=sensor_dataset)
 	encoderset = feature.make_encoderset()
 	encoderset = encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler()
@@ -799,9 +799,9 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'object'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset=dataset,columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset=dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -937,9 +937,9 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'species'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset=dataset, columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset=dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1083,9 +1083,9 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	)
 	
 	label_column = 'price'
-	label = dataset.make_label(columns=[label_column])
+	label = make_label(dataset=dataset, columns=[label_column])
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	feature = make_feature(dataset=dataset, exclude_columns=[label_column])
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1237,12 +1237,12 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 
 	# Dataset.Tabular
 	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
-	label = dataset_tabular.make_label(columns=['status'])
+	label = make_label(dataset=dataset_tabular, columns=['status'])
 
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
 	dataset_image = Dataset.Image.from_urls(urls = image_urls)
-	feature = dataset_image.make_feature()
+	feature = make_feature(dataset=dataset_image)
 	
 	if (fold_count is not None):
 		size_test = 0.25

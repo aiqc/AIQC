@@ -3,7 +3,7 @@ from playhouse.sqlite_ext import JSONField
 from playhouse.fields import PickleField
 from natsort import natsorted #file sorting.
 from textwrap import dedent
-import os, requests, validators
+import os, requests, validators, io, fsspec
 from PIL import Image as Imaje
 from tqdm import tqdm #progress bar.
 import numpy as np
