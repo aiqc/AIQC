@@ -1054,7 +1054,7 @@ class Dataset(BaseModel):
 			if Dataset.Text.column_name not in columns:
 				return df
 
-			return df[Dataset.Text.column_name].tolist()
+			return df[Dataset.Text.column_name].to_frame()
 
 		
 		def to_numpy(
@@ -1066,7 +1066,7 @@ class Dataset(BaseModel):
 			if Dataset.Text.column_name not in columns:
 				return df.to_numpy()
 
-			return df[Dataset.Text.column_name].to_numpy().reshape((-1, 2))
+			return df[Dataset.Text.column_name].to_numpy().reshape((-1, 1))
 
 
 		def to_strings(
@@ -3186,9 +3186,10 @@ class Labelcoder(BaseModel):
 			# This `.T` works for both single and multi column.
 			encoded_samples = samples_to_transform.T
 			# Since each column is 1D, we care about rows now.
+			
 			length = encoded_samples.shape[0]
 			if (length == 1):
-				encoded_samples = fitted_encoders[0].transform(encoded_samples)
+				encoded_samples = fitted_encoders[0].transform(encoded_samples[0])
 				# Some of these 1D encoders also output 1D.
 				# Need to put it back into 2D.
 				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)  
@@ -3406,7 +3407,7 @@ class Featurecoder(BaseModel):
 			sklearn_preprocess = sklearn_preprocess
 			, samples_to_fit = samples_to_encode
 		)
-
+		
 		# 5. Test encoding the whole dataset using fitted encoder on matching columns.
 		try:
 			Labelcoder.transform_dynamicDimensions(
