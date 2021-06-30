@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "needed-jewelry",
+   "id": "parental-berkeley",
    "metadata": {},
    "source": [
     "# PyTorch: Regression"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "confused-auditor",
+   "id": "verified-oracle",
    "metadata": {},
    "source": [
     "![houses](../images/houses.png)"
@@ -19,7 +19,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "directed-launch",
+   "id": "arctic-personal",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "confident-animation",
+   "id": "promotional-tennis",
    "metadata": {},
    "source": [
     "---"
@@ -44,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "portable-telescope",
+   "id": "acceptable-beginning",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -52,7 +52,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "occasional-waterproof",
+   "id": "hybrid-token",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -61,7 +61,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "driven-government",
+   "id": "downtown-affect",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -71,7 +71,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "polish-solomon",
+   "id": "wicked-dynamics",
    "metadata": {},
    "outputs": [
     {
@@ -222,7 +222,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "completed-headset",
+   "id": "announced-project",
    "metadata": {},
    "source": [
     "---"
@@ -230,7 +230,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "interracial-office",
+   "id": "vulnerable-japan",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -238,7 +238,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "discrete-bailey",
+   "id": "million-champagne",
    "metadata": {},
    "source": [
     "Reference [High-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data."
@@ -247,7 +247,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "numerous-budget",
+   "id": "direct-pantyhose",
    "metadata": {},
    "outputs": [
     {
@@ -305,7 +305,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "technological-tuesday",
+   "id": "proud-warrant",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -332,7 +332,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "union-boards",
+   "id": "contained-uruguay",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -387,7 +387,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "floral-phase",
+   "id": "working-indiana",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -396,7 +396,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "dental-florida",
+   "id": "korean-jonathan",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -411,7 +411,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "silver-approval",
+   "id": "bridal-snapshot",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -424,7 +424,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "logical-aaron",
+   "id": "equal-fitness",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -448,7 +448,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "internal-output",
+   "id": "southwest-heaven",
    "metadata": {},
    "outputs": [
     {
@@ -465,7 +465,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "aquatic-utilization",
+   "id": "frozen-pregnancy",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -473,7 +473,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "australian-injection",
+   "id": "amber-prairie",
    "metadata": {},
    "source": [
     "---"
@@ -481,7 +481,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "formed-designer",
+   "id": "ranking-istanbul",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -489,16 +489,16 @@
   },
   {
    "cell_type": "markdown",
-   "id": "favorite-binding",
+   "id": "canadian-despite",
    "metadata": {},
    "source": [
-    "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data, and defining an optimizer."
+    "Reference [Low-Level API Docs](api_low_level.ipynb) for more information including how to work with non-tabular data, and defining an optimizer."
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "electronic-onion",
+   "id": "underlying-working",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -508,7 +508,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "designing-radiation",
+   "id": "stainless-mandate",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -518,7 +518,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "compressed-input",
+   "id": "hindu-prayer",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -528,7 +528,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "hybrid-assault",
+   "id": "hourly-enforcement",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -540,7 +540,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "eastern-habitat",
+   "id": "excited-allah",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -550,7 +550,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "unnecessary-evidence",
+   "id": "fatal-feature",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -560,7 +560,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "sound-confirmation",
+   "id": "representative-canal",
    "metadata": {},
    "outputs": [
     {
@@ -590,7 +590,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "induced-curve",
+   "id": "terminal-mounting",
    "metadata": {},
    "outputs": [
     {
@@ -620,7 +620,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "democratic-period",
+   "id": "prescription-interaction",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -635,7 +635,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "supreme-business",
+   "id": "similar-hurricane",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -662,7 +662,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "handmade-grove",
+   "id": "crazy-mobile",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -717,7 +717,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "indoor-radar",
+   "id": "opposed-lancaster",
    "metadata": {},
    "source": [
     "Optional, will be automatically selected based on `analysis_type` if left as `None`."
@@ -726,7 +726,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "aerial-latest",
+   "id": "static-crazy",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -741,7 +741,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "third-prescription",
+   "id": "urban-nursing",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -757,7 +757,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "regular-fairy",
+   "id": "willing-local",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -770,7 +770,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "certified-rebecca",
+   "id": "unlikely-bottom",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -782,7 +782,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "vulnerable-maria",
+   "id": "seeing-raise",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -796,7 +796,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "enhanced-parameter",
+   "id": "dependent-class",
    "metadata": {},
    "outputs": [
     {
@@ -813,7 +813,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "exceptional-saudi",
+   "id": "nutritional-benefit",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."

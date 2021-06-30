@@ -33,6 +33,7 @@ name = "aiqc"
 https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
 - 'fork' makes all variables on main process available to child process. OS attempts not to duplicate all variables.
 - 'spawn' requires that variables be passed to child as args, and seems to play by pickle's rules (e.g. no func in func).
+
 - In Python 3.8, macOS changed default from 'fork' to 'spawn' , which is how I learned all this.
 - Windows does not support 'fork'. It supports 'spawn'. So basically I have to play by spawn/ pickle rules.
 - Spawn/ pickle dictates (1) where execute_jobs func is placed, (2) if MetricsCutoff func works, (3) if tqdm output is visible.
@@ -387,7 +388,6 @@ def setup():
 	create_folder()
 	create_config()
 	create_db()
-
 
 
 #==================================================
@@ -1051,10 +1051,13 @@ class Dataset(BaseModel):
 			samples:list = None
 		):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
+
 			if Dataset.Text.column_name not in columns:
 				return df
 
-			return df[Dataset.Text.column_name].to_frame()
+			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
+			df = pd.DataFrame(word_counts.todense(), columns = feature_names)
+			return df
 
 		
 		def to_numpy(
@@ -1063,10 +1066,20 @@ class Dataset(BaseModel):
 			samples:list = None
 		):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
+
 			if Dataset.Text.column_name not in columns:
 				return df.to_numpy()
 
-			return df[Dataset.Text.column_name].to_numpy().reshape((-1, 1))
+			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
+			return word_counts.todense()
+
+
+		def get_feature_matrix(
+			dataframe:object
+		):
+			count_vect = CountVectorizer(max_features = 200)
+			word_counts = count_vect.fit_transform(dataframe[Dataset.Text.column_name].tolist())
+			return word_counts, count_vect.get_feature_names()
 
 
 		def to_strings(
@@ -2404,191 +2417,197 @@ class Splitset(BaseModel):
 		
 		samples = {}
 		sizes = {}
-		if (size_test is None):
-			size_test = 0.30
 
-		# ------ Stratification prep ------
-		if (label_id is not None):
-			if (unsupervised_stratify_col is not None):
-				raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n")
-			if (len(feature.windows)>0):
-				raise ValueError("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
+		if (size_test is not None):
+			# ------ Stratification prep ------
+			if (label_id is not None):
+				if (unsupervised_stratify_col is not None):
+					raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n")
+				if (len(feature.windows)>0):
+					raise ValueError("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
 
-			has_test = True
-			supervision = "supervised"
+				has_test = True
+				supervision = "supervised"
 
-			# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
-			label = Label.get_by_id(label_id)
-			# Check number of samples in Label vs Feature, because they can come from different Datasets.
-			stratify_arr = label.to_numpy()
-			l_length = label.dataset.get_main_file().shape['rows']
-			
-			if (label.dataset.id != f_dataset.id):
-				if (l_length != sample_count):
-					raise ValueError("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
-
-			
-			# check for OHE cols and reverse them so we can still stratify ordinally.
-			if (stratify_arr.shape[1] > 1):
-				stratify_arr = np.argmax(stratify_arr, axis=1)
-			# OHE dtype returns as int64
-			stratify_dtype = stratify_arr.dtype
-
-
-		elif (label_id is None):
-			if (len(feature_ids) > 1):
-				# Mainly because it would require multiple labels.
-				raise ValueError("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
-
-			has_test = False
-			supervision = "unsupervised"
-			label = None
-
-			indices_lst_train = arr_idx.tolist()
-
-			if (unsupervised_stratify_col is not None):
-				if (f_dset_type=='image'):
-					raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be used with `dataset_type=='image'`.\n")
-
-				# Get the column for stratification.
-				column_names = f_dataset.get_main_tabular().columns
-				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
+				# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
+				label = Label.get_by_id(label_id)
+				# Check number of samples in Label vs Feature, because they can come from different Datasets.
+				stratify_arr = label.to_numpy()
+				l_length = label.dataset.get_main_file().shape['rows']
 				
-				if (len(feature_array.shape)==4):
-					# Used by windowed sequence. Reduces to 3D with 1 column.
-					stratify_arr = feature_array[:,:,:,col_index]
-				elif (len(feature_array.shape)==3):
-					# Used by windowed tabular. Reduces to 2D with 1 column.
-					stratify_arr = feature_array[:,:,col_index]
-				elif (len(feature_array.shape)==2):
-					stratify_arr = feature_array[:,col_index]
-				stratify_dtype = stratify_arr.dtype
+				if (label.dataset.id != f_dataset.id):
+					if (l_length != sample_count):
+						raise ValueError("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
+
 				
+				# check for OHE cols and reverse them so we can still stratify ordinally.
 				if (stratify_arr.shape[1] > 1):
-					# We need a single value for each sample.
-					if (np.issubdtype(stratify_dtype, np.number) == True):
-						stratify_arr = np.median(stratify_arr, axis=1)
-					if (np.issubdtype(stratify_dtype, np.number) == False):
-						modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
-						stratify_arr = np.array(modes)
-					# Now reshape from 1D to 2D.
-					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
-
-			elif (unsupervised_stratify_col is None):
-				if (bin_count is not None):
-		 			raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
-				stratify_arr = None#Used in if statements below.
+					stratify_arr = np.argmax(stratify_arr, axis=1)
+				# OHE dtype returns as int64
+				stratify_dtype = stratify_arr.dtype
 
 
-		# ------ Stratified vs Unstratified ------		
-		if (stratify_arr is not None):
-			"""
-			- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-			- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
-			- Don't include the Dataset.Image.feature pixel arrays in stratification.
-			"""
-			# `bin_count` is only returned so that we can persist it.
-			stratifier1, bin_count = Splitset.stratifier_by_dtype_binCount(
-				stratify_dtype = stratify_dtype,
-				stratify_arr = stratify_arr,
-				bin_count = bin_count
-			)
+			elif (label_id is None):
+				if (len(feature_ids) > 1):
+					# Mainly because it would require multiple labels.
+					raise ValueError("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
 
-			if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
-				features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
-					feature_array, stratify_arr, arr_idx
-					, test_size = size_test
-					, stratify = stratifier1
-					, shuffle = True
+				has_test = False
+				supervision = "unsupervised"
+				label = None
+
+				indices_lst_train = arr_idx.tolist()
+
+				if (unsupervised_stratify_col is not None):
+					if (f_dset_type=='image'):
+						raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be used with `dataset_type=='image'`.\n")
+
+					# Get the column for stratification.
+					column_names = f_dataset.get_main_tabular().columns
+					col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
+					
+					if (len(feature_array.shape)==4):
+						# Used by windowed sequence. Reduces to 3D with 1 column.
+						stratify_arr = feature_array[:,:,:,col_index]
+					elif (len(feature_array.shape)==3):
+						# Used by windowed tabular. Reduces to 2D with 1 column.
+						stratify_arr = feature_array[:,:,col_index]
+					elif (len(feature_array.shape)==2):
+						stratify_arr = feature_array[:,col_index]
+					stratify_dtype = stratify_arr.dtype
+					
+					if (stratify_arr.shape[1] > 1):
+						# We need a single value for each sample.
+						if (np.issubdtype(stratify_dtype, np.number) == True):
+							stratify_arr = np.median(stratify_arr, axis=1)
+						if (np.issubdtype(stratify_dtype, np.number) == False):
+							modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
+							stratify_arr = np.array(modes)
+						# Now reshape from 1D to 2D.
+						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
+
+				elif (unsupervised_stratify_col is None):
+					if (bin_count is not None):
+			 			raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
+					stratify_arr = None#Used in if statements below.
+
+
+			# ------ Stratified vs Unstratified ------		
+			if (stratify_arr is not None):
+				"""
+				- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
+				- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
+				- Don't include the Dataset.Image.feature pixel arrays in stratification.
+				"""
+				# `bin_count` is only returned so that we can persist it.
+				stratifier1, bin_count = Splitset.stratifier_by_dtype_binCount(
+					stratify_dtype = stratify_dtype,
+					stratify_arr = stratify_arr,
+					bin_count = bin_count
 				)
 
-				if (size_validation is not None):
-					stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
-						stratify_dtype = stratify_dtype,
-						stratify_arr = stratify_train, #This split is different from stratifier1.
-						bin_count = bin_count
-					)
-
-					features_train, features_validation, stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
-						features_train, stratify_train, indices_train
-						, test_size = pct_for_2nd_split
-						, stratify = stratifier2
+				if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
+					features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
+						feature_array, stratify_arr, arr_idx
+						, test_size = size_test
+						, stratify = stratifier1
 						, shuffle = True
 					)
 
-			elif (f_dset_type=='image'):
-				# Differs in that the Features not fed into `train_test_split()`.
-				stratify_train, stratify_test, indices_train, indices_test = train_test_split(
-					stratify_arr, arr_idx
-					, test_size = size_test
-					, stratify = stratifier1
-					, shuffle = True
-				)
+					if (size_validation is not None):
+						stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
+							stratify_dtype = stratify_dtype,
+							stratify_arr = stratify_train, #This split is different from stratifier1.
+							bin_count = bin_count
+						)
 
-				if (size_validation is not None):
-					stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
-						stratify_dtype = stratify_dtype,
-						stratify_arr = stratify_train, #This split is different from stratifier1.
-						bin_count = bin_count
-					)
+						features_train, features_validation, stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
+							features_train, stratify_train, indices_train
+							, test_size = pct_for_2nd_split
+							, stratify = stratifier2
+							, shuffle = True
+						)
 
-					stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
-						stratify_train, indices_train
-						, test_size = pct_for_2nd_split
-						, stratify = stratifier2
+				elif (f_dset_type=='image'):
+					# Differs in that the Features not fed into `train_test_split()`.
+					stratify_train, stratify_test, indices_train, indices_test = train_test_split(
+						stratify_arr, arr_idx
+						, test_size = size_test
+						, stratify = stratifier1
 						, shuffle = True
 					)
 
-		elif (stratify_arr is None):
-			if (f_dset_type=='tabular' or f_dset_type=='sequence'):
-				features_train, features_test, indices_train, indices_test = train_test_split(
-					feature_array, arr_idx
-					, test_size = size_test
-					, shuffle = True
-				)
+					if (size_validation is not None):
+						stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
+							stratify_dtype = stratify_dtype,
+							stratify_arr = stratify_train, #This split is different from stratifier1.
+							bin_count = bin_count
+						)
 
-				if (size_validation is not None):
-					features_train, features_validation, indices_train, indices_validation = train_test_split(
-						features_train, indices_train
-						, test_size = pct_for_2nd_split
+						stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
+							stratify_train, indices_train
+							, test_size = pct_for_2nd_split
+							, stratify = stratifier2
+							, shuffle = True
+						)
+
+			elif (stratify_arr is None):
+				if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
+					features_train, features_test, indices_train, indices_test = train_test_split(
+						feature_array, arr_idx
+						, test_size = size_test
 						, shuffle = True
 					)
 
-			elif (f_dset_type=='image' or f_dset_type=='text'):
-				# Differs in that the Features not fed into `train_test_split()`.
-				indices_train, indices_test = train_test_split(
-					arr_idx
-					, test_size = size_test
-					, shuffle = True
-				)
+					if (size_validation is not None):
+						features_train, features_validation, indices_train, indices_validation = train_test_split(
+							features_train, indices_train
+							, test_size = pct_for_2nd_split
+							, shuffle = True
+						)
 
-				if (size_validation is not None):
-					indices_train, indices_validation = train_test_split(
-						indices_train
-						, test_size = pct_for_2nd_split
+				elif (f_dset_type=='image'):
+					# Differs in that the Features not fed into `train_test_split()`.
+					indices_train, indices_test = train_test_split(
+						arr_idx
+						, test_size = size_test
 						, shuffle = True
 					)
 
-		
-		if (size_validation is not None):
-			indices_lst_validation = indices_validation.tolist()
-			samples["validation"] = indices_lst_validation	
+					if (size_validation is not None):
+						indices_train, indices_validation = train_test_split(
+							indices_train
+							, test_size = pct_for_2nd_split
+							, shuffle = True
+						)
 
-		indices_lst_train, indices_lst_test  = indices_train.tolist(), indices_test.tolist()
-		samples["train"] = indices_lst_train
-		samples["test"] = indices_lst_test
+			
+			if (size_validation is not None):
+				indices_lst_validation = indices_validation.tolist()
+				samples["validation"] = indices_lst_validation	
 
-		size_train = 1.0 - size_test
-		if (size_validation is not None):
-			size_train -= size_validation
-			count_validation = len(indices_lst_validation)
-			sizes["validation"] =  {"percent": size_validation, "count": count_validation}
-		
-		count_test = len(indices_lst_test)
-		count_train = len(indices_lst_train)
-		sizes["test"] = {"percent": size_test, "count": count_test}
-		sizes["train"] = {"percent": size_train, "count": count_train}
+			indices_lst_train, indices_lst_test  = indices_train.tolist(), indices_test.tolist()
+			samples["train"] = indices_lst_train
+			samples["test"] = indices_lst_test
 
+			size_train = 1.0 - size_test
+			if (size_validation is not None):
+				size_train -= size_validation
+				count_validation = len(indices_lst_validation)
+				sizes["validation"] =  {"percent": size_validation, "count": count_validation}
+			
+			count_test = len(indices_lst_test)
+			count_train = len(indices_lst_train)
+			sizes["test"] = {"percent": size_test, "count": count_test}
+			sizes["train"] = {"percent": size_train, "count": count_train}
+
+		# This is used by inference where we just want all of the samples.
+		elif(size_test is None):
+			label = None
+			has_test = False
+			supervision = "unsupervised"#Don't think this value matters during inference
+			samples["train"] = arr_idx.tolist()
+			sizes["train"] = {"percent": 1.0, "count":sample_count}
 
 		splitset = Splitset.create(
 			label = label
@@ -3261,10 +3280,9 @@ class Labelcoder(BaseModel):
 			# This `.T` works for both single and multi column.
 			encoded_samples = samples_to_transform.T
 			# Since each column is 1D, we care about rows now.
-			
 			length = encoded_samples.shape[0]
 			if (length == 1):
-				encoded_samples = fitted_encoders[0].transform(encoded_samples[0])
+				encoded_samples = fitted_encoders[0].transform(encoded_samples)
 				# Some of these 1D encoders also output 1D.
 				# Need to put it back into 2D.
 				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)  
@@ -3278,10 +3296,6 @@ class Labelcoder(BaseModel):
 				# From "3D of 2D_singleColumn" to "2D_multiColumn"
 				encoded_samples = np.array(encoded_arrs).T
 				del encoded_arrs
-
-		if (scipy.sparse.issparse(encoded_samples)):
-			return encoded_samples.todense()
-		
 		return encoded_samples
 
 
@@ -3354,15 +3368,10 @@ class Featurecoder(BaseModel):
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
-		elif (dataset_type == "text"):
-			only_fit_train = False
-			is_categorical = False
-			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
-				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
-		else:
-			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
-				sklearn_preprocess, is_label=False
-			)
+		
+		sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
+			sklearn_preprocess, is_label=False
+		)
 
 		if (dtypes is not None):
 			for typ in dtypes:
@@ -3482,7 +3491,7 @@ class Featurecoder(BaseModel):
 			sklearn_preprocess = sklearn_preprocess
 			, samples_to_fit = samples_to_encode
 		)
-		
+
 		# 5. Test encoding the whole dataset using fitted encoder on matching columns.
 		try:
 			Labelcoder.transform_dynamicDimensions(
@@ -4610,7 +4619,7 @@ class Queue(BaseModel):
 				if (predictor.job.repeat_count > 1):
 					split_metric['repeat_index'] = predictor.repeat_index
 
-				split_metric['predictor_id'] = prediction.id
+				split_metric['predictor_id'] = predictor.id
 				split_metric['split'] = split_name
 
 				for metric_name,metric_value in metrics.items():
@@ -5234,7 +5243,7 @@ class Job(BaseModel):
 						data = np.delete(data, np.s_[0:num_matching_columns], axis=1)
 					# Check for and merge any leftover columns.
 					leftover_columns = encoderset.featurecoders[-1].leftover_columns
-					if (len(leftover_columns)!=0):
+					if (len(leftover_columns)>0):
 						[encoded_column_names.append(c) for c in leftover_columns]
 						decoded_data = np.concatenate((decoded_data, data), axis=1)
 					
@@ -5243,12 +5252,17 @@ class Job(BaseModel):
 					original_dict = {}
 					for i, name in enumerate(original_columns):
 						original_dict[i] = name
+
 					encoded_indices = []
 					for name in encoded_column_names:
+						# I don't think this will work for OHE because they aren't all mapped to the original column.
 						for idx, n in original_dict.items():
 							if (name == n):
 								encoded_indices.append(idx)
 								break
+					# The int of the index might be greater than the size of the list. 
+					ranked = sorted(encoded_indices)
+					encoded_indices = [ranked.index(i) for i in encoded_indices]
 					# Rearrange columns by index.
 					placeholder = np.empty_like(encoded_indices)
 					placeholder[encoded_indices] = np.arange(len(encoded_indices))
@@ -5414,7 +5428,6 @@ class Job(BaseModel):
 					arr_features=arr_features,
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
-				
 				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=job, encoderset=encoderset)
 
 			if (len(feature.windows) > 0):
@@ -5432,7 +5445,6 @@ class Job(BaseModel):
 			# Don't use the list if you don't have to.
 			if (feature_count > 1):
 				features.append(arr_features)			
-
 		"""
 		- Stage preprocessed data to be passed into the remaining Job steps.
 		- Example samples dict entry: samples['train']['labels']
@@ -5800,7 +5812,9 @@ class Predictor(BaseModel):
 			raise ValueError("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
 
 		for i, feature_new in enumerate(features_new):
+			print(feature_new.columns)
 			feature_old = features_old[i]
+			print(feature_old.columns)
 			feature_old_typ = feature_old.dataset.dataset_type
 			feature_new_typ = feature_new.dataset.dataset_type
 			if (feature_old_typ != feature_new_typ):
@@ -5821,9 +5835,9 @@ class Predictor(BaseModel):
 				window_old = feature_old.windows[-1]
 				window_new = feature_new.windows[-1]
 				if (
-					window_old.size_window != window_new.size_window
+					(window_old.size_window != window_new.size_window)
 					or
-					window_old.size_shift != window_new.size_shift
+					(window_old.size_shift != window_new.size_shift)
 				):
 					raise ValueError("\nYikes - New Window and old Window schemas do not match.\n")
 
@@ -6183,7 +6197,16 @@ class Pipeline():
 			, size_validation:float = None
 			, fold_count:int = None
 			, bin_count:int = None
+			, size_window:int = None
+			, size_shift:int = None
 		):
+			if (
+				(size_window is None) and (size_shift is not None)
+				or 
+				(size_window is not None) and (size_shift is None)
+			):
+				raise ValueError("\nYikes - Either both or neither `size_window` and `size_shift` must be set.\n")
+
 			features_excluded = listify(features_excluded)
 			feature_encoders = listify(feature_encoders)
 
@@ -6207,6 +6230,9 @@ class Pipeline():
 			elif (features_excluded is not None):
 				feature = dataset.make_feature(exclude_columns=features_excluded)
 			
+			if (size_window is not None):
+				feature.make_window(size_window=size_window, size_shift=size_shift)
+
 			if (feature_encoders is not None):					
 				encoderset = feature.make_encoderset()
 				for fc in feature_encoders:

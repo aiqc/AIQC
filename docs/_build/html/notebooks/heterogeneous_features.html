@@ -191,6 +191,13 @@
 <li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="keras_tabular_forecasting.html">Keras: Tabular Forecasting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#b)-Low-Level-API">b) Low-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Inference">Inference</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
@@ -306,10 +313,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Split-Strategies">Split Strategies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitting-Strategies">Splitting Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#d)-Specifying-validation-size.">d) Specifying validation size.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
@@ -774,17 +782,6 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">%</span><span class="k">capture</span>
-<span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-<span class="n">aiqc</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <hr class="docutils" />
 <div class="section" id="Ingesting-Example-Galaxy-Data">
 <h2>Ingesting Example Galaxy Data<a class="headerlink" href="#Ingesting-Example-Galaxy-Data" title="Permalink to this headline">¶</a></h2>
@@ -1073,7 +1070,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_29_0.png" src="../_images/notebooks_heterogeneous_features_29_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_28_0.png" src="../_images/notebooks_heterogeneous_features_28_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1090,7 +1087,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_30_0.png" src="../_images/notebooks_heterogeneous_features_30_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_29_0.png" src="../_images/notebooks_heterogeneous_features_29_0.png" />
 </div>
 </div>
 <p>Although it is easy enough to distinguish between the two types with the naked eye, you start to realize that a <em>bar</em> galaxy is almost like a degraded <em>spiral</em> galaxy. Like anything else, there is a gray area in whether or not the band of stars/ rectangle of light connecting the two main galactic arms is to be considered a “bar” or more of an oval.</p>
@@ -1109,7 +1106,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_33_0.png" src="../_images/notebooks_heterogeneous_features_33_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_32_0.png" src="../_images/notebooks_heterogeneous_features_32_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1126,7 +1123,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_34_0.png" src="../_images/notebooks_heterogeneous_features_34_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_33_0.png" src="../_images/notebooks_heterogeneous_features_33_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -3156,7 +3153,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_91_0.png" src="../_images/notebooks_heterogeneous_features_91_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_90_0.png" src="../_images/notebooks_heterogeneous_features_90_0.png" />
 </div>
 </div>
 </div>

@@ -17,11 +17,13 @@
   notebooks/keras_regression
   notebooks/image_classification
   notebooks/sequence_classification
+  notebooks/keras_tabular_forecasting
   notebooks/pytorch_binary_classification
   notebooks/pytorch_multi-label_classification
   notebooks/pytorch_regression
   notebooks/tensorflow_binary_classification
   notebooks/heterogeneous_features
+
 
 
 .. toctree::
