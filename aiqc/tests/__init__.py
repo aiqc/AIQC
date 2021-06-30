@@ -386,8 +386,8 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 	)
 
 	encoderset.make_featurecoder(
-		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
-		, dtypes = ['object']
+		sklearn_preprocess = CountVectorizer(max_features = 200)
+		, columns=['TextData']
 	)
 
 	algorithm = Algorithm.make(
