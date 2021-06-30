@@ -741,11 +741,12 @@ def keras_tabular_forecast_fn_build(features_shape, label_shape, **hp):
 			hp['neuron_count']
 			, input_shape=(features_shape[0], features_shape[1])
 			, return_sequences=False
+			, activation='tanh'
 	))
 	# Automatically flattens.
-	model.add(keras.layers.Dense(label_shape[0]*label_shape[1]*hp['dense_multiplier'], activation='relu'))
+	model.add(keras.layers.Dense(label_shape[0]*label_shape[1]*hp['dense_multiplier'], activation='tanh'))
 	model.add(keras.layers.Dropout(0.3))
-	model.add(keras.layers.Dense(label_shape[0]*label_shape[1], activation='relu'))
+	model.add(keras.layers.Dense(label_shape[0]*label_shape[1], activation='tanh'))
 	model.add(keras.layers.Dropout(0.3))
 	# Reshape to be 3D.
 	model.add(keras.layers.Reshape((label_shape[0], label_shape[1])))
