@@ -1055,9 +1055,7 @@ class Dataset(BaseModel):
 			if Dataset.Text.column_name not in columns:
 				return df
 
-			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
-			df = pd.DataFrame(word_counts.todense(), columns = feature_names)
-			return df
+			return df[Dataset.Text.column_name].to_frame()
 
 		
 		def to_numpy(
@@ -1070,16 +1068,7 @@ class Dataset(BaseModel):
 			if Dataset.Text.column_name not in columns:
 				return df.to_numpy()
 
-			word_counts, feature_names = Dataset.Text.get_feature_matrix(df)
-			return word_counts.todense()
-
-
-		def get_feature_matrix(
-			dataframe:object
-		):
-			count_vect = CountVectorizer(max_features = 200)
-			word_counts = count_vect.fit_transform(dataframe[Dataset.Text.column_name].tolist())
-			return word_counts, count_vect.get_feature_names()
+			return df[Dataset.Text.column_name].to_numpy().reshape((-1, 1))
 
 
 		def to_strings(
@@ -2552,7 +2541,7 @@ class Splitset(BaseModel):
 						)
 
 			elif (stratify_arr is None):
-				if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
+				if (f_dset_type=='tabular' or f_dset_type=='sequence'):
 					features_train, features_test, indices_train, indices_test = train_test_split(
 						feature_array, arr_idx
 						, test_size = size_test
@@ -2566,7 +2555,7 @@ class Splitset(BaseModel):
 							, shuffle = True
 						)
 
-				elif (f_dset_type=='image'):
+				elif (f_dset_type=='image' or f_dset_type=='text'):
 					# Differs in that the Features not fed into `train_test_split()`.
 					indices_train, indices_test = train_test_split(
 						arr_idx
@@ -3282,7 +3271,9 @@ class Labelcoder(BaseModel):
 			# Since each column is 1D, we care about rows now.
 			length = encoded_samples.shape[0]
 			if (length == 1):
-				encoded_samples = fitted_encoders[0].transform(encoded_samples)
+				#encoded_samples = fitted_encoders[0].transform(encoded_samples)
+				# to get text feature_extraction working.
+				encoded_samples = fitted_encoders[0].transform(encoded_samples[0])
 				# Some of these 1D encoders also output 1D.
 				# Need to put it back into 2D.
 				encoded_samples = Labelcoder.if_1d_make_2d(array=encoded_samples)  
@@ -3296,6 +3287,8 @@ class Labelcoder(BaseModel):
 				# From "3D of 2D_singleColumn" to "2D_multiColumn"
 				encoded_samples = np.array(encoded_arrs).T
 				del encoded_arrs
+		if (scipy.sparse.issparse(encoded_samples)):
+			return encoded_samples.todense()
 		return encoded_samples
 
 
@@ -3368,10 +3361,15 @@ class Featurecoder(BaseModel):
 		# 2. Validate the lists of dtypes and columns provided as filters.
 		if (dataset_type == "image"):
 			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
-		
-		sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
-			sklearn_preprocess, is_label=False
-		)
+		elif (dataset_type == "text"):
+			only_fit_train = False
+			is_categorical = False
+			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
+				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
+		else:
+			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
+				sklearn_preprocess, is_label=False
+			)
 
 		if (dtypes is not None):
 			for typ in dtypes:
