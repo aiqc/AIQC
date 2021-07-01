@@ -25,7 +25,6 @@
   notebooks/heterogeneous_features
 
 
-
 .. toctree::
   :maxdepth: 2
   :caption: Documentation
@@ -179,8 +178,12 @@
     <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
   </tr>
   <tr>
-    <td class="tbl-head tbl-head-Generation">Generation</br><small>(forecast, synthetic)</small></td>
-    <td>Coming soon.</td>
+    <td class="tbl-head tbl-head-Generation">Forecast</br></td>
+    <td class="done">
+      <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
+      <br/><span class="checkmark">✓</span><br/>
+      PyTorch
+    </td>
     <td>Coming soon.</td>
     <td class="coming-soon">Coming soon.</td>
   </tr>
