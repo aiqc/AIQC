@@ -2592,11 +2592,22 @@ class Splitset(BaseModel):
 
 		# This is used by inference where we just want all of the samples.
 		elif(size_test is None):
-			label = None
+			if (unsupervised_stratify_col is not None):
+				raise ValueError("\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n")
+
 			has_test = False
-			supervision = "unsupervised"#Don't think this value matters during inference
 			samples["train"] = arr_idx.tolist()
 			sizes["train"] = {"percent": 1.0, "count":sample_count}
+			# Remaining attributes are already `None`.
+
+			# Unsupervised inference.
+			if (label_id is None):
+				label = None
+				supervision = "unsupervised"
+			# Supervised inference with metrics.
+			elif (label_id is not None):
+				label = Label.get_by_id(label_id)
+				supervision = "supervised"
 
 		splitset = Splitset.create(
 			label = label
@@ -4806,6 +4817,7 @@ class Job(BaseModel):
 
 
 	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
+		"""Sometimes these still fail (e.g. ROC when only 1 class of label is predicted)."""
 		if (analysis_type == "classification_binary"):
 			average = "binary"
 			roc_average = "micro"
@@ -4815,7 +4827,7 @@ class Job(BaseModel):
 			roc_average = "weighted"
 			roc_multi_class = "ovr"
 			
-		split_metrics = {}
+		split_metrics = {}		
 		# Let the classification_multi labels hit this metric in OHE format.
 		split_metrics['roc_auc'] = sklearn.metrics.roc_auc_score(labels_processed, probabilities, average=roc_average, multi_class=roc_multi_class)
 		# Then convert the classification_multi labels ordinal format.
@@ -5810,9 +5822,7 @@ class Predictor(BaseModel):
 			raise ValueError("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
 
 		for i, feature_new in enumerate(features_new):
-			print(feature_new.columns)
 			feature_old = features_old[i]
-			print(feature_old.columns)
 			feature_old_typ = feature_old.dataset.dataset_type
 			feature_new_typ = feature_new.dataset.dataset_type
 			if (feature_old_typ != feature_new_typ):
@@ -5946,10 +5956,8 @@ class Predictor(BaseModel):
 		- Pack into samples for the Algorithm functions.
 		- This is two levels deep to mirror how the training samples were structured 
 		  e.g. `samples[<trn,val,tst>]`
-		- str() id because int keys aren't JSON serializable.
 		"""
-		str_id = str(splitset_id)
-		samples = {str_id: {'features':features}}
+		samples = {'infer': {'features':features}}
 
 		if (splitset_new.label is not None):
 			label_new = splitset_new.label
@@ -5971,10 +5979,10 @@ class Predictor(BaseModel):
 				)
 			if (library == 'pytorch'):
 				arr_labels = torch.FloatTensor(arr_labels)
-			samples[str_id]['labels'] = arr_labels
+			samples['infer']['labels'] = arr_labels
 		
 		elif (windowed_label == True):
-			samples[str_id]['labels'] = arr_labels
+			samples['infer']['labels'] = arr_labels
 
 
 		prediction = Job.predict(
@@ -6197,6 +6205,7 @@ class Pipeline():
 			, bin_count:int = None
 			, size_window:int = None
 			, size_shift:int = None
+			, record_shifted:bool = True
 		):
 			if (
 				(size_window is None) and (size_shift is not None)
@@ -6207,6 +6216,7 @@ class Pipeline():
 
 			features_excluded = listify(features_excluded)
 			feature_encoders = listify(feature_encoders)
+			# We need `label_column` as a str, not a list.
 
 			dataset = Pipeline.parse_tabular_input(
 				dataFrame_or_filePath = dataFrame_or_filePath
@@ -6215,7 +6225,6 @@ class Pipeline():
 			if (label_column is not None):
 				label = dataset.make_label(columns=[label_column])
 				label_id = label.id
-
 				if (label_encoder is not None): 
 					label.make_labelcoder(sklearn_preprocess=label_encoder)
 			elif (label_column is None):
@@ -6225,11 +6234,18 @@ class Pipeline():
 			if (features_excluded is None):
 				if (label_column is not None):
 					feature = dataset.make_feature(exclude_columns=[label_column])
+				# Unsupervised.
+				elif (label_column is None):
+					feature = dataset.make_feature()
 			elif (features_excluded is not None):
 				feature = dataset.make_feature(exclude_columns=features_excluded)
 			
 			if (size_window is not None):
-				feature.make_window(size_window=size_window, size_shift=size_shift)
+				feature.make_window(
+					size_window = size_window
+					, size_shift = size_shift
+					, record_shifted = record_shifted
+				)
 
 			if (feature_encoders is not None):					
 				encoderset = feature.make_encoderset()
@@ -6269,6 +6285,7 @@ class Pipeline():
 		):
 			seq_features_excluded = listify(seq_features_excluded)
 			seq_feature_encoders = listify(seq_feature_encoders)
+			tab_label_column = listify(tab_label_column)
 
 			# ------ SEQUENCE FEATURE ------
 			seq_dataset = Dataset.Sequence.from_numpy(
@@ -6300,7 +6317,7 @@ class Pipeline():
 					, dtype = tab_dtype
 				)
 				# Tabular-based Label.
-				label = dataset_tabular.make_label(columns=[tab_label_column])
+				label = dataset_tabular.make_label(columns=tab_label_column)
 				label_id = label.id
 
 				if (tab_label_encoder is not None): 
@@ -6335,6 +6352,7 @@ class Pipeline():
 			, fold_count:int = None
 			, bin_count:int = None
 		):
+			label_column = listify(label_column)
 			if (isinstance(folderPath_or_urls, str)):
 				dataset_image = Dataset.Image.from_folder(
 					folder_path = folderPath_or_urls
@@ -6362,7 +6380,7 @@ class Pipeline():
 					, dtype = tabular_dtype
 				)
 				# Tabular-based Label.
-				label = dataset_tabular.make_label(columns=[label_column])
+				label = dataset_tabular.make_label(columns=label_column)
 				label_id = label.id
 
 				if (label_encoder is not None): 

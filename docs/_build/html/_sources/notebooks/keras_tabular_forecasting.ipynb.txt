@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "seventh-vegetarian",
+   "id": "global-sherman",
    "metadata": {},
    "source": [
     "# Keras: Tabular Forecasting"
@@ -10,7 +10,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "simplified-substitute",
+   "id": "animated-philip",
    "metadata": {},
    "source": [
     "*Climate Forecasting Using a 2D Time Series of Multi-Variate Features Over Shifting Windows.*"
@@ -18,7 +18,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "further-mineral",
+   "id": "adequate-personal",
    "metadata": {},
    "source": [
     "![delhi](../images/india_weather.png)"
@@ -26,7 +26,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "amber-manual",
+   "id": "hungry-franchise",
    "metadata": {},
    "source": [
     "Highly dimensional forecasting is another holy grail of deep learning. This process encodes information about the state of the future as a function of the states of the past. Here the learnable parameters of a neural network effectively serve as coefficients in an 'infinitely' long polynomial equation for predicting the future.\n",
@@ -39,7 +39,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "median-cigarette",
+   "id": "incorporate-purse",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -55,7 +55,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "physical-annual",
+   "id": "critical-stress",
    "metadata": {},
    "source": [
     "---"
@@ -63,7 +63,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "hidden-original",
+   "id": "russian-effects",
    "metadata": {},
    "source": [
     "## Example Data"
@@ -71,7 +71,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "declared-roommate",
+   "id": "collectible-afghanistan",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -80,7 +80,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "hourly-arena",
+   "id": "virtual-forest",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -91,7 +91,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "black-machine",
+   "id": "varied-bowling",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -101,7 +101,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "piano-funeral",
+   "id": "quick-senator",
    "metadata": {},
    "outputs": [
     {
@@ -198,7 +198,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "engaged-health",
+   "id": "surprised-emphasis",
    "metadata": {},
    "outputs": [
     {
@@ -231,7 +231,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "circular-invite",
+   "id": "decent-latino",
    "metadata": {},
    "outputs": [
     {
@@ -263,7 +263,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "experienced-chest",
+   "id": "killing-printer",
    "metadata": {},
    "source": [
     "---"
@@ -271,7 +271,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "authentic-animal",
+   "id": "revised-great",
    "metadata": {},
    "source": [
     "## a) High-Level API"
@@ -280,7 +280,7 @@
   {
    "cell_type": "code",
    "execution_count": 84,
-   "id": "congressional-finance",
+   "id": "complex-bonus",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -290,7 +290,7 @@
   {
    "cell_type": "code",
    "execution_count": 88,
-   "id": "essential-backing",
+   "id": "capable-price",
    "metadata": {},
    "outputs": [
     {
@@ -333,7 +333,7 @@
   {
    "cell_type": "code",
    "execution_count": 89,
-   "id": "governing-nirvana",
+   "id": "becoming-credits",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -372,7 +372,7 @@
   {
    "cell_type": "code",
    "execution_count": 90,
-   "id": "appreciated-research",
+   "id": "super-validity",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -397,7 +397,7 @@
   {
    "cell_type": "code",
    "execution_count": 91,
-   "id": "shared-center",
+   "id": "laughing-generator",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -414,7 +414,7 @@
   {
    "cell_type": "code",
    "execution_count": 92,
-   "id": "martial-selection",
+   "id": "southwest-serum",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -433,7 +433,7 @@
   {
    "cell_type": "code",
    "execution_count": 93,
-   "id": "right-fraction",
+   "id": "fantastic-plane",
    "metadata": {},
    "outputs": [
     {
@@ -450,7 +450,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "mechanical-deadline",
+   "id": "refined-manchester",
    "metadata": {},
    "source": [
     "---"
@@ -458,7 +458,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ordinary-vietnamese",
+   "id": "resistant-egypt",
    "metadata": {},
    "source": [
     "## b) Low-Level API"
@@ -466,7 +466,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "compatible-observer",
+   "id": "vietnamese-france",
    "metadata": {},
    "source": [
     "Reference [Low-Level API Docs](api_low_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
@@ -475,7 +475,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "collected-southwest",
+   "id": "affected-windsor",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -485,7 +485,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "narrow-pollution",
+   "id": "instrumental-burning",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -495,7 +495,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "solved-period",
+   "id": "hydraulic-amplifier",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -505,7 +505,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "interim-acceptance",
+   "id": "native-bandwidth",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -515,7 +515,7 @@
   {
    "cell_type": "code",
    "execution_count": 83,
-   "id": "furnished-tuning",
+   "id": "wrong-physics",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -525,7 +525,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "headed-means",
+   "id": "generic-repository",
    "metadata": {},
    "outputs": [
     {
@@ -568,7 +568,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "conscious-disabled",
+   "id": "incorporate-irrigation",
    "metadata": {},
    "source": [
     "Here we `unsupervised_stratify_col` in order to ensure that each split uses different seasons of the year."
@@ -577,7 +577,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "split-graduate",
+   "id": "uniform-cornwall",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -594,7 +594,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "documentary-halifax",
+   "id": "capable-cleanup",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -633,7 +633,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "weird-challenge",
+   "id": "instant-sharp",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -658,7 +658,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "unnecessary-exclusive",
+   "id": "southeast-heating",
    "metadata": {
     "tags": []
    },
@@ -675,7 +675,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "choice-america",
+   "id": "considerable-hudson",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -692,7 +692,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "floppy-pregnancy",
+   "id": "piano-priest",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -704,7 +704,7 @@
   {
    "cell_type": "code",
    "execution_count": 30,
-   "id": "clean-mediterranean",
+   "id": "primary-cleanup",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -718,7 +718,7 @@
   {
    "cell_type": "code",
    "execution_count": 31,
-   "id": "metropolitan-recipe",
+   "id": "enclosed-divorce",
    "metadata": {},
    "outputs": [
     {
@@ -735,7 +735,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "boolean-battle",
+   "id": "dynamic-spice",
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
@@ -743,7 +743,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "isolated-incentive",
+   "id": "international-canberra",
    "metadata": {},
    "source": [
     "---"
@@ -751,7 +751,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fantastic-track",
+   "id": "reflected-badge",
    "metadata": {},
    "source": [
     "## Inference"
@@ -760,7 +760,7 @@
   {
    "cell_type": "code",
    "execution_count": 79,
-   "id": "ethical-breed",
+   "id": "becoming-liechtenstein",
    "metadata": {},
    "outputs": [
     {
@@ -930,7 +930,7 @@
   {
    "cell_type": "code",
    "execution_count": 34,
-   "id": "unknown-router",
+   "id": "sharp-adolescent",
    "metadata": {
     "tags": []
    },
@@ -941,7 +941,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "informative-account",
+   "id": "structural-andrews",
    "metadata": {},
    "source": [
     "Let's fetch an arbitrary 30 (25+5) days worth of data."
@@ -950,7 +950,7 @@
   {
    "cell_type": "code",
    "execution_count": 58,
-   "id": "gentle-lawsuit",
+   "id": "later-conjunction",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -960,7 +960,7 @@
   {
    "cell_type": "code",
    "execution_count": 59,
-   "id": "exclusive-feedback",
+   "id": "burning-blood",
    "metadata": {},
    "outputs": [
     {
@@ -981,7 +981,7 @@
   {
    "cell_type": "code",
    "execution_count": 60,
-   "id": "auburn-disclaimer",
+   "id": "obvious-strand",
    "metadata": {
     "tags": []
    },
@@ -993,7 +993,7 @@
   {
    "cell_type": "code",
    "execution_count": 61,
-   "id": "engaged-integration",
+   "id": "known-nudist",
    "metadata": {
     "tags": []
    },
@@ -1005,7 +1005,7 @@
   {
    "cell_type": "code",
    "execution_count": 62,
-   "id": "adopted-particle",
+   "id": "bright-modem",
    "metadata": {
     "tags": []
    },
@@ -1017,7 +1017,7 @@
   {
    "cell_type": "code",
    "execution_count": 63,
-   "id": "respiratory-gather",
+   "id": "wanted-legend",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1030,7 +1030,7 @@
   {
    "cell_type": "code",
    "execution_count": 64,
-   "id": "vietnamese-amount",
+   "id": "superior-liquid",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1040,7 +1040,7 @@
   {
    "cell_type": "code",
    "execution_count": 65,
-   "id": "arabic-combine",
+   "id": "uniform-composition",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1050,16 +1050,16 @@
   {
    "cell_type": "code",
    "execution_count": 66,
-   "id": "established-forest",
+   "id": "monthly-withdrawal",
    "metadata": {},
    "outputs": [],
    "source": [
-    "infer_predictions = infer_prediction.predictions[str(infer_splitset.id)]"
+    "infer_predictions = infer_prediction.predictions['infer']"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "excessive-shirt",
+   "id": "elder-wages",
    "metadata": {},
    "source": [
     "Looking at the shape, we have 1 prediction with 25 days and 3 features worth of data."
@@ -1068,7 +1068,7 @@
   {
    "cell_type": "code",
    "execution_count": 67,
-   "id": "varied-indie",
+   "id": "rising-coast",
    "metadata": {},
    "outputs": [
     {
@@ -1088,7 +1088,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "commercial-motorcycle",
+   "id": "southeast-desktop",
    "metadata": {},
    "source": [
     "Let's compare this to the original data. We'll grab the last 7 days of our real data."
@@ -1097,7 +1097,7 @@
   {
    "cell_type": "code",
    "execution_count": 69,
-   "id": "dying-price",
+   "id": "corporate-church",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1107,7 +1107,7 @@
   {
    "cell_type": "code",
    "execution_count": 94,
-   "id": "occupational-restriction",
+   "id": "wrapped-angel",
    "metadata": {},
    "outputs": [
     {
@@ -1285,7 +1285,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "expected-somerset",
+   "id": "compact-tamil",
    "metadata": {},
    "source": [
     "And the last 7 days of our forecasted data."
@@ -1294,7 +1294,7 @@
   {
    "cell_type": "code",
    "execution_count": 71,
-   "id": "statutory-effect",
+   "id": "dried-construction",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1304,7 +1304,7 @@
   {
    "cell_type": "code",
    "execution_count": 72,
-   "id": "incoming-spirituality",
+   "id": "sonic-desire",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1314,7 +1314,7 @@
   {
    "cell_type": "code",
    "execution_count": 73,
-   "id": "bibliographic-prospect",
+   "id": "reliable-wisdom",
    "metadata": {},
    "outputs": [
     {
@@ -1352,7 +1352,7 @@
   {
    "cell_type": "code",
    "execution_count": 74,
-   "id": "interim-isolation",
+   "id": "brazilian-electron",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1362,7 +1362,7 @@
   {
    "cell_type": "code",
    "execution_count": 75,
-   "id": "herbal-sample",
+   "id": "developing-literature",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1372,7 +1372,7 @@
   {
    "cell_type": "code",
    "execution_count": 96,
-   "id": "trained-illness",
+   "id": "animated-argentina",
    "metadata": {},
    "outputs": [
     {
@@ -1405,7 +1405,7 @@
   {
    "cell_type": "code",
    "execution_count": 77,
-   "id": "liable-going",
+   "id": "acceptable-guess",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1415,7 +1415,7 @@
   {
    "cell_type": "code",
    "execution_count": 97,
-   "id": "governmental-radar",
+   "id": "regional-clerk",
    "metadata": {},
    "outputs": [
     {
@@ -1447,7 +1447,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "hungry-flash",
+   "id": "interesting-blanket",
    "metadata": {},
    "source": [
     "We're not exactly ready to start our own weather channel, but there is definitely evidence of learning."

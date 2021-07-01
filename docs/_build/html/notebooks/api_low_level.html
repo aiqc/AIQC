@@ -311,20 +311,27 @@
 <li class="toctree-l3"><a class="reference internal" href="#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#4.-Slice-samples-with-a-Splitset.">4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Optional,-define-sliding-time-series-Windows.">4. Optional, define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Specifying-Windows">Specifying Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Reading-Windows">Reading Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Slice-samples-with-a-Splitset.">5. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Stratification">Stratification</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Splitting-Strategies">Splitting Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b)-Specifying-test-size.">b) Specifying test size.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#d)-Specifying-validation-size.">d) Specifying validation size.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d)-Unsupervised">d) Unsupervised</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e)-Take-all-samples-for-inference">e) Take all samples for inference</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Reading-Splitsets">Reading Splitsets</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#5.-Optionally,-create-a-Foldset-for-cross-validation.">5. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id2">ORM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Optionally,-create-a-Foldset-for-cross-validation.">6. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">ORM</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
 </ul>
 </li>
@@ -335,20 +342,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#6.-Optionally,-encode-labels-with-Labelcoder.">6. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Optionally,-encode-labels-with-Labelcoder.">7. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Encoding">Encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Labelcoder">Labelcoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#7.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">7. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">8. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Background">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Filtering-feature-columns">Filtering feature columns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Creating-an-Encoderset-and-attaching-multiple-Featurecoders-to-it.">Creating an <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> and attaching multiple <code class="docutils literal notranslate"><span class="pre">Featurecoders</span></code> to it.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#8.-Create-an-Algorithm-aka-model.">8. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">ORM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Create-an-Algorithm-aka-model.">9. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Model-Definition">Model Definition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Function-to-build-model">Function to build model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Optional,-function-to-calculate-loss.">Optional, function to calculate loss.</a></li>
@@ -360,7 +367,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#9.-Optional,-associate-a-Hyperparamset-with-your-model.">9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#10.-Optional,-associate-a-Hyperparamset-with-your-model.">10. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Parameters-are-fed-into-Algorithm-functions.">Parameters are fed into Algorithm functions.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Grid-search-strategy.">Grid search strategy.</a></li>
@@ -371,7 +378,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#10.-Create-a-Queue-of-training-Jobs.">10. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#11.-Create-a-Queue-of-training-Jobs.">11. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Execute-all-Jobs.">Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
@@ -381,16 +388,16 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#11.-Preprocessing-during-Job-is-recorded">11. Preprocessing during Job is recorded</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#12.-Predictors-are-the-trained-models.">12. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#12.-Preprocessing-during-Job-is-recorded">12. Preprocessing during Job is recorded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#13.-Predictors-are-the-trained-models.">13. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Fetching-the-trained-model.">Fetching the trained model.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#13.-Predictions-are-the-output-of-a-Predictor.">13. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#14.-Predictions-are-the-output-of-a-Predictor.">14. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#13.-Metrics-&amp;-Visualization">13. Metrics &amp; Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#15.-Metrics-&amp;-Visualization">15. Metrics &amp; Visualization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
@@ -1843,8 +1850,36 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 </div>
 </div>
-<div class="section" id="4.-Slice-samples-with-a-Splitset.">
-<h2>4. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#4.-Slice-samples-with-a-Splitset." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="4.-Optional,-define-sliding-time-series-Windows.">
+<h2>4. Optional, define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.<a class="headerlink" href="#4.-Optional,-define-sliding-time-series-Windows." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>ORM<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Window</span></code> object is provided in order to facilitate sliding windows for unsupervised/ self-supervised time series forecasting.</p>
+<p>It assumes that the last time point is the most recent (aka ascending time). So if you inverted your data during ingestion, then it will shift backward in time in case you need to predict the past.</p>
+<p><strong>Parameters:</strong> - <code class="docutils literal notranslate"><span class="pre">size_window:int</span></code> the number of points in time to include in a window. - <code class="docutils literal notranslate"><span class="pre">size_shift:int</span></code> the number of points in time to slide forward. - <code class="docutils literal notranslate"><span class="pre">record_shift:bool=True</span></code> used during inference. Only persists unshifted windows and while leaving shifted windows as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">Window</span></code> is associated with a <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, then the windows it produces will assume the role of “sample.” That is to say, when slicing the dataset, the samples become <em>0:4</em> windows, not <em>0:14</em> time points.</p>
+<p><img alt="Windows" src="../_images/sliding_windows.png" /></p>
+</div>
+<div class="section" id="Specifying-Windows">
+<h3>Specifying Windows<a class="headerlink" href="#Specifying-Windows" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">window</span> <span class="pre">=</span> <span class="pre">feature.make_window(size_window=4,</span> <span class="pre">size_shift=2)</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">samples_unshifted:list</span> <span class="pre">of</span> <span class="pre">lists</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samples_shifted:list</span> <span class="pre">of</span> <span class="pre">lists</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="Reading-Windows">
+<h3>Reading Windows<a class="headerlink" href="#Reading-Windows" title="Permalink to this headline">¶</a></h3>
+<p>In the example above, <code class="docutils literal notranslate"><span class="pre">window.samples_unshifted[0]==[1,2,3,4]</span></code>. Where <em>1:4</em> represents the raw, underlying sample indices of that window. This is used when fetching the data. First, the entire <code class="docutils literal notranslate"><span class="pre">Feature</span></code> is fetched for preprocessing, then windows are copied out of it like so:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">np.array([feature_array[w]</span> <span class="pre">for</span> <span class="pre">w</span> <span class="pre">in</span> <span class="pre">window.samples_unshifted])</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">np.array([feature_array[w]</span> <span class="pre">for</span> <span class="pre">w</span> <span class="pre">in</span> <span class="pre">window.samples_shifted])</span></code></p></li>
+</ul>
+<p>Where each of the above arrays is a 3D sequence that is fed into a single recurrent model. The shifted sequence is slotted into <code class="docutils literal notranslate"><span class="pre">samples[&lt;split&gt;]['labels']</span></code> to facilitate self-supervision.</p>
+</div>
+</div>
+<div class="section" id="5.-Slice-samples-with-a-Splitset.">
+<h2>5. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#5.-Slice-samples-with-a-Splitset." title="Permalink to this headline">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
 <p>Both continuous and categorical <code class="docutils literal notranslate"><span class="pre">Labels</span></code> are automatically stratified.</p>
 <table class="docutils align-default">
@@ -1871,18 +1906,19 @@ array([[5.1, 3.5, 1.4, 0.2],
 </table>
 <blockquote>
 <div><p>Label-based stratification is used to ensure equally distributed label classes for both categorical and continuous data.</p>
-<p>If you want more control over stratification of continuous splits, specify the number of <code class="docutils literal notranslate"><span class="pre">continuous_bin_count</span></code> for grouping.</p>
+<p>If you want more control over stratification of continuous splits, specify the number of <code class="docutils literal notranslate"><span class="pre">bin_count:int</span></code> for grouping.</p>
 </div></blockquote>
 <blockquote>
 <div><p>Again, creating a Splitset won’t duplicate your data. It simply points to the sample indices to be used in the splits that you specify!</p>
 </div></blockquote>
-<div class="section" id="Stratification-of-continuous-labels.">
-<h3>Stratification of continuous labels.<a class="headerlink" href="#Stratification-of-continuous-labels." title="Permalink to this headline">¶</a></h3>
-<p>All splits are stratified by default in that they contain similar distributions of unique label classes so that each split is a statistically accurate representation of the population as a whole.</p>
+<div class="section" id="Stratification">
+<h3>Stratification<a class="headerlink" href="#Stratification" title="Permalink to this headline">¶</a></h3>
+<p>All tabular splits are stratified by default in that they contain similar distributions of unique Label classes so that each split is a statistically accurate representation of the population as a whole.</p>
 <p>In order to support this process for continuous labels, binning/ discretization is utilized. For example, if 4 bins are used, values from <em>0.0 to 1.0</em> would be binned as <em>[0.0-0.25, 0.25-0.50, 0.50-0.75, 0.75-1.0]</em>. This is controlled by the <code class="docutils literal notranslate"><span class="pre">bin_count:int</span></code> argument.</p>
 <blockquote>
 <div><p>Reference the handy <code class="docutils literal notranslate"><span class="pre">Pandas.qcut()</span></code> and the source code <code class="docutils literal notranslate"><span class="pre">pd.qcut(x=array_to_bin,</span> <span class="pre">q=bin_count,</span> <span class="pre">labels=False,</span> <span class="pre">duplicates='drop')</span></code> for more detail.</p>
 </div></blockquote>
+<p>Additionally <code class="docutils literal notranslate"><span class="pre">unsupervised_stratify_column:str</span></code> is provided for scenarios where there is no Label. For example, you may want to stratify by the month during unsupervised time series analysis.</p>
 </div>
 <div class="section" id="Splitting-Strategies">
 <h3>Splitting Strategies<a class="headerlink" href="#Splitting-Strategies" title="Permalink to this headline">¶</a></h3>
@@ -1940,8 +1976,25 @@ array([[5.1, 3.5, 1.4, 0.2],
 </div>
 </div>
 </div>
-<div class="section" id="d)-Specifying-validation-size.">
-<h4>d) Specifying validation size.<a class="headerlink" href="#d)-Specifying-validation-size." title="Permalink to this headline">¶</a></h4>
+<div class="section" id="d)-Unsupervised">
+<h4>d) Unsupervised<a class="headerlink" href="#d)-Unsupervised" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>splitset = aiqc.Splitset.make(
+    label_id = None
+    , feature_ids = [feature.id]
+    , size_test=0.12
+    , size_validation=0.16
+)
+</pre></div>
+</div>
+</div>
+<div class="section" id="e)-Take-all-samples-for-inference">
+<h4>e) Take all samples for inference<a class="headerlink" href="#e)-Take-all-samples-for-inference" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>splitset = aiqc.Splitset.make(
+    feature_ids = [feature.id]
+    , label_id = None # Optional for unsupervised and pure inference.
+)
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="Reading-Splitsets">
@@ -1997,10 +2050,10 @@ dict_keys([&#39;validation&#39;, &#39;train&#39;, &#39;test&#39;])
 <p>The main attribute of the splitset is the <code class="docutils literal notranslate"><span class="pre">samples</span></code> dictionary. Again, on-disk this only contains sample indices. The dictionary is structured like so:</p>
 </div>
 </div>
-<div class="section" id="5.-Optionally,-create-a-Foldset-for-cross-validation.">
-<h2>5. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.<a class="headerlink" href="#5.-Optionally,-create-a-Foldset-for-cross-validation." title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id2">
-<h3>ORM<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="6.-Optionally,-create-a-Foldset-for-cross-validation.">
+<h2>6. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.<a class="headerlink" href="#6.-Optionally,-create-a-Foldset-for-cross-validation." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>ORM<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p><em>Reference the</em><a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a><em>to learn more about folding.</em></p>
 <p><img alt="Cross Folds" src="../_images/cross_fold.png" /></p>
 <p>We refer to the left out fold (blue) as the <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> and the remaining training data as the <code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code> (green).</p>
@@ -2112,8 +2165,8 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </div>
 </div>
 </div>
-<div class="section" id="6.-Optionally,-encode-labels-with-Labelcoder.">
-<h2>6. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.<a class="headerlink" href="#6.-Optionally,-encode-labels-with-Labelcoder." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="7.-Optionally,-encode-labels-with-Labelcoder.">
+<h2>7. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.<a class="headerlink" href="#7.-Optionally,-encode-labels-with-Labelcoder." title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Encoding">
 <h3>Encoding<a class="headerlink" href="#Encoding" title="Permalink to this headline">¶</a></h3>
 <p>Certain algorithms either (a) require features and/ or labels formatted a certain way, or (b) perform significantly better when their values are normalized. For example:</p>
@@ -2192,8 +2245,8 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 </div>
 </div>
 </div>
-<div class="section" id="7.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">
-<h2>7. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.<a class="headerlink" href="#7.-Optionally,-encode-Features-sequentially-with-Featurecoder(s)." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="8.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">
+<h2>8. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.<a class="headerlink" href="#8.-Optionally,-encode-Features-sequentially-with-Featurecoder(s)." title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Background">
 <h3>Background<a class="headerlink" href="#Background" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code> has the same validation process as the <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>. However, it is not without its own challenges:</p>
@@ -2293,10 +2346,10 @@ No more Featurecoders can be added to this Encoderset.
 <p>You can also view this information via the following attributes: <code class="docutils literal notranslate"><span class="pre">matching_columns</span></code>, <code class="docutils literal notranslate"><span class="pre">leftover_dtypes</span></code>, and <code class="docutils literal notranslate"><span class="pre">leftover_columns</span></code>.</p>
 </div>
 </div>
-<div class="section" id="8.-Create-an-Algorithm-aka-model.">
-<h2>8. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.<a class="headerlink" href="#8.-Create-an-Algorithm-aka-model." title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
-<h3>ORM<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="9.-Create-an-Algorithm-aka-model.">
+<h2>9. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.<a class="headerlink" href="#9.-Create-an-Algorithm-aka-model." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>ORM<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>Now that our data has been prepared, we transition to the other half of the ORM where the focus is the logic that will be applied to that data.</p>
 <blockquote>
 <div><p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is our ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> when it comes to ORMs.</p>
@@ -2578,8 +2631,8 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 </div>
-<div class="section" id="9.-Optional,-associate-a-Hyperparamset-with-your-model.">
-<h2>9. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.<a class="headerlink" href="#9.-Optional,-associate-a-Hyperparamset-with-your-model." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="10.-Optional,-associate-a-Hyperparamset-with-your-model.">
+<h2>10. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.<a class="headerlink" href="#10.-Optional,-associate-a-Hyperparamset-with-your-model." title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Parameters-are-fed-into-Algorithm-functions.">
 <h3>Parameters are fed into Algorithm functions.<a class="headerlink" href="#Parameters-are-fed-into-Algorithm-functions." title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument we saw earlier.</p>
@@ -2738,8 +2791,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </div>
 </div>
 </div>
-<div class="section" id="10.-Create-a-Queue-of-training-Jobs.">
-<h2>10. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#10.-Create-a-Queue-of-training-Jobs." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="11.-Create-a-Queue-of-training-Jobs.">
+<h2>11. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#11.-Create-a-Queue-of-training-Jobs." title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">Queue</span></code> is the central object of the “logic side” of the ORM. It ties together everything we need for training and hyperparameter tuning.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[65]:
@@ -2833,8 +2886,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </div>
 </div>
 </div>
-<div class="section" id="11.-Preprocessing-during-Job-is-recorded">
-<h2>11. Preprocessing during Job is recorded<a class="headerlink" href="#11.-Preprocessing-during-Job-is-recorded" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="12.-Preprocessing-during-Job-is-recorded">
+<h2>12. Preprocessing during Job is recorded<a class="headerlink" href="#12.-Preprocessing-during-Job-is-recorded" title="Permalink to this headline">¶</a></h2>
 <p>During the execution of a Job, the latest Labelcoder and Encoderset(s) tied to the Label and Feature(s) of the Splitset used during training will record their <code class="docutils literal notranslate"><span class="pre">fit()</span></code> to the data.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">FittedLabelcoder</span></code> for the Labelcoder used.</p>
@@ -2859,8 +2912,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_labelcoder(job,</span> <span class="pre">feature)</span></code></p></li>
 </ul>
 </div>
-<div class="section" id="12.-Predictors-are-the-trained-models.">
-<h2>12. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.<a class="headerlink" href="#12.-Predictors-are-the-trained-models." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="13.-Predictors-are-the-trained-models.">
+<h2>13. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.<a class="headerlink" href="#13.-Predictors-are-the-trained-models." title="Permalink to this headline">¶</a></h2>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> trains a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>. The following attributes are automatically written to the <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> after training.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">model_file</span></code>: serialization varies for Keras and Pytorch deep learning framework.</p></li>
@@ -2890,8 +2943,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </div>
 </div>
 </div>
-<div class="section" id="13.-Predictions-are-the-output-of-a-Predictor.">
-<h2>13. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.<a class="headerlink" href="#13.-Predictions-are-the-output-of-a-Predictor." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="14.-Predictions-are-the-output-of-a-Predictor.">
+<h2>14. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.<a class="headerlink" href="#14.-Predictions-are-the-output-of-a-Predictor." title="Permalink to this headline">¶</a></h2>
 <p>When you feed samples through a Predictor, you get Predictions. During training, Predictions are automatically generated for every split/fold that was tied to the Queue.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
@@ -2939,8 +2992,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </ul>
 </div>
 </div>
-<div class="section" id="13.-Metrics-&amp;-Visualization">
-<h2>13. Metrics &amp; Visualization<a class="headerlink" href="#13.-Metrics-&-Visualization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="15.-Metrics-&amp;-Visualization">
+<h2>15. Metrics &amp; Visualization<a class="headerlink" href="#15.-Metrics-&-Visualization" title="Permalink to this headline">¶</a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="visualization.html">Visualization &amp; Metrics</a> documentation.</p>
 </div>
 </div>

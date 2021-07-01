@@ -1529,7 +1529,90 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 4. Slice samples with a `Splitset`."
+    "## 4. Optional, define sliding time series `Windows`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### ORM"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `Window` object is provided in order to facilitate sliding windows for unsupervised/ self-supervised time series forecasting. \n",
+    "\n",
+    "It assumes that the last time point is the most recent (aka ascending time). So if you inverted your data during ingestion, then it will shift backward in time in case you need to predict the past.\n",
+    "\n",
+    "**Parameters:**\n",
+    "- `size_window:int` the number of points in time to include in a window.\n",
+    "- `size_shift:int` the number of points in time to slide forward.\n",
+    "- `record_shift:bool=True` used during inference. Only persists unshifted windows and while leaving shifted windows as `None`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "If a `Window` is associated with a `Feature`, then the windows it produces will assume the role of \"sample.\" That is to say, when slicing the dataset, the samples become *0:4* windows, not *0:14* time points."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Windows](../images/sliding_windows.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Specifying Windows"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`window = feature.make_window(size_window=4, size_shift=2)`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- `samples_unshifted:list of lists`\n",
+    "- `samples_shifted:list of lists`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Reading Windows"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In the example above, `window.samples_unshifted[0]==[1,2,3,4]`. Where *1:4* represents the raw, underlying sample indices of that window. This is used when fetching the data. First, the entire `Feature` is fetched for preprocessing, then windows are copied out of it like so:\n",
+    "\n",
+    "- `np.array([feature_array[w] for w in window.samples_unshifted])`\n",
+    "- `np.array([feature_array[w] for w in window.samples_shifted])`\n",
+    "\n",
+    "Where each of the above arrays is a 3D sequence that is fed into a single recurrent model. The shifted sequence is slotted into `samples[<split>]['labels']` to facilitate self-supervision."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 5. Slice samples with a `Splitset`."
    ]
   },
   {
@@ -1563,7 +1646,7 @@
    "source": [
     "> Label-based stratification is used to ensure equally distributed label classes for both categorical and continuous data.\n",
     ">\n",
-    "> If you want more control over stratification of continuous splits, specify the number of `continuous_bin_count` for grouping."
+    "> If you want more control over stratification of continuous splits, specify the number of `bin_count:int` for grouping."
    ]
   },
   {
@@ -1577,18 +1660,25 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Stratification of continuous labels."
+    "### Stratification"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "All splits are stratified by default in that they contain similar distributions of unique label classes so that each split is a statistically accurate representation of the population as a whole.\n",
+    "All tabular splits are stratified by default in that they contain similar distributions of unique Label classes so that each split is a statistically accurate representation of the population as a whole.\n",
     "\n",
     "In order to support this process for continuous labels, binning/ discretization is utilized. For example, if 4 bins are used, values from *0.0 to 1.0* would be binned as *[0.0-0.25, 0.25-0.50, 0.50-0.75, 0.75-1.0]*. This is controlled by the `bin_count:int` argument. \n",
     "\n",
     "> Reference the handy `Pandas.qcut()`  and the source code `pd.qcut(x=array_to_bin, q=bin_count, labels=False, duplicates='drop')` for more detail."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Additionally `unsupervised_stratify_column:str` is provided for scenarios where there is no Label. For example, you may want to stratify by the month during unsupervised time series analysis."
    ]
   },
   {
@@ -1685,7 +1775,40 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### d) Specifying validation size."
+    "#### d) Unsupervised"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "    splitset = aiqc.Splitset.make(\n",
+    "        label_id = None\n",
+    "        , feature_ids = [feature.id]\n",
+    "        , size_test=0.12\n",
+    "        , size_validation=0.16\n",
+    "    )\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### e) Take all samples for inference"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "    splitset = aiqc.Splitset.make(\n",
+    "        feature_ids = [feature.id]\n",
+    "        , label_id = None # Optional for unsupervised and pure inference.\n",
+    "    )\n",
+    "```"
    ]
   },
   {
@@ -1771,7 +1894,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 5. Optionally, create a `Foldset` for cross-validation."
+    "## 6. Optionally, create a `Foldset` for cross-validation."
    ]
   },
   {
@@ -1969,7 +2092,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 6. Optionally, encode labels with `Labelcoder`."
+    "## 7. Optionally, encode labels with `Labelcoder`."
    ]
   },
   {
@@ -2106,7 +2229,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 7. Optionally, encode Features sequentially with `Featurecoder(s)`."
+    "## 8. Optionally, encode Features sequentially with `Featurecoder(s)`."
    ]
   },
   {
@@ -2263,7 +2386,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 8. Create an `Algorithm` aka model."
+    "## 9. Create an `Algorithm` aka model."
    ]
   },
   {
@@ -2701,7 +2824,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 9. Optional, associate a `Hyperparamset` with your model."
+    "## 10. Optional, associate a `Hyperparamset` with your model."
    ]
   },
   {
@@ -2911,7 +3034,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 10. Create a `Queue` of training `Jobs`."
+    "## 11. Create a `Queue` of training `Jobs`."
    ]
   },
   {
@@ -3047,7 +3170,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 11. Preprocessing during Job is recorded"
+    "## 12. Preprocessing during Job is recorded"
    ]
   },
   {
@@ -3081,7 +3204,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 12. `Predictors` are the trained models."
+    "## 13. `Predictors` are the trained models."
    ]
   },
   {
@@ -3129,7 +3252,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 13. `Predictions` are the output of a Predictor."
+    "## 14. `Predictions` are the output of a Predictor."
    ]
   },
   {
@@ -3202,7 +3325,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 13. Metrics & Visualization"
+    "## 15. Metrics & Visualization"
    ]
   },
   {
