@@ -4991,10 +4991,10 @@ class Job(BaseModel):
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
 			# Handle Sequence (part 1): reshape 3D to tall 2D for transformation.
-			features_shape = arr_features.shape
-			if (len(features_shape)==3):
-				rows_2D = features_shape[0] * features_shape[1]
-				arr_features = arr_features.reshape(rows_2D, features_shape[2])
+			original_features_shape = arr_features.shape
+			if (len(original_features_shape)==3):
+				rows_2D = original_features_shape[0] * original_features_shape[1]
+				arr_features = arr_features.reshape(rows_2D, original_features_shape[2])
 
 			f_cols = encoderset.feature.columns
 			transformed_features = None #Used as a placeholder for `np.concatenate`.
@@ -5045,12 +5045,13 @@ class Job(BaseModel):
 					(transformed_features, leftover_features)
 					, axis = 1
 				)
-			# Handle Sequence (part 2): reshape 3D to tall 2D for transformation.
-			if (len(features_shape)==3):
+			# Handle Sequence (part 2): reshape tall 2D back to 3D.
+			# This checks `==3` intentionaly!!!
+			if (len(original_features_shape)==3):
 				transformed_features = arr_features.reshape(
-					features_shape[0],
-					features_shape[1],
-					features_shape[2]
+					original_features_shape[0],
+					original_features_shape[1],
+					original_features_shape[2]
 				)
 				
 		elif (len(featurecoders) == 0):
@@ -5071,7 +5072,8 @@ class Job(BaseModel):
 		algorithm = predictor.job.queue.algorithm
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
-		supervision = predictor.job.queue.splitset.supervision
+		splitset = predictor.job.queue.splitset
+		supervision = splitset.supervision
 
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
@@ -5287,6 +5289,11 @@ class Job(BaseModel):
 						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], data_shape[2], new_col_count)
 
 					predictions[split] = decoded_data
+		# Assumes only 1 unsupervised Feature is allowed, and Dataset.Image does not all encoding.
+		# Dataset.Image are divided by 255 during `to_numpy()`.
+		if (splitset.get_features()[0].dataset.dataset_type=='image'):
+			for split, data in predictions.items():
+				predictions[split] = data*255
 
 		# Flatten.
 		if (supervision=='supervised'):

@@ -292,23 +292,20 @@
     "##### New: simplified, pre-built extension for plotly>=5.0.0\n",
     "The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.\n",
     "\n",
-    "> However, I suspect that it may get moved to a package extra (e.g. *plotly[jupyterlab]*) in order to avoid long plotly install times.\n",
-    "\n",
-    "\n",
     "##### *Deprecated:* manually building extension process for plotly<=5.0.0\n",
     "*Deprecated:* If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "metadata": {},
    "outputs": [],
    "source": [
     "# Deprecated\n",
-    "!jupyter labextension install jupyterlab-plotly\n",
-    "!jupyter labextension check jupyterlab-plotly\n",
-    "!jupyter lab build"
+    "#!jupyter labextension install jupyterlab-plotly\n",
+    "#!jupyter labextension check jupyterlab-plotly\n",
+    "#!jupyter lab build"
    ]
   },
   {

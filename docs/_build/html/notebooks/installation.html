@@ -318,7 +318,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Slice-samples-with-a-Splitset.">5. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Stratification">Stratification</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitting-Strategies">Splitting Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
@@ -955,22 +955,19 @@ v14.7.0
 <div class="section" id="New:-simplified,-pre-built-extension-for-plotly&gt;=5.0.0">
 <h5>New: simplified, pre-built extension for plotly&gt;=5.0.0<a class="headerlink" href="#New:-simplified,-pre-built-extension-for-plotly>=5.0.0" title="Permalink to this headline">¶</a></h5>
 <p>The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.</p>
-<blockquote>
-<div><p>However, I suspect that it may get moved to a package extra (e.g. <em>plotly[jupyterlab]</em>) in order to avoid long plotly install times.</p>
-</div></blockquote>
 </div>
 <div class="section" id="Deprecated:-manually-building-extension-process-for-plotly&lt;=5.0.0">
 <h5><em>Deprecated:</em> manually building extension process for plotly&lt;=5.0.0<a class="headerlink" href="#Deprecated:-manually-building-extension-process-for-plotly<=5.0.0" title="Permalink to this headline">¶</a></h5>
 <p><em>Deprecated:</em> If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Deprecated</span>
-<span class="o">!</span>jupyter labextension install jupyterlab-plotly
-<span class="o">!</span>jupyter labextension check jupyterlab-plotly
-<span class="o">!</span>jupyter lab build
+<span class="c1">#!jupyter labextension install jupyterlab-plotly</span>
+<span class="c1">#!jupyter labextension check jupyterlab-plotly</span>
+<span class="c1">#!jupyter lab build</span>
 </pre></div>
 </div>
 </div>

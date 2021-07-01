@@ -812,6 +812,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Persisting-and-Compressing-Structured-Data">
 <h3>Persisting and Compressing Structured Data<a class="headerlink" href="#Persisting-and-Compressing-Structured-Data" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">ingest:bool=True</span></code> parameter dictates whether or not the data is ingested into SQLite or if remains on disk and is accessed via <code class="docutils literal notranslate"><span class="pre">source_path</span></code>.</p>
 <p>By default the actual bytes of the file are persisted to the SQLite <code class="docutils literal notranslate"><span class="pre">BlobField</span></code>. It gets gzip compressed, reducing the size by up to 90%. Maximum BlobField size is 2.147 GB, but once you factor in compression, your bottleneck is more likely to be memory beyond that size. The bytes themselves are Parquet (single-partitioned) because, using the PyArrow engine, it preserves every dtype except certain datetimes (which are honestly better off parsed into floats/ ordinal ints). Parquet is also
 integrated nicely into both Spark and Dask; frameworks for distributed, in-memory computation.</p>
 <p>Persisting the file ensures reproducibility by: (a) keeping the data packaged alongside the experiment, and (b) helping entry-level users move away from relying on mutable dataframes they have had in-memory for extended periods of time or floating around on shared file systems.</p>
@@ -825,12 +826,17 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></p>
 <ul>
-<li><p>In-memory data structures (pandas dataframe, numpy array).</p></li>
+<li><p>In-memory data structures (Pandas DataFrame, NumPy ndarray).</p></li>
 <li><p>Flat files (csv, tsv, parquet).</p>
 <ul>
 <li><p>Accepts urls.</p></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></p>
+<ul>
+<li><p>In-memory NumPy ndarray or .npy file.</p></li>
 </ul>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></p>
