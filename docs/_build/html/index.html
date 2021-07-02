@@ -556,12 +556,12 @@
 <table class="compatibility" valign="center">
 <tr>
   <td id="top-left"></td>
-  <td class="tbl-head  tbl-head-Tabular">Tabular</br><small>(array, df, file)</small></td>
-  <td class="tbl-head  tbl-head">Sequence</br><small>(3D, files, time series)</small></td>
-  <td class="tbl-head  tbl-head-Image">Image</br><small>(png, jpg)</small></td>
+  <td class="tbl-head  top-left">Tabular</br><small>(array, df, file)</small></td>
+  <td class="tbl-head">Sequence</br><small>(3D, files, time series)</small></td>
+  <td class="tbl-head  top-right">Image</br><small>(png, jpg)</small></td>
 </tr>
 <tr>
-  <td class="tbl-head tbl-head-Classification">Classification</br><small>(binary, multi)</small></td>
+  <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
   <td class="done">
     Keras (<a href='notebooks/keras_binary_classification.html'>binary</a>,
     <a href='notebooks/keras_multi-label_classification.html'>multi</a>)
@@ -582,16 +582,19 @@
     PyTorch (binary, multi)
   </td>
 </tr>
+
 <tr>
-  <td class="tbl-head">Quantification</br><small>(regression)</small></td>
+  <td class="tbl-head bottom-left">Quantification</br><small>(regression)</small></td>
   <td class="done">
     <a href='notebooks/keras_regression.html'>Keras</a>
     <br/><span class="checkmark">✓</span><br/>
     <a href='notebooks/pytorch_regression.html'>PyTorch</a>
   </td>
   <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
-  <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+  <td class="done bottom-right">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
 </tr>
+
+<!--
 <tr>
   <td class="tbl-head tbl-head-Generation">Forecast</br></td>
   <td class="done">
@@ -602,11 +605,17 @@
   <td>Coming soon.</td>
   <td class="coming-soon">Coming soon.</td>
 </tr>
+-->
 </table>
 
 </br></br>
 
 <ul style="text-align: center; list-style-position: inside;">
+  <li class="extra-bullets">
+    <a href='notebooks/keras_tabular_forecasting.html'>
+      Supports multi-variate time series forecasting via walk forward windowing.
+    </a>
+  </li>
   <li class="extra-bullets">
     <a href='notebooks/tensorflow_binary_classification.html'>
       Compatible with TensorFlow 2 for model maintenance and training loop customization.

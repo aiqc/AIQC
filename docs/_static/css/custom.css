@@ -93,23 +93,19 @@ iframe {
 	font-size: 	100% !important;
 }
 
-.tbl-head-Classification {
+.top-left {
 	border-top-left-radius: 22px;
 }
 
-.tbl-head-Tabular { 
-	border-top-left-radius: 22px;
-}
-
-.tbl-head-Generation {
+.bottom-left {
 	border-bottom-left-radius:	22px;
 }
 
-.tbl-head-Image {
+.top-right {
 	border-top-right-radius:	22px;
 }
 
-.coming-soon {
+.bottom-right {
 	border-bottom-right-radius:	22px;
 }
 
