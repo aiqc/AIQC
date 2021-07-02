@@ -5225,15 +5225,16 @@ class Job(BaseModel):
 						originally_3d = False
 						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
 
-					# Figure out the order in which columns were encoded.
+					
 					encoded_column_names = []
 					for i, fc in enumerate(encoderset.featurecoders):
+						# Figure out the order in which columns were encoded.
+						# This `[0]` assumes that there is only 1 fitted encoder in the list; that 2D fit succeeded.
 						fitted_encoder = fitted_encoders[i][0]
 						stringified_encoder = str(fitted_encoder)
 						matching_columns = fc.matching_columns
 						[encoded_column_names.append(mc) for mc in matching_columns]
-						# Fetch the columns that it encoded.
-						# This will need to be adjusted to handle text feature extraction.
+						# Figure out how many columns they account for in the encoded data.
 						if ("OneHotEncoder" in stringified_encoder):
 							num_matching_columns = 0
 							for c in fitted_encoder.categories_:
@@ -5248,10 +5249,10 @@ class Job(BaseModel):
 						# Then concatenate w previously decoded columns.
 						if (i==0):
 							decoded_data = data_subset
-						else:
+						elif (i>0):
 							decoded_data = np.concatenate((decoded_data, data_subset), axis=1)
 						# Delete those columns from the original data.
-						# So that we can continue to access columns via index.
+						# So we can continue to access the next cols via `num_matching_columns`.
 						data = np.delete(data, np.s_[0:num_matching_columns], axis=1)
 					# Check for and merge any leftover columns.
 					leftover_columns = encoderset.featurecoders[-1].leftover_columns
@@ -5259,29 +5260,31 @@ class Job(BaseModel):
 						[encoded_column_names.append(c) for c in leftover_columns]
 						decoded_data = np.concatenate((decoded_data, data), axis=1)
 					
-					# Map encoded indices against original indices.
-					original_columns = predictor.job.queue.splitset.get_features()[0].dataset.get_main_tabular().columns
+					# Now we have `decoded_data` but its columns needs to be reordered to match original.
+					# OHE, text extraction are condensed at this point.
+					# Mapping of original col names {0:"first_column_name"}
+					original_col_names = predictor.job.queue.splitset.get_features()[0].dataset.get_main_tabular().columns
 					original_dict = {}
-					for i, name in enumerate(original_columns):
+					for i, name in enumerate(original_col_names):
 						original_dict[i] = name
-
+					# Lookup encoded indices against this map: [4,2,0,1]
 					encoded_indices = []
 					for name in encoded_column_names:
-						# I don't think this will work for OHE because they aren't all mapped to the original column.
 						for idx, n in original_dict.items():
 							if (name == n):
 								encoded_indices.append(idx)
 								break
-					# The int of the index might be greater than the size of the list. 
+					# Result is original columns indices, but still out of order.
+					# Based on columns selected, the indices may not be incremental: [4,2,0,1] --> [3,2,0,1]
 					ranked = sorted(encoded_indices)
 					encoded_indices = [ranked.index(i) for i in encoded_indices]
-					# Rearrange columns by index.
+					# Rearrange columns by index: [0,1,2,3]
 					placeholder = np.empty_like(encoded_indices)
 					placeholder[encoded_indices] = np.arange(len(encoded_indices))
 					decoded_data = decoded_data[:, placeholder]
 
 					# Restore original shape.
-					# Due to inverse OHE, the number of columns may have decreased.
+					# Due to inverse OHE or text extraction, the number of columns may have decreased.
 					new_col_count = decoded_data.shape[1]
 					if (originally_3d==True):
 						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], new_col_count)
