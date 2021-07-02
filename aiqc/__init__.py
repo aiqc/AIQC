@@ -2246,6 +2246,7 @@ class Window(BaseModel):
 	):
 		feature = Feature.get_by_id(feature_id)
 		dataset_type = feature.dataset.dataset_type
+		# Works for both since it is based on their 2D schema.
 		if (dataset_type=='tabular' or dataset_type=='sequence'):
 			sample_count = feature.dataset.get_main_file().shape['rows']
 		elif (dataset_type=='image'):
@@ -2370,10 +2371,12 @@ class Splitset(BaseModel):
 			f_dataset = f.dataset
 			f_dset_type = f_dataset.dataset_type
 
-			if (len(f.windows)!=0):
+			if ((len(f.windows)>0) and (f_dset_type == 'tabular')):
+				# Only 2D tabular will use the window as the sample.
+				# Because in 3D, the sample is the patient, not the intra-patient time windows.
 				window = f.windows[-1]
 				f_length = window.window_count
-			elif (len(f.windows)==0):
+			else:
 				if (f_dset_type == 'tabular' or f_dset_type == 'text'):
 					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
 				elif (f_dset_type == 'image' or f_dset_type == 'sequence'):
@@ -2395,7 +2398,7 @@ class Splitset(BaseModel):
 		if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
 			# Could get the row count via `f_dataset.get_main_file().shape['rows']`, but need array later.
 			feature_array = f_dataset.to_numpy(columns=f_cols) #Used below for splitting.
-			if (len(feature.windows)!=0):
+			if ((len(feature.windows)!=0) and (f_dset_type=='tabular')):
 				window = feature.windows[-1]
 				# Returns 3D: e.g. (50 samples, 28 timesteps, 5 columns)
 				# Shifted and unshifted point to the same sample.
@@ -3150,7 +3153,6 @@ class Labelcoder(BaseModel):
 
 	def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 		"""
-		- Future: optimize to make sure not duplicating numpy. especially append to lists + reshape after transpose.
 		- There are 17 uppercase sklearn encoders, and 10 different data types across float, str, int 
 		  when consider negatives, 2D multiple columns, 2D single columns.
 		- Different encoders work with different data types and dimensionality.
@@ -3179,7 +3181,7 @@ class Labelcoder(BaseModel):
 
 		with warnings.catch_warnings(record=True) as w:
 			try:
-				# aiqc `to_numpy()` always fetches 2D.
+				#`samples_to_fit` is coming in as 2D.
 				# Remember, we are assembling `fitted_encoders` dict, not accesing it.
 				fit_encoder = sklearn_preprocess.fit(samples_to_fit)
 				fitted_encoders.append(fit_encoder)
@@ -3490,7 +3492,7 @@ class Featurecoder(BaseModel):
 
 		# 4. Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
-		# Handles `Dataset.Sequence` by stacking the 2D arrays into a tall 2D array.
+		# Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
 		features_shape = samples_to_encode.shape
 		if (len(features_shape)==3):
 			rows_2D = features_shape[0] * features_shape[1]
@@ -4845,11 +4847,17 @@ class Job(BaseModel):
 		split_metrics = {}
 		data_shape = data.shape
 		# Unsupervised sequences and images have many data points for a single sample.
-		# These metrics don't work with 3D data, so reshape to 2D.
-		if (len(data_shape) == 3):
+		# These metrics only work with 2D data, and all we are after is comparing each number to the real number.
+		if (len(data_shape) == 5):
+			data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2]*data_shape[3], data_shape[4])
+			predictions = predictions.reshape(data_shape[0]*data_shape[1]*data_shape[2]*data_shape[3], data_shape[4])
+		elif (len(data_shape) == 4):
+			data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
+			predictions = predictions.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
+		elif (len(data_shape) == 3):
 			data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
 			predictions = predictions.reshape(data_shape[0]*data_shape[1], data_shape[2])
-
+		# These predictions are not persisted. Only used for metrics.
 		split_metrics['r2'] = sklearn.metrics.r2_score(data, predictions)
 		split_metrics['mse'] = sklearn.metrics.mean_squared_error(data, predictions)
 		split_metrics['explained_variance'] = sklearn.metrics.explained_variance_score(data, predictions)
@@ -5214,7 +5222,7 @@ class Job(BaseModel):
 
 			if (encoderset is not None):
 				for split, data in predictions.items():
-					# Make sure it is 2D
+					# Make sure it is 2D.
 					data_shape = data.shape
 					if (len(data_shape)==3):
 						data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
@@ -5452,14 +5460,34 @@ class Job(BaseModel):
 
 			if (len(feature.windows) > 0):
 				window = feature.windows[-1]
-				# Need to do the target first in order to access the unwindowed `arr_features`.
+
+				features_ndim = arr_features.ndim
+				
+				# Shifted labels. Need to do the target first in order to access the unwindowed `arr_features`.
 				# During pure inference, there may be no shifted samples.
 				if (window.samples_shifted is not None):
-					arr_labels = np.array([arr_features[w] for w in window.samples_shifted])
+					if (features_ndim==2):
+						arr_labels = np.array([arr_features[w] for w in window.samples_shifted])
+					elif (features_ndim==3):
+						arr_labels = []
+						for i, patient in enumerate(arr_features):
+							arr_labels.append(
+								[arr_features[i][w] for w in window.samples_shifted]
+							)
+						arr_labels = np.array(arr_labels)
 					if (library == 'pytorch'):
 						arr_labels = torch.FloatTensor(arr_labels)
-				arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
-			
+				
+				# Unshifted features.
+				if (features_ndim==2):
+					arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
+				elif (features_ndim==3):
+					feature_holder = []
+					for i, patient in enumerate(arr_features):
+						feature_holder.append(
+							[arr_features[i][w] for w in window.samples_unshifted]
+						)
+					arr_features = np.array(feature_holder)
 			if (library == 'pytorch'):
 				arr_features = torch.FloatTensor(arr_features)
 			# Don't use the list if you don't have to.
@@ -5483,6 +5511,7 @@ class Job(BaseModel):
 		- `[0]` accessess the first sample in each array.
 		- Does not impact the training loop's `batch_size`.
 		- Shapes are used later by `get_model()` to initialize it.
+		- Here the count refers to Features, not columns.
 		"""
 		if (feature_count == 1):
 			features_shape = samples[key_train]['features'][0].shape
