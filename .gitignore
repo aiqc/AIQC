@@ -1,13 +1,41 @@
 **/.DS_Store
+.~lock
 .DS_Store
+.idea
 **/.ipynb_checkpoints/
 .ipynb_checkpoints/
 Untitled.ipynb
 **/__pycache__/
 __pycache__/
-# pypi build
+
+# Distribution / packaging
 /dist
 /aiqc.egg-info
 /build
-.idea
-venv
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
