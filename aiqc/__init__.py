@@ -6112,7 +6112,15 @@ class Predictor(BaseModel):
 			label_old = None
 
 		if (label_new is not None):			
-			arr_labels = label_new.to_numpy()
+			if (len(label_new.labelpolaters) > 0):
+				lp = label_new.labelpolaters[-1]
+				# In case `lp.process_separately`, still need to define samples.
+				sample_count = label_new.dataset.get_main_file.shape['rows']
+				samples = list(range(sample_count))
+				lp_samples = dict(all=samples)
+				arr_labels = lp.fetch_interpolated(samples=lp_samples)
+			else:
+				arr_labels = label_new.to_numpy()
 
 			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
 				job=predictor.job, label=label_old
