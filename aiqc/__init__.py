@@ -2888,7 +2888,10 @@ class Fold(BaseModel):
 
 
 class Labelpolater(BaseModel):
-	"""- Based on `pandas.DataFrame.interpolate`"""
+	"""
+	- Based on `pandas.DataFrame.interpolate
+	- Label cannot be of `dataset_type=='sequence'` so don't need to worry about 3D data.
+	"""
 
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
