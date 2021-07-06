@@ -139,7 +139,18 @@ def list_datums(format:str=None):
 			, 'samples': 1575
 			, 'description': "<https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data>. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'"
 			, 'location': 'local'
-		}
+		},
+		{
+			'name': 'liberty_moon.csv'
+			, 'dataset_type': 'image'
+			, 'analysis_type': 'forecasting'
+			, 'label': 'N/A'
+			, 'label_classes': 'N/A'
+			, 'features': '1 color x 100 tall x 120 wide'
+			, 'samples': 15
+			, 'description': 'moon glides from top left to bottom right'
+			, 'location': 'remote'
+		},
 	]
 
 	formats_df = [None, 'pandas', 'df' ,'dataframe', 'd', 'pd']
@@ -166,6 +177,8 @@ def get_path(name:str):
 		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/brain_tumor/brain_tumor.csv"
 	elif (name == 'galaxies.tsv'):
 		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/galaxy_morphology/galaxies.tsv"
+	elif (name == 'liberty_moon.csv'):
+		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/liberty_moon/liberty_moon.csv"
 	else:
 		short_path = f"data/{name}"
 		full_path = pkg_resources.resource_filename('aiqc', short_path)

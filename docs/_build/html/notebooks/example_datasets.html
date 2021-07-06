@@ -318,7 +318,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Slice-samples-with-a-Splitset.">5. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Stratification-of-continuous-labels.">Stratification of continuous labels.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Stratification">Stratification</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Splitting-Strategies">Splitting Strategies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
@@ -781,6 +781,15 @@ div.rendered_html tbody tr:hover {
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>If you’ve already completed the instructions on the <a class="reference external" href="installation.html">Installation</a> page, then let’s get started.</p>
 <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/Users/Layne/Desktop/AIQC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -978,7 +987,7 @@ div.rendered_html tbody tr:hover {
     </tr>
     <tr>
       <th>11</th>
-      <td>dehli_climate.parquet</td>
+      <td>delhi_climate.parquet</td>
       <td>sequence</td>
       <td>forecasting</td>
       <td>N/A</td>
@@ -987,6 +996,18 @@ div.rendered_html tbody tr:hover {
       <td>1575</td>
       <td>&lt;https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data&gt;. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'</td>
       <td>local</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>liberty_moon.csv</td>
+      <td>image</td>
+      <td>forecasting</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>1 color x 100 tall x 120 wide</td>
+      <td>15</td>
+      <td>moon glides from top left to bottom right</td>
+      <td>remote</td>
     </tr>
   </tbody>
 </table>
