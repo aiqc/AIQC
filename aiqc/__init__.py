@@ -2425,7 +2425,7 @@ class Splitset(BaseModel):
 				# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 				label = Label.get_by_id(label_id)
 				# Check number of samples in Label vs Feature, because they can come from different Datasets.
-				if (label.labelpolaters > 0):
+				if (len(label.labelpolaters) > 0):
 					lp = label.labelpolaters[-1]
 					lp_samples = dict(all=arr_idx.tolist())#just take all samples.
 					stratify_arr = lp.fetch_interpolated(samples=lp_samples)
@@ -5521,7 +5521,7 @@ class Job(BaseModel):
 		if (splitset.supervision == "supervised"):
 			label = splitset.label
 			# Interpolate
-			if (label.labelpolaters > 0):
+			if (len(label.labelpolaters) > 0):
 				labelpolater = label.labelpolaters[-1]
 				arr_labels = labelpolater.fetch_interpolated(samples=samples)
 			else:
