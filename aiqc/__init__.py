@@ -2891,8 +2891,8 @@ class Labelpolater(BaseModel):
 	"""
 	- Based on `pandas.DataFrame.interpolate
 	- Label cannot be of `dataset_type=='sequence'` so don't need to worry about 3D data.
+	- Only works on floats.
 	"""
-
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
@@ -2905,7 +2905,7 @@ class Labelpolater(BaseModel):
 		, interpolate_kwargs:dict = None
 	):
 		label = Label.get_by_id(label_id)
-		Labelpolater.prevent_integers(label)
+		Labelpolater.floats_only(label)
 		df = label.to_pandas()
 
 		if (interpolate_kwargs is None):
@@ -2934,16 +2934,12 @@ class Labelpolater(BaseModel):
 		return lp
 
 
-	def prevent_integers(label:object):
+	def floats_only(label:object):
 		# Prevent integer dtypes. It will ignore.
 		label_dtypes = set(label.get_dtypes().values())
 		for typ in label_dtypes:
-			if (
-				(np.issubdtype(typ, np.signedinteger))
-				or
-				(np.issubdtype(typ, np.unsignedinteger))
-			):
-				raise ValueError(f"\nYikes - Interpolate cannot be ran on integer dtypes like <{typ}> because they will be converted to non-integer floats\n")
+			if (not np.issubdtype(typ, np.floating)):
+				raise ValueError(f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n")
 
 	def check_attributes(interpolate_kwargs:dict):
 		if (interpolate_kwargs['method'] == 'polynomial'):
