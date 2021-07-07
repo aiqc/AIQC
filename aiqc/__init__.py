@@ -2432,11 +2432,16 @@ class Splitset(BaseModel):
 		- Simulate an index to be split alongside features and labels
 		  in order to keep track of the samples being used in the resulting splits.
 		- If it's windowed, the samples become the windows instead of the rows.
+		- Images just use the index for stratification.
 		"""
 		if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
-			# Could get the row count via `f_dataset.get_main_file().shape['rows']`, but need array later.
-			feature_array = f_dataset.to_numpy(columns=f_cols) #Used below for splitting.
-			if ((len(feature.windows)!=0) and (f_dset_type=='tabular')):
+			if (len(feature.featurepolaters)>0):
+				fp = feature.featurepolaters[-1]
+				feature_array = fp.fetch_interpolated()
+			else:
+				feature_array = feature.to_numpy(columns=f_cols)
+
+			if (len(feature.windows)>0):
 				window = feature.windows[-1]
 				# Returns 3D: e.g. (50 samples, 28 timesteps, 5 columns)
 				# Shifted and unshifted point to the same sample.
@@ -2788,18 +2793,49 @@ class Foldset(BaseModel):
 			elif (fold_count == 2):
 				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
-		# Get the training indices. The actual values of the features don't matter, only label values needed for stratification.
 		arr_train_indices = splitset.samples["train"]
 		if (splitset.supervision=="supervised"):
-			stratify_arr = splitset.label.to_numpy(samples=arr_train_indices)
+			# The actual values of the features don't matter, only label values needed for stratification.
+			label = splitset.label
+			if (len(splitset.label.labelpolaters)>0):
+				stratify_arr = label.labelpolater.fetch_interpolated(samples=arr_train_indices)
+			else:
+				stratify_arr = label.to_numpy(samples=arr_train_indices)
 			stratify_dtype = stratify_arr.dtype
+
 		elif (splitset.supervision=="unsupervised"):
 			if (splitset.unsupervised_stratify_col is not None):
-				stratify_arr = splitset.get_features()[0].to_numpy(
-					columns = splitset.unsupervised_stratify_col,
-					samples = arr_train_indices
-				)
+				stratify_col = splitset.unsupervised_stratify_col
+				feature = splitset.get_features()[0]
+
+				if (len(feature.featurepolaters)>0):
+					# Only use the interpolation if that column is interpolated.
+					matching_columns = feature.featurepolaters[-1].matching_columns
+					if (stratify_col in matching_columns):
+						featurepolater = feature.featurepolaters[-1]
+						stratify_arr = featurepolater.fetch_interpolated(
+							columns = [stratify_col]
+							, samples = arr_train_indices
+						)
+					else:
+						stratify_arr = feature.to_numpy(
+							columns = [stratify_col]
+							, samples = arr_train_indices
+						)
+				else:
+					stratify_arr = feature.to_numpy(
+						columns = [stratify_col]
+						, samples = arr_train_indices
+					)
+				
+				if (len(feature.windows)>0):
+					window = feature.windows[-1]
+					# Returns 3D: e.g. (50 samples, 28 timesteps, 5 columns)
+					# Shifted and unshifted point to the same sample.
+					stratify_arr = np.array([stratify_arr[w] for w in window.samples_shifted]) 
 				stratify_dtype = stratify_arr.dtype
+
+				# need to window.
 
 				# Handles sequence.
 				if (stratify_arr.shape[1] > 1):
@@ -2869,6 +2905,7 @@ class Foldset(BaseModel):
 			, bin_count = bin_count
 			, splitset = splitset
 		)
+		# Create first because need to attach the Folds.
 		try:
 			# Stratified vs Unstratified.
 			if (stratify_arr is None):
@@ -3078,15 +3115,23 @@ class Featurepolater(BaseModel):
 		return matching_cols
 
 
-	def fetch_interpolated(id:int, samples:dict=None):
+	def fetch_interpolated(id:int, samples:dict=None, columns:list=None):
 		"""
-		Have to overwrite columns in order to preserve the column order.
+		- Have to overwrite columns in order to preserve the column order.
+		- `columns` is used during unsupervised stratification.
 		"""
 		fp = Featurepolater.get_by_id(id)
 		feature = fp.feature
 		dataset_type = feature.dataset.dataset_type
+		columns = listify(columns)
 
 		matching_columns = fp.matching_columns
+		# In case you a subset of columns aside from `Feature.columns`.
+		if (columns is not None):
+			matching_columns = [c for c in columns if c in matching_columns]
+			if (not matching_columns):
+				raise ValueError("\nYikes - `columns` not found in `Featurepolater.matching_columns`.\n")
+
 		if (dataset_type=='tabular'):
 			if ((fp.process_separately==False) or (samples is None)):
 				df_original = feature.to_pandas()
@@ -5699,7 +5744,12 @@ class Job(BaseModel):
 		features = []# expecting diff array shapes inside so it has to be list, not array.
 		
 		for feature in featureset:
-			arr_features = feature.to_numpy()
+			if (len(feature.featurepolaters)>0):
+				featureploater = feature.featurepolaters[-1]
+				arr_features = featureploater.fetch_interpolated(samples=samples)
+			else:
+				arr_features = feature.to_numpy()
+
 			encoderset = feature.get_latest_encoderset()
 
 			if (encoderset is not None):
@@ -6218,7 +6268,12 @@ class Predictor(BaseModel):
 		# Right now only 1 Feature can be windowed.
 		windowed_label = False
 		for i, feature_new in enumerate(featureset_new):
-			arr_features = feature_new.to_numpy()
+			if (len(feature_new.featureploaters)>0):
+				featureploater = feature_new.featureploaters[-1]
+				arr_features = featureploater.fetch_interpolated()
+			else:
+				arr_features = feature_new.to_numpy()
+
 			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
 				job=predictor.job, feature=featureset_old[i]
 			)
