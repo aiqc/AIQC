@@ -344,7 +344,7 @@ def create_db():
 			Label, Feature, 
 			Splitset, Featureset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder, 
-			Labelpolater,
+			Labelpolater, Featurepolater,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction,
 			FittedEncoderset, FittedLabelcoder,
@@ -549,8 +549,10 @@ class Dataset(BaseModel):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'text'):
 			df = Dataset.Text.to_pandas(id=dataset.id, columns=columns, samples=samples)
-		elif ((dataset.dataset_type == 'image') or (dataset.dataset_type == 'sequence')):
-			raise ValueError("\nYikes - `dataset_type={dataset.dataset_type}` does not have a `to_pandas()` method.\n")
+		elif (dataset.dataset_type == 'sequence'):
+			df = Dataset.Sequence.to_pandas(id=dataset.id, columns=columns, samples=samples)
+		elif (dataset.dataset_type == 'image'):
+			raise ValueError(f"\nYikes - `dataset_type={dataset.dataset_type}` does not have a `to_pandas()` method.\n")
 		return df
 
 
@@ -1191,6 +1193,30 @@ class Dataset(BaseModel):
 			return arr_3D
 
 
+		def to_pandas(
+			id:int, 
+			columns:list = None, 
+			samples:list = None
+		):
+			dataset = Dataset.get_by_id(id)
+			columns = listify(columns)
+			samples = listify(samples)
+			
+			if (samples is None):
+				files = dataset.files
+			elif (samples is not None):
+				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
+				# So run a query to get those files: `<<` means `in`.
+				files = File.select().join(Dataset).where(
+					Dataset.id==dataset.id, File.file_index<<samples
+				)
+			files = list(files)
+			# Then call them with the column filter.
+			# So don't pass `samples=samples` to the file.
+			dfs = [file.to_pandas(columns=columns) for file in files]
+			return dfs
+
+
 	# Graph
 	# handle nodes and edges as separate tabular types?
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
@@ -1219,10 +1245,9 @@ class File(BaseModel):
 	dataset = ForeignKeyField(Dataset, backref='files')
 	
 	"""
-	Classes are much cleaner than a knot of if statements in every method,
-	and `=None` for every parameter.
+	Route the request for data to the right class, so that we don't need a nest of 
+	`if` statements and `=None` parameters in every method below.
 	"""
-
 	def to_numpy(id:int, columns:list=None, samples:list=None):
 		file = File.get_by_id(id)
 		columns = listify(columns)
@@ -1232,6 +1257,18 @@ class File(BaseModel):
 			arr = File.Tabular.to_numpy(id=id, columns=columns, samples=samples)
 		elif (file.file_type == 'image'):
 			arr = File.Image.to_numpy(id=id, columns=columns, samples=samples)
+		return arr
+
+
+	def to_pandas(id:int, columns:list=None, samples:list=None):
+		file = File.get_by_id(id)
+		columns = listify(columns)
+		samples = listify(samples)
+
+		if (file.file_type == 'tabular'):
+			arr = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
+		elif (file.file_type == 'image'):
+			raise ValueError("\nYikes - `file_type=='image'` does not support `to_pandas()`.\n")
 		return arr
 
 
@@ -2427,8 +2464,7 @@ class Splitset(BaseModel):
 				# Check number of samples in Label vs Feature, because they can come from different Datasets.
 				if (len(label.labelpolaters) > 0):
 					lp = label.labelpolaters[-1]
-					lp_samples = dict(all=arr_idx.tolist())#just take all samples.
-					stratify_arr = lp.fetch_interpolated(samples=lp_samples)
+					stratify_arr = lp.fetch_interpolated()
 				else:
 					stratify_arr = label.to_numpy()
 
@@ -2889,9 +2925,10 @@ class Fold(BaseModel):
 
 class Labelpolater(BaseModel):
 	"""
-	- Based on `pandas.DataFrame.interpolate
 	- Label cannot be of `dataset_type=='sequence'` so don't need to worry about 3D data.
+	- Based on `pandas.DataFrame.interpolate
 	- Only works on floats.
+	- `proces_separately` is for 2D time series. Where splits are rows and processed separately.
 	"""
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
@@ -2906,7 +2943,6 @@ class Labelpolater(BaseModel):
 	):
 		label = Label.get_by_id(label_id)
 		Labelpolater.floats_only(label)
-		df = label.to_pandas()
 
 		if (interpolate_kwargs is None):
 			interpolate_kwargs = dict(
@@ -2917,13 +2953,16 @@ class Labelpolater(BaseModel):
 				, axis = 0
 			)
 		elif (interpolate_kwargs is not None):
-			Labelpolater.check_attributes(interpolate_kwargs)
+			Labelpolater.verify_attributes(interpolate_kwargs)
 
 		# Check that the arguments actually work.
 		try:
+			df = label.to_pandas()
 			Labelpolater.interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
 			raise ValueError("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
+		else:
+			print("\n=> Tested interpolation of Label successfully.\n")
 
 		lp = Labelpolater.create(
 			process_separately = process_separately
@@ -2941,7 +2980,7 @@ class Labelpolater(BaseModel):
 			if (not np.issubdtype(typ, np.floating)):
 				raise ValueError(f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n")
 
-	def check_attributes(interpolate_kwargs:dict):
+	def verify_attributes(interpolate_kwargs:dict):
 		if (interpolate_kwargs['method'] == 'polynomial'):
 			raise ValueError("\nYikes - `method=polynomial` is prevented due to bug <https://stackoverflow.com/questions/67222606/interpolate-polynomial-forward-and-backward-missing-nans>.\n")
 		if ((interpolate_kwargs['axis'] != 0) and (interpolate_kwargs['axis'] != 'index')):
@@ -2955,7 +2994,7 @@ class Labelpolater(BaseModel):
 		return dataframe
 
 
-	def fetch_interpolated(id:int, samples:dict):
+	def fetch_interpolated(id:int, samples:dict=None):
 		lp = Labelpolater.get_by_id(id)
 		label = lp.label
 
@@ -2965,7 +3004,11 @@ class Labelpolater(BaseModel):
 		elif (lp.process_separately==True):
 			df_labels = None
 			for split, indices in samples.items():
-				df = label.to_pandas(samples=indices)
+				if (samples is not None):
+					df = label.to_pandas(samples=indices)
+				# During splitset creation and inference.
+				elif (samples is None):
+					df = label.to_pandas()
 				df = Labelpolater.interpolate(df, lp.interpolate_kwargs)
 				if (df_labels is None):
 					df_labels = df
@@ -2974,6 +3017,123 @@ class Labelpolater(BaseModel):
 			df_labels = df_labels.sort_index()
 		arr_labels = df_labels.to_numpy()
 		return arr_labels
+
+
+
+class Featurepolater(BaseModel):
+	"""
+	- No need to stack 3D into 2D because each sequence has to be processed independently.
+	- Due to the fact that interpolation only applies to floats and can be applied multiple columns,
+	  I am not going to offer Interpolaterset for now.
+	"""
+	process_separately = BooleanField()# use False if you have few evaluate samples.
+	interpolate_kwargs = JSONField()
+	matching_columns = JSONField()
+
+	label = ForeignKeyField(Label, backref='featurepolaters')
+
+
+	def from_feature(
+		feature_id:int
+		, process_separately:bool = True
+		, interpolate_kwargs:dict = None
+	):
+		feature = Feature.get_by_id(feature_id)
+		matching_cols = Featurepolater.floats_only(feature)
+		
+		if (interpolate_kwargs is None):
+			interpolate_kwargs = dict(
+				method = 'linear'
+				, limit_direction = 'both'
+				, limit_area = None
+				, inplace = True
+				, axis = 0
+			)
+		elif (interpolate_kwargs is not None):
+			Labelpolater.verify_attributes(interpolate_kwargs)
+
+		# Check that the arguments actually work.
+		try:
+			fp = Featurepolater.create(
+				process_separately = process_separately
+				, interpolate_kwargs = interpolate_kwargs
+				, matching_columns = matching_cols
+				, feature_id = feature.id
+			)
+
+			fp.fetch_interpolated()
+		except:
+			fp.delete_instance() # Orphaned.
+			raise
+		else:
+			print("\n=> Tested interpolation of Feature successfully.\n")
+		return fp
+
+
+	def floats_only(feature:object):
+		# Prevent integer dtypes. It will ignore.
+		feature_dtypes = feature.get_dtypes().items()
+		matching_cols = []
+		for col, typ in feature_dtypes:
+			if (np.issubdtype(typ, np.floating)):
+				matching_cols.append(col)
+		print(f"\n=> These float-based columns will be interpolated:\n{matching_cols}\n")
+		return matching_cols
+
+
+	def fetch_interpolated(id:int, samples:dict=None):
+		"""
+		Have to overwrite columns in order to preserve the column order.
+		"""
+		fp = Featurepolater.get_by_id(id)
+		feature = fp.feature
+		dataset_type = feature.dataset.dataset_type
+
+		matching_columns = fp.matching_columns
+		if (dataset_type=='tabular'):
+			if (fp.process_separately==False):
+				df_original = feature.to_pandas()
+				df_match = feature.to_pandas(columns=matching_columns)
+				df_match = Labelpolater.interpolate(df_match, fp.interpolate_kwargs)
+				# Overwrite original columns with interpolated columns.
+				for col in matching_columns:
+					df_original[col] = df_match[col]
+			
+			elif (fp.process_separately==True):
+				df_features = None
+				for split, indices in samples.items():
+					if (samples is not None):
+						df_original = feature.to_pandas(samples=indices)
+						df_match = feature.to_pandas(samples=indices, columns=matching_columns)
+					elif (samples is None):
+						df_original = feature.to_pandas()
+						df_match = feature.to_pandas(columns=matching_columns)
+					df_match = Labelpolater.interpolate(df_match, fp.interpolate_kwargs)
+					# Overwrite original columns with interpolated columns.
+					for col in matching_columns:
+						df_original[col] = df_match[col]
+
+					if (df_features is None):
+						df_features = df_original
+					elif (df_features is not None):
+						# Reassemble 2D.
+						df_features = pd.concat([df_features, df_original])
+				df_features = df_features.sort_index()
+			arr_features = df_features.to_numpy()
+
+		elif (dataset_type=='sequence'):
+			# Each sequence is processed independently regardless of split.
+			dfs_original = feature.to_pandas()
+			dfs_matching = feature.to_pandas(columns=matching_columns)
+			dfs_matching = [Labelpolater.interpolate(df, fp.interpolate_kwargs) for df in dfs_matching]
+			# Overwrite original columns with interpolated columns.
+			for i, df_match in enumerate(dfs_matching):
+				for col in matching_columns:
+					dfs_original[i][col] = df_match[col]
+			del dfs_matching
+			arr_features = [df.to_numpy() for df in dfs_original]
+		return arr_features
+
 
 
 class Encoderset(BaseModel):
@@ -6110,11 +6270,7 @@ class Predictor(BaseModel):
 		if (label_new is not None):			
 			if (len(label_new.labelpolaters) > 0):
 				lp = label_new.labelpolaters[-1]
-				# In case `lp.process_separately`, still need to define samples.
-				sample_count = label_new.dataset.get_main_file.shape['rows']
-				samples = list(range(sample_count))
-				lp_samples = dict(all=samples)
-				arr_labels = lp.fetch_interpolated(samples=lp_samples)
+				arr_labels = lp.fetch_interpolated()
 			else:
 				arr_labels = label_new.to_numpy()
 
