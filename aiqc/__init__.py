@@ -1531,9 +1531,9 @@ class File(BaseModel):
 			  but this forces each column name to be its own str.
 			 """
 			dataframe, columns = File.Tabular.pandas_stringify_columns(df=dataframe, columns=column_names)
-
 			"""
 			- At this point, user-provided `dtype` can be either a dict or a singular string/ class.
+			- If columns are renamed, then dtype must used the renamed column names.
 			- But a Pandas dataframe in-memory only has `dtypes` dict not a singular `dtype` str.
 			- So we will ensure that there is 1 dtype per column.
 			"""
@@ -1542,7 +1542,8 @@ class File(BaseModel):
 				try:
 					dataframe = dataframe.astype(dtype)
 				except:
-					raise ValueError("\nYikes - Failed to apply the dtypes you specified to the data you provided.\n")
+					print("\nYikes - Failed to apply the dtypes you specified to the data you provided.\n")
+					raise
 				"""
 				Check if any user-provided dtype against actual dataframe dtypes to see if conversions failed.
 				Pandas dtype seems robust in comparing dtypes: 
@@ -1587,7 +1588,6 @@ class File(BaseModel):
 						Yikes - You specified `dtype['{col_name}']:'{typ}',
 						but aiqc does not support the following dtypes: {excluded_types}
 						"""))
-
 			"""
 			Now, we take the all of the resulting dataframe dtypes and save them.
 			Regardless of whether or not they were user-provided.
@@ -2968,7 +2968,7 @@ class Labelpolater(BaseModel):
 			process_separately = process_separately
 			, interpolate_kwargs = interpolate_kwargs
 			, matching_columns = label.columns
-			, label_id = label.id
+			, label = label
 		)
 		return lp
 
@@ -2998,17 +2998,13 @@ class Labelpolater(BaseModel):
 		lp = Labelpolater.get_by_id(id)
 		label = lp.label
 
-		if (lp.process_separately==False):
+		if ((lp.process_separately==False) or (samples is None)):
 			df_labels = label.to_pandas()
 			df_labels = Labelpolater.interpolate(df_labels, lp.interpolate_kwargs)	
-		elif (lp.process_separately==True):
+		elif ((lp.process_separately==True) and (samples is not None)):
 			df_labels = None
 			for split, indices in samples.items():
-				if (samples is not None):
-					df = label.to_pandas(samples=indices)
-				# During splitset creation and inference.
-				elif (samples is None):
-					df = label.to_pandas()
+				df = label.to_pandas(samples=indices)
 				df = Labelpolater.interpolate(df, lp.interpolate_kwargs)
 				if (df_labels is None):
 					df_labels = df
@@ -3030,7 +3026,7 @@ class Featurepolater(BaseModel):
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
 
-	label = ForeignKeyField(Label, backref='featurepolaters')
+	feature = ForeignKeyField(Feature, backref='featurepolaters')
 
 
 	def from_feature(
@@ -3053,14 +3049,13 @@ class Featurepolater(BaseModel):
 			Labelpolater.verify_attributes(interpolate_kwargs)
 
 		# Check that the arguments actually work.
+		fp = Featurepolater.create(
+			process_separately = process_separately
+			, interpolate_kwargs = interpolate_kwargs
+			, matching_columns = matching_cols
+			, feature = feature
+		)
 		try:
-			fp = Featurepolater.create(
-				process_separately = process_separately
-				, interpolate_kwargs = interpolate_kwargs
-				, matching_columns = matching_cols
-				, feature_id = feature.id
-			)
-
 			fp.fetch_interpolated()
 		except:
 			fp.delete_instance() # Orphaned.
@@ -3077,6 +3072,8 @@ class Featurepolater(BaseModel):
 		for col, typ in feature_dtypes:
 			if (np.issubdtype(typ, np.floating)):
 				matching_cols.append(col)
+		if (not matching_cols):
+			raise ValueError("\nYikes - This Feature contains no float-based columns.\n")
 		print(f"\n=> These float-based columns will be interpolated:\n{matching_cols}\n")
 		return matching_cols
 
@@ -3091,23 +3088,20 @@ class Featurepolater(BaseModel):
 
 		matching_columns = fp.matching_columns
 		if (dataset_type=='tabular'):
-			if (fp.process_separately==False):
+			if ((fp.process_separately==False) or (samples is None)):
 				df_original = feature.to_pandas()
 				df_match = feature.to_pandas(columns=matching_columns)
 				df_match = Labelpolater.interpolate(df_match, fp.interpolate_kwargs)
 				# Overwrite original columns with interpolated columns.
 				for col in matching_columns:
 					df_original[col] = df_match[col]
+				arr_features = df_original.to_numpy()
 			
-			elif (fp.process_separately==True):
+			elif ((fp.process_separately==True) and (samples is not None)):
 				df_features = None
 				for split, indices in samples.items():
-					if (samples is not None):
-						df_original = feature.to_pandas(samples=indices)
-						df_match = feature.to_pandas(samples=indices, columns=matching_columns)
-					elif (samples is None):
-						df_original = feature.to_pandas()
-						df_match = feature.to_pandas(columns=matching_columns)
+					df_original = feature.to_pandas(samples=indices)
+					df_match = feature.to_pandas(samples=indices, columns=matching_columns)
 					df_match = Labelpolater.interpolate(df_match, fp.interpolate_kwargs)
 					# Overwrite original columns with interpolated columns.
 					for col in matching_columns:
@@ -3118,8 +3112,9 @@ class Featurepolater(BaseModel):
 					elif (df_features is not None):
 						# Reassemble 2D.
 						df_features = pd.concat([df_features, df_original])
-				df_features = df_features.sort_index()
-			arr_features = df_features.to_numpy()
+				if (len(samples.keys()) > 1):
+					df_features = df_features.sort_index()
+				arr_features = df_features.to_numpy()
 
 		elif (dataset_type=='sequence'):
 			# Each sequence is processed independently regardless of split.

@@ -677,7 +677,7 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	dataset_tab = aiqc.Dataset.Tabular.from_pandas(label_df)
 	label = dataset_tab.make_label(columns='seizure')
 
-	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
+	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')	
 	sensor_dataset = aiqc.Dataset.Sequence.from_numpy(sensor_arr3D)
 	feature = sensor_dataset.make_feature()
 	encoderset = feature.make_encoderset()
