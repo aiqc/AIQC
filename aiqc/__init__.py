@@ -2798,7 +2798,9 @@ class Foldset(BaseModel):
 			# The actual values of the features don't matter, only label values needed for stratification.
 			label = splitset.label
 			if (len(splitset.label.labelpolaters)>0):
-				stratify_arr = label.labelpolater.fetch_interpolated(samples=arr_train_indices)
+				labelpolater = label.labelpolaters[-1]
+				samples = dict(all=arr_train_indices)
+				stratify_arr = labelpolater.fetch_interpolated(samples=samples)
 			else:
 				stratify_arr = label.to_numpy(samples=arr_train_indices)
 			stratify_dtype = stratify_arr.dtype
@@ -2813,9 +2815,10 @@ class Foldset(BaseModel):
 					matching_columns = feature.featurepolaters[-1].matching_columns
 					if (stratify_col in matching_columns):
 						featurepolater = feature.featurepolaters[-1]
+						samples = dict(all=arr_train_indices)
 						stratify_arr = featurepolater.fetch_interpolated(
 							columns = [stratify_col]
-							, samples = arr_train_indices
+							, samples = samples
 						)
 					else:
 						stratify_arr = feature.to_numpy(
@@ -3171,7 +3174,7 @@ class Featurepolater(BaseModel):
 				for col in matching_columns:
 					dfs_original[i][col] = df_match[col]
 			del dfs_matching
-			arr_features = [df.to_numpy() for df in dfs_original]
+			arr_features = np.array([df.to_numpy() for df in dfs_original])
 		return arr_features
 
 
