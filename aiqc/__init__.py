@@ -2254,7 +2254,6 @@ class Feature(BaseModel):
 	def preprocess(
 		id:int
 		, samples:list=None # dict::{split:[samples]} or list::[samples].
-		, columns:list=None #<-- this is dictated by the feature, but unsupervised stratify col.
 		, supervision:str='supervised'
 		, interpolaterset_id:str='latest'
 		#, imputerset_id:str='latest'
@@ -2262,8 +2261,9 @@ class Feature(BaseModel):
 		, encoderset_id:str='latest'
 		, window_id:str='latest'
 		, _samples_train:list=None #Used during job.run()
-		, _job:object=None #Used during job.run()
-		, _library:str=None #Used during job.run()
+		, _library:str=None #Used during job.run() and during infer()
+		, _job:object=None #Used during job.run() and during infer()
+		, _fitted_feature:object=None #Used during infer()
 	):
 		"""
 		- As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
@@ -2271,8 +2271,6 @@ class Feature(BaseModel):
 		- Future: a preprocess is passed a list, then we could produce different Pipelinecombos.
 		"""
 		feature = Feature.get_by_id(id)
-		if (columns is None):
-			columns = feature.columns
 
 		#feature_array = feature.to_numpy(columns=columns, samples=samples)
 
@@ -2289,13 +2287,23 @@ class Feature(BaseModel):
 			feature_array = fp.fetch_interpolated() 
 
 		else:
-			feature_array = feature.to_numpy(columns=columns)
+			feature_array = feature.to_numpy()
 
 		# --- Impute ---
 		# --- Outliers ---
 
 		# --- Encode ---
-		if ((encoderset_id!='skip') and (feature.encodersets.count()>0)):
+		# During inference, the old Feature's encoderset is used no matter what.
+		if (_fitted_feature is not None):
+			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+				job=_job, feature=_fitted_feature
+			)
+			feature_array = Job.encoderset_transform_features(
+				arr_features=feature_array,
+				fitted_encoders=fitted_encoders, encoderset=encoderset
+			)
+
+		elif ((encoderset_id!='skip') and (feature.encodersets.count()>0)):
 			if (encoderset_id=='latest'):
 				encoderset = feature.encodersets[-1]
 			elif isinstance(encoderset_id, int):
@@ -2343,6 +2351,8 @@ class Feature(BaseModel):
 					label_array = np.array(label_array)
 				if (_library == 'pytorch'):
 					label_array = torch.FloatTensor(label_array)
+			elif (window.samples_shifted is None):
+				label_array = None
 
 			# Unshifted features.
 			if (features_ndim==2):
@@ -6312,38 +6322,23 @@ class Predictor(BaseModel):
 		features = []# expecting different array shapes so it has to be list, not array.
 		
 		# Right now only 1 Feature can be windowed.
-		windowed_label = False
 		for i, feature_new in enumerate(featureset_new):
-			if (len(feature_new.featureploaters)>0):
-				featureploater = feature_new.featureploaters[-1]
-				arr_features = featureploater.fetch_interpolated()
-			else:
-				arr_features = feature_new.to_numpy()
-
-			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
-				job=predictor.job, feature=featureset_old[i]
-			)
-			if (encoderset is not None):
-				# Don't need to check types because Encoderset creation protects
-				# against unencodable types.
-				arr_features = Job.encoderset_transform_features(
-					arr_features=arr_features,
-					fitted_encoders=fitted_encoders, encoderset=encoderset
+			if (splitset_new.supervision=='supervised'):
+				arr_features = feature_new.preprocess(
+					# These arguments are used to get the old encoders.
+					supervision = 'supervised'
+					, _job=predictor.job
+					, _fitted_feature=featureset_old[i]
+					, _library=library
 				)
-			# We can use Window confidently because we know the schemas match.
-			if (len(feature_new.windows) > 0):
-				window = feature_new.windows[-1]
-				
-				if (window.samples_shifted is not None):
-					windowed_label = True
-					arr_labels = np.array([arr_features[w] for w in window.samples_shifted])
-					if (library == 'pytorch'):
-						arr_labels = torch.FloatTensor(arr_labels)
-				
-				arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
+			elif (splitset_new.supervision=='unsupervised'):
+				arr_features, arr_labels = feature_new.preprocess(
+					supervision = 'unsupervised'
+					, _job=predictor.job
+					, _fitted_feature=featureset_old[i]
+					, _library=library
+				)
 
-			if (library == 'pytorch'):
-				arr_features = torch.FloatTensor(arr_features)
 			if (feature_count > 1):
 				features.append(arr_features)
 			else:
@@ -6382,9 +6377,9 @@ class Predictor(BaseModel):
 				arr_labels = torch.FloatTensor(arr_labels)
 			samples['infer']['labels'] = arr_labels
 		
-		elif (windowed_label == True):
+		elif ((splitset_new.supervision=='unsupervised') and (arr_labels is not None)):
+			# An example of `None` would be `window.samples_shifted is None`
 			samples['infer']['labels'] = arr_labels
-
 
 		prediction = Job.predict(
 			samples=samples, predictor_id=id, splitset_id=splitset_id
