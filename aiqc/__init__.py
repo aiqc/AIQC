@@ -2235,16 +2235,6 @@ class Feature(BaseModel):
 		return encoderset
 
 
-	def get_latest_encoderset(id:int):
-		feature = Feature.get_by_id(id)
-		encodersets = list(feature.encodersets)
-		# Check if list empty.
-		if (not encodersets):
-			return None
-		else:
-			return encodersets[-1]
-
-
 	def make_window(
 		id:int
 		, size_window:int
@@ -2547,17 +2537,7 @@ class Splitset(BaseModel):
 		- Images just use the index for stratification.
 		"""
 		if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
-			if (len(feature.featurepolaters)>0):
-				fp = feature.featurepolaters[-1]
-				feature_array = fp.fetch_interpolated()
-			else:
-				feature_array = feature.to_numpy(columns=f_cols)
-
-			if (len(feature.windows)>0):
-				window = feature.windows[-1]
-				# Returns 3D: e.g. (50 samples, 28 timesteps, 5 columns)
-				# Shifted and unshifted point to the same sample.
-				feature_array = np.array([feature_array[w] for w in window.samples_unshifted]) 
+			feature_array = feature.preprocess(encoderset_id='skip')
 		# Could take the shape of array, but we already have this.
 		sample_count = feature_lengths[0]
 		arr_idx = np.arange(sample_count)
@@ -2905,6 +2885,7 @@ class Foldset(BaseModel):
 			elif (fold_count == 2):
 				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
+		# Figure out what data, if any, is needed for stratification.
 		arr_train_indices = splitset.samples["train"]
 		if (splitset.supervision=="supervised"):
 			# The actual values of the features don't matter, only label values needed for stratification.
@@ -2919,38 +2900,26 @@ class Foldset(BaseModel):
 
 		elif (splitset.supervision=="unsupervised"):
 			if (splitset.unsupervised_stratify_col is not None):
-				stratify_col = splitset.unsupervised_stratify_col
-				feature = splitset.get_features()[0]
-
-				if (len(feature.featurepolaters)>0):
-					# Only use the interpolation if that column is interpolated.
-					matching_columns = feature.featurepolaters[-1].matching_columns
-					if (stratify_col in matching_columns):
-						featurepolater = feature.featurepolaters[-1]
-						samples = dict(all=arr_train_indices)
-						stratify_arr = featurepolater.fetch_interpolated(
-							columns = [stratify_col]
-							, samples = samples
-						)
-					else:
-						stratify_arr = feature.to_numpy(
-							columns = [stratify_col]
-							, samples = arr_train_indices
-						)
-				else:
-					stratify_arr = feature.to_numpy(
-						columns = [stratify_col]
-						, samples = arr_train_indices
-					)
 				
-				if (len(feature.windows)>0):
-					window = feature.windows[-1]
-					# Returns 3D: e.g. (50 samples, 28 timesteps, 5 columns)
-					# Shifted and unshifted point to the same sample.
-					stratify_arr = np.array([stratify_arr[w] for w in window.samples_shifted]) 
-				stratify_dtype = stratify_arr.dtype
+				feature = splitset.get_features()[0]
+				_, stratify_arr = feature.preprocess(
+					supervision='unsupervised'
+					, encoderset_id='skip'
+				)
 
-				# need to window.
+				stratify_col = splitset.unsupervised_stratify_col
+				column_names = feature.dataset.get_main_tabular().columns
+				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
+				
+				if (len(stratify_arr.shape)==4):
+					# Used by windowed sequence. Reduces to 3D with 1 column.
+					stratify_arr = stratify_arr[:,:,:,col_index]
+				elif (len(stratify_arr.shape)==3):
+					# Used by windowed tabular. Reduces to 2D with 1 column.
+					stratify_arr = stratify_arr[:,:,col_index]
+				elif (len(stratify_arr.shape)==2):
+					stratify_arr = stratify_arr[:,col_index]
+				stratify_dtype = stratify_arr.dtype
 
 				# Handles sequence.
 				if (stratify_arr.shape[1] > 1):
