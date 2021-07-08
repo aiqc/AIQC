@@ -811,14 +811,6 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		size_test = 0.17
 		size_validation = 0.16
 
-	splitset = aiqc.Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = None
-		, size_test = 0.17
-		, size_validation = 0.16
-
-	)
-
 	splitset = Splitset.make(
 		feature_ids = [feature.id]
 		, label_id = None
