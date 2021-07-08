@@ -2261,6 +2261,118 @@ class Feature(BaseModel):
 		return window
 
 
+	def preprocess(
+		id:int
+		, samples:list=None # dict::{split:[samples]} or list::[samples].
+		, columns:list=None #<-- this is dictated by the feature, but unsupervised stratify col.
+		, supervision:str='supervised'
+		, interpolaterset_id:str='latest'
+		#, imputerset_id:str='latest'
+		#, outlierset_id:str='latest'
+		, encoderset_id:str='latest'
+		, window_id:str='latest'
+		, _samples_train:list=None #Used during job.run()
+		, _job:object=None #Used during job.run()
+		, _library:str=None #Used during job.run()
+	):
+		"""
+		- As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
+		- Unsupervised
+		- Future: a preprocess is passed a list, then we could produce different Pipelinecombos.
+		"""
+		feature = Feature.get_by_id(id)
+		if (columns is None):
+			columns = feature.columns
+
+		#feature_array = feature.to_numpy(columns=columns, samples=samples)
+
+		# --- Interpolate ---
+		if ((interpolaterset_id!='skip') and (feature.featurepolaters.count()>0)):
+			if (interpolaterset_id=='latest'):
+				fp = feature.featurepolaters[-1]
+			elif isinstance(interpolaterset_id, int):
+				fp = Featurepolater.get_by_id(interpolaterset_id)
+			else:
+				raise ValueError(f"\nYikes - Unexpected value <{interpolaterset_id}> for `interpolaterset_id` argument.\n")
+			
+			# rework interpolaterset to take in an array?
+			feature_array = fp.fetch_interpolated() 
+
+		else:
+			feature_array = feature.to_numpy(columns=columns)
+
+		# --- Impute ---
+		# --- Outliers ---
+
+		# --- Encode ---
+		if ((encoderset_id!='skip') and (feature.encodersets.count()>0)):
+			if (encoderset_id=='latest'):
+				encoderset = feature.encodersets[-1]
+			elif isinstance(encoderset_id, int):
+				encoderset = Encoderset.get_by_id(encoderset)
+			else:
+				raise ValueError(f"\nYikes - Unexpected value <{encoderset_id}> for `encoderset` argument.\n")
+
+			if ((_job is None) or (_samples_train is None)):
+				raise ValueError("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
+
+			# This takes the entire array because it handles all features and splits.
+			fitted_encoders = Job.encoderset_fit_features(
+				arr_features=feature_array, samples_train=_samples_train,
+				encoderset=encoderset
+			)
+
+			feature_array = Job.encoderset_transform_features(
+				arr_features=feature_array,
+				fitted_encoders=fitted_encoders, encoderset=encoderset
+			)
+			# Record the `fit` for decoding predictions via `inverse_transform`.
+			FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+
+		# --- Window ---
+		if ((window_id!='skip') and (feature.windows.count()>0)):
+			if (window_id=='latest'):
+				window = feature.windows[-1]
+			elif isinstance(window_id, int):
+				window = Window.get_by_id(window)
+			else:
+				raise ValueError(f"\nYikes - Unexpected value <{window_id}> for `window_id` argument.\n")
+			
+			features_ndim = feature_array.ndim
+			# Shifted labels. Need to do the target first in order to access the unwindowed `arr_features`.
+			# During pure inference, there may be no shifted samples.
+			if (window.samples_shifted is not None):
+				if (features_ndim==2):
+					label_array = np.array([feature_array[w] for w in window.samples_shifted])
+				elif (features_ndim==3):
+					label_array = []
+					for i, site in enumerate(feature_array):
+						label_array.append(
+							[feature_array[i][w] for w in window.samples_shifted]
+						)
+					label_array = np.array(label_array)
+				if (_library == 'pytorch'):
+					label_array = torch.FloatTensor(label_array)
+
+			# Unshifted features.
+			if (features_ndim==2):
+				feature_array = np.array([feature_array[w] for w in window.samples_unshifted])
+			elif (features_ndim==3):
+				feature_holder = []
+				for i, site in enumerate(feature_array):
+					feature_holder.append(
+						[feature_array[i][w] for w in window.samples_unshifted]
+					)
+				feature_array = np.array(feature_holder)
+
+		if (_library == 'pytorch'):
+			feature_array = torch.FloatTensor(feature_array)
+		
+		if (supervision=='supervised'):
+			return feature_array
+		elif (supervision=='unsupervised'):
+			return feature_array, label_array
+
 
 
 class Window(BaseModel):
@@ -5439,7 +5551,9 @@ class Job(BaseModel):
 							loss = loser(tz_probs, flat_labels)
 							# convert back to *OHE* numpy for metrics and plots.
 							data['labels'] = data['labels'].detach().numpy()
-							data['labels'] = keras.utils.to_categorical(data['labels'])
+							from sklearn.preprocessing import OneHotEncoder
+							OHE = OneHotEncoder(sparse=False)
+							data['labels'] = OHE.fit_transform(data['labels'])
 
 					metrics[split] = Job.split_classification_metrics(
 						data['labels'], preds, probs, analysis_type
@@ -5747,62 +5861,22 @@ class Job(BaseModel):
 		features = []# expecting diff array shapes inside so it has to be list, not array.
 		
 		for feature in featureset:
-			if (len(feature.featurepolaters)>0):
-				featureploater = feature.featurepolaters[-1]
-				arr_features = featureploater.fetch_interpolated(samples=samples)
-			else:
-				arr_features = feature.to_numpy()
-
-			encoderset = feature.get_latest_encoderset()
-
-			if (encoderset is not None):
-				# This takes the entire array because it handles all features and splits.
-				fitted_encoders = Job.encoderset_fit_features(
-					arr_features=arr_features, samples_train=samples[key_train],
-					encoderset=encoderset
+			if (splitset.supervision == 'supervised'):
+				arr_features = feature.preprocess(
+					supervision = 'supervised'
+					, _job = job
+					, _samples_train = samples[key_train]
+					, _library = library
+				)	
+			elif (splitset.supervision == 'unsupervised'):
+				arr_features, arr_labels = feature.preprocess(
+					supervision = 'unsupervised'
+					, _job = job
+					, _samples_train = samples[key_train]
+					, _library = library
 				)
-
-				arr_features = Job.encoderset_transform_features(
-					arr_features=arr_features,
-					fitted_encoders=fitted_encoders, encoderset=encoderset
-				)
-				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=job, encoderset=encoderset)
-
-			if (len(feature.windows) > 0):
-				window = feature.windows[-1]
-
-				features_ndim = arr_features.ndim
-				
-				# Shifted labels. Need to do the target first in order to access the unwindowed `arr_features`.
-				# During pure inference, there may be no shifted samples.
-				if (window.samples_shifted is not None):
-					if (features_ndim==2):
-						arr_labels = np.array([arr_features[w] for w in window.samples_shifted])
-					elif (features_ndim==3):
-						arr_labels = []
-						for i, patient in enumerate(arr_features):
-							arr_labels.append(
-								[arr_features[i][w] for w in window.samples_shifted]
-							)
-						arr_labels = np.array(arr_labels)
-					if (library == 'pytorch'):
-						arr_labels = torch.FloatTensor(arr_labels)
-				
-				# Unshifted features.
-				if (features_ndim==2):
-					arr_features = np.array([arr_features[w] for w in window.samples_unshifted])
-				elif (features_ndim==3):
-					feature_holder = []
-					for i, patient in enumerate(arr_features):
-						feature_holder.append(
-							[arr_features[i][w] for w in window.samples_unshifted]
-						)
-					arr_features = np.array(feature_holder)
-			if (library == 'pytorch'):
-				arr_features = torch.FloatTensor(arr_features)
-			# Don't use the list if you don't have to.
-			if (feature_count > 1):
-				features.append(arr_features)			
+			features.append(arr_features)
+			# `arr_labels` not appended because unsupervised analysis only supports 1 unsupervised feature.
 		"""
 		- Stage preprocessed data to be passed into the remaining Job steps.
 		- Example samples dict entry: samples['train']['labels']

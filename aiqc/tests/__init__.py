@@ -1432,7 +1432,7 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 		queue = make_test_queue_keras_image_binary(repeat_count, fold_count)
 	elif (name == 'keras_sequence_binary'):
 		queue = make_test_queue_keras_sequence_binary(repeat_count, fold_count)
-	elif('keras_tabular_forecast'):
+	elif (name == 'keras_tabular_forecast'):
 		queue = make_test_queue_keras_tabular_forecast(repeat_count, fold_count)
 	elif (name == 'pytorch_binary'):
 		queue = make_test_queue_pytorch_binary(repeat_count, fold_count)
