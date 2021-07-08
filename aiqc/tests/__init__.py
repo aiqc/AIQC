@@ -816,8 +816,7 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		, label_id = None
 		, size_test = 0.17
 		, size_validation = 0.16
-		, bin_count = None
-		, unsupervised_stratify_col = 'day_of_year'
+
 	)
 
 	splitset = Splitset.make(
@@ -825,6 +824,8 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		, label_id = None
 		, size_test = size_test
 		, size_validation = size_validation
+		, bin_count = None
+		, unsupervised_stratify_col = 'day_of_year'
 	)
 
 	if (fold_count is not None):
