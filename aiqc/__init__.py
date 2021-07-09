@@ -3204,6 +3204,13 @@ class Interpolaterset(BaseModel):
 		)
 		return interpolaterset
 
+	"""
+	def interpolate(
+		id:int
+	):
+	"""
+
+
 
 
 class Labelpolater(BaseModel):
@@ -3310,6 +3317,9 @@ class Featurepolater(BaseModel):
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
+	leftover_columns = JSONField()
+	leftover_dtypes = JSONField()
+	original_filter = JSONField()
 
 	interpolaterset = ForeignKeyField(Interpolaterset, backref='featurepolaters')
 
@@ -3318,13 +3328,18 @@ class Featurepolater(BaseModel):
 		interpolaterset_id:int
 		, process_separately:bool = True
 		, interpolate_kwargs:dict = None
+		, include:bool = True
+		, columns:list = None
+		, verbose:bool = True
 	):
+		"""
+		- By default it takes all of the float columns, but you can include them manually.
+		- 
+		"""
 		interpolaterset = Interpolaterset.get_by_id(interpolaterset_id)
 		existing_preprocs = interpolaterset.featurepolaters
 		feature = interpolaterset.feature
 
-		matching_cols = Featurepolater.floats_only(feature)
-		
 		if (interpolate_kwargs is None):
 			interpolate_kwargs = dict(
 				method = 'linear'
@@ -3336,25 +3351,37 @@ class Featurepolater(BaseModel):
 		elif (interpolate_kwargs is not None):
 			Labelpolater.verify_attributes(interpolate_kwargs)
 
-		"""
+		if ((include==False) and (columns is None)):
+			raise ValueError("\nYikes - When defining Featurepolaters, cannot have `(include==False) and (columns is None)`.\n")
+		# Gets all floating columns.
+		feature_dtypes = feature.get_dtypes()
+		if (columns is None):
+			columns = []
+			for col, typ in feature_dtypes.items():
+				if (np.issubdtype(typ, np.floating)):
+					columns.append(col)
+		# Prevents non-floating columns.
+		elif (columns is not None):
+			for col, typ in feature_dtypes.items():
+				if (not np.issubdtype(typ, np.floating)):
+					raise ValueError(f"\nYikes - All specified `columns` must be floats.\nNon-float column: <{col}>\n")
+
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_preprocs
 			, include = include
-			, dtypes = dtypes
 			, columns = columns
 			, verbose = verbose
-		)
-
-		dont forget to update the .create() index
-		
-		"""
+		)		
 
 		# Check that the arguments actually work.
 		fp = Featurepolater.create(
-			index = 0
+			index = index
 			, process_separately = process_separately
 			, interpolate_kwargs = interpolate_kwargs
-			, matching_columns = matching_cols
+			, matching_columns = matching_columns
+			, leftover_columns = leftover_columns
+			, leftover_dtypes = initial_dtypes
+			, original_filter = original_filter
 			, interpolaterset = interpolaterset
 		)
 		try:
@@ -3365,19 +3392,6 @@ class Featurepolater(BaseModel):
 		else:
 			print("\n=> Tested interpolation of Feature successfully.\n")
 		return fp
-
-
-	def floats_only(feature:object):
-		# Prevent integer dtypes. It will ignore.
-		feature_dtypes = feature.get_dtypes().items()
-		matching_cols = []
-		for col, typ in feature_dtypes:
-			if (np.issubdtype(typ, np.floating)):
-				matching_cols.append(col)
-		if (not matching_cols):
-			raise ValueError("\nYikes - This Feature contains no float-based columns.\n")
-		print(f"\n=> These float-based columns will be interpolated:\n{matching_cols}\n")
-		return matching_cols
 
 
 	def fetch_interpolated(id:int, samples:dict=None, columns:list=None):
@@ -3438,6 +3452,7 @@ class Featurepolater(BaseModel):
 			del dfs_matching
 			arr_features = np.array([df.to_numpy() for df in dfs_original])
 		return arr_features
+
 
 
 
