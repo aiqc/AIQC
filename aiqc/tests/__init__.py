@@ -455,6 +455,9 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	df['price'][0] = np.NaN
 	df['price'][5] = np.NaN
 	df['price'][10] = np.NaN
+	# testing Featurepolater 2D.
+	df['nox'][5] = np.NaN
+	df['nox'][10] = np.NaN
 	
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 	
@@ -463,6 +466,8 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	aiqc.Labelpolater.from_label(label_id=label.id)
 
 	feature = dataset.make_feature(exclude_columns=[label_column])
+	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
+	aiqc.Featurepolater.from_interpolaterset(interpolaterset_id=interpolaterset.id)
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -688,7 +693,10 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')	
 	sensor_dataset = aiqc.Dataset.Sequence.from_numpy(sensor_arr3D)
 	feature = sensor_dataset.make_feature()
-	aiqc.Featurepolater.from_feature(feature_id=feature.id)
+	
+	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
+	aiqc.Featurepolater.from_interpolaterset(interpolaterset_id=interpolaterset.id)
+	
 	encoderset = feature.make_encoderset()
 	encoderset = encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler()
@@ -781,15 +789,12 @@ def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samp
 
 def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas('delhi_climate.parquet')
-	# testing Featurepolater 2D.
-	df['temperature'][0] = np.NaN
-	df['temperature'][13] = np.NaN
-
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
 	feature = dataset.make_feature()
-	aiqc.Featurepolater.from_feature(feature_id=feature.id)
-
+	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
+	aiqc.Featurepolater.from_interpolaterset(interpolaterset_id=interpolaterset.id)
+	
 	window = feature.make_window(size_window=28, size_shift=14)
 
 	encoderset = feature.make_encoderset()

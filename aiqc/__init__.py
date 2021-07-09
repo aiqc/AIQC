@@ -344,7 +344,7 @@ def create_db():
 			Label, Feature, 
 			Splitset, Featureset, Foldset, Fold, 
 			Encoderset, Labelcoder, Featurecoder, 
-			Labelpolater, Featurepolater,
+			Interpolaterset, Labelpolater, Featurepolater,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction,
 			FittedEncoderset, FittedLabelcoder,
@@ -2275,17 +2275,16 @@ class Feature(BaseModel):
 		#feature_array = feature.to_numpy(columns=columns, samples=samples)
 
 		# --- Interpolate ---
-		if ((interpolaterset_id!='skip') and (feature.featurepolaters.count()>0)):
+		if ((interpolaterset_id!='skip') and (feature.interpolatersets.count()>0)):
 			if (interpolaterset_id=='latest'):
-				fp = feature.featurepolaters[-1]
+				fp = feature.interpolatersets[-1].featurepolaters[0]
 			elif isinstance(interpolaterset_id, int):
-				fp = Featurepolater.get_by_id(interpolaterset_id)
+				fp = Interpolaterset.get_by_id(interpolaterset_id).featurepolaters[0]
 			else:
 				raise ValueError(f"\nYikes - Unexpected value <{interpolaterset_id}> for `interpolaterset_id` argument.\n")
 			
 			# rework interpolaterset to take in an array?
 			feature_array = fp.fetch_interpolated() 
-
 		else:
 			feature_array = feature.to_numpy()
 
@@ -2374,13 +2373,12 @@ class Feature(BaseModel):
 			return feature_array, label_array
 
 
-	def preprocess_col_filter(
+	def preprocess_remaining_cols(
 		id:int
 		, existing_preprocs:object #Feature.<preprocessset>.<preprocesses> Queryset.
 		, include:bool = True
 		, verbose:bool = True
 		, dtypes:list = None
-		, prevent_dtypes:list = None
 		, columns:list = None
 	):
 		"""
@@ -3187,6 +3185,28 @@ class Fold(BaseModel):
 
 
 
+
+class Interpolaterset(BaseModel):
+	interpolater_count = IntegerField()
+	description = CharField(null=True)
+
+	feature = ForeignKeyField(Feature, backref='interpolatersets')
+
+	def from_feature(
+		feature_id:int
+		, interpolater_count:int = 0
+		, description:str = None
+	):
+		feature = Feature.get_by_id(feature_id)
+		interpolaterset = Interpolaterset.create(
+			interpolater_count = interpolater_count
+			, description = description
+			, feature = feature
+		)
+		return interpolaterset
+
+
+
 class Labelpolater(BaseModel):
 	"""
 	- Label cannot be of `dataset_type=='sequence'` so don't need to worry about 3D data.
@@ -3287,19 +3307,24 @@ class Featurepolater(BaseModel):
 	- Due to the fact that interpolation only applies to floats and can be applied multiple columns,
 	  I am not going to offer Interpolaterset for now.
 	"""
+	index = IntegerField()
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
 
-	feature = ForeignKeyField(Feature, backref='featurepolaters')
+
+	interpolaterset = ForeignKeyField(Interpolaterset, backref='featurepolaters')
 
 
-	def from_feature(
-		feature_id:int
+	def from_interpolaterset(
+		interpolaterset_id:int
 		, process_separately:bool = True
 		, interpolate_kwargs:dict = None
 	):
-		feature = Feature.get_by_id(feature_id)
+		interpolaterset = Interpolaterset.get_by_id(interpolaterset_id)
+		existing_preprocs = interpolaterset.featurepolaters
+		feature = interpolaterset.feature
+
 		matching_cols = Featurepolater.floats_only(feature)
 		
 		if (interpolate_kwargs is None):
@@ -3313,12 +3338,26 @@ class Featurepolater(BaseModel):
 		elif (interpolate_kwargs is not None):
 			Labelpolater.verify_attributes(interpolate_kwargs)
 
+		"""
+		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
+			existing_preprocs = existing_preprocs
+			, include = include
+			, dtypes = dtypes
+			, columns = columns
+			, verbose = verbose
+		)
+
+		dont forget to update the .create() index
+		
+		"""
+
 		# Check that the arguments actually work.
 		fp = Featurepolater.create(
-			process_separately = process_separately
+			index = 0
+			, process_separately = process_separately
 			, interpolate_kwargs = interpolate_kwargs
 			, matching_columns = matching_cols
-			, feature = feature
+			, interpolaterset = interpolaterset
 		)
 		try:
 			fp.fetch_interpolated()
@@ -3349,7 +3388,7 @@ class Featurepolater(BaseModel):
 		- `columns` is used during unsupervised stratification.
 		"""
 		fp = Featurepolater.get_by_id(id)
-		feature = fp.feature
+		feature = fp.interpolaterset.feature
 		dataset_type = feature.dataset.dataset_type
 		columns = listify(columns)
 
@@ -3865,7 +3904,7 @@ class Featurecoder(BaseModel):
 		dataset = feature.dataset
 		dataset_type = dataset.dataset_type
 
-		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_col_filter(
+		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_featurecoders
 			, include = include
 			, dtypes = dtypes
