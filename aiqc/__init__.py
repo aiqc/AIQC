@@ -2374,6 +2374,136 @@ class Feature(BaseModel):
 			return feature_array, label_array
 
 
+	def preprocess_col_filter(
+		id:int
+		, existing_preprocs:object #Feature.<preprocessset>.<preprocesses> Queryset.
+		, include:bool = True
+		, verbose:bool = True
+		, dtypes:list = None
+		, columns:list = None
+	):
+		"""
+		- Used by the preprocessors to figure out which columns have yet to be assigned preprocessors.
+		"""
+		feature = Feature.get_by_id(id)
+		feature_cols = feature.columns
+		feature_dtypes = feature.get_dtypes()
+
+		dtypes = listify(dtypes)
+		columns = listify(columns)
+
+		# 1. Figure out which columns have yet to be encoded.
+		# Order-wise no need to validate filters if there are no columns left to filter.
+		# Remember Feature columns are a subset of the Dataset columns.
+		index = existing_preprocs.count()
+		if (index==0):
+			initial_columns = feature_cols
+		elif (index>0):
+			# Get the leftover columns from the last one.
+			initial_columns = existing_preprocs[-1].leftover_columns
+			if (len(initial_columns) == 0):
+				raise ValueError("\nYikes - All features already have preprocessors associated with them. Cannot add more Featurecoders to this Encoderset.\n")
+		initial_dtypes = {}
+		for key,value in feature_dtypes.items():
+			for col in initial_columns:
+				if (col == key):
+					initial_dtypes[col] = value
+					# Exit `c` loop early becuase matching `c` found.
+					break
+
+		if (verbose == True):
+			print(f"\n___/ index: {index} \\_________\n") # Intentionally no trailing `\n`.
+
+		if (dtypes is not None):
+			for typ in dtypes:
+				if (typ not in set(initial_dtypes.values())):
+					raise ValueError(dedent(f"""
+					Yikes - dtype '{typ}' was not found in remaining dtypes.
+					Remove '{typ}' from `dtypes` and try again.
+					"""))
+		
+		if (columns is not None):
+			for c in columns:
+				if (col not in initial_columns):
+					raise ValueError(dedent(f"""
+					Yikes - Column '{col}' was not found in remaining columns.
+					Remove '{col}' from `columns` and try again.
+					"""))
+		
+		# 3a. Figure out which columns the filters apply to.
+		if (include==True):
+			# Add to this empty list via inclusion.
+			matching_columns = []
+			
+			if ((dtypes is None) and (columns is None)):
+				raise ValueError("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
+
+			if (dtypes is not None):
+				for typ in dtypes:
+					for key,value in initial_dtypes.items():
+						if (value == typ):
+							matching_columns.append(key)
+							# Don't `break`; there can be more than one match.
+
+			if (columns is not None):
+				for c in columns:
+					# Remember that the dtype has already added some columns.
+					if (c not in matching_columns):
+						matching_columns.append(c)
+					elif (c in matching_columns):
+						# We know from validation above that the column existed in initial_columns.
+						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
+						raise ValueError(dedent(f"""
+						Yikes - The column '{c}' was already included by `dtypes`, so this column-based filter is not valid.
+						Remove '{c}' from `columns` and try again.
+						"""))
+
+		elif (include==False):
+			# Prune this list via exclusion.
+			matching_columns = initial_columns.copy()
+
+			if (dtypes is not None):
+				for typ in dtypes:
+					for key,value in initial_dtypes.items():                
+						if (value == typ):
+							matching_columns.remove(key)
+							# Don't `break`; there can be more than one match.
+			if (columns is not None):
+				for c in columns:
+					# Remember that the dtype has already pruned some columns.
+					if (c in matching_columns):
+						matching_columns.remove(c)
+					elif (c not in matching_columns):
+						# We know from validation above that the column existed in initial_columns.
+						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
+						raise ValueError(dedent(f"""
+						Yikes - The column '{c}' was already excluded by `dtypes`,
+						so this column-based filter is not valid.
+						Remove '{c}' from `dtypes` and try again.
+						"""))
+		if (len(matching_columns) == 0):
+			if (include == True):
+				inex_str = "inclusion"
+			elif (include == False):
+				inex_str = "exclusion"
+			raise ValueError(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
+
+		# 3b. Record the  output.
+		leftover_columns =  list(set(initial_columns) - set(matching_columns))
+		# This becomes leftover_dtypes.
+		for c in matching_columns:
+			del initial_dtypes[c]
+
+		original_filter = {
+			'include': include
+			, 'dtypes': dtypes
+			, 'columns': columns
+		}
+
+		return index, matching_columns, leftover_columns, original_filter, initial_dtypes
+
+
+
 
 class Window(BaseModel):
 	"""
@@ -3147,6 +3277,7 @@ class Labelpolater(BaseModel):
 
 
 
+
 class Featurepolater(BaseModel):
 	"""
 	- No need to stack 3D into 2D because each sequence has to be processed independently.
@@ -3699,11 +3830,11 @@ class Labelcoder(BaseModel):
 class Featurecoder(BaseModel):
 	"""
 	- An Encoderset can have a chain of Featurecoders.
-	- Encoders are applied sequential, meaning the columns encoded by `featurecoder_index=0` 
-	  are not available to `featurecoder_index=1`.
+	- Encoders are applied sequential, meaning the columns encoded by `index=0` 
+	  are not available to `index=1`.
 	- Much validation because real-life encoding errors are cryptic and deep for beginners.
 	"""
-	featurecoder_index = IntegerField()
+	index = IntegerField()
 	sklearn_preprocess = PickleField()
 	matching_columns = JSONField()
 	leftover_columns = JSONField()
@@ -3725,128 +3856,21 @@ class Featurecoder(BaseModel):
 		, verbose:bool = True
 	):
 		encoderset = Encoderset.get_by_id(encoderset_id)
-		dtypes = listify(dtypes)
-		columns = listify(columns)
-		
 		feature = encoderset.feature
-		feature_cols = feature.columns
-		feature_dtypes = feature.get_dtypes()
-		existing_featurecoders = list(encoderset.featurecoders)
+		existing_featurecoders = encoderset.featurecoders
 
 		dataset = feature.dataset
 		dataset_type = dataset.dataset_type
 
-		# 1. Figure out which columns have yet to be encoded.
-		# Order-wise no need to validate filters if there are no columns left to filter.
-		# Remember Feature columns are a subset of the Dataset columns.
-		if (len(existing_featurecoders) == 0):
-			initial_columns = feature_cols
-			featurecoder_index = 0
-		elif (len(existing_featurecoders) > 0):
-			# Get the leftover columns from the last one.
-			initial_columns = existing_featurecoders[-1].leftover_columns
+		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_col_filter(
+			existing_preprocs = existing_featurecoders
+			, include = include
+			, dtypes = dtypes
+			, columns = columns
+			, verbose = verbose
+		)
 
-			featurecoder_index = existing_featurecoders[-1].featurecoder_index + 1
-			if (len(initial_columns) == 0):
-				raise ValueError("\nYikes - All features already have encoders associated with them. Cannot add more Featurecoders to this Encoderset.\n")
-		initial_dtypes = {}
-		for key,value in feature_dtypes.items():
-			for col in initial_columns:
-				if (col == key):
-					initial_dtypes[col] = value
-					# Exit `c` loop early becuase matching `c` found.
-					break
-
-		if (verbose == True):
-			print(f"\n___/ featurecoder_index: {featurecoder_index} \\_________\n") # Intentionally no trailing `\n`.
-
-		# 2. Validate the lists of dtypes and columns provided as filters.
-		if (dataset_type == "image"):
-			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
-		elif (dataset_type == "text"):
-			only_fit_train = False
-			is_categorical = False
-			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
-				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
-		else:
-			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
-				sklearn_preprocess, is_label=False
-			)
-
-		if (dtypes is not None):
-			for typ in dtypes:
-				if (typ not in set(initial_dtypes.values())):
-					raise ValueError(dedent(f"""
-					Yikes - dtype '{typ}' was not found in remaining dtypes.
-					Remove '{typ}' from `dtypes` and try again.
-					"""))
-		
-		if (columns is not None):
-			for c in columns:
-				if (col not in initial_columns):
-					raise ValueError(dedent(f"""
-					Yikes - Column '{col}' was not found in remaining columns.
-					Remove '{col}' from `columns` and try again.
-					"""))
-		
-		# 3a. Figure out which columns the filters apply to.
-		if (include==True):
-			# Add to this empty list via inclusion.
-			matching_columns = []
-			
-			if ((dtypes is None) and (columns is None)):
-				raise ValueError("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
-
-			if (dtypes is not None):
-				for typ in dtypes:
-					for key,value in initial_dtypes.items():
-						if (value == typ):
-							matching_columns.append(key)
-							# Don't `break`; there can be more than one match.
-
-			if (columns is not None):
-				for c in columns:
-					# Remember that the dtype has already added some columns.
-					if (c not in matching_columns):
-						matching_columns.append(c)
-					elif (c in matching_columns):
-						# We know from validation above that the column existed in initial_columns.
-						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(dedent(f"""
-						Yikes - The column '{c}' was already included by `dtypes`, so this column-based filter is not valid.
-						Remove '{c}' from `columns` and try again.
-						"""))
-
-		elif (include==False):
-			# Prune this list via exclusion.
-			matching_columns = initial_columns.copy()
-
-			if (dtypes is not None):
-				for typ in dtypes:
-					for key,value in initial_dtypes.items():                
-						if (value == typ):
-							matching_columns.remove(key)
-							# Don't `break`; there can be more than one match.
-			if (columns is not None):
-				for c in columns:
-					# Remember that the dtype has already pruned some columns.
-					if (c in matching_columns):
-						matching_columns.remove(c)
-					elif (c not in matching_columns):
-						# We know from validation above that the column existed in initial_columns.
-						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(dedent(f"""
-						Yikes - The column '{c}' was already excluded by `dtypes`,
-						so this column-based filter is not valid.
-						Remove '{c}' from `dtypes` and try again.
-						"""))
-		if (len(matching_columns) == 0):
-			if (include == True):
-				inex_str = "inclusion"
-			elif (include == False):
-				inex_str = "exclusion"
-			raise ValueError(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
-		elif (
+		if (
 			(
 				(str(sklearn_preprocess).startswith("LabelBinarizer"))
 				or 
@@ -3867,17 +3891,17 @@ class Featurecoder(BaseModel):
 				time or switch to another encoder.
 			"""))
 
-		# 3b. Record the  output.
-		leftover_columns =  list(set(initial_columns) - set(matching_columns))
-		# This becomes leftover_dtypes.
-		for c in matching_columns:
-			del initial_dtypes[c]
-
-		original_filter = {
-			'include': include
-			, 'dtypes': dtypes
-			, 'columns': columns
-		}
+		if (dataset_type == "image"):
+			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
+		elif (dataset_type == "text"):
+			only_fit_train = False
+			is_categorical = False
+			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
+				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
+		else:
+			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
+				sklearn_preprocess, is_label=False
+			)
 
 		# 4. Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
@@ -3908,7 +3932,7 @@ class Featurecoder(BaseModel):
 			pass
 
 		featurecoder = Featurecoder.create(
-			featurecoder_index = featurecoder_index
+			index = index
 			, only_fit_train = only_fit_train
 			, is_categorical = is_categorical
 			, sklearn_preprocess = sklearn_preprocess
@@ -5396,7 +5420,7 @@ class Job(BaseModel):
 			f_cols = encoderset.feature.columns
 			transformed_features = None #Used as a placeholder for `np.concatenate`.
 			for featurecoder in featurecoders:
-				idx = featurecoder.featurecoder_index
+				idx = featurecoder.index
 				fitted_coders = fitted_encoders[idx]# returns list
 				encoding_dimension = featurecoder.encoding_dimension
 				
