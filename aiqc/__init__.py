@@ -2253,7 +2253,6 @@ class Feature(BaseModel):
 
 	def preprocess(
 		id:int
-		, samples:list=None # dict::{split:[samples]} or list::[samples].
 		, supervision:str='supervised'
 		, interpolaterset_id:str='latest'
 		#, imputerset_id:str='latest'
@@ -2267,7 +2266,7 @@ class Feature(BaseModel):
 	):
 		"""
 		- As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
-		- Unsupervised
+		- `, samples:list=None` removed this arg because encoding and stratification use the entire dataset.
 		- Future: a preprocess is passed a list, then we could produce different Pipelinecombos.
 		"""
 		feature = Feature.get_by_id(id)
@@ -3311,7 +3310,6 @@ class Featurepolater(BaseModel):
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
-
 
 	interpolaterset = ForeignKeyField(Interpolaterset, backref='featurepolaters')
 
