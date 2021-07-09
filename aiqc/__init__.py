@@ -2499,7 +2499,21 @@ class Feature(BaseModel):
 			, 'dtypes': dtypes
 			, 'columns': columns
 		}
-
+		if (verbose == True):
+			print(
+				f"=> The column(s) below matched your filter(s) {class_name} filters.\n\n" \
+				f"{matching_columns}\n" 
+			)
+			if (len(leftover_columns) == 0):
+				print(
+					f"=> Done. All feature column(s) have {class_name}(s) associated with them.\n" \
+					f"No more Featurecoders can be added to this Encoderset.\n"
+				)
+			elif (len(leftover_columns) > 0):
+				print(
+					f"=> The remaining column(s) and dtype(s) are available for downstream {class_name}(s):\n" \
+					f"{pprint.pformat(initial_dtypes)}\n"
+				)
 		return index, matching_columns, leftover_columns, original_filter, initial_dtypes
 
 
@@ -3328,13 +3342,13 @@ class Featurepolater(BaseModel):
 		interpolaterset_id:int
 		, process_separately:bool = True
 		, interpolate_kwargs:dict = None
-		, include:bool = True
+		, dtypes:list = None
 		, columns:list = None
 		, verbose:bool = True
 	):
 		"""
-		- By default it takes all of the float columns, but you can include them manually.
-		- 
+		- By default it takes all of the float columns, but you can include columns manually too.
+		- Only `include=True` is allowed so that the dtype can be included.
 		"""
 		interpolaterset = Interpolaterset.get_by_id(interpolaterset_id)
 		existing_preprocs = interpolaterset.featurepolaters
@@ -3351,25 +3365,23 @@ class Featurepolater(BaseModel):
 		elif (interpolate_kwargs is not None):
 			Labelpolater.verify_attributes(interpolate_kwargs)
 
-		if ((include==False) and (columns is None)):
-			raise ValueError("\nYikes - When defining Featurepolaters, cannot have `(include==False) and (columns is None)`.\n")
-		# Gets all floating columns.
-		feature_dtypes = feature.get_dtypes()
-		if (columns is None):
-			columns = []
-			for col, typ in feature_dtypes.items():
-				if (np.issubdtype(typ, np.floating)):
-					columns.append(col)
-		# Prevents non-floating columns.
-		elif (columns is not None):
-			for col, typ in feature_dtypes.items():
+		dtypes = listify(dtypes)
+		columns = listify(columns)
+		if (dtypes is not None):
+			for typ in dtypes:
 				if (not np.issubdtype(typ, np.floating)):
-					raise ValueError(f"\nYikes - All specified `columns` must be floats.\nNon-float column: <{col}>\n")
+					raise ValueError("\nYikes - All `dtypes` must match `np.issubdtype(dtype, np.floating`.\nYour dtype: <{typ}>")
+		if (columns is not None):
+			feature_dtypes = feature.get_dtypes()
+			for c in columns:
+				if (not np.issubdtype(feature_dtypes[c], np.floating)):
+					raise ValueError(f"\nYikes - The column <{c}> that you provided is not of dtype `np.floating`.\n")
 
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_preprocs
-			, include = include
+			, include = True
 			, columns = columns
+			, dtypes = dtypes
 			, verbose = verbose
 		)		
 
@@ -3998,22 +4010,6 @@ class Featurecoder(BaseModel):
 			, encoderset = encoderset
 			, encoding_dimension = encoding_dimension
 		)
-
-		if (verbose == True):
-			print(
-				f"=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n\n" \
-				f"{matching_columns}\n" 
-			)
-			if (len(leftover_columns) == 0):
-				print(
-					f"=> Done. All feature column(s) have encoder(s) associated with them.\n" \
-					f"No more Featurecoders can be added to this Encoderset.\n"
-				)
-			elif (len(leftover_columns) > 0):
-				print(
-					f"=> The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):\n" \
-					f"{pprint.pformat(initial_dtypes)}\n"
-				)
 		return featurecoder
 
 

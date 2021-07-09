@@ -457,7 +457,8 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	df['price'][10] = np.NaN
 	# testing Featurepolater 2D.
 	df['nox'][5] = np.NaN
-	df['nox'][10] = np.NaN
+	df['indus'][10] = np.NaN
+	df['age'][19] = np.NaN
 	
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 	
@@ -467,7 +468,16 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 
 	feature = dataset.make_feature(exclude_columns=[label_column])
 	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
-	aiqc.Featurepolater.from_interpolaterset(interpolaterset_id=interpolaterset.id)
+	# testing multiple interpolaters.
+	# First 
+	aiqc.Featurepolater.from_interpolaterset(
+		interpolaterset_id=interpolaterset.id
+		, columns = 'nox'
+	)
+	aiqc.Featurepolater.from_interpolaterset(
+		interpolaterset_id=interpolaterset.id
+		, dtypes = 'float64'
+	)
 
 	if (fold_count is not None):
 		size_test = 0.25
