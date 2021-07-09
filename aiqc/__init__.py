@@ -2253,39 +2253,35 @@ class Feature(BaseModel):
 
 	def preprocess(
 		id:int
-		, supervision:str='supervised'
-		, interpolaterset_id:str='latest'
+		, supervision:str = 'supervised'
+		, interpolaterset_id:str = 'latest'
 		#, imputerset_id:str='latest'
 		#, outlierset_id:str='latest'
-		, encoderset_id:str='latest'
-		, window_id:str='latest'
-		, _samples_train:list=None #Used during job.run()
-		, _library:str=None #Used during job.run() and during infer()
-		, _job:object=None #Used during job.run() and during infer()
-		, _fitted_feature:object=None #Used during infer()
+		, encoderset_id:str = 'latest'
+		, window_id:str = 'latest'
+		, samples:dict = None#Used by Interpolaterset to encode separately.
+		, _samples_train:list = None#Used during job.run()
+		, _library:str = None#Used during job.run() and during infer()
+		, _job:object = None#Used during job.run() and during infer()
+		, _fitted_feature:object = None#Used during infer()
 	):
 		"""
 		- As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
-		- `, samples:list=None` removed this arg because encoding and stratification use the entire dataset.
 		- Future: a preprocess is passed a list, then we could produce different Pipelinecombos.
 		"""
 		feature = Feature.get_by_id(id)
-
-		#feature_array = feature.to_numpy(columns=columns, samples=samples)
+		feature_array = feature.to_numpy()
 
 		# --- Interpolate ---
 		if ((interpolaterset_id!='skip') and (feature.interpolatersets.count()>0)):
 			if (interpolaterset_id=='latest'):
-				fp = feature.interpolatersets[-1].featurepolaters[0]
+				ip = feature.interpolatersets[-1]
 			elif isinstance(interpolaterset_id, int):
-				fp = Interpolaterset.get_by_id(interpolaterset_id).featurepolaters[0]
+				ip = Interpolaterset.get_by_id(interpolaterset_id)
 			else:
 				raise ValueError(f"\nYikes - Unexpected value <{interpolaterset_id}> for `interpolaterset_id` argument.\n")
 			
-			# rework interpolaterset to take in an array?
-			feature_array = fp.fetch_interpolated() 
-		else:
-			feature_array = feature.to_numpy()
+			feature_array = ip.interpolate(array=feature_array, samples=samples)
 
 		# --- Impute ---
 		# --- Outliers ---
@@ -2683,7 +2679,6 @@ class Splitset(BaseModel):
 		feature = Feature.get_by_id(feature_ids[0])
 		f_dataset = feature.dataset
 		f_dset_type = f_dataset.dataset_type
-		f_cols = feature.columns
 		"""
 		- Simulate an index to be split alongside features and labels
 		  in order to keep track of the samples being used in the resulting splits.
@@ -2924,6 +2919,7 @@ class Splitset(BaseModel):
 		except:
 			splitset.delete_instance() # Orphaned.
 			raise
+
 		return splitset
 
 
@@ -3205,6 +3201,7 @@ class Interpolaterset(BaseModel):
 
 	feature = ForeignKeyField(Feature, backref='interpolatersets')
 
+
 	def from_feature(
 		feature_id:int
 		, interpolater_count:int = 0
@@ -3218,11 +3215,51 @@ class Interpolaterset(BaseModel):
 		)
 		return interpolaterset
 
-	"""
-	def interpolate(
-		id:int
-	):
-	"""
+
+	def interpolate(id:int, array:object, samples:dict=None):
+		"""
+		- `array` is assumed to be the output of `feature.to_numpy()`.
+		- I was originally calling `feature.to_pandas` but all preprocesses take in and return arrays.
+		- `samples` is used for indices only. It does not get repacked into a dict.
+		"""
+		ip = Interpolaterset.get_by_id(id)
+		fps = ip.featurepolaters
+		if (fps.count()==0):
+			raise ValueError("\nYikes - This Interpolaterset has no Featurepolaters yet.\n")
+
+		dataset_type = ip.feature.dataset.dataset_type
+		columns = ip.feature.columns# Used for naming not slicing cols.
+
+		if (dataset_type=='tabular'):
+			# Single dataframe.
+			dataframe = pd.DataFrame(array, columns=columns)
+			
+			for fp in fps:
+				# Interpolate that slice.
+				df = dataframe[fp.matching_columns]
+				df = fp.interpolate(dataframes=df, samples=samples)
+				# Overwrite the original column with the interpolated column.
+				for c in fp.matching_columns:
+					dataframe[c] = df[c]
+
+			array = dataframe.to_numpy()
+
+		elif (dataset_type=='sequence'):
+			# One df per sequence array.
+			dataframes = [pd.DataFrame(arr, columns=columns) for arr in array]
+			# Each one needs to be interpolated separately.
+			for i, dataframe in enumerate(dataframes):
+				for fp in fps:
+					# Interpolate that slice.
+					df = dataframe[fp.matching_columns]
+					df = fp.interpolate(dataframes=df)
+					# Overwrite the original column with the interpolated column.
+					for c in fp.matching_columns:
+						dataframe[c] = df[c]
+					# Update the list. Might as well array it while accessing it.
+					dataframes[i] = dataframe.to_numpy()
+			array = np.array(dataframes)
+		return array
 
 
 
@@ -3253,7 +3290,6 @@ class Labelpolater(BaseModel):
 				method = 'linear'
 				, limit_direction = 'both'
 				, limit_area = None
-				, inplace = True
 				, axis = 0
 			)
 		elif (interpolate_kwargs is not None):
@@ -3292,7 +3328,7 @@ class Labelpolater(BaseModel):
 
 
 	def interpolate(dataframe:object, interpolate_kwargs:dict):
-		dataframe.interpolate(**interpolate_kwargs)
+		dataframe = dataframe.interpolate(**interpolate_kwargs)
 		if (dataframe.isnull().values.any() == True):
 			raise ValueError("\nYikes - DataFrame still contains `np.NaN` after interpolation.\n")
 		return dataframe
@@ -3345,6 +3381,7 @@ class Featurepolater(BaseModel):
 		, dtypes:list = None
 		, columns:list = None
 		, verbose:bool = True
+		, samples:dict = None #used for processing 2D separately.
 	):
 		"""
 		- By default it takes all of the float columns, but you can include columns manually too.
@@ -3359,7 +3396,6 @@ class Featurepolater(BaseModel):
 				method = 'linear'
 				, limit_direction = 'both'
 				, limit_area = None
-				, inplace = True
 				, axis = 0
 			)
 		elif (interpolate_kwargs is not None):
@@ -3385,7 +3421,7 @@ class Featurepolater(BaseModel):
 			, verbose = verbose
 		)		
 
-		# Check that the arguments actually work.
+		# Check that it actually works.
 		fp = Featurepolater.create(
 			index = index
 			, process_separately = process_separately
@@ -3397,7 +3433,8 @@ class Featurepolater(BaseModel):
 			, interpolaterset = interpolaterset
 		)
 		try:
-			fp.fetch_interpolated()
+			test_df = feature.to_pandas(columns=matching_columns)
+			fp.interpolate(dataframes=test_df, samples=None)
 		except:
 			fp.delete_instance() # Orphaned.
 			raise
@@ -3406,65 +3443,40 @@ class Featurepolater(BaseModel):
 		return fp
 
 
-	def fetch_interpolated(id:int, samples:dict=None, columns:list=None):
+	def interpolate(id:int, dataframes:object, samples:dict=None):
 		"""
-		- Have to overwrite columns in order to preserve the column order.
-		- `columns` is used during unsupervised stratification.
+		- Called by the `Interpolaterset.interpolate` loop.
+		- Assuming that matching cols have already been sliced from main array before this is called.
 		"""
 		fp = Featurepolater.get_by_id(id)
-		feature = fp.interpolaterset.feature
-		dataset_type = feature.dataset.dataset_type
-		columns = listify(columns)
-
-		matching_columns = fp.matching_columns
-		# In case you a subset of columns aside from `Feature.columns`.
-		if (columns is not None):
-			matching_columns = [c for c in columns if c in matching_columns]
-			if (not matching_columns):
-				raise ValueError("\nYikes - `columns` not found in `Featurepolater.matching_columns`.\n")
+		interpolate_kwargs = fp.interpolate_kwargs
+		dataset_type = fp.interpolaterset.feature.dataset.dataset_type
 
 		if (dataset_type=='tabular'):
+			# Single dataframe.
 			if ((fp.process_separately==False) or (samples is None)):
-				df_original = feature.to_pandas()
-				df_match = feature.to_pandas(columns=matching_columns)
-				df_match = Labelpolater.interpolate(df_match, fp.interpolate_kwargs)
-				# Overwrite original columns with interpolated columns.
-				for col in matching_columns:
-					df_original[col] = df_match[col]
-				arr_features = df_original.to_numpy()
+				dfs_interp = Labelpolater.interpolate(dataframes, interpolate_kwargs)
 			
 			elif ((fp.process_separately==True) and (samples is not None)):
-				df_features = None
+				dfs_interp = None
 				for split, indices in samples.items():
-					df_original = feature.to_pandas(samples=indices)
-					df_match = feature.to_pandas(samples=indices, columns=matching_columns)
-					df_match = Labelpolater.interpolate(df_match, fp.interpolate_kwargs)
-					# Overwrite original columns with interpolated columns.
-					for col in matching_columns:
-						df_original[col] = df_match[col]
-
-					if (df_features is None):
-						df_features = df_original
-					elif (df_features is not None):
-						# Reassemble 2D.
-						df_features = pd.concat([df_features, df_original])
-				if (len(samples.keys()) > 1):
-					df_features = df_features.sort_index()
-				arr_features = df_features.to_numpy()
+					# Fetch those samples.
+					df = dataframes.loc[indices]
+					df_interp = Labelpolater.interpolate(df, interpolate_kwargs)
+					# Stack them up.
+					if (dfs_interp is None):
+						dfs_interp = df_interp
+					elif (dfs_interp is not None):
+						dfs_interp = pd.concat([dfs_interp, df_interp])
+				dfs_interp = dfs_interp.sort_index()
 
 		elif (dataset_type=='sequence'):
+			# Multiple dataframes.
 			# Each sequence is processed independently regardless of split.
-			dfs_original = feature.to_pandas()
-			dfs_matching = feature.to_pandas(columns=matching_columns)
-			dfs_matching = [Labelpolater.interpolate(df, fp.interpolate_kwargs) for df in dfs_matching]
-			# Overwrite original columns with interpolated columns.
-			for i, df_match in enumerate(dfs_matching):
-				for col in matching_columns:
-					dfs_original[i][col] = df_match[col]
-			del dfs_matching
-			arr_features = np.array([df.to_numpy() for df in dfs_original])
-		return arr_features
+			dfs_interp = [Labelpolater.interpolate(df, interpolate_kwargs) for df in dataframes]
 
+		# Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
+		return dfs_interp
 
 
 
@@ -3926,8 +3938,21 @@ class Featurecoder(BaseModel):
 		feature = encoderset.feature
 		existing_featurecoders = encoderset.featurecoders
 
+
 		dataset = feature.dataset
 		dataset_type = dataset.dataset_type
+		if (dataset_type == "image"):
+			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
+		elif (dataset_type == "text"):
+			only_fit_train = False
+			is_categorical = False
+			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
+				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
+		else:
+			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
+				sklearn_preprocess, is_label=False
+			)
+
 
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_featurecoders
@@ -3958,17 +3983,6 @@ class Featurecoder(BaseModel):
 				time or switch to another encoder.
 			"""))
 
-		if (dataset_type == "image"):
-			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
-		elif (dataset_type == "text"):
-			only_fit_train = False
-			is_categorical = False
-			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
-				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
-		else:
-			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
-				sklearn_preprocess, is_label=False
-			)
 
 		# 4. Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
@@ -5918,6 +5932,7 @@ class Job(BaseModel):
 			if (splitset.supervision == 'supervised'):
 				arr_features = feature.preprocess(
 					supervision = 'supervised'
+					, samples = samples
 					, _job = job
 					, _samples_train = samples[key_train]
 					, _library = library
@@ -5925,6 +5940,7 @@ class Job(BaseModel):
 			elif (splitset.supervision == 'unsupervised'):
 				arr_features, arr_labels = feature.preprocess(
 					supervision = 'unsupervised'
+					, samples = samples
 					, _job = job
 					, _samples_train = samples[key_train]
 					, _library = library

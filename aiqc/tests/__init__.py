@@ -705,7 +705,10 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	feature = sensor_dataset.make_feature()
 	
 	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
-	aiqc.Featurepolater.from_interpolaterset(interpolaterset_id=interpolaterset.id)
+	aiqc.Featurepolater.from_interpolaterset(
+		interpolaterset_id=interpolaterset.id
+		, dtypes = "float"
+	)
 	
 	encoderset = feature.make_encoderset()
 	encoderset = encoderset.make_featurecoder(
