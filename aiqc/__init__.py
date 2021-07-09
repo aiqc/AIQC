@@ -2380,6 +2380,7 @@ class Feature(BaseModel):
 		, include:bool = True
 		, verbose:bool = True
 		, dtypes:list = None
+		, prevent_dtypes:list = None
 		, columns:list = None
 	):
 		"""
@@ -2392,6 +2393,8 @@ class Feature(BaseModel):
 		dtypes = listify(dtypes)
 		columns = listify(columns)
 
+		class_name = existing_preprocs.model.__name__.lower()
+
 		# 1. Figure out which columns have yet to be encoded.
 		# Order-wise no need to validate filters if there are no columns left to filter.
 		# Remember Feature columns are a subset of the Dataset columns.
@@ -2402,7 +2405,7 @@ class Feature(BaseModel):
 			# Get the leftover columns from the last one.
 			initial_columns = existing_preprocs[-1].leftover_columns
 			if (len(initial_columns) == 0):
-				raise ValueError("\nYikes - All features already have preprocessors associated with them. Cannot add more Featurecoders to this Encoderset.\n")
+				raise ValueError(f"\nYikes - All features already have {class_name}s associated with them. Cannot add more preprocesses to this set.\n")
 		initial_dtypes = {}
 		for key,value in feature_dtypes.items():
 			for col in initial_columns:
@@ -2412,7 +2415,7 @@ class Feature(BaseModel):
 					break
 
 		if (verbose == True):
-			print(f"\n___/ index: {index} \\_________\n") # Intentionally no trailing `\n`.
+			print(f"\n___/ {class_name}_index: {index} \\_________\n") # Intentionally no trailing `\n`.
 
 		if (dtypes is not None):
 			for typ in dtypes:
@@ -2464,7 +2467,7 @@ class Feature(BaseModel):
 
 			if (dtypes is not None):
 				for typ in dtypes:
-					for key,value in initial_dtypes.items():                
+					for key,value in initial_dtypes.items():
 						if (value == typ):
 							matching_columns.remove(key)
 							# Don't `break`; there can be more than one match.
