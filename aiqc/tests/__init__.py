@@ -707,7 +707,7 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
 	aiqc.Featurepolater.from_interpolaterset(
 		interpolaterset_id=interpolaterset.id
-		, dtypes = "float"
+		, dtypes = "float64"
 	)
 	
 	encoderset = feature.make_encoderset()
@@ -806,7 +806,10 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 
 	feature = dataset.make_feature()
 	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
-	aiqc.Featurepolater.from_interpolaterset(interpolaterset_id=interpolaterset.id)
+	aiqc.Featurepolater.from_interpolaterset(
+		interpolaterset_id=interpolaterset.id
+		, dtypes="float64"
+	)
 	
 	window = feature.make_window(size_window=28, size_shift=14)
 

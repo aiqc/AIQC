@@ -3213,17 +3213,15 @@ class Interpolaterset(BaseModel):
 		columns = ip.feature.columns# Used for naming not slicing cols.
 
 		if (dataset_type=='tabular'):
-			# Single dataframe.
-			dataframe = pd.DataFrame(array, columns=columns)
-			
+			dataframe = pd.DataFrame(array, columns=columns)			
 			for fp in fps:
-				# Interpolate that slice.
+				# Interpolate that slice. Don't need to process each column separately.
 				df = dataframe[fp.matching_columns]
-				df = fp.interpolate(dataframes=df, samples=samples)
+				# This method handles a few things before interpolation.
+				df = fp.interpolate(dataframe=df, samples=samples)
 				# Overwrite the original column with the interpolated column.
 				for c in fp.matching_columns:
 					dataframe[c] = df[c]
-
 			array = dataframe.to_numpy()
 
 		elif (dataset_type=='sequence'):
@@ -3232,14 +3230,14 @@ class Interpolaterset(BaseModel):
 			# Each one needs to be interpolated separately.
 			for i, dataframe in enumerate(dataframes):
 				for fp in fps:
-					# Interpolate that slice.
-					df = dataframe[fp.matching_columns]
-					df = fp.interpolate(dataframes=df)
-					# Overwrite the original column with the interpolated column.
+					df_cols = dataframe[fp.matching_columns]
+					# Don't need to parse anything. Straight to DVD.
+					df_cols = fp.interpolate(dataframe=df_cols, samples=None)
+					# Overwrite columns.
 					for c in fp.matching_columns:
-						dataframe[c] = df[c]
-					# Update the list. Might as well array it while accessing it.
-					dataframes[i] = dataframe.to_numpy()
+						dataframe[c] = df_cols[c]
+				# Update the list. Might as well array it while accessing it.
+				dataframes[i] = dataframe.to_numpy()
 			array = np.array(dataframes)
 		return array
 
@@ -3310,6 +3308,11 @@ class Labelpolater(BaseModel):
 
 
 	def interpolate(dataframe:object, interpolate_kwargs:dict):
+		###
+		data_type = str(type(dataframe))
+		if (data_type != "<class 'pandas.core.frame.DataFrame'>"):
+			raise ValueError("not df final")
+
 		dataframe = dataframe.interpolate(**interpolate_kwargs)
 		if (dataframe.isnull().values.any() == True):
 			raise ValueError("\nYikes - DataFrame still contains `np.NaN` after interpolation.\n")
@@ -3415,8 +3418,8 @@ class Featurepolater(BaseModel):
 			, interpolaterset = interpolaterset
 		)
 		try:
-			test_df = feature.to_pandas(columns=matching_columns)
-			fp.interpolate(dataframes=test_df, samples=None)
+			test_arr = feature.to_numpy()#Don't pass matching cols.
+			interpolaterset.interpolate(array=test_arr, samples=None)
 		except:
 			fp.delete_instance() # Orphaned.
 			raise
@@ -3425,7 +3428,7 @@ class Featurepolater(BaseModel):
 		return fp
 
 
-	def interpolate(id:int, dataframes:object, samples:dict=None):
+	def interpolate(id:int, dataframe:object, samples:dict=None):
 		"""
 		- Called by the `Interpolaterset.interpolate` loop.
 		- Assuming that matching cols have already been sliced from main array before this is called.
@@ -3437,28 +3440,28 @@ class Featurepolater(BaseModel):
 		if (dataset_type=='tabular'):
 			# Single dataframe.
 			if ((fp.process_separately==False) or (samples is None)):
-				dfs_interp = Labelpolater.interpolate(dataframes, interpolate_kwargs)
+				df_interp = Labelpolater.interpolate(dataframe, interpolate_kwargs)
 			
 			elif ((fp.process_separately==True) and (samples is not None)):
-				dfs_interp = None
+				df_interp = None
 				for split, indices in samples.items():
 					# Fetch those samples.
-					df = dataframes.loc[indices]
-					df_interp = Labelpolater.interpolate(df, interpolate_kwargs)
+					df = dataframe.loc[indices]
+					df = Labelpolater.interpolate(df, interpolate_kwargs)
 					# Stack them up.
-					if (dfs_interp is None):
-						dfs_interp = df_interp
-					elif (dfs_interp is not None):
-						dfs_interp = pd.concat([dfs_interp, df_interp])
-				dfs_interp = dfs_interp.sort_index()
-
+					if (df_interp is None):
+						df_interp = df
+					elif (df_interp is not None):
+						df_interp = pd.concat([df_interp, df])
+				df_interp = df_interp.sort_index()
+			else:
+				raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with arguments provided.\n")
 		elif (dataset_type=='sequence'):
-			# Multiple dataframes.
-			# Each sequence is processed independently regardless of split.
-			dfs_interp = [Labelpolater.interpolate(df, interpolate_kwargs) for df in dataframes]
-
+			df_interp = Labelpolater.interpolate(dataframe, interpolate_kwargs)
+		else:
+			raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with dataset_type provided.\n")
 		# Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
-		return dfs_interp
+		return df_interp
 
 
 
