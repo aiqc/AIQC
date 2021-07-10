@@ -1943,24 +1943,20 @@ class Label(BaseModel):
 						f"Your Label's only class was: <{unique_classes[0]}>."
 					)
 
-		l = Label.create(
+		label = Label.create(
 			dataset = d
 			, columns = columns
 			, column_count = column_count
 			, unique_classes = unique_classes
 		)
-		return l
+		return label
 
 
 	def to_pandas(id:int, samples:list=None):
 		label = Label.get_by_id(id)
 		columns = label.columns
 		samples = listify(samples)
-		df = Dataset.to_pandas(
-			id = id
-			, columns = columns
-			, samples = samples
-		)
+		df = Dataset.to_pandas(id=id, columns=columns, samples=samples)
 		return df
 
 
@@ -1968,21 +1964,15 @@ class Label(BaseModel):
 		label = Label.get_by_id(id)
 		columns = label.columns
 		samples = listify(samples)
-		arr = Dataset.to_numpy(
-			id = id
-			, columns = columns
-			, samples = samples
-		)
+		arr = Dataset.to_numpy(id=id, columns=columns, samples=samples)
 		return arr
 
 
-	def get_dtypes(
-		id:int
-	):
-		l = Label.get_by_id(id)
+	def get_dtypes(id:int):
+		label = Label.get_by_id(id)
 
-		dataset = l.dataset
-		l_cols = l.columns
+		dataset = label.dataset
+		l_cols = label.columns
 		tabular_dtype = Dataset.get_main_tabular(dataset.id).dtypes
 
 		label_dtypes = {}
@@ -1995,15 +1985,12 @@ class Label(BaseModel):
 		return label_dtypes
 
 
-	def make_labelcoder(
-		id:int
-		, sklearn_preprocess:object
-	):
-		lc = Labelcoder.from_label(
+	def make_labelcoder(id:int, sklearn_preprocess:object):
+		labelcoder = Labelcoder.from_label(
 			label_id = id
 			, sklearn_preprocess = sklearn_preprocess
 		)
-		return lc
+		return labelcoder
 
 
 	def get_latest_labelcoder(id:int):
@@ -3008,12 +2995,7 @@ class Foldset(BaseModel):
 		, bin_count:int = None
 	):
 		splitset = Splitset.get_by_id(splitset_id)
-		new_random = False
-		while new_random == False:
-			random_state = random.randint(0, 4294967295) #2**32 - 1 inclusive
-			matching_randoms = splitset.foldsets.select().where(Foldset.random_state==random_state)
-			if (matching_randoms.count()==0):
-				new_random = True
+		
 		if (fold_count is None):
 			fold_count = 5 # More likely than 4 to be evenly divisible.
 		else:
@@ -3116,7 +3098,6 @@ class Foldset(BaseModel):
 					\n"""))
 
 		train_count = len(arr_train_indices)
-		print(len(stratify_arr))
 		remainder = train_count % fold_count
 		if (remainder != 0):
 			print(
@@ -3125,13 +3106,21 @@ class Foldset(BaseModel):
 				f"This can result in misleading performance metrics for the last Fold.\n"
 			)
 
+		new_random = False
+		while new_random == False:
+			random_state = random.randint(0, 4294967295) #2**32 - 1 inclusive
+			matching_randoms = splitset.foldsets.select().where(Foldset.random_state==random_state)
+			if (matching_randoms.count()==0):
+				new_random = True
+
+		# Create first because need to attach the Folds.
 		foldset = Foldset.create(
 			fold_count = fold_count
 			, random_state = random_state
 			, bin_count = bin_count
 			, splitset = splitset
 		)
-		# Create first because need to attach the Folds.
+
 		try:
 			# Stratified vs Unstratified.
 			if (stratify_arr is None):
@@ -3143,6 +3132,7 @@ class Foldset(BaseModel):
 				)
 				splitz_gen = kf.split(arr_train_indices)
 			elif (stratify_arr is not None):
+				# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
 				skf = StratifiedKFold(
 					n_splits = fold_count
 					, shuffle = True
@@ -3152,11 +3142,12 @@ class Foldset(BaseModel):
 
 			i = -1
 			for index_folds_train, index_fold_validation in splitz_gen:
+				# ^ These are new zero-based indices that must be used to access the old indices.
 				i+=1
 				fold_samples = {}
 				
-				fold_samples["folds_train_combined"] = index_folds_train.tolist()
-				fold_samples["fold_validation"] = index_fold_validation.tolist()
+				fold_samples["folds_train_combined"] = [arr_train_indices[idx] for idx in index_folds_train]
+				fold_samples["fold_validation"] = [arr_train_indices[idx] for idx in index_fold_validation]
 
 				Fold.create(
 					fold_index = i
@@ -4846,7 +4837,7 @@ class Queue(BaseModel):
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
 			foldset_splitset = foldset.splitset
-			if foldset_splitset != splitset:
+			if (foldset_splitset != splitset):
 				raise ValueError(f"\nYikes - The Foldset <id:{foldset_id}> and Splitset <id:{splitset_id}> you provided are not related.\n")
 			folds = list(foldset.folds)
 		else:
@@ -4877,6 +4868,7 @@ class Queue(BaseModel):
 		try:
 			for c in combos:
 				if (foldset is not None):
+					# Jobset can probably be replaced w a query after the fact using the objects below.
 					jobset = Jobset.create(
 						repeat_count = repeat_count
 						, queue = queue
@@ -4981,7 +4973,7 @@ class Queue(BaseModel):
 				time.sleep(loop_delay)
 
 
-	def run_jobs(id:int, in_background:bool=False, verbose:bool=False):
+	def run_jobs(id:int, in_background:bool=False):
 		queue = Queue.get_by_id(id)
 
 		# Quick check to make sure all predictors aren't already complete.
@@ -5008,7 +5000,7 @@ class Queue(BaseModel):
 				proc = multiprocessing.Process(
 					target = execute_jobs
 					, name = proc_name
-					, args = (job_statuses, verbose,) #Needs trailing comma.
+					, args = (job_statuses,) #Needs trailing comma.
 				)
 				proc.start()
 				# proc terminates when `execute_jobs` finishes.
@@ -5020,7 +5012,7 @@ class Queue(BaseModel):
 						, ncols = 100
 					):
 						if (j['predictor_id'] is None):
-							Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
+							Job.run(id=j['job_id'],repeat_index=j['repeat_index'])
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
 					print("\nQueue was gracefully interrupted.\n")
@@ -5834,14 +5826,10 @@ class Job(BaseModel):
 		return prediction
 
 
-	def run(id:int, repeat_index:int, verbose:bool=False):
-		"""
-		Needs optimization = https://github.com/aiqc/aiqc/projects/1
-		"""
+	def run(id:int, repeat_index:int):
+		"""Needs optimization = https://github.com/aiqc/aiqc/projects/1"""
 		time_started = datetime.datetime.now()
 		job = Job.get_by_id(id)
-		if verbose:
-			print(f"\nJob #{job.id} starting...")
 		queue = job.queue
 		algorithm = queue.algorithm
 		analysis_type = algorithm.analysis_type
@@ -5850,7 +5838,6 @@ class Job(BaseModel):
 		splitset = queue.splitset
 		hyperparamcombo = job.hyperparamcombo
 		fold = job.fold
-		print(fold)
 		"""
 		1. Determines which splits/folds are needed.
 		- Source of the training & evaluation data varies based on how Splitset and Foldset were designed.
@@ -5870,61 +5857,14 @@ class Job(BaseModel):
 			key_evaluation = 'validation'
 
 		if (fold is not None):
-			foldset = fold.foldset
-			fold_index = fold.fold_index
-			fold_samples = foldset.folds[fold_index].samples
-			samples['folds_train_combined'] = fold_samples['folds_train_combined']
-			samples['fold_validation'] = fold_samples['fold_validation']
+			samples['folds_train_combined'] = fold.samples['folds_train_combined']
+			samples['fold_validation'] = fold.samples['fold_validation']
 
 			key_train = "folds_train_combined"
 			key_evaluation = "fold_validation"
 		elif (fold is None):
 			samples['train'] = splitset.samples['train']
 			key_train = "train"
-
-
-		"""
-		test_val = []
-		[test_val.append(i) for i in samples['test']]
-		[test_val.append(i) for i in samples['validation']]
-		if (len(set(test_val)) != len(test_val)):
-			raise ValueError("test_val")
-		"""
-
-
-		test_ftv = []
-		[test_ftv.append(i) for i in samples['test']]
-		[test_ftv.append(i) for i in samples['fold_validation']]
-		if (len(set(test_ftv)) != len(test_ftv)):
-			raise ValueError("test_ftv")
-
-		test_ftc = []
-		[test_ftc.append(i) for i in samples['test']]
-		[test_ftc.append(i) for i in samples['folds_train_combined']]
-		if (len(set(test_ftc)) != len(test_ftc)):
-			raise ValueError("test_ftc")
-
-
-		"""
-		v_ftc = []
-		[v_ftc.append(i) for i in samples['validation']]
-		[v_ftc.append(i) for i in samples['folds_train_combined']]
-		if (len(set(v_ftc)) != len(v_ftc)):
-			raise ValueError("v_ftc")
-
-		v_ftv = []
-		[v_ftv.append(i) for i in samples['validation']]
-		[v_ftv.append(i) for i in samples['folds_train_validation']]
-		if (len(set(v_ftv)) != len(v_ftv)):
-			raise ValueError("v_ftv")
-		"""
-		ftc_ftv = []
-		[ftc_ftv.append(i) for i in samples['folds_train_combined']]
-		[ftc_ftv.append(i) for i in samples['folds_train_validation']]
-		if (len(set(ftc_ftv)) != len(ftc_ftv)):
-			raise ValueError("ftc_ftv")
-
-
 
 		"""
 		2. Encodes the labels and features.
