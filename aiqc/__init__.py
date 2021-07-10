@@ -1953,36 +1953,27 @@ class Label(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None):
+		label = Label.get_by_id(id)
+		columns = label.columns
 		samples = listify(samples)
-		l_frame = Label.get_label(id=id, numpy_or_pandas='pandas', samples=samples)
-		return l_frame
+		df = Dataset.to_pandas(
+			id = id
+			, columns = columns
+			, samples = samples
+		)
+		return df
 
 
 	def to_numpy(id:int, samples:list=None):
+		label = Label.get_by_id(id)
+		columns = label.columns
 		samples = listify(samples)
-		l_arr = Label.get_label(id=id, numpy_or_pandas='numpy', samples=samples)
-		return l_arr
-
-
-	def get_label(id:int, numpy_or_pandas:str, samples:list=None):
-		samples = listify(samples)
-		l = Label.get_by_id(id)
-		l_cols = l.columns
-		dataset_id = l.dataset.id
-
-		if (numpy_or_pandas == 'numpy'):
-			lf = Dataset.to_numpy(
-				id = dataset_id
-				, columns = l_cols
-				, samples = samples
-			)
-		elif (numpy_or_pandas == 'pandas'):
-			lf = Dataset.to_pandas(
-				id = dataset_id
-				, columns = l_cols
-				, samples = samples
-			)
-		return lf
+		arr = Dataset.to_numpy(
+			id = id
+			, columns = columns
+			, samples = samples
+		)
+		return arr
 
 
 	def get_dtypes(
@@ -3021,8 +3012,7 @@ class Foldset(BaseModel):
 		while new_random == False:
 			random_state = random.randint(0, 4294967295) #2**32 - 1 inclusive
 			matching_randoms = splitset.foldsets.select().where(Foldset.random_state==random_state)
-			count_matches = matching_randoms.count()
-			if count_matches == 0:
+			if (matching_randoms.count()==0):
 				new_random = True
 		if (fold_count is None):
 			fold_count = 5 # More likely than 4 to be evenly divisible.
@@ -3035,8 +3025,9 @@ class Foldset(BaseModel):
 			elif (fold_count == 2):
 				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
-		# Figure out what data, if any, is needed for stratification.
+		# From the training indices, we'll derive indices for 'folds_train_combined' and 'fold_validation'.
 		arr_train_indices = splitset.samples["train"]
+		# Figure out what data, if any, is needed for stratification.
 		if (splitset.supervision=="supervised"):
 			# The actual values of the features don't matter, only label values needed for stratification.
 			label = splitset.label
@@ -3125,6 +3116,7 @@ class Foldset(BaseModel):
 					\n"""))
 
 		train_count = len(arr_train_indices)
+		print(len(stratify_arr))
 		remainder = train_count % fold_count
 		if (remainder != 0):
 			print(
@@ -3145,18 +3137,17 @@ class Foldset(BaseModel):
 			if (stratify_arr is None):
 				# Nothing to stratify with.
 				kf = KFold(
-					n_splits=fold_count
-					, shuffle=True
-					, random_state=random_state
+					n_splits = fold_count
+					, shuffle = True
+					, random_state = random_state
 				)
 				splitz_gen = kf.split(arr_train_indices)
 			elif (stratify_arr is not None):
 				skf = StratifiedKFold(
-					n_splits=fold_count
-					, shuffle=True
-					, random_state=random_state
+					n_splits = fold_count
+					, shuffle = True
+					, random_state = random_state
 				)
-
 				splitz_gen = skf.split(arr_train_indices, stratify_arr)
 
 			i = -1
@@ -5859,6 +5850,7 @@ class Job(BaseModel):
 		splitset = queue.splitset
 		hyperparamcombo = job.hyperparamcombo
 		fold = job.fold
+		print(fold)
 		"""
 		1. Determines which splits/folds are needed.
 		- Source of the training & evaluation data varies based on how Splitset and Foldset were designed.
@@ -5889,6 +5881,51 @@ class Job(BaseModel):
 		elif (fold is None):
 			samples['train'] = splitset.samples['train']
 			key_train = "train"
+
+
+		"""
+		test_val = []
+		[test_val.append(i) for i in samples['test']]
+		[test_val.append(i) for i in samples['validation']]
+		if (len(set(test_val)) != len(test_val)):
+			raise ValueError("test_val")
+		"""
+
+
+		test_ftv = []
+		[test_ftv.append(i) for i in samples['test']]
+		[test_ftv.append(i) for i in samples['fold_validation']]
+		if (len(set(test_ftv)) != len(test_ftv)):
+			raise ValueError("test_ftv")
+
+		test_ftc = []
+		[test_ftc.append(i) for i in samples['test']]
+		[test_ftc.append(i) for i in samples['folds_train_combined']]
+		if (len(set(test_ftc)) != len(test_ftc)):
+			raise ValueError("test_ftc")
+
+
+		"""
+		v_ftc = []
+		[v_ftc.append(i) for i in samples['validation']]
+		[v_ftc.append(i) for i in samples['folds_train_combined']]
+		if (len(set(v_ftc)) != len(v_ftc)):
+			raise ValueError("v_ftc")
+
+		v_ftv = []
+		[v_ftv.append(i) for i in samples['validation']]
+		[v_ftv.append(i) for i in samples['folds_train_validation']]
+		if (len(set(v_ftv)) != len(v_ftv)):
+			raise ValueError("v_ftv")
+		"""
+		ftc_ftv = []
+		[ftc_ftv.append(i) for i in samples['folds_train_combined']]
+		[ftc_ftv.append(i) for i in samples['folds_train_validation']]
+		if (len(set(ftc_ftv)) != len(ftc_ftv)):
+			raise ValueError("ftc_ftv")
+
+
+
 		"""
 		2. Encodes the labels and features.
 		- Remember, you `.fit()` on either training data or all data (categoricals).
