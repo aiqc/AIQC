@@ -3032,12 +3032,15 @@ class Foldset(BaseModel):
 
 		elif (splitset.supervision=="unsupervised"):
 			if (splitset.unsupervised_stratify_col is not None):
-				
+				samples = dict(train=arr_train_indices)
 				feature = splitset.get_features()[0]
 				_, stratify_arr = feature.preprocess(
-					supervision='unsupervised'
-					, encoderset_id='skip'
+					supervision = 'unsupervised'
+					, encoderset_id = 'skip'
+					, samples = samples
 				)
+
+				### needs arr_train_indices ^^^
 
 				stratify_col = splitset.unsupervised_stratify_col
 				column_names = feature.dataset.get_main_tabular().columns
@@ -3053,6 +3056,10 @@ class Foldset(BaseModel):
 					stratify_arr = stratify_arr[:,col_index]
 				stratify_dtype = stratify_arr.dtype
 
+				###
+				print(stratify_arr)
+				print(len(stratify_arr))
+
 				# Handles sequence.
 				if (stratify_arr.shape[1] > 1):
 					# We need a single value, so take the median or mode of each 1D array.
@@ -3063,6 +3070,10 @@ class Foldset(BaseModel):
 						stratify_arr = np.array(modes)
 					# Now both are 1D so reshape to 2D.
 					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
+
+				###
+				print(stratify_arr)
+				print(len(stratify_arr))
 			elif (splitset.unsupervised_stratify_col is None):
 				if (bin_count is not None):
 					raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
@@ -3130,6 +3141,12 @@ class Foldset(BaseModel):
 			, splitset = splitset
 		)
 
+
+		###
+		print(arr_train_indices)
+		print(len(arr_train_indices))
+		print(stratify_arr)
+		print(len(stratify_arr))
 		try:
 			# Stratified vs Unstratified.
 			if (stratify_arr is None):
