@@ -804,8 +804,6 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	df = datum.to_pandas('delhi_climate.parquet')
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
-	print(dataset.get_main_tabular().dtypes)
-
 	feature = dataset.make_feature()
 	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
 	aiqc.Featurepolater.from_interpolaterset(

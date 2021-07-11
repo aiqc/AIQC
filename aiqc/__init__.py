@@ -2239,7 +2239,7 @@ class Feature(BaseModel):
 		#, outlierset_id:str='latest'
 		, encoderset_id:str = 'latest'
 		, window_id:str = 'latest'
-		, samples:dict = None#Used by Interpolaterset to encode separately.
+		, samples:dict = None#Used by Interpolaterset to encode separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
 		, _samples_train:list = None#Used during job.run()
 		, _library:str = None#Used during job.run() and during infer()
 		, _job:object = None#Used during job.run() and during infer()
@@ -2251,7 +2251,6 @@ class Feature(BaseModel):
 		"""
 		feature = Feature.get_by_id(id)
 		feature_array = feature.to_numpy()
-
 
 		# Although this is not the first preprocess, other preprocesses need to know the window ranges.
 		if ((window_id!='skip') and (feature.windows.count()>0)):
@@ -3024,23 +3023,22 @@ class Foldset(BaseModel):
 			label = splitset.label
 			if (len(splitset.label.labelpolaters)>0):
 				labelpolater = label.labelpolaters[-1]
-				samples = dict(all=arr_train_indices)
+				samples = dict(train=arr_train_indices)
 				stratify_arr = labelpolater.fetch_interpolated(samples=samples)
 			else:
 				stratify_arr = label.to_numpy(samples=arr_train_indices)
 			stratify_dtype = stratify_arr.dtype
 
 		elif (splitset.supervision=="unsupervised"):
+
 			if (splitset.unsupervised_stratify_col is not None):
-				samples = dict(train=arr_train_indices)
 				feature = splitset.get_features()[0]
 				_, stratify_arr = feature.preprocess(
 					supervision = 'unsupervised'
 					, encoderset_id = 'skip'
-					, samples = samples
 				)
-
-				### needs arr_train_indices ^^^
+				# Only take the training samples.
+				stratify_arr = stratify_arr[arr_train_indices]
 
 				stratify_col = splitset.unsupervised_stratify_col
 				column_names = feature.dataset.get_main_tabular().columns
@@ -3056,10 +3054,6 @@ class Foldset(BaseModel):
 					stratify_arr = stratify_arr[:,col_index]
 				stratify_dtype = stratify_arr.dtype
 
-				###
-				print(stratify_arr)
-				print(len(stratify_arr))
-
 				# Handles sequence.
 				if (stratify_arr.shape[1] > 1):
 					# We need a single value, so take the median or mode of each 1D array.
@@ -3071,9 +3065,6 @@ class Foldset(BaseModel):
 					# Now both are 1D so reshape to 2D.
 					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
-				###
-				print(stratify_arr)
-				print(len(stratify_arr))
 			elif (splitset.unsupervised_stratify_col is None):
 				if (bin_count is not None):
 					raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
