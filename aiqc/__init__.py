@@ -1954,17 +1954,19 @@ class Label(BaseModel):
 
 	def to_pandas(id:int, samples:list=None):
 		label = Label.get_by_id(id)
+		dataset = label.dataset
 		columns = label.columns
 		samples = listify(samples)
-		df = Dataset.to_pandas(id=id, columns=columns, samples=samples)
+		df = Dataset.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
 	def to_numpy(id:int, samples:list=None):
 		label = Label.get_by_id(id)
+		dataset = label.dataset
 		columns = label.columns
 		samples = listify(samples)
-		arr = Dataset.to_numpy(id=id, columns=columns, samples=samples)
+		arr = Dataset.to_numpy(id=dataset.id, columns=columns, samples=samples)
 		return arr
 
 
@@ -3263,25 +3265,16 @@ class Interpolaterset(BaseModel):
 
 			elif (window is None):
 				for fp in fps:
-					###
-					print("ip fp tabular")
 					# Interpolate that slice. Don't need to process each column separately.
 					df = dataframe[fp.matching_columns]
 					# This method handles a few things before interpolation.
 					df = fp.interpolate(dataframe=df, samples=samples)
 					# Overwrite the original column with the interpolated column.
-					###
-					print(dataframe.index.size)
 					if (dataframe.index.size != df.index.size):
 						raise ValueError("Yikes - Internal error. Index sizes inequal.")
 					for c in fp.matching_columns:
 						dataframe[c] = df[c]
-					###
-					print(df[c])
-					print(c)
-					print(dataframe.index == df.index)
-					if (dataframe.isnull().values.any() == True):
-						raise ValueError(f"\nright before arr\n")
+
 				array = dataframe.to_numpy()
 
 		elif (dataset_type=='sequence'):
@@ -3497,20 +3490,13 @@ class Featurepolater(BaseModel):
 		if (dataset_type=='tabular'):
 			# Single dataframe.
 			if ((fp.process_separately==False) or (samples is None)):
-				###
-				print("fp insep")
+
 				df_interp = Labelpolater.interpolate(dataframe, interpolate_kwargs)
 			
 			elif ((fp.process_separately==True) and (samples is not None)):
-				# Tricky part here is that the split samples are windowed and the df is raw rows.
-				windows_unshifted = fp.interpolaterset.feature.windows # which window?
-				###
-				print("fp sep")
 				df_interp = None
 				for split, indices in samples.items():
 					# Fetch those samples.
-					###
-					print(indices)
 					df = dataframe.loc[indices]
 
 					df = Labelpolater.interpolate(df, interpolate_kwargs)
@@ -3519,14 +3505,6 @@ class Featurepolater(BaseModel):
 						df_interp = df
 					elif (df_interp is not None):
 						df_interp = pd.concat([df_interp, df])
-
-					###
-					if (df_interp.isnull().values.any() == True):
-						raise ValueError(f"\nLooper. {split}\n")
-					print(split)
-					print(df_interp.index.size)
-
-
 				df_interp = df_interp.sort_index()
 			else:
 				raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with arguments provided.\n")
@@ -6070,9 +6048,6 @@ class Job(BaseModel):
 			samples_eval = samples[key_evaluation]
 		elif (key_evaluation is None):
 			samples_eval = None
-		
-		###
-		print(samples)
 
 		if (library == "keras"):
 			model = fn_train(
@@ -6148,16 +6123,6 @@ class Job(BaseModel):
 				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
 				No action needed, the other instance will continue running to completion.
 			""")
-
-		###
-		print(time_started)
-		print(time_succeeded)
-		print(time_duration)
-		print(input_shapes)
-		print(history)
-		print(job)
-		print(repeat_index)
-		print(model_blob)
 
 		predictor = Predictor.create(
 			time_started = time_started
