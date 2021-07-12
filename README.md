@@ -26,3 +26,14 @@
 
 * Achieve end-to-end reproducibility by recording both data preparation & training experiments.
 * Easily orchestrate parameterized protocols for data preprocessing & model evalaution.
+
+
+---
+
+<br />
+
+<p align='center'><i>Thanks to the support and sponsorship of:</i></p>
+
+<br />
+
+![Sponsor](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png)

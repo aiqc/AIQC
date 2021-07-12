@@ -3258,19 +3258,20 @@ class Interpolaterset(BaseModel):
 						rows_range = range(row_start,row_stop)
 
 						# Make an empty df, overwrite it with the rows from above.
+						# There will be blanks between the windows.
 						df_null = pd.DataFrame(
 							np.nan, index=rows_range, 
-							columns=matching_cols, dtype='float64'
+							columns=matching_cols, #dtype='float64'
 						)
 						for row in rows_unique:
 							df_null.loc[row] = df_fp.loc[row]
 						# Then we can interpolate the rows that are still missing.
 						df_null = fp.interpolate(dataframe=df_null)
-						# Write back any rows of interest that may have been null.
+						# Write back the rows of interest.
 						for row in rows_unique:
 							df_fp.loc[row] = df_null.loc[row]
 					"""
-					At this point there may still be leading/ lagging nulls outside the windows
+					At this point there may still be leading/ lagging nulls outside the splits
 					that are within the reach of a shift.
 					"""
 					df_fp = fp.interpolate(dataframe=df_fp)

@@ -222,7 +222,7 @@
   
   </br>
   <center>
-    <i style="color:gray;">Provided in part by the support and sponsorship of:</i>
+    <i style="color:gray;">Thanks to the support and sponsorship of:</i>
   </center>
   </br></br>
 
