@@ -2259,6 +2259,14 @@ class Feature(BaseModel):
 				window = Window.get_by_id(window)
 			else:
 				raise ValueError(f"\nYikes - Unexpected value <{window_id}> for `window_id` argument.\n")
+
+			# During encoding we'll need the raw rows, not window indices.
+			if ((_samples_train is not None) and (_job is not None) and (_fitted_feature is None)):
+				samples_unshifted = window.samples_unshifted
+				train_windows = [samples_unshifted[idx] for idx in _samples_train]
+				# We need all of the rows from all of the windows. But only the unique ones. 
+				windows_flat = [item for sublist in train_windows for item in sublist]
+				_samples_train = list(set(windows_flat))
 		else:
 			window = None
 
@@ -5467,8 +5475,9 @@ class Job(BaseModel):
 
 	def encoderset_fit_features(
 		arr_features:object, samples_train:list,
-		encoderset:object
+		encoderset:object,
 	):
+
 		featurecoders = list(encoderset.featurecoders)
 		fitted_encoders = []
 		if (len(featurecoders) > 0):
