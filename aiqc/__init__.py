@@ -2895,6 +2895,10 @@ class Splitset(BaseModel):
 				label = Label.get_by_id(label_id)
 				supervision = "supervised"
 
+		# Sort the indices for easier human inspection and potentially faster seeking?
+		for split, indices in samples.items:
+			samples[split] = sorted(indices)
+
 		splitset = Splitset.create(
 			label = label
 			, samples = samples
@@ -3161,10 +3165,13 @@ class Foldset(BaseModel):
 
 			i = -1
 			for index_folds_train, index_fold_validation in splitz_gen:
-				# ^ These are new zero-based indices that must be used to access the old indices.
+				# ^ These are new zero-based indices that must be used to access the real data.
 				i+=1
 				fold_samples = {}
-				
+
+				index_folds_train = sorted(index_folds_train)
+				index_fold_validation = sorted(index_fold_validation)
+
 				fold_samples["folds_train_combined"] = [arr_train_indices[idx] for idx in index_folds_train]
 				fold_samples["fold_validation"] = [arr_train_indices[idx] for idx in index_fold_validation]
 
