@@ -811,10 +811,16 @@ def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samp
 
 def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas('delhi_climate.parquet')
+	df['temperature'][0] = np.NaN
+	df['temperature'][13] = np.NaN
+
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
 	feature = dataset.make_feature()
-	
+	ip = Interpolaterset.from_feature(feature_id=feature.id)
+	Featurepolater.from_interpolaterset(interpolaterset_id=ip.id, dtypes=['float64'])
+
+
 	window = feature.make_window(size_window=28, size_shift=14)
 
 	encoderset = feature.make_encoderset()

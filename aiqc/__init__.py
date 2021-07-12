@@ -5318,7 +5318,7 @@ class Jobset(BaseModel):
 	repeat_count = IntegerField()
 
 	foldset = ForeignKeyField(Foldset, backref='jobsets')
-	hyperparamcombo = ForeignKeyField(Hyperparamcombo, backref='jobsets')
+	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobsets')
 	queue = ForeignKeyField(Queue, backref='jobsets')
 
 
