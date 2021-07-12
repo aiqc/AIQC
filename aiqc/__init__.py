@@ -2354,7 +2354,7 @@ class Feature(BaseModel):
 
 		if (_library == 'pytorch'):
 			feature_array = torch.FloatTensor(feature_array)
-		
+
 		if (supervision=='supervised'):
 			return feature_array
 		elif (supervision=='unsupervised'):
@@ -2896,7 +2896,7 @@ class Splitset(BaseModel):
 				supervision = "supervised"
 
 		# Sort the indices for easier human inspection and potentially faster seeking?
-		for split, indices in samples.items:
+		for split, indices in samples.items():
 			samples[split] = sorted(indices)
 
 		splitset = Splitset.create(
@@ -3240,36 +3240,35 @@ class Interpolaterset(BaseModel):
 
 		if (dataset_type=='tabular'):
 			dataframe = pd.DataFrame(array, columns=columns)
+
 			if ((window is not None) and (samples is not None)):
 				for fp in fps:
 					matching_cols = fp.matching_columns
 					# We need to overwrite this df.
 					df_fp = dataframe[matching_cols]
 					windows_unshifted = window.samples_unshifted
-					if (samples is not None):
-						# At this point, indices are windows, not raw sample rows.
-						for split, indices in samples.items():
-							# Grab the windows for that split.
-							split_windows = [windows_unshifted[idx] for idx in indices]
-							# We need all of the rows from all of the windows. 
-							windows_flat = [item for sublist in split_windows for item in sublist]
-							rows_unique = set(windows_flat)
-							row_start = min(rows_unique)
-							row_stop = max(rows_unique) + 1
-							rows_range = range(row_start,row_stop)
+					for split, indices in samples.items():
+						# At this point, indices are groups of rows (windows), not raw rows.
+						split_windows = [windows_unshifted[idx] for idx in indices]
+						# We need all of the rows from all of the windows. 
+						windows_flat = [item for sublist in split_windows for item in sublist]
+						rows_unique = set(windows_flat)
+						row_start = min(rows_unique)
+						row_stop = max(rows_unique) + 1
+						rows_range = range(row_start,row_stop)
 
-							# Make an empty df, overwrite it with the rows from above.
-							df_null = pd.DataFrame(
-								np.nan, index=rows_range, 
-								columns=matching_cols, dtype='float64'
-							)
-							for row in rows_unique:
-								df_null.loc[row] = df_fp.loc[row]
-							# Then we can interpolate the rows that are still missing.
-							df_null = fp.interpolate(dataframe=df_null)
-							# Write back any rows of interest that may have been null.
-							for row in rows_unique:
-								df_fp.loc[row] = df_null.loc[row]
+						# Make an empty df, overwrite it with the rows from above.
+						df_null = pd.DataFrame(
+							np.nan, index=rows_range, 
+							columns=matching_cols, dtype='float64'
+						)
+						for row in rows_unique:
+							df_null.loc[row] = df_fp.loc[row]
+						# Then we can interpolate the rows that are still missing.
+						df_null = fp.interpolate(dataframe=df_null)
+						# Write back any rows of interest that may have been null.
+						for row in rows_unique:
+							df_fp.loc[row] = df_null.loc[row]
 					"""
 					At this point there may still be leading/ lagging nulls outside the windows
 					that are within the reach of a shift.
@@ -3291,7 +3290,6 @@ class Interpolaterset(BaseModel):
 						raise ValueError("Yikes - Internal error. Index sizes inequal.")
 					for c in fp.matching_columns:
 						dataframe[c] = df[c]
-
 			array = dataframe.to_numpy()
 
 		elif (dataset_type=='sequence'):
@@ -3299,6 +3297,7 @@ class Interpolaterset(BaseModel):
 			dataframes = [pd.DataFrame(arr, columns=columns) for arr in array]
 			# Each one needs to be interpolated separately.
 			for i, dataframe in enumerate(dataframes):
+
 				for fp in fps:
 					df_cols = dataframe[fp.matching_columns]
 					# Don't need to parse anything. Straight to DVD.
