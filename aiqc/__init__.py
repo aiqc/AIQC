@@ -2247,7 +2247,6 @@ class Feature(BaseModel):
 	):
 		"""
 		- As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
-		- Future: a preprocess is passed a list, then we could produce different Pipelinecombos.
 		"""
 		feature = Feature.get_by_id(id)
 		feature_array = feature.to_numpy()
@@ -2271,7 +2270,7 @@ class Feature(BaseModel):
 				ip = Interpolaterset.get_by_id(interpolaterset_id)
 			else:
 				raise ValueError(f"\nYikes - Unexpected value <{interpolaterset_id}> for `interpolaterset_id` argument.\n")
-			
+
 			feature_array = ip.interpolate(array=feature_array, samples=samples, window=window)
 
 		# --- Impute ---
@@ -2316,6 +2315,7 @@ class Feature(BaseModel):
 		# Window object is defined above because the other features need it. 
 		if ((window_id!='skip') and (feature.windows.count()>0)):
 			features_ndim = feature_array.ndim
+
 			# Shifted labels. Need to do the target first in order to access the unwindowed `arr_features`.
 			# During pure inference, there may be no shifted samples.
 			if (window.samples_shifted is not None):
@@ -3132,12 +3132,6 @@ class Foldset(BaseModel):
 			, splitset = splitset
 		)
 
-
-		###
-		print(arr_train_indices)
-		print(len(arr_train_indices))
-		print(stratify_arr)
-		print(len(stratify_arr))
 		try:
 			# Stratified vs Unstratified.
 			if (stratify_arr is None):
@@ -3269,21 +3263,21 @@ class Interpolaterset(BaseModel):
 
 					for c in matching_cols:
 						dataframe[c] = df_fp[c]
-				array = np.array(dataframe)
 
-			elif (window is None):
+			elif ((window is None) or (samples is None)):
+				# The underlying window data only needs to be processed separately is when there are split involved.
 				for fp in fps:
 					# Interpolate that slice. Don't need to process each column separately.
 					df = dataframe[fp.matching_columns]
 					# This method handles a few things before interpolation.
-					df = fp.interpolate(dataframe=df, samples=samples)
+					df = fp.interpolate(dataframe=df, samples=samples)#handles `samples=None`
 					# Overwrite the original column with the interpolated column.
 					if (dataframe.index.size != df.index.size):
 						raise ValueError("Yikes - Internal error. Index sizes inequal.")
 					for c in fp.matching_columns:
 						dataframe[c] = df[c]
 
-				array = dataframe.to_numpy()
+			array = dataframe.to_numpy()
 
 		elif (dataset_type=='sequence'):
 			# One df per sequence array.
@@ -3372,6 +3366,7 @@ class Labelpolater(BaseModel):
 
 
 	def interpolate(dataframe:object, interpolate_kwargs:dict):
+		dataframe = dataframe.sort_index()
 		dataframe = dataframe.interpolate(**interpolate_kwargs)
 		if (dataframe.isnull().values.any() == True):
 			raise ValueError("\nYikes - DataFrame still contains `np.NaN` after interpolation.\n")
@@ -3381,15 +3376,16 @@ class Labelpolater(BaseModel):
 	def fetch_interpolated(id:int, samples:dict=None):
 		lp = Labelpolater.get_by_id(id)
 		label = lp.label
+		interpolate_kwargs = lp.interpolate_kwargs
 
 		if ((lp.process_separately==False) or (samples is None)):
 			df_labels = label.to_pandas()
-			df_labels = Labelpolater.interpolate(df_labels, lp.interpolate_kwargs)	
+			df_labels = Labelpolater.interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
 			df_labels = None
 			for split, indices in samples.items():
 				df = label.to_pandas(samples=indices)
-				df = Labelpolater.interpolate(df, lp.interpolate_kwargs)
+				df = Labelpolater.interpolate(df, interpolate_kwargs)
 				if (df_labels is None):
 					df_labels = df
 				elif (df_labels is not None):

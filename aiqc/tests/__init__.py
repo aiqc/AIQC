@@ -464,7 +464,16 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	
 	label_column = 'price'
 	label = dataset.make_label(columns=[label_column])
-	aiqc.Labelpolater.from_label(label_id=label.id)
+	aiqc.Labelpolater.from_label(
+		label_id=label.id
+		, interpolate_kwargs = dict(
+			method = 'spline'
+			, limit_direction = 'both'
+			, limit_area = None
+			, axis = 0
+			, order = 1
+		)
+	)
 
 	feature = dataset.make_feature(exclude_columns=[label_column])
 	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
@@ -805,11 +814,6 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
 	feature = dataset.make_feature()
-	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
-	aiqc.Featurepolater.from_interpolaterset(
-		interpolaterset_id=interpolaterset.id
-		, dtypes="float64"
-	)
 	
 	window = feature.make_window(size_window=28, size_shift=14)
 
@@ -837,7 +841,6 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		, label_id = None
 		, size_test = 0.17
 		, size_validation = 0.16
-
 	)
 
 	splitset = Splitset.make(
