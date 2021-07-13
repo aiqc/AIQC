@@ -1995,16 +1995,6 @@ class Label(BaseModel):
 		return labelcoder
 
 
-	def get_latest_labelcoder(id:int):
-		label = Label.get_by_id(id)
-		labelcoders = list(label.labelcoders)
-		# Check if list empty.
-		if (not labelcoders):
-			return None
-		else:
-			return labelcoders[-1]
-
-
 
 
 class Feature(BaseModel):
@@ -2701,12 +2691,11 @@ class Splitset(BaseModel):
 
 				# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 				label = Label.get_by_id(label_id)
+				stratify_arr = label.to_numpy()
 				# Check number of samples in Label vs Feature, because they can come from different Datasets.
 				if (len(label.labelpolaters) > 0):
 					lp = label.labelpolaters[-1]
-					stratify_arr = lp.fetch_interpolated()
-				else:
-					stratify_arr = label.to_numpy()
+					stratify_arr = lp.interpolate(array=stratify_arr, samples=None)				
 
 				l_length = label.dataset.get_main_file().shape['rows']
 				
@@ -3036,7 +3025,7 @@ class Foldset(BaseModel):
 			if (len(splitset.label.labelpolaters)>0):
 				labelpolater = label.labelpolaters[-1]
 				samples = dict(train=arr_train_indices)
-				stratify_arr = labelpolater.fetch_interpolated(samples=samples)
+				stratify_arr = labelpolater.interpolate(samples=samples)
 			else:
 				stratify_arr = label.to_numpy(samples=arr_train_indices)
 			stratify_dtype = stratify_arr.dtype
@@ -3351,7 +3340,7 @@ class Labelpolater(BaseModel):
 		# Check that the arguments actually work.
 		try:
 			df = label.to_pandas()
-			Labelpolater.interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
+			Labelpolater.run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
 			raise ValueError("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
 		else:
@@ -3380,32 +3369,33 @@ class Labelpolater(BaseModel):
 			raise ValueError("\nYikes - `axis` must be either 0 or 'index'.\n")
 
 
-	def interpolate(dataframe:object, interpolate_kwargs:dict):
+	def run_interpolate(dataframe:object, interpolate_kwargs:dict):
+		# Interpolation requires the samples to be in order.
 		dataframe = dataframe.sort_index()
 		dataframe = dataframe.interpolate(**interpolate_kwargs)
-		if (dataframe.isnull().values.any() == True):
-			raise ValueError("\nYikes - DataFrame still contains `np.NaN` after interpolation.\n")
 		return dataframe
 
 
-	def fetch_interpolated(id:int, samples:dict=None):
+	def interpolate(id:int, array:object, samples:dict=None):
 		lp = Labelpolater.get_by_id(id)
 		label = lp.label
 		interpolate_kwargs = lp.interpolate_kwargs
 
 		if ((lp.process_separately==False) or (samples is None)):
 			df_labels = label.to_pandas()
-			df_labels = Labelpolater.interpolate(df_labels, interpolate_kwargs)	
+			df_labels = Labelpolater.run_interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
 			df_labels = None
 			for split, indices in samples.items():
 				df = label.to_pandas(samples=indices)
-				df = Labelpolater.interpolate(df, interpolate_kwargs)
+				df = Labelpolater.run_interpolate(df, interpolate_kwargs)
 				if (df_labels is None):
 					df_labels = df
 				elif (df_labels is not None):
 					df_labels = pd.concat([df_labels, df])
 			df_labels = df_labels.sort_index()
+		else:
+			raise ValueError("\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n")
 		arr_labels = df_labels.to_numpy()
 		return arr_labels
 
@@ -3510,7 +3500,7 @@ class Featurepolater(BaseModel):
 			# Single dataframe.
 			if ((fp.process_separately==False) or (samples is None)):
 
-				df_interp = Labelpolater.interpolate(dataframe, interpolate_kwargs)
+				df_interp = Labelpolater.run_interpolate(dataframe, interpolate_kwargs)
 			
 			elif ((fp.process_separately==True) and (samples is not None)):
 				df_interp = None
@@ -3518,7 +3508,7 @@ class Featurepolater(BaseModel):
 					# Fetch those samples.
 					df = dataframe.loc[indices]
 
-					df = Labelpolater.interpolate(df, interpolate_kwargs)
+					df = Labelpolater.run_interpolate(df, interpolate_kwargs)
 					# Stack them up.
 					if (df_interp is None):
 						df_interp = df
@@ -3528,7 +3518,7 @@ class Featurepolater(BaseModel):
 			else:
 				raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with arguments provided.\n")
 		elif (dataset_type=='sequence'):
-			df_interp = Labelpolater.interpolate(dataframe, interpolate_kwargs)
+			df_interp = Labelpolater.run_interpolate(dataframe, interpolate_kwargs)
 		else:
 			raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with dataset_type provided.\n")
 		# Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
@@ -4791,14 +4781,16 @@ class Queue(BaseModel):
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
-			label_col_count = splitset.label.column_count
-			label_dtypes = list(splitset.label.get_dtypes().values())
+			label = splitset.label
+			label_col_count = label.column_count
+			label_dtypes = list(label.get_dtypes().values())
 			
-			labelcoder = splitset.label.get_latest_labelcoder()
 
-			if (labelcoder is not None):
+			if (label.labelcoders.count() > 0):
+				labelcoder = label.labelcoders[-1]
 				stringified_labelcoder = str(labelcoder.sklearn_preprocess)
 			else:
+				labelcoder = None
 				stringified_labelcoder = None
 
 			if (label_col_count == 1):
@@ -5952,15 +5944,15 @@ class Job(BaseModel):
 		# Labels - fetch and encode.
 		if (splitset.supervision == "supervised"):
 			label = splitset.label
+			arr_labels = label.to_numpy()
 			# Interpolate
-			if (len(label.labelpolaters) > 0):
+			if (label.labelpolaters.count() > 0):
 				labelpolater = label.labelpolaters[-1]
-				arr_labels = labelpolater.fetch_interpolated(samples=samples)
-			else:
-				arr_labels = label.to_numpy()
+				arr_labels = labelpolater.interpolate(array=arr_labels, samples=samples)
 
-			labelcoder = label.get_latest_labelcoder()
-			if (labelcoder is not None):
+			if (label.labelcoders.count() > 0):
+				labelcoder = label.labelcoders[-1]
+
 				fitted_encoders = Job.encoder_fit_labels(
 					arr_labels=arr_labels, samples_train=samples[key_train],
 					labelcoder=labelcoder
@@ -6501,11 +6493,11 @@ class Predictor(BaseModel):
 			label_old = None
 
 		if (label_new is not None):			
+			arr_labels = label_new.to_numpy()
+
 			if (len(label_new.labelpolaters) > 0):
 				lp = label_new.labelpolaters[-1]
-				arr_labels = lp.fetch_interpolated()
-			else:
-				arr_labels = label_new.to_numpy()
+				arr_labels = lp.interpolate(array=arr_labels, samples=None)
 
 			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
 				job=predictor.job, label=label_old

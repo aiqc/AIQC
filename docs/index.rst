@@ -198,7 +198,7 @@
   <ul style="text-align: center; list-style-position: inside;">
     <li class="extra-bullets">
       <a href='notebooks/keras_tabular_forecasting.html'>
-        Supports multi-variate time series forecasting via walk forward windowing.
+        Supports multi-variate time series forecasting & backcasting via windowing.
       </a>
     </li>
     <li class="extra-bullets">
