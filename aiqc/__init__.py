@@ -1995,6 +1995,76 @@ class Label(BaseModel):
 		return labelcoder
 
 
+	def preprocess(
+		id:int
+		, labelpolater_id:str = 'latest'
+		#, imputerset_id:str='latest'
+		#, outlierset_id:str='latest'
+		, labelcoder_id:str = 'latest'
+		, samples:dict = None#Used by interpolation to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
+		, _samples_train:list = None#Used during job.run()
+		, _library:str = None#Used during job.run() and during infer()
+		, _job:object = None#Used during job.run() and during infer()
+		, _fitted_label:object = None#Used during infer()
+	):
+		label = Label.get_by_id(id)
+		label_array = label.to_numpy()
+
+		# Interpolate
+		if ((labelpolater_id!='skip') and (label.labelpolaters.count()>0)):
+			if (labelpolater_id=='latest'):
+				labelpolater = label.labelpolaters[-1]
+			elif isinstance(labelpolater_id, int):
+				labelpolater = Labelpolater.get_by_id(labelpolater_id)
+			else:
+				raise ValueError(f"\nYikes - Unexpected value <{labelpolater_id}> for `labelpolater_id` argument.\n")
+
+			labelpolater = label.labelpolaters[-1]
+			label_array = labelpolater.interpolate(array=label_array, samples=samples)
+		
+		#Encode
+		# During inference the old labelcoder may be used so we have to nest the count.
+		if (labelcoder_id!='skip'):
+			if (_fitted_label is not None):
+				labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
+					job=_job, label=_fitted_label
+				)
+
+				label_array = Job.encoder_transform_labels(
+					arr_labels=label_array,
+					fitted_encoders=fitted_encoders, labelcoder=labelcoder
+				)
+
+			elif (label.labelcoders.count()>0):
+				if (labelcoder_id=='latest'):
+					labelcoder = label.labelcoders[-1]
+				elif (isinstance(labelpolater_id, int)):
+					labelcoder = Labelcoder.get_by_id(labelcoder_id)
+				else:
+					raise ValueError(f"\nYikes - Unexpected value <{labelcoder_id}> for `labelcoder_id` argument.\n")
+
+				if ((_job is None) or (_samples_train is None)):
+					raise ValueError("Yikes - both `job_id` and `key_train` must be defined in order to use `labelcoder`")
+
+				fitted_encoders = Job.encoder_fit_labels(
+					arr_labels=label_array, samples_train=_samples_train,
+					labelcoder=labelcoder
+				)
+
+				FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=_job, labelcoder=labelcoder)
+
+				label_array = Job.encoder_transform_labels(
+					arr_labels=label_array,
+					fitted_encoders=fitted_encoders, labelcoder=labelcoder
+				)
+			elif (label.labelcoders.count()==0):
+				pass
+
+		if (_library == 'pytorch'):
+			label_array = torch.FloatTensor(label_array)
+		return label_array
+
+
 
 
 class Feature(BaseModel):
@@ -2229,7 +2299,7 @@ class Feature(BaseModel):
 		#, outlierset_id:str='latest'
 		, encoderset_id:str = 'latest'
 		, window_id:str = 'latest'
-		, samples:dict = None#Used by Interpolaterset to encode separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
+		, samples:dict = None#Used by Interpolaterset to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
 		, _samples_train:list = None#Used during job.run()
 		, _library:str = None#Used during job.run() and during infer()
 		, _job:object = None#Used during job.run() and during infer()
@@ -2246,7 +2316,7 @@ class Feature(BaseModel):
 			if (window_id=='latest'):
 				window = feature.windows[-1]
 			elif isinstance(window_id, int):
-				window = Window.get_by_id(window)
+				window = Window.get_by_id(window_id)
 			else:
 				raise ValueError(f"\nYikes - Unexpected value <{window_id}> for `window_id` argument.\n")
 
@@ -2275,43 +2345,46 @@ class Feature(BaseModel):
 		# --- Outliers ---
 
 		# --- Encode ---
-		# During inference, the old Feature's encoderset is used no matter what.
-		if (_fitted_feature is not None):
-			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
-				job=_job, feature=_fitted_feature
-			)
-			feature_array = Job.encoderset_transform_features(
-				arr_features=feature_array,
-				fitted_encoders=fitted_encoders, encoderset=encoderset
-			)
+		# During inference the old encoderset may be used so we have to nest the count.
+		if (encoderset_id!='skip'):
+			if (_fitted_feature is not None):
+				encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+					job=_job, feature=_fitted_feature
+				)
+				feature_array = Job.encoderset_transform_features(
+					arr_features=feature_array,
+					fitted_encoders=fitted_encoders, encoderset=encoderset
+				)
 
-		elif ((encoderset_id!='skip') and (feature.encodersets.count()>0)):
-			if (encoderset_id=='latest'):
-				encoderset = feature.encodersets[-1]
-			elif isinstance(encoderset_id, int):
-				encoderset = Encoderset.get_by_id(encoderset)
-			else:
-				raise ValueError(f"\nYikes - Unexpected value <{encoderset_id}> for `encoderset` argument.\n")
+			elif (feature.encodersets.count()>0):
+				if (encoderset_id=='latest'):
+					encoderset = feature.encodersets[-1]
+				elif (isinstance(encoderset_id, int)):
+					encoderset = Encoderset.get_by_id(encoderset_id)
+				else:
+					raise ValueError(f"\nYikes - Unexpected value <{encoderset_id}> for `encoderset_id` argument.\n")
 
-			if ((_job is None) or (_samples_train is None)):
-				raise ValueError("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
+				if ((_job is None) or (_samples_train is None)):
+					raise ValueError("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
 
-			# This takes the entire array because it handles all features and splits.
-			fitted_encoders = Job.encoderset_fit_features(
-				arr_features=feature_array, samples_train=_samples_train,
-				encoderset=encoderset
-			)
+				# This takes the entire array because it handles all features and splits.
+				fitted_encoders = Job.encoderset_fit_features(
+					arr_features=feature_array, samples_train=_samples_train,
+					encoderset=encoderset
+				)
 
-			feature_array = Job.encoderset_transform_features(
-				arr_features=feature_array,
-				fitted_encoders=fitted_encoders, encoderset=encoderset
-			)
-			# Record the `fit` for decoding predictions via `inverse_transform`.
-			FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+				feature_array = Job.encoderset_transform_features(
+					arr_features=feature_array,
+					fitted_encoders=fitted_encoders, encoderset=encoderset
+				)
+				# Record the `fit` for decoding predictions via `inverse_transform`.
+				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+			elif (feature.encodersets.count()==0):
+				pass
 
 		# --- Window ---
-		# Window object is defined above because the other features need it. 
 		if ((window_id!='skip') and (feature.windows.count()>0)):
+			# Window object is fetched above because the other features need it. 
 			features_ndim = feature_array.ndim
 
 			# Shifted labels. Need to do the target first in order to access the unwindowed `arr_features`.
@@ -2691,19 +2764,14 @@ class Splitset(BaseModel):
 
 				# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 				label = Label.get_by_id(label_id)
-				stratify_arr = label.to_numpy()
-				# Check number of samples in Label vs Feature, because they can come from different Datasets.
-				if (len(label.labelpolaters) > 0):
-					lp = label.labelpolaters[-1]
-					stratify_arr = lp.interpolate(array=stratify_arr, samples=None)				
+				stratify_arr = label.preprocess(labelcoder_id='skip')
 
-				l_length = label.dataset.get_main_file().shape['rows']
-				
+				# Check number of samples in Label vs Feature, because they can come from different Datasets.
+				l_length = label.dataset.get_main_file().shape['rows']				
 				if (label.dataset.id != f_dataset.id):
 					if (l_length != sample_count):
 						raise ValueError("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
 
-				
 				# check for OHE cols and reverse them so we can still stratify ordinally.
 				if (stratify_arr.shape[1] > 1):
 					stratify_arr = np.argmax(stratify_arr, axis=1)
@@ -3022,16 +3090,11 @@ class Foldset(BaseModel):
 		if (splitset.supervision=="supervised"):
 			# The actual values of the features don't matter, only label values needed for stratification.
 			label = splitset.label
-			if (len(splitset.label.labelpolaters)>0):
-				labelpolater = label.labelpolaters[-1]
-				samples = dict(train=arr_train_indices)
-				stratify_arr = labelpolater.interpolate(samples=samples)
-			else:
-				stratify_arr = label.to_numpy(samples=arr_train_indices)
+			stratify_arr = label.preprocess(labelcoder_id='skip')
+			stratify_arr = stratify_arr[arr_train_indices]
 			stratify_dtype = stratify_arr.dtype
 
 		elif (splitset.supervision=="unsupervised"):
-
 			if (splitset.unsupervised_stratify_col is not None):
 				feature = splitset.get_features()[0]
 				_, stratify_arr = feature.preprocess(
@@ -5944,27 +6007,12 @@ class Job(BaseModel):
 		# Labels - fetch and encode.
 		if (splitset.supervision == "supervised"):
 			label = splitset.label
-			arr_labels = label.to_numpy()
-			# Interpolate
-			if (label.labelpolaters.count() > 0):
-				labelpolater = label.labelpolaters[-1]
-				arr_labels = labelpolater.interpolate(array=arr_labels, samples=samples)
-
-			if (label.labelcoders.count() > 0):
-				labelcoder = label.labelcoders[-1]
-
-				fitted_encoders = Job.encoder_fit_labels(
-					arr_labels=arr_labels, samples_train=samples[key_train],
-					labelcoder=labelcoder
-				)
-				
-				arr_labels = Job.encoder_transform_labels(
-					arr_labels=arr_labels,
-					fitted_encoders=fitted_encoders, labelcoder=labelcoder
-				)
-				FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=job, labelcoder=labelcoder)
-			if (library == 'pytorch'):
-				arr_labels = torch.FloatTensor(arr_labels)
+			arr_labels = label.preprocess(
+				samples = samples
+				, _samples_train = samples[key_train]
+				, _library = library
+				, _job = job
+			)
 
 		# Features - fetch and encode.
 		featureset = splitset.get_features()
@@ -6154,9 +6202,8 @@ class Job(BaseModel):
 			predictor.delete_instance()
 			raise
 		
-		# Just to be sure not held in memory or multiprocess forked on a 2nd Queue.
-		del samples
-		del model
+		# Just to be sure big objects not held in memory on last loop or forked processes.
+		del samples, arr_features, arr_labels, model
 		return job
 
 
@@ -6492,23 +6539,12 @@ class Predictor(BaseModel):
 			label_new = None
 			label_old = None
 
-		if (label_new is not None):			
-			arr_labels = label_new.to_numpy()
-
-			if (len(label_new.labelpolaters) > 0):
-				lp = label_new.labelpolaters[-1]
-				arr_labels = lp.interpolate(array=arr_labels, samples=None)
-
-			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
-				job=predictor.job, label=label_old
+		if (label_new is not None):
+			arr_labels = label_new.preprocess(
+				_job = predictor.job
+				, _fitted_label = label_old 
+				, _library=library
 			)
-			if (labelcoder is not None):
-				arr_labels = Job.encoder_transform_labels(
-					arr_labels=arr_labels,
-					fitted_encoders=fitted_encoders, labelcoder=labelcoder
-				)
-			if (library == 'pytorch'):
-				arr_labels = torch.FloatTensor(arr_labels)
 			samples['infer']['labels'] = arr_labels
 		
 		elif ((splitset_new.supervision=='unsupervised') and (arr_labels is not None)):
@@ -6558,6 +6594,7 @@ class Prediction(BaseModel):
 		labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
 			job=prediction.predictor.job, label=prediction.predictor.job.queue.splitset.label
 		)
+
 		if (labelcoder is not None):
 			if hasattr(fitted_encoders,'categories_'):
 				labels = list(fitted_encoders.categories_[0])
