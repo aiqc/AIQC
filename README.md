@@ -18,9 +18,9 @@
 <p align='center'><i>On a mission to accelerate open science by making deep learning more accessible.</i></p>
 
 <br />
-
+<center>
 ![Framework](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_june14.png)
-
+</center>
 <br />
 
 
@@ -35,5 +35,6 @@
 <p align='center'><i>Thanks to the support and sponsorship of:</i></p>
 
 <br />
-
+<center>
 ![Sponsor](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png)
+</center>
