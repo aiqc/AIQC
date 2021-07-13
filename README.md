@@ -19,10 +19,12 @@
 
 <br />
 
-<img align="center" src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_june14.png" alt="framework">
+
+<p align="center">
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_june14.png" alt="framework"/>
+</p>
 
 <br />
-
 
 * Achieve end-to-end reproducibility by recording both data preparation & training experiments.
 * Easily orchestrate parameterized protocols for data preprocessing & model evalaution.
@@ -36,4 +38,7 @@
 
 <br />
 
-<img align="center" src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" alt="sponsor">
+
+<p align="center">
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" alt="sponsor"/>
+</p>
