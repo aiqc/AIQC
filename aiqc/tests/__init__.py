@@ -466,7 +466,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	label = dataset.make_label(columns=[label_column])
 	label.make_labelpolater(
 		interpolate_kwargs = dict(
-			method = 'spline'
+			method = 'linear'
 			, limit_direction = 'both'
 			, limit_area = None
 			, axis = 0

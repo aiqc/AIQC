@@ -2981,6 +2981,14 @@ class Splitset(BaseModel):
 		# Sort the indices for easier human inspection and potentially faster seeking?
 		for split, indices in samples.items():
 			samples[split] = sorted(indices)
+		# Sort splits by logical order. We'll rely on this during 2D interpolation.
+		keys = list(samples.keys())
+		if (("validation" in keys) and ("test" in keys)):
+			ordered_names = ["train", "validation", "test"]
+			samples = {k: samples[k] for k in ordered_names}
+		elif ("test" in keys):
+			ordered_names = ["train", "test"]
+			samples = {k: samples[k] for k in ordered_names}
 
 		splitset = Splitset.create(
 			label = label
@@ -3250,6 +3258,7 @@ class Foldset(BaseModel):
 				index_folds_train = sorted(index_folds_train)
 				index_fold_validation = sorted(index_fold_validation)
 
+				# Python 3.7+ insertion order of dict keys assured.
 				fold_samples["folds_train_combined"] = [arr_train_indices[idx] for idx in index_folds_train]
 				fold_samples["fold_validation"] = [arr_train_indices[idx] for idx in index_fold_validation]
 
@@ -3325,6 +3334,31 @@ class Interpolaterset(BaseModel):
 					# We need to overwrite this df.
 					df_fp = dataframe[matching_cols]
 					windows_unshifted = window.samples_unshifted
+					
+					###
+					# Augment our evaluation splits/folds with training data.
+					if ('train' in samples):
+						indices_train = samples['train']
+						split_windows = [windows_unshifted[idx] for idx in indices]
+						windows_flat = [item for sublist in split_windows for item in sublist]
+						df_train = feature.to_pandas(samples=indices_train).set_index([indices_train], drop=True)
+						df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
+						df_labels = df_train
+					elif (samples.has_key('folds_train_combined')):
+						indices_train = samples['folds_train_combined']
+						split_windows = [windows_unshifted[idx] for idx in indices]
+						windows_flat = [item for sublist in split_windows for item in sublist]
+						df_train = label.to_pandas(samples=indices_train).set_index([indices_train], drop=True)
+						df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
+						df_labels = df_train
+
+
+
+
+
+
+
+
 					for split, indices in samples.items():
 						# At this point, indices are groups of rows (windows), not raw rows.
 						split_windows = [windows_unshifted[idx] for idx in indices]
@@ -3474,6 +3508,7 @@ class Labelpolater(BaseModel):
 		if (interpolate_kwargs['method'] == 'polynomial'):
 			raise ValueError("\nYikes - `method=polynomial` is prevented due to bug <https://stackoverflow.com/questions/67222606/interpolate-polynomial-forward-and-backward-missing-nans>.\n")
 		if ((interpolate_kwargs['axis'] != 0) and (interpolate_kwargs['axis'] != 'index')):
+			# This makes it so that you can run on sparse indices.
 			raise ValueError("\nYikes - `axis` must be either 0 or 'index'.\n")
 
 
@@ -3490,18 +3525,34 @@ class Labelpolater(BaseModel):
 		interpolate_kwargs = lp.interpolate_kwargs
 
 		if ((lp.process_separately==False) or (samples is None)):
-			df_labels = label.to_pandas()
+			df_labels = pd.DataFrame(array, columns=label.columns)
 			df_labels = Labelpolater.run_interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
-			df_labels = None
+			# Augment our evaluation splits/folds with training data.
+			if ('train' in samples):
+				indices_train = samples['train']
+				array = array[indices_train]
+				df_train = pd.DataFrame(array).set_index([indices_train], drop=True)
+				df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
+				df_labels = df_train
+			elif (samples.has_key('folds_train_combined')):
+				indices_train = samples['folds_train_combined']
+				array = array[indices_train]
+				df_train = pd.DataFrame(array).set_index([indices_train], drop=True)
+				df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
+				df_labels = df_train
+
 			for split, indices in samples.items():
-				df = label.to_pandas(samples=indices)
-				df = Labelpolater.run_interpolate(df, interpolate_kwargs)
-				if (df_labels is None):
-					df_labels = df
-				elif (df_labels is not None):
+				if ('train' not in split):
+					array = array[indices]
+					df = pd.DataFrame(array).set_index([indices], drop=True)
+					# Does not need to be sorted for interpolate.
+					df = pd.concat([df_train, df])
+					df = Labelpolater.run_interpolate(df, interpolate_kwargs)
+					# Only keep the indices from the split of interest.
+					df = df.iloc[indices]
 					df_labels = pd.concat([df_labels, df])
-			df_labels = df_labels.sort_index()
+			# df doesn't need to be sorted if it is going back to numpy.
 		else:
 			raise ValueError("\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n")
 		arr_labels = df_labels.to_numpy()
@@ -6021,15 +6072,18 @@ class Job(BaseModel):
 		  'train' or 'folds_train_combined'.
 		"""
 		samples = {}
+		ordered_names = []
 		if (hide_test == False):
 			samples['test'] = splitset.samples['test']
 			key_evaluation = 'test'
+			ordered_names.append('test')
 		elif (hide_test == True):
 			key_evaluation = None
 
 		if (splitset.has_validation):
 			samples['validation'] = splitset.samples['validation']
 			key_evaluation = 'validation'
+			ordered_names.insert(0, 'validation')
 
 		if (fold is not None):
 			samples['folds_train_combined'] = fold.samples['folds_train_combined']
@@ -6037,9 +6091,13 @@ class Job(BaseModel):
 
 			key_train = "folds_train_combined"
 			key_evaluation = "fold_validation"
+
+			ordered_names.insert(0, 'fold_validation')
+			ordered_names.insert(0, 'folds_train_combined')
 		elif (fold is None):
 			samples['train'] = splitset.samples['train']
 			key_train = "train"
+			ordered_names.insert(0, 'train')
 		"""
 		2. Encodes the labels and features.
 		- Remember, you `.fit()` on either training data or all data (categoricals).
