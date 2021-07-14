@@ -13,7 +13,7 @@
 
 <br />
 
-<p align='center'><b>AIQC is a Python framework for rapid, rigorous, & reproducible deep learning.</b></p>
+<p align='center'><b>Deep learning experiment tracking that's rapid, rigorous, & reproducible.</b></p>
 
 <p align='center'><i>On a mission to accelerate open science by making deep learning more accessible.</i></p>
 

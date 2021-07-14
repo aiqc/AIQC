@@ -2065,6 +2065,19 @@ class Label(BaseModel):
 		return label_array
 
 
+	def make_labelpolater(
+		id:int
+		, process_separately:bool = True
+		, interpolate_kwargs:dict = None
+	):
+		labelpolater = Labelpolater.from_label(
+			label_id = id
+			, process_separately = process_separately
+			, interpolate_kwargs = interpolate_kwargs
+		)
+		return labelpolater
+
+
 
 
 class Feature(BaseModel):
@@ -2567,6 +2580,19 @@ class Feature(BaseModel):
 					f"{pprint.pformat(initial_dtypes)}\n"
 				)
 		return index, matching_columns, leftover_columns, original_filter, initial_dtypes
+
+
+	def make_interpolaterset(
+		id:int
+		, interpolater_count:int = 0
+		, description:str = None
+	):
+		interpolaterset = Interpolaterset.from_feature(
+			feature_id = id
+			, interpolater_count = interpolater_count
+			, description = description
+		)
+		return interpolaterset
 
 
 
@@ -3364,6 +3390,25 @@ class Interpolaterset(BaseModel):
 				dataframes[i] = dataframe.to_numpy()
 			array = np.array(dataframes)
 		return array
+
+
+	def make_featurepolater(
+		id:int
+		, process_separately:bool = True
+		, interpolate_kwargs:dict = None
+		, dtypes:list = None
+		, columns:list = None
+		, samples:dict = None
+	):
+		featurepolater = Featurepolater.from_interpolaterset(
+			interpolaterset_id = id
+			, process_separately = process_separately
+			, interpolate_kwargs = interpolate_kwargs
+			, dtypes = dtypes
+			, columns = columns
+			, samples = samples
+		)
+		return featurepolater
 
 
 

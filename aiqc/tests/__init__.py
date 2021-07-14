@@ -204,7 +204,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 
 	encoderset = feature.make_encoderset()
 
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = OneHotEncoder(sparse=False)
 	)
 
@@ -308,11 +308,11 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = feature.make_encoderset()
-
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
 	)
+
+	encoderset = feature.make_encoderset()
 
 	encoderset.make_featurecoder(
 		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
@@ -381,11 +381,11 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = feature.make_encoderset()
-
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
 	)
+
+	encoderset = feature.make_encoderset()
 
 	encoderset.make_featurecoder(
 		sklearn_preprocess = CountVectorizer(max_features = 200)
@@ -464,9 +464,8 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	
 	label_column = 'price'
 	label = dataset.make_label(columns=[label_column])
-	aiqc.Labelpolater.from_label(
-		label_id=label.id
-		, interpolate_kwargs = dict(
+	label.make_labelpolater(
+		interpolate_kwargs = dict(
 			method = 'spline'
 			, limit_direction = 'both'
 			, limit_area = None
@@ -476,17 +475,9 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	)
 
 	feature = dataset.make_feature(exclude_columns=[label_column])
-	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
-	# testing multiple interpolaters.
-	# First 
-	aiqc.Featurepolater.from_interpolaterset(
-		interpolaterset_id=interpolaterset.id
-		, columns = 'nox'
-	)
-	aiqc.Featurepolater.from_interpolaterset(
-		interpolaterset_id=interpolaterset.id
-		, dtypes = 'float64'
-	)
+	interpolaterset = feature.make_interpolaterset()
+	interpolaterset.make_featurepolater(columns='nox')
+	interpolaterset.make_featurepolater(dtypes='float64')
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -512,11 +503,12 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = feature.make_encoderset()
-
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
 	)
+
+	encoderset = feature.make_encoderset()
+
 
 	encoderset.make_featurecoder(
 		include = False
@@ -713,14 +705,11 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	sensor_dataset = aiqc.Dataset.Sequence.from_numpy(sensor_arr3D)
 	feature = sensor_dataset.make_feature()
 	
-	interpolaterset = aiqc.Interpolaterset.from_feature(feature_id=feature.id)
-	aiqc.Featurepolater.from_interpolaterset(
-		interpolaterset_id=interpolaterset.id
-		, dtypes = "float64"
-	)
+	interpolaterset = feature.make_interpolaterset()
+	interpolaterset.make_featurepolater(dtypes="float64")
 	
 	encoderset = feature.make_encoderset()
-	encoderset = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler()
 		, columns = ['0']
 	)
@@ -817,20 +806,20 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
 	feature = dataset.make_feature()
-	ip = Interpolaterset.from_feature(feature_id=feature.id)
-	Featurepolater.from_interpolaterset(interpolaterset_id=ip.id, dtypes=['float64'])
 
+	interpolaterset = feature.make_interpolaterset()
+	interpolaterset.make_featurepolater(dtypes=['float64'])
 
-	window = feature.make_window(size_window=28, size_shift=14)
+	feature.make_window(size_window=28, size_shift=14)
 
 	encoderset = feature.make_encoderset()
 
-	featurecoder_0 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = RobustScaler(copy=False)
 		, columns = ['wind', 'pressure']
 	)
 
-	featurecoder_1 = encoderset.make_featurecoder(
+	encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler()
 		, dtypes = ['float64', 'int64']
 	)
@@ -995,7 +984,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 
 	encoderset = feature.make_encoderset()
 
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = LabelBinarizer(sparse_output=False)
 	)
 
@@ -1131,11 +1120,11 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = feature.make_encoderset()
-
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = OrdinalEncoder()
 	)
+
+	encoderset = feature.make_encoderset()
 
 	encoderset.make_featurecoder(
 		sklearn_preprocess = StandardScaler(copy=False)
@@ -1279,11 +1268,11 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 	else:
 		foldset_id = None
 
-	encoderset = feature.make_encoderset()
-
-	labelcoder = label.make_labelcoder(
+	label.make_labelcoder(
 		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
 	)
+
+	encoderset = feature.make_encoderset()
 
 	encoderset.make_featurecoder(
 		include = False
