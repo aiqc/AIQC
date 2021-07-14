@@ -1424,7 +1424,7 @@ class File(BaseModel):
 				df = df.filter(columns)
 			# Specific rows.
 			if (samples is not None):
-				df = df.iloc[samples]
+				df = df.loc[samples]
 			
 			# Accepts dict{'column_name':'dtype_str'} or a single str.
 			tab = file.tabulars[0]
@@ -3335,53 +3335,34 @@ class Interpolaterset(BaseModel):
 					df_fp = dataframe[matching_cols]
 					windows_unshifted = window.samples_unshifted
 					
-					###
-					# Augment our evaluation splits/folds with training data.
-					if ('train' in samples):
-						indices_train = samples['train']
-						split_windows = [windows_unshifted[idx] for idx in indices]
-						windows_flat = [item for sublist in split_windows for item in sublist]
-						df_train = feature.to_pandas(samples=indices_train).set_index([indices_train], drop=True)
-						df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
-						df_labels = df_train
-					elif (samples.has_key('folds_train_combined')):
-						indices_train = samples['folds_train_combined']
-						split_windows = [windows_unshifted[idx] for idx in indices]
-						windows_flat = [item for sublist in split_windows for item in sublist]
-						df_train = label.to_pandas(samples=indices_train).set_index([indices_train], drop=True)
-						df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
-						df_labels = df_train
-
-
-
-
-
-
-
-
+					"""
+					- Augment our evaluation splits/folds with training data.
+					- At this point, indices are groups of rows (windows), not raw rows.
+					  We need all of the rows from all of the windows. 
+					"""
 					for split, indices in samples.items():
-						# At this point, indices are groups of rows (windows), not raw rows.
+						if ('train' in split):
+							split_windows = [windows_unshifted[idx] for idx in indices]
+							windows_flat = [item for sublist in split_windows for item in sublist]
+							rows_unique = set(windows_flat)
+							df_train = df_fp.loc[rows_unique].set_index([rows_unique], drop=True)
+							df_train = fp.interpolate(dataframe=df_train)
+							
+							for row in rows_unique:
+								df_fp.loc[row] = df_train.loc[row]
+
+					# We need `df_train` from above.
+					for split, indices in samples.items():
 						split_windows = [windows_unshifted[idx] for idx in indices]
-						# We need all of the rows from all of the windows. 
 						windows_flat = [item for sublist in split_windows for item in sublist]
 						rows_unique = set(windows_flat)
-						row_start = min(rows_unique)
-						row_stop = max(rows_unique) + 1
-						rows_range = range(row_start,row_stop)
+						df_split = df_fp.loc[rows_unique].set_index([rows_unique], drop=True)
 
-						# Make an empty df, overwrite it with the rows from above.
-						# There will be blanks between the windows.
-						df_null = pd.DataFrame(
-							np.nan, index=rows_range, 
-							columns=matching_cols, #dtype='float64'
-						)
+						df_merge = pd.concat([df_train, df_split])
+						df_merge = fp.interpolate(dataframe=df_merge)
+
 						for row in rows_unique:
-							df_null.loc[row] = df_fp.loc[row]
-						# Then we can interpolate the rows that are still missing.
-						df_null = fp.interpolate(dataframe=df_null)
-						# Write back the rows of interest.
-						for row in rows_unique:
-							df_fp.loc[row] = df_null.loc[row]
+							df_fp.loc[row] = df_merge.loc[row]
 					"""
 					At this point there may still be leading/ lagging nulls outside the splits
 					that are within the reach of a shift.
@@ -3529,28 +3510,22 @@ class Labelpolater(BaseModel):
 			df_labels = Labelpolater.run_interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
 			# Augment our evaluation splits/folds with training data.
-			if ('train' in samples):
-				indices_train = samples['train']
-				array = array[indices_train]
-				df_train = pd.DataFrame(array).set_index([indices_train], drop=True)
-				df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
-				df_labels = df_train
-			elif (samples.has_key('folds_train_combined')):
-				indices_train = samples['folds_train_combined']
-				array = array[indices_train]
-				df_train = pd.DataFrame(array).set_index([indices_train], drop=True)
-				df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
-				df_labels = df_train
+			for split, indices in samples.items():
+				if ('train' in split):
+					array_train = array[indices]
+					df_train = pd.DataFrame(array_train).set_index([indices], drop=True)
+					df_train = Labelpolater.run_interpolate(df_train, interpolate_kwargs)
+					df_labels = df_train
 
+			# We need `df_train` from above.
 			for split, indices in samples.items():
 				if ('train' not in split):
-					array = array[indices]
-					df = pd.DataFrame(array).set_index([indices], drop=True)
-					# Does not need to be sorted for interpolate.
+					arr = array[indices]
+					df = pd.DataFrame(arr).set_index([indices], drop=True)					# Does not need to be sorted for interpolate.
 					df = pd.concat([df_train, df])
 					df = Labelpolater.run_interpolate(df, interpolate_kwargs)
 					# Only keep the indices from the split of interest.
-					df = df.iloc[indices]
+					df = df.loc[indices]
 					df_labels = pd.concat([df_labels, df])
 			# df doesn't need to be sorted if it is going back to numpy.
 		else:
