@@ -272,8 +272,8 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Object-Relational-Model-(ORM)">Object Relational Model (ORM)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Persisting-and-Compressing-Structured-Data">Persisting and Compressing Structured Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Data-Sources">Data Sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Either-Persisting-or-Fetch-Data">Either Persisting or Fetch Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Data-Sources">a) Data Sources</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.from_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_pandas()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_numpy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.from_path"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path</span></code></a></li>
@@ -284,112 +284,102 @@
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.from_folder()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Datasets">Reading Datasets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_pandas()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_numpy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.to_pillow()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_pillow()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_numpy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Reading-Datasets">b) Reading Datasets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.to_pillow()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_pillow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_numpy()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#2.-Select-the-Label-column(s).">2. Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#ORM">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Deriving-Labels">Deriving Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Labels">Reading Labels</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#3.-Select-the-Feature-column(s).">3. Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id1">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Features">Specifying Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Features">Reading Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#2.-Selecting-Features-and-Labels.">2. Selecting <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Select-the-Label-column(s).">a) Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#ORM">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Deriving-Labels">Deriving Labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Labels">Reading Labels</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#4.-Optional,-define-sliding-time-series-Windows.">4. Optional, define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id2">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Windows">Reading Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id1">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Features">Specifying Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#5.-Slice-samples-with-a-Splitset.">5. Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Stratification">Stratification</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Splitting-Strategies">Splitting Strategies</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#a)-Default-supervised-70-30-split.">a) Default supervised 70-30 split.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#b)-Specifying-test-size.">b) Specifying test size.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#c)-Specifying-validation-size.">c) Specifying validation size.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#d)-Unsupervised">d) Unsupervised</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#e)-Take-all-samples-for-inference">e) Take all samples for inference</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#3.-Slicing-samples.">3. Slicing samples.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id2">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Windows">Reading Windows</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#6.-Optionally,-create-a-Foldset-for-cross-validation.">6. Optionally, create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id3">ORM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Slice-samples-with-a-Splitset.">b) Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Stratification">Stratification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Splitting-Strategies">Splitting Strategies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id3">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Foldsets">Reading Foldsets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Sample-indices-of-each-Fold:">Sample indices of each Fold:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#7.-Optionally,-encode-labels-with-Labelcoder.">7. Optionally, encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Labelcoder">Labelcoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#8.-Optionally,-encode-Features-sequentially-with-Featurecoder(s).">8. Optionally, encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Featurecoder(s)</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Background">Background</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Creating-an-Encoderset-and-attaching-multiple-Featurecoders-to-it.">Creating an <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> and attaching multiple <code class="docutils literal notranslate"><span class="pre">Featurecoders</span></code> to it.</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#9.-Create-an-Algorithm-aka-model.">9. Create an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> aka model.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id4">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Model-Definition">Model Definition</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Function-to-build-model">Function to build model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Optional,-function-to-calculate-loss.">Optional, function to calculate loss.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Optional,-function-to-optimize-model.">Optional, function to optimize model.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Function-to-train-model">Function to train model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Optional,-function-to-predict-samples">Optional, function to predict samples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Encoding">Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#6.-Deep-Learning-Models">6. Deep Learning Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Model-Definition">Model Definition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#10.-Optional,-associate-a-Hyperparamset-with-your-model.">10. Optional, associate a <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code> with your model.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Parameters-are-fed-into-Algorithm-functions.">Parameters are fed into Algorithm functions.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Grid-search-strategy.">Grid search strategy.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Random-selection-strategy.">Random selection strategy.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Bayesian-selection-strategy.">Bayesian selection strategy.</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#11.-Create-a-Queue-of-training-Jobs.">11. Create a <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Job-objects."><code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Execute-all-Jobs.">Execute all <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#1.-queue.run_jobs(in_background=False)">1. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#2.-queue.run_jobs(in_background=True);-experimental">2. <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#3.-Future,-distributed-cloud-execution.">3. Future, distributed cloud execution.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#12.-Preprocessing-during-Job-is-recorded">12. Preprocessing during Job is recorded</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#13.-Predictors-are-the-trained-models.">13. <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#7.-Queue-of-training-Jobs.">7. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#i)-queue.run_jobs(in_background=False)">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#ii)-queue.run_jobs(in_background=True);-experimental">ii) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>; experimental</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#iii)-Future,-cluster-execution.">iii) Future, cluster execution.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#14.-Predictions-are-the-output-of-a-Predictor.">14. <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#15.-Metrics-&amp;-Visualization">15. Metrics &amp; Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#8.-Metrics-&amp;-Visualization">8. Metrics &amp; Visualization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/inference.html">Inference</a><ul>
