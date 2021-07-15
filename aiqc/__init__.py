@@ -3344,25 +3344,32 @@ class Interpolaterset(BaseModel):
 						if ('train' in split):
 							split_windows = [windows_unshifted[idx] for idx in indices]
 							windows_flat = [item for sublist in split_windows for item in sublist]
-							rows_unique = set(windows_flat)
-							df_train = df_fp.loc[rows_unique].set_index([rows_unique], drop=True)
-							df_train = fp.interpolate(dataframe=df_train)
+							rows_train = list(set(windows_flat))
+							df_train = df_fp.loc[rows_train].set_index([rows_train], drop=True)
+							# Interpolate will write its own index so coerce it back.
+							df_train = fp.interpolate(dataframe=df_train).set_index([rows_train], drop=True)
 							
-							for row in rows_unique:
+							for row in rows_train:
 								df_fp.loc[row] = df_train.loc[row]
 
 					# We need `df_train` from above.
 					for split, indices in samples.items():
-						split_windows = [windows_unshifted[idx] for idx in indices]
-						windows_flat = [item for sublist in split_windows for item in sublist]
-						rows_unique = set(windows_flat)
-						df_split = df_fp.loc[rows_unique].set_index([rows_unique], drop=True)
+						if ('train' not in split):
+							split_windows = [windows_unshifted[idx] for idx in indices]
+							windows_flat = [item for sublist in split_windows for item in sublist]
+							rows_split = list(set(windows_flat))
+							# Train windows and split windows may overlap, so take train's duplicates.
+							rows_split = [r for r in rows_split if r not in rows_train]
+							df_split = df_fp.loc[rows_split].set_index([rows_split], drop=True)
+							df_merge = pd.concat([df_train, df_split]).set_index([rows_train + rows_split], drop=True)
+							# Interpolate will write its own index so coerce it back,
+							# but have to cut out the split_rows before it can be reindexed.
+							df_merge = fp.interpolate(dataframe=df_merge).set_index([rows_train + rows_split], drop=True)
+							df_split = df_merge.loc[rows_split]
 
-						df_merge = pd.concat([df_train, df_split])
-						df_merge = fp.interpolate(dataframe=df_merge)
-
-						for row in rows_unique:
-							df_fp.loc[row] = df_merge.loc[row]
+							for row in rows_split:
+								print(df_split.index.is_unique)
+								df_fp.loc[row] = df_split.loc[row]
 					"""
 					At this point there may still be leading/ lagging nulls outside the splits
 					that are within the reach of a shift.
@@ -3494,8 +3501,7 @@ class Labelpolater(BaseModel):
 
 
 	def run_interpolate(dataframe:object, interpolate_kwargs:dict):
-		# Interpolation requires the samples to be in order.
-		dataframe = dataframe.sort_index()
+		# Interpolation does not require indices to be in order.
 		dataframe = dataframe.interpolate(**interpolate_kwargs)
 		return dataframe
 
