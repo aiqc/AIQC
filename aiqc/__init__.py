@@ -6848,7 +6848,9 @@ class Pipeline():
 			, dtype:object = None
 			, label_column:str = None
 			, features_excluded:list = None
+			, label_interpolater:dict = None
 			, label_encoder:object = None
+			, feature_interpolaters:list = None
 			, feature_encoders:list = None
 			, size_test:float = None
 			, size_validation:float = None
@@ -6878,6 +6880,8 @@ class Pipeline():
 				label_id = label.id
 				if (label_encoder is not None): 
 					label.make_labelcoder(sklearn_preprocess=label_encoder)
+				if (label_interpolater is not None):
+					label.make_labelpolater(**label_interpolater)
 			elif (label_column is None):
 				# Needs to know if label exists so that it can exlcude it.
 				label_id = None
@@ -6898,10 +6902,16 @@ class Pipeline():
 					, record_shifted = record_shifted
 				)
 
+			if (feature_interpolaters is not None):
+				interpolaterset = feature.make_interpolaterset()
+				for fp in feature_interpolaters:
+					interpolaterset.make_featurepolater(**fp)
+
 			if (feature_encoders is not None):					
 				encoderset = feature.make_encoderset()
 				for fc in feature_encoders:
 					encoderset.make_featurecoder(**fc)
+
 
 			splitset = Splitset.make(
 				feature_ids = [feature.id]
@@ -6922,11 +6932,13 @@ class Pipeline():
 			seq_ndarray3D:object
 			, seq_dtype:object = None
 			, seq_features_excluded:list = None
+			, seq_feature_interpolaters:list = None
 			, seq_feature_encoders:list = None
 			
 			, tab_DF_or_path:object = None
 			, tab_dtype:object = None
 			, tab_label_column:str = None
+			, tab_label_interpolater:dict = None
 			, tab_label_encoder:object = None
 			
 			, size_test:float = None
@@ -6949,6 +6961,11 @@ class Pipeline():
 			elif (seq_features_excluded is None):
 				feature = seq_dataset.make_feature()
 			
+			if (seq_feature_interpolaters is not None):
+				interpolaterset = feature.make_interpolaterset()
+				for fp in seq_feature_interpolaters:
+					interpolaterset.make_featurepolater(**fp)
+
 			if (seq_feature_encoders is not None):					
 				encoderset = feature.make_encoderset()
 				for fc in seq_feature_encoders:
@@ -6973,6 +6990,10 @@ class Pipeline():
 
 				if (tab_label_encoder is not None): 
 					label.make_labelcoder(sklearn_preprocess=tab_label_encoder)
+
+				if (tab_label_interpolater is not None):
+					label.make_labelpolater(**tab_label_interpolater)
+
 			elif (tab_DF_or_path is None):
 				label_id = None
 
@@ -6997,6 +7018,7 @@ class Pipeline():
 			, tabularDF_or_path:object = None
 			, tabular_dtype:object = None
 			, label_column:str = None
+			, label_interpolater:dict = None
 			, label_encoder:object = None
 			, size_test:float = None
 			, size_validation:float = None
@@ -7036,6 +7058,10 @@ class Pipeline():
 
 				if (label_encoder is not None): 
 					label.make_labelcoder(sklearn_preprocess=label_encoder)
+
+				if (label_interpolater is not None):
+					label.make_labelpolater(**label_interpolater)
+
 			elif (tabularDF_or_path is None):
 				label_id = None
 			
