@@ -57,6 +57,7 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 
 ## Quirks.
 
+- If the build fails remotely, then check for dependency issues here: https://github.com/spatialaudio/nbsphinx/issues
 - Don't forget to run `make html` if you want your changes to show up in the final documentation.
 - When adding/ removing/ renaming files to the toctrees, I have to run `make html` twice: once with with and without the `html_sidebars` line of `conf.py` uncommented and then again with it commented.
 - Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
