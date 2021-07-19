@@ -2009,6 +2009,8 @@ class Label(BaseModel):
 	):
 		label = Label.get_by_id(id)
 		label_array = label.to_numpy()
+		if (_job is not None):
+			fold = _job.fold
 
 		# Interpolate
 		if ((labelpolater_id!='skip') and (label.labelpolaters.count()>0)):
@@ -2051,7 +2053,12 @@ class Label(BaseModel):
 					labelcoder=labelcoder
 				)
 
-				FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=_job, labelcoder=labelcoder)
+				if (fold is not None):
+					FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=_job, labelcoder=labelcoder)
+				elif (fold is None):
+					jobs = list(_job.queue.jobs)
+					for j in jobs:
+						FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 
 				label_array = Job.encoder_transform_labels(
 					arr_labels=label_array,
@@ -2323,6 +2330,8 @@ class Feature(BaseModel):
 		"""
 		feature = Feature.get_by_id(id)
 		feature_array = feature.to_numpy()
+		if (_job is not None):
+			fold = _job.fold
 
 		# Although this is not the first preprocess, other preprocesses need to know the window ranges.
 		if ((window_id!='skip') and (feature.windows.count()>0)):
@@ -2391,7 +2400,13 @@ class Feature(BaseModel):
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
 				# Record the `fit` for decoding predictions via `inverse_transform`.
-				FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+				if (fold is not None):
+					FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+				# Unfolded jobs will all have the same fits.
+				elif (fold is None):
+					jobs = list(_job.queue.jobs)
+					for j in jobs:
+						FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
 			elif (feature.encodersets.count()==0):
 				pass
 
@@ -5178,6 +5193,175 @@ class Queue(BaseModel):
 					break
 				time.sleep(loop_delay)
 
+	###
+	def run_jobs_decoupled(id:int):
+		queue = Queue.get_by_id(id)
+		hide_test = queue.hide_test
+		jobs = list(queue.jobs)
+		splitset = queue.splitset
+		foldset = queue.foldset
+		library = queue.algorithm.library
+
+		# --- 1. Fetch the data for the runs ---
+		samples = {}
+		ordered_names = []
+
+		if (hide_test == False):
+			samples['test'] = splitset.samples['test']
+			key_evaluation = 'test'
+			ordered_names.append('test')
+		elif (hide_test == True):
+			key_evaluation = None
+
+		if (splitset.has_validation):
+			samples['validation'] = splitset.samples['validation']
+			key_evaluation = 'validation'
+			ordered_names.insert(0, 'validation')
+
+		if (foldset is not None):
+			for fold in foldset.folds:
+				samples['folds_train_combined'] = fold.samples['folds_train_combined']
+				samples['fold_validation'] = fold.samples['fold_validation']
+
+				key_train = "folds_train_combined"
+				key_evaluation = "fold_validation"
+
+				ordered_names.insert(0, 'fold_validation')
+				ordered_names.insert(0, 'folds_train_combined')
+				samples = {k: samples[k] for k in ordered_names}
+				# Underlying sample data is fetched during loop below.
+
+		elif (foldset is None):
+			samples['train'] = splitset.samples['train']
+			key_train = "train"
+			ordered_names.insert(0, 'train')
+			samples = {k: samples[k] for k in ordered_names}
+			# Fetch the data once for all jobs. Encoder fits still need to tied to job.
+			job = list(queue.jobs)[0]
+			samples, input_shapes = Queue.stage_data(
+				splitset=splitset, job=job
+				, samples=samples, library=library
+				, key_train=key_train, key_evaluation=key_evaluation
+			)
+
+		# --- 2. Loop over the jobs ---
+		repeated_jobs = [] #tuple:(job, repeat_count)
+		for i in range(queue.repeat_count):
+			for j in jobs:
+				repeated_jobs.append((j,i))
+
+		try:
+			for rj in tqdm(
+				repeated_jobs
+				, desc = "🔮 Training Models 🔮"
+				, ncols = 100
+			):
+				print(rj)###
+				print(type(samples['train']['labels']))###
+				# See if this job has already completed.
+				matching_predictor = Predictor.select().join(Job).where(
+					Job.id==rj[0].id, Predictor.repeat_index==rj[1]
+				)
+				if (matching_predictor.count()==0):
+					# Still need to fetch the underlying samples for a folded job.
+					if (rj[0].fold is not None):
+						samples, input_shapes = Queue.stage_data(
+							splitset=splitset, job=rj[0]
+							, samples=samples, library=library
+							, key_train=key_train, key_evaluation=key_evaluation
+						)
+					Job.run_decoupled(
+						id=rj[0].id, repeat_index=rj[1]
+						, samples=samples, input_shapes=input_shapes
+						, key_train=key_train, key_evaluation=key_evaluation
+					)
+		except (KeyboardInterrupt):
+			# So that we don't get nasty error messages when interrupting a long running loop.
+			print("\nQueue was gracefully interrupted.\n")
+		
+	###
+	def stage_data(
+		splitset:object
+		, job:object
+		, samples:dict
+		, library:str
+		, key_train:str
+		, key_evaluation:str=None
+	):
+		"""
+		- Remember, you `.fit()` on either training data or all data (categoricals).
+		- Then you transform the entire dataset because downstream processes may need the entire dataset:
+		  e.g. fit imputer to training data, but then impute entire dataset so that encoders can use entire dataset.
+		- So we transform the entire dataset, then divide it into splits/ folds.
+		- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
+		  work the same in both numpy and torch.
+		"""
+		# Labels - fetch and encode.
+		if (splitset.supervision == "supervised"):
+			label = splitset.label
+			arr_labels = label.preprocess(
+				samples = samples
+				, _samples_train = samples[key_train]
+				, _library = library
+				, _job = job
+			)
+
+		# Features - fetch and encode.
+		featureset = splitset.get_features()
+		feature_count = len(featureset)
+		features = []# expecting diff array shapes inside so it has to be list, not array.
+		
+		for feature in featureset:
+			if (splitset.supervision == 'supervised'):
+				arr_features = feature.preprocess(
+					supervision = 'supervised'
+					, samples = samples
+					, _job = job
+					, _samples_train = samples[key_train]
+					, _library = library
+				)	
+			elif (splitset.supervision == 'unsupervised'):
+				arr_features, arr_labels = feature.preprocess(
+					supervision = 'unsupervised'
+					, samples = samples
+					, _job = job
+					, _samples_train = samples[key_train]
+					, _library = library
+				)
+			features.append(arr_features)
+			# `arr_labels` is not appended because unsupervised analysis only supports 1 unsupervised feature.
+		
+		"""
+		- Stage preprocessed data to be passed into the remaining Job steps.
+		- Example samples dict entry: samples['train']['labels']
+		- For each entry in the dict, fetch the rows from the encoded data.
+		- Keras multi-input models accept input as a list. Not using nested dict for multiple
+		  features because it would be hard to figure out feature.id-based keys on the fly.
+		""" 
+		for split, indices in samples.items():
+			if (feature_count == 1):
+				samples[split] = {"features": arr_features[indices]}
+			elif (feature_count > 1):
+				samples[split] = {"features": [arr_features[indices] for arr_features in features]}
+			samples[split]['labels'] = arr_labels[indices]
+		"""
+		- Input shapes can only be determined after encoding has taken place.
+		- `[0]` accessess the first sample in each array.
+		- Does not impact the training loop's `batch_size`.
+		- Shapes are used later by `get_model()` to initialize it.
+		- Here the count refers to Features, not columns.
+		"""
+		if (feature_count == 1):
+			features_shape = samples[key_train]['features'][0].shape
+		elif (feature_count > 1):
+			features_shape = [arr_features[0].shape for arr_features in samples[key_train]['features']]
+		input_shapes = {"features_shape": features_shape}
+
+		label_shape = samples[key_train]['labels'][0].shape
+		input_shapes["label_shape"] = label_shape
+
+		return samples, input_shapes
+
 
 	def run_jobs(id:int, in_background:bool=False):
 		queue = Queue.get_by_id(id)
@@ -5751,6 +5935,9 @@ class Job(BaseModel):
 		splitset = predictor.job.queue.splitset
 		supervision = splitset.supervision
 
+		print('--- start predict ---')###
+		print(type(samples['train']['labels']))
+
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
 		first_key = list(samples.keys())[0]
@@ -5835,6 +6022,8 @@ class Job(BaseModel):
 
 		# Used by both supervised and unsupervised.
 		elif (analysis_type=="regression"):
+			print('--- start predict reg ---')###
+			print(type(samples['train']['labels']))
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
@@ -5850,6 +6039,7 @@ class Job(BaseModel):
 						tz_preds = torch.FloatTensor(preds)
 						loss = loser(tz_preds, data['labels'])
 						# After obtaining loss, make labels numpy again for metrics.
+						### this is preventing reuse of samples.
 						data['labels'] = data['labels'].detach().numpy()
 						# `preds` object is still numpy.
 
@@ -5857,6 +6047,10 @@ class Job(BaseModel):
 					metrics[split] = Job.split_regression_metrics(data['labels'], preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
+		
+		print('--- mid predict ---')###
+		print(type(samples['train']['labels']))
+
 		"""
 		4b. Format predictions for saving.
 		- Decode predictions before saving.
@@ -6030,7 +6224,178 @@ class Job(BaseModel):
 			, predictor = predictor
 			, splitset = splitset
 		)
+
+		# Unfolded jobs reuse `samples` so convert torch back from numpy
+		foldset = predictor.job.queue.foldset
+		library = predictor.job.queue.algorithm.library
+		if ((foldset is None) and (library=='pytorch')):
+			for split, subset in samples.items():
+				for subset, data in subset.items():
+					samples[split][subset] = torch.FloatTensor(data)
+		print('--- end predict ---')###
+		print(type(samples['train']['labels']))
+		print("predicted")###
 		return prediction
+
+	###
+	def run_decoupled(
+		id:int
+		, repeat_index:int
+		, samples:dict
+		, input_shapes:dict
+		, key_train:str
+		, key_evaluation:str=None
+	):
+		job = Job.get_by_id(id)
+		queue = job.queue
+		splitset = queue.splitset
+		algorithm = queue.algorithm
+		analysis_type = algorithm.analysis_type
+		library = algorithm.library
+		hyperparamcombo = job.hyperparamcombo
+		time_started = datetime.datetime.now()
+
+		print(splitset)###
+		print(library)
+
+		if (key_evaluation is not None):
+			samples_eval = samples[key_evaluation]
+		elif (key_evaluation is None):
+			samples_eval = None
+
+		if (hyperparamcombo is not None):
+			hp = hyperparamcombo.hyperparameters
+		elif (hyperparamcombo is None):
+			hp = {} #`**` cannot be None.
+
+		fn_build = dill_deserialize(algorithm.fn_build)
+		# pytorch multiclass has a single ordinal label.
+		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
+			num_classes = len(splitset.label.unique_classes)
+			model = fn_build(input_shapes['features_shape'], num_classes, **hp)
+		else:
+			model = fn_build(
+				input_shapes['features_shape'], input_shapes['label_shape'], **hp
+			)
+		if (model is None):
+			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
+		
+		# The model and optimizer get combined during training.
+		fn_lose = dill_deserialize(algorithm.fn_lose)
+		fn_optimize = dill_deserialize(algorithm.fn_optimize)
+		fn_train = dill_deserialize(algorithm.fn_train)
+
+		loser = fn_lose(**hp)
+		if (loser is None):
+			raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+
+		if (library == 'keras'):
+			optimizer = fn_optimize(**hp)
+		elif (library == 'pytorch'):
+			optimizer = fn_optimize(model, **hp)
+		if (optimizer is None):
+			raise ValueError("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
+
+		if (library == "keras"):
+			model = fn_train(
+				model = model
+				, loser = loser
+				, optimizer = optimizer
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples_eval
+				, **hp
+			)
+			if (model is None):
+				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+
+			# Save the artifacts of the trained model.
+			# If blank this value is `{}` not None.
+			history = model.history.history
+			"""
+			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
+			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
+			  https://github.com/keras-team/keras/issues/14411
+			- So let's switch to a real file in appdirs.
+			- Assuming `model.save()` will trigger OS-specific h5 drivers.
+			"""
+			# Write it.
+			temp_file_name = f"{app_dir}temp_keras_model.h5"
+			model.save(
+				temp_file_name
+				, include_optimizer = True
+				, save_format = 'h5'
+			)
+			# Fetch the bytes ('rb': read binary)
+			with open(temp_file_name, 'rb') as file:
+				model_blob = file.read()
+			os.remove(temp_file_name)
+
+		elif (library == "pytorch"):
+			model, history = fn_train(
+				model = model
+				, loser = loser
+				, optimizer = optimizer
+				, samples_train = samples[key_train]
+				, samples_evaluate = samples_eval
+				, **hp
+			)
+			if (model is None):
+				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+			if (history is None):
+				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+			# Save the artifacts of the trained model.
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
+			model_blob = io.BytesIO()
+			torch.save(
+				{
+					'model_state_dict': model.state_dict(),
+					'optimizer_state_dict': optimizer.state_dict()
+				},
+				model_blob
+			)
+			model_blob = model_blob.getvalue()
+		"""
+		5. Save everything to Predictor object.
+		"""
+		time_succeeded = datetime.datetime.now()
+		time_duration = (time_succeeded - time_started).seconds
+
+		# There's a chance that a duplicate job was running elsewhere and finished first.
+		matching_predictor = Predictor.select().join(Job).join(Queue).where(
+			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
+		if (matching_predictor.count() > 0):
+			raise ValueError(f"""
+				Yikes - Duplicate run detected for Job<{job.id}> repeat_index<{repeat_index}>.
+				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
+				No action needed, the other queue will continue running to completion.
+			""")
+
+		predictor = Predictor.create(
+			time_started = time_started
+			, time_succeeded = time_succeeded
+			, time_duration = time_duration
+			, model_file = model_blob
+			, input_shapes = input_shapes
+			, history = history
+			, job = job
+			, repeat_index = repeat_index
+		)
+		print('--- pre predict ---')###
+		print(type(samples['train']['labels']))
+		# 6. Use the predictor object to make predictions and obtain metrics.
+		try:
+			Job.predict(samples=samples, predictor_id=predictor.id)
+		except:
+			predictor.delete_instance()
+			raise
+		
+		# Don't force delete samples because we need it for runs with duplicated data.
+		del model
+		print('--- end run_decoupled ---')###
+		print(type(samples['train']['labels']))
+		return job
+
+		
 
 
 	def run(id:int, repeat_index:int):
@@ -6151,6 +6516,11 @@ class Job(BaseModel):
 		label_shape = samples[key_train]['labels'][0].shape
 		input_shapes["label_shape"] = label_shape
 
+		if (key_evaluation is not None):
+			samples_eval = samples[key_evaluation]
+		elif (key_evaluation is None):
+			samples_eval = None
+
 		"""
 		3. Build and Train model.
 		- This does not need to be modularized out of `Job.run()` because models are not
@@ -6186,12 +6556,6 @@ class Job(BaseModel):
 			optimizer = fn_optimize(model, **hp)
 		if (optimizer is None):
 			raise ValueError("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
-
-		
-		if (key_evaluation is not None):
-			samples_eval = samples[key_evaluation]
-		elif (key_evaluation is None):
-			samples_eval = None
 
 		if (library == "keras"):
 			model = fn_train(
