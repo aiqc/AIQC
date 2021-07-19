@@ -1,4 +1,4 @@
-import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, h5py, \
+import os, sys, platform, json, operator, multiprocessing, io, copy, random, itertools, warnings, h5py, \
 	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec, scipy
 # Python utils.
 from textwrap import dedent
@@ -5931,11 +5931,18 @@ class Job(BaseModel):
 		analysis_type = algorithm.analysis_type
 		splitset = predictor.job.queue.splitset
 		supervision = splitset.supervision
-
+		"""
+		This step includes a lot of post-processing, so if you are trying to hold `samples` in-memory
+		across jobs then you need to duplicate the data. The tradeoff is memory vs speed. However, 
+		this memory surge is temporary and the computation being performed on it is minimal so if 
+		it spills onto swap-disk then its not a big deal. Maybe I could cache the original samples dict
+		so that it would decrease the memory pressure.
+		"""
+		post_samples = copy.deepcopy(samples)
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
-		first_key = list(samples.keys())[0]
-		if ('labels' in samples[first_key].keys()):
+		first_key = list(post_samples.keys())[0]
+		if ('labels' in post_samples[first_key].keys()):
 			has_labels = True
 		else:
 			has_labels = False
@@ -5969,7 +5976,7 @@ class Job(BaseModel):
 
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
-			for split, data in samples.items():
+			for split, data in post_samples.items():
 				preds, probs = fn_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
@@ -6018,7 +6025,7 @@ class Job(BaseModel):
 		elif (analysis_type=="regression"):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
-			for split, data in samples.items():
+			for split, data in post_samples.items():
 				preds = fn_predict(model, data)
 				predictions[split] = preds
 				# Outputs numpy.
@@ -6212,14 +6219,7 @@ class Job(BaseModel):
 			, predictor = predictor
 			, splitset = splitset
 		)
-
-		# Unfolded jobs reuse `samples` so convert torch back from numpy
-		foldset = predictor.job.queue.foldset
-		library = predictor.job.queue.algorithm.library
-		if ((foldset is None) and (library=='pytorch')):
-			for split, subset in samples.items():
-				for subset, data in subset.items():
-					samples[split][subset] = torch.FloatTensor(data)
+		del post_samples
 		return prediction
 
 	###
