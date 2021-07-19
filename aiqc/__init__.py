@@ -3383,7 +3383,6 @@ class Interpolaterset(BaseModel):
 							df_split = df_merge.loc[rows_split]
 
 							for row in rows_split:
-								print(df_split.index.is_unique)
 								df_fp.loc[row] = df_split.loc[row]
 					"""
 					At this point there may still be leading/ lagging nulls outside the splits
@@ -5256,8 +5255,6 @@ class Queue(BaseModel):
 				, desc = "🔮 Training Models 🔮"
 				, ncols = 100
 			):
-				print(rj)###
-				print(type(samples['train']['labels']))###
 				# See if this job has already completed.
 				matching_predictor = Predictor.select().join(Job).where(
 					Job.id==rj[0].id, Predictor.repeat_index==rj[1]
@@ -5935,9 +5932,6 @@ class Job(BaseModel):
 		splitset = predictor.job.queue.splitset
 		supervision = splitset.supervision
 
-		print('--- start predict ---')###
-		print(type(samples['train']['labels']))
-
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
 		first_key = list(samples.keys())[0]
@@ -6022,8 +6016,6 @@ class Job(BaseModel):
 
 		# Used by both supervised and unsupervised.
 		elif (analysis_type=="regression"):
-			print('--- start predict reg ---')###
-			print(type(samples['train']['labels']))
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
@@ -6047,12 +6039,8 @@ class Job(BaseModel):
 					metrics[split] = Job.split_regression_metrics(data['labels'], preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
-		
-		print('--- mid predict ---')###
-		print(type(samples['train']['labels']))
-
 		"""
-		4b. Format predictions for saving.
+		Format predictions for saving.
 		- Decode predictions before saving.
 		- Doesn't use any Label data, but does use Labelcoder fit on the original Labels.
 		"""
@@ -6177,7 +6165,7 @@ class Job(BaseModel):
 					predictions[split] = data.flatten()
 
 		if (has_labels==True):
-			# 4c. Aggregate metrics across splits/ folds.
+			# Aggregate metrics across splits/ folds.
 			# Alphabetize metrics dictionary by key.
 			for k,v in metrics.items():
 				metrics[k] = dict(natsorted(v.items()))
@@ -6232,9 +6220,6 @@ class Job(BaseModel):
 			for split, subset in samples.items():
 				for subset, data in subset.items():
 					samples[split][subset] = torch.FloatTensor(data)
-		print('--- end predict ---')###
-		print(type(samples['train']['labels']))
-		print("predicted")###
 		return prediction
 
 	###
@@ -6254,9 +6239,6 @@ class Job(BaseModel):
 		library = algorithm.library
 		hyperparamcombo = job.hyperparamcombo
 		time_started = datetime.datetime.now()
-
-		print(splitset)###
-		print(library)
 
 		if (key_evaluation is not None):
 			samples_eval = samples[key_evaluation]
@@ -6380,8 +6362,7 @@ class Job(BaseModel):
 			, job = job
 			, repeat_index = repeat_index
 		)
-		print('--- pre predict ---')###
-		print(type(samples['train']['labels']))
+
 		# 6. Use the predictor object to make predictions and obtain metrics.
 		try:
 			Job.predict(samples=samples, predictor_id=predictor.id)
@@ -6391,8 +6372,6 @@ class Job(BaseModel):
 		
 		# Don't force delete samples because we need it for runs with duplicated data.
 		del model
-		print('--- end run_decoupled ---')###
-		print(type(samples['train']['labels']))
 		return job
 
 		
