@@ -41,11 +41,11 @@ https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-method
 - Wrote the `poll_progress` func for 'spawn' situations.
 - If everything hits the fan, `run_jobs(in_background=False)` for a normal for loop.
 - Tried `concurrent.futures` but it only works with `.py` from command line.
-"""
+
 if (os.name != 'nt'):
 	# If `force=False`, then `importlib.reload(aiqc)` triggers `RuntimeError: context already set`.
 	multiprocessing.set_start_method('fork', force=True)
-
+"""
 
 #==================================================
 # CONFIGURATION
@@ -5127,7 +5127,8 @@ class Queue(BaseModel):
 			raise
 		return queue
 
-
+	"""
+	# This is related to background processing. After I decoupled Jobs, I never reenabled background processing.
 	def poll_statuses(id:int, as_pandas:bool=False):
 		queue = Queue.get_by_id(id)
 		repeat_count = queue.repeat_count
@@ -5151,12 +5152,11 @@ class Queue(BaseModel):
 		elif (as_pandas==False):
 			return statuses
 
-
+	
+	# This is related to background processing. After I decoupled Jobs, I never reenabled background processing.
 	def poll_progress(id:int, raw:bool=False, loop:bool=False, loop_delay:int=3):
-		"""
-		- For background_process execution where progress bar not visible.
-		- Could also be used for cloud jobs though.
-		"""
+		# - For background_process execution where progress bar not visible.
+		# - Could also be used for cloud jobs though.
 		if (loop==False):
 			statuses = Queue.poll_statuses(id)
 			total = len(statuses)
@@ -5202,9 +5202,8 @@ class Queue(BaseModel):
 					os.system("say Model training completed")
 					break
 				time.sleep(loop_delay)
-
-	###
-	def run_jobs_decoupled(id:int):
+	"""
+	def run_jobs(id:int):
 		"""
 		- Jobs re-use the same data instead of preprocessing it from scratch. 
 		- Samples are cached because post-processing has to transforms the data.
@@ -5268,7 +5267,7 @@ class Queue(BaseModel):
 							with gzip.open(cached_samples,'rb') as f:
 								samples = pickle.load(f)
 						# Still need to fetch the underlying samples for a folded job.
-						Job.run_decoupled(
+						Job.run(
 							id=rj[1].id, repeat_index=rj[0]
 							, samples=samples, input_shapes=input_shapes
 							, key_train=key_train, key_evaluation=key_evaluation
@@ -5286,7 +5285,7 @@ class Queue(BaseModel):
 			folds = list(foldset.folds)
 			# Each fold will contain unique, reusable data.
 			for e, fold in enumerate(folds):
-				print(f"\nRunning Jobs for Fold #{e+1} out of {foldset.fold_count}...\n", flush=True)
+				print(f"\nRunning Jobs for Fold {e+1} out of {foldset.fold_count}:\n", flush=True)
 				cached_samples = f"{app_dir}cached_samples-fold_{e}.gzip"
 				jobs = [j for j in queue.jobs if j.fold==fold]
 				repeated_jobs = [] #tuple:(repeat_index, job, fold)
@@ -5339,7 +5338,7 @@ class Queue(BaseModel):
 							if (i>0):
 								with gzip.open(cached_samples,'rb') as f:
 									samples = pickle.load(f)
-							Job.run_decoupled(
+							Job.run(
 								id=rj[1].id, repeat_index=rj[0]
 								, samples=samples, input_shapes=input_shapes
 								, key_train=key_train, key_evaluation=key_evaluation
@@ -5352,8 +5351,8 @@ class Queue(BaseModel):
 				except:
 					os.remove(cached_samples)
 					raise
-		
-	###
+	
+
 	def stage_data(
 		splitset:object
 		, job:object
@@ -5413,7 +5412,6 @@ class Queue(BaseModel):
 		  features because it would be hard to figure out feature.id-based keys on the fly.
 		""" 
 		for split, indices in samples.items():
-			#print(indices)###
 			if (feature_count == 1):
 				samples[split] = {"features": arr_features[indices]}
 			elif (feature_count > 1):
@@ -5438,51 +5436,8 @@ class Queue(BaseModel):
 		return samples, input_shapes
 
 
-	def run_jobs(id:int, in_background:bool=False):
-		queue = Queue.get_by_id(id)
-
-		# Quick check to make sure all predictors aren't already complete.
-		run_count = queue.run_count
-		predictor_count = Predictor.select().join(Job).join(Queue).where(
-			Queue.id == queue.id).count()
-		if (run_count == predictor_count):
-			print("\nAll Jobs have already completed.\n")
-		else:
-			if (run_count > predictor_count > 0):
-				print("\nResuming Jobs...\n")
-			job_statuses = Queue.poll_statuses(id)
-			
-			if (in_background==True):
-				proc_name = "aiqc_queue_" + str(queue.id)
-				proc_names = [p.name for p in multiprocessing.active_children()]
-				if (proc_name in proc_names):
-					raise ValueError(
-						f"\nYikes - Cannot start this Queue because multiprocessing.Process.name '{proc_name}' is already running."
-						f"\nIf need be, you can kill the existing Process with `queue.stop_jobs()`.\n"
-					)
-				
-				# See notes at top of file about 'fork' vs 'spawn'
-				proc = multiprocessing.Process(
-					target = execute_jobs
-					, name = proc_name
-					, args = (job_statuses,) #Needs trailing comma.
-				)
-				proc.start()
-				# proc terminates when `execute_jobs` finishes.
-			elif (in_background==False):
-				try:
-					for j in tqdm(
-						job_statuses
-						, desc = "🔮 Training Models 🔮"
-						, ncols = 100
-					):
-						if (j['predictor_id'] is None):
-							Job.run(id=j['job_id'],repeat_index=j['repeat_index'])
-				except (KeyboardInterrupt):
-					# So that we don't get nasty error messages when interrupting a long running loop.
-					print("\nQueue was gracefully interrupted.\n")
-
-
+	"""
+	# This is related to background processing. After I decoupled Jobs, I never reenabled background processing.
 	def stop_jobs(id:int):
 		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
 		queue = Queue.get_by_id(id)
@@ -5501,7 +5456,7 @@ class Queue(BaseModel):
 					raise Exception(f"\nYikes - Failed to terminate `multiprocessing.Process` '{proc_name}.'\n")
 				else:
 					print(f"\nKilled `multiprocessing.Process` '{proc_name}' spawned from aiqc.Queue <id:{queue.id}>\n")
-
+	"""
 
 	def metrics_to_pandas(
 		id:int
@@ -6115,7 +6070,7 @@ class Job(BaseModel):
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
 		"""
-		Format predictions for saving.
+		Format predictions for saving:
 		- Decode predictions before saving.
 		- Doesn't use any Label data, but does use Labelcoder fit on the original Labels.
 		"""
@@ -6290,8 +6245,8 @@ class Job(BaseModel):
 		del samples
 		return prediction
 
-	###
-	def run_decoupled(
+
+	def run(
 		id:int
 		, repeat_index:int
 		, samples:dict
@@ -6404,9 +6359,8 @@ class Job(BaseModel):
 				model_blob
 			)
 			model_blob = model_blob.getvalue()
-		"""
-		5. Save everything to Predictor object.
-		"""
+		
+		# Save everything to Predictor object.
 		time_succeeded = datetime.datetime.now()
 		time_duration = (time_succeeded - time_started).seconds
 
@@ -6431,286 +6385,27 @@ class Job(BaseModel):
 			, repeat_index = repeat_index
 		)
 
-		# 6. Use the predictor object to make predictions and obtain metrics.
+		# Use the predictor object to make predictions and obtain metrics.
 		try:
 			Job.predict(samples=samples, predictor_id=predictor.id)
 		except:
 			predictor.delete_instance()
 			raise
-		
+
 		# Don't force delete samples because we need it for runs with duplicated data.
 		del model
 		return job
 
-		
 
-
-	def run(id:int, repeat_index:int):
-		"""Needs optimization = https://github.com/aiqc/aiqc/projects/1"""
-		time_started = datetime.datetime.now()
-		job = Job.get_by_id(id)
-		queue = job.queue
-		algorithm = queue.algorithm
-		analysis_type = algorithm.analysis_type
-		library = algorithm.library
-		hide_test = queue.hide_test
-		splitset = queue.splitset
-		hyperparamcombo = job.hyperparamcombo
-		fold = job.fold
-		"""
-		1. Determines which splits/folds are needed.
-		- Source of the training & evaluation data varies based on how Splitset and Foldset were designed.
-		- The rest of the tasks in Job.run() look to `samples:dict` for their data.
-		- The `key_*` variables are passed to downstream tasks. `key_train` could be either
-		  'train' or 'folds_train_combined'.
-		"""
-		samples = {}
-		ordered_names = []
-		if (hide_test == False):
-			samples['test'] = splitset.samples['test']
-			key_evaluation = 'test'
-			ordered_names.append('test')
-		elif (hide_test == True):
-			key_evaluation = None
-
-		if (splitset.has_validation):
-			samples['validation'] = splitset.samples['validation']
-			key_evaluation = 'validation'
-			ordered_names.insert(0, 'validation')
-
-		if (fold is not None):
-			samples['folds_train_combined'] = fold.samples['folds_train_combined']
-			samples['fold_validation'] = fold.samples['fold_validation']
-
-			key_train = "folds_train_combined"
-			key_evaluation = "fold_validation"
-
-			ordered_names.insert(0, 'fold_validation')
-			ordered_names.insert(0, 'folds_train_combined')
-		elif (fold is None):
-			samples['train'] = splitset.samples['train']
-			key_train = "train"
-			ordered_names.insert(0, 'train')
-		"""
-		2. Encodes the labels and features.
-		- Remember, you `.fit()` on either training data or all data (categoricals).
-		- Then you transform the entire dataset because downstream processes may need the entire dataset:
-		  e.g. fit imputer to training data, but then impute entire dataset so that encoders can use entire dataset.
-		- So we transform the entire dataset, then divide it into splits/ folds.
-		- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
-		  work the same in both numpy and torch.
-		"""
-		# Labels - fetch and encode.
-		if (splitset.supervision == "supervised"):
-			label = splitset.label
-			arr_labels = label.preprocess(
-				samples = samples
-				, _samples_train = samples[key_train]
-				, _library = library
-				, _job = job
-			)
-
-		# Features - fetch and encode.
-		featureset = splitset.get_features()
-		feature_count = len(featureset)
-		features = []# expecting diff array shapes inside so it has to be list, not array.
-		
-		for feature in featureset:
-			if (splitset.supervision == 'supervised'):
-				arr_features = feature.preprocess(
-					supervision = 'supervised'
-					, samples = samples
-					, _job = job
-					, _samples_train = samples[key_train]
-					, _library = library
-				)	
-			elif (splitset.supervision == 'unsupervised'):
-				arr_features, arr_labels = feature.preprocess(
-					supervision = 'unsupervised'
-					, samples = samples
-					, _job = job
-					, _samples_train = samples[key_train]
-					, _library = library
-				)
-			features.append(arr_features)
-			# `arr_labels` not appended because unsupervised analysis only supports 1 unsupervised feature.
-		"""
-		- Stage preprocessed data to be passed into the remaining Job steps.
-		- Example samples dict entry: samples['train']['labels']
-		- For each entry in the dict, fetch the rows from the encoded data.
-		- Keras multi-input models accept input as a list. Not using nested dict for multiple
-		  features because it would be hard to figure out feature.id-based keys on the fly.
-		""" 
-		for split, indices in samples.items():
-			if (feature_count == 1):
-				samples[split] = {"features": arr_features[indices]}
-			elif (feature_count > 1):
-				samples[split] = {"features": [arr_features[indices] for arr_features in features]}
-			samples[split]['labels'] = arr_labels[indices]
-		"""
-		- Input shapes can only be determined after encoding has taken place.
-		- `[0]` accessess the first sample in each array.
-		- Does not impact the training loop's `batch_size`.
-		- Shapes are used later by `get_model()` to initialize it.
-		- Here the count refers to Features, not columns.
-		"""
-		if (feature_count == 1):
-			features_shape = samples[key_train]['features'][0].shape
-		elif (feature_count > 1):
-			features_shape = [arr_features[0].shape for arr_features in samples[key_train]['features']]
-		input_shapes = {"features_shape": features_shape}
-
-		label_shape = samples[key_train]['labels'][0].shape
-		input_shapes["label_shape"] = label_shape
-
-		if (key_evaluation is not None):
-			samples_eval = samples[key_evaluation]
-		elif (key_evaluation is None):
-			samples_eval = None
-
-		"""
-		3. Build and Train model.
-		- This does not need to be modularized out of `Job.run()` because models are not
-		  trained anywhere else in the codebase.
-		"""
-		if (hyperparamcombo is not None):
-			hp = hyperparamcombo.hyperparameters
-		elif (hyperparamcombo is None):
-			hp = {} #`**` cannot be None.
-
-		fn_build = dill_deserialize(algorithm.fn_build)
-		# pytorch multiclass has a single ordinal label.
-		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
-			num_classes = len(splitset.label.unique_classes)
-			model = fn_build(features_shape, num_classes, **hp)
-		else:
-			model = fn_build(features_shape, label_shape, **hp)
-		if (model is None):
-			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
-		
-		# The model and optimizer get combined during training.
-		fn_lose = dill_deserialize(algorithm.fn_lose)
-		fn_optimize = dill_deserialize(algorithm.fn_optimize)
-		fn_train = dill_deserialize(algorithm.fn_train)
-
-		loser = fn_lose(**hp)
-		if (loser is None):
-			raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
-
-		if (library == 'keras'):
-			optimizer = fn_optimize(**hp)
-		elif (library == 'pytorch'):
-			optimizer = fn_optimize(model, **hp)
-		if (optimizer is None):
-			raise ValueError("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
-
-		if (library == "keras"):
-			model = fn_train(
-				model = model
-				, loser = loser
-				, optimizer = optimizer
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples_eval
-				, **hp
-			)
-			if (model is None):
-				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
-
-			# Save the artifacts of the trained model.
-			# If blank this value is `{}` not None.
-			history = model.history.history
-			"""
-			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
-			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
-			  https://github.com/keras-team/keras/issues/14411
-			- So let's switch to a real file in appdirs.
-			- Assuming `model.save()` will trigger OS-specific h5 drivers.
-			"""
-			# Write it.
-			temp_file_name = f"{app_dir}temp_keras_model.h5"
-			model.save(
-				temp_file_name
-				, include_optimizer = True
-				, save_format = 'h5'
-			)
-			# Fetch the bytes ('rb': read binary)
-			with open(temp_file_name, 'rb') as file:
-				model_blob = file.read()
-			os.remove(temp_file_name)
-
-		elif (library == "pytorch"):
-			model, history = fn_train(
-				model = model
-				, loser = loser
-				, optimizer = optimizer
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples_eval
-				, **hp
-			)
-			if (model is None):
-				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
-			if (history is None):
-				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
-			# Save the artifacts of the trained model.
-			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
-			model_blob = io.BytesIO()
-			torch.save(
-				{
-					'model_state_dict': model.state_dict(),
-					'optimizer_state_dict': optimizer.state_dict()
-				},
-				model_blob
-			)
-			model_blob = model_blob.getvalue()
-		"""
-		5. Save everything to Predictor object.
-		"""
-		time_succeeded = datetime.datetime.now()
-		time_duration = (time_succeeded - time_started).seconds
-
-		# There's a chance that a duplicate job-repeat_index pair was running elsewhere and finished first.
-		matching_predictor = Predictor.select().join(Job).join(Queue).where(
-			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
-		if (len(matching_predictor) > 0):
-			raise ValueError(f"""
-				Yikes - Duplicate run detected:
-				Queue<{queue.id}>, Job<{job.id}>, Job.repeat_index<{repeat_index}>.
-				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
-				No action needed, the other instance will continue running to completion.
-			""")
-
-		predictor = Predictor.create(
-			time_started = time_started
-			, time_succeeded = time_succeeded
-			, time_duration = time_duration
-			, model_file = model_blob
-			, input_shapes = input_shapes
-			, history = history
-			, job = job
-			, repeat_index = repeat_index
-		)
-		
-		# 6. Use the predictor object to make predictions and obtain metrics.
-		try:
-			Job.predict(samples=samples, predictor_id=predictor.id)
-		except:
-			predictor.delete_instance()
-			raise
-		
-		# Just to be sure big objects not held in memory on last loop or forked processes.
-		del samples, arr_features, arr_labels, model
-		return job
-
-
+"""
+# This is related to background processing. After I decoupled Jobs, I never reenabled background processing.
 def execute_jobs(job_statuses:list, verbose:bool=False):  
-	"""
-	- This needs to be a top level function, otherwise you get pickle attribute error.
-	- Alternatively, you can put this is a separate submodule file, and call it via
-	  `import aiqc.execute_jobs.execute_jobs`
-	- Tried `mp.Manager` and `mp.Value` for shared variable for progress, but gave up after
-	  a full day of troubleshooting.
-	- Also you have to get a separate database connection for the separate process.
-	"""
+	# - This needs to be a top level function, otherwise you get pickle attribute error.
+	# - Alternatively, you can put this is a separate submodule file, and call it via
+	#   `import aiqc.execute_jobs.execute_jobs`
+	# - Tried `mp.Manager` and `mp.Value` for shared variable for progress, but gave up after
+	#   a full day of troubleshooting.
+	# - Also you have to get a separate database connection for the separate process.
 	BaseModel._meta.database.close()
 	BaseModel._meta.database = get_db()
 	for j in tqdm(
@@ -6720,7 +6415,7 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 	):
 		if (j['predictor_id'] is None):
 			Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
-
+"""
 
 
 
