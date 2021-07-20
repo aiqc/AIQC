@@ -5201,18 +5201,18 @@ class Queue(BaseModel):
 		"""
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
-		jobs = list(queue.jobs)
 		splitset = queue.splitset
 		foldset = queue.foldset
 		library = queue.algorithm.library
 
-		# The number of folds is already reflected in the number of jobs.
-		repeated_jobs = [] #tuple:(repeat_index, job)
-		for r in range(queue.repeat_count):
-			for j in jobs:
-				repeated_jobs.append((r,j))
-		cached_samples = f"{app_dir}cached_samples.gzip"
 		if (foldset is None):
+			cached_samples = f"{app_dir}cached_samples.gzip"
+			jobs = list(queue.jobs)
+			repeated_jobs = [] #tuple:(repeat_index, job)
+			for r in range(queue.repeat_count):
+				for j in jobs:
+					repeated_jobs.append((r,j))
+
 			samples = {}
 			ordered_names = [] 
 			
@@ -5234,7 +5234,6 @@ class Queue(BaseModel):
 			samples = {k: samples[k] for k in ordered_names}
 			# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
 			job = list(queue.jobs)[0]
-
 			samples, input_shapes = Queue.stage_data(
 				splitset=splitset, job=job
 				, samples=samples, library=library
@@ -5250,14 +5249,14 @@ class Queue(BaseModel):
 					, desc = "🔮 Training Models 🔮"
 					, ncols = 100
 				):
-					if (i>0):
-						with gzip.open(cached_samples,'rb') as f:
-							samples = pickle.load(f)
-					# See if this job has already completed.
+					# See if this job has already completed. Keeps the tqdm intact.
 					matching_predictor = Predictor.select().join(Job).where(
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
 					)
 					if (matching_predictor.count()==0):
+						if (i>0):
+							with gzip.open(cached_samples,'rb') as f:
+								samples = pickle.load(f)
 						# Still need to fetch the underlying samples for a folded job.
 						Job.run_decoupled(
 							id=rj[1].id, repeat_index=rj[0]
@@ -5265,6 +5264,7 @@ class Queue(BaseModel):
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
 					i+=1
+				os.remove(cached_samples)
 			except (KeyboardInterrupt):
 				# So that we don't get nasty error messages when interrupting a long running loop.
 				os.remove(cached_samples)
@@ -5273,58 +5273,78 @@ class Queue(BaseModel):
 				os.remove(cached_samples)
 				raise
 
-
 		elif (foldset is not None):
-			try:
-				for rj in tqdm(
-					repeated_jobs
-					, desc = "🔮 Training Models 🔮"
-					, ncols = 100
-				):
-					fold = rj[1].fold
-					samples = {}
-					ordered_names = []
+			folds = list(foldset.folds)
+			# Each fold will contain unique, reusable data.
+			for e, fold in enumerate(folds):
+				print(f"\nRunning Jobs for Fold #{e+1} out of {foldset.fold_count}...\n", flush=True)
+				cached_samples = f"{app_dir}cached_samples-fold_{e}.gzip"
+				jobs = [j for j in queue.jobs if j.fold==fold]
+				repeated_jobs = [] #tuple:(repeat_index, job, fold)
+				for r in range(queue.repeat_count):
+					for j in jobs:
+						repeated_jobs.append((r,j))
 
-					if (hide_test == False):
-						ordered_names.append('test')
-					if (splitset.has_validation):
-						ordered_names.insert(0, 'validation')
+				samples = {}
+				ordered_names = []
 
-					key_train = "folds_train_combined"
-					key_evaluation = "fold_validation"
-					ordered_names.insert(0, 'fold_validation')
-					ordered_names.insert(0, 'folds_train_combined')
+				if (hide_test == False):
+					ordered_names.append('test')
+					samples['test'] = splitset.samples['test']
+				if (splitset.has_validation):
+					ordered_names.insert(0, 'validation')
+					samples['validation'] = splitset.samples['validation']
 
-					# See if this job has already completed.
-					matching_predictor = Predictor.select().join(Job).join(Fold).where(
-						Predictor.repeat_index==rj[0], Job.id==rj[1].id, Fold.id==fold.id
-					)
-					if (matching_predictor.count()==0):
-						# Test and validation splits need to be fetch from scratch because their 
-						# preprocessing is dependent on the training fold.
-						if (hide_test == False):
-							samples['test'] = splitset.samples['test']
-						if (splitset.has_validation):
-							samples['validation'] = splitset.samples['validation']
+				key_train = "folds_train_combined"
+				key_evaluation = "fold_validation"
+				ordered_names.insert(0, 'fold_validation')
+				ordered_names.insert(0, 'folds_train_combined')
 
-						# Still need to fetch the underlying samples for a folded job.
-						samples['folds_train_combined'] = fold.samples['folds_train_combined']
-						samples['fold_validation'] = fold.samples['fold_validation']
-						samples = {k: samples[k] for k in ordered_names}
+				# Still need to fetch the underlying samples for a folded job.
+				samples['folds_train_combined'] = fold.samples['folds_train_combined']
+				samples['fold_validation'] = fold.samples['fold_validation']
+				samples = {k: samples[k] for k in ordered_names}
 
-						samples, input_shapes = Queue.stage_data(
-							splitset=splitset, job=rj[1]
-							, samples=samples, library=library
-							, key_train=key_train, key_evaluation=key_evaluation
+				# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
+				job = list(queue.jobs)[0]
+				samples, input_shapes = Queue.stage_data(
+					splitset=splitset, job=job
+					, samples=samples, library=library
+					, key_train=key_train, key_evaluation=key_evaluation
+				)
+
+				with gzip.open(cached_samples,'wb') as f:
+					pickle.dump(samples,f)
+				try:
+					i=0
+					for rj in tqdm(
+						repeated_jobs
+						, desc = "🔮 Training Models 🔮"
+						, ncols = 100
+					):
+						# See if this job has already completed. Keeps the tqdm intact.
+						matching_predictor = Predictor.select().join(Job).where(
+							Predictor.repeat_index==rj[0], Job.id==rj[1].id
 						)
-						Job.run_decoupled(
-							id=rj[1].id, repeat_index=rj[0]
-							, samples=samples, input_shapes=input_shapes
-							, key_train=key_train, key_evaluation=key_evaluation
-						)
-			except (KeyboardInterrupt):
-				# So that we don't get nasty error messages when interrupting a long running loop.
-				print("\nQueue was gracefully interrupted.\n")
+
+						if (matching_predictor.count()==0):
+							if (i>0):
+								with gzip.open(cached_samples,'rb') as f:
+									samples = pickle.load(f)
+							Job.run_decoupled(
+								id=rj[1].id, repeat_index=rj[0]
+								, samples=samples, input_shapes=input_shapes
+								, key_train=key_train, key_evaluation=key_evaluation
+							)
+						i+=1
+					os.remove(cached_samples)
+				except (KeyboardInterrupt):
+					# So that we don't get nasty error messages when interrupting a long running loop.
+					os.remove(cached_samples)
+					print("\nQueue was gracefully interrupted.\n")
+				except:
+					os.remove(cached_samples)
+					raise
 		
 	###
 	def stage_data(
