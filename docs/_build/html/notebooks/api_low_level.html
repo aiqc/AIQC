@@ -376,7 +376,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True);">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#iii)-Future,-cluster-execution.">iii) Future, cluster execution.</a></li>
 </ul>
 </li>
@@ -2892,8 +2892,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <li><p>Prototype your training jobs in this method so that you can see any errors that arise in the console.</p></li>
 </ul>
 </div>
-<div class="section" id="ii)-DEPRECATED---queue.run_jobs(in_background=True);">
-<h4>ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>;<a class="headerlink" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True);" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="ii)-DEPRECATED---queue.run_jobs(in_background=True).">
+<h4>ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.<a class="headerlink" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True)." title="Permalink to this headline">¶</a></h4>
 <p><em>Support for background processing has not been restored after decoupling the preprocessing pipelines from the Queue/Job logic.</em></p>
 <ul class="simple">
 <li><p>The Jobs loop is executed on a separate, parallel <code class="docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code></p></li>
@@ -2906,7 +2906,7 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <li><p><code class="docutils literal notranslate"><span class="pre">queue.poll_progress(raw:bool=False,</span> <span class="pre">loop:bool=False,</span> <span class="pre">loop_delay:int=3)</span></code> where <code class="docutils literal notranslate"><span class="pre">raw=True</span></code> is just a float, <code class="docutils literal notranslate"><span class="pre">loop=True</span></code> won’t stop checking jobs until they are all complete, and <code class="docutils literal notranslate"><span class="pre">loop_delay=3</span></code> checks the progress every 3 seconds.</p></li>
 </ul>
 </li>
-<li><p>It is a known bug that the <code class="docutils literal notranslate"><span class="pre">aiqc.TrainingCallbacks.Keras.MetricCutoff</span></code> class does not work with <code class="docutils literal notranslate"><span class="pre">in_background=True</span></code> as of Python 3.8.</p></li>
+<li><p>It is a known bug that the <code class="docutils literal notranslate"><span class="pre">aiqc.TrainingCallbacks.Keras.MetricCutoff</span></code> class does not work with `` as of Python 3.8.</p></li>
 <li><p>Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.</p></li>
 </ul>
 </div>
@@ -2920,7 +2920,7 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="n">in_background</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
