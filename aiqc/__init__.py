@@ -2054,11 +2054,17 @@ class Label(BaseModel):
 				)
 
 				if (fold is not None):
-					FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=_job, labelcoder=labelcoder)
+					queue = _job.queue
+					jobs = [j for j in queue.jobs if j.fold==fold]
+					for j in jobs:
+						if (j.fittedlabelcoders is None):
+							FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=_job, labelcoder=labelcoder)
+				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
 					for j in jobs:
-						FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
+						if (j.fittedlabelcoders is None):
+							FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 
 				label_array = Job.encoder_transform_labels(
 					arr_labels=label_array,
@@ -2401,12 +2407,17 @@ class Feature(BaseModel):
 				)
 				# Record the `fit` for decoding predictions via `inverse_transform`.
 				if (fold is not None):
-					FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+					queue = _job.queue
+					jobs = [j for j in queue.jobs if j.fold==fold]
+					for j in jobs:
+						if (j.fittedencodersets is None):
+							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
 					for j in jobs:
-						FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
+						if (j.fittedencodersets is None):
+							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
 			elif (feature.encodersets.count()==0):
 				pass
 
@@ -6945,15 +6956,15 @@ class Predictor(BaseModel):
 		- Given a Feature, you want to know if it needs to be transformed,
 		  and, if so, how to transform it.
 		"""
-		fitted_encodersets = FittedEncoderset.select().join(Encoderset).where(
+		fittedencodersets = FittedEncoderset.select().join(Encoderset).where(
 			FittedEncoderset.job==job, FittedEncoderset.encoderset.feature==feature
 		)
 
-		if (not fitted_encodersets):
+		if (not fittedencodersets):
 			return None, None
 		else:
-			encoderset = fitted_encodersets[0].encoderset
-			fitted_encoders = fitted_encodersets[0].fitted_encoders
+			encoderset = fittedencodersets[0].encoderset
+			fitted_encoders = fittedencodersets[0].fitted_encoders
 			return encoderset, fitted_encoders
 
 
@@ -6962,14 +6973,14 @@ class Predictor(BaseModel):
 		- Given a Feature, you want to know if it needs to be transformed,
 		  and, if so, how to transform it.
 		"""
-		fitted_labelcoders = FittedLabelcoder.select().join(Labelcoder).where(
+		fittedlabelcoders = FittedLabelcoder.select().join(Labelcoder).where(
 			FittedLabelcoder.job==job, FittedLabelcoder.labelcoder.label==label
 		)
-		if (not fitted_labelcoders):
+		if (not fittedlabelcoders):
 			return None, None
 		else:
-			labelcoder = fitted_labelcoders[0].labelcoder
-			fitted_encoders = fitted_labelcoders[0].fitted_encoders
+			labelcoder = fittedlabelcoders[0].labelcoder
+			fitted_encoders = fittedlabelcoders[0].fitted_encoders
 			return labelcoder, fitted_encoders
 
 			
