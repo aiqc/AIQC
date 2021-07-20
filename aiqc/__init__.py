@@ -2057,13 +2057,13 @@ class Label(BaseModel):
 					queue = _job.queue
 					jobs = [j for j in queue.jobs if j.fold==fold]
 					for j in jobs:
-						if (j.fittedlabelcoders is None):
+						if (j.fittedlabelcoders.count()==0):
 							FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
 					for j in jobs:
-						if (j.fittedlabelcoders is None):
+						if (j.fittedlabelcoders.count()==0):
 							FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 
 				label_array = Job.encoder_transform_labels(
@@ -2410,13 +2410,13 @@ class Feature(BaseModel):
 					queue = _job.queue
 					jobs = [j for j in queue.jobs if j.fold==fold]
 					for j in jobs:
-						if (j.fittedencodersets is None):
+						if (j.fittedencodersets.count()==0):
 							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
 					for j in jobs:
-						if (j.fittedencodersets is None):
+						if (j.fittedencodersets.count()==0):
 							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
 			elif (feature.encodersets.count()==0):
 				pass
