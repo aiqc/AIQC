@@ -3483,7 +3483,7 @@ class Labelpolater(BaseModel):
 
 		if (interpolate_kwargs is None):
 			interpolate_kwargs = dict(
-				method = 'spline'
+				method = 'linear'
 				, limit_direction = 'both'
 				, limit_area = None
 				, axis = 0
@@ -3603,7 +3603,7 @@ class Featurepolater(BaseModel):
 
 		if (interpolate_kwargs is None):
 			interpolate_kwargs = dict(
-				method = 'spline'
+				method = 'linear'
 				, limit_direction = 'both'
 				, limit_area = None
 				, axis = 0
