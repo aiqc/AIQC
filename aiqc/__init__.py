@@ -1,5 +1,5 @@
-import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, h5py, gzip, \
-	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec, scipy, pickle
+import os, sys, platform, json, operator, io, random, itertools, warnings, h5py, gzip, statistics,  \
+	inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec, scipy, pickle
 # Python utils.
 from textwrap import dedent
 # External utils.
@@ -30,17 +30,18 @@ import plotly.figure_factory as ff
 
 name = "aiqc"
 """
-https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
-- 'fork' makes all variables on main process available to child process. OS attempts not to duplicate all variables.
-- 'spawn' requires that variables be passed to child as args, and seems to play by pickle's rules (e.g. no func in func).
+import multiprocessing
+# https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+# - 'fork' makes all variables on main process available to child process. OS attempts not to duplicate all variables.
+# - 'spawn' requires that variables be passed to child as args, and seems to play by pickle's rules (e.g. no func in func).
 
-- In Python 3.8, macOS changed default from 'fork' to 'spawn' , which is how I learned all this.
-- Windows does not support 'fork'. It supports 'spawn'. So basically I have to play by spawn/ pickle rules.
-- Spawn/ pickle dictates (1) where execute_jobs func is placed, (2) if MetricsCutoff func works, (3) if tqdm output is visible.
-- Update: now MetricsCutoff is not working in `fork` mode.
-- Wrote the `poll_progress` func for 'spawn' situations.
-- If everything hits the fan, `run_jobs(in_background=False)` for a normal for loop.
-- Tried `concurrent.futures` but it only works with `.py` from command line.
+# - In Python 3.8, macOS changed default from 'fork' to 'spawn' , which is how I learned all this.
+# - Windows does not support 'fork'. It supports 'spawn'. So basically I have to play by spawn/ pickle rules.
+# - Spawn/ pickle dictates (1) where execute_jobs func is placed, (2) if MetricsCutoff func works, (3) if tqdm output is visible.
+# - Update: now MetricsCutoff is not working in `fork` mode.
+# - Wrote the `poll_progress` func for 'spawn' situations.
+# - If everything hits the fan, `run_jobs(in_background=False)` for a normal for loop.
+# - Tried `concurrent.futures` but it only works with `.py` from command line.
 
 if (os.name != 'nt'):
 	# If `force=False`, then `importlib.reload(aiqc)` triggers `RuntimeError: context already set`.
