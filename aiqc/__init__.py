@@ -2058,7 +2058,7 @@ class Label(BaseModel):
 					jobs = [j for j in queue.jobs if j.fold==fold]
 					for j in jobs:
 						if (j.fittedlabelcoders is None):
-							FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=_job, labelcoder=labelcoder)
+							FittedLabelcoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
@@ -2411,7 +2411,7 @@ class Feature(BaseModel):
 					jobs = [j for j in queue.jobs if j.fold==fold]
 					for j in jobs:
 						if (j.fittedencodersets is None):
-							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=_job, encoderset=encoderset)
+							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
@@ -5254,12 +5254,11 @@ class Queue(BaseModel):
 				pickle.dump(samples,f)
 
 			try:
-				i=0
-				for rj in tqdm(
+				for i, rj in enumerate(tqdm(
 					repeated_jobs
 					, desc = "🔮 Training Models 🔮"
 					, ncols = 100
-				):
+				)):
 					# See if this job has already completed. Keeps the tqdm intact.
 					matching_predictor = Predictor.select().join(Job).where(
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
@@ -5274,7 +5273,6 @@ class Queue(BaseModel):
 							, samples=samples, input_shapes=input_shapes
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
-					i+=1
 				os.remove(cached_samples)
 			except (KeyboardInterrupt):
 				# So that we don't get nasty error messages when interrupting a long running loop.
@@ -5327,12 +5325,11 @@ class Queue(BaseModel):
 				with gzip.open(cached_samples,'wb') as f:
 					pickle.dump(samples,f)
 				try:
-					i=0
-					for rj in tqdm(
+					for i, rj in enumerate(tqdm(
 						repeated_jobs
 						, desc = "🔮 Training Models 🔮"
 						, ncols = 100
-					):
+					)):
 						# See if this job has already completed. Keeps the tqdm intact.
 						matching_predictor = Predictor.select().join(Job).where(
 							Predictor.repeat_index==rj[0], Job.id==rj[1].id
@@ -5347,7 +5344,6 @@ class Queue(BaseModel):
 								, samples=samples, input_shapes=input_shapes
 								, key_train=key_train, key_evaluation=key_evaluation
 							)
-						i+=1
 					os.remove(cached_samples)
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
