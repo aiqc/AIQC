@@ -1,0 +1,3208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta property="og:title" content="Heterogeneous/ Multi-Modal" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/heterogeneous_features.html" />
+  <meta property="og:site_name" content="AIQC" />
+  <meta property="og:description" content="Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata. bannerGalaxy Mixed data analysis is one of the areas where deep learning really sets itself apart from tradit..." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
+  <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
+  <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Heterogeneous/ Multi-Modal &mdash; AIQC</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualization &amp; Metrics" href="visualization.html" />
+    <link rel="prev" title="TensorFlow2: Training Loop." href="tensorflow_binary_classification.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/aiqc_logo_wide_white_docs_300px.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#TLDR">TLDR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Environment">Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Python-Version">Python Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Pickle-Disclaimer">Pickle Disclaimer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Operating-System">Operating System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Plotting">Plotting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Line-Install">a) One-Line Install</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Config-File">Create Config File</a></li>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Database-File">Create Database File</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Liner">a) One-Liner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Reloading-the-Package">Reloading the Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Remote-Data">Remote Data</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#a)-High-Level-API">a) High-Level API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Preprocess-Data">Preprocess Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Build-Model">Build Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#b)-Low-Level-API">b) Low-Level API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id1">Preprocess Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id2">Build Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id3">Stage Experiment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="image_classification.html">Keras: Classify Binary Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Load-Data">Load Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Build-Model">Build Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sequence_classification.html">Keras: Classify Binary Times Series</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_tabular_forecasting.html">Keras: Tabular Forecasting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#b)-Low-Level-API">b) Low-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Inference">Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Heterogeneous/ Multi-Modal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Ingesting-Example-Galaxy-Data">Ingesting Example Galaxy Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Tabular-Data">Tabular Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Image-Data">Image Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Defining-a-Model">Defining a Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Train-Models">Train Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Interpret-Results">Interpret Results</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Classification">Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Metrics">Individual Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Visualization">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Visualization">Individual Job Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Regression">Regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id1">Individual Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Metrics">Aggregate Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Visualization">Aggregate Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id2">Individual Job Visualization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#1.-Pipeline">1. Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#a)-Tabular-Dataset">a) Tabular Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#b)-Sequence-Dataset">b) Sequence Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#c)-Image-Dataset">c) Image Dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#2.-Experiment">2. Experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Model-Functions">Model Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_build"><code class="docutils literal notranslate"><span class="pre">fn_build</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_train"><code class="docutils literal notranslate"><span class="pre">fn_train</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Hyperparameters">Hyperparameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment.make()"><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Object-Relational-Model-(ORM)">Object Relational Model (ORM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Either-Persisting-or-Fetch-Data">Either Persisting or Fetch Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Data-Sources">a) Data Sources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.from_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.from_path"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Sequence-Datasets">Sequence Datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Sequence.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Image-Datasets">Image Datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.from_urls()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.from_folder()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Reading-Datasets">b) Reading Datasets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.to_pillow()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_pillow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_numpy()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#2.-Selecting-Features-and-Labels.">2. Selecting <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Select-the-Label-column(s).">a) Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#ORM">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Deriving-Labels">Deriving Labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Labels">Reading Labels</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id1">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Features">Specifying Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Slicing-samples.">3. Slicing samples.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id2">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Windows">Reading Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Slice-samples-with-a-Splitset.">b) Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Stratification">Stratification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Splitting-Strategies">Splitting Strategies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id3">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id4">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Defining-Architectures-&amp;-Hyperparameters.">6. Defining Architectures &amp; Hyperparameters.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Model-Definition">Model Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Queue-of-training-Jobs.">7. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#i)-queue.run_jobs(in_background=False)">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#ii)-[DEPRECATED]-queue.run_jobs(in_background=True);">ii) [DEPRECATED] <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#iii)-Future,-cluster-execution.">iii) Future, cluster execution.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Metrics-&amp;-Visualization">8. Metrics &amp; Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#Predictor">Predictor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#New-Splitset">New Splitset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#Run-Inference">Run Inference</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#purpose">Purpose.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#how-can-i-get-involved">How can I get involved?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#what-can-i-contribute">What can I contribute?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-dev-environment">Setting up dev environment.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#programming-style">Programming style.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#code-of-conduct">Code of conduct.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#open-source">Open source.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../community.html#choosing-a-license">Choosing a license</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AIQC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Heterogeneous/ Multi-Modal</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/heterogeneous_features.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Heterogeneous/-Multi-Modal">
+<h1>Heterogeneous/ Multi-Modal<a class="headerlink" href="#Heterogeneous/-Multi-Modal" title="Permalink to this headline">¶</a></h1>
+<p><em>Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata.</em></p>
+<p><img alt="bannerGalaxy" src="../_images/banner_galaxy.png" /></p>
+<p>Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional forms of statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) within the same analysis while converging toward the minimization a single <em>loss</em> metric. This leads to rich experiments that resemble real-world scenarios that resemble man-machine symbiosis. For
+example, consider combining a doctor’s annotations with electronic medical records and histology imagery.</p>
+<hr class="docutils" />
+<blockquote>
+<div><p><em>This example was put together for a demo that builds upon the documentation of the Low-Level API and the example workflows for binary classification. Due to the fact that these images were captured by different instruments that represent color differently, I removed the noisy 3-channel color information and proceeded with grayscale. Since the shapes of the features are dynamically passed into the model, the only difference between a single versus multi-channel workflow is changing the actual
+layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
+</div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="Ingesting-Example-Galaxy-Data">
+<h2>Ingesting Example Galaxy Data<a class="headerlink" href="#Ingesting-Example-Galaxy-Data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Tabular-Data">
+<h3>Tabular Data<a class="headerlink" href="#Tabular-Data" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[199]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="s1">&#39;galaxies.tsv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Using the built-in structured data about 40 galaxies, we’ll derive:</p>
+<ul class="simple">
+<li><p>A binary, categorical label: <code class="docutils literal notranslate"><span class="pre">morphology</span></code>.</p></li>
+<li><p>Categorical and numeric metadata features: <code class="docutils literal notranslate"><span class="pre">clarity</span></code>, <code class="docutils literal notranslate"><span class="pre">angle</span></code>.</p></li>
+<li><p>A manifest detailing where to find our image files: <code class="docutils literal notranslate"><span class="pre">url</span></code>.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[200]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[200]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>morphology</th>
+      <th>clarity</th>
+      <th>angle</th>
+      <th>url</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>bar</td>
+      <td>0</td>
+      <td>face</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/ma...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>bar</td>
+      <td>3</td>
+      <td>angle</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/ma...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>bar</td>
+      <td>3</td>
+      <td>face</td>
+      <td>https://raw.githubusercontent.com/aiqc/aiqc/ma...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>From a single <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> we’ll specify a <code class="docutils literal notranslate"><span class="pre">Label</span></code> and <code class="docutils literal notranslate"><span class="pre">Feature</span></code> before encoding them.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">dataset_tab</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">dataset_tab</span><span class="o">.</span><span class="n">make_label</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label</span><span class="o">.</span><span class="n">make_labelcoder</span><span class="p">(</span><span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">OrdinalEncoder</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Labelcoder: 1&gt;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">feature_tab</span> <span class="o">=</span> <span class="n">dataset_tab</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">,</span><span class="s1">&#39;url&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">feature_tab</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">encoderset</span><span class="o">.</span><span class="n">make_featurecoder</span><span class="p">(</span>
+    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">(),</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;clarity&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+___/ featurecoder_index: 0 \_________
+
+
+=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+   This saves memory when concatenating the output of many encoders.
+
+=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
+[&#39;clarity&#39;]
+
+=&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
+{&#39;angle&#39;: &#39;object&#39;}
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Featurecoder: 1&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">encoderset</span><span class="o">.</span><span class="n">make_featurecoder</span><span class="p">(</span>
+    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(),</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+___/ featurecoder_index: 1 \_________
+
+
+=&gt; Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+   This would have generated &#39;scipy.sparse.csr.csr_matrix&#39;, causing Keras training to fail.
+
+=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+
+[&#39;angle&#39;]
+
+=&gt; Done. All feature column(s) have encoder(s) associated with them.
+No more Featurecoders can be added to this Encoderset.
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Featurecoder: 2&gt;
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Image-Data">
+<h3>Image Data<a class="headerlink" href="#Image-Data" title="Permalink to this headline">¶</a></h3>
+<p>Construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from that manifest and use it as a 2nd <code class="docutils literal notranslate"><span class="pre">Feature</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">urls</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">dataset_img</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_urls</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🖼️ Validating Images 🖼️: 100%|███████████████████████| 40/40 [00:04&lt;00:00,  9.09it/s]
+🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 40/40 [00:04&lt;00:00,  8.51it/s]
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[173]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">example_images</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">to_pillow</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset_img</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Bar galaxies</strong></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[189]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">example_images</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[189]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_heterogeneous_features_28_0.png" src="../_images/notebooks_heterogeneous_features_28_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[218]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">example_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[218]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_heterogeneous_features_29_0.png" src="../_images/notebooks_heterogeneous_features_29_0.png" />
+</div>
+</div>
+<p>Although it is easy enough to distinguish between the two types with the naked eye, you start to realize that a <em>bar</em> galaxy is almost like a degraded <em>spiral</em> galaxy. Like anything else, there is a gray area in whether or not the band of stars/ rectangle of light connecting the two main galactic arms is to be considered a “bar” or more of an oval.</p>
+<p><strong>Spiral galaxies</strong></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[192]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">example_images</span><span class="p">[</span><span class="mi">38</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[192]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_heterogeneous_features_32_0.png" src="../_images/notebooks_heterogeneous_features_32_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[193]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">example_images</span><span class="p">[</span><span class="mi">37</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[193]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_heterogeneous_features_33_0.png" src="../_images/notebooks_heterogeneous_features_33_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">feature_img</span> <span class="o">=</span> <span class="n">dataset_img</span><span class="o">.</span><span class="n">make_feature</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We have only 40 samples, so we’ll keep our validation and test <em>splits</em> small, and definitely forgo cross-validation.</p>
+<p>Notice how we pass in both the <em>tabular</em> and <em>image</em> Features. As described in the low-level API documentation, the first feature in the list is used to determine stratification.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">feature_img</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.125</span>
+    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.175</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="Defining-a-Model">
+<h2>Defining a Model<a class="headerlink" href="#Defining-a-Model" title="Permalink to this headline">¶</a></h2>
+<p>AIQC makes it easy to compartmentalize both Keras/TensorFlow and PyTorch models. See <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the Low-Level API documentation.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">keras</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
+</pre></div>
+</div>
+</div>
+<p>Hyperparameters are passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> <em>kwargs</em>, which allows you to tweak both the topology and the params alike.</p>
+<p>Below we see two towers, feedforward for tabular data and convolutional for image data, that are eventually concatenated together.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">feature_shapes</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+
+    <span class="c1"># Feed forward tower using the first Feature.</span>
+    <span class="n">ff_input</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">feature_shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;ff_neurons&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">ff_input</span><span class="p">)</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">ff</span><span class="p">)</span>
+    <span class="n">model_ff</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">ff_input</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span>
+
+    <span class="c1"># Convolutional tower using the second Feature.</span>
+    <span class="n">cnn_input</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">feature_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+        <span class="mi">16</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+        <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn_input</span><span class="p">)</span>
+    <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+        <span class="mi">16</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+        <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+        <span class="mi">32</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+        <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;4th_cnn&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+            <span class="mi">32</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+            <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+        <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+
+    <span class="c1"># Perform one dense layer on CNN output, so that the tabular data</span>
+    <span class="c1"># can talk directly to the</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">model_cnn</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">cnn_input</span><span class="p">,</span> <span class="n">cnn</span><span class="p">)</span>
+
+    <span class="n">concat</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">model_ff</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">model_cnn</span><span class="o">.</span><span class="n">output</span><span class="p">])</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;concat_neurons&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">concat</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
+
+    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
+
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">model_ff</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">model_cnn</span><span class="o">.</span><span class="n">input</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="n">join</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[108]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loser</span>
+        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Early stopper.</span>
+    <span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.80</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span> <span class="c1">#5 samples in validation set.</span>
+    <span class="p">]</span>
+    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
+
+
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+            <span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+</div>
+</div>
+<p>You can also customize the functions for loss, optimization, and prediction - but we’ll just run with the defaults for binary classification analysis.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[109]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
+    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
+
+    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Define the parameters that will be passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> argument in the functions above.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[110]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">300</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="p">,</span> <span class="s2">&quot;ff_neurons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="p">,</span> <span class="s2">&quot;cnn_multiply&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;dropout&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;he_normal&#39;</span><span class="p">]</span>
+    <span class="p">,</span> <span class="s2">&quot;4th_cnn&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+
+    <span class="p">,</span> <span class="s2">&quot;concat_neurons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[111]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_hyperparamset</span><span class="p">(</span>
+    <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+</div>
+<div class="section" id="Train-Models">
+<h2>Train Models<a class="headerlink" href="#Train-Models" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> runs the same model multiple times due to the fact that neural networks are non-deterministic.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[112]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_queue</span><span class="p">(</span>
+    <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[113]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;ERROR&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[114]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:   0%|                                                 | 0/10 [00:00&lt;?, ?it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #115 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  10%|████                                     | 1/10 [00:12&lt;01:52, 12.53s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #167 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  20%|████████▏                                | 2/10 [00:28&lt;01:54, 14.26s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #21 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  30%|████████████▎                            | 3/10 [00:32&lt;01:09,  9.94s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #66 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  40%|████████████████▍                        | 4/10 [00:41&lt;00:56,  9.35s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #138 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  50%|████████████████████▌                    | 5/10 [00:55&lt;00:55, 11.02s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #105 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  60%|████████████████████████▌                | 6/10 [01:06&lt;00:44, 11.14s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #104 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  70%|████████████████████████████▋            | 7/10 [01:17&lt;00:33, 11.16s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #167 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  80%|████████████████████████████████▊        | 8/10 [01:33&lt;00:25, 12.66s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #281 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮:  90%|████████████████████████████████████▉    | 9/10 [01:59&lt;00:16, 16.64s/it]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+:: Epoch #95 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+🔮 Training Models 🔮: 100%|████████████████████████████████████████| 10/10 [02:09&lt;00:00, 12.90s/it]
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</div>
+<div class="section" id="Interpret-Results">
+<h2>Interpret Results<a class="headerlink" href="#Interpret-Results" title="Permalink to this headline">¶</a></h2>
+<p>The <em>boomerang</em> chart shows how each model performed across all of its splits [and or folds].</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
+    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">min_accuracy</span> <span class="o">=</span> <span class="mf">0.70</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="galaxyBoomerang" src="../_images/galaxy_boomerang.png" /></p>
+<p>Let’s dig into that green model with precise loss.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[132]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[133]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[133]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>param</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>epoch_count</td>
+      <td>300</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>learning_rate</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>batch_size</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ff_neurons</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cnn_multiply</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>dropout</td>
+      <td>0.5</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>init</td>
+      <td>he_normal</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>4th_cnn</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>concat_neurons</td>
+      <td>64</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Not exactly the smoothest curve, and it seems like we could have learned more with a bit of patience, but, then again, it always seems that way.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">loss_skip_15pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="galaxyLearn" src="../_images/galaxy_learn.png" /></p>
+<p>The charts below show how it performed when running predictions against each split in the dataset.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[140]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">prediction</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="galaxyRoc" src="../_images/galaxy_roc.png" /></p>
+<p>Interestingly enough, the model is performing poorly on the <em>training</em> split. I guess that’s what you get when you set <code class="docutils literal notranslate"><span class="pre">dropout=0.5</span></code>. You can tell that it hasn’t learned all of the spiral patterns yet by examining the matrix.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="galaxyConfusion" src="../_images/galaxy_confusion.png" /></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="galaxyPr" src="../_images/galaxy_pr.png" /></p>
+<p>We have all of the metrics for every run precalculated and at our disposal.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[161]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[161]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hyperparamcombo_id</th>
+      <th>job_id</th>
+      <th>repeat_index</th>
+      <th>predictor_id</th>
+      <th>metric</th>
+      <th>maximum</th>
+      <th>minimum</th>
+      <th>pstdev</th>
+      <th>median</th>
+      <th>mean</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>accuracy</td>
+      <td>1.000000</td>
+      <td>0.571429</td>
+      <td>0.175093</td>
+      <td>0.800000</td>
+      <td>0.790476</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>f1</td>
+      <td>1.000000</td>
+      <td>0.571429</td>
+      <td>0.175093</td>
+      <td>0.800000</td>
+      <td>0.790476</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>loss</td>
+      <td>0.657118</td>
+      <td>0.433796</td>
+      <td>0.101170</td>
+      <td>0.638489</td>
+      <td>0.576468</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>precision</td>
+      <td>1.000000</td>
+      <td>0.500000</td>
+      <td>0.235702</td>
+      <td>1.000000</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.157135</td>
+      <td>0.666667</td>
+      <td>0.777778</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>roc_auc</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.136083</td>
+      <td>0.833333</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>accuracy</td>
+      <td>0.800000</td>
+      <td>0.571429</td>
+      <td>0.098111</td>
+      <td>0.750000</td>
+      <td>0.707143</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>f1</td>
+      <td>0.857143</td>
+      <td>0.666667</td>
+      <td>0.079808</td>
+      <td>0.800000</td>
+      <td>0.774603</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>loss</td>
+      <td>0.626964</td>
+      <td>0.515694</td>
+      <td>0.050871</td>
+      <td>0.619902</td>
+      <td>0.587520</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>precision</td>
+      <td>0.750000</td>
+      <td>0.500000</td>
+      <td>0.103935</td>
+      <td>0.666667</td>
+      <td>0.638889</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>roc_auc</td>
+      <td>0.948980</td>
+      <td>0.666667</td>
+      <td>0.126159</td>
+      <td>0.916667</td>
+      <td>0.844104</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>accuracy</td>
+      <td>0.800000</td>
+      <td>0.571429</td>
+      <td>0.094281</td>
+      <td>0.714286</td>
+      <td>0.695238</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>f1</td>
+      <td>0.857143</td>
+      <td>0.666667</td>
+      <td>0.078121</td>
+      <td>0.777778</td>
+      <td>0.767196</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>loss</td>
+      <td>2.118411</td>
+      <td>0.551639</td>
+      <td>0.683482</td>
+      <td>0.824062</td>
+      <td>1.164704</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>precision</td>
+      <td>0.750000</td>
+      <td>0.500000</td>
+      <td>0.102203</td>
+      <td>0.636364</td>
+      <td>0.628788</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>roc_auc</td>
+      <td>0.938776</td>
+      <td>0.666667</td>
+      <td>0.128273</td>
+      <td>0.666667</td>
+      <td>0.757370</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>accuracy</td>
+      <td>0.857143</td>
+      <td>0.571429</td>
+      <td>0.123443</td>
+      <td>0.800000</td>
+      <td>0.742857</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>f1</td>
+      <td>0.875000</td>
+      <td>0.571429</td>
+      <td>0.129110</td>
+      <td>0.800000</td>
+      <td>0.748810</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>loss</td>
+      <td>0.754951</td>
+      <td>0.465973</td>
+      <td>0.118053</td>
+      <td>0.619605</td>
+      <td>0.613510</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>precision</td>
+      <td>1.000000</td>
+      <td>0.500000</td>
+      <td>0.204544</td>
+      <td>0.777778</td>
+      <td>0.759259</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.157135</td>
+      <td>0.666667</td>
+      <td>0.777778</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>roc_auc</td>
+      <td>0.928571</td>
+      <td>0.750000</td>
+      <td>0.072955</td>
+      <td>0.833333</td>
+      <td>0.837302</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>accuracy</td>
+      <td>1.000000</td>
+      <td>0.785714</td>
+      <td>0.097822</td>
+      <td>0.800000</td>
+      <td>0.861905</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>f1</td>
+      <td>1.000000</td>
+      <td>0.750000</td>
+      <td>0.108012</td>
+      <td>0.800000</td>
+      <td>0.850000</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>loss</td>
+      <td>0.606985</td>
+      <td>0.564041</td>
+      <td>0.019458</td>
+      <td>0.603421</td>
+      <td>0.591483</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>precision</td>
+      <td>1.000000</td>
+      <td>0.900000</td>
+      <td>0.047140</td>
+      <td>1.000000</td>
+      <td>0.966667</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>0.642857</td>
+      <td>0.163037</td>
+      <td>0.666667</td>
+      <td>0.769841</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>roc_auc</td>
+      <td>1.000000</td>
+      <td>0.833333</td>
+      <td>0.072717</td>
+      <td>0.862245</td>
+      <td>0.898526</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>accuracy</td>
+      <td>0.800000</td>
+      <td>0.428571</td>
+      <td>0.164579</td>
+      <td>0.750000</td>
+      <td>0.659524</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>f1</td>
+      <td>0.857143</td>
+      <td>0.600000</td>
+      <td>0.108637</td>
+      <td>0.787879</td>
+      <td>0.748341</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>loss</td>
+      <td>0.761833</td>
+      <td>0.552645</td>
+      <td>0.095547</td>
+      <td>0.566346</td>
+      <td>0.626942</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>precision</td>
+      <td>0.750000</td>
+      <td>0.428571</td>
+      <td>0.138643</td>
+      <td>0.684211</td>
+      <td>0.620927</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>0.928571</td>
+      <td>0.033672</td>
+      <td>1.000000</td>
+      <td>0.976190</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>roc_auc</td>
+      <td>0.933673</td>
+      <td>0.416667</td>
+      <td>0.213995</td>
+      <td>0.750000</td>
+      <td>0.700113</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>accuracy</td>
+      <td>0.892857</td>
+      <td>0.714286</td>
+      <td>0.072921</td>
+      <td>0.800000</td>
+      <td>0.802381</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>f1</td>
+      <td>0.896552</td>
+      <td>0.750000</td>
+      <td>0.060827</td>
+      <td>0.800000</td>
+      <td>0.815517</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>loss</td>
+      <td>3.542673</td>
+      <td>0.412229</td>
+      <td>1.423016</td>
+      <td>0.649813</td>
+      <td>1.534905</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>precision</td>
+      <td>1.000000</td>
+      <td>0.600000</td>
+      <td>0.166296</td>
+      <td>0.866667</td>
+      <td>0.822222</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.143297</td>
+      <td>0.928571</td>
+      <td>0.865079</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>roc_auc</td>
+      <td>0.969388</td>
+      <td>0.666667</td>
+      <td>0.127678</td>
+      <td>0.750000</td>
+      <td>0.795351</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>accuracy</td>
+      <td>0.821429</td>
+      <td>0.714286</td>
+      <td>0.046291</td>
+      <td>0.800000</td>
+      <td>0.778571</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>f1</td>
+      <td>0.857143</td>
+      <td>0.750000</td>
+      <td>0.048596</td>
+      <td>0.848485</td>
+      <td>0.818543</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>loss</td>
+      <td>0.975309</td>
+      <td>0.299485</td>
+      <td>0.292846</td>
+      <td>0.845627</td>
+      <td>0.706807</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>precision</td>
+      <td>0.750000</td>
+      <td>0.600000</td>
+      <td>0.067822</td>
+      <td>0.736842</td>
+      <td>0.695614</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>roc_auc</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.136083</td>
+      <td>0.833333</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>48</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>accuracy</td>
+      <td>0.800000</td>
+      <td>0.571429</td>
+      <td>0.098111</td>
+      <td>0.750000</td>
+      <td>0.707143</td>
+    </tr>
+    <tr>
+      <th>49</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>f1</td>
+      <td>0.800000</td>
+      <td>0.571429</td>
+      <td>0.099442</td>
+      <td>0.758621</td>
+      <td>0.710016</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>loss</td>
+      <td>3.459070</td>
+      <td>0.547876</td>
+      <td>1.352021</td>
+      <td>0.636163</td>
+      <td>1.547703</td>
+    </tr>
+    <tr>
+      <th>51</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>precision</td>
+      <td>1.000000</td>
+      <td>0.500000</td>
+      <td>0.204275</td>
+      <td>0.733333</td>
+      <td>0.744444</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>recall</td>
+      <td>0.785714</td>
+      <td>0.666667</td>
+      <td>0.056120</td>
+      <td>0.666667</td>
+      <td>0.706349</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>roc_auc</td>
+      <td>0.811224</td>
+      <td>0.666667</td>
+      <td>0.068145</td>
+      <td>0.666667</td>
+      <td>0.714853</td>
+    </tr>
+    <tr>
+      <th>54</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>accuracy</td>
+      <td>0.800000</td>
+      <td>0.714286</td>
+      <td>0.040406</td>
+      <td>0.714286</td>
+      <td>0.742857</td>
+    </tr>
+    <tr>
+      <th>55</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>f1</td>
+      <td>0.857143</td>
+      <td>0.750000</td>
+      <td>0.047423</td>
+      <td>0.764706</td>
+      <td>0.790616</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>loss</td>
+      <td>0.722628</td>
+      <td>0.473485</td>
+      <td>0.102240</td>
+      <td>0.620068</td>
+      <td>0.605394</td>
+    </tr>
+    <tr>
+      <th>57</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>precision</td>
+      <td>0.750000</td>
+      <td>0.600000</td>
+      <td>0.062361</td>
+      <td>0.650000</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>58</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>recall</td>
+      <td>1.000000</td>
+      <td>0.928571</td>
+      <td>0.033672</td>
+      <td>1.000000</td>
+      <td>0.976190</td>
+    </tr>
+    <tr>
+      <th>59</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>roc_auc</td>
+      <td>0.933673</td>
+      <td>0.666667</td>
+      <td>0.110120</td>
+      <td>0.833333</td>
+      <td>0.811224</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[162]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[162]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hyperparamcombo_id</th>
+      <th>job_id</th>
+      <th>repeat_index</th>
+      <th>predictor_id</th>
+      <th>split</th>
+      <th>accuracy</th>
+      <th>f1</th>
+      <th>loss</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>roc_auc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>29</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>train</td>
+      <td>0.714286</td>
+      <td>0.764706</td>
+      <td>0.473485</td>
+      <td>0.650000</td>
+      <td>0.928571</td>
+      <td>0.933673</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.857143</td>
+      <td>0.620068</td>
+      <td>0.750000</td>
+      <td>1.000000</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>9</td>
+      <td>9</td>
+      <td>4</td>
+      <td>31</td>
+      <td>test</td>
+      <td>0.714286</td>
+      <td>0.750000</td>
+      <td>0.722628</td>
+      <td>0.600000</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>train</td>
+      <td>0.750000</td>
+      <td>0.758621</td>
+      <td>0.547876</td>
+      <td>0.733333</td>
+      <td>0.785714</td>
+      <td>0.811224</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.800000</td>
+      <td>3.459070</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>8</td>
+      <td>8</td>
+      <td>4</td>
+      <td>30</td>
+      <td>test</td>
+      <td>0.571429</td>
+      <td>0.571429</td>
+      <td>0.636163</td>
+      <td>0.500000</td>
+      <td>0.666667</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>train</td>
+      <td>0.821429</td>
+      <td>0.848485</td>
+      <td>0.299485</td>
+      <td>0.736842</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.857143</td>
+      <td>0.845627</td>
+      <td>0.750000</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>9</td>
+      <td>9</td>
+      <td>3</td>
+      <td>29</td>
+      <td>test</td>
+      <td>0.714286</td>
+      <td>0.750000</td>
+      <td>0.975309</td>
+      <td>0.600000</td>
+      <td>1.000000</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>train</td>
+      <td>0.892857</td>
+      <td>0.896552</td>
+      <td>0.412229</td>
+      <td>0.866667</td>
+      <td>0.928571</td>
+      <td>0.969388</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.800000</td>
+      <td>3.542673</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>8</td>
+      <td>8</td>
+      <td>3</td>
+      <td>28</td>
+      <td>test</td>
+      <td>0.714286</td>
+      <td>0.750000</td>
+      <td>0.649813</td>
+      <td>0.600000</td>
+      <td>1.000000</td>
+      <td>0.750000</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.857143</td>
+      <td>0.566346</td>
+      <td>0.750000</td>
+      <td>1.000000</td>
+      <td>0.750000</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>train</td>
+      <td>0.750000</td>
+      <td>0.787879</td>
+      <td>0.552645</td>
+      <td>0.684211</td>
+      <td>0.928571</td>
+      <td>0.933673</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>9</td>
+      <td>9</td>
+      <td>2</td>
+      <td>27</td>
+      <td>test</td>
+      <td>0.428571</td>
+      <td>0.600000</td>
+      <td>0.761833</td>
+      <td>0.428571</td>
+      <td>1.000000</td>
+      <td>0.416667</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>train</td>
+      <td>0.785714</td>
+      <td>0.750000</td>
+      <td>0.606985</td>
+      <td>0.900000</td>
+      <td>0.642857</td>
+      <td>0.862245</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.800000</td>
+      <td>0.564041</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>8</td>
+      <td>8</td>
+      <td>2</td>
+      <td>26</td>
+      <td>test</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.603421</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>train</td>
+      <td>0.857143</td>
+      <td>0.875000</td>
+      <td>0.465973</td>
+      <td>0.777778</td>
+      <td>1.000000</td>
+      <td>0.928571</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.800000</td>
+      <td>0.619605</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.833333</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>9</td>
+      <td>1</td>
+      <td>25</td>
+      <td>test</td>
+      <td>0.571429</td>
+      <td>0.571429</td>
+      <td>0.754951</td>
+      <td>0.500000</td>
+      <td>0.666667</td>
+      <td>0.750000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>train</td>
+      <td>0.714286</td>
+      <td>0.777778</td>
+      <td>0.551639</td>
+      <td>0.636364</td>
+      <td>1.000000</td>
+      <td>0.938776</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.857143</td>
+      <td>0.824062</td>
+      <td>0.750000</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>8</td>
+      <td>8</td>
+      <td>1</td>
+      <td>24</td>
+      <td>test</td>
+      <td>0.571429</td>
+      <td>0.666667</td>
+      <td>2.118411</td>
+      <td>0.500000</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>train</td>
+      <td>0.750000</td>
+      <td>0.800000</td>
+      <td>0.515694</td>
+      <td>0.666667</td>
+      <td>1.000000</td>
+      <td>0.948980</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.857143</td>
+      <td>0.619902</td>
+      <td>0.750000</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>9</td>
+      <td>0</td>
+      <td>23</td>
+      <td>test</td>
+      <td>0.571429</td>
+      <td>0.666667</td>
+      <td>0.626964</td>
+      <td>0.500000</td>
+      <td>1.000000</td>
+      <td>0.916667</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>validation</td>
+      <td>0.800000</td>
+      <td>0.800000</td>
+      <td>0.657118</td>
+      <td>1.000000</td>
+      <td>0.666667</td>
+      <td>0.666667</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>train</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.433796</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>8</td>
+      <td>8</td>
+      <td>0</td>
+      <td>22</td>
+      <td>test</td>
+      <td>0.571429</td>
+      <td>0.571429</td>
+      <td>0.638489</td>
+      <td>0.500000</td>
+      <td>0.666667</td>
+      <td>0.833333</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>We can also inspect the actual predictions for each split, which have been automatically <code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code>’ed back from their encoded values.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;test&#39;: array([&#39;bar&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;],
+       dtype=object),
+ &#39;validation&#39;: array([&#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;], dtype=object),
+ &#39;train&#39;: array([&#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;bar&#39;,
+        &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;spiral&#39;,
+        &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;,
+        &#39;spiral&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;], dtype=object)}
+</pre></div></div>
+</div>
+<p>Let’s dig into our recorded experiment to pull out the samples within the training set that were misclassified by comparing them to their actual labels.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">train_predicted</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">train_samples</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">splitset</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">train_actual</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">splitset</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">train_samples</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">comparison</span> <span class="o">=</span> <span class="n">train_predicted</span> <span class="o">==</span> <span class="n">train_actual</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">train_misclassifications</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">comparison</span><span class="o">==</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">train_samples_miss</span> <span class="o">=</span> <span class="p">[</span><span class="n">train_samples</span><span class="p">[</span><span class="n">miss</span><span class="p">]</span> <span class="k">for</span> <span class="n">miss</span> <span class="ow">in</span> <span class="n">train_misclassifications</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">img_miss</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">to_pillow</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">train_samples_miss</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Here is an example of a spiral that was missclassified as a bar.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">img_miss</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_heterogeneous_features_90_0.png" src="../_images/notebooks_heterogeneous_features_90_0.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="visualization.html" class="btn btn-neutral float-right" title="Visualization &amp; Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tensorflow_binary_classification.html" class="btn btn-neutral float-left" title="TensorFlow2: Training Loop." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

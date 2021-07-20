@@ -1,0 +1,1349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta property="og:title" content="Installation" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/installation.html" />
+  <meta property="og:site_name" content="AIQC" />
+  <meta property="og:description" content="TLDR:[ ]: pip install --upgrade aiqc If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook.[2]: ..." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
+  <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
+  <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; AIQC</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example Datasets" href="example_datasets.html" />
+    <link rel="prev" title="Overview" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/aiqc_logo_wide_white_docs_300px.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#TLDR">TLDR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Environment">Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Pickle-Disclaimer">Pickle Disclaimer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#AIQC-Package">AIQC Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a)-One-Line-Install">a) One-Line Install</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Create-Config-File">Create Config File</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Create-Database-File">Create Database File</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Config-File">Config File</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Location-Based-on-OS">Location Based on OS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a)-One-Liner">a) One-Liner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Reloading-the-Package">Reloading the Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Remote-Data">Remote Data</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#a)-High-Level-API">a) High-Level API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Preprocess-Data">Preprocess Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Build-Model">Build Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#b)-Low-Level-API">b) Low-Level API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id1">Preprocess Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id2">Build Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id3">Stage Experiment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="image_classification.html">Keras: Classify Binary Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Load-Data">Load Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Build-Model">Build Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_classification.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sequence_classification.html">Keras: Classify Binary Times Series</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_tabular_forecasting.html">Keras: Tabular Forecasting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#b)-Low-Level-API">b) Low-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Inference">Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="heterogeneous_features.html">Heterogeneous/ Multi-Modal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Ingesting-Example-Galaxy-Data">Ingesting Example Galaxy Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Tabular-Data">Tabular Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Image-Data">Image Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Defining-a-Model">Defining a Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Train-Models">Train Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Interpret-Results">Interpret Results</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Classification">Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Metrics">Individual Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Visualization">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Visualization">Individual Job Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#Regression">Regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id1">Individual Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Metrics">Aggregate Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Visualization">Aggregate Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id2">Individual Job Visualization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#1.-Pipeline">1. Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#a)-Tabular-Dataset">a) Tabular Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#b)-Sequence-Dataset">b) Sequence Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#c)-Image-Dataset">c) Image Dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#2.-Experiment">2. Experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Model-Functions">Model Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_build"><code class="docutils literal notranslate"><span class="pre">fn_build</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_train"><code class="docutils literal notranslate"><span class="pre">fn_train</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Hyperparameters">Hyperparameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment.make()"><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Object-Relational-Model-(ORM)">Object Relational Model (ORM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Either-Persisting-or-Fetch-Data">Either Persisting or Fetch Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Data-Sources">a) Data Sources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.from_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.from_path"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Sequence-Datasets">Sequence Datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Sequence.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Image-Datasets">Image Datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.from_urls()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.from_folder()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Reading-Datasets">b) Reading Datasets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Tabular.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_numpy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.to_pillow()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_pillow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Dataset.Image.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_numpy()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#2.-Selecting-Features-and-Labels.">2. Selecting <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Select-the-Label-column(s).">a) Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#ORM">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Deriving-Labels">Deriving Labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Labels">Reading Labels</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id1">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Features">Specifying Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Slicing-samples.">3. Slicing samples.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id2">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Windows">Reading Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Slice-samples-with-a-Splitset.">b) Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Stratification">Stratification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Splitting-Strategies">Splitting Strategies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id3">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id4">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Defining-Architectures-&amp;-Hyperparameters.">6. Defining Architectures &amp; Hyperparameters.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Model-Definition">Model Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Queue-of-training-Jobs.">7. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#i)-queue.run_jobs(in_background=False)">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=False)</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#ii)-[DEPRECATED]-queue.run_jobs(in_background=True);">ii) [DEPRECATED] <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#iii)-Future,-cluster-execution.">iii) Future, cluster execution.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Metrics-&amp;-Visualization">8. Metrics &amp; Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#Predictor">Predictor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#New-Splitset">New Splitset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#Run-Inference">Run Inference</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#purpose">Purpose.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#how-can-i-get-involved">How can I get involved?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#what-can-i-contribute">What can I contribute?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#setting-up-dev-environment">Setting up dev environment.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#programming-style">Programming style.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#code-of-conduct">Code of conduct.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../community.html#open-source">Open source.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../community.html#choosing-a-license">Choosing a license</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AIQC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/installation.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Installation">
+<h1>Installation<a class="headerlink" href="#Installation" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<div class="section" id="TLDR">
+<h2>TLDR<a class="headerlink" href="#TLDR" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
+</pre></div>
+</div>
+</div>
+<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+<span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Welcome to AIQC.
+To get started, run `aiqc.setup()`.
+
+
+=&gt; Info - Cannot fetch database yet because it has not been configured.
+
+=&gt; Info - it appears the following folder does not exist on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
+
+=&gt; Success - created folder at file path:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Next run `aiqc.create_config()`.
+
+
+=&gt; Success - the following file path already exists on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+
+=&gt; Success - created config file for settings at path:
+/Users/layne/Library/Application Support/aiqc/config.json
+
+
+=&gt; Next run `aiqc.create_db()`.
+
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">setup()</span></code> only needs to be ran once. Going forward, just <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>. Don’t use <code class="docutils literal notranslate"><span class="pre">as</span></code> when importing.</p>
+<blockquote>
+<div><p>Technically, the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import, but we don’t want to get in the habit of running system commands without explicit user consent.</p>
+</div></blockquote>
+<p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
+<blockquote>
+<div><p>So you <strong>do not</strong> have to worry about anything like installing a database server, database client, database users, configuring ports, configuring passwords/ secrets/ environment variables, or starting and restopping the database. Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>. Glad we found this fantastic and simple alternative to SQLAlchemy.</p>
+</div></blockquote>
+<p>Finally, be sure to read the plotting section below.</p>
+<hr class="docutils" />
+</div>
+<div class="section" id="Environment">
+<h2>Environment<a class="headerlink" href="#Environment" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Python-Version">
+<h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline">¶</a></h3>
+<p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was originally developed on 3.7.6 and then upgraded to 3.8.7. We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing python installations and virtualenvs.</p>
+<p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is in the root of the github.com/aiqc/aiqc repository.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">version</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;3.8.7 (default, Jan 28 2021, 17:14:59) \n[Clang 12.0.0 (clang-1200.0.31.1)]&#39;
+</pre></div></div>
+</div>
+<div class="section" id="Pickle-Disclaimer">
+<h4>Pickle Disclaimer<a class="headerlink" href="#Pickle-Disclaimer" title="Permalink to this headline">¶</a></h4>
+<p>AIQC, much like PyTorch, relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, if you create objects in your <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful info about your OS/ Python version is stored in the
+<code class="docutils literal notranslate"><span class="pre">config.json</span></code> file at the time of creation.</p>
+</div>
+</div>
+<div class="section" id="Operating-System">
+<h3>Operating System<a class="headerlink" href="#Operating-System" title="Permalink to this headline">¶</a></h3>
+<p>AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:</p>
+<ul class="simple">
+<li><p>macOS 10.15+</p></li>
+<li><p>Linux (Ubuntu, Alpine, RHEL).</p></li>
+<li><p>Windows 10 (and WSL).</p></li>
+</ul>
+<blockquote>
+<div><p>If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible.</p>
+</div></blockquote>
+</div>
+<div class="section" id="Optional---JupyterLab-IDE">
+<h3>Optional - JupyterLab IDE<a class="headerlink" href="#Optional---JupyterLab-IDE" title="Permalink to this headline">¶</a></h3>
+<p>AIQC runs anywhere Python runs. We just like Jupyter for interactive visualization and data transformation. FYI, <em>jupyterlab</em> is not an official dependency of the AIQC package.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">jupyterlab</span>
+</pre></div>
+</div>
+</div>
+<p>JupyterLab requires Node.js &gt;= 10. Once all extensions switch to JupyterLab 3.0 prebuilding, this will no longer be necessary.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">!</span>node -v
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+v14.7.0
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Plotting">
+<h3>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h3>
+<p>AIQC uses Plotly for interactive charts.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">plotly</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Optional---Plotly-in-JupyterLab">
+<h4>Optional - Plotly in JupyterLab<a class="headerlink" href="#Optional---Plotly-in-JupyterLab" title="Permalink to this headline">¶</a></h4>
+<p>This requires the following dependencies:</p>
+<ul class="simple">
+<li><p>Python packages: [<code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code>, <code class="docutils literal notranslate"><span class="pre">plotly</span></code>]</p></li>
+<li><p>JupyterLab Extension: [<code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code>].</p></li>
+</ul>
+<blockquote>
+<div><p><a class="reference external" href="https://github.com/plotly/plotly.py#jupyterlab-support">https://github.com/plotly/plotly.py#jupyterlab-support</a></p>
+</div></blockquote>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipywidgets</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="New:-simplified,-pre-built-extension-for-plotly&gt;=5.0.0">
+<h5>New: simplified, pre-built extension for plotly&gt;=5.0.0<a class="headerlink" href="#New:-simplified,-pre-built-extension-for-plotly>=5.0.0" title="Permalink to this headline">¶</a></h5>
+<p>The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.</p>
+</div>
+<div class="section" id="Deprecated:-manually-building-extension-process-for-plotly&lt;=5.0.0">
+<h5><em>Deprecated:</em> manually building extension process for plotly&lt;=5.0.0<a class="headerlink" href="#Deprecated:-manually-building-extension-process-for-plotly<=5.0.0" title="Permalink to this headline">¶</a></h5>
+<p><em>Deprecated:</em> If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Deprecated</span>
+<span class="c1">#!jupyter labextension install jupyterlab-plotly</span>
+<span class="c1">#!jupyter labextension check jupyterlab-plotly</span>
+<span class="c1">#!jupyter lab build</span>
+</pre></div>
+</div>
+</div>
+<p><em>Deprecated:</em> After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</p>
+</div>
+</div>
+</div>
+<div class="section" id="Optional---Swap-Space-for-Failover-Memory">
+<h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline">¶</a></h3>
+<p>It’s good practice to configure “swap space” on your machine so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD.</p>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="AIQC-Package">
+<h2>AIQC Package<a class="headerlink" href="#AIQC-Package" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
+</pre></div>
+</div>
+</div>
+<p>Troubleshooting:</p>
+<ul class="simple">
+<li><p>Be sure to include <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> when running the command above.</p>
+<ul>
+<li><p>The command above must often be ran twice (PyPI bug).</p></li>
+</ul>
+</li>
+<li><p>Upgrade <code class="docutils literal notranslate"><span class="pre">pip</span></code> itself: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span></code></p></li>
+<li><p>Install<code class="docutils literal notranslate"><span class="pre">wheel</span></code> is recommended: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">wheel</span></code></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+</div>
+<div class="section" id="AIQC-Config-&amp;-Database">
+<h2>AIQC Config &amp; Database<a class="headerlink" href="#AIQC-Config-&-Database" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a)-One-Line-Install">
+<h3>a) One-Line Install<a class="headerlink" href="#a)-One-Line-Install" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup()</span></code> method just runs the following methods in one go: <code class="docutils literal notranslate"><span class="pre">create_folder()</span></code>, <code class="docutils literal notranslate"><span class="pre">create_config()</span></code>, and <code class="docutils literal notranslate"><span class="pre">create_db()</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+=&gt; Info - it appears the following folder does not exist on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
+
+=&gt; Success - created folder at file path:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Next run `aiqc.create_config()`.
+
+
+=&gt; Success - the following file path already exists on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+
+=&gt; Success - created config file for settings at path:
+/Users/layne/Library/Application Support/aiqc/config.json
+
+
+=&gt; Next run `aiqc.create_db()`.
+
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="b)-Or-Line-by-Line-Configuration">
+<h3>b) Or Line-by-Line Configuration<a class="headerlink" href="#b)-Or-Line-by-Line-Configuration" title="Permalink to this headline">¶</a></h3>
+<p>If you need to troubleshoot your installation, then run the installation steps one-by-one.</p>
+<div class="section" id="Create-Config-File">
+<h4>Create Config File<a class="headerlink" href="#Create-Config-File" title="Permalink to this headline">¶</a></h4>
+<p>Enter the following commands one-by-one and follow any instructions returned by the command prompt to resolve errors should they arise.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_folder</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+=&gt; Info - it appears the following folder does not exist on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
+
+=&gt; Success - created folder at file path:
+/Users/layne/Library/Application Support/aiqc/
+
+=&gt; Next run `aiqc.create_config()`.
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_config</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Success - the following file path already exists on your system:
+/Users/layne/Library/Application Support/aiqc/
+
+
+=&gt; Success - created config file for settings at path:
+/Users/layne/Library/Application Support/aiqc/config.json
+
+
+=&gt; Next run `aiqc.create_db()`.
+
+</pre></div></div>
+</div>
+<p>If you run the <code class="docutils literal notranslate"><span class="pre">.create_*()</span></code> commands in the future, don’t worry, they won’t overwrite your existing data. They will detect the presence of the data and skip creation.</p>
+</div>
+<div class="section" id="Create-Database-File">
+<h4>Create Database File<a class="headerlink" href="#Create-Database-File" title="Permalink to this headline">¶</a></h4>
+<p>This creates a SQLite database file that AIQC uses to reproducibly record experiments.</p>
+<p>Only now that the configuration exists can we create the database tables. After creating the config, the AIQC module should reload itself automatically. If you encounter errors, reference the Troubleshooting section below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Config-File">
+<h3>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline">¶</a></h3>
+<p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;created_at&#39;: &#39;2021-02-04 18:23:01.707030&#39;,
+ &#39;config_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/config.json&#39;,
+ &#39;db_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3&#39;,
+ &#39;sys.version&#39;: &#39;3.8.7 (default, Jan 28 2021, 17:14:59) \n[Clang 12.0.0 (clang-1200.0.31.1)]&#39;,
+ &#39;platform.python_implementation()&#39;: &#39;CPython&#39;,
+ &#39;sys.prefix&#39;: &#39;/Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3&#39;,
+ &#39;os.name&#39;: &#39;posix&#39;,
+ &#39;platform.version()&#39;: &#39;Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10 PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64&#39;,
+ &#39;platform.java_ver()&#39;: [&#39;&#39;, &#39;&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], [&#39;&#39;, &#39;&#39;, &#39;&#39;]],
+ &#39;platform.win32_ver()&#39;: [&#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;],
+ &#39;platform.libc_ver()&#39;: [&#39;&#39;, &#39;&#39;],
+ &#39;platform.mac_ver()&#39;: [&#39;10.15.6&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], &#39;x86_64&#39;]}
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="Location-of-AIQC-Files">
+<h2>Location of AIQC Files<a class="headerlink" href="#Location-of-AIQC-Files" title="Permalink to this headline">¶</a></h2>
+<p>AIQC makes use of the Python package, <code class="docutils literal notranslate"><span class="pre">appdirs</span></code>, for an operating system (OS) agnostic location to store configuration and database files. This not only keeps your <code class="docutils literal notranslate"><span class="pre">$HOME</span></code> directory clean, but also helps prevent careless users from deleting your database.</p>
+<blockquote>
+<div><p>The installation process checks not only that the corresponding appdirs folder exists on your system but also that you have the permissions neceessary to read from and write to that location. If these conditions are not met, then you will be provided instructions during the installation about how to create the folder and/ or grant yourself the appropriate permissions.</p>
+</div></blockquote>
+<blockquote>
+<div><p>We have attempted to support both Windows (<code class="docutils literal notranslate"><span class="pre">icacls</span></code> permissions and backslashes <code class="docutils literal notranslate"><span class="pre">C:\\</span></code>) as well as POSIX including Mac and Linux including containers &amp; Google Colab (<code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">letters</span></code> permissions and slashes <code class="docutils literal notranslate"><span class="pre">/</span></code>). Note: due to variations in the ordering of appdirs author and app directories in different OS’, we do not make use of the appdirs <code class="docutils literal notranslate"><span class="pre">appauthor</span></code> directory, only the <code class="docutils literal notranslate"><span class="pre">appname</span></code> directory.</p>
+</div></blockquote>
+<div class="section" id="Location-Based-on-OS">
+<h3>Location Based on OS<a class="headerlink" href="#Location-Based-on-OS" title="Permalink to this headline">¶</a></h3>
+<p>Test it for yourself: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">appdirs;</span> <span class="pre">appdirs.user_data_dir('aiqc');</span></code></p>
+<ul class="simple">
+<li><p>Mac: <code class="docutils literal notranslate"><span class="pre">/Users/Username/Library/Application</span> <span class="pre">Support/aiqc</span></code></p></li>
+<li><p>Linux - Alpine and Ubuntu: <code class="docutils literal notranslate"><span class="pre">/root/.local/share/aiqc</span></code></p></li>
+<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">C:\Users\Username\AppData\Local\aiqc</span></code></p></li>
+</ul>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="Optional---Deleting-the-Database">
+<h2>Optional - Deleting the Database<a class="headerlink" href="#Optional---Deleting-the-Database" title="Permalink to this headline">¶</a></h2>
+<p>If, for whatever reason, you find that you need to destroy your SQLite database file and start from scratch, then you can do so without having to manually find and <code class="docutils literal notranslate"><span class="pre">rm</span></code> the database file. In order to reduce the chance of an accident, <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> by default.</p>
+<blockquote>
+<div><p>Bear in mind that if you are on either a server or shared OS, then this database may contain more than just your data.</p>
+</div></blockquote>
+<div class="section" id="a)-One-Liner">
+<h3>a) One-Liner<a class="headerlink" href="#a)-One-Liner" title="Permalink to this headline">¶</a></h3>
+<p>Both <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> and <code class="docutils literal notranslate"><span class="pre">rebuild:bool=False</span></code>, so it only does what you command it to do.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Success - deleted database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="b)-Or-Line-by-Line">
+<h3>b) Or Line-by-Line<a class="headerlink" href="#b)-Or-Line-by-Line" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Success - deleted database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=&gt; Success - created database file at path:
+/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+
+
+💾  Success - created all database tables.  💾
+
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</div>
+</div>
+<div class="section" id="Troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Reloading-the-Package">
+<h3>Reloading the Package<a class="headerlink" href="#Reloading-the-Package" title="Permalink to this headline">¶</a></h3>
+<p>After CRUD’ing the config files, AIQC needs the be reimported in order to detect those changes. This can be done in one of three ways:</p>
+<ul class="simple">
+<li><p>If everything goes smoothly, it should automatically happen behind the scenes: <code class="docutils literal notranslate"><span class="pre">reload(sys.modules['aiqc'])</span></code>.</p></li>
+<li><p>Manually by the user: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">importlib</span> <span class="pre">import</span> <span class="pre">reload;</span> <span class="pre">reload(aiqc)</span></code>.</p></li>
+<li><p>Manually restarting your Python kernel/ session and <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_datasets.html" class="btn btn-neutral float-right" title="Example Datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
