@@ -1,5 +1,5 @@
-import os, sys, platform, json, operator, multiprocessing, io, copy, random, itertools, warnings, h5py, \
-	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec, scipy
+import os, sys, platform, json, operator, multiprocessing, io, random, itertools, warnings, h5py, gzip, \
+	statistics, inspect, requests, validators, math, time, pprint, datetime, importlib, fsspec, scipy, pickle
 # Python utils.
 from textwrap import dedent
 # External utils.
@@ -5194,6 +5194,11 @@ class Queue(BaseModel):
 
 	###
 	def run_jobs_decoupled(id:int):
+		"""
+		- Jobs re-use the same data instead of preprocessing it from scratch. 
+		- Samples are cached because post-processing has to transforms the data.
+		- The alternative is to `deepcopy()` the samples, but the memory pressure is too great.
+		"""
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
 		jobs = list(queue.jobs)
@@ -5201,80 +5206,125 @@ class Queue(BaseModel):
 		foldset = queue.foldset
 		library = queue.algorithm.library
 
-		# --- 1. Fetch the data for the runs ---
-		samples = {}
-		ordered_names = []
+		# The number of folds is already reflected in the number of jobs.
+		repeated_jobs = [] #tuple:(repeat_index, job)
+		for r in range(queue.repeat_count):
+			for j in jobs:
+				repeated_jobs.append((r,j))
+		cached_samples = f"{app_dir}cached_samples.gzip"
+		if (foldset is None):
+			samples = {}
+			ordered_names = [] 
+			
+			if (hide_test == False):
+				samples['test'] = splitset.samples['test']
+				key_evaluation = 'test'
+				ordered_names.append('test')
+			elif (hide_test == True):
+				key_evaluation = None
 
-		if (hide_test == False):
-			samples['test'] = splitset.samples['test']
-			key_evaluation = 'test'
-			ordered_names.append('test')
-		elif (hide_test == True):
-			key_evaluation = None
+			if (splitset.has_validation):
+				samples['validation'] = splitset.samples['validation']
+				key_evaluation = 'validation'
+				ordered_names.insert(0, 'validation')
 
-		if (splitset.has_validation):
-			samples['validation'] = splitset.samples['validation']
-			key_evaluation = 'validation'
-			ordered_names.insert(0, 'validation')
-
-		if (foldset is not None):
-			for fold in foldset.folds:
-				samples['folds_train_combined'] = fold.samples['folds_train_combined']
-				samples['fold_validation'] = fold.samples['fold_validation']
-
-				key_train = "folds_train_combined"
-				key_evaluation = "fold_validation"
-
-				ordered_names.insert(0, 'fold_validation')
-				ordered_names.insert(0, 'folds_train_combined')
-				samples = {k: samples[k] for k in ordered_names}
-				# Underlying sample data is fetched during loop below.
-
-		elif (foldset is None):
 			samples['train'] = splitset.samples['train']
 			key_train = "train"
 			ordered_names.insert(0, 'train')
 			samples = {k: samples[k] for k in ordered_names}
-			# Fetch the data once for all jobs. Encoder fits still need to tied to job.
+			# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
 			job = list(queue.jobs)[0]
+
 			samples, input_shapes = Queue.stage_data(
 				splitset=splitset, job=job
 				, samples=samples, library=library
 				, key_train=key_train, key_evaluation=key_evaluation
 			)
+			with gzip.open(cached_samples,'wb') as f:
+				pickle.dump(samples,f)
 
-		# --- 2. Loop over the jobs ---
-		repeated_jobs = [] #tuple:(job, repeat_count)
-		for i in range(queue.repeat_count):
-			for j in jobs:
-				repeated_jobs.append((j,i))
+			try:
+				i=0
+				for rj in tqdm(
+					repeated_jobs
+					, desc = "🔮 Training Models 🔮"
+					, ncols = 100
+				):
+					if (i>0):
+						with gzip.open(cached_samples,'rb') as f:
+							samples = pickle.load(f)
+					# See if this job has already completed.
+					matching_predictor = Predictor.select().join(Job).where(
+						Predictor.repeat_index==rj[0], Job.id==rj[1].id
+					)
+					if (matching_predictor.count()==0):
+						# Still need to fetch the underlying samples for a folded job.
+						Job.run_decoupled(
+							id=rj[1].id, repeat_index=rj[0]
+							, samples=samples, input_shapes=input_shapes
+							, key_train=key_train, key_evaluation=key_evaluation
+						)
+					i+=1
+			except (KeyboardInterrupt):
+				# So that we don't get nasty error messages when interrupting a long running loop.
+				os.remove(cached_samples)
+				print("\nQueue was gracefully interrupted.\n")
+			except:
+				os.remove(cached_samples)
+				raise
 
-		try:
-			for rj in tqdm(
-				repeated_jobs
-				, desc = "🔮 Training Models 🔮"
-				, ncols = 100
-			):
-				# See if this job has already completed.
-				matching_predictor = Predictor.select().join(Job).where(
-					Job.id==rj[0].id, Predictor.repeat_index==rj[1]
-				)
-				if (matching_predictor.count()==0):
-					# Still need to fetch the underlying samples for a folded job.
-					if (rj[0].fold is not None):
+
+		elif (foldset is not None):
+			try:
+				for rj in tqdm(
+					repeated_jobs
+					, desc = "🔮 Training Models 🔮"
+					, ncols = 100
+				):
+					fold = rj[1].fold
+					samples = {}
+					ordered_names = []
+
+					if (hide_test == False):
+						ordered_names.append('test')
+					if (splitset.has_validation):
+						ordered_names.insert(0, 'validation')
+
+					key_train = "folds_train_combined"
+					key_evaluation = "fold_validation"
+					ordered_names.insert(0, 'fold_validation')
+					ordered_names.insert(0, 'folds_train_combined')
+
+					# See if this job has already completed.
+					matching_predictor = Predictor.select().join(Job).join(Fold).where(
+						Predictor.repeat_index==rj[0], Job.id==rj[1].id, Fold.id==fold.id
+					)
+					if (matching_predictor.count()==0):
+						# Test and validation splits need to be fetch from scratch because their 
+						# preprocessing is dependent on the training fold.
+						if (hide_test == False):
+							samples['test'] = splitset.samples['test']
+						if (splitset.has_validation):
+							samples['validation'] = splitset.samples['validation']
+
+						# Still need to fetch the underlying samples for a folded job.
+						samples['folds_train_combined'] = fold.samples['folds_train_combined']
+						samples['fold_validation'] = fold.samples['fold_validation']
+						samples = {k: samples[k] for k in ordered_names}
+
 						samples, input_shapes = Queue.stage_data(
-							splitset=splitset, job=rj[0]
+							splitset=splitset, job=rj[1]
 							, samples=samples, library=library
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
-					Job.run_decoupled(
-						id=rj[0].id, repeat_index=rj[1]
-						, samples=samples, input_shapes=input_shapes
-						, key_train=key_train, key_evaluation=key_evaluation
-					)
-		except (KeyboardInterrupt):
-			# So that we don't get nasty error messages when interrupting a long running loop.
-			print("\nQueue was gracefully interrupted.\n")
+						Job.run_decoupled(
+							id=rj[1].id, repeat_index=rj[0]
+							, samples=samples, input_shapes=input_shapes
+							, key_train=key_train, key_evaluation=key_evaluation
+						)
+			except (KeyboardInterrupt):
+				# So that we don't get nasty error messages when interrupting a long running loop.
+				print("\nQueue was gracefully interrupted.\n")
 		
 	###
 	def stage_data(
@@ -5336,6 +5386,7 @@ class Queue(BaseModel):
 		  features because it would be hard to figure out feature.id-based keys on the fly.
 		""" 
 		for split, indices in samples.items():
+			#print(indices)###
 			if (feature_count == 1):
 				samples[split] = {"features": arr_features[indices]}
 			elif (feature_count > 1):
@@ -5797,7 +5848,6 @@ class Job(BaseModel):
 		arr_features:object, samples_train:list,
 		encoderset:object,
 	):
-
 		featurecoders = list(encoderset.featurecoders)
 		fitted_encoders = []
 		if (len(featurecoders) > 0):
@@ -5931,18 +5981,10 @@ class Job(BaseModel):
 		analysis_type = algorithm.analysis_type
 		splitset = predictor.job.queue.splitset
 		supervision = splitset.supervision
-		"""
-		This step includes a lot of post-processing, so if you are trying to hold `samples` in-memory
-		across jobs then you need to duplicate the data. The tradeoff is memory vs speed. However, 
-		this memory surge is temporary and the computation being performed on it is minimal so if 
-		it spills onto swap-disk then its not a big deal. Maybe I could cache the original samples dict
-		so that it would decrease the memory pressure.
-		"""
-		post_samples = copy.deepcopy(samples)
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
-		first_key = list(post_samples.keys())[0]
-		if ('labels' in post_samples[first_key].keys()):
+		first_key = list(samples.keys())[0]
+		if ('labels' in samples[first_key].keys()):
 			has_labels = True
 		else:
 			has_labels = False
@@ -5976,7 +6018,7 @@ class Job(BaseModel):
 
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
-			for split, data in post_samples.items():
+			for split, data in samples.items():
 				preds, probs = fn_predict(model, data)
 				predictions[split] = preds
 				probabilities[split] = probs
@@ -6025,7 +6067,7 @@ class Job(BaseModel):
 		elif (analysis_type=="regression"):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
-			for split, data in post_samples.items():
+			for split, data in samples.items():
 				preds = fn_predict(model, data)
 				predictions[split] = preds
 				# Outputs numpy.
@@ -6038,7 +6080,6 @@ class Job(BaseModel):
 						tz_preds = torch.FloatTensor(preds)
 						loss = loser(tz_preds, data['labels'])
 						# After obtaining loss, make labels numpy again for metrics.
-						### this is preventing reuse of samples.
 						data['labels'] = data['labels'].detach().numpy()
 						# `preds` object is still numpy.
 
@@ -6219,7 +6260,7 @@ class Job(BaseModel):
 			, predictor = predictor
 			, splitset = splitset
 		)
-		del post_samples
+		del samples
 		return prediction
 
 	###
