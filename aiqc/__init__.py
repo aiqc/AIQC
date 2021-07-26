@@ -805,7 +805,7 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
-			name = folder_path if (name is None)
+			if (name is None): name = folder_path
 			source_path = os.path.abspath(folder_path)
 			file_paths = Dataset.sorted_file_list(source_path)
 			file_count = len(file_paths)
@@ -815,7 +815,7 @@ class Dataset(BaseModel):
 			for path in file_paths:
 				img = Imaje.open(path)
 				arr = np.array(img)
-				arr = np.array(arr) if (arr.ndim==2)
+				if (arr.ndim==2): arr=np.array(arr)
 				arr_4d.append(arr)
 			arr_4d = np.array(arr_4d)
 
@@ -864,7 +864,7 @@ class Dataset(BaseModel):
 					requests.get(url, stream=True).raw
 				)
 				arr = np.array(img)
-				arr = np.array(arr) if (arr.ndim==2)
+				if (arr.ndim==2): arr=np.array(arr)
 				arr_4d.append(arr)
 			arr_4d = np.array(arr_4d)
 
@@ -957,20 +957,11 @@ class Dataset(BaseModel):
 			column_names = listify(column_names)
 			if ((ingest==False) and (isinstance(dtype, dict))):
 				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
+			# Checking that the shape is 4D validates that each internal array is uniformly shaped.
 			if (ndarray_4D.ndim!=4):
-				raise ValueError("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`.\n")
+				raise ValueError("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`. Tip: shapes of each image array must be the same.\n")
 			Dataset.arr_validate(ndarray_4D)
 			
-			shapes = []
-			for arr in tqdm(
-				ndarray_4D
-				, desc = "🖼️ Validating Images 🖼️"
-				, ncols = 85
-			):
-				shapes.append(arr.shape)
-			if (len(set(shapes))>1):
-				raise ValueError("\nYikes - The image arrays you provided do not have the same shape.\n")
-
 			if (paths is not None):
 				for i, arr in enumerate(tqdm(
 					ndarray_4D
@@ -1008,8 +999,7 @@ class Dataset(BaseModel):
 
 
 		def to_numpy(id:int, samples:list=None, columns:list=None):
-			samples = listify(samples)
-			columns = listify(columns)
+			samples, columns = listify(samples), listify(columns)
 			dataset = Dataset.get_by_id(id)
 			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
 			if (samples is not None):
@@ -1186,11 +1176,12 @@ class Dataset(BaseModel):
 				raise ValueError(dedent(f"""
 				Yikes - Sequence Datasets can only be constructed from 3D arrays.
 				Your array dimensions had <{ndarray_3D.ndim}> dimensions.
+				Tip: the shape of each internal array must be the same.
 				"""))
 
 			if (_dataset_index is None):
 				dataset_index = Dataset.Sequence.dataset_index
-			else:
+			elif (_dataset_index is None):
 				dataset_index = _dataset_index
 			file_count = len(ndarray_3D)
 			dataset = Dataset.create(
@@ -1203,23 +1194,6 @@ class Dataset(BaseModel):
 			)
 
 			try:
-				# 'ragged nested sequences' still have a .__class__ ndarray.
-				shapes = []
-				for i, arr in enumerate(tqdm(
-					ndarray_3D
-					, desc = "⏱️ Validating Sequences 🧬"
-					, ncols = 85
-					, disable = _disable
-				)):
-					shapes.append(arr.shape)
-
-				if (len(set(shapes)) > 1):
-					dataset.delete_instance()# Orphaned.
-					raise ValueError(dedent(f"""
-					Yikes - All 2D arrays in the Dataset must be of the shape.
-					`ndarray.shape`\nHere are the unique sizes you provided:\n{set(shapes)}
-					"""))
-
 				for i, arr in enumerate(tqdm(
 					ndarray_3D
 					, desc = "⏱️ Ingesting Sequences 🧬"
