@@ -557,7 +557,7 @@ class Dataset(BaseModel):
 		elif (dataset.dataset_type == 'sequence'):
 			df = Dataset.Sequence.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
-			raise ValueError(f"\nYikes - `dataset_type={dataset.dataset_type}` does not have a `to_pandas()` method.\n")
+			df = Dataset.Image.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
@@ -568,14 +568,13 @@ class Dataset(BaseModel):
 
 		if (dataset.dataset_type == 'tabular'):
 			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
-		elif (dataset.dataset_type == 'image'):
-			if (columns is not None):
-				raise ValueError("\nYikes - `Dataset.Image.to_numpy` does not accept a `columns` argument.\n")
-			arr = Dataset.Image.to_numpy(id=id, samples=samples)
-		elif (dataset.dataset_type == 'text'):
-			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'sequence'):
 			arr = Dataset.Sequence.to_numpy(id=id, columns=columns, samples=samples)
+		elif (dataset.dataset_type == 'text'):
+			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
+		elif (dataset.dataset_type == 'image'):
+			arr = Dataset.Image.to_numpy(id=id, columns=columns, samples=samples)
+
 		return arr
 
 
@@ -1000,16 +999,26 @@ class Dataset(BaseModel):
 
 		def to_numpy(id:int, samples:list=None, columns:list=None):
 			samples, columns = listify(samples), listify(columns)
-			dataset = Dataset.get_by_id(id)
 			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
 			if (samples is not None):
-				datasets = Dataset.select().where(
-					Dataset.dataset.id==dataset.id, Dataset.dataset_index<<samples
-				)
+				# ORM was queries were being weird about the self foreign key.
+				datasets = [Dataset.get_by_id(s) for s in samples]
 			elif (samples is None):
-				datasets = dataset.datasets
+				datasets = list(Dataset.get_by_id(id).datasets)
 			arr_4d = np.array([d.to_numpy(columns=columns) for d in datasets])
 			return arr_4d
+
+
+		def to_pandas(id:int, samples:list=None, columns:list=None):
+			samples, columns = listify(samples), listify(columns)
+			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
+			if (samples is not None):
+				# ORM was queries were being weird about the self foreign key.
+				datasets = [Dataset.get_by_id(s) for s in samples]
+			elif (samples is None):
+				datasets = list(Dataset.get_by_id(id).datasets)
+			dfs = [d.to_pandas(columns=columns) for d in datasets]
+			return dfs
 
 		"""
 		def to_pillow(id:int, samples:list=None):
@@ -1179,7 +1188,7 @@ class Dataset(BaseModel):
 				Tip: the shape of each internal array must be the same.
 				"""))
 
-			if (_dataset_index is None):
+			if (_dataset_index is not None):
 				dataset_index = Dataset.Sequence.dataset_index
 			elif (_dataset_index is None):
 				dataset_index = _dataset_index
@@ -1214,15 +1223,9 @@ class Dataset(BaseModel):
 			return dataset
 
 
-		def to_numpy(
-			id:int, 
-			columns:list = None, 
-			samples:list = None
-		):
+		def to_numpy(id:int, columns:list=None, samples:list=None):
+			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
-			columns = listify(columns)
-			samples = listify(samples)
-			
 			if (samples is None):
 				files = dataset.files
 			elif (samples is not None):
@@ -1239,15 +1242,9 @@ class Dataset(BaseModel):
 			return arr_3D
 
 
-		def to_pandas(
-			id:int, 
-			columns:list = None, 
-			samples:list = None
-		):
+		def to_pandas(id:int, columns:list=None, samples:list=None):
+			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
-			columns = listify(columns)
-			samples = listify(samples)
-			
 			if (samples is None):
 				files = dataset.files
 			elif (samples is not None):
