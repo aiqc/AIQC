@@ -523,7 +523,6 @@ class Dataset(BaseModel):
 	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
 
 
-
 	def make_label(id:int, columns:list):
 		columns = listify(columns)
 		l = Label.from_dataset(dataset_id=id, columns=columns)
@@ -794,6 +793,7 @@ class Dataset(BaseModel):
 
 	
 	class Image():
+		# PIL supported file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
 		dataset_type = 'image'
 		dataset_index = 0
 
@@ -814,7 +814,8 @@ class Dataset(BaseModel):
 			for path in file_paths:
 				img = Imaje.open(path)
 				arr = np.array(img)
-				if (arr.ndim==2): arr=np.array(arr)
+				if (arr.ndim==2):
+					arr=np.array([arr])
 				arr_4d.append(arr)
 			arr_4d = np.array(arr_4d)
 
@@ -863,7 +864,8 @@ class Dataset(BaseModel):
 					requests.get(url, stream=True).raw
 				)
 				arr = np.array(img)
-				if (arr.ndim==2): arr=np.array(arr)
+				if (arr.ndim==2):
+					arr=np.array([arr])
 				arr_4d.append(arr)
 			arr_4d = np.array(arr_4d)
 
@@ -906,6 +908,8 @@ class Dataset(BaseModel):
 					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
 				if (not os.path.isfile(ndarray4D_or_npyPath)):
 					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+				if (not ndarray4D_or_npyPath.lower().endswith('.npy')):
+					raise ValueError("\nYikes - Path must end with '.npy' or '.NPY'\n")
 				source_path = ndarray4D_or_npyPath
 				try:
 					# `allow_pickle=False` prevented it from reading the file.
@@ -920,7 +924,7 @@ class Dataset(BaseModel):
 				if (ingest==False):
 					raise ValueError("\nYikes - If provided an in-memory array, then `ingest` cannot be False.\n")
 
-			file_count = ndarray_4D.shape[-1]
+			file_count = ndarray_4D.shape[1]#This is the 3rd dimension
 			dataset = Dataset.create(
 				dataset_type = Dataset.Image.dataset_type
 				, dataset_index = Dataset.Image.dataset_index
@@ -932,11 +936,11 @@ class Dataset(BaseModel):
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = ndarray_4D
-					, paths = None
 					, name = name
 					, dtype = dtype
 					, column_names = column_names
 					, ingest = ingest
+					, source_path = source_path
 				)
 			except:
 				dataset.delete_instance()
@@ -952,6 +956,7 @@ class Dataset(BaseModel):
 			, name:str = None
 			, dtype:object = None
 			, column_names:list = None
+			, source_path:str = None
 		):
 			column_names = listify(column_names)
 			if ((ingest==False) and (isinstance(dtype, dict))):
@@ -992,6 +997,7 @@ class Dataset(BaseModel):
 						, column_names = column_names
 						, ingest = ingest
 						, _dataset_index = i
+						, _source_path = source_path
 						, _disable = True
 						, _dataset = dataset
 					)
@@ -1163,6 +1169,8 @@ class Dataset(BaseModel):
 					source_path = _source_path
 				elif (_source_path is None):
 					source_path = ndarray3D_or_npyPath
+				if (not source_path.lower().endswith(".npy")):
+					raise ValueError("\nYikes - Path must end with '.npy' or '.NPY'\n")
 				try:
 					# `allow_pickle=False` prevented it from reading the file.
 					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
@@ -1503,20 +1511,28 @@ class File(BaseModel):
 						, desired_cols = columns
 					)
 				dtype = list(file.tabulars[0].dtypes.values())[0] #`ingest==False` only allows singular dtype.
-				# Verified that it is lazy via `sys.getsizeof()`				
-				lazy_load = np.load(file.dataset.source_path)
-				if (lazy_load.ndim==3):
+
+				source_path = file.dataset.source_path
+				if (source_path.lower().endswith('.npy')):
+					# work at the Dataset level.
+					# Verified that it is lazy loaded via `sys.getsizeof()`				
+					arr = np.load(source_path)
+				else:
+					arr = np.array(Imaje.open(source_path))
+
+				if (arr.ndim==3):
 					if (columns is not None):
 						# 1st accessor[] gets the 2D. 2nd accessor[] the cols.
-						arr = lazy_load[file.file_index][:,col_indices].astype(dtype)
+						arr = arr[file.file_index][:,col_indices].astype(dtype)
 					else:
-						arr = lazy_load[file.file_index].astype(dtype)
-				elif (lazy_load.ndim==4):
+						arr = arr[file.file_index].astype(dtype)
+				elif (arr.ndim==4):
 					if (columns is not None):
 						# 1st accessor[] gets the 3D. 2nd accessor[] the 2D. 3rd [] the cols.
-						arr = lazy_load[f_dataset.dataset_index][file.file_index][:,col_indices].astype(dtype)
+						arr = arr[f_dataset.dataset_index][file.file_index][:,col_indices].astype(dtype)
 					else:
-						arr = lazy_load[f_dataset.dataset_index][file.file_index].astype(dtype)
+						arr = arr[f_dataset.dataset_index][file.file_index].astype(dtype)
+
 			else:
 				df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
 				arr = df.to_numpy()
