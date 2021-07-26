@@ -515,9 +515,13 @@ class Dataset(BaseModel):
 	The sub-classes are not 1-1 tables. They simply provide namespacing for functions
 	to avoid functions riddled with if statements about dataset_type and null parameters.
 	"""
+	dataset_index = IntegerField()
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
-	file_count = IntegerField() # only includes file_types that match the dataset_type.
+	file_count = IntegerField() # used in Dataset.Sequence, but for Dataset.Image this really represents the number of seq datasets.
 	source_path = CharField(null=True)
+	#http://docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
+	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
+
 
 
 	def make_label(id:int, columns:list):
@@ -641,9 +645,10 @@ class Dataset(BaseModel):
 		  because then ORM would make a separate table for it.
 		- It is just a collection of methods and default variables.
 		"""
+		dataset_index = 0
 		dataset_type = 'tabular'
-		file_index = 0
 		file_count = 1
+		file_index = 0
 
 		def from_path(
 			file_path:str
@@ -678,6 +683,7 @@ class Dataset(BaseModel):
 
 			dataset = Dataset.create(
 				dataset_type = Dataset.Tabular.dataset_type
+				, dataset_index = Dataset.Tabular.dataset_index
 				, file_count = Dataset.Tabular.file_count
 				, source_path = source_path
 				, name = name
@@ -712,8 +718,9 @@ class Dataset(BaseModel):
 				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
 
 			dataset = Dataset.create(
-				file_count = Dataset.Tabular.file_count
-				, dataset_type = Dataset.Tabular.dataset_type
+				dataset_type = Dataset.Tabular.dataset_type
+				, dataset_index = Dataset.Tabular.dataset_index
+				, file_count = Dataset.Tabular.file_count
 				, name = name
 				, source_path = None
 			)
@@ -736,6 +743,7 @@ class Dataset(BaseModel):
 			, name:str = None
 			, dtype:object = None
 			, column_names:list = None
+			, _dataset_index:int = None
 		):
 			column_names = listify(column_names)
 			Dataset.arr_validate(ndarray)
@@ -748,10 +756,12 @@ class Dataset(BaseModel):
 				"""))
 			
 			dataset = Dataset.create(
-				file_count = Dataset.Tabular.file_count
+				dataset_type = Dataset.Tabular.dataset_type
+				, dataset_index = Dataset.Tabular.dataset_index
+				, file_count = Dataset.Tabular.file_count
 				, name = name
 				, source_path = None
-				, dataset_type = Dataset.Tabular.dataset_type
+				
 			)
 			try:
 				File.Tabular.from_numpy(
@@ -766,11 +776,7 @@ class Dataset(BaseModel):
 			return dataset
 
 
-		def to_pandas(
-			id:int
-			, columns:list = None
-			, samples:list = None
-		):
+		def to_pandas(id:int, columns:list=None, samples:list=None):
 			file = Dataset.get_main_file(id)#`id` belongs to dataset, not file
 			columns = listify(columns)
 			samples = listify(samples)
@@ -778,11 +784,7 @@ class Dataset(BaseModel):
 			return df
 
 
-		def to_numpy(
-			id:int
-			, columns:list = None
-			, samples:list = None
-		):
+		def to_numpy(id:int, columns:list=None, samples:list=None):
 			dataset = Dataset.get_by_id(id)
 			columns = listify(columns)
 			samples = listify(samples)
@@ -794,183 +796,242 @@ class Dataset(BaseModel):
 	
 	class Image():
 		dataset_type = 'image'
+		dataset_index = 0
 
-		def from_folder(
+		def from_folder_pillow(
 			folder_path:str
-			, name:str = None
-			, pillow_save:dict = {}
 			, ingest:bool = True
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
 		):
-			if ((pillow_save!={}) and (ingest==False)):
-				raise ValueError("\nYikes - `pillow_save` cannot be defined if `ingest==False`.\n")
-			if (name is None):
-				name = folder_path
+			name = folder_path if (name is None)
 			source_path = os.path.abspath(folder_path)
-
 			file_paths = Dataset.sorted_file_list(source_path)
 			file_count = len(file_paths)
 
+			# Validated during `sequences_from_4D`.
+			arr_4d = []
+			for path in file_paths:
+				img = Imaje.open(path)
+				arr = np.array(img)
+				arr = np.array(arr) if (arr.ndim==2)
+				arr_4d.append(arr)
+			arr_4d = np.array(arr_4d)
+
 			dataset = Dataset.create(
-				file_count = file_count
+				dataset_type = Dataset.Image.dataset_type
+				, dataset_index = Dataset.Image.dataset_index
+				, file_count = file_count
 				, name = name
 				, source_path = source_path
-				, dataset_type = Dataset.Image.dataset_type
 			)
-			
-			#Make sure the shape and mode of each image are the same before writing the Dataset.
-			sizes = []
-			modes = []
-			
-			for i, path in enumerate(tqdm(
-				file_paths
-				, desc = "🖼️ Validating Images 🖼️"
-				, ncols = 85
-			)):
-				img = Imaje.open(path)
-				sizes.append(img.size)
-				modes.append(img.mode)
-
-			if (len(set(sizes)) > 1):
-				dataset.delete_instance()# Orphaned.
-				raise ValueError(dedent(f"""
-				Yikes - All images in the Dataset must be of the same width and height.
-				`PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}
-				"""))
-			elif (len(set(modes)) > 1):
-				dataset.delete_instance()# Orphaned.
-				raise ValueError(dedent(f"""
-				Yikes - All images in the Dataset must be of the same mode aka colorscale.
-				`PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}
-				"""))
-
-			try:
-				for i, p in enumerate(tqdm(
-					file_paths
-					, desc = "🖼️ Ingesting Images 🖼️"
-					, ncols = 85
-				)):
-					File.Image.from_file(
-						path = p
-						, pillow_save = pillow_save
-						, file_index = i
-						, ingest = ingest
-						, dataset_id = dataset.id
-					)
+			try:			
+				Dataset.Image.sequences_from_4D(
+					dataset = dataset
+					, ndarray_4D = arr_4d
+					, paths = file_paths
+					, name = name
+					, dtype = dtype
+					, column_names = column_names
+					, ingest = ingest
+				)
 			except:
 				dataset.delete_instance()
 				raise
 			return dataset
 
 
-		def from_urls(
+		def from_urls_pillow(
 			urls:list
-			, pillow_save:dict = {}
-			, name:str = None
-			, source_path:str = None
+			, source_path:str = None # not used anywhere, but doesn't hurt to record.
 			, ingest:bool = True
+			, name:str = None
+			, dtype:dict = None
+			, column_names:list = None
 		):
-			if ((pillow_save!={}) and (ingest==False)):
-				raise ValueError("\nYikes - `pillow_save` cannot be defined if `ingest==False`.\n")
 			urls = listify(urls)
-			for u in urls:
-				validation = validators.url(u)
-				if (validation != True): #`== False` doesn't work.
-					raise ValueError(f"\nYikes - Invalid url detected within `urls` list:\n'{u}'\n")
-
 			file_count = len(urls)
 
-			dataset = Dataset.create(
-				file_count = file_count
-				, name = name
-				, dataset_type = Dataset.Image.dataset_type
-				, source_path = source_path
-			)
-			
-			#Make sure the shape and mode of each image are the same before writing the Dataset.
-			sizes = []
-			modes = []
-			
-			for i, url in enumerate(tqdm(
-					urls
-					, desc = "🖼️ Validating Images 🖼️"
-					, ncols = 85
-			)):
+			# Validated during `sequences_from_4D`.
+			arr_4d = []
+			for url in urls:
+				validation = validators.url(url)
+				if (validation != True): #`== False` doesn't work.
+					raise ValueError(f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n")
+
 				img = Imaje.open(
 					requests.get(url, stream=True).raw
 				)
-				sizes.append(img.size)
-				modes.append(img.mode)
+				arr = np.array(img)
+				arr = np.array(arr) if (arr.ndim==2)
+				arr_4d.append(arr)
+			arr_4d = np.array(arr_4d)
 
-			if (len(set(sizes)) > 1):
-				raise ValueError(dedent(f"""
-				Yikes - All images in the Dataset must be of the same width and height.
-				`PIL.Image.size`\nHere are the unique sizes you provided:\n{set(sizes)}
-				"""))
-			elif (len(set(modes)) > 1):
-				raise ValueError(dedent(f"""
-				Yikes - All images in the Dataset must be of the same mode aka colorscale.
-				`PIL.Image.mode`\nHere are the unique modes you provided:\n{set(modes)}
-				"""))
+			dataset = Dataset.create(
+				dataset_type = Dataset.Image.dataset_type
+				, dataset_index = Dataset.Image.dataset_index
+				, file_count = file_count
+				, name = name
+				, source_path = source_path
+			)
 
 			try:
-				for i, url in enumerate(tqdm(
-					urls
-					, desc = "🖼️ Ingesting Images 🖼️"
-					, ncols = 85
-				)):
-					File.Image.from_url(
-						url = url
-						, pillow_save = pillow_save
-						, file_index = i
-						, ingest = ingest
-						, dataset_id = dataset.id
-					)
-				"""
-				for i, url in enumerate(urls):  
-					file = File.Image.from_url(
-						url = url
-						, pillow_save = pillow_save
-						, file_index = i
-						, dataset_id = dataset.id
-					)
-				"""
+				Dataset.Image.sequences_from_4D(
+					dataset = dataset
+					, ndarray_4D = arr_4d
+					, paths = urls
+					, name = name
+					, dtype = dtype
+					, column_names = column_names
+					, ingest = ingest
+				)
 			except:
-				dataset.delete_instance() # Orphaned.
-				raise       
+				dataset.delete_instance()
+				raise
 			return dataset
 
 
+		def from_numpy(
+			ndarray4D_or_npyPath:object
+			, name:str = None
+			, dtype:object = None
+			, column_names:list = None
+			, ingest:bool = True
+		):
+			# Fetch array from .npy if it is not an in-memory array.
+			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
+				if (not isinstance(ndarray4D_or_npyPath, str)):
+					raise ValueError("\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n")
+				if (not os.path.exists(ndarray4D_or_npyPath)):
+					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
+				if (not os.path.isfile(ndarray4D_or_npyPath)):
+					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+				source_path = ndarray4D_or_npyPath
+				try:
+					# `allow_pickle=False` prevented it from reading the file.
+					ndarray_4D = np.load(file=ndarray4D_or_npyPath)
+				except:
+					print("\nYikes - Failed to `np.load(file=ndarray4D_or_npyPath)` with your `ndarray4D_or_npyPath`:\n")
+					print(f"{ndarray4D_or_npyPath}\n")
+					raise
+			elif (str(ndarray4D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
+				source_path = None
+				ndarray_4D = ndarray4D_or_npyPath
+				if (ingest==False):
+					raise ValueError("\nYikes - If provided an in-memory array, then `ingest` cannot be False.\n")
+
+			file_count = ndarray_4D.shape[-1]
+			dataset = Dataset.create(
+				dataset_type = Dataset.Image.dataset_type
+				, dataset_index = Dataset.Image.dataset_index
+				, file_count = file_count
+				, name = name
+				, source_path = source_path
+			)
+			try:
+				Dataset.Image.sequences_from_4D(
+					dataset = dataset
+					, ndarray_4D = ndarray_4D
+					, paths = None
+					, name = name
+					, dtype = dtype
+					, column_names = column_names
+					, ingest = ingest
+				)
+			except:
+				dataset.delete_instance()
+				raise
+			return dataset
+
+
+		def sequences_from_4D(
+			dataset:object
+			, ndarray_4D:object
+			, ingest:bool = True
+			, paths:list = None
+			, name:str = None
+			, dtype:object = None
+			, column_names:list = None
+		):
+			column_names = listify(column_names)
+			if ((ingest==False) and (isinstance(dtype, dict))):
+				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
+			if (ndarray_4D.ndim!=4):
+				raise ValueError("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`.\n")
+			Dataset.arr_validate(ndarray_4D)
+			
+			shapes = []
+			for arr in tqdm(
+				ndarray_4D
+				, desc = "🖼️ Validating Images 🖼️"
+				, ncols = 85
+			):
+				shapes.append(arr.shape)
+			if (len(set(shapes))>1):
+				raise ValueError("\nYikes - The image arrays you provided do not have the same shape.\n")
+
+			if (paths is not None):
+				for i, arr in enumerate(tqdm(
+					ndarray_4D
+					, desc = "🖼️ Ingesting Images 🖼️"
+					, ncols = 85
+				)):
+					Dataset.Sequence.from_numpy(
+						ndarray3D_or_npyPath = arr
+						, name = name
+						, dtype = dtype
+						, column_names = column_names
+						, ingest = ingest
+						, _dataset_index = i
+						, _source_path = paths[i]
+						, _disable = True
+						, _dataset = dataset
+					)
+			# Creating Sequences is optional for the npy file approach.
+			elif (paths is None):
+				for i, arr in enumerate(tqdm(
+					ndarray_4D
+					, desc = "🖼️ Ingesting Images 🖼️"
+					, ncols = 85
+				)):
+					Dataset.Sequence.from_numpy(
+						ndarray3D_or_npyPath = arr
+						, name = name
+						, dtype = dtype
+						, column_names = column_names
+						, ingest = ingest
+						, _dataset_index = i
+						, _disable = True
+						, _dataset = dataset
+					)
+
+
+		def to_numpy(id:int, samples:list=None, columns:list=None):
+			samples = listify(samples)
+			columns = listify(columns)
+			dataset = Dataset.get_by_id(id)
+			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
+			if (samples is not None):
+				datasets = Dataset.select().where(
+					Dataset.dataset.id==dataset.id, Dataset.dataset_index<<samples
+				)
+			elif (samples is None):
+				datasets = dataset.datasets
+			arr_4d = np.array([d.to_numpy(columns=columns) for d in datasets])
+			return arr_4d
+
+		"""
 		def to_pillow(id:int, samples:list=None):
-			"""
-			- This does not have `columns` attrbute because it is only for fetching images.
-			- Have to fetch as image before feeding into numpy `numpy.array(Image.open())`.
-			- Future: could return the tabular data along with it.
-			- Might need this for Preprocess where rotate images and such.
-			"""
+			# - This does not have `columns` attrbute because it is only for fetching images.
+			# - Have to fetch as image before feeding into numpy `numpy.array(Image.open())`.
+			# - Future: could return the tabular data along with it.
+			# - Might need this for Preprocess where rotate images and such.
 			samples = listify(samples)
 			files = Dataset.Image.get_image_files(id, samples=samples)
 			images = [f.Image.to_pillow(f.id) for f in files]
 			return images
-
-
-		def to_numpy(id:int, samples:list=None):
-			"""
-			- Because Pillow works directly with numpy, there's no need for pandas right now.
-			- But downstream methods are using pandas.
-			"""
-			samples = listify(samples)
-			images = Dataset.Image.to_pillow(id, samples=samples)
-			images = [np.array(img) for img in images]
-			images = np.array(images)
-			"""
-			- Pixel values range from 0-255.
-			- `np.set_printoptions(threshold=99999)` to inspect for yourself.
-			- It will look like some are all 0, but that's just the black edges.
-			"""
-			images = images/255
-			return images
-
-
+		
 		def get_image_files(id:int, samples:list=None):
 			samples = listify(samples)
 			files = File.select().join(Dataset).where(
@@ -980,6 +1041,9 @@ class Dataset(BaseModel):
 			if (samples is not None):
 				files = [files[i] for i in samples]
 			return files
+		"""
+
+
 
 
 	class Text():
@@ -1031,10 +1095,7 @@ class Dataset(BaseModel):
 			return dataset
 
 
-		def from_folder(
-			folder_path:str, 
-			name:str = None
-		):
+		def from_folder(folder_path:str, name:str=None):
 			if name is None:
 				name = folder_path
 			source_path = os.path.abspath(folder_path)
@@ -1049,11 +1110,7 @@ class Dataset(BaseModel):
 			return Dataset.Text.from_strings(files_data, name)
 
 
-		def to_pandas(
-			id:int, 
-			columns:list = None, 
-			samples:list = None
-		):
+		def to_pandas(id:int, columns:list=None, samples:list=None):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
 
 			if Dataset.Text.column_name not in columns:
@@ -1062,11 +1119,7 @@ class Dataset(BaseModel):
 			return df[Dataset.Text.column_name].to_frame()
 
 		
-		def to_numpy(
-			id:int, 
-			columns:list = None, 
-			samples:list = None
-		):
+		def to_numpy(id:int, columns:list=None, samples:list=None):
 			df = Dataset.Tabular.to_pandas(id, columns, samples)
 
 			if Dataset.Text.column_name not in columns:
@@ -1075,16 +1128,14 @@ class Dataset(BaseModel):
 			return df[Dataset.Text.column_name].to_numpy().reshape((-1, 1))
 
 
-		def to_strings(
-			id:int, 
-			samples:list = None
-		):
+		def to_strings(id:int, samples:list=None):
 			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
 			return data_df[Dataset.Text.column_name].tolist()
 
 
 	class Sequence():
 		dataset_type = 'sequence'
+		dataset_index = 0
 
 		def from_numpy(
 			ndarray3D_or_npyPath:object
@@ -1092,7 +1143,12 @@ class Dataset(BaseModel):
 			, dtype:object = None
 			, column_names:list = None
 			, ingest:bool = True
+			, _disable:bool = False #used by Dataset.Image
+			, _source_path:str = None #used by Dataset.Image
+			, _dataset_index:int = None #used by Dataset.Image
+			, _dataset:object = None #used by Dataset.Image
 		):
+			"""It's possible that passes both `ingest=False` and `_source_path=None`"""
 			if ((ingest==False) and (isinstance(dtype, dict))):
 				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
 			# Fetch array from .npy if it is not an in-memory array.
@@ -1103,7 +1159,11 @@ class Dataset(BaseModel):
 					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
 				if (not os.path.isfile(ndarray3D_or_npyPath)):
 					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
-				source_path = ndarray3D_or_npyPath
+				if (_source_path is not None):
+					# Path or url to 3D image.
+					source_path = _source_path
+				elif (_source_path is None):
+					source_path = ndarray3D_or_npyPath
 				try:
 					# `allow_pickle=False` prevented it from reading the file.
 					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
@@ -1112,48 +1172,59 @@ class Dataset(BaseModel):
 					print(f"{ndarray3D_or_npyPath}\n")
 					raise
 			elif (str(ndarray3D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
-				source_path = None
 				ndarray_3D = ndarray3D_or_npyPath 
+				if (_source_path is not None):
+					# Path or url to 3D image.
+					source_path = _source_path
+				elif (_source_path is None):
+					source_path = None
 
 			column_names = listify(column_names)
 			Dataset.arr_validate(ndarray_3D)
 
-			dimensions = len(ndarray_3D.shape)
-			if (dimensions != 3):
+			if (ndarray_3D.ndim != 3):
 				raise ValueError(dedent(f"""
 				Yikes - Sequence Datasets can only be constructed from 3D arrays.
-				Your array dimensions had <{dimensions}> dimensions.
+				Your array dimensions had <{ndarray_3D.ndim}> dimensions.
 				"""))
 
+			if (_dataset_index is None):
+				dataset_index = Dataset.Sequence.dataset_index
+			else:
+				dataset_index = _dataset_index
 			file_count = len(ndarray_3D)
 			dataset = Dataset.create(
-				file_count = file_count
+				dataset_type = Dataset.Sequence.dataset_type
+				, dataset_index = dataset_index
+				, file_count = file_count
 				, name = name
-				, dataset_type = Dataset.Sequence.dataset_type
 				, source_path = source_path
+				, dataset = _dataset
 			)
 
-			# 'ragged nested sequences' still have a .__class__ ndarray.
-			shapes = []
-			for i, arr in enumerate(tqdm(
-				ndarray_3D
-				, desc = "⏱️ Validating Sequences 🧬"
-				, ncols = 85
-			)):
-				shapes.append(arr.shape)
-
-			if (len(set(shapes)) > 1):
-				dataset.delete_instance()# Orphaned.
-				raise ValueError(dedent(f"""
-				Yikes - All 2D arrays in the Dataset must be of the shape.
-				`ndarray.shape`\nHere are the unique sizes you provided:\n{set(shapes)}
-				"""))
-
 			try:
+				# 'ragged nested sequences' still have a .__class__ ndarray.
+				shapes = []
+				for i, arr in enumerate(tqdm(
+					ndarray_3D
+					, desc = "⏱️ Validating Sequences 🧬"
+					, ncols = 85
+					, disable = _disable
+				)):
+					shapes.append(arr.shape)
+
+				if (len(set(shapes)) > 1):
+					dataset.delete_instance()# Orphaned.
+					raise ValueError(dedent(f"""
+					Yikes - All 2D arrays in the Dataset must be of the shape.
+					`ndarray.shape`\nHere are the unique sizes you provided:\n{set(shapes)}
+					"""))
+
 				for i, arr in enumerate(tqdm(
 					ndarray_3D
 					, desc = "⏱️ Ingesting Sequences 🧬"
 					, ncols = 85
+					, disable = _disable
 				)):
 					File.Tabular.from_numpy(
 						ndarray = arr
@@ -1392,11 +1463,7 @@ class File(BaseModel):
 			return file
 
 
-		def to_pandas(
-			id:int
-			, columns:list = None
-			, samples:list = None
-		):
+		def to_pandas(id:int, columns:list=None, samples:list=None):
 			"""
 			This function could be optimized to read columns and rows selectively
 			rather than dropping them after the fact.
@@ -1446,11 +1513,7 @@ class File(BaseModel):
 			return df
 
 
-		def to_numpy(
-			id:int
-			, columns:list = None
-			, samples:list = None
-		):
+		def to_numpy(id:int, columns:list=None, samples:list=None):
 			"""
 			This is the only place where to_numpy() relies on to_pandas(). 
 			It does so because pandas is good with the parquet and dtypes.
@@ -1458,8 +1521,9 @@ class File(BaseModel):
 			columns = listify(columns)
 			samples = listify(samples)
 			file = File.get_by_id(id)
+			f_dataset = file.dataset
 			# Handles when Dataset.Sequence is stored as a single .npy file
-			if ((file.dataset.dataset_type=='sequence') and (file.is_ingested==False)):
+			if ((f_dataset.dataset_type=='sequence') and (file.is_ingested==False)):
 				# Subsetting a File via `samples` is irrelevant here because the entire File is 1 sample.
 				# Subset the columns:
 				if (columns is not None):
@@ -1470,17 +1534,23 @@ class File(BaseModel):
 				dtype = list(file.tabulars[0].dtypes.values())[0] #`ingest==False` only allows singular dtype.
 				# Verified that it is lazy via `sys.getsizeof()`				
 				lazy_load = np.load(file.dataset.source_path)
-				if (columns is not None):
-					# First accessor[] gets the 2D. Second accessor[] gets the 2D.
-					arr = lazy_load[file.file_index][:,col_indices].astype(dtype)
-				else:
-					arr = lazy_load[file.file_index].astype(dtype)
+				if (lazy_load.ndim==3):
+					if (columns is not None):
+						# 1st accessor[] gets the 2D. 2nd accessor[] the cols.
+						arr = lazy_load[file.file_index][:,col_indices].astype(dtype)
+					else:
+						arr = lazy_load[file.file_index].astype(dtype)
+				elif (lazy_load.ndim==4):
+					if (columns is not None):
+						# 1st accessor[] gets the 3D. 2nd accessor[] the 2D. 3rd [] the cols.
+						arr = lazy_load[f_dataset.dataset_index][file.file_index][:,col_indices].astype(dtype)
+					else:
+						arr = lazy_load[f_dataset.dataset_index][file.file_index].astype(dtype)
 			else:
 				df = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
 				arr = df.to_numpy()
 			return arr
 
-		#Future: Add to_tensor and from_tensor? Or will numpy suffice?  
 
 		def pandas_stringify_columns(df, columns):
 			"""
@@ -1518,14 +1588,9 @@ class File(BaseModel):
 					"""))
 
 
-		def df_set_metadata(
-			dataframe:object
-			, column_names:list = None
-			, dtype:object = None
-		):
+		def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None):
 			shape = {}
 			shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
-
 			"""
 			- Passes in user-defined columns in case they are specified.
 			- Pandas auto-assigns int-based columns return a range when `df.columns`, 
@@ -1611,12 +1676,7 @@ class File(BaseModel):
 			"""
 			fs = fsspec.filesystem("memory")
 			temp_path = "memory://temp.parq"
-			dataframe.to_parquet(
-				temp_path
-				, engine = "fastparquet"
-				, compression = "gzip"
-				, index = False
-			)
+			dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
 			blob = fs.cat(temp_path)
 			fs.delete(temp_path)
 			return blob
@@ -1681,10 +1741,7 @@ class File(BaseModel):
 			path = os.path.abspath(path)
 
 			img = Imaje.open(path)
-			shape = {
-				'width': img.size[0]
-				, 'height':img.size[1]
-			}
+			shape = {'width':img.size[0], 'height':img.size[1]}
 
 			if (ingest==True):
 				blob = io.BytesIO()
@@ -2118,6 +2175,7 @@ class Feature(BaseModel):
 		dataset = Dataset.get_by_id(dataset_id)
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
+
 
 		if (dataset.dataset_type == 'image'):
 			# Just passes the Dataset through for now.
