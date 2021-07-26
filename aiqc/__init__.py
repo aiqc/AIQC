@@ -607,19 +607,16 @@ class Dataset(BaseModel):
 
 	def get_main_file(id:int):
 		dataset = Dataset.get_by_id(id)
-
-		if (dataset.dataset_type == 'image'):
-			raise ValueError("\n Dataset class does not support get_main_file() method for `image` data type,\n")
-
-		file = File.select().join(Dataset).where(
-			Dataset.id==id, File.file_type=='tabular', File.file_index==0
-		)[0]
+		if (dataset.dataset_type != 'image'):
+			file = File.select().join(Dataset).where(
+				Dataset.id==id, File.file_type=='tabular', File.file_index==0
+			)[0]
+		elif (dataset.dataset_type == 'image'):
+			file = dataset.datasets[0].get_main_file()#Recursion.
 		return file
 
 	def get_main_tabular(id:int):
-		"""
-		Works on both `Dataset.Tabular`, `Dataset.Sequence`, and `Dataset.Text`
-		"""
+		#Works on both `Dataset.Tabular`, `Dataset.Sequence`, and `Dataset.Text`
 		file = Dataset.get_main_file(id)
 		return file.tabulars[0]
 
@@ -1514,12 +1511,17 @@ class File(BaseModel):
 
 				source_path = file.dataset.source_path
 				if (source_path.lower().endswith('.npy')):
-					# work at the Dataset level.
-					# Verified that it is lazy loaded via `sys.getsizeof()`				
+					# The .npy file represents the entire dataset so we'll lazy load and grab a slice.			
 					arr = np.load(source_path)
 				else:
-					arr = np.array(Imaje.open(source_path))
-
+					# Handled by PIL. Check if it is a url or not. 
+					if (validators.url(source_path)):
+						arr = np.array(
+							Imaje.open(
+								requests.get(source_path, stream=True).raw
+						))
+					else:
+						arr = np.array(Imaje.open(source_path))
 				if (arr.ndim==3):
 					if (columns is not None):
 						# 1st accessor[] gets the 2D. 2nd accessor[] the cols.
@@ -2156,77 +2158,66 @@ class Feature(BaseModel):
 		, exclude_columns:list=None
 		#Future: runPCA #,run_pca:boolean=False # triggers PCA analysis of all columns
 	):
-		"""
-		As we get further away from the `Dataset.<Types>` they need less isolation.
-		"""
+		#As we get further away from the `Dataset.<Types>` they need less isolation.
 		dataset = Dataset.get_by_id(dataset_id)
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
+		d_cols = Dataset.get_main_tabular(dataset_id).columns
+		
+		if ((include_columns is not None) and (exclude_columns is not None)):
+			raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
 
+		if (include_columns is not None):
+			# check columns exist
+			all_cols_found = all(col in d_cols for col in include_columns)
+			if (not all_cols_found):
+				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
+			# inclusion
+			columns = include_columns
+			# exclusion
+			columns_excluded = d_cols
+			for col in include_columns:
+				columns_excluded.remove(col)
 
-		if (dataset.dataset_type == 'image'):
-			# Just passes the Dataset through for now.
-			if (include_columns is not None) or (exclude_columns is not None):
-				raise ValueError("\nYikes - The `Dataset.Image` classes supports neither the `include_columns` nor `exclude_columns` arguemnt.\n")
-			columns = None
+		elif (exclude_columns is not None):
+			all_cols_found = all(col in d_cols for col in exclude_columns)
+			if (not all_cols_found):
+				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
+			# exclusion
+			columns_excluded = exclude_columns
+			# inclusion
+			columns = d_cols
+			for col in exclude_columns:
+				columns.remove(col)
+			if (not columns):
+				raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
+		else:
+			columns = d_cols
 			columns_excluded = None
-		elif (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'text' or dataset.dataset_type == 'sequence'):
-			d_cols = Dataset.get_main_tabular(dataset_id).columns
 
-			if ((include_columns is not None) and (exclude_columns is not None)):
-				raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
-
-			if (include_columns is not None):
-				# check columns exist
-				all_cols_found = all(col in d_cols for col in include_columns)
-				if (not all_cols_found):
-					raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
-				# inclusion
-				columns = include_columns
-				# exclusion
-				columns_excluded = d_cols
-				for col in include_columns:
-					columns_excluded.remove(col)
-
-			elif (exclude_columns is not None):
-				all_cols_found = all(col in d_cols for col in exclude_columns)
-				if (not all_cols_found):
-					raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
-				# exclusion
-				columns_excluded = exclude_columns
-				# inclusion
-				columns = d_cols
-				for col in exclude_columns:
-					columns.remove(col)
-				if (not columns):
-					raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
-			else:
-				columns = d_cols
-				columns_excluded = None
-
-			"""
-			- Check that this Dataset does not already have a Feature that is exactly the same.
-			- There are less entries in `excluded_columns` so maybe it's faster to compare that.
-			"""
-			if columns_excluded is not None:
-				cols_aplha = sorted(columns_excluded)
-			else:
-				cols_aplha = None
-			d_features = dataset.features
-			count = d_features.count()
-			if (count > 0):
-				for f in d_features:
-					f_id = str(f.id)
-					f_cols = f.columns_excluded
-					if (f_cols is not None):
-						f_cols_alpha = sorted(f_cols)
-					else:
-						f_cols_alpha = None
-					if (cols_aplha == f_cols_alpha):
-						raise ValueError(dedent(f"""
-						Yikes - This Dataset already has Feature <id:{f_id}> with the same columns.
-						Cannot create duplicate.
-						"""))
+		"""
+		- Check that this Dataset does not already have a Feature that is exactly the same.
+		- There are less entries in `excluded_columns` so maybe it's faster to compare that.
+		"""
+		if columns_excluded is not None:
+			cols_aplha = sorted(columns_excluded)
+		else:
+			cols_aplha = None
+		d_features = dataset.features
+		count = d_features.count()
+		if (count > 0):
+			for f in d_features:
+				f_id = str(f.id)
+				f_cols = f.columns_excluded
+				if (f_cols is not None):
+					f_cols_alpha = sorted(f_cols)
+				else:
+					f_cols_alpha = None
+				if (cols_aplha == f_cols_alpha):
+					raise ValueError(dedent(f"""
+					Yikes - This Dataset already has Feature <id:{f_id}> with the same columns.
+					Cannot create duplicate.
+					"""))
 
 		feature = Feature.create(
 			dataset = dataset
@@ -2239,25 +2230,25 @@ class Feature(BaseModel):
 	def to_pandas(id:int, samples:list=None, columns:list=None):
 		samples = listify(samples)
 		columns = listify(columns)
-		f_frame = Feature.get_feature(
+		df = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'pandas'
 			, samples = samples
 			, columns = columns
 		)
-		return f_frame
+		return df
 
 
 	def to_numpy(id:int, samples:list=None, columns:list=None):
 		samples = listify(samples)
 		columns = listify(columns)
-		f_arr = Feature.get_feature(
+		arr = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'numpy'
 			, samples = samples
 			, columns = columns
 		)
-		return f_arr
+		return arr
 
 
 	def get_feature(
@@ -2298,12 +2289,8 @@ class Feature(BaseModel):
 		id:int
 	):
 		feature = Feature.get_by_id(id)
-		dataset = feature.dataset
-		if (dataset.dataset_type == 'image'):
-			raise ValueError("\nYikes - `feature.dataset.dataset_type=='image'` does not have dtypes.\n")
-
 		f_cols = feature.columns
-		tabular_dtype = Dataset.get_main_tabular(dataset.id).dtypes
+		tabular_dtype = feature.dataset.get_main_tabular().dtypes
 
 		feature_dtypes = {}
 		for key,value in tabular_dtype.items():
@@ -2334,11 +2321,7 @@ class Feature(BaseModel):
 		return splitset
 
 
-	def make_encoderset(
-		id:int
-		, encoder_count:int = 0
-		, description:str = None
-	):
+	def make_encoderset(id:int, encoder_count:int=0, description:str=None):
 		encoderset = Encoderset.from_feature(
 			feature_id = id
 			, encoder_count = 0
@@ -2377,9 +2360,7 @@ class Feature(BaseModel):
 		, _job:object = None#Used during job.run() and during infer()
 		, _fitted_feature:object = None#Used during infer()
 	):
-		"""
-		- As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
-		"""
+		#As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
 		feature = Feature.get_by_id(id)
 		feature_array = feature.to_numpy()
 		if (_job is not None):
