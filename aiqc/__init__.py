@@ -5437,7 +5437,7 @@ class Queue(BaseModel):
 		"""
 		- Input shapes can only be determined after encoding has taken place.
 		- `[0]` accessess the first sample in each array.
-		- Does not impact the training loop's `batch_size`.
+		- This shape does not influence the training loop's `batch_size`.
 		- Shapes are used later by `get_model()` to initialize it.
 		- Here the count refers to Features, not columns.
 		"""
@@ -5452,10 +5452,9 @@ class Queue(BaseModel):
 
 		return samples, input_shapes
 
-
 	"""
-	# This is related to background processing. After I decoupled Jobs, I never reenabled background processing.
 	def stop_jobs(id:int):
+		# This is related to background processing. After I decoupled Jobs, I never reenabled background processing.
 		# SQLite is ACID (D = Durable). If transaction is interrupted mid-write, then it is rolled back.
 		queue = Queue.get_by_id(id)
 		
@@ -6296,7 +6295,6 @@ class Job(BaseModel):
 			)
 		if (model is None):
 			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
-		
 		# The model and optimizer get combined during training.
 		fn_lose = dill_deserialize(algorithm.fn_lose)
 		fn_optimize = dill_deserialize(algorithm.fn_optimize)
