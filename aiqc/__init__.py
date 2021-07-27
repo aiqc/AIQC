@@ -3338,150 +3338,6 @@ class Fold(BaseModel):
 
 
 
-class Interpolaterset(BaseModel):
-	interpolater_count = IntegerField()
-	description = CharField(null=True)
-
-	feature = ForeignKeyField(Feature, backref='interpolatersets')
-
-
-	def from_feature(
-		feature_id:int
-		, interpolater_count:int = 0
-		, description:str = None
-	):
-		feature = Feature.get_by_id(feature_id)
-		interpolaterset = Interpolaterset.create(
-			interpolater_count = interpolater_count
-			, description = description
-			, feature = feature
-		)
-		return interpolaterset
-
-
-	def interpolate(id:int, array:object, window:object=None, samples:dict=None):
-		"""
-		- `array` is assumed to be the output of `feature.to_numpy()`.
-		- I was originally calling `feature.to_pandas` but all preprocesses take in and return arrays.
-		- `samples` is used for indices only. It does not get repacked into a dict.
-		- Extremely tricky to interpolate windowed splits separately.
-		"""
-		ip = Interpolaterset.get_by_id(id)
-		fps = ip.featurepolaters
-		if (fps.count()==0):
-			raise ValueError("\nYikes - This Interpolaterset has no Featurepolaters yet.\n")
-		dataset_type = ip.feature.dataset.dataset_type
-		columns = ip.feature.columns# Used for naming not slicing cols.
-
-		if (dataset_type=='tabular'):
-			dataframe = pd.DataFrame(array, columns=columns)
-
-			if ((window is not None) and (samples is not None)):
-				for fp in fps:
-					matching_cols = fp.matching_columns
-					# We need to overwrite this df.
-					df_fp = dataframe[matching_cols]
-					windows_unshifted = window.samples_unshifted
-					
-					"""
-					- Augment our evaluation splits/folds with training data.
-					- At this point, indices are groups of rows (windows), not raw rows.
-					  We need all of the rows from all of the windows. 
-					"""
-					for split, indices in samples.items():
-						if ('train' in split):
-							split_windows = [windows_unshifted[idx] for idx in indices]
-							windows_flat = [item for sublist in split_windows for item in sublist]
-							rows_train = list(set(windows_flat))
-							df_train = df_fp.loc[rows_train].set_index([rows_train], drop=True)
-							# Interpolate will write its own index so coerce it back.
-							df_train = fp.interpolate(dataframe=df_train).set_index([rows_train], drop=True)
-							
-							for row in rows_train:
-								df_fp.loc[row] = df_train.loc[row]
-
-					# We need `df_train` from above.
-					for split, indices in samples.items():
-						if ('train' not in split):
-							split_windows = [windows_unshifted[idx] for idx in indices]
-							windows_flat = [item for sublist in split_windows for item in sublist]
-							rows_split = list(set(windows_flat))
-							# Train windows and split windows may overlap, so take train's duplicates.
-							rows_split = [r for r in rows_split if r not in rows_train]
-							df_split = df_fp.loc[rows_split].set_index([rows_split], drop=True)
-							df_merge = pd.concat([df_train, df_split]).set_index([rows_train + rows_split], drop=True)
-							# Interpolate will write its own index so coerce it back,
-							# but have to cut out the split_rows before it can be reindexed.
-							df_merge = fp.interpolate(dataframe=df_merge).set_index([rows_train + rows_split], drop=True)
-							df_split = df_merge.loc[rows_split]
-
-							for row in rows_split:
-								df_fp.loc[row] = df_split.loc[row]
-					"""
-					At this point there may still be leading/ lagging nulls outside the splits
-					that are within the reach of a shift.
-					"""
-					df_fp = fp.interpolate(dataframe=df_fp)
-
-					for c in matching_cols:
-						dataframe[c] = df_fp[c]
-
-			elif ((window is None) or (samples is None)):
-				# The underlying window data only needs to be processed separately is when there are split involved.
-				for fp in fps:
-					# Interpolate that slice. Don't need to process each column separately.
-					df = dataframe[fp.matching_columns]
-					# This method handles a few things before interpolation.
-					df = fp.interpolate(dataframe=df, samples=samples)#handles `samples=None`
-					# Overwrite the original column with the interpolated column.
-					if (dataframe.index.size != df.index.size):
-						raise ValueError("Yikes - Internal error. Index sizes inequal.")
-					for c in fp.matching_columns:
-						dataframe[c] = df[c]
-			array = dataframe.to_numpy()
-
-		elif (dataset_type=='sequence'):
-			# One df per sequence array.
-			dataframes = [pd.DataFrame(arr, columns=columns) for arr in array]
-			# Each one needs to be interpolated separately.
-			for i, dataframe in enumerate(dataframes):
-
-				for fp in fps:
-					df_cols = dataframe[fp.matching_columns]
-					# Don't need to parse anything. Straight to DVD.
-					df_cols = fp.interpolate(dataframe=df_cols, samples=None)
-					# Overwrite columns.
-					if (dataframe.index.size != df_cols.index.size):
-						raise ValueError("Yikes - Internal error. Index sizes inequal.")
-					for c in fp.matching_columns:
-						dataframe[c] = df_cols[c]
-				# Update the list. Might as well array it while accessing it.
-				dataframes[i] = dataframe.to_numpy()
-			array = np.array(dataframes)
-		return array
-
-
-	def make_featurepolater(
-		id:int
-		, process_separately:bool = True
-		, interpolate_kwargs:dict = None
-		, dtypes:list = None
-		, columns:list = None
-		, samples:dict = None
-	):
-		featurepolater = Featurepolater.from_interpolaterset(
-			interpolaterset_id = id
-			, process_separately = process_separately
-			, interpolate_kwargs = interpolate_kwargs
-			, dtypes = dtypes
-			, columns = columns
-			, samples = samples
-		)
-		return featurepolater
-
-
-
-
 class Labelpolater(BaseModel):
 	"""
 	- Label cannot be of `dataset_type=='sequence'` so don't need to worry about 3D data.
@@ -3585,6 +3441,161 @@ class Labelpolater(BaseModel):
 			raise ValueError("\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n")
 		arr_labels = df_labels.to_numpy()
 		return arr_labels
+
+
+
+
+class Interpolaterset(BaseModel):
+	interpolater_count = IntegerField()
+	description = CharField(null=True)
+
+	feature = ForeignKeyField(Feature, backref='interpolatersets')
+
+
+	def from_feature(
+		feature_id:int
+		, interpolater_count:int = 0
+		, description:str = None
+	):
+		feature = Feature.get_by_id(feature_id)
+		interpolaterset = Interpolaterset.create(
+			interpolater_count = interpolater_count
+			, description = description
+			, feature = feature
+		)
+		return interpolaterset
+
+
+	def interpolate(
+		id:int
+		, array:object
+		, window:object=None
+		, samples:dict=None
+	):
+		"""
+		- `array` is assumed to be the output of `feature.to_numpy()`.
+		- I was originally calling `feature.to_pandas` but all preprocesses take in and return arrays.
+		- `samples` is used for indices only. It does not get repacked into a dict.
+		- Extremely tricky to interpolate windowed splits separately.
+		"""
+		ip = Interpolaterset.get_by_id(id)
+		fps = ip.featurepolaters
+		if (fps.count()==0):
+			raise ValueError("\nYikes - This Interpolaterset has no Featurepolaters yet.\n")
+		dataset_type = ip.feature.dataset.dataset_type
+		columns = ip.feature.columns# Used for naming not slicing cols.
+
+		if (dataset_type=='tabular'):
+			dataframe = pd.DataFrame(array, columns=columns)
+
+			if ((window is not None) and (samples is not None)):
+				for fp in fps:
+					matching_cols = fp.matching_columns
+					# We need to overwrite this df.
+					df_fp = dataframe[matching_cols]
+					windows_unshifted = window.samples_unshifted
+					
+					"""
+					- Augment our evaluation splits/folds with training data.
+					- At this point, indices are groups of rows (windows), not raw rows.
+					  We need all of the rows from all of the windows. 
+					"""
+					for split, indices in samples.items():
+						if ('train' in split):
+							split_windows = [windows_unshifted[idx] for idx in indices]
+							windows_flat = [item for sublist in split_windows for item in sublist]
+							rows_train = list(set(windows_flat))
+							df_train = df_fp.loc[rows_train].set_index([rows_train], drop=True)
+							# Interpolate will write its own index so coerce it back.
+							df_train = fp.interpolate(dataframe=df_train).set_index([rows_train], drop=True)
+							
+							for row in rows_train:
+								df_fp.loc[row] = df_train.loc[row]
+
+					# We need `df_train` from above.
+					for split, indices in samples.items():
+						if ('train' not in split):
+							split_windows = [windows_unshifted[idx] for idx in indices]
+							windows_flat = [item for sublist in split_windows for item in sublist]
+							rows_split = list(set(windows_flat))
+							# Train windows and split windows may overlap, so take train's duplicates.
+							rows_split = [r for r in rows_split if r not in rows_train]
+							df_split = df_fp.loc[rows_split].set_index([rows_split], drop=True)
+							df_merge = pd.concat([df_train, df_split]).set_index([rows_train + rows_split], drop=True)
+							# Interpolate will write its own index so coerce it back,
+							# but have to cut out the split_rows before it can be reindexed.
+							df_merge = fp.interpolate(dataframe=df_merge).set_index([rows_train + rows_split], drop=True)
+							df_split = df_merge.loc[rows_split]
+
+							for row in rows_split:
+								df_fp.loc[row] = df_split.loc[row]
+					"""
+					At this point there may still be leading/ lagging nulls outside the splits
+					that are within the reach of a shift.
+					"""
+					df_fp = fp.interpolate(dataframe=df_fp)
+
+					for c in matching_cols:
+						dataframe[c] = df_fp[c]
+
+			elif ((window is None) or (samples is None)):
+				# The underlying window data only needs to be processed separately is when there are split involved.
+				for fp in fps:
+					# Interpolate that slice. Don't need to process each column separately.
+					df = dataframe[fp.matching_columns]
+					# This method handles a few things before interpolation.
+					df = fp.interpolate(dataframe=df, samples=samples)#handles `samples=None`
+					# Overwrite the original column with the interpolated column.
+					if (dataframe.index.size != df.index.size):
+						raise ValueError("Yikes - Internal error. Index sizes inequal.")
+					for c in fp.matching_columns:
+						dataframe[c] = df[c]
+			array = dataframe.to_numpy()
+
+		elif ((dataset_type=='sequence') or (dataset_type=='image')):
+			if (dataset_type=='image'):
+				# Sequences are nested. Multiply number of 4D by number of 3D.
+				shape = array.shape
+				array = array.reshape(shape[0]*shape[1], shape[2], shape[3])
+
+			# One df per sequence array.
+			dataframes = [pd.DataFrame(arr, columns=columns) for arr in array]
+			# Each one needs to be interpolated separately.
+			for i, dataframe in enumerate(dataframes):
+				for fp in fps:
+					df_cols = dataframe[fp.matching_columns]
+					# Don't need to parse anything. Straight to DVD.
+					df_cols = fp.interpolate(dataframe=df_cols, samples=None)
+					# Overwrite columns.
+					if (dataframe.index.size != df_cols.index.size):
+						raise ValueError("Yikes - Internal error. Index sizes inequal.")
+					for c in fp.matching_columns:
+						dataframe[c] = df_cols[c]
+				# Update the list. Might as well array it while accessing it.
+				dataframes[i] = dataframe.to_numpy()
+			array = np.array(dataframes)
+			if (dataset_type=='image'):
+				array = array.reshape(shape[0],shape[1],shape[2],shape[3])
+		return array
+
+
+	def make_featurepolater(
+		id:int
+		, process_separately:bool = True
+		, interpolate_kwargs:dict = None
+		, dtypes:list = None
+		, columns:list = None
+		, samples:dict = None
+	):
+		featurepolater = Featurepolater.from_interpolaterset(
+			interpolaterset_id = id
+			, process_separately = process_separately
+			, interpolate_kwargs = interpolate_kwargs
+			, dtypes = dtypes
+			, columns = columns
+			, samples = samples
+		)
+		return featurepolater
 
 
 
@@ -3704,7 +3715,7 @@ class Featurepolater(BaseModel):
 				df_interp = df_interp.sort_index()
 			else:
 				raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with arguments provided.\n")
-		elif (dataset_type=='sequence'):
+		elif ((dataset_type=='sequence') or (dataset_type=='image')):
 			df_interp = Labelpolater.run_interpolate(dataframe, interpolate_kwargs)
 		else:
 			raise ValueError("\nYikes - Internal error. Unable to process Featurepolater with dataset_type provided.\n")
