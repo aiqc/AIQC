@@ -4217,10 +4217,13 @@ class Featurecoder(BaseModel):
 		# 4. Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
 		# Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
-		features_shape = samples_to_encode.shape
-		if (len(features_shape)==3):
-			rows_2D = features_shape[0] * features_shape[1]
-			samples_to_encode = samples_to_encode.reshape(rows_2D, features_shape[2])
+		f_shape = samples_to_encode.shape
+		if (len(f_shape)==3):
+			rows_2D = f_shape[0] * f_shape[1]
+			samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[2])
+		elif (len(f_shape)==4):
+			rows_2D = f_shape[0] * f_shape[1] * f_shape[2]
+			samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[3])
 
 		fitted_encoders, encoding_dimension = Labelcoder.fit_dynamicDimensions(
 			sklearn_preprocess = sklearn_preprocess
@@ -5868,6 +5871,9 @@ class Job(BaseModel):
 				if (len(features_shape)==3):
 					rows_2D = features_shape[0] * features_shape[1]
 					features_to_fit = features_to_fit.reshape(rows_2D, features_shape[2])
+				elif (len(features_shape)==4):
+					rows_2D = features_shape[0] * features_shape[1] * features_shape[2]
+					features_to_fit = features_to_fit.reshape(rows_2D, features_shape[3])
 
 				# Only fit these columns.
 				matching_columns = featurecoder.matching_columns
@@ -5898,10 +5904,13 @@ class Job(BaseModel):
 		featurecoders = list(encoderset.featurecoders)
 		if (len(featurecoders) > 0):
 			# Handle Sequence (part 1): reshape 3D to tall 2D for transformation.
-			original_features_shape = arr_features.shape
-			if (len(original_features_shape)==3):
-				rows_2D = original_features_shape[0] * original_features_shape[1]
-				arr_features = arr_features.reshape(rows_2D, original_features_shape[2])
+			og_shape = arr_features.shape
+			if (len(og_shape)==3):
+				rows_2D = og_shape[0] * og_shape[1]
+				arr_features = arr_features.reshape(rows_2D, og_shape[2])
+			elif (len(og_shape)==4):
+				rows_2D = og_shape[0] * og_shape[1] * og_shape[2]
+				arr_features = arr_features.reshape(rows_2D, og_shape[3])
 
 			f_cols = encoderset.feature.columns
 			transformed_features = None #Used as a placeholder for `np.concatenate`.
@@ -5954,11 +5963,18 @@ class Job(BaseModel):
 				)
 			# Handle Sequence (part 2): reshape tall 2D back to 3D.
 			# This checks `==3` intentionaly!!!
-			if (len(original_features_shape)==3):
+			if (len(og_shape)==3):
 				transformed_features = arr_features.reshape(
-					original_features_shape[0],
-					original_features_shape[1],
-					original_features_shape[2]
+					og_shape[0],
+					og_shape[1],
+					og_shape[2]
+				)
+			elif(len(og_shape)==4):
+				transformed_features = arr_features.reshape(
+					og_shape[0],
+					og_shape[1],
+					og_shape[2],
+					og_shape[3]
 				)
 				
 		elif (len(featurecoders) == 0):
