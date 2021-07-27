@@ -1297,26 +1297,18 @@ class File(BaseModel):
 	`if` statements and `=None` parameters in every method below.
 	"""
 	def to_numpy(id:int, columns:list=None, samples:list=None):
-		file = File.get_by_id(id)
 		columns = listify(columns)
 		samples = listify(samples)
 
-		if (file.file_type == 'tabular'):
-			arr = File.Tabular.to_numpy(id=id, columns=columns, samples=samples)
-		elif (file.file_type == 'image'):
-			arr = File.Image.to_numpy(id=id, columns=columns, samples=samples)
+		arr = File.Tabular.to_numpy(id=id, columns=columns, samples=samples)
 		return arr
 
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
-		file = File.get_by_id(id)
 		columns = listify(columns)
 		samples = listify(samples)
 
-		if (file.file_type == 'tabular'):
-			arr = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
-		elif (file.file_type == 'image'):
-			raise ValueError("\nYikes - `file_type=='image'` does not support `to_pandas()`.\n")
+		arr = File.Tabular.to_pandas(id=id, columns=columns, samples=samples)
 		return arr
 
 
@@ -2345,7 +2337,7 @@ class Feature(BaseModel):
 		)
 		return window
 
-
+	###
 	def preprocess(
 		id:int
 		, supervision:str = 'supervised'
@@ -2804,8 +2796,10 @@ class Splitset(BaseModel):
 			else:
 				if (f_dset_type == 'tabular' or f_dset_type == 'text'):
 					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
-				elif (f_dset_type == 'image' or f_dset_type == 'sequence'):
-					f_length = f_dataset.file_count					
+				elif (f_dset_type == 'sequence'):
+					f_length = f_dataset.file_count
+				elif (f_dset_type == 'image'):
+					f_length = f_dataset.datasets.count()
 			feature_lengths.append(f_length)
 		if (len(set(feature_lengths)) != 1):
 			raise ValueError("Yikes - List of Features you provided contain different amounts of samples.")
@@ -2820,10 +2814,10 @@ class Splitset(BaseModel):
 		- If it's windowed, the samples become the windows instead of the rows.
 		- Images just use the index for stratification.
 		"""
-		if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
-			feature_array = feature.preprocess(encoderset_id='skip')
+		###
+		feature_array = feature.preprocess(encoderset_id='skip')
 
-		# Could take the shape of array, but we already have this.
+		# Could take the shape of array, but we already have the lengths.
 		sample_count = feature_lengths[0]
 		arr_idx = np.arange(sample_count)
 		
@@ -2870,31 +2864,42 @@ class Splitset(BaseModel):
 				indices_lst_train = arr_idx.tolist()
 
 				if (unsupervised_stratify_col is not None):
-					if (f_dset_type=='image'):
-						raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be used with `dataset_type=='image'`.\n")
-
 					# Get the column for stratification.
 					column_names = f_dataset.get_main_tabular().columns
 					col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
 					
-					if (len(feature_array.shape)==4):
-						# Used by windowed sequence. Reduces to 3D with 1 column.
-						stratify_arr = feature_array[:,:,:,col_index]
-					elif (len(feature_array.shape)==3):
-						# Used by windowed tabular. Reduces to 2D with 1 column.
-						stratify_arr = feature_array[:,:,col_index]
-					elif (len(feature_array.shape)==2):
-						stratify_arr = feature_array[:,col_index]
+					dimensions = stratify_arr.ndim
+					if (dimensions==2):
+						stratify_arr = stratify_arr[:,col_index]
+					elif (dimensions==3):
+						# Used by sequence and tabular-windowed. Reduces to 2D w data from 1 column.
+						stratify_arr = stratify_arr[:,:,col_index]
+					elif (dimensions==4):
+						# Used by image and sequence-windowed. Reduces to 3D w data from 1 column.
+						stratify_arr = stratify_arr[:,:,:,col_index]
+					elif (dimensions==5):
+						# Used by image-windowed. Reduces to 4D w data from 1 column.
+						stratify_arr = stratify_arr[:,:,:,:,col_index]
 					stratify_dtype = stratify_arr.dtype
 					
-					if (stratify_arr.shape[1] > 1):
-						# We need a single value for each sample.
+					dimensions = stratify_arr.ndim
+					# In order to stratify, we need a single value from each sample.
+					if ((stratify_arr.shape[-1] > 1) and (dimensions > 1)):
+						# We want a 2D array where each 1D array reprents the desired column across all dimensions.
+						# 1D already has a single value and 2D just works.
+						if (dimensions==3):
+							shape = stratify_arr.shape
+							stratify_arr = stratify_arr.reshape(shape[0], shape[1]*shape[2])
+						elif (dimensions==4):
+							shape = stratify_arr.shape
+							stratify_arr = stratify_arr.reshape(shape[0], shape[1]*shape[2]*shape[3])
+
 						if (np.issubdtype(stratify_dtype, np.number) == True):
 							stratify_arr = np.median(stratify_arr, axis=1)
-						if (np.issubdtype(stratify_dtype, np.number) == False):
-							modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
-							stratify_arr = np.array(modes)
-						# Now reshape from 1D to 2D.
+						elif (np.issubdtype(stratify_dtype, np.number) == False):
+							stratify_arr = np.array([scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr])
+						
+						# Now its 1D so reshape to 2D for the rest of the process.
 						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
 				elif (unsupervised_stratify_col is None):
@@ -2917,53 +2922,29 @@ class Splitset(BaseModel):
 					bin_count = bin_count
 				)
 
-				if (f_dset_type=='tabular' or f_dset_type=='text' or f_dset_type=='sequence'):
-					features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
-						feature_array, stratify_arr, arr_idx
-						, test_size = size_test
-						, stratify = stratifier1
-						, shuffle = True
+				features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
+					feature_array, stratify_arr, arr_idx
+					, test_size = size_test
+					, stratify = stratifier1
+					, shuffle = True
+				)
+
+				if (size_validation is not None):
+					stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
+						stratify_dtype = stratify_dtype,
+						stratify_arr = stratify_train, #This split is different from stratifier1.
+						bin_count = bin_count
 					)
 
-					if (size_validation is not None):
-						stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
-							stratify_dtype = stratify_dtype,
-							stratify_arr = stratify_train, #This split is different from stratifier1.
-							bin_count = bin_count
-						)
-
-						features_train, features_validation, stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
-							features_train, stratify_train, indices_train
-							, test_size = pct_for_2nd_split
-							, stratify = stratifier2
-							, shuffle = True
-						)
-
-				elif (f_dset_type=='image'):
-					# Differs in that the Features not fed into `train_test_split()`.
-					stratify_train, stratify_test, indices_train, indices_test = train_test_split(
-						stratify_arr, arr_idx
-						, test_size = size_test
-						, stratify = stratifier1
+					features_train, features_validation, stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
+						features_train, stratify_train, indices_train
+						, test_size = pct_for_2nd_split
+						, stratify = stratifier2
 						, shuffle = True
 					)
-
-					if (size_validation is not None):
-						stratifier2, bin_count = Splitset.stratifier_by_dtype_binCount(
-							stratify_dtype = stratify_dtype,
-							stratify_arr = stratify_train, #This split is different from stratifier1.
-							bin_count = bin_count
-						)
-
-						stratify_train, stratify_validation, indices_train, indices_validation = train_test_split(
-							stratify_train, indices_train
-							, test_size = pct_for_2nd_split
-							, stratify = stratifier2
-							, shuffle = True
-						)
 
 			elif (stratify_arr is None):
-				if (f_dset_type=='tabular' or f_dset_type=='sequence'):
+				if (f_dset_type!='text'):
 					features_train, features_test, indices_train, indices_test = train_test_split(
 						feature_array, arr_idx
 						, test_size = size_test
@@ -2977,7 +2958,7 @@ class Splitset(BaseModel):
 							, shuffle = True
 						)
 
-				elif (f_dset_type=='image' or f_dset_type=='text'):
+				elif (f_dset_type=='text'):
 					# Differs in that the Features not fed into `train_test_split()`.
 					indices_train, indices_test = train_test_split(
 						arr_idx
@@ -2992,7 +2973,6 @@ class Splitset(BaseModel):
 							, shuffle = True
 						)
 
-			
 			if (size_validation is not None):
 				indices_lst_validation = indices_validation.tolist()
 				samples["validation"] = indices_lst_validation	
@@ -3195,25 +3175,38 @@ class Foldset(BaseModel):
 				column_names = feature.dataset.get_main_tabular().columns
 				col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
 				
-				if (len(stratify_arr.shape)==4):
-					# Used by windowed sequence. Reduces to 3D with 1 column.
-					stratify_arr = stratify_arr[:,:,:,col_index]
-				elif (len(stratify_arr.shape)==3):
-					# Used by windowed tabular. Reduces to 2D with 1 column.
-					stratify_arr = stratify_arr[:,:,col_index]
-				elif (len(stratify_arr.shape)==2):
+				dimensions = stratify_arr.ndim
+				if (dimensions==2):
 					stratify_arr = stratify_arr[:,col_index]
+				elif (dimensions==3):
+					# Used by sequence and tabular-windowed. Reduces to 2D w data from 1 column.
+					stratify_arr = stratify_arr[:,:,col_index]
+				elif (dimensions==4):
+					# Used by image and sequence-windowed. Reduces to 3D w data from 1 column.
+					stratify_arr = stratify_arr[:,:,:,col_index]
+				elif (dimensions==5):
+					# Used by image-windowed. Reduces to 4D w data from 1 column.
+					stratify_arr = stratify_arr[:,:,:,:,col_index]
 				stratify_dtype = stratify_arr.dtype
 
-				# Handles sequence.
-				if (stratify_arr.shape[1] > 1):
-					# We need a single value, so take the median or mode of each 1D array.
+				dimensions = stratify_arr.ndim
+				# In order to stratify, we need a single value from each sample.
+				if ((stratify_arr.shape[-1] > 1) and (dimensions > 1)):
+					# We want a 2D array where each 1D array reprents the desired column across all dimensions.
+					# 1D already has a single value and 2D just works.
+					if (dimensions==3):
+						shape = stratify_arr.shape
+						stratify_arr = stratify_arr.reshape(shape[0], shape[1]*shape[2])
+					elif (dimensions==4):
+						shape = stratify_arr.shape
+						stratify_arr = stratify_arr.reshape(shape[0], shape[1]*shape[2]*shape[3])
+
 					if (np.issubdtype(stratify_dtype, np.number) == True):
 						stratify_arr = np.median(stratify_arr, axis=1)
-					if (np.issubdtype(stratify_dtype, np.number) == False):
-						modes = [scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr]
-						stratify_arr = np.array(modes)
-					# Now both are 1D so reshape to 2D.
+					elif (np.issubdtype(stratify_dtype, np.number) == False):
+						stratify_arr = np.array([scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr])
+					
+					# Now its 1D so reshape to 2D for the rest of the process.
 					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
 			elif (splitset.unsupervised_stratify_col is None):
@@ -4179,9 +4172,8 @@ class Featurecoder(BaseModel):
 
 		dataset = feature.dataset
 		dataset_type = dataset.dataset_type
-		if (dataset_type == "image"):
-			raise ValueError("\nYikes - `Dataset.dataset_type=='image'` does not support encoding Feature.\n")
-		elif (dataset_type == "text"):
+
+		if (dataset_type == "text"):
 			only_fit_train = False
 			is_categorical = False
 			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
@@ -4190,7 +4182,6 @@ class Featurecoder(BaseModel):
 			sklearn_preprocess, only_fit_train, is_categorical = Labelcoder.check_sklearn_attributes(
 				sklearn_preprocess, is_label=False
 			)
-
 
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_featurecoders
@@ -4220,7 +4211,6 @@ class Featurecoder(BaseModel):
 				We recommend you either use these with 1 column at a 
 				time or switch to another encoder.
 			"""))
-
 
 		# 4. Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
@@ -6209,11 +6199,6 @@ class Job(BaseModel):
 						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], data_shape[2], new_col_count)
 
 					predictions[split] = decoded_data
-		# Assumes only 1 unsupervised Feature is allowed, and Dataset.Image does not all encoding.
-		# Dataset.Image are divided by 255 during `to_numpy()`.
-		if (splitset.get_features()[0].dataset.dataset_type=='image'):
-			for split, data in predictions.items():
-				predictions[split] = data*255
 
 		# Flatten.
 		if (supervision=='supervised'):
