@@ -2067,14 +2067,15 @@ class Label(BaseModel):
 		# During inference the old labelcoder may be used so we have to nest the count.
 		if (labelcoder_id!='skip'):
 			if (_fitted_label is not None):
-				labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
-					job=_job, label=_fitted_label
-				)
+				if (_fitted_label.labelcoders.count()>0):
+					labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
+						job=_job, label=_fitted_label
+					)
 
-				label_array = Job.encoder_transform_labels(
-					arr_labels=label_array,
-					fitted_encoders=fitted_encoders, labelcoder=labelcoder
-				)
+					label_array = Job.encoder_transform_labels(
+						arr_labels=label_array,
+						fitted_encoders=fitted_encoders, labelcoder=labelcoder
+					)
 
 			elif (label.labelcoders.count()>0):
 				if (labelcoder_id=='latest'):
@@ -2395,13 +2396,14 @@ class Feature(BaseModel):
 		# During inference the old encoderset may be used so we have to nest the count.
 		if (encoderset_id!='skip'):
 			if (_fitted_feature is not None):
-				encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
-					job=_job, feature=_fitted_feature
-				)
-				feature_array = Job.encoderset_transform_features(
-					arr_features=feature_array,
-					fitted_encoders=fitted_encoders, encoderset=encoderset
-				)
+				if (_fitted_feature.encodersets.count()>0):
+					encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+						job=_job, feature=_fitted_feature
+					)
+					feature_array = Job.encoderset_transform_features(
+						arr_features=feature_array,
+						fitted_encoders=fitted_encoders, encoderset=encoderset
+					)
 
 			elif (feature.encodersets.count()>0):
 				if (encoderset_id=='latest'):
@@ -6587,15 +6589,6 @@ class Predictor(BaseModel):
 				The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 			"""))
 
-	def image_schemas_match(feature_old, feature_new):
-		image_old = feature_old.dataset.files[0].images[0]
-		image_new = feature_new.dataset.files[0].images[0]
-		if (image_old.size != image_new.size):
-			raise ValueError(f"\nYikes - The new image size:{image_new.size} did not match the original image size:{image_old.size}.\n")
-		if (image_old.mode != image_new.mode):
-			raise ValueError(f"\nYikes - The new image color mode:{image_new.mode} did not match the original image color mode:{image_old.mode}.\n")
-			
-
 	def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 		# Get the new and old featuresets. Loop over them by index.
 		features_new = splitset_new.get_features()
@@ -6610,10 +6603,7 @@ class Predictor(BaseModel):
 			feature_new_typ = feature_new.dataset.dataset_type
 			if (feature_old_typ != feature_new_typ):
 				raise ValueError(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
-			if ((feature_new_typ == 'tabular') or (feature_new_typ == 'sequence')):
-				Predictor.tabular_schemas_match(feature_old, feature_new)
-			elif (feature_new_typ == 'image'):
-				Predictor.image_schemas_match(feature_old, feature_new)
+			Predictor.tabular_schemas_match(feature_old, feature_new)
 
 			if (
 				((len(feature_old.windows)>0) and (len(feature_new.windows)==0))
