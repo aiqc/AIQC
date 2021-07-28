@@ -2447,17 +2447,28 @@ class Feature(BaseModel):
 			# Window object is fetched above because the other features need it. 
 			features_ndim = feature_array.ndim
 
-			# Shifted labels. Need to do the target first in order to access the unwindowed `arr_features`.
-			# During pure inference, there may be no shifted samples.
+			"""
+			- *Need to do the label first in order to access the unwindowed `arr_features`.*
+			- During pure inference, there may be no shifted samples.
+			- The window grouping adds an extra dimension to the data.
+			"""
 			if (window.samples_shifted is not None):
-				if (features_ndim==2):
+				# ndim 2 and 3 are grouping rows of 2D tables.
+				if ((features_ndim==2) or (features_ndim==4)):
 					label_array = np.array([feature_array[w] for w in window.samples_shifted])
 				elif (features_ndim==3):
 					label_array = []
-					for i, site in enumerate(feature_array):
+					for i, sample in enumerate(feature_array):
 						label_array.append(
 							[feature_array[i][w] for w in window.samples_shifted]
 						)
+					label_array = np.array(label_array)
+				# whereas ndim 4 is grouping entire images.
+				elif (features_ndim==4):
+					label_array = []
+					for window in window.samples_shifted:
+						window_arr = [feature_array[sample] for sample in window]
+						label_array.append(window_arr)
 					label_array = np.array(label_array)
 				if (_library == 'pytorch'):
 					label_array = torch.FloatTensor(label_array)
@@ -2465,7 +2476,7 @@ class Feature(BaseModel):
 				label_array = None
 
 			# Unshifted features.
-			if (features_ndim==2):
+			if ((features_ndim==2) or (features_ndim==4)):
 				feature_array = np.array([feature_array[w] for w in window.samples_unshifted])
 			elif (features_ndim==3):
 				feature_holder = []
@@ -2473,6 +2484,12 @@ class Feature(BaseModel):
 					feature_holder.append(
 						[feature_array[i][w] for w in window.samples_unshifted]
 					)
+				feature_array = np.array(feature_holder)
+			elif (features_ndim==4):
+				feature_holder = []
+				for window in window.samples_unshifted:
+					window_arr = [feature_array[sample] for sample in window]
+					feature_holder.append(window_arr)
 				feature_array = np.array(feature_holder)
 
 		if (_library == 'pytorch'):
@@ -2665,19 +2682,19 @@ class Window(BaseModel):
 	):
 		feature = Feature.get_by_id(feature_id)
 		dataset_type = feature.dataset.dataset_type
-		# Works for both since it is based on their 2D schema.
+		
 		if (dataset_type=='tabular' or dataset_type=='sequence'):
+			# Works for both since it is based on their 2D/ inner 2D dimensions.
 			sample_count = feature.dataset.get_main_file().shape['rows']
 		elif (dataset_type=='image'):
-			sample_count = feature.dataset.file_count
-
+			# If each seq is an img, think images over time.
+			sample_count = feature.dataset.datasets.count()
 
 		if (record_shifted==True):
 			if ((size_window < 1) or (size_window > (sample_count - size_shift))):
 				raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
 			if ((size_shift < 1) or (size_shift > (sample_count - size_window))):
 				raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
-
 
 			window_count = math.floor((sample_count - size_window) / size_shift)
 			prune_shifted_lead = sample_count - ((window_count - 1)*size_shift + size_window)
@@ -2699,9 +2716,8 @@ class Window(BaseModel):
 				shifted_samples = file_indices[shifted_start:shifted_stop]
 				samples_shifted.append(shifted_samples)
 
-
 		# This is for pure inference. Just taking as many Windows as you can.
-		if (record_shifted==False):
+		elif (record_shifted==False):
 			window_count = math.floor((sample_count - size_window) / size_shift) + 1
 			prune_unshifted_lead = sample_count - ((window_count - 1)*size_shift + size_window)
 
@@ -2715,7 +2731,6 @@ class Window(BaseModel):
 				unshifted_samples = file_indices[unshifted_start:unshifted_stop]
 				samples_unshifted.append(unshifted_samples)
 			samples_shifted = None
-
 
 		window = Window.create(
 			size_window = size_window
