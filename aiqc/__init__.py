@@ -2805,9 +2805,13 @@ class Splitset(BaseModel):
 			f_dataset = f.dataset
 			f_dset_type = f_dataset.dataset_type
 
-			if ((len(f.windows)>0) and (f_dset_type == 'tabular')):
-				# Only 2D tabular will use the window as the sample.
-				# Because in 3D, the sample is the patient, not the intra-patient time windows.
+			# Determine the number of samples in each feature. Varies based on dset_type and windowing.
+			if (
+				(f.windows.count()>0)
+				and 
+				# In 3D sequence, the sample is the patient, not the intra-patient time windows.
+				((f_dset_type == 'tabular') or (f_dset_type == 'image'))
+			):
 				window = f.windows[-1]
 				f_length = window.window_count
 			else:
@@ -2820,6 +2824,9 @@ class Splitset(BaseModel):
 			feature_lengths.append(f_length)
 		if (len(set(feature_lengths)) != 1):
 			raise ValueError("Yikes - List of Features you provided contain different amounts of samples.")
+		sample_count = feature_lengths[0]		
+		arr_idx = np.arange(sample_count)
+
 
 		# --- Prepare for splitting ---
 		feature = Feature.get_by_id(feature_ids[0])
@@ -2832,12 +2839,10 @@ class Splitset(BaseModel):
 		- Images just use the index for stratification.
 		"""
 		###
+		print(arr_idx)
+		print(feature.interpolatersets[-1].featurepolaters[-1])
 		feature_array = feature.preprocess(encoderset_id='skip')
-
-		# Could take the shape of array, but we already have the lengths.
-		sample_count = feature_lengths[0]
-		arr_idx = np.arange(sample_count)
-		
+		print(np.isnan(feature_array).any())
 		samples = {}
 		sizes = {}
 
@@ -2884,19 +2889,19 @@ class Splitset(BaseModel):
 					# Get the column for stratification.
 					column_names = f_dataset.get_main_tabular().columns
 					col_index = Job.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
-					
-					dimensions = stratify_arr.ndim
+
+					dimensions = feature_array.ndim
 					if (dimensions==2):
-						stratify_arr = stratify_arr[:,col_index]
+						stratify_arr = feature_array[:,col_index]
 					elif (dimensions==3):
 						# Used by sequence and tabular-windowed. Reduces to 2D w data from 1 column.
-						stratify_arr = stratify_arr[:,:,col_index]
+						stratify_arr = feature_array[:,:,col_index]
 					elif (dimensions==4):
 						# Used by image and sequence-windowed. Reduces to 3D w data from 1 column.
-						stratify_arr = stratify_arr[:,:,:,col_index]
+						stratify_arr = feature_array[:,:,:,col_index]
 					elif (dimensions==5):
 						# Used by image-windowed. Reduces to 4D w data from 1 column.
-						stratify_arr = stratify_arr[:,:,:,:,col_index]
+						stratify_arr = feature_array[:,:,:,:,col_index]
 					stratify_dtype = stratify_arr.dtype
 					
 					dimensions = stratify_arr.ndim
@@ -2918,6 +2923,8 @@ class Splitset(BaseModel):
 						
 						# Now its 1D so reshape to 2D for the rest of the process.
 						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
+						###
+						print(stratify_arr)
 
 				elif (unsupervised_stratify_col is None):
 					if (bin_count is not None):
@@ -2933,11 +2940,17 @@ class Splitset(BaseModel):
 				- Don't include the Dataset.Image.feature pixel arrays in stratification.
 				"""
 				# `bin_count` is only returned so that we can persist it.
+				
+				print(stratify_dtype)
+				print(bin_count)
+
 				stratifier1, bin_count = Splitset.stratifier_by_dtype_binCount(
 					stratify_dtype = stratify_dtype,
 					stratify_arr = stratify_arr,
 					bin_count = bin_count
 				)
+				print("stratifier1")
+				print(stratifier1)
 
 				features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
 					feature_array, stratify_arr, arr_idx
@@ -3072,8 +3085,12 @@ class Splitset(BaseModel):
 		# For really unbalanced labels, I ran into errors where bin boundaries would be duplicates all the way down to 2 bins.
 		# Setting `duplicates='drop'` to address this.
 		bin_numbers = pd.qcut(x=array_to_bin, q=bin_count, labels=False, duplicates='drop')
-		# Convert 1D array back to 2D for the rest of the program.
-		bin_numbers = np.reshape(bin_numbers, (-1, 1))
+		# When the entire `array_to_bin` is the same, qcut returns all nans!
+		if (np.isnan(bin_numbers).any()):
+			bin_numbers = None
+		else:
+			# Convert 1D array back to 2D for the rest of the program.
+			bin_numbers = np.reshape(bin_numbers, (-1, 1))
 		return bin_numbers
 
 
@@ -3084,6 +3101,8 @@ class Splitset(BaseModel):
 			if (bin_count is None):
 				bin_count = 3
 			stratifier = Splitset.values_to_bins(array_to_bin=stratify_arr, bin_count=bin_count)
+			###
+			print(stratifier)
 		# Allow ints to pass either binned or unbinned.
 		elif (
 			(np.issubdtype(stratify_dtype, np.signedinteger))
