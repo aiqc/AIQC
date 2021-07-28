@@ -1194,9 +1194,9 @@ class Dataset(BaseModel):
 				"""))
 
 			if (_dataset_index is not None):
-				dataset_index = Dataset.Sequence.dataset_index
-			elif (_dataset_index is None):
 				dataset_index = _dataset_index
+			elif (_dataset_index is None):
+				dataset_index = Dataset.Sequence.dataset_index
 			file_count = len(ndarray_3D)
 			dataset = Dataset.create(
 				dataset_type = Dataset.Sequence.dataset_type

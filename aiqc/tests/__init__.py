@@ -547,7 +547,15 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 # ------------------------ KERAS IMAGE BINARY ------------------------
 def keras_image_binary_fn_build(features_shape, label_shape, **hp):
 	model = keras.models.Sequential()
-	
+	# incoming features_shape = channels * rows * columns
+    # https://keras.io/api/layers/reshaping_layers/reshape/
+    # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv1D
+    # Conv1D shape = `batch_shape + (steps, input_dim)`
+	model.add(layers.Reshape(
+		(features_shape[1],features_shape[2])#,features_shape[0])#dropping
+		, input_shape=features_shape)
+	)
+
 	model.add(layers.Conv1D(128*hp['neuron_multiply'], kernel_size=hp['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
 	model.add(layers.MaxPooling1D(pool_size=hp['pool_size']))
 	model.add(layers.Dropout(hp['dropout']))
@@ -617,7 +625,7 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	dataset_image = Dataset.Image.from_urls(urls = image_urls)
+	dataset_image = Dataset.Image.from_urls_pillow(urls=image_urls)
 	feature = dataset_image.make_feature()
 	
 	if (fold_count is not None):
