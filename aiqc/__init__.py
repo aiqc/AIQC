@@ -2838,11 +2838,7 @@ class Splitset(BaseModel):
 		- If it's windowed, the samples become the windows instead of the rows.
 		- Images just use the index for stratification.
 		"""
-		###
-		print(arr_idx)
-		print(feature.interpolatersets[-1].featurepolaters[-1])
 		feature_array = feature.preprocess(encoderset_id='skip')
-		print(np.isnan(feature_array).any())
 		samples = {}
 		sizes = {}
 
@@ -2923,8 +2919,6 @@ class Splitset(BaseModel):
 						
 						# Now its 1D so reshape to 2D for the rest of the process.
 						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
-						###
-						print(stratify_arr)
 
 				elif (unsupervised_stratify_col is None):
 					if (bin_count is not None):
@@ -2940,17 +2934,11 @@ class Splitset(BaseModel):
 				- Don't include the Dataset.Image.feature pixel arrays in stratification.
 				"""
 				# `bin_count` is only returned so that we can persist it.
-				
-				print(stratify_dtype)
-				print(bin_count)
-
 				stratifier1, bin_count = Splitset.stratifier_by_dtype_binCount(
 					stratify_dtype = stratify_dtype,
 					stratify_arr = stratify_arr,
 					bin_count = bin_count
 				)
-				print("stratifier1")
-				print(stratifier1)
 
 				features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
 					feature_array, stratify_arr, arr_idx
@@ -3101,8 +3089,6 @@ class Splitset(BaseModel):
 			if (bin_count is None):
 				bin_count = 3
 			stratifier = Splitset.values_to_bins(array_to_bin=stratify_arr, bin_count=bin_count)
-			###
-			print(stratifier)
 		# Allow ints to pass either binned or unbinned.
 		elif (
 			(np.issubdtype(stratify_dtype, np.signedinteger))
