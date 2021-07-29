@@ -548,9 +548,9 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 def keras_image_binary_fn_build(features_shape, label_shape, **hp):
 	model = keras.models.Sequential()
 	# incoming features_shape = channels * rows * columns
-    # https://keras.io/api/layers/reshaping_layers/reshape/
-    # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv1D
-    # Conv1D shape = `batch_shape + (steps, input_dim)`
+	# https://keras.io/api/layers/reshaping_layers/reshape/
+	# https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv1D
+	# Conv1D shape = `batch_shape + (steps, input_dim)`
 	model.add(layers.Reshape(
 		(features_shape[1],features_shape[2])#,features_shape[0])#dropping
 		, input_shape=features_shape)
@@ -1413,7 +1413,6 @@ def pytorch_image_binary_fn_predict(model, samples_predict):
 			samples_predict['features']
 			, (pred_sz[0], pred_sz[2], pred_sz[3])
 		)
-	print(samples_predict['features'].size() )
 
 	probability = model(samples_predict['features'])
 	# Convert tensor back to numpy for AIQC metrics.
@@ -1472,6 +1471,123 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 	)
 	return queue
 
+
+# ------------------------ KERAS IMAGE FORECAST ------------------------
+def keras_image_forecast_fn_build(features_shape, label_shape, **hp):
+	model = keras.models.Sequential()
+	"""
+	- incoming features_shape = channels * rows * columns
+	- https://keras.io/api/layers/reshaping_layers/reshape/
+	- ConvLSTM1D is still in nightly build so use ConvLSTM2D
+	- https://www.tensorflow.org/api_docs/python/tf/keras/layers/ConvLSTM2D
+	- If data_format='channels_last' 5D tensor with shape: (samples, time, rows, cols, channels)
+	"""
+	# model.add(layers.Reshape(
+	# 	(1, features_shape[1],features_shape[2],features_shape[0])
+	# 	, input_shape=features_shape)
+	# )
+
+	#input_shape: Shape tuple (not including the batch axis)
+	model.add(layers.InputLayer(input_shape=features_shape))
+
+	model.add(layers.ConvLSTM2D(
+		64, (3,3), padding='same', data_format='channels_first', return_sequences=False
+	))
+	model.add(keras.layers.Flatten())
+
+	# Automatically flattens.
+	model.add(keras.layers.Dense(label_shape[1]*label_shape[2]*label_shape[3]*hp['dense_multiplier'], activation='tanh'))
+	model.add(keras.layers.Dropout(0.3))
+	model.add(keras.layers.Dense(label_shape[1]*label_shape[2]*label_shape[3], activation='tanh'))
+	model.add(keras.layers.Dropout(0.3))
+	# Reshape to be 3D.
+	model.add(keras.layers.Reshape((label_shape[1],label_shape[2],label_shape[3])))
+
+	return model
+
+def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+	model.compile(
+		optimizer=optimizer
+		, loss=loser
+		, metrics=['accuracy']
+	)
+	
+	model.fit(
+		samples_train["features"]
+		, samples_train["labels"]
+		, validation_data = (
+			samples_evaluate["features"]
+			, samples_evaluate["labels"]
+		)
+		, verbose = 0
+		, batch_size = hp['batch_size']
+		, callbacks=[keras.callbacks.History()]
+		, epochs = hp['epoch_count']
+	)
+	return model, history
+
+def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
+	folder_path = 'remote_datum/image/liberty_moon/images'
+	image = Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')
+
+	feature = image.make_feature()
+	feature.make_window(size_window=1, size_shift=2)
+	encoderset = feature.make_encoderset()
+
+	encoderset.make_featurecoder(
+		sklearn_preprocess= FunctionTransformer(div255, inverse_func=mult255)
+		, dtypes = 'float64'
+	)
+
+	if (fold_count is not None):
+		size_test = 0.15
+		size_validation = None
+	elif (fold_count is None):
+		size_test = 0.15
+		size_validation = 0.08
+
+	splitset = Splitset.make(
+		feature_ids = feature.id
+		, size_test = size_test
+		, size_validation = size_validation
+	)
+
+	if (fold_count is not None):
+		foldset = splitset.make_foldset(
+			fold_count = fold_count
+		)
+		foldset_id = foldset.id
+	else:
+		foldset_id = None
+
+	algorithm = Algorithm.make(
+		library = "keras"
+		, analysis_type = "regression"
+		, fn_build = keras_image_forecast_fn_build
+		, fn_train = keras_image_forecast_fn_train
+	)
+
+	hyperparameters = dict(
+		batch_size = 3
+		, dense_multiplier = 3
+		, epoch_count = 30
+	)
+
+	hyperparamset = algorithm.make_hyperparamset(
+		hyperparameters = hyperparameters
+	)
+
+	queue = algorithm.make_queue(
+		splitset_id = splitset.id
+		, foldset_id = foldset_id
+		, hyperparamset_id = hyperparamset.id
+		, repeat_count = repeat_count
+	)
+
+	return queue
+
+	
+
 # ------------------------ TEST BATCH CALLER ------------------------
 def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 	if (name == 'keras_multiclass'):
@@ -1488,6 +1604,8 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
 		queue = make_test_queue_keras_sequence_binary(repeat_count, fold_count)
 	elif (name == 'keras_tabular_forecast'):
 		queue = make_test_queue_keras_tabular_forecast(repeat_count, fold_count)
+	elif (name == 'keras_image_forecast'):
+		queue = make_test_queue_keras_image_forecast(repeat_count, fold_count)
 	elif (name == 'pytorch_binary'):
 		queue = make_test_queue_pytorch_binary(repeat_count, fold_count)
 	elif (name == 'pytorch_multiclass'):

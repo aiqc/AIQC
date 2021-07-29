@@ -494,6 +494,10 @@ def tf_batcher(features:object, labels:object, batch_size = 5):
 	batched_labels = np.array_split(labels, rows_per_batch)
 	batched_labels = np.array(batched_labels, dtype=object)
 	return batched_features, batched_labels
+
+# Used by `sklearn.preprocessing.FunctionTransformer` to normalize images.
+def div255(X): return X/255
+def mult255(X): return X*255
 # --------- END HELPERS ---------
 
 
