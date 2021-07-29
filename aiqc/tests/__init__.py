@@ -1326,7 +1326,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 	model = torch.nn.Sequential(
 		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
 		nn.Conv1d(
-			in_channels=features_shape[0]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
+			in_channels=features_shape[1]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
 			, out_channels=56 #arbitrary number. treating this as network complexity.
 			, kernel_size=3
 			, padding=1
@@ -1355,6 +1355,14 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 	return model
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
+	# incoming features_shape = channels * rows * columns
+	#https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d
+	#https://pytorch.org/docs/stable/generated/torch.reshape.html
+	train_size = samples_train['features'].size()
+	eval_size = samples_evaluate['features'].size()
+	samples_train['features'] = torch.reshape(samples_train['features'], (train_size[0], train_size[2], train_size[3]))
+	samples_evaluate['features'] = torch.reshape(samples_evaluate['features'], (eval_size[0], eval_size[2], eval_size[3]))
+
 	## --- Prepare mini batches for analysis ---
 	batched_features, batched_labels = aiqc.torch_batcher(
 		samples_train['features'], samples_train['labels'],
@@ -1397,6 +1405,23 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
+def pytorch_image_binary_fn_predict(model, samples_predict):
+	#reshaping for Conv1D.
+	pred_sz = samples_predict['features'].size() 
+	if (len(pred_sz)==4):
+		samples_predict['features'] = torch.reshape(
+			samples_predict['features']
+			, (pred_sz[0], pred_sz[2], pred_sz[3])
+		)
+	print(samples_predict['features'].size() )
+
+	probability = model(samples_predict['features'])
+	# Convert tensor back to numpy for AIQC metrics.
+	probability = probability.detach().numpy()
+	prediction = (probability > 0.5).astype("int32")
+	# Both objects are numpy.
+	return prediction, probability
+
 def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas(name='brain_tumor.csv')
 
@@ -1406,7 +1431,7 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	dataset_image = Dataset.Image.from_urls(urls = image_urls)
+	dataset_image = Dataset.Image.from_urls_pillow(urls=image_urls)
 	feature = dataset_image.make_feature()
 	
 	if (fold_count is not None):
@@ -1436,6 +1461,7 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 		, analysis_type = "classification_binary"
 		, fn_build = pytorch_image_binary_fn_build
 		, fn_train = pytorch_image_binary_fn_train
+		, fn_predict = pytorch_image_binary_fn_predict
 	)
 
 	queue = algorithm.make_queue(
