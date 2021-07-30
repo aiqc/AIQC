@@ -1530,21 +1530,21 @@ def keras_image_forecast_fn_build(features_shape, label_shape, **hp):
 	model.add(keras.layers.Reshape((label_shape[2], label_shape[3])))
 	"""
 	model = keras.models.Sequential()
-	model.add(layers.Conv1D(64, 3, activation='relu', padding='same'))
+	model.add(layers.Conv1D(64*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
 	model.add(layers.MaxPool1D( 2, padding='same'))
-	model.add(layers.Conv1D(32, 3, activation='relu', padding='same'))
+	model.add(layers.Conv1D(32*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
 	model.add(layers.MaxPool1D( 2, padding='same'))
-	model.add(layers.Conv1D(16, 3, activation='relu', padding='same'))
+	model.add(layers.Conv1D(16*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
 	model.add(layers.MaxPool1D( 2, padding='same'))
 
 	# decoding architecture
-	model.add(layers.Conv1D(16, 3, activation='relu', padding='same'))
+	model.add(layers.Conv1D(16*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
 	model.add(layers.UpSampling1D(2))
-	model.add(layers.Conv1D(32, 3, activation='relu', padding='same'))
+	model.add(layers.Conv1D(32*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
 	model.add(layers.UpSampling1D(2))
-	model.add(layers.Conv1D(64, 3, activation='relu'))
+	model.add(layers.Conv1D(64*hp['multiplier'], 3, activation=hp['activation']))
 	model.add(layers.UpSampling1D(2))
-	model.add(layers.Conv1D(50, 3, padding='same', activation=hp['final_act']))
+	model.add(layers.Conv1D(50, 3, activation='relu', padding='same'))# removing sigmoid
 	return model
 
 def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
@@ -1568,12 +1568,12 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 	)
 	return model
 
-def keras_image_forecast_fn_lose(**hp):
-	loser = keras.losses.BinaryCrossentropy()
-	return loser
+# def keras_image_forecast_fn_lose(**hp):
+# 	loser = keras.losses.BCEWithLogitsLoss()
+# 	return loser
 
 def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
-	folder_path = 'remote_datum/image/liberty_moon/images_copy'
+	folder_path = 'remote_datum/image/liberty_moon/images'
 	image = Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')
 
 	feature = image.make_feature()
@@ -1590,7 +1590,7 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		size_validation = None
 	elif (fold_count is None):
 		size_test = 0.15
-		size_validation = 0.08
+		size_validation = None#small dataset
 
 	splitset = Splitset.make(
 		feature_ids = feature.id
@@ -1611,15 +1611,15 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		, analysis_type = "regression"
 		, fn_build = keras_image_forecast_fn_build
 		, fn_train = keras_image_forecast_fn_train
-		, fn_lose = keras_image_forecast_fn_lose
+		# , fn_lose = keras_image_forecast_fn_lose
 	)
 
 	hyperparameters = dict(
 		epoch_count = [150]
-		, batch_size = [2, 4] 
+		, batch_size = [1]
 		, cnn_init = ['he_normal']
-		, activation = ['tanh', 'relu']
-		, final_act = ['sigmoid']
+		, activation = ['relu']
+		, multiplier = [3]
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(
@@ -1632,7 +1632,6 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
 	)
-
 	return queue
 
 	
