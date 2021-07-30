@@ -1474,35 +1474,77 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 
 # ------------------------ KERAS IMAGE FORECAST ------------------------
 def keras_image_forecast_fn_build(features_shape, label_shape, **hp):
-	model = keras.models.Sequential()
 	"""
-	- incoming features_shape = channels * rows * columns
+	- Model size was too large for SQLite blob... need to rework to store it on the FS.
+	- incoming features_shape = frame* channels * rows * columns
 	- https://keras.io/api/layers/reshaping_layers/reshape/
+	- Model size was too large for SQLite blob... need to rework to store it on the FS.
 	- ConvLSTM1D is still in nightly build so use ConvLSTM2D
 	- https://www.tensorflow.org/api_docs/python/tf/keras/layers/ConvLSTM2D
 	- If data_format='channels_last' 5D tensor with shape: (samples, time, rows, cols, channels)
-	"""
+	
+	model = keras.models.Sequential()
 	# model.add(layers.Reshape(
 	# 	(1, features_shape[1],features_shape[2],features_shape[0])
 	# 	, input_shape=features_shape)
 	# )
-
 	#input_shape: Shape tuple (not including the batch axis)
 	model.add(layers.InputLayer(input_shape=features_shape))
 
 	model.add(layers.ConvLSTM2D(
-		64, (3,3), padding='same', data_format='channels_first', return_sequences=False
+		4, (3,3), padding='same', data_format='channels_first', return_sequences=False
 	))
 	model.add(keras.layers.Flatten())
 
-	# Automatically flattens.
-	model.add(keras.layers.Dense(label_shape[1]*label_shape[2]*label_shape[3]*hp['dense_multiplier'], activation='tanh'))
+	model.add(keras.layers.Dense(label_shape[0]*label_shape[1]*label_shape[2]*label_shape[3], activation='tanh'))
 	model.add(keras.layers.Dropout(0.3))
-	model.add(keras.layers.Dense(label_shape[1]*label_shape[2]*label_shape[3], activation='tanh'))
-	model.add(keras.layers.Dropout(0.3))
+	# model.add(keras.layers.Dense(label_shape[1]*label_shape[2]*label_shape[3], activation='tanh'))
+	# model.add(keras.layers.Dropout(0.3))
 	# Reshape to be 3D.
-	model.add(keras.layers.Reshape((label_shape[1],label_shape[2],label_shape[3])))
+	model.add(keras.layers.Reshape((label_shape)))
+	"""
+	
 
+	# model.add(layers.Reshape(
+	# 	(features_shape[2], features_shape[3])
+	# 	, input_shape=features_shape)
+	# )
+	"""
+	model.add(layers.Conv1D(
+		128, kernel_size=3, padding='same'
+		, activation=hp['activation'], kernel_initializer=hp['cnn_init']
+	))
+	model.add(layers.MaxPooling1D(pool_size=2))
+	model.add(layers.Dropout(0.3))
+	if (hp['conv_2nd'] == True):
+		model.add(layers.Conv1D(
+			256, kernel_size=3, padding='same'
+			, activation=hp['activation'], kernel_initializer=hp['cnn_init']
+		))
+
+	model.add(layers.MaxPooling1D(pool_size=2))
+	model.add(layers.Dropout(0.3))
+
+	model.add(layers.Flatten())
+	model.add(layers.Dense(label_shape[2]*label_shape[3], hp['activation']))
+	model.add(keras.layers.Reshape((label_shape[2], label_shape[3])))
+	"""
+	model = keras.models.Sequential()
+	model.add(layers.Conv1D(64, 3, activation='relu', padding='same'))
+	model.add(layers.MaxPool1D( 2, padding='same'))
+	model.add(layers.Conv1D(32, 3, activation='relu', padding='same'))
+	model.add(layers.MaxPool1D( 2, padding='same'))
+	model.add(layers.Conv1D(16, 3, activation='relu', padding='same'))
+	model.add(layers.MaxPool1D( 2, padding='same'))
+
+	# decoding architecture
+	model.add(layers.Conv1D(16, 3, activation='relu', padding='same'))
+	model.add(layers.UpSampling1D(2))
+	model.add(layers.Conv1D(32, 3, activation='relu', padding='same'))
+	model.add(layers.UpSampling1D(2))
+	model.add(layers.Conv1D(64, 3, activation='relu'))
+	model.add(layers.UpSampling1D(2))
+	model.add(layers.Conv1D(50, 3, padding='same', activation=hp['final_act']))
 	return model
 
 def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
@@ -1524,20 +1566,24 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 		, callbacks=[keras.callbacks.History()]
 		, epochs = hp['epoch_count']
 	)
-	return model, history
+	return model
+
+def keras_image_forecast_fn_lose(**hp):
+	loser = keras.losses.BinaryCrossentropy()
+	return loser
 
 def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
-	folder_path = 'remote_datum/image/liberty_moon/images'
+	folder_path = 'remote_datum/image/liberty_moon/images_copy'
 	image = Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')
 
 	feature = image.make_feature()
 	feature.make_window(size_window=1, size_shift=2)
 	encoderset = feature.make_encoderset()
-
 	encoderset.make_featurecoder(
-		sklearn_preprocess= FunctionTransformer(div255, inverse_func=mult255)
+		sklearn_preprocess= FunctionTransformer(aiqc.div255, inverse_func=aiqc.mult255)
 		, dtypes = 'float64'
 	)
+	feature.make_featureshaper(reshape_indices=(0,3,4))
 
 	if (fold_count is not None):
 		size_test = 0.15
@@ -1565,12 +1611,15 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		, analysis_type = "regression"
 		, fn_build = keras_image_forecast_fn_build
 		, fn_train = keras_image_forecast_fn_train
+		, fn_lose = keras_image_forecast_fn_lose
 	)
 
 	hyperparameters = dict(
-		batch_size = 3
-		, dense_multiplier = 3
-		, epoch_count = 30
+		epoch_count = [150]
+		, batch_size = [2, 4] 
+		, cnn_init = ['he_normal']
+		, activation = ['tanh', 'relu']
+		, final_act = ['sigmoid']
 	)
 
 	hyperparamset = algorithm.make_hyperparamset(

@@ -349,7 +349,7 @@ def create_db():
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction,
 			FittedEncoderset, FittedLabelcoder,
-			Window
+			Window, Featureshaper
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -1337,7 +1337,8 @@ class File(BaseModel):
 			dataframe, columns, shape, dtype = File.Tabular.df_set_metadata(
 				dataframe=dataframe, column_names=column_names, dtype=dtype
 			)
-
+			###
+			#print(dataframe.dtypes)
 			if (ingest==True):
 				blob = File.Tabular.df_to_compressed_parquet_bytes(dataframe)
 			elif (ingest==False):
@@ -1444,7 +1445,7 @@ class File(BaseModel):
 			file = File.get_by_id(id)
 			columns = listify(columns)
 			samples = listify(samples)
-
+			dtypes = file.get_main_tabular().dtypes
 
 			if (file.is_ingested==False):
 				# future: check if `query_fetcher` defined.
@@ -1454,11 +1455,13 @@ class File(BaseModel):
 					, column_names = columns
 					, skip_header_rows = file.skip_header_rows
 				)
+				df = df.astype(dtypes)
 			elif (file.is_ingested==True):
 				df = pd.read_parquet(
 					io.BytesIO(file.blob)
 					, columns=columns
 				)
+
 			# Ensures columns are rearranged to be in the correct order.
 			if ((columns is not None) and (df.columns.to_list() != columns)):
 				df = df.filter(columns)
@@ -1518,7 +1521,14 @@ class File(BaseModel):
 						))
 					else:
 						arr = np.array(Imaje.open(source_path))
-				if (arr.ndim==3):
+				
+				if (arr.ndim==2):
+					# grayscale image.
+					if (columns is not None):
+						arr = arr[:,col_indices].astype(dtype)
+					else:
+						arr = arr.astype(dtype)
+				elif (arr.ndim==3):
 					if (columns is not None):
 						# 1st accessor[] gets the 2D. 2nd accessor[] the cols.
 						arr = arr[file.file_index][:,col_indices].astype(dtype)
@@ -2342,7 +2352,7 @@ class Feature(BaseModel):
 		)
 		return window
 
-	###
+
 	def preprocess(
 		id:int
 		, supervision:str = 'supervised'
@@ -2351,6 +2361,7 @@ class Feature(BaseModel):
 		#, outlierset_id:str='latest'
 		, encoderset_id:str = 'latest'
 		, window_id:str = 'latest'
+		, featureshaper_id:str = 'latest'
 		, samples:dict = None#Used by Interpolaterset to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
 		, _samples_train:list = None#Used during job.run()
 		, _library:str = None#Used during job.run() and during infer()
@@ -2474,8 +2485,7 @@ class Feature(BaseModel):
 						window_arr = [feature_array[sample] for sample in window]
 						label_array.append(window_arr)
 					label_array = np.array(label_array)
-				if (_library == 'pytorch'):
-					label_array = torch.FloatTensor(label_array)
+
 			elif (window.samples_shifted is None):
 				label_array = None
 
@@ -2496,12 +2506,38 @@ class Feature(BaseModel):
 					feature_holder.append(window_arr)
 				feature_array = np.array(feature_holder)
 
+
+		if ((featureshaper_id!='skip') and (feature.featureshapers.count()>0)):
+			if (featureshaper_id=='latest'):
+				featureshaper = feature.featureshapers[-1]
+			elif isinstance(featureshaper_id, int):
+				featureshaper = Featureshaper.get_by_id(featureshaper_id)
+			else:
+				raise ValueError(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
+
+			current_shape = feature_array.shape
+			new_shape = tuple([current_shape[i] for i in featureshaper.reshape_indices])
+			try:
+				feature_array = feature_array.reshape(new_shape)
+			except:
+				raise ValueError(f"\nYikes - Failed to rearrange the feature shape {current_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
+			
+			# Unsupervised labels.
+			if ((window_id!='skip') and (feature.windows.count()>0) and (window.samples_shifted is not None)):
+				try:
+					label_array = label_array.reshape(new_shape)
+				except:
+					raise ValueError(f"\nYikes - Failed to rearrange the label shape {current_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
+
+
 		if (_library == 'pytorch'):
 			feature_array = torch.FloatTensor(feature_array)
 
 		if (supervision=='supervised'):
 			return feature_array
 		elif (supervision=='unsupervised'):
+			if (_library == 'pytorch'):
+				label_array = torch.FloatTensor(label_array)
 			return feature_array, label_array
 
 
@@ -2662,6 +2698,10 @@ class Feature(BaseModel):
 		)
 		return interpolaterset
 
+
+	def make_featureshaper(id:int, reshape_indices:tuple):
+		featureshaper = Featureshaper.from_feature(feature_id=id, reshape_indices=reshape_indices)
+		return featureshaper
 
 
 
@@ -4295,6 +4335,17 @@ class Featurecoder(BaseModel):
 		return featurecoder
 
 
+class Featureshaper(BaseModel):
+	reshape_indices = PickleField()#tuple has no json equivalent
+	feature = ForeignKeyField(Feature, backref='featureshapers')
+
+	def from_feature(feature_id:int, reshape_indices:tuple):
+		feature = Feature.get_by_id(feature_id)
+		featureshaper = Featureshaper.create(
+			reshape_indices=reshape_indices
+			, feature = feature
+		)
+		return featureshaper
 
 
 class Algorithm(BaseModel):
