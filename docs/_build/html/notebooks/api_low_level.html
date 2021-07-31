@@ -359,7 +359,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#6.-Defining-Architectures-&amp;-Hyperparameters.">6. Defining Architectures &amp; Hyperparameters.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Preprocessing---Reshaping.">6. Preprocessing - Reshaping.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Reshaping-by-Index">Reshaping by Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Reshaping-Explicitly">Reshaping Explicitly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Defining-Architectures-&amp;-Hyperparameters.">7. Defining Architectures &amp; Hyperparameters.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Model-Definition">Model Definition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
@@ -372,7 +379,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#7.-Queue-of-training-Jobs.">7. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Queue-of-training-Jobs.">8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
@@ -390,7 +397,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#8.-Metrics-&amp;-Visualization">8. Metrics &amp; Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Metrics-&amp;-Visualization">9. Metrics &amp; Visualization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
@@ -2400,8 +2407,62 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 </div>
-<div class="section" id="6.-Defining-Architectures-&amp;-Hyperparameters.">
-<h2>6. Defining Architectures &amp; Hyperparameters.<a class="headerlink" href="#6.-Defining-Architectures-&-Hyperparameters." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="6.-Preprocessing---Reshaping.">
+<h2>6. Preprocessing - Reshaping.<a class="headerlink" href="#6.-Preprocessing---Reshaping." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>ORM<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>When working with architectures that are highly dimensional such convolutional and recurrent networks (Conv1D, Conv2D, Conv3D / ConvLSTM1D, ConvLSTM2D, ConvLSTM3D), you’ll often find yourself needing to reshape data to fit a layer’s required input shape.</p>
+<ul class="simple">
+<li><p><em>Reducing unused dimensions</em> - When working with grayscale/ single channel images (1 channel * 25 rows * 25 columns) there is no sense using Conv2D just to handle that 1 channel.</p></li>
+<li><p><em>Adding wrapper dimensions</em> - Perhaps your data is a fit for ConvLSTM1D, but that layer is only supported in the nightly TensorFlow build so you want to add a wrapper dimension in order to use the production-ready ConvLSTM2D.</p></li>
+</ul>
+<p>It is difficult do this on the fly during training (aka after the fact) because you need to: add reshaping layers/ views to your model, intercept and reshape the data in your post-processing functions, and, by this point, the data is in a variety of tensor formats. It’s also more efficient to do this wrangling once up front rather than repeatedly on every training run.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">reshape_indices</span></code> argument accepts a tuple for rearranging indices in your order of choosing. Behind the scenes, it will use <code class="docutils literal notranslate"><span class="pre">np.reshape()</span></code> to rearrange the data at the end of your preprocessing pipeline. How the element is handled in that tuple is determined by its type.</p>
+<p><code class="docutils literal notranslate"><span class="pre">feature.make_featureshaper(reshape_indices:tuple)</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># source code from the end of `feature.preprocess()`</span>
+<span class="n">current_shape</span> <span class="o">=</span> <span class="n">feature_array</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="n">new</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">featureshaper</span><span class="o">.</span><span class="n">reshape_indices</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_shape</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">==</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">current_shape</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">indices</span><span class="p">))</span>
+<span class="n">new_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
+
+<span class="n">feature_array</span> <span class="o">=</span> <span class="n">feature_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Reshaping-by-Index">
+<h3>Reshaping by Index<a class="headerlink" href="#Reshaping-by-Index" title="Permalink to this headline">¶</a></h3>
+<p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">color</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our image is B&amp;W, so we want to get rid of the single color channel. So we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Thus we have wrangled ourselves a 3D feature consisting of 2D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>.</p>
+</div>
+<div class="section" id="Reshaping-Explicitly">
+<h3>Reshaping Explicitly<a class="headerlink" href="#Reshaping-Explicitly" title="Permalink to this headline">¶</a></h3>
+<p>But what if the dimensions we want cannot be expressed by rearranging the existing indices? You might have been wondering why <code class="docutils literal notranslate"><span class="pre">str</span></code> appeared in the loop above. If you define a string-based number, then that number will be used as the dimension.</p>
+<p>So if I wanted to add an extra wrapper dimension to my data, I would simply do</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Multiplicative-Reshaping">
+<h3>Multiplicative Reshaping<a class="headerlink" href="#Multiplicative-Reshaping" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes you need to stack/nest dimensions. This requires multiplying one shape index by another. For example, if I have a 3 separate hours worth of data and I want to treat it at 180 minutes, then I need to go from a shape of (3 hours * 60 minutes) to (180 minutes). Just provide the shape indices that you want to multiply in a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="7.-Defining-Architectures-&amp;-Hyperparameters.">
+<h2>7. Defining Architectures &amp; Hyperparameters.<a class="headerlink" href="#7.-Defining-Architectures-&-Hyperparameters." title="Permalink to this headline">¶</a></h2>
 <div class="section" id="a)-Define-an-Algorithm">
 <h3>a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code><a class="headerlink" href="#a)-Define-an-Algorithm" title="Permalink to this headline">¶</a></h3>
 <p>Now that our data has been prepared, we transition to the other half of the ORM where the focus is the logic that will be applied to that data.</p>
@@ -2843,8 +2904,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </div>
 </div>
 </div>
-<div class="section" id="7.-Queue-of-training-Jobs.">
-<h2>7. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#7.-Queue-of-training-Jobs." title="Permalink to this headline">¶</a></h2>
+<div class="section" id="8.-Queue-of-training-Jobs.">
+<h2>8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#8.-Queue-of-training-Jobs." title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">Queue</span></code> is the central object of the “logic side” of the ORM. It ties together everything we need for training and hyperparameter tuning.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[65]:
@@ -3045,8 +3106,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </div>
 </div>
 </div>
-<div class="section" id="8.-Metrics-&amp;-Visualization">
-<h2>8. Metrics &amp; Visualization<a class="headerlink" href="#8.-Metrics-&-Visualization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="9.-Metrics-&amp;-Visualization">
+<h2>9. Metrics &amp; Visualization<a class="headerlink" href="#9.-Metrics-&-Visualization" title="Permalink to this headline">¶</a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="visualization.html">Visualization &amp; Metrics</a> documentation.</p>
 </div>
 </div>

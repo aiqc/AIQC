@@ -2345,7 +2345,17 @@ class Feature(BaseModel):
 				raise ValueError(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
 
 			current_shape = feature_array.shape
-			new_shape = tuple([current_shape[i] for i in featureshaper.reshape_indices])
+			new shape = []
+			for i in featureshaper.reshape_indices:
+				if (type(i) == int):
+					new_shape.append(current_shape[i])
+				elif (type(i) == str):
+					new_shape.append(int(i))
+				elif (type(i)== tuple):
+					indices = [current_shape[idx] for idx in i]
+					new_shape.append(math.prod(indices))
+			new_shape = tuple(new_shape)
+
 			try:
 				feature_array = feature_array.reshape(new_shape)
 			except:
