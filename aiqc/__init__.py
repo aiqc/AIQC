@@ -934,7 +934,7 @@ class Dataset(BaseModel):
 
 		def to_pillow(id:int):
 			dataset = Dataset.get_by_id(id)
-			arr = dataset.to_numpy()
+			arr = dataset.to_numpy().astype('uint8')
 			if (arr.shape[0]==1):
 				arr = arr.reshape(arr.shape[1], arr.shape[2])
 				img = Imaje.fromarray(arr, 'L')
