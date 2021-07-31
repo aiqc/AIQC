@@ -576,8 +576,21 @@ class Dataset(BaseModel):
 			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
 			arr = Dataset.Image.to_numpy(id=id, columns=columns, samples=samples)
-
 		return arr
+
+
+	def to_pillow(id:int, samples:list=None):
+		samples = listify(samples)
+		dataset = Dataset.get_by_id(id)
+		if ((dataset.dataset_type == 'tabular') or (dataset.dataset_type == 'text')):
+			raise ValueError("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
+		elif (dataset.dataset_type == 'image'):
+			image = Dataset.Image.to_pillow(id=id, samples=samples)
+		elif (dataset.dataset_type == 'sequence'):
+			if (samples is not None):
+				raise ValueError("\nYikes - `Dataset.Sequence.to_pillow()` does not support a `samples` argument.\n")
+			image = Dataset.Sequence.to_pillow(id=id)
+		return image
 
 
 	def to_strings(id:int, samples:list=None):	
@@ -683,7 +696,7 @@ class Dataset(BaseModel):
 			)
 
 			try:
-				File.from_file(
+				File.from_path(
 					path = file_path
 					, source_file_format = source_file_format
 					, dtype = dtype
@@ -787,6 +800,154 @@ class Dataset(BaseModel):
 			return ndarray
 
 	
+
+
+	class Sequence():
+		dataset_type = 'sequence'
+		dataset_index = 0
+
+		def from_numpy(
+			ndarray3D_or_npyPath:object
+			, name:str = None
+			, dtype:object = None
+			, column_names:list = None
+			, ingest:bool = True
+			, _disable:bool = False #used by Dataset.Image
+			, _source_path:str = None #used by Dataset.Image
+			, _dataset_index:int = None #used by Dataset.Image
+			, _dataset:object = None #used by Dataset.Image
+		):
+			"""It's possible that passes both `ingest=False` and `_source_path=None`"""
+			if ((ingest==False) and (isinstance(dtype, dict))):
+				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
+			# Fetch array from .npy if it is not an in-memory array.
+			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
+				if (not isinstance(ndarray3D_or_npyPath, str)):
+					raise ValueError("\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n")
+				if (not os.path.exists(ndarray3D_or_npyPath)):
+					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
+				if (not os.path.isfile(ndarray3D_or_npyPath)):
+					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+				if (_source_path is not None):
+					# Path or url to 3D image.
+					source_path = _source_path
+				elif (_source_path is None):
+					source_path = ndarray3D_or_npyPath
+				if (not source_path.lower().endswith(".npy")):
+					raise ValueError("\nYikes - Path must end with '.npy' or '.NPY'\n")
+				try:
+					# `allow_pickle=False` prevented it from reading the file.
+					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
+				except:
+					print("\nYikes - Failed to `np.load(file=ndarray3D_or_npyPath)` with your `ndarray3D_or_npyPath`:\n")
+					print(f"{ndarray3D_or_npyPath}\n")
+					raise
+			elif (str(ndarray3D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
+				ndarray_3D = ndarray3D_or_npyPath 
+				if (_source_path is not None):
+					# Path or url to 3D image.
+					source_path = _source_path
+				elif (_source_path is None):
+					source_path = None
+
+			column_names = listify(column_names)
+			Dataset.arr_validate(ndarray_3D)
+
+			if (ndarray_3D.ndim != 3):
+				raise ValueError(dedent(f"""
+				Yikes - Sequence Datasets can only be constructed from 3D arrays.
+				Your array dimensions had <{ndarray_3D.ndim}> dimensions.
+				Tip: the shape of each internal array must be the same.
+				"""))
+
+			if (_dataset_index is not None):
+				dataset_index = _dataset_index
+			elif (_dataset_index is None):
+				dataset_index = Dataset.Sequence.dataset_index
+			file_count = len(ndarray_3D)
+			dataset = Dataset.create(
+				dataset_type = Dataset.Sequence.dataset_type
+				, dataset_index = dataset_index
+				, file_count = file_count
+				, name = name
+				, source_path = source_path
+				, dataset = _dataset
+			)
+
+			try:
+				for i, arr in enumerate(tqdm(
+					ndarray_3D
+					, desc = "⏱️ Ingesting Sequences 🧬"
+					, ncols = 85
+					, disable = _disable
+				)):
+					File.from_numpy(
+						ndarray = arr
+						, dataset_id = dataset.id
+						, column_names = column_names
+						, dtype = dtype
+						, _file_index = i
+						, ingest = ingest
+					)
+			except:
+				dataset.delete_instance() # Orphaned.
+				raise
+			return dataset
+
+
+		def to_numpy(id:int, columns:list=None, samples:list=None):
+			columns, samples = listify(columns), listify(samples)
+			dataset = Dataset.get_by_id(id)
+			if (samples is None):
+				files = dataset.files
+			elif (samples is not None):
+				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
+				# So run a query to get those files: `<<` means `in`.
+				files = File.select().join(Dataset).where(
+					Dataset.id==dataset.id, File.file_index<<samples
+				)
+			files = list(files)
+			# Then call them with the column filter.
+			# So don't pass `samples=samples` to the file.
+			list_2D = [f.to_numpy(columns=columns) for f in files]
+			arr_3D = np.array(list_2D)
+			return arr_3D
+
+
+		def to_pandas(id:int, columns:list=None, samples:list=None):
+			columns, samples = listify(columns), listify(samples)
+			dataset = Dataset.get_by_id(id)
+			if (samples is None):
+				files = dataset.files
+			elif (samples is not None):
+				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
+				# So run a query to get those files: `<<` means `in`.
+				files = File.select().join(Dataset).where(
+					Dataset.id==dataset.id, File.file_index<<samples
+				)
+			files = list(files)
+			# Then call them with the column filter.
+			# So don't pass `samples=samples` to the file.
+			dfs = [file.to_pandas(columns=columns) for file in files]
+			return dfs
+
+
+		def to_pillow(id:int):
+			dataset = Dataset.get_by_id(id)
+			arr = dataset.to_numpy()
+			if (arr.shape[0]==1):
+				arr = arr.reshape(arr.shape[1], arr.shape[2])
+				img = Imaje.fromarray(arr, 'L')
+			elif (arr.shape[0]==3):
+				img = Imaje.fromarray(arr, 'RGB')
+			elif (arr.shape[0]==4):
+				img = Imaje.fromarray(arr, 'RGBA')
+			else:
+				raise ValueError("\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n")
+			return img
+
+
+
 	class Image():
 		# PIL supported file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
 		dataset_type = 'image'
@@ -1022,6 +1183,16 @@ class Dataset(BaseModel):
 			return dfs
 
 
+		def to_pillow(id:int, samples:list=None):
+			dataset = Dataset.get_by_id(id)
+			datasets = dataset.datasets
+			if (samples is not None):
+				samples = listify(samples)
+				datasets = [d for d in datasets if d.dataset_index in samples]
+			images = [d.to_pillow() for d in datasets]
+			return images
+
+
 
 
 	class Text():
@@ -1110,138 +1281,7 @@ class Dataset(BaseModel):
 			data_df = Dataset.Tabular.to_pandas(id, [Dataset.Text.column_name], samples)
 			return data_df[Dataset.Text.column_name].tolist()
 
-
-	class Sequence():
-		dataset_type = 'sequence'
-		dataset_index = 0
-
-		def from_numpy(
-			ndarray3D_or_npyPath:object
-			, name:str = None
-			, dtype:object = None
-			, column_names:list = None
-			, ingest:bool = True
-			, _disable:bool = False #used by Dataset.Image
-			, _source_path:str = None #used by Dataset.Image
-			, _dataset_index:int = None #used by Dataset.Image
-			, _dataset:object = None #used by Dataset.Image
-		):
-			"""It's possible that passes both `ingest=False` and `_source_path=None`"""
-			if ((ingest==False) and (isinstance(dtype, dict))):
-				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
-			# Fetch array from .npy if it is not an in-memory array.
-			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
-				if (not isinstance(ndarray3D_or_npyPath, str)):
-					raise ValueError("\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n")
-				if (not os.path.exists(ndarray3D_or_npyPath)):
-					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
-				if (not os.path.isfile(ndarray3D_or_npyPath)):
-					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
-				if (_source_path is not None):
-					# Path or url to 3D image.
-					source_path = _source_path
-				elif (_source_path is None):
-					source_path = ndarray3D_or_npyPath
-				if (not source_path.lower().endswith(".npy")):
-					raise ValueError("\nYikes - Path must end with '.npy' or '.NPY'\n")
-				try:
-					# `allow_pickle=False` prevented it from reading the file.
-					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
-				except:
-					print("\nYikes - Failed to `np.load(file=ndarray3D_or_npyPath)` with your `ndarray3D_or_npyPath`:\n")
-					print(f"{ndarray3D_or_npyPath}\n")
-					raise
-			elif (str(ndarray3D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
-				ndarray_3D = ndarray3D_or_npyPath 
-				if (_source_path is not None):
-					# Path or url to 3D image.
-					source_path = _source_path
-				elif (_source_path is None):
-					source_path = None
-
-			column_names = listify(column_names)
-			Dataset.arr_validate(ndarray_3D)
-
-			if (ndarray_3D.ndim != 3):
-				raise ValueError(dedent(f"""
-				Yikes - Sequence Datasets can only be constructed from 3D arrays.
-				Your array dimensions had <{ndarray_3D.ndim}> dimensions.
-				Tip: the shape of each internal array must be the same.
-				"""))
-
-			if (_dataset_index is not None):
-				dataset_index = _dataset_index
-			elif (_dataset_index is None):
-				dataset_index = Dataset.Sequence.dataset_index
-			file_count = len(ndarray_3D)
-			dataset = Dataset.create(
-				dataset_type = Dataset.Sequence.dataset_type
-				, dataset_index = dataset_index
-				, file_count = file_count
-				, name = name
-				, source_path = source_path
-				, dataset = _dataset
-			)
-
-			try:
-				for i, arr in enumerate(tqdm(
-					ndarray_3D
-					, desc = "⏱️ Ingesting Sequences 🧬"
-					, ncols = 85
-					, disable = _disable
-				)):
-					File.from_numpy(
-						ndarray = arr
-						, dataset_id = dataset.id
-						, column_names = column_names
-						, dtype = dtype
-						, _file_index = i
-						, ingest = ingest
-					)
-			except:
-				dataset.delete_instance() # Orphaned.
-				raise
-			return dataset
-
-
-		def to_numpy(id:int, columns:list=None, samples:list=None):
-			columns, samples = listify(columns), listify(samples)
-			dataset = Dataset.get_by_id(id)
-			if (samples is None):
-				files = dataset.files
-			elif (samples is not None):
-				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
-				# So run a query to get those files: `<<` means `in`.
-				files = File.select().join(Dataset).where(
-					Dataset.id==dataset.id, File.file_index<<samples
-				)
-			files = list(files)
-			# Then call them with the column filter.
-			# So don't pass `samples=samples` to the file.
-			list_2D = [f.to_numpy(columns=columns) for f in files]
-			arr_3D = np.array(list_2D)
-			return arr_3D
-
-
-		def to_pandas(id:int, columns:list=None, samples:list=None):
-			columns, samples = listify(columns), listify(samples)
-			dataset = Dataset.get_by_id(id)
-			if (samples is None):
-				files = dataset.files
-			elif (samples is not None):
-				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
-				# So run a query to get those files: `<<` means `in`.
-				files = File.select().join(Dataset).where(
-					Dataset.id==dataset.id, File.file_index<<samples
-				)
-			files = list(files)
-			# Then call them with the column filter.
-			# So don't pass `samples=samples` to the file.
-			dfs = [file.to_pandas(columns=columns) for file in files]
-			return dfs
-
-
-	# Graph
+	# class Graph?
 	# handle nodes and edges as separate tabular types?
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
 	# the only unique thing is an edge_data for each Graph file.
@@ -1349,7 +1389,7 @@ class File(BaseModel):
 		return file
 
 
-	def from_file(
+	def from_path(
 		path:str
 		, source_file_format:str
 		, dataset_id:int
@@ -1425,7 +1465,6 @@ class File(BaseModel):
 		elif (isinstance(f_dtypes, str)):
 			pass #dtype just gets applied as-is.
 		df = df.astype(f_dtypes)
-
 		return df
 
 
@@ -1658,6 +1697,7 @@ class File(BaseModel):
 			df = pd.read_parquet(path=path, engine='fastparquet')
 			df, columns = File.pandas_stringify_columns(df=df, columns=column_names)
 		return df
+
 
 
 
