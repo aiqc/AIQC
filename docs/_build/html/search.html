@@ -273,23 +273,16 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Object-Relational-Model-(ORM)">Object Relational Model (ORM)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Either-Persisting-or-Fetch-Data">Either Persisting or Fetch Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Data-Sources">a) Data Sources</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.from_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_pandas()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_numpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.from_path"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Sequence-Datasets">Sequence Datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Sequence.from_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Image-Datasets">Image Datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.from_urls()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.from_folder()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Registering-Datasets">Registering Datasets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Sequence"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Reading-Datasets">b) Reading Datasets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.to_pandas()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_pandas()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Tabular.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.to_numpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.to_pillow()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_pillow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Dataset.Image.to_numpy()"><code class="docutils literal notranslate"><span class="pre">Dataset.Image.to_numpy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Datasets-into-Memory">Reading Datasets into Memory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id3"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id4"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id7"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +295,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id1">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id10">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Features">Specifying Features</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
@@ -311,7 +304,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#3.-Slicing-samples.">3. Slicing samples.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id2">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id11">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Windows">Reading Windows</a></li>
 </ul>
@@ -323,7 +316,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id3">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#id12">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
@@ -332,7 +325,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id4">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id13">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
@@ -350,7 +343,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#6.-Preprocessing---Reshaping.">6. Preprocessing - Reshaping.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id5">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id14">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reshaping-by-Index">Reshaping by Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Reshaping-Explicitly">Reshaping Explicitly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
