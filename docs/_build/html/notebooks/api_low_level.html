@@ -283,13 +283,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Object-Relational-Model-(ORM)">Object Relational Model (ORM)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Registering-Datasets">Registering Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a)-Registering-Datasets">a) Registering Datasets</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Dataset.Tabular"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Dataset.Sequence"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Dataset.Image"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Reading-Datasets-into-Memory">Reading Datasets into Memory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#b)-Reading-Datasets-into-Memory">b) Reading Datasets into Memory</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
@@ -782,18 +782,18 @@ div.rendered_html tbody tr:hover {
 <h2>1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code><a class="headerlink" href="#1.-Ingest-a-Dataset" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Object-Relational-Model-(ORM)">
 <h3>Object Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline">¶</a></h3>
-<p><img alt="Datasets" src="../_images/dimensionality.png" /></p>
+<p><img alt="Datasets" src="../_images/dimensions.png" /></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different dimensionalities of data:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> - 2D constructed from either an array/dataframe or a tabular file.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> - 3D constructed from an array.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> - 4D constructed from either an array, a folder of files, or a list of URLs.</p></li>
 </ul>
-<p>During each stage of both the preprocessing and postprocessing pipelines, these shapes of data need to be handled differently. Additionally, each split and/or fold needs to be processed separately in order to avoid data leakage. You may also find yourself combining heterogenous featuresets (e.g. both tabular data and image data). All of these transformations needs to be recorded. The reason for this is that when making predictions during inference, the new samples must be processed identically
-to the original samples that the model was trained upon. Then these predictions must be decoded into their natural forms. AIQC coordinates all of this.</p>
+<p>During each stage of both the preprocessing and postprocessing pipelines, these shapes of data need to be handled differently. Additionally, each split and/or fold needs to be processed separately in order to avoid data leakage. You may also find yourself combining heterogenous featuresets (e.g. both tabular data and image data). If you were to derive sliding timeseries windows from a given dataset, then that would add another dimension to the data. All of these transformations needs to be
+recorded. The reason for this is that when making predictions during inference, the new samples must be processed identically to the original samples that the model was trained upon. Then these predictions must be decoded into their natural forms. AIQC records and coordinates all of this.</p>
 </div>
-<div class="section" id="Registering-Datasets">
-<h3>Registering Datasets<a class="headerlink" href="#Registering-Datasets" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="a)-Registering-Datasets">
+<h3>a) Registering Datasets<a class="headerlink" href="#a)-Registering-Datasets" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">ingest:bool=True</span></code> parameter dictates whether or not the data is ingested into SQLite or if remains on disk and is accessed via <code class="docutils literal notranslate"><span class="pre">source_path</span></code>.</p>
 <p>By default the actual bytes of the file are persisted to the SQLite <code class="docutils literal notranslate"><span class="pre">BlobField</span></code>. It gets gzip compressed, reducing the size by up to 90%. Maximum BlobField size is 2.147 GB, but once you factor in compression, your bottleneck is more likely to be memory beyond that size. The bytes themselves are Parquet (single-partitioned) because, using the PyArrow engine, it preserves every dtype except certain datetimes (which are honestly better off parsed into floats/ ordinal ints). Parquet is also
 integrated nicely into both Spark and Dask; frameworks for distributed, in-memory computation.</p>
@@ -924,7 +924,8 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 <div class="section" id="id1">
 <h5><code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h5>
-<p><code class="docutils literal notranslate"><span class="pre">from_numpy(ndarray_3D:object)</span></code> requires a 3D NumPy array where each 2D array represents a sample. So we’ll drop our seizure column from our DataFrame and reshape it into a 3D array.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ndarray3D_or_npyPath:object</span></code> requires either an in-memory 3D NumPy array or a <em>.npy</em> file. Each 2D array represents a sample.</p>
+<p>So we’ll drop our seizure column from our DataFrame and reshape it into a 3D array.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
@@ -940,7 +941,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">dataset_sequence</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
-    <span class="n">ndarray_3D</span> <span class="o">=</span> <span class="n">seq_ndarray3D</span>
+    <span class="n">ndarray3D_or_npyPath</span> <span class="o">=</span> <span class="n">seq_ndarray3D</span>
     <span class="p">,</span> <span class="n">column_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
@@ -1219,6 +1220,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 <div class="section" id="id2">
 <h5><code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">ndarray4D_or_npyPath:object</span></code> requires either an in-memory 4D NumPy array or a <em>.npy</em> file. Each 3D sequence represents an image sample.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
         <span class="n">ndarray4D_or_npyPath</span><span class="p">:</span><span class="nb">object</span>
         <span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1231,8 +1233,8 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </div>
 </div>
 </div>
-<div class="section" id="Reading-Datasets-into-Memory">
-<h3>Reading Datasets into Memory<a class="headerlink" href="#Reading-Datasets-into-Memory" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="b)-Reading-Datasets-into-Memory">
+<h3>b) Reading Datasets into Memory<a class="headerlink" href="#b)-Reading-Datasets-into-Memory" title="Permalink to this headline">¶</a></h3>
 <p>All of the sample-related objects in the API have <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> methods that accept the following arguments:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">samples=[]</span></code> list of indices to fetch.</p></li>
@@ -1496,7 +1498,7 @@ array([[5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;],
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_api_low_level_83_0.png" src="../_images/notebooks_api_low_level_83_0.png" />
+<img alt="../_images/notebooks_api_low_level_84_0.png" src="../_images/notebooks_api_low_level_84_0.png" />
 </div>
 </div>
 </div>
@@ -1869,14 +1871,15 @@ array([[5.1, 3.5, 1.4, 0.2],
 <p>The <code class="docutils literal notranslate"><span class="pre">Window</span></code> object is provided in order to facilitate sliding windows for unsupervised/ self-supervised time series forecasting and backcasting. It assumes that the last time point is the most recent (aka ascending time).</p>
 <p><img alt="Windows" src="../_images/sliding_windows.png" /></p>
 <p><strong>Concept of a sliding sample:</strong></p>
+<p>The ‘sample’ refers to the highest dimension of the data that is batched just before training.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> - The ‘sample’ is no longer a single image, but rather a group of images known as a window. Looking at the diagram above, there are 5 samples (<em>0:4</em> windows), not 15 samples (<em>0:14</em> time points).</p></li>
 </ul>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> - The ‘sample’ becomes a windowed sequence as opposed to an unwindowed sequence. Normally each sequence represents timesteps for a site/ patient. Windowing is applied to the timesteps within each sequence. That is to say that it groups rows within the sequence as windows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> - The ‘sample’ is an array consisting of 1 window from each sequence. Imagine monitoring the weather of several cities at once, and taking the same window from each city as a sample.</p></li>
 </ul>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> - The sample is no longer a single image, but rather a group of images known as a window.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> - The ‘sample’ is no longer a single image, but rather a group of images known as a window.</p></li>
 </ul>
 <p><strong>Parameters:</strong> - <code class="docutils literal notranslate"><span class="pre">size_window:int</span></code> the number of points in time to include in a window. - <code class="docutils literal notranslate"><span class="pre">size_shift:int</span></code> the number of points in time to slide forward. - <code class="docutils literal notranslate"><span class="pre">record_shift:bool=True</span></code> used during inference. Only persists unshifted windows and while leaving shifted windows as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </div>

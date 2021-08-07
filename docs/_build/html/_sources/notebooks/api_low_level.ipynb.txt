@@ -49,7 +49,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "![Datasets](../images/dimensionality.png)"
+    "![Datasets](../images/dimensions.png)"
    ]
   },
   {
@@ -67,14 +67,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "During each stage of both the preprocessing and postprocessing pipelines, these shapes of data need to be handled differently. Additionally, each split and/or fold needs to be processed separately in order to avoid data leakage. You may also find yourself combining heterogenous featuresets (e.g. both tabular data and image data). All of these transformations needs to be recorded. The reason for this is that when making predictions during inference, the new samples must be processed identically to the original samples that the model was trained upon. Then these predictions must be decoded into their natural forms. AIQC coordinates all of this."
+    "During each stage of both the preprocessing and postprocessing pipelines, these shapes of data need to be handled differently. Additionally, each split and/or fold needs to be processed separately in order to avoid data leakage. You may also find yourself combining heterogenous featuresets (e.g. both tabular data and image data). If you were to derive sliding timeseries windows from a given dataset, then that would add another dimension to the data. All of these transformations needs to be recorded. The reason for this is that when making predictions during inference, the new samples must be processed identically to the original samples that the model was trained upon. Then these predictions must be decoded into their natural forms. AIQC records and coordinates all of this."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Registering Datasets"
+    "### a) Registering Datasets"
    ]
   },
   {
@@ -288,7 +288,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "`from_numpy(ndarray_3D:object)` requires a 3D NumPy array where each 2D array represents a sample. So we'll drop our seizure column from our DataFrame and reshape it into a 3D array."
+    "`ndarray3D_or_npyPath:object` requires either an in-memory 3D NumPy array or a *.npy* file. Each 2D array represents a sample.\n",
+    "\n",
+    "So we'll drop our seizure column from our DataFrame and reshape it into a 3D array."
    ]
   },
   {
@@ -316,7 +318,7 @@
    ],
    "source": [
     "dataset_sequence = aiqc.Dataset.Sequence.from_numpy(\n",
-    "    ndarray_3D = seq_ndarray3D\n",
+    "    ndarray3D_or_npyPath = seq_ndarray3D\n",
     "    , column_names = ['EEG']\n",
     ")"
    ]
@@ -683,6 +685,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "The `ndarray4D_or_npyPath:object` requires either an in-memory 4D NumPy array or a *.npy* file. Each 3D sequence represents an image sample."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "```python\n",
     "Dataset.Image.from_numpy(\n",
     "        ndarray4D_or_npyPath:object\n",
@@ -698,7 +707,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Reading Datasets into Memory"
+    "### b) Reading Datasets into Memory"
    ]
   },
   {
@@ -1653,6 +1662,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "The 'sample' refers to the highest dimension of the data that is batched just before training."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "- `Dataset.Tabular` - The 'sample' is no longer a single image, but rather a group of images known as a window. Looking at the diagram above, there are 5 samples (*0:4* windows), not 15 samples (*0:14* time points)."
    ]
   },
@@ -1660,14 +1676,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "- `Dataset.Sequence` - The 'sample' becomes a windowed sequence as opposed to an unwindowed sequence. Normally each sequence represents timesteps for a site/ patient. Windowing is applied to the timesteps within each sequence. That is to say that it groups rows within the sequence as windows."
+    "- `Dataset.Sequence` - The 'sample' is an array consisting of 1 window from each sequence. Imagine monitoring the weather of several cities at once, and taking the same window from each city as a sample."
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "- `Dataset.Image` - The sample is no longer a single image, but rather a group of images known as a window."
+    "- `Dataset.Image` - The 'sample' is no longer a single image, but rather a group of images known as a window."
    ]
   },
   {

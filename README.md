@@ -13,9 +13,9 @@
 
 <br />
 
-<p align='center'><b>Deep learning experiment tracking that's rapid, rigorous, & reproducible.</b></p>
+<p align='center'><b>Deep learning experiment tracking & preprocessing.</b></p>
 
-<p align='center'><i>On a mission to accelerate open science by making deep learning more accessible.</i></p>
+<p align='center'><i>On a mission to accelerate open science by making deep learning reproducible & accessible.</i></p>
 
 <br />
 

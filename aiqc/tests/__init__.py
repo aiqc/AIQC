@@ -69,6 +69,14 @@ def list_test_queues(format:str=None):
 			, 'datum': 'dehli_climate.parquet'	
 		},
 		{
+			'queue_name': 'keras_image_forecast'
+			, 'data_type': 'image'
+			, 'supervision': 'unsupervised'
+			, 'analysis': 'regression'
+			, 'sub_analysis': 'windowed'
+			, 'datum': 'liberty_moon.csv'
+		},
+		{
 			'queue_name': 'pytorch_multiclass'
 			, 'data_type': 'tabular'
 			, 'supervision': 'supervised'
@@ -1358,11 +1366,6 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	# incoming features_shape = channels * rows * columns
 	#https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d
 	#https://pytorch.org/docs/stable/generated/torch.reshape.html
-	train_size = samples_train['features'].size()
-	eval_size = samples_evaluate['features'].size()
-	samples_train['features'] = torch.reshape(samples_train['features'], (train_size[0], train_size[2], train_size[3]))
-	samples_evaluate['features'] = torch.reshape(samples_evaluate['features'], (eval_size[0], eval_size[2], eval_size[3]))
-
 	## --- Prepare mini batches for analysis ---
 	batched_features, batched_labels = aiqc.torch_batcher(
 		samples_train['features'], samples_train['labels'],
@@ -1432,6 +1435,7 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
 	dataset_image = Dataset.Image.from_urls_pillow(urls=image_urls)
 	feature = dataset_image.make_feature()
+	feature.make_featureshaper(reshape_indices=(0,2,3))
 	
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1482,52 +1486,6 @@ def keras_image_forecast_fn_build(features_shape, label_shape, **hp):
 	- ConvLSTM1D is still in nightly build so use ConvLSTM2D
 	- https://www.tensorflow.org/api_docs/python/tf/keras/layers/ConvLSTM2D
 	- If data_format='channels_last' 5D tensor with shape: (samples, time, rows, cols, channels)
-	
-	model = keras.models.Sequential()
-	# model.add(layers.Reshape(
-	# 	(1, features_shape[1],features_shape[2],features_shape[0])
-	# 	, input_shape=features_shape)
-	# )
-	#input_shape: Shape tuple (not including the batch axis)
-	model.add(layers.InputLayer(input_shape=features_shape))
-
-	model.add(layers.ConvLSTM2D(
-		4, (3,3), padding='same', data_format='channels_first', return_sequences=False
-	))
-	model.add(keras.layers.Flatten())
-
-	model.add(keras.layers.Dense(label_shape[0]*label_shape[1]*label_shape[2]*label_shape[3], activation='tanh'))
-	model.add(keras.layers.Dropout(0.3))
-	# model.add(keras.layers.Dense(label_shape[1]*label_shape[2]*label_shape[3], activation='tanh'))
-	# model.add(keras.layers.Dropout(0.3))
-	# Reshape to be 3D.
-	model.add(keras.layers.Reshape((label_shape)))
-	"""
-	
-
-	# model.add(layers.Reshape(
-	# 	(features_shape[2], features_shape[3])
-	# 	, input_shape=features_shape)
-	# )
-	"""
-	model.add(layers.Conv1D(
-		128, kernel_size=3, padding='same'
-		, activation=hp['activation'], kernel_initializer=hp['cnn_init']
-	))
-	model.add(layers.MaxPooling1D(pool_size=2))
-	model.add(layers.Dropout(0.3))
-	if (hp['conv_2nd'] == True):
-		model.add(layers.Conv1D(
-			256, kernel_size=3, padding='same'
-			, activation=hp['activation'], kernel_initializer=hp['cnn_init']
-		))
-
-	model.add(layers.MaxPooling1D(pool_size=2))
-	model.add(layers.Dropout(0.3))
-
-	model.add(layers.Flatten())
-	model.add(layers.Dense(label_shape[2]*label_shape[3], hp['activation']))
-	model.add(keras.layers.Reshape((label_shape[2], label_shape[3])))
 	"""
 	model = keras.models.Sequential()
 	model.add(layers.Conv1D(64*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
@@ -1583,7 +1541,7 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		sklearn_preprocess= FunctionTransformer(aiqc.div255, inverse_func=aiqc.mult255)
 		, dtypes = 'float64'
 	)
-	feature.make_featureshaper(reshape_indices=(0,3,4))
+	feature.make_featureshaper(reshape_indices=(0,2,3))
 
 	if (fold_count is not None):
 		size_test = 0.15

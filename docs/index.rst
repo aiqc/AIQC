@@ -98,9 +98,9 @@
   
   </br>
   <center>
-    <b>→ Deep learning experiment tracking that's rapid, rigorous, & reproducible.</b>
+    <b>→ Deep learning experiment tracking & data preprocessing.</b>
     </br></br>
-    <i style="color: #505050;">On a mission to accelerate open science by making best practice deep learning more accessible.</i>
+    <i style="color: #505050;">On a mission to accelerate open science by making deep learning reproducible & accessible.</i>
   </center>
   </br>
   </br>
