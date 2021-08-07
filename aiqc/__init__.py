@@ -2345,7 +2345,7 @@ class Feature(BaseModel):
 				raise ValueError(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
 
 			current_shape = feature_array.shape
-			new shape = []
+			new_shape = []
 			for i in featureshaper.reshape_indices:
 				if (type(i) == int):
 					new_shape.append(current_shape[i])
@@ -2624,6 +2624,17 @@ class Window(BaseModel):
 			, feature_id = feature.id
 		)
 		return window
+
+	def size_shift_defined(size_window:int=None, size_shift:int=None):
+		"""Used by high level API classes."""
+		if (
+			((size_window is None) and (size_shift is not None))
+			or 
+			((size_window is not None) and (size_shift is None))
+		):
+			raise ValueError("\nYikes - `size_window` and `size_shift` must be used together or not at all.\n")
+
+
 
 
 
@@ -6895,10 +6906,14 @@ class Pipeline():
 
 			, feature_dtype:object = None
 			, feature_cols_excluded:list = None
+			, feature_interpolaters:list = None
+			, feature_window:dict = None
 			, feature_encoders:list = None
+			, feature_reshape_indices:tuple = None
 
 			, label_column:str = None
-			, label_encoder:object = None
+			, label_interpolater:dict = None
+			, label_encoder:dict = None
 
 			, size_test:float = None
 			, size_validation:float = None
@@ -6908,7 +6923,6 @@ class Pipeline():
 			feature_cols_excluded = listify(feature_cols_excluded)
 			feature_encoders = listify(feature_encoders)
 			label_column = listify(label_column)
-			# We need `label_column` as a str, not a list.
 
 			dataset = Pipeline.parse_tabular_input(
 				df_or_path = df_or_path
@@ -6917,8 +6931,10 @@ class Pipeline():
 			if (label_column is not None):
 				label = dataset.make_label(columns=label_column)
 				label_id = label.id
+				if (label_interpolater is not None):
+					label.make_labelpolater(**label_interpolater)
 				if (label_encoder is not None): 
-					label.make_labelcoder(sklearn_preprocess=label_encoder)
+					label.make_labelcoder(**label_encoder)
 			elif (label_column is None):
 				# Needs to know if label exists so that it can exlcude it.
 				label_id = None
@@ -6932,10 +6948,21 @@ class Pipeline():
 			elif (feature_cols_excluded is not None):
 				feature = dataset.make_feature(exclude_columns=feature_cols_excluded)
 
+			if (feature_interpolaters is not None):
+				interpolaterset = feature.make_interpolaterset()
+				for fp in feature_interpolaters:
+					interpolaterset.make_featurepolater(**fp)
+
+			if (feature_window is not None):
+				feature.make_window(**feature_window)
+
 			if (feature_encoders is not None):					
 				encoderset = feature.make_encoderset()
 				for fc in feature_encoders:
 					encoderset.make_featurecoder(**fc)
+
+			if (feature_reshape_indices is not None):
+				feature.make_featureshaper(reshape_indices=feature_reshape_indices)
 
 			splitset = Splitset.make(
 				feature_ids = [feature.id]
@@ -6956,11 +6983,15 @@ class Pipeline():
 			feature_ndarray3D_or_npyPath:object
 			, feature_dtype:object = None
 			, feature_cols_excluded:list = None
+			, feature_interpolaters:list = None
+			, feature_window:dict = None
 			, feature_encoders:list = None
+			, feature_reshape_indices:tuple = None
 			
 			, label_df_or_path:object = None
 			, label_column:str = None
-			, label_encoder:object = None
+			, label_interpolater:dict = None
+			, label_encoder:dict = None
 			
 			, size_test:float = None
 			, size_validation:float = None
@@ -6982,10 +7013,21 @@ class Pipeline():
 			elif (feature_cols_excluded is None):
 				feature = seq_dataset.make_feature()
 
+			if (feature_interpolaters is not None):
+				interpolaterset = feature.make_interpolaterset()
+				for fp in feature_interpolaters:
+					interpolaterset.make_featurepolater(**fp)
+
+			if (feature_window is not None):
+				feature.make_window(**feature_window)
+
 			if (feature_encoders is not None):					
 				encoderset = feature.make_encoderset()
 				for fc in feature_encoders:
 					encoderset.make_featurecoder(**fc)
+
+			if (feature_reshape_indices is not None):
+				feature.make_featureshaper(reshape_indices=feature_reshape_indices)
 
 			# ------ TABULAR LABEL ------
 			if (
@@ -7002,9 +7044,10 @@ class Pipeline():
 				# Tabular-based Label.
 				label = dataset_tabular.make_label(columns=label_column)
 				label_id = label.id
-
+				if (label_interpolater is not None):
+					label.make_labelpolater(**label_interpolater)
 				if (label_encoder is not None): 
-					label.make_labelcoder(sklearn_preprocess=label_encoder)
+					label.make_labelcoder(**label_encoder)
 			elif (label_df_or_path is None):
 				label_id = None
 
@@ -7024,12 +7067,17 @@ class Pipeline():
 
 	class Image():
 		def make(
-			, feature_folder_or_urls:str = None
+			feature_folder_or_urls:str = None
 			, feature_dtype:str = None
+			, feature_interpolaters:list = None
+			, feature_window:dict = None
+			, feature_encoders:list = None
+			, feature_reshape_indices:tuple = None
 
 			, label_df_or_path:object = None
 			, label_column:str = None
-			, label_encoder:object = None
+			, label_interpolater:dict = None
+			, label_encoder:dict = None
 
 			, size_test:float = None
 			, size_validation:float = None
@@ -7037,6 +7085,7 @@ class Pipeline():
 			, bin_count:int = None
 		):
 			label_column = listify(label_column)
+			Window.size_shift_defined(feature_window_size, feature_window_shift)
 			if (isinstance(feature_folder_or_urls, str)):
 				dataset_image = Dataset.Image.from_folder_pillow(
 					folder_path = feature_folder_or_urls
@@ -7051,14 +7100,30 @@ class Pipeline():
 			# Image-based Feature.
 			feature = dataset_image.make_feature()
 
+			if (feature_interpolaters is not None):
+				interpolaterset = feature.make_interpolaterset()
+				for fp in feature_interpolaters:
+					interpolaterset.make_featurepolater(**fp)
+
+			if (feature_window is not None):
+				feature.make_window(**feature_window)
+
+			if (feature_encoders is not None):					
+				encoderset = feature.make_encoderset()
+				for fc in feature_encoders:
+					encoderset.make_featurecoder(**fc)
+
+			if (feature_reshape_indices is not None):
+				feature.make_featureshaper(reshape_indices=feature_reshape_indices)
+
+			# Dataset.Tabular
 			if (
 				((label_df_or_path is None) and (label_column is not None))
 				or
 				((label_df_or_path is not None) and (label_column is None))
 			):
 				raise ValueError("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
-
-			# Dataset.Tabular
+			
 			if (label_df_or_path is not None):
 				dataset_tabular = Pipeline.parse_tabular_input(
 					dataFrame_or_filePath = label_df_or_path
@@ -7066,9 +7131,10 @@ class Pipeline():
 				# Tabular-based Label.
 				label = dataset_tabular.make_label(columns=label_column)
 				label_id = label.id
-
+				if (label_interpolater is not None):
+					label.make_labelpolater(**label_interpolater)
 				if (label_encoder is not None): 
-					label.make_labelcoder(sklearn_preprocess=label_encoder)
+					label.make_labelcoder(**label_encoder)
 
 			elif (label_df_or_path is None):
 				label_id = None
