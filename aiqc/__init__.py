@@ -7069,7 +7069,7 @@ class Pipeline():
 
 	class Image():
 		def make(
-			feature_folder_or_urls:str = None
+			feature_folder_or_urls:str
 			, feature_dtype:str = None
 			, feature_interpolaters:list = None
 			, feature_window:dict = None
