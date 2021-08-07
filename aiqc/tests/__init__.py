@@ -1334,7 +1334,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 	model = torch.nn.Sequential(
 		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
 		nn.Conv1d(
-			in_channels=features_shape[1]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
+			in_channels=features_shape[0]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
 			, out_channels=56 #arbitrary number. treating this as network complexity.
 			, kernel_size=3
 			, padding=1
@@ -1409,14 +1409,6 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	return model, history
 
 def pytorch_image_binary_fn_predict(model, samples_predict):
-	#reshaping for Conv1D.
-	pred_sz = samples_predict['features'].size() 
-	if (len(pred_sz)==4):
-		samples_predict['features'] = torch.reshape(
-			samples_predict['features']
-			, (pred_sz[0], pred_sz[2], pred_sz[3])
-		)
-
 	probability = model(samples_predict['features'])
 	# Convert tensor back to numpy for AIQC metrics.
 	probability = probability.detach().numpy()
@@ -1426,7 +1418,6 @@ def pytorch_image_binary_fn_predict(model, samples_predict):
 
 def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas(name='brain_tumor.csv')
-
 	# Dataset.Tabular
 	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
 	label = dataset_tabular.make_label(columns=['status'])
@@ -1437,6 +1428,8 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 	feature = dataset_image.make_feature()
 	feature.make_featureshaper(reshape_indices=(0,2,3))
 	
+	print(feature.preprocess().shape)
+
 	if (fold_count is not None):
 		size_test = 0.25
 		size_validation = None
@@ -1541,7 +1534,7 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		sklearn_preprocess= FunctionTransformer(aiqc.div255, inverse_func=aiqc.mult255)
 		, dtypes = 'float64'
 	)
-	feature.make_featureshaper(reshape_indices=(0,2,3))
+	feature.make_featureshaper(reshape_indices=(0,3,4))
 
 	if (fold_count is not None):
 		size_test = 0.15

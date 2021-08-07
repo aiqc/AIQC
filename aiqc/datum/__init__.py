@@ -146,7 +146,7 @@ def list_datums(format:str=None):
 			, 'analysis_type': 'forecasting'
 			, 'label': 'N/A'
 			, 'label_classes': 'N/A'
-			, 'features': '1 color x 100 tall x 120 wide'
+			, 'features': '1 color x 50 tall x 60 wide'
 			, 'samples': 15
 			, 'description': 'moon glides from top left to bottom right'
 			, 'location': 'remote'

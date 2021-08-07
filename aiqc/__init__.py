@@ -7085,7 +7085,6 @@ class Pipeline():
 			, bin_count:int = None
 		):
 			label_column = listify(label_column)
-			Window.size_shift_defined(feature_window_size, feature_window_shift)
 			if (isinstance(feature_folder_or_urls, str)):
 				dataset_image = Dataset.Image.from_folder_pillow(
 					folder_path = feature_folder_or_urls
