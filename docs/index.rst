@@ -15,7 +15,7 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
-  notebooks/image_classification
+  notebooks/keras_image_classification
   notebooks/sequence_classification
   notebooks/keras_tabular_forecasting
   notebooks/pytorch_binary_classification
@@ -143,7 +143,7 @@
     <td id="top-left"></td>
     <td class="tbl-head  top-left">Tabular</br><small>(2D: array, dataframe,</br>file, time series)</small></td>
     <td class="tbl-head">Sequence</br><small>(3D: files, channels,</br>multi time series)</small></td>
-    <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br>multi site)</small></td>
+    <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br>multi site time series)</small></td>
   </tr>
   <tr>
     <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>

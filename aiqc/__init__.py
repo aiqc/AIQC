@@ -6903,8 +6903,8 @@ class Pipeline():
 	class Tabular():
 		def make(
 			df_or_path:object
-
-			, feature_dtype:object = None
+			, dtype:object = None
+			
 			, feature_cols_excluded:list = None
 			, feature_interpolaters:list = None
 			, feature_window:dict = None
@@ -6926,7 +6926,7 @@ class Pipeline():
 
 			dataset = Pipeline.parse_tabular_input(
 				df_or_path = df_or_path
-				, dtype = feature_dtype
+				, dtype = dtype
 			)
 			if (label_column is not None):
 				label = dataset.make_label(columns=label_column)
@@ -6989,6 +6989,7 @@ class Pipeline():
 			, feature_reshape_indices:tuple = None
 			
 			, label_df_or_path:object = None
+			, label_dtype:object = None
 			, label_column:str = None
 			, label_interpolater:dict = None
 			, label_encoder:dict = None
@@ -7040,6 +7041,7 @@ class Pipeline():
 			if (label_df_or_path is not None):
 				dataset_tabular = Pipeline.parse_tabular_input(
 					dataFrame_or_filePath = label_df_or_path
+					, dtype = label_dtype
 				)
 				# Tabular-based Label.
 				label = dataset_tabular.make_label(columns=label_column)
@@ -7075,6 +7077,7 @@ class Pipeline():
 			, feature_reshape_indices:tuple = None
 
 			, label_df_or_path:object = None
+			, label_dtype:object = None
 			, label_column:str = None
 			, label_interpolater:dict = None
 			, label_encoder:dict = None
@@ -7126,6 +7129,7 @@ class Pipeline():
 			if (label_df_or_path is not None):
 				dataset_tabular = Pipeline.parse_tabular_input(
 					dataFrame_or_filePath = label_df_or_path
+					, dtype = label_dtype
 				)
 				# Tabular-based Label.
 				label = dataset_tabular.make_label(columns=label_column)
