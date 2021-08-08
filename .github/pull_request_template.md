@@ -68,15 +68,18 @@ q6.run_jobs()
 q7 = tests.make_test_queue('keras_tabular_forecast')
 q7.run_jobs()
 
-q8 = tests.make_test_queue('pytorch_binary')
+q8 = tests.make_test_queue('keras_image_forecast')
 q8.run_jobs()
 
-q9 = tests.make_test_queue('pytorch_multiclass')
+q9 = tests.make_test_queue('pytorch_binary')
 q9.run_jobs()
 
-q10 = tests.make_test_queue('pytorch_regression')
+q10 = tests.make_test_queue('pytorch_multiclass')
 q10.run_jobs()
 
-q11 = tests.make_test_queue('pytorch_image_binary')
+q11 = tests.make_test_queue('pytorch_regression')
 q11.run_jobs()
+
+q12 = tests.make_test_queue('pytorch_image_binary')
+q12.run_jobs()
 ```
