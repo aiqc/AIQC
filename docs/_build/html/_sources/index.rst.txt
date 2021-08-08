@@ -142,9 +142,9 @@
   <table class="compatibility" valign="center">
   <tr>
     <td id="top-left"></td>
-    <td class="tbl-head  top-left">Tabular</br><small>(2D: array, dataframe,</br>file, time series)</small></td>
-    <td class="tbl-head">Sequence</br><small>(3D: files, channels,</br>multi time series)</small></td>
-    <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br>multi site time series)</small></td>
+    <td class="tbl-head  top-left">Tabular</br><small>(2D: array, df, file,</br>single site time series)</small></td>
+    <td class="tbl-head">Sequence</br><small>(3D: files, channels,</br>multi site time series)</small></td>
+    <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br> grayscale video)</small></td>
   </tr>
   <tr>
     <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
@@ -181,7 +181,7 @@
   </tr>
 
   <tr>
-    <td class="tbl-head bottom-left">Forecasting</br><small>(windowed walk)</small></td>
+    <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate walk forward)</small></td>
     <td class="done">
       <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
       <br/><span class="checkmark">✓</span><br/>
