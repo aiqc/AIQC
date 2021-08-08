@@ -5174,7 +5174,7 @@ class Queue(BaseModel):
 		library = queue.algorithm.library
 
 		if (foldset is None):
-			cached_samples = f"{app_dir}cached_samples.gzip"
+			cached_samples = f"{app_dir}queue-{id}_cached_samples.gzip"
 			jobs = list(queue.jobs)
 			repeated_jobs = [] #tuple:(repeat_index, job)
 			for r in range(queue.repeat_count):
@@ -5244,7 +5244,7 @@ class Queue(BaseModel):
 			# Each fold will contain unique, reusable data.
 			for e, fold in enumerate(folds):
 				print(f"\nRunning Jobs for Fold {e+1} out of {foldset.fold_count}:\n", flush=True)
-				cached_samples = f"{app_dir}cached_samples-fold_{e}.gzip"
+				cached_samples = f"{app_dir}queue-{id}_fold-{e}_cached_samples.gzip"
 				jobs = [j for j in queue.jobs if j.fold==fold]
 				repeated_jobs = [] #tuple:(repeat_index, job, fold)
 				for r in range(queue.repeat_count):

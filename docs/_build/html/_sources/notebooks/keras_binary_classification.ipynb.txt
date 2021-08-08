@@ -27,7 +27,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "virtual-produce",
+   "id": "684cccfd-9d8b-4ee2-862a-c43dcde3d23e",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -313,7 +313,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "dangerous-recorder",
+   "id": "c5fa6b1e-8b1b-4ad6-8738-bf5e4ba9c8b8",
    "metadata": {},
    "outputs": [
     {
@@ -323,32 +323,38 @@
       "\n",
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
-      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
       "\n",
       "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 'bh']\n",
       "\n",
-      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
+      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
     }
    ],
    "source": [
-    "aiqc.Dataset.Sequence.make(\n",
-    "    seq_ndarray3D = \n",
-    "    , seq_dtype = None\n",
-    "    , seq_features_excluded:list = None\n",
-    "    , seq_feature_encoders:list = None\n",
+    "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "    df_or_path = df\n",
+    "    , dtype = None\n",
     "\n",
-    "    , tab_DF_or_path:object = None\n",
-    "    , tab_dtype:dict = None\n",
-    "    , tab_label_column:str = None\n",
-    "    , tab_label_encoder:object = None\n",
+    "    , feature_cols_excluded = 'object'\n",
+    "    , feature_interpolaters = None\n",
+    "    , feature_window = None\n",
+    "    , feature_encoders = dict(\n",
+    "        sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)\n",
+    "        , dtypes = ['float64']\n",
+    "    )\n",
+    "    , feature_reshape_indices = None\n",
     "\n",
-    "    , size_test:float = None\n",
-    "    , size_validation:float = None\n",
-    "    , fold_count:int = None\n",
-    "    , bin_count:int = None\n",
+    "    , label_column = 'object'\n",
+    "    , label_interpolater = None\n",
+    "    , label_encoder = dict(sklearn_preprocess = LabelBinarizer(sparse_output=False))\n",
+    "\n",
+    "    , size_test = 0.12\n",
+    "    , size_validation = 0.22\n",
+    "    , fold_count = None\n",
+    "    , bin_count = None\n",
     ")"
    ]
   },
@@ -441,7 +447,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:37<00:00, 12.23s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:32<00:00, 11.58s/it]\n"
      ]
     }
    ],
@@ -554,11 +560,11 @@
       "\n",
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
-      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
       "\n",
       "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 'bh']\n",
       "\n",
-      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
+      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -692,7 +698,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:37<00:00, 12.13s/it]\n"
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:08<00:00,  8.53s/it]\n"
      ]
     }
    ],
