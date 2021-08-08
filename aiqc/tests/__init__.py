@@ -1428,8 +1428,6 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 	feature = dataset_image.make_feature()
 	feature.make_featureshaper(reshape_indices=(0,2,3))
 	
-	print(feature.preprocess().shape)
-
 	if (fold_count is not None):
 		size_test = 0.25
 		size_validation = None
