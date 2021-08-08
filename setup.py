@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="2.5.2",#start using double digits.
+    version="3.0.0",#start using double digits.
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
