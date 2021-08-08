@@ -55,7 +55,16 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os; os.chdir('../..')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -156,11 +165,11 @@
       "\n",
       "___/ featurecoder_index: 0 \\_________\n",
       "\n",
-      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
       "\n",
       "['sepal_length', 'sepal_width', 'petal_length', 'petal_width']\n",
       "\n",
-      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
+      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -168,21 +177,26 @@
    ],
    "source": [
     "splitset = aiqc.Pipeline.Tabular.make(\n",
-    "\tdataFrame_or_filePath = df\n",
+    "    df_or_path = df\n",
     "    , dtype = None\n",
-    "\t, label_column = 'species'\n",
-    "    , features_excluded = None\n",
-    "\t, size_test = 0.24\n",
-    "\t, size_validation = 0.12\n",
-    "\t, fold_count = None\n",
+    "\n",
+    "    , feature_cols_excluded = None\n",
+    "    , feature_interpolaters = None\n",
+    "    , feature_window = None\n",
+    "    , feature_encoders = dict(\n",
+    "        sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)\n",
+    "        , dtypes = ['float64']\n",
+    "    )\n",
+    "    , feature_reshape_indices = None\n",
+    "\n",
+    "    , label_column = 'species'\n",
+    "    , label_interpolater = None\n",
+    "    , label_encoder = dict(sklearn_preprocess=OneHotEncoder(sparse=False))\n",
+    "\n",
+    "    , size_test = 0.24\n",
+    "    , size_validation = 0.12\n",
+    "    , fold_count = None\n",
     "    , bin_count = None\n",
-    "    , label_encoder = OneHotEncoder(sparse=False)\n",
-    "    , feature_encoders = [{\n",
-    "        \"sklearn_preprocess\": PowerTransformer(method='box-cox', copy=False)\n",
-    "        , \"dtypes\": ['float64']\n",
-    "    }]\n",
-    "    , size_window = None\n",
-    "    , size_shift = None\n",
     ")"
    ]
   },
@@ -217,7 +231,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 6,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -226,7 +240,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 7,
    "metadata": {
     "tags": []
    },
@@ -237,7 +251,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 8,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -246,7 +260,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 9,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -255,15 +269,14 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 10,
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "⏱️ Validating Sequences 🧬: 100%|████████████| 1000/1000 [00:00<00:00, 310183.70it/s]\n",
-      "⏱️ Ingesting Sequences 🧬: 100%|█████████████████| 1000/1000 [00:10<00:00, 99.52it/s]\n"
+      "⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:05<00:00, 183.89it/s]\n"
      ]
     },
     {
@@ -271,17 +284,17 @@
      "output_type": "stream",
      "text": [
       "\n",
-      "___/ featurecoder_index: 0 \\_________\n",
-      "\n",
-      "\n",
       "=> Info - System overriding user input to set `sklearn_preprocess.copy=False`.\n",
       "   This saves memory when concatenating the output of many encoders.\n",
       "\n",
-      "=> The column(s) below matched your filter(s) and were ran through a test-encoding successfully.\n",
+      "\n",
+      "___/ featurecoder_index: 0 \\_________\n",
+      "\n",
+      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
       "\n",
       "['0']\n",
       "\n",
-      "=> Done. All feature column(s) have encoder(s) associated with them.\n",
+      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
       "No more Featurecoders can be added to this Encoderset.\n",
       "\n"
      ]
@@ -289,18 +302,27 @@
    ],
    "source": [
     "seq_splitset = aiqc.Pipeline.Sequence.make(\n",
-    "    \n",
-    "    seq_ndarray3D = seq_ndarray3D\n",
-    "    , seq_feature_encoders = [{\n",
+    "    feature_ndarray3D_or_npyPath = seq_ndarray3D\n",
+    "    , feature_dtype = None\n",
+    "    , feature_cols_excluded = None\n",
+    "    , feature_interpolaters = None\n",
+    "    , feature_window = None\n",
+    "    , feature_encoders = [{\n",
     "        \"sklearn_preprocess\": StandardScaler()\n",
     "        , \"columns\": '0'\n",
     "    }]\n",
-    "    \n",
-    "    , tab_DF_or_path = label_df\n",
-    "    , tab_label_column = 'seizure'\n",
+    "    , feature_reshape_indices = None\n",
+    "\n",
+    "    , label_df_or_path = label_df\n",
+    "    , label_dtype = None\n",
+    "    , label_column = 'seizure'\n",
+    "    , label_interpolater = None\n",
+    "    , label_encoder = None\n",
     "\n",
     "    , size_test = 0.22\n",
     "    , size_validation = 0.12\n",
+    "    , fold_count = None\n",
+    "    , bin_count = None\n",
     ")"
    ]
   },
@@ -337,7 +359,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 11,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -347,29 +369,63 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import FunctionTransformer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🖼️ Validating Images 🖼️: 100%|███████████████████████| 80/80 [00:16<00:00,  4.83it/s]\n",
-      "🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:09<00:00,  8.36it/s]\n"
+      "🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:09<00:00,  8.87it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "___/ featurecoder_index: 0 \\_________\n",
+      "\n",
+      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
+      "\n",
+      "['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95', '96', '97', '98', '99', '100', '101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112', '113', '114', '115', '116', '117', '118', '119']\n",
+      "\n",
+      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
+      "No more Featurecoders can be added to this Encoderset.\n",
+      "\n"
      ]
     }
    ],
    "source": [
     "img_splitset = aiqc.Pipeline.Image.make(\n",
-    "    folderPath_or_urls = image_urls\n",
-    "    , pillow_save = {}\n",
-    "    , tabularDF_or_path = df\n",
-    "    , tabular_dtype = None\n",
+    "    feature_folder_or_urls = image_urls\n",
+    "    , feature_dtype = 'float64'\n",
+    "    , feature_interpolaters = None\n",
+    "    , feature_window = None\n",
+    "    , feature_encoders = dict(#pixel values are 0-255 so we will standardize by dividing by 255.\n",
+    "        sklearn_preprocess= FunctionTransformer(aiqc.div255, inverse_func=aiqc.mult255)\n",
+    "        , dtypes = 'float64'\n",
+    "    )\n",
+    "    , feature_reshape_indices = None\n",
+    "\n",
+    "    , label_df_or_path = df\n",
+    "    , label_dtype = None\n",
     "    , label_column = 'status'\n",
+    "    , label_interpolater = None\n",
     "    , label_encoder = None\n",
-    "    , size_test = 0.30\n",
-    "    , size_validation = None\n",
-    "    , fold_count = 4\n",
+    "\n",
+    "    , size_test = 0.12\n",
+    "    , size_validation = 0.18\n",
+    "    , fold_count = None\n",
     "    , bin_count = None\n",
     ")"
    ]
@@ -392,7 +448,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 16,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -450,7 +506,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 17,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -477,7 +533,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": 18,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -528,7 +584,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 19,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -566,7 +622,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
+   "execution_count": 20,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -590,14 +646,14 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
+   "execution_count": null,
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|████████████████████████████████████████| 16/16 [01:11<00:00,  4.45s/it]\n"
+      "🔮 Training Models 🔮:  25%|██████████▎                              | 4/16 [00:35<01:18,  6.55s/it]"
      ]
     }
    ],

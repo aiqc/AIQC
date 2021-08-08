@@ -179,10 +179,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/image_classification.html">Keras: Classify Binary Image</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/image_classification.html#Load-Data">Load Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/image_classification.html#Build-Model">Build Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/image_classification.html#Stage-Experiment">Stage Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/keras_image_classification.html">Keras: Classify Binary Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/keras_image_classification.html#Load-Data">Load Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/keras_image_classification.html#Build-Model">Build Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/keras_image_classification.html#Stage-Experiment">Stage Experiment</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/sequence_classification.html">Keras: Classify Binary Times Series</a><ul>
@@ -531,8 +531,8 @@
 </br><a class="reference internal image-reference" href="_images/framework_june14.png"><img alt="framework" class="align-center" src="_images/framework_june14.png" style="width: 100%;" /></a>
 </br></br>
 <ul style="text-align: center; list-style-position: inside;">
-  <li class="extra-bullets">Achieve end-to-end reproducibility by recording both data preparation & training experiments.</li>
-  <li class="extra-bullets">Easily orchestrate parameterized protocols for data preprocessing & model evalaution.</li>
+  <li class="extra-bullets">Pipelines with tweakable parameters for data prep, model evalaution, and post-processing.</li>
+  <li class="extra-bullets">Achieve end-to-end reproducibility by recording every step in the process.</li>
 </ul>
 </br><div class="line-block">
 <div class="line"><br /></div>
@@ -540,7 +540,7 @@
 <hr class="docutils" />
 </br>
 <center>
-  <b>→ Write 95% less code by integrating these best practice workflows into your research:</b>
+  <b>→ Write 95% less code by integrating AIQC workflows into your research:</b>
 </center>
 </br></br><!-- intentionally 2 space indentation -->
 
@@ -575,11 +575,22 @@
 </tr>
 
 <tr>
-  <td class="tbl-head bottom-left">Quantification</br><small>(regression)</small></td>
+  <td class="tbl-head">Quantification</br><small>(regression)</small></td>
   <td class="done">
     <a href='notebooks/keras_regression.html'>Keras</a>
     <br/><span class="checkmark">✓</span><br/>
     <a href='notebooks/pytorch_regression.html'>PyTorch</a>
+  </td>
+  <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+  <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+</tr>
+
+<tr>
+  <td class="tbl-head bottom-left">Forecasting</br><small>(windowed walk)</small></td>
+  <td class="done">
+    <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
+    <br/><span class="checkmark">✓</span><br/>
+    PyTorch
   </td>
   <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
   <td class="done bottom-right">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
@@ -603,13 +614,8 @@
 
 <ul style="text-align: center; list-style-position: inside;">
   <li class="extra-bullets">
-    <a href='notebooks/keras_tabular_forecasting.html'>
-      Supports multi-variate time series forecasting & backcasting via windowing.
-    </a>
-  </li>
-  <li class="extra-bullets">
     <a href='notebooks/tensorflow_binary_classification.html'>
-      Compatible with TensorFlow 2 for model maintenance and training loop customization.
+      Also compatible with TensorFlow 2 for model maintenance and training loop customization.
     </a>
   </li>
   <li class="extra-bullets">

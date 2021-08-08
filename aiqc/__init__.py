@@ -6921,11 +6921,12 @@ class Pipeline():
 			, bin_count:int = None
 		):
 			feature_cols_excluded = listify(feature_cols_excluded)
+			feature_interpolaters = listify(feature_interpolaters)
 			feature_encoders = listify(feature_encoders)
 			label_column = listify(label_column)
 
 			dataset = Pipeline.parse_tabular_input(
-				df_or_path = df_or_path
+				dataFrame_or_filePath = df_or_path
 				, dtype = dtype
 			)
 			if (label_column is not None):
@@ -7000,6 +7001,7 @@ class Pipeline():
 			, bin_count:int = None
 		):
 			feature_cols_excluded = listify(feature_cols_excluded)
+			feature_interpolaters = listify(feature_interpolaters)
 			feature_encoders = listify(feature_encoders)
 			label_column = listify(label_column)
 
@@ -7088,6 +7090,9 @@ class Pipeline():
 			, bin_count:int = None
 		):
 			label_column = listify(label_column)
+			feature_interpolaters = listify(feature_interpolaters)
+			feature_encoders = listify(feature_encoders)
+
 			if (isinstance(feature_folder_or_urls, str)):
 				dataset_image = Dataset.Image.from_folder_pillow(
 					folder_path = feature_folder_or_urls

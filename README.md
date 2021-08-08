@@ -26,8 +26,8 @@
 
 <br />
 
-* Achieve end-to-end reproducibility by recording both data preparation & training experiments.
-* Easily orchestrate parameterized protocols for data preprocessing & model evalaution.
+* Pipelines with tweakable parameters for data prep, model evalaution, and post-processing.
+* Achieve end-to-end reproducibility by recording every step in the process.
 
 
 ---
