@@ -5,7 +5,7 @@
    "id": "silver-toner",
    "metadata": {},
    "source": [
-    "# Keras: Classify Multi-Label"
+    "# Keras: Tabular Classify Multi-Label"
    ]
   },
   {

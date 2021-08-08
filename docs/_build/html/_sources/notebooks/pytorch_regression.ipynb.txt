@@ -5,7 +5,7 @@
    "id": "parental-berkeley",
    "metadata": {},
    "source": [
-    "# PyTorch: Regression"
+    "# PyTorch: Tabular Regression"
    ]
   },
   {

@@ -5,7 +5,7 @@
    "id": "wireless-beach",
    "metadata": {},
    "source": [
-    "# Keras: Classify Binary Times Series"
+    "# Keras: Times Series Classify Binary"
    ]
   },
   {

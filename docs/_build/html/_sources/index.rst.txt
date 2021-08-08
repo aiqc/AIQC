@@ -14,9 +14,9 @@
 
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
-  notebooks/keras_regression
   notebooks/keras_sequence_classification
   notebooks/keras_image_classification
+  notebooks/keras_regression
   notebooks/keras_tabular_forecasting
   notebooks/keras_image_forecasting
   notebooks/pytorch_binary_classification
@@ -99,7 +99,7 @@
   
   </br>
   <center>
-    <b>→ Deep learning experiment tracking & data preprocessing.</b>
+    <b>→ Deep learning experiment tracking with tightly integrated data preprocessing.</b>
     </br></br>
     <i style="color: #505050;">On a mission to accelerate open science by making deep learning reproducible & accessible.</i>
   </center>
@@ -319,30 +319,6 @@ III. Evaluate algorithm performance with metrics & charts.
 IV. Effortlessly track, reproduce, & prove experiments.
 =======================================================
 
-.. code-block:: python
-
-   ## All experiment artifacts are automatically saved.
-   queue.jobs[0].hyperparamcombo.hyperparameters
-   {
-       'include_4th_layer': True,
-       'weight_init': 'he_normal',
-       'batch_size': 8,
-       'dense_neurons': 64
-   }
-
-   ## A few examples:
-   # Trained model.
-   queue.jobs[0].predictors[0].get_model()
-   # Function used to build model.
-   queue.algorithm.fn_build
-   # Predictions for the left-out cross-validation fold.
-   queue.jobs[0].predictors[0].predictions[0].predections['fold_validation']
-   # Indices of the cross-validation training fold.
-   queue.jobs[0].fold.samples['folds_train_combined']['features']
-   # Fitted encoders.
-   queue.jobs[0].fitted_encoders['featurecoders'][0]
-
-
 - Automatically records all workflow steps in a local SQLite database file.
 
 - During inference, original preprocessing is automatically applied to new samples.
@@ -356,11 +332,12 @@ V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials<
 
 .. code-block:: python
 
-   # pip install --upgrade aiqc
-
+   pip install --upgrade aiqc
    import aiqc
+
    # Data for tutorials.
    from aiqc import datum 
+
    # Creates & connects to the database.
    aiqc.setup() 
 

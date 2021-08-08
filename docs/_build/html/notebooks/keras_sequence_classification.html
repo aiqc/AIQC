@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   
-  <meta property="og:title" content="Keras: Classify Binary Times Series" />
+  <meta property="og:title" content="Keras: Times Series Classify Binary" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/keras_sequence_classification.html" />
   <meta property="og:site_name" content="AIQC" />
@@ -15,7 +15,7 @@
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Keras: Classify Binary Times Series &mdash; AIQC</title>
+  <title>Keras: Times Series Classify Binary &mdash; AIQC</title>
   
 
   
@@ -56,7 +56,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Keras: Classify Binary Image" href="keras_image_classification.html" />
-    <link rel="prev" title="Keras: Regression" href="keras_regression.html" /> 
+    <link rel="prev" title="Keras: Tabular Classify Multi-Label" href="keras_multi-label_classification.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -154,19 +154,31 @@
 </ul>
 <p class="caption"><span class="caption-text">Workflows</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Classify Binary</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="keras_binary_classification.html">Keras: Tabular Classify Binary</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Classify Multi-Label</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Tabular Classify Multi-Label</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Regression</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Keras: Times Series Classify Binary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_image_classification.html">Keras: Classify Binary Image</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Load-Data">Load Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Build-Model">Build Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Stage-Experiment">Stage Experiment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Tabular Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="keras_regression.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_regression.html#a)-High-Level-API">a) High-Level API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Preprocess-Data">Preprocess Data</a></li>
@@ -182,18 +194,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Keras: Classify Binary Times Series</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_image_classification.html">Keras: Classify Binary Image</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Load-Data">Load Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Build-Model">Build Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Stage-Experiment">Stage Experiment</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="keras_tabular_forecasting.html">Keras: Tabular Forecasting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#a)-High-Level-API">a) High-Level API</a></li>
@@ -206,19 +206,19 @@
 <li class="toctree-l2"><a class="reference internal" href="keras_image_forecasting.html#Inference">Inference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Tabular Classify Binary</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Classify Multi-Label</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Tabular Classify Multi-Label</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Regression</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Tabular Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#Example-Data">Example Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#a)-High-Level-API">a) High-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#b)-Low-Level-API">b) Low-Level API</a></li>
@@ -478,7 +478,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Keras: Classify Binary Times Series</li>
+      <li>Keras: Times Series Classify Binary</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -767,8 +767,8 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Keras:-Classify-Binary-Times-Series">
-<h1>Keras: Classify Binary Times Series<a class="headerlink" href="#Keras:-Classify-Binary-Times-Series" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Keras:-Times-Series-Classify-Binary">
+<h1>Keras: Times Series Classify Binary<a class="headerlink" href="#Keras:-Times-Series-Classify-Binary" title="Permalink to this headline">¶</a></h1>
 <p><em>Binary Detection of Epileptic Seizures Using a Cohort of Sequence of Electroencephalography (EEG) Readings.</em></p>
 <p><img alt="waves" src="../_images/waves.png" /></p>
 <p>Sequence data structures contain many observations (rows) for each sample (e.g. site, sensor, or patient). They are often used for grouping time-based observations into what is called a time series. However, sequences can also represent biological sequences like DNA and RNA.</p>
@@ -1439,7 +1439,7 @@ No more Featurecoders can be added to this Encoderset.
         <a href="keras_image_classification.html" class="btn btn-neutral float-right" title="Keras: Classify Binary Image" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="keras_regression.html" class="btn btn-neutral float-left" title="Keras: Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="keras_multi-label_classification.html" class="btn btn-neutral float-left" title="Keras: Tabular Classify Multi-Label" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
