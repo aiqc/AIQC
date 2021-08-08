@@ -15,9 +15,10 @@
   notebooks/keras_binary_classification
   notebooks/keras_multi-label_classification
   notebooks/keras_regression
+  notebooks/keras_sequence_classification
   notebooks/keras_image_classification
-  notebooks/sequence_classification
   notebooks/keras_tabular_forecasting
+  notebooks/keras_image_forecasting
   notebooks/pytorch_binary_classification
   notebooks/pytorch_multi-label_classification
   notebooks/pytorch_regression
@@ -187,7 +188,10 @@
       PyTorch
     </td>
     <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
-    <td class="done bottom-right">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+    <td class="done bottom-right">
+      <a href='notebooks/keras_image_forecasting.html'>Keras</a><br/>
+      <span class="checkmark">✓</span><br/>
+      PyTorch</td>
   </tr>
   
   <!--

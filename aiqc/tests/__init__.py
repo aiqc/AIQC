@@ -1502,7 +1502,7 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 	model.compile(
 		optimizer=optimizer
 		, loss=loser
-		, metrics=['accuracy']
+		, metrics=['r2']
 	)
 	
 	model.fit(
@@ -1525,9 +1525,9 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 
 def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
 	folder_path = 'remote_datum/image/liberty_moon/images'
-	image = Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')
+	image_dataset = Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')
 
-	feature = image.make_feature()
+	feature = image_dataset.make_feature()
 	feature.make_window(size_window=1, size_shift=2)
 	encoderset = feature.make_encoderset()
 	encoderset.make_featurecoder(

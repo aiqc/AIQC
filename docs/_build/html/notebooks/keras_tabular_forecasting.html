@@ -55,8 +55,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PyTorch: Classify Binary" href="pytorch_binary_classification.html" />
-    <link rel="prev" title="Keras: Classify Binary Times Series" href="sequence_classification.html" /> 
+    <link rel="next" title="Keras: Image Forecasting" href="keras_image_forecasting.html" />
+    <link rel="prev" title="Keras: Classify Binary Image" href="keras_image_classification.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -182,16 +182,16 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="keras_sequence_classification.html">Keras: Classify Binary Times Series</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_sequence_classification.html#Example-Data">Example Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_sequence_classification.html#a)-High-Level-API">a) High-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_sequence_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="keras_image_classification.html">Keras: Classify Binary Image</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Load-Data">Load Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Build-Model">Build Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Stage-Experiment">Stage Experiment</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="sequence_classification.html">Keras: Classify Binary Times Series</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sequence_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Keras: Tabular Forecasting</a><ul>
@@ -199,6 +199,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#a)-High-Level-API">a) High-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#b)-Low-Level-API">b) Low-Level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Inference">Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="keras_image_forecasting.html">Keras: Image Forecasting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="keras_image_forecasting.html#Low-Level-API">Low-Level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keras_image_forecasting.html#Inference">Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Classify Binary</a><ul>
@@ -949,15 +954,6 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="a)-High-Level-API">
 <h2>a) High-Level API<a class="headerlink" href="#a)-High-Level-API" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
-</pre></div>
-</div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -1160,15 +1156,6 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
 </div>
@@ -1870,7 +1857,7 @@ array([[ 99.42948 ,  22.078543,  63.977283],
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_keras_tabular_forecasting_66_1.png" src="../_images/notebooks_keras_tabular_forecasting_66_1.png" />
+<img alt="../_images/notebooks_keras_tabular_forecasting_64_1.png" src="../_images/notebooks_keras_tabular_forecasting_64_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1904,7 +1891,7 @@ array([[ 99.42948 ,  22.078543,  63.977283],
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_keras_tabular_forecasting_68_1.png" src="../_images/notebooks_keras_tabular_forecasting_68_1.png" />
+<img alt="../_images/notebooks_keras_tabular_forecasting_66_1.png" src="../_images/notebooks_keras_tabular_forecasting_66_1.png" />
 </div>
 </div>
 <p>We’re not exactly ready to start our own weather channel, but there is definitely evidence of learning.</p>
@@ -1919,10 +1906,10 @@ array([[ 99.42948 ,  22.078543,  63.977283],
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pytorch_binary_classification.html" class="btn btn-neutral float-right" title="PyTorch: Classify Binary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="keras_image_forecasting.html" class="btn btn-neutral float-right" title="Keras: Image Forecasting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sequence_classification.html" class="btn btn-neutral float-left" title="Keras: Classify Binary Times Series" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="keras_image_classification.html" class="btn btn-neutral float-left" title="Keras: Classify Binary Image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
