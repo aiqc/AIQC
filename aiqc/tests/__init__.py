@@ -1500,7 +1500,7 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 	model.compile(
 		optimizer=optimizer
 		, loss=loser
-		, metrics=['r2']
+		, metrics=['mean_squared_error']
 	)
 	
 	model.fit(
