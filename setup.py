@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="3.0.0",#start using double digits.
+    version="3.0.02",#start using double digits.
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
@@ -22,7 +22,7 @@ setuptools.setup(
     url="https://aiqc.readthedocs.io/",
     packages=setuptools.find_packages(),
     include_package_data=True,# Triggers `MANIFEST.in` file.
-    python_requires='>=3.5, <=3.8.7', # (tf req Py3.5-3.8)
+    python_requires='>=3.5, <=3.8.12', # (tf req Py3.5-3.8)
     license='BSD 3-Clause',
     # Version operands https://pip.pypa.io/en/stable/reference/pip_install/#requirement-specifiers
     # According to Python slack wizards, despite wheel-related warnings when installing aiqc on 

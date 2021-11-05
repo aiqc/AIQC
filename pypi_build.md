@@ -11,6 +11,8 @@ pip3 install --upgrade wheel twine
 ### Steps to build & upload.
 
 ```bash
+cd ~/Desktop/AIQC
+
 python3 setup.py sdist bdist_wheel
 
 python3 -m twine upload --repository pypi dist/*

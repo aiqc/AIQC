@@ -1,0 +1,90 @@
+# ========= BUILDING IMAGE =========
+
+# Overview
+- `Dockerfile` is used to locally build the container image.
+- Whereas the `docker-compose.yml` file is used to run the container with specified settings
+  as opposed to passing all of those arguments into the `docker run ...` command.
+
+
+# Files for Build
+Put all of these files in the same directory e.g. '/desktop/aiqc/docker':
+    1. Your python packages e.g. 'requirements.txt'
+    2. Dockerfile
+    3. docker-compose.yml
+
+
+# Build the Image
+To locally build the image, navigate to that directory and run:
+`docker build --tag <your_dockerhub_account>/<your_image_name>:<your_tag> .` 
+The `.` tells docker to look in local folder for files.
+
+
+# Run the Service
+You'll want to test the imagebefore you push it as uploading can take a long time.
+To run the service using the settings in docker-compose.yml:
+`cd ~/desktop/AIQC/docker`
+`docker-compose up`
+http://127.0.0.1:8888/lab
+
+# Push the Image to DockerHub
+Create the remote repo: https://hub.docker.com/repository/create?namespace=hashrocketsyntax
+`docker push <your_dockerhub_account>/<your_repo>:<your_tag>`
+
+
+# Running Without Compose
+`docker run -it <image_id>` # python shell at root directory.
+`docker run -it <image_id> /bin/bash` # bash shell at root directory.
+
+
+# ========= WHEN RUNNING CONTAINER =========
+
+# Expected folders on your desktop for docker to mount:
+- Assumes that you have git cloned AIQC repo to `~/Desktop/AIQC`
+- `mkdir ~/Desktop/AIQC_Docker_AppDirs ~/Desktop/AIQC_Docker_Workspace`
+- Put `dev_notebooks` in `/AIQC_Docker_Workspace`
+
+
+# OS
+`cat /etc/os-release`
+PRETTY_NAME="Debian GNU/Linux 10 (buster)"
+NAME="Debian GNU/Linux"
+VERSION_ID="10"
+VERSION="10 (buster)"
+VERSION_CODENAME=buster
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+
+
+# PYTHON
+`python --version`
+Python 3.8.12
+# The python binary is the same for root and non-root users.
+`which python`
+/usr/local/bin/python
+
+
+# EXISTING BINARIES
+`dpkg -s git | grep Version`
+Version: 1:2.20.1-2+deb10u3
+
+`dpkg -s openssl | grep Version`
+Version: 1.1.1d-0+deb10u7
+
+`pip show pip`
+Name: pip
+Version: 21.2.4
+Summary: The PyPA recommended tool for installing Python packages.
+Home-page: https://pip.pypa.io/
+Author: The pip developers
+Author-email: distutils-sig@python.org
+License: MIT
+Location: /usr/local/lib/python3.8/site-packages
+
+
+# APPDIRS OF NON-ROOT.
+`python`
+>>> import appdirs
+>>> appdirs.user_data_dir()
+'/home/aiqc_usr/.local/share'
