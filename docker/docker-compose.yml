@@ -14,12 +14,13 @@ services:
     volumes:
       # Source Code (allows for `import aiqc` without package installed so code can be edited/ developed).
       - "~/desktop/AIQC:/home/aiqc_usr/AIQC"
-      # AppDirs (for aiqc database and config files).
-      - "~/desktop/AIQC_Docker_AppDirs:/home/aiqc_usr/.local/share"
-      # Working Directory (contains dev_notebooks).
+      # Working Directory (contains dev_notebooks that aren't in git repo).
       - "~/desktop/AIQC_Docker_Workspace:/home/aiqc_usr"
+      # AppDirs (for aiqc database and config files). Easier than dynamically installing & running `appdirs.user_data_dir()` for different users/OS.
+      - "~/desktop/AIQC_Docker_Workspace/AppDirs:/home/aiqc_usr/.local/share"
     # As opposed to `entrypoint` which is supposed to be a bash script.
-    working_dir: /home/aiqc_usr/AIQC
+    # Jupyter's file browser doesn't let you drill up out of the folder you launch it from.
+    working_dir: /home/aiqc_usr
     # Serves notebooks from local directory: `/home/aiqc_usr`.
     # Access via: <http://127.0.0.1:8888/lab>.
     user: "aiqc_usr" #otherwise jupyter will complain about `--allow-root` even if you `su - aiqc_usr` to switch user first.

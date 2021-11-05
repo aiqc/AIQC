@@ -19,9 +19,8 @@ RUN su - aiqc_usr
 
 # ========= USER COMMANDS =========
 # Can't install nodejs without updating package manager.
-RUN pw=RapidRigorReproduce
 # Only need to use the pw once when running sudo commands.
-RUN echo $pw | sudo -S apt update
+RUN echo "RapidRigorReproduce" | sudo -S apt update
 RUN sudo apt upgrade -y
 RUN sudo apt update
 
@@ -47,4 +46,3 @@ RUN rm requirements.txt
 
 # Create a place to mount the source code so that it can be imported.
 RUN mkdir /home/aiqc_usr/AIQC
-#RUN sudo chown -R /home/aiqc_usr/AIQC
