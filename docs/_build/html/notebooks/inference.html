@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta property="og:title" content="Inference" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/inference.html" />
@@ -48,7 +49,7 @@
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -767,7 +768,7 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Inference">
+<section id="Inference">
 <h1>Inference<a class="headerlink" href="#Inference" title="Permalink to this headline">¶</a></h1>
 <p>Down the road, you will need to make real-life predictions using the models that you’ve trained.</p>
 <p>Inference is a breeze with AIQC because it persists all of the information that we need to preprocess our new samples and reconstruct our model.</p>
@@ -796,7 +797,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="Predictor">
+<section id="Predictor">
 <h2>Predictor<a class="headerlink" href="#Predictor" title="Permalink to this headline">¶</a></h2>
 <p>Let’s say that we have a trained model in the form of a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>,</p>
 <div class="nbinput nblast docutils container">
@@ -809,8 +810,8 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <p>and that we have samples that we want to generate predictions for.</p>
-</div>
-<div class="section" id="New-Splitset">
+</section>
+<section id="New-Splitset">
 <h2>New Splitset<a class="headerlink" href="#New-Splitset" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -922,8 +923,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Run-Inference">
+</section>
+<section id="Run-Inference">
 <h2>Run Inference<a class="headerlink" href="#Run-Inference" title="Permalink to this headline">¶</a></h2>
 <p>Then pass that <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> to <code class="docutils literal notranslate"><span class="pre">Predictor.infer()</span></code>.</p>
 <p>During <code class="docutils literal notranslate"><span class="pre">infer()</span></code>, it will validate that the schema of your new Splitset’s <code class="docutils literal notranslate"><span class="pre">Feature</span></code> (the latest <code class="docutils literal notranslate"><span class="pre">Window</span></code> if provided) and <code class="docutils literal notranslate"><span class="pre">Label</span></code> (if provided) match the schema of the original training Splitset.</p>
@@ -962,8 +963,8 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <p>For more information on the <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> object, reference the <a class="reference external" href="api_low_level.html">Low-Level API</a> documentation.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

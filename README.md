@@ -13,7 +13,7 @@
 
 <br />
 
-<p align='center'><b>Framework for deep learning experiment tracking with tightly integrated data preprocessing.</b></p>
+<p align='center'><b>End-to-end deep learning experiment tracking with tightly integrated pre & post processing.</b></p>
 
 <p align='center'><i>On a mission to accelerate open science by making deep learning reproducible & accessible.</i></p>
 

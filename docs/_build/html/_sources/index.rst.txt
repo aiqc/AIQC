@@ -99,7 +99,7 @@
   
   </br>
   <center>
-    <b>→ Framework for deep learning experiment tracking with tightly integrated data preprocessing.</b>
+    <b>→ End-to-end deep learning experiment tracking with tightly integrated pre & post processing.</b>
     </br></br>
     <i style="color: #505050;">On a mission to accelerate open science by making deep learning reproducible & accessible.</i>
   </center>

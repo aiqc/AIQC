@@ -1,4 +1,4 @@
-#reference requirements.dev
+# This file tells ReadTheDocs what to install.
 sphinx==4.0.2
 ipython==7.19.0
 nbsphinx>=0.8.6

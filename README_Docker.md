@@ -8,7 +8,7 @@
 
 # Files for Build
 Put all of these files in the same directory e.g. '/desktop/aiqc/docker':
-    1. Your python packages e.g. 'requirements.txt'
+    1. Your python packages e.g. 'requirements.txt' and 'requirements_dev.txt'
     2. Dockerfile
     3. docker-compose.yml
 
@@ -25,6 +25,7 @@ To run the service using the settings in docker-compose.yml:
 `cd ~/desktop/AIQC/docker`
 `docker-compose up`
 http://127.0.0.1:8888/lab
+
 
 # Push the Image to DockerHub
 Create the remote repo: https://hub.docker.com/repository/create?namespace=hashrocketsyntax
@@ -45,10 +46,12 @@ Create the remote repo: https://hub.docker.com/repository/create?namespace=hashr
 
 
 # Editing files.
-- If you only delete files on host, then Docker's filesys gets out of sync.
 - You can programmatically `aiqc.setup()` & `aiqc.destroy_db()` from within Docker, and it will impact both container/host filesys.
 - You can programmatically `!touch file` & `!rm file` from within Docker, and it will impact both container/host filesys.
-- Jupyter UI does not seem to have permission to add/remove files.
+- You can install packages with `--user` from the Jupyter Terminal. 
+
+- If you only delete files on the host, then Docker's filesys gets out of sync.
+- The Jupyter UI does not seem to have permission to add/remove files.
 # OSError: [Errno 18] Invalid cross-device link: b'/home/aiqc_usr/file' -> b'/home/aiqc_usr/.local/share/Trash/files/file'
 ^ despite OS user having chown permissions on '/home/aiqc_usr/'
 

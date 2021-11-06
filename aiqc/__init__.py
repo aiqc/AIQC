@@ -20,7 +20,7 @@ import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold #mandatory separate import.
 from sklearn.feature_extraction.text import CountVectorizer
 # Deep learning.
-import keras
+from tensorflow import keras
 import torch
 # Visualization.
 import plotly.graph_objects as go

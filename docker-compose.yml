@@ -1,7 +1,7 @@
 version: "3"
 services: 
   aiqc:
-    image: "aiqc:dev_v3.0.1_py3.7.12"
+    image: "hashrocketsyntax/aiqc:dev_desktop_v3.0.2_py3.7.12-bullseye"
     deploy:
       resources:
         limits:

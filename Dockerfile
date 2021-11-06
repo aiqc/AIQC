@@ -1,4 +1,4 @@
-FROM python:3.7.12-buster
+FROM python:3.7.12-bullseye
 
 # ========= ROOT COMMANDS =========
 # `jupyter lab` won't run as root, and root is bad practice.
@@ -27,21 +27,24 @@ RUN sudo apt update
 # Add the registry that contains node
 RUN sudo apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
 RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-# install node
+# Install node
 RUN sudo apt -y install nodejs
 
-RUN pip install --upgrade pip
+# For Sphinx documentation.
+RUN sudo apt -y install pandoc
 
-# dev packages
+RUN pip install --upgrade pip
+# Developer packages
 # Contains JupyterLab and I want this installed prior to plotly.
+# Docker paths are can't access parent directories.
 COPY requirements_dev.txt /
-RUN pip install -r requirements_dev.txt
+RUN pip install --default-timeout=100 -r requirements_dev.txt 
 RUN rm requirements_dev.txt
 
 # pip packages
 # Installing plotly>=5.0.0 includes the prebuilt jupyter extension.
 COPY requirements.txt /
-RUN pip install -r requirements.txt
+RUN pip install --default-timeout=100 -r requirements.txt 
 RUN rm requirements.txt
 
 # Create a place to mount the source code so that it can be imported.
