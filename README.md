@@ -29,16 +29,33 @@
 * Pipelines with tweakable parameters for data prep, model evalaution, and post-processing.
 * Achieve end-to-end reproducibility by recording every step in the process.
 
+<br />
 
 ---
 
 <br />
-
-<p align='center'><i>Thanks to the support and sponsorship of:</i></p>
-
 <br />
 
+<p align="center">
+	<i>Thanks to the support & sponsorship of:</i>
+</p>
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" alt="sponsor"/>
+	<a href="https://wiki.python.org/psf/ScientificWG/Charter_v3">
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" alt="sponsor"/>
+	</a>
 </p>
+
+<br />
+<br />
+
+<p align="center">
+	<i>As seen at PyData Global 2021:</i>
+</p>
+
+<p align="center">
+	<a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/">
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/pydata_logo.png" alt="conference"/>
+	</a>
+</p>
+

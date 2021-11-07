@@ -48,12 +48,14 @@ Create the remote repo: https://hub.docker.com/repository/create?namespace=hashr
 # Editing files.
 - You can programmatically `aiqc.setup()` & `aiqc.destroy_db()` from within Docker, and it will impact both container/host filesys.
 - You can programmatically `!touch file` & `!rm file` from within Docker, and it will impact both container/host filesys.
-- You can install packages with `--user` from the Jupyter Terminal. 
+- You can install packages with `--user` from the Jupyter Terminal.
+- You can edit the documentation in the Jupyter Editor 
+- You can build the documentation in the Jupyter Terminal.
+- However, you can edit the AIQC module's source code on the host, and `import aiqc` will refresh it.
 
-- If you only delete files on the host, then Docker's filesys gets out of sync.
-- The Jupyter UI does not seem to have permission to add/remove files.
+- If you only edit/delete files on the host, then Docker's filesys gets out of sync.
+- The Jupyter UI does not seem to have permission to add/remove files. Despite the Docker OS user having chown permissions on '/home/aiqc_usr/'
 # OSError: [Errno 18] Invalid cross-device link: b'/home/aiqc_usr/file' -> b'/home/aiqc_usr/.local/share/Trash/files/file'
-^ despite OS user having chown permissions on '/home/aiqc_usr/'
 
 
 # OS

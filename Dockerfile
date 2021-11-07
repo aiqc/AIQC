@@ -1,13 +1,10 @@
-FROM python:3.7.12-bullseye
+FROM python:3.7.12-slim-bullseye
 
 # ========= ROOT COMMANDS =========
 # `jupyter lab` won't run as root, and root is bad practice.
 # So we create a regular user.
 RUN apt update
 RUN apt install sudo
-# Create a hashed password. This will be replaced with a secret when migrating to the cloud.
-# `useradd` step below didn't like when $pw was being passed in as a variable.
-#RUN pw=$(openssl passwd -1 RapidRigorReproduce)
 # Create user; 
 RUN useradd --create-home --password RapidRigorReproduce aiqc_usr
 # Make that user an admin; can't install apt-get dependencies without `sudo` prefix otherwise.
@@ -33,18 +30,18 @@ RUN sudo apt -y install nodejs
 # For Sphinx documentation.
 RUN sudo apt -y install pandoc
 
-RUN pip install --upgrade pip
+RUN pip install --no-cache-dir --default-timeout=100 --upgrade pip
 # Developer packages
 # Contains JupyterLab and I want this installed prior to plotly.
 # Docker paths are can't access parent directories.
 COPY requirements_dev.txt /
-RUN pip install --default-timeout=100 -r requirements_dev.txt 
+RUN pip install --no-cache-dir --default-timeout=100 -r requirements_dev.txt 
 RUN rm requirements_dev.txt
 
 # pip packages
 # Installing plotly>=5.0.0 includes the prebuilt jupyter extension.
 COPY requirements.txt /
-RUN pip install --default-timeout=100 -r requirements.txt 
+RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt 
 RUN rm requirements.txt
 
 # Create a place to mount the source code so that it can be imported.

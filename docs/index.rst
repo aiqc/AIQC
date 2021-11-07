@@ -234,13 +234,28 @@
   <center>
     <i style="color:gray;">Thanks to the support and sponsorship of:</i>
   </center>
-  </br></br>
+  </br>
 
 .. image:: images/psf_wide.png
   :width: 36%
   :align: center
   :alt: framework
   :target: https://wiki.python.org/psf/ScientificWG/Charter_v3
+
+.. raw:: html
+
+  </br>
+  </br>
+  <center>
+    <i style="color:gray;">As seen at the PyData Global 2021 conference:</i>
+  </center>
+  </br>
+
+.. image:: images/pydata_logo.png
+  :width: 25%
+  :align: center
+  :alt: framework
+  :target: https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/
 
 |
 
