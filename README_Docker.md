@@ -1,4 +1,7 @@
-# ========= BUILDING IMAGE =========
+# ============ BUILDING IMAGE ============
+
+`brew install docker`
+Via the UI: (1) login, (2) set sensible resource constraints.
 
 # Overview
 - `Dockerfile` is used to locally build the container image.
@@ -26,15 +29,60 @@ To run the service using the settings in docker-compose.yml:
 `docker-compose up`
 http://127.0.0.1:8888/lab
 
+If you want to run it manually to inspect the file system:
+`docker run -it <image_id> /bin/bash` # bash shell at root directory.
+
 
 # Push the Image to DockerHub
 Create the remote repo: https://hub.docker.com/repository/create?namespace=hashrocketsyntax
 `docker push <your_dockerhub_account>/<your_repo>:<your_tag>`
 
 
-# Running Without Compose
-`docker run -it <image_id>` # python shell at root directory.
-`docker run -it <image_id> /bin/bash` # bash shell at root directory.
+# ============ AWS ECR ============
+
+# Initial configuration of AWS CLI w Docker
+
+IAM user = "user_aiqc"
+IAM group = "group_aiqc"
+
+Download credentials CSV generated when creating the IAM user (saved to 'GoogleDrive/AIQC').
+
+`brew update`
+`brew doctor`
+`brew install awscli`
+
+$ aws configure
+Default region name: us-east-1
+Default output format: table
+
+
+Hook AWS ECR up to DockerHub
+https://docs.aws.amazon.com/AmazonECR/latest/userguide/getting-started-cli.html#cli-authenticate-registry 
+
+"When passing the Amazon ECR authorization token to the docker login command, use the value AWS for the username and specify the Amazon ECR registry URI"
+
+
+`aws ecr get-login-password --region us-east-1 --output text | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com`
+
+"Login Succeeded"
+
+You can run `aws ecr get-login-password --region us-east-1 --output text` standalone to make sure it's working. It outputs a big multi-line token that looks that is not the regular AWS key/secret. It wanted "us-east-1" not "us-1-east".
+
+```
+aws ecr create-repository \
+    --repository-name aiqc \
+    --image-scanning-configuration scanOnPush=true \
+    --region us-east-1
+```
+
+# Tagging and pushing a new image to AWS ECR: 
+
+Just switch in the ECR repo's URL instead of the regular DockerHub repo. 
+
+`docker tag hashrocketsyntax/aiqc:dev_dsktp_v3.0.2_py3.7.12-slim-bulls <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/aiqc:dev_dsktp_v3.0.2_py3.7.12-slim-bulls`
+
+`<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/aiqc:dev_dsktp_v3.0.2_py3.7.12-slim-bulls`
+
 
 
 # ========= WHEN RUNNING CONTAINER =========
@@ -46,6 +94,11 @@ Create the remote repo: https://hub.docker.com/repository/create?namespace=hashr
 
 
 # Editing files.
+TLDR: changes on host not propagated to container, but changes in container are passed to host.
+`--volumes` acts like a snapshot at the time of boot. 
+If you truly want to edit files on the host, then you are supposed to restart container.
+But here are some workarounds:
+
 - You can programmatically `aiqc.setup()` & `aiqc.destroy_db()` from within Docker, and it will impact both container/host filesys.
 - You can programmatically `!touch file` & `!rm file` from within Docker, and it will impact both container/host filesys.
 - You can install packages with `--user` from the Jupyter Terminal.

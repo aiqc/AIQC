@@ -21,6 +21,10 @@ RUN echo "RapidRigorReproduce" | sudo -S apt update
 RUN sudo apt upgrade -y
 RUN sudo apt update
 
+# Create a place to mount the source code so that it can be imported.
+RUN mkdir /home/aiqc_usr/AIQC
+
+# --- Binaries ---
 # Add the registry that contains node
 RUN sudo apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
 RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
@@ -30,19 +34,18 @@ RUN sudo apt -y install nodejs
 # For Sphinx documentation.
 RUN sudo apt -y install pandoc
 
+# --- Python packages ---
 RUN pip install --no-cache-dir --default-timeout=100 --upgrade pip
 # Developer packages
+# if reqs.txt doesn't change then it will used a cached layer.
 # Contains JupyterLab and I want this installed prior to plotly.
 # Docker paths are can't access parent directories.
 COPY requirements_dev.txt /
 RUN pip install --no-cache-dir --default-timeout=100 -r requirements_dev.txt 
 RUN rm requirements_dev.txt
 
-# pip packages
+# User packages
 # Installing plotly>=5.0.0 includes the prebuilt jupyter extension.
 COPY requirements.txt /
 RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt 
 RUN rm requirements.txt
-
-# Create a place to mount the source code so that it can be imported.
-RUN mkdir /home/aiqc_usr/AIQC

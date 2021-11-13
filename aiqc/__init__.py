@@ -57,6 +57,8 @@ app_dir_no_trailing_slash = appdirs.user_data_dir("aiqc")
 app_dir = os.path.join(app_dir_no_trailing_slash, '')
 default_config_path = app_dir + "config.json"
 default_db_path = app_dir + "aiqc.sqlite3"
+# API URL format 'https://{api_id}.execute-api.{region}.amazonaws.com/{stage}/'.
+aws_api_root = "https://qzdvq719pa.execute-api.us-east-1.amazonaws.com/Stage_AIQC/"
 
 
 def check_exists_folder():
@@ -223,6 +225,7 @@ def create_config():
 				, "platform.win32_ver()": platform.win32_ver()
 				, "platform.libc_ver()": platform.libc_ver()
 				, "platform.mac_ver()": platform.mac_ver()
+				, "aws_api_key": None
 			}
 			
 			try:
@@ -281,8 +284,24 @@ def update_config(kv:dict):
 				f"===================================\n"
 			)
 			raise
-		print(f"\n=> Success - updated configuration settings:\n{aiqc_config}\n")
+		print(f"\n=> Success - updated configuration settings at path:\n{config_path}\n")
 		importlib.reload(sys.modules[__name__])
+
+
+def config_add_aws_api_key(api_key:str):
+	config_test_aws_api_key(api_key)
+	update_config(kv=dict(aws_api_key=api_key))
+
+
+def config_test_aws_api_key(api_key:str):
+	print(f"\n=> Info - testing API key via connection to AIQC AWS API Gateway:\n{aws_api_root}\n")
+	response = requests.get(
+		url=aws_api_root, headers={"x-api-key":api_key}
+	)
+	if (response.status_code==200):
+		print("\n=> Success - was able to connect to root of AIQC AWS API Gateway.\n")
+	else:
+		raise ValueError("\n=> Yikes - failed to to connect to root of AIQC AWS API Gateway.\n")
 
 
 #==================================================
@@ -310,6 +329,7 @@ def get_db():
 	if path is None:
 		print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
 	else:
+		# Can't use Write Ahead Lock (WAL) mode because it doesn't work over NFS <https://www.sqlite.org/wal.html>
 		db = SqliteExtDatabase(path)
 		return db
 
@@ -1329,8 +1349,6 @@ class File(BaseModel):
 		dataframe, columns, shape, dtype = File.df_set_metadata(
 			dataframe=dataframe, column_names=column_names, dtype=dtype
 		)
-		###
-		#print(dataframe.dtypes)
 		if (ingest==True):
 			blob = File.df_to_compressed_parquet_bytes(dataframe)
 		elif (ingest==False):
@@ -5161,11 +5179,13 @@ class Queue(BaseModel):
 					break
 				time.sleep(loop_delay)
 	"""
-	def run_jobs(id:int):
+	def run_jobs(id:int):###, in_aws:bool=False):
 		"""
 		- Jobs re-use the same data instead of preprocessing it from scratch. 
 		- Samples are cached because post-processing has to transforms the data.
 		- The alternative is to `deepcopy()` the samples, but the memory pressure is too great.
+		
+		- When `run_jobs_aws()` function is called, Lambda will call `run_jobs(in_aws=True)` and spawn Batch Jobs.
 		"""
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
@@ -5176,6 +5196,7 @@ class Queue(BaseModel):
 		if (foldset is None):
 			cached_samples = f"{app_dir}queue-{id}_cached_samples.gzip"
 			jobs = list(queue.jobs)
+			# Repeat count means that a single Job can have multiple Predictors.
 			repeated_jobs = [] #tuple:(repeat_index, job)
 			for r in range(queue.repeat_count):
 				for j in jobs:
@@ -5216,6 +5237,7 @@ class Queue(BaseModel):
 					, desc = "🔮 Training Models 🔮"
 					, ncols = 100
 				)):
+					### This is where AWS Batch has to be called.
 					# See if this job has already completed. Keeps the tqdm intact.
 					matching_predictor = Predictor.select().join(Job).where(
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
@@ -5224,7 +5246,6 @@ class Queue(BaseModel):
 						if (i>0):
 							with gzip.open(cached_samples,'rb') as f:
 								samples = pickle.load(f)
-						# Still need to fetch the underlying samples for a folded job.
 						Job.run(
 							id=rj[1].id, repeat_index=rj[0]
 							, samples=samples, input_shapes=input_shapes
@@ -6288,7 +6309,7 @@ class Job(BaseModel):
 			- Assuming `model.save()` will trigger OS-specific h5 drivers.
 			"""
 			# Write it.
-			temp_file_name = f"{app_dir}temp_keras_model.h5"
+			temp_file_name = f"{app_dir}temp_keras_model.h5"# flag - make unique for concurrency.
 			model.save(
 				temp_file_name
 				, include_optimizer = True
