@@ -59,9 +59,6 @@ html_static_path = ['_static']
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_css_files
 # Create a CSS file at path: `.../docs/_static/css/custom.css`.
 html_css_files = ['css/custom.css']
-# Attempting this fix which is on a few stackoverflow posts
-def setup(app):
-    app.add_css_file('css/custom.css')
 # See my css solution for svg: https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
 html_logo = 'images/aiqc_logo_wide_white_docs_300px.svg'
 html_favicon = 'images/favicon.ico'
