@@ -111,7 +111,7 @@
       <b>Experiment Tracking</b> - Tuning parameters and architectures requires many training runs that must be evaluated with metrics and charts. However, leading tools are only designed for a single run and don't keep track of performance. Validation splits and/or cross-validation folds compound these problems.
     </span></li>
     <li><span>
-      <b>Postprocessing</b> - When making predictions, if the original encoder-decoder pair wasn't saved, then how should new samples be encoded? How do we know that the schema of new data matches the schema of the original data? These problems are compounded if multiple encoders were involved.
+      <b>Postprocessing</b> - If the encoder-decoder pairs weren't saved, then how should inference samples be encoded and predictions be decoded? How do we know that inference samples have the right schema? Did encoders spawn extra columns? These problems are compounded if multiple encoders were used.
     </span></li>
   </ol>
   </br>
