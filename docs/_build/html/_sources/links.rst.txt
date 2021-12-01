@@ -37,8 +37,5 @@ Links
   * - `Twitter <https://twitter.com/LayneSadler>`__
     - Posts and updates
 
-  * - `Ko-fi <https://ko-fi.com/donate2aiqc>`__
-    - Crowdsourced donations. 
-
   * - `Slack <https://aiqc.slack.com>`__
     - Community chat.

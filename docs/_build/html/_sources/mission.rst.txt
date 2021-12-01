@@ -43,5 +43,5 @@ Earth's natural resources are being destroyed, and it's beyond our current capab
 3. Break down walled gardens to keep science open.
 ==================================================
 
-  * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We empower the non-cloud researchers: the academic/ institute HPCers, the remote server SSH'ers, and everyday desktop warriors.
+  * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We empower the non-cloud researchers: the academic/ institute HPCers, the remote server SSH'ers, and everyday laptop warriors.
   * If the entire scientific community does not have access to the toolset used to conduct the experiment, then, again, it is not reproducible.

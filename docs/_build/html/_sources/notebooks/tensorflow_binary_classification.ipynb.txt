@@ -39,14 +39,13 @@
    "metadata": {},
    "outputs": [],
    "source": [
+    "import aiqc\n",
+    "from aiqc import datum\n",
+    "\n",
     "import tensorflow as tf\n",
     "from tensorflow.keras.models import Sequential\n",
     "from tensorflow.keras.layers import Dense, Dropout\n",
-    "\n",
-    "from sklearn.preprocessing import LabelBinarizer, PowerTransformer\n",
-    "\n",
-    "import aiqc\n",
-    "from aiqc import datum"
+    "from sklearn.preprocessing import LabelBinarizer, PowerTransformer"
    ]
   },
   {
@@ -342,9 +341,16 @@
    ],
    "source": [
     "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "    # --- Data source ---\n",
     "    df_or_path = df\n",
     "    , dtype = None\n",
     "\n",
+    "    # --- Label preprocessing ---\n",
+    "    , label_column = 'object'\n",
+    "    , label_interpolater = None\n",
+    "    , label_encoder = dict(sklearn_preprocess = LabelBinarizer(sparse_output=False))\n",
+    "\n",
+    "    # --- Feature preprocessing ---\n",
     "    , feature_cols_excluded = 'object'\n",
     "    , feature_interpolaters = None\n",
     "    , feature_window = None\n",
@@ -354,10 +360,7 @@
     "    )\n",
     "    , feature_reshape_indices = None\n",
     "\n",
-    "    , label_column = 'object'\n",
-    "    , label_interpolater = None\n",
-    "    , label_encoder = dict(sklearn_preprocess = LabelBinarizer(sparse_output=False))\n",
-    "\n",
+    "    # --- Stratification ---\n",
     "    , size_test = 0.12\n",
     "    , size_validation = 0.22\n",
     "    , fold_count = None\n",
@@ -374,8 +377,7 @@
    "source": [
     "def fn_build(features_shape, label_shape, **hp):\n",
     "    model = Sequential(name='Sonar')\n",
-    "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
-    "    model.add(Dropout(0.30))\n",
+    "    model.add(Input(shape=features_shape))\n",
     "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
     "    model.add(Dropout(0.30))\n",
     "    model.add(Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))\n",
@@ -485,19 +487,26 @@
    "outputs": [],
    "source": [
     "queue = aiqc.Experiment.make(\n",
+    "    # --- Data source ---\n",
     "    library = \"keras\"\n",
     "    , analysis_type = \"classification_binary\"\n",
+    "    \n",
+    "    # --- Model functions ---\n",
     "    , fn_build = fn_build\n",
     "    , fn_train = fn_train\n",
     "    , fn_lose = fn_lose\n",
     "    , fn_optimize = fn_optimize\n",
-    "    , splitset_id = splitset.id\n",
-    "    , repeat_count = 1\n",
-    "    , hide_test = False\n",
-    "    , hyperparameters = hyperparameters\n",
-    "\n",
     "    , fn_predict = None #automated\n",
+    "\n",
+    "    # --- Training options ---\n",
+    "    , repeat_count = 1\n",
+    "    , hyperparameters = hyperparameters\n",
+    "    , pick_percent = None\n",
+    "    \n",
+    "    # --- Data source ---\n",
+    "    , splitset_id = splitset.id\n",
     "    , foldset_id = None\n",
+    "    , hide_test = False\n",
     ")"
    ]
   },
@@ -869,7 +878,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.7"
+   "version": "3.7.12"
   }
  },
  "nbformat": 4,

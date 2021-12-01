@@ -3,9 +3,21 @@
   {
    "cell_type": "markdown",
    "id": "young-phone",
-   "metadata": {},
+   "metadata": {
+    "tags": []
+   },
    "source": [
     "# PyTorch: Tabular Classify Multi-Label"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "35ff8ea6-e9ed-482f-97ed-54042956c9e9",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "*Categorizing Plant Species with Multi-Label Classification of Phenotypes.*"
    ]
   },
   {
@@ -13,25 +25,24 @@
    "id": "hearing-ministry",
    "metadata": {},
    "source": [
-    "![iris](../images/iris.png)"
+    "![farming](../images/vertical_farming.png)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "id": "b30f0528-571a-40ad-bd16-797041753d8f",
    "metadata": {},
    "outputs": [],
    "source": [
+    "import aiqc\n",
+    "from aiqc import datum\n",
+    "\n",
     "import torch\n",
     "import torch.nn as nn\n",
     "from torch import optim\n",
     "import torchmetrics\n",
-    "\n",
-    "from sklearn.preprocessing import OrdinalEncoder, StandardScaler, PowerTransformer\n",
-    "\n",
-    "import aiqc\n",
-    "from aiqc import datum"
+    "from sklearn.preprocessing import OrdinalEncoder, StandardScaler, PowerTransformer"
    ]
   },
   {
@@ -244,9 +255,16 @@
    ],
    "source": [
     "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "    # --- Data source ---\n",
     "    df_or_path = df\n",
     "    , dtype = None\n",
     "\n",
+    "    # --- Label preprocessing ---\n",
+    "    , label_column = 'species'\n",
+    "    , label_interpolater = None\n",
+    "    , label_encoder = dict(sklearn_preprocess = OrdinalEncoder())\n",
+    "\n",
+    "    # --- Feature preprocessing ---\n",
     "    , feature_cols_excluded = 'species'\n",
     "    , feature_interpolaters = None\n",
     "    , feature_window = None\n",
@@ -256,10 +274,7 @@
     "    )\n",
     "    , feature_reshape_indices = None\n",
     "\n",
-    "    , label_column = 'species'\n",
-    "    , label_interpolater = None\n",
-    "    , label_encoder = dict(sklearn_preprocess = OrdinalEncoder())\n",
-    "\n",
+    "    # --- Stratification ---\n",
     "    , size_test = 0.22\n",
     "    , size_validation = 0.12\n",
     "    , fold_count = None\n",
@@ -390,19 +405,26 @@
    "outputs": [],
    "source": [
     "queue = aiqc.Experiment.make(\n",
+    "    # --- Analysis type ---\n",
     "    library = \"pytorch\"\n",
     "    , analysis_type = \"classification_multi\"\n",
+    "    \n",
+    "    # --- Model functions ---\n",
     "    , fn_build = fn_build\n",
     "    , fn_train = fn_train\n",
-    "    , splitset_id = splitset.id\n",
-    "    , repeat_count = 1\n",
-    "    , hide_test = False\n",
-    "    , hyperparameters = hyperparameters\n",
+    "    , fn_lose = None #auto\n",
+    "    , fn_optimize = None #auto\n",
+    "    , fn_predict = None #auto    \n",
     "    \n",
-    "    , fn_lose = None #automated\n",
-    "    , fn_optimize = None #automated\n",
-    "    , fn_predict = None #automated\n",
+    "    # --- Training options ---\n",
+    "    , repeat_count = 1\n",
+    "    , hyperparameters = hyperparameters\n",
+    "    , pick_percent = None\n",
+    "    \n",
+    "    # --- Data source ---\n",
+    "    , splitset_id = splitset.id\n",
     "    , foldset_id = None\n",
+    "    , hide_test = False\n",
     ")"
    ]
   },
@@ -774,7 +796,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.7"
+   "version": "3.7.12"
   }
  },
  "nbformat": 4,

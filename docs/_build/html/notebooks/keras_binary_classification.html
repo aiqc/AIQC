@@ -10,7 +10,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/keras_binary_classification.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="mines Reference this great blog for machine learning cookbooks: MachineLearningMastery.com “Binary Classification”.[2]: import keras from keras.models import Sequential from keras.layers import Den..." />
+  <meta property="og:description" content="Detecting Naval Mines with Binary Classification of Sonar Data. mines[2]: import keras from keras.models import Sequential from keras.layers import Dense, Dropout from keras.callbacks import Histor..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -55,9 +55,7 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Keras: Tabular Classify Multi-Label" href="keras_multi-label_classification.html" />
-    <link rel="prev" title="Example Datasets" href="example_datasets.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -152,94 +150,10 @@
 <li class="toctree-l2"><a class="reference internal" href="example_datasets.html#Remote-Data">Remote Data</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption"><span class="caption-text">Workflows</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Keras: Tabular Classify Binary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_multi-label_classification.html">Keras: Tabular Classify Multi-Label</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_sequence_classification.html">Keras: Times Series Classify Binary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_sequence_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_sequence_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_sequence_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_image_classification.html">Keras: Image Classify Binary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Load-Data">Load Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Build-Model">Build Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_classification.html#Stage-Experiment">Stage Experiment</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_regression.html">Keras: Tabular Regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#a)-High-Level-API">a) High-Level API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Preprocess-Data">Preprocess Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Build-Model">Build Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#Stage-Experiment">Stage Experiment</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="keras_regression.html#b)-Low-Level-API">b) Low-Level API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id1">Preprocess Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id2">Build Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="keras_regression.html#id3">Stage Experiment</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_tabular_forecasting.html">Keras: Tabular Forecasting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#b)-Low-Level-API">b) Low-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_tabular_forecasting.html#Inference">Inference</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="keras_image_forecasting.html">Keras: Image Forecasting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_forecasting.html#Low-Level-API">Low-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keras_image_forecasting.html#Inference">Inference</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_binary_classification.html">PyTorch: Tabular Classify Binary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_multi-label_classification.html">PyTorch: Tabular Classify Multi-Label</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_multi-label_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pytorch_regression.html">PyTorch: Tabular Regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pytorch_regression.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tensorflow_binary_classification.html">TensorFlow2: Training Loop.</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#Example-Data">Example Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#a)-High-Level-API">a) High-Level API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tensorflow_binary_classification.html#b)-Low-Level-API">b) Low-Level API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="heterogeneous_features.html">Heterogeneous/ Multi-Modal</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Ingesting-Example-Galaxy-Data">Ingesting Example Galaxy Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Tabular-Data">Tabular Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="heterogeneous_features.html#Image-Data">Image Data</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Defining-a-Model">Defining a Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Train-Models">Train Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="heterogeneous_features.html#Interpret-Results">Interpret Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Use Cases &amp; Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials.html#keras">Keras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials.html#pytorch">PyTorch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials.html#other">Other</a></li>
 </ul>
 </li>
 </ul>
@@ -770,8 +684,8 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Keras:-Tabular-Classify-Binary">
 <h1>Keras: Tabular Classify Binary<a class="headerlink" href="#Keras:-Tabular-Classify-Binary" title="Permalink to this headline">¶</a></h1>
+<p><em>Detecting Naval Mines with Binary Classification of Sonar Data.</em></p>
 <p><img alt="mines" src="../_images/mines.png" /></p>
-<p>Reference this great blog for machine learning cookbooks: <a class="reference external" href="https://machinelearningmastery.com/binary-classification-tutorial-with-the-keras-deep-learning-library/">MachineLearningMastery.com “Binary Classification”</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -994,9 +908,16 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="c1"># --- Data source ---</span>
     <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
     <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="c1"># --- Label preprocessing ---</span>
+    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
+    <span class="p">,</span> <span class="n">label_interpolater</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">(</span><span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+    <span class="c1"># --- Feature preprocessing ---</span>
     <span class="p">,</span> <span class="n">feature_cols_excluded</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
     <span class="p">,</span> <span class="n">feature_interpolaters</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">feature_window</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1006,10 +927,7 @@ div.rendered_html tbody tr:hover {
     <span class="p">)</span>
     <span class="p">,</span> <span class="n">feature_reshape_indices</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
-    <span class="p">,</span> <span class="n">label_interpolater</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">(</span><span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-
+    <span class="c1"># --- Stratification ---</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.12</span>
     <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.22</span>
     <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1035,6 +953,7 @@ No more Featurecoders can be added to this Encoderset.
 
 </pre></div></div>
 </div>
+<p>Reference this great blog for machine learning cookbooks: <a class="reference external" href="https://machinelearningmastery.com/binary-classification-tutorial-with-the-keras-deep-learning-library/">MachineLearningMastery.com “Binary Classification”</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -1042,8 +961,7 @@ No more Featurecoders can be added to this Encoderset.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Sonar&#39;</span><span class="p">)</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.30</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.30</span><span class="p">))</span>
     <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
@@ -1093,19 +1011,26 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+
+    <span class="c1"># --- Model functions ---</span>
     <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
     <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
+    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
 
-    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#automated</span>
+    <span class="c1"># --- Training options ---</span>
+    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">,</span> <span class="n">pick_percent</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># --- Data source ---</span>
+    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1346,15 +1271,6 @@ No more Featurecoders can be added to this Encoderset.
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="keras_multi-label_classification.html" class="btn btn-neutral float-right" title="Keras: Tabular Classify Multi-Label" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="example_datasets.html" class="btn btn-neutral float-left" title="Example Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

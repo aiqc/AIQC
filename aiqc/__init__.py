@@ -298,10 +298,21 @@ def config_test_aws_api_key(api_key:str):
 	response = requests.get(
 		url=aws_api_root, headers={"x-api-key":api_key}
 	)
-	if (response.status_code==200):
+	status_code = response.status_code
+	if (status_code==200):
 		print("\n=> Success - was able to connect to root of AIQC AWS API Gateway.\n")
 	else:
-		raise ValueError("\n=> Yikes - failed to to connect to root of AIQC AWS API Gateway.\n")
+		raise ValueError(f"\n=> Yikes - failed to connect to root of AIQC AWS API Gateway.\nHTTP Error Code = {status_code}.\n")
+
+
+def _aws_get_api_key():
+	api_key = get_config()['aws_api_key']
+	if (api_key is None):
+		raise ValueError("\nYikes - `config['aws_api_key']` has not been set.\nRun `config_add_aws_api_key(api_key)` to define it.\n")
+	elif (api_key is not None):
+		return api_key
+
+
 
 
 #==================================================
@@ -329,8 +340,12 @@ def get_db():
 	if path is None:
 		print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
 	else:
-		# Can't use Write Ahead Lock (WAL) mode because it doesn't work over NFS <https://www.sqlite.org/wal.html>
-		db = SqliteExtDatabase(path)
+		"""
+		- Use Write Ahead Lock (WAL) mode by default because it supports concurrent writes.
+		- Howerver, adapt for AWS because it does not work over NFS <https://www.sqlite.org/wal.html>
+		- To switch back to Journal mode you can just skip `pragmas` <https://docs.peewee-orm.com/en/latest/peewee/database.html>
+		"""
+		db = SqliteExtDatabase(path, pragmas=dict(journal_mode='wal', cache_size= -1024*1024))#1GB
 		return db
 
 
@@ -4896,6 +4911,7 @@ class Queue(BaseModel):
 	repeat_count = IntegerField()
 	run_count = IntegerField()
 	hide_test = BooleanField()
+	aws_uid = CharField(null=True)
 
 	algorithm = ForeignKeyField(Algorithm, backref='queues') 
 	splitset = ForeignKeyField(Splitset, backref='queues')
@@ -5179,13 +5195,11 @@ class Queue(BaseModel):
 					break
 				time.sleep(loop_delay)
 	"""
-	def run_jobs(id:int):###, in_aws:bool=False):
+	def run_jobs(id:int):
 		"""
 		- Jobs re-use the same data instead of preprocessing it from scratch. 
 		- Samples are cached because post-processing has to transforms the data.
-		- The alternative is to `deepcopy()` the samples, but the memory pressure is too great.
-		
-		- When `run_jobs_aws()` function is called, Lambda will call `run_jobs(in_aws=True)` and spawn Batch Jobs.
+		- The alternative is to `deepcopy()` the samples, but the memory pressure is too great.		
 		"""
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
@@ -5237,7 +5251,6 @@ class Queue(BaseModel):
 					, desc = "🔮 Training Models 🔮"
 					, ncols = 100
 				)):
-					### This is where AWS Batch has to be called.
 					# See if this job has already completed. Keeps the tqdm intact.
 					matching_predictor = Predictor.select().join(Job).where(
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
@@ -5648,6 +5661,54 @@ class Queue(BaseModel):
 			Plot().performance(dataframe=dataframe)
 
 
+	def _aws_get_upload_url(id:int):
+		"""
+		- Fetch a temporary, presigned URL that can be used to upload db to S3.
+		"""
+		queue = Queue.get_by_id(id)
+		api_key = _aws_get_api_key()
+		
+		upload_url_endpoint = f"{aws_api_root}queues/upload-url"
+
+		response = requests.get(
+			url = upload_url_endpoint
+			, headers = {"x-api-key":api_key}
+		)
+		status_code = response.status_code
+		if (status_code!=200):
+			raise ValueError(f"\n=> Yikes - failed to obtain upload url for AWS S3.\nHTTP Error Code = {status_code}.\n")
+
+		# The uid can be used later for polling.
+		uid = response.json()['uid']
+		queue.aws_uid = uid
+		queue.save()
+		# The upload url is temporary so it doesn't make sense to save it.
+		upload_url = response.json()['upload_url']
+		s3_url = response.json()['s3_url']
+		return upload_url, s3_url
+	
+
+	def _aws_upload(id:int, presigned_url:str):
+		"""
+		- Fetch a temporary, presigned URL that can be used to upload db to S3.
+		"""
+		queue = Queue.get_by_id(id)
+		uid = queue.uid
+		if (queue.aws_uid is None):
+			raise ValueError("\nYikes - This Queue has not been assigned an UID for AWS yet. Run `Queue._aws_get_upload_url()`.\n")
+
+		# Regular utf-8 encoding of sqlite file does not parse. S3 picks up on "type=sqlite3"
+		db_path = aiqc.get_path_db()
+		data = open(db_path, encoding='latin-1').read()
+		response = requests.put(presigned_url, data=data)
+		status_code = response.status_code
+		if (status_code==200):
+			print("\n=> Success - project database was successfully uploaded to AWS S3.\n")
+		else:
+			raise ValueError(f"\n=> Yikes - failed upload project databse to AWS S3.\nHTTP Error Code = {status_code}.\n")
+
+
+	
 
 class Jobset(BaseModel):
 	"""
@@ -5964,11 +6025,8 @@ class Job(BaseModel):
 
 		# Prepare the logic.
 		model = predictor.get_model()
-		if (algorithm.library == 'keras'):
-			model = predictor.get_model()
-		elif (algorithm.library == 'pytorch'):
+		if (algorithm.library == 'pytorch'):
 			# Returns tuple(model,optimizer)
-			model = predictor.get_model()
 			model = model[0].eval()
 		fn_predict = dill_deserialize(algorithm.fn_predict)
 		

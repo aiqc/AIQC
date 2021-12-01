@@ -33,6 +33,57 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
 	font-size: 	11.5px;
 }
 
+/* intro paragraphs */
+.intro {
+    font-size:  14px;
+}
+
+p.intro {
+    text-align: center;
+}
+
+.intro.bigP {
+    line-height:   20px;
+    margin-bottom: 20px;
+}
+
+ol.intro {
+    padding-left: 45px;
+}
+
+ol.intro li {
+    list-style-type:     decimal;
+    list-style-position: outside;
+    margin-bottom:       12px;
+}
+
+ol.intro li span {
+    position: relative;
+    left:     12px;
+}
+
+/* list of features */
+ul.featureLists {
+    padding-bottom: 50px;
+    padding-left: 45px;
+}
+
+ul.featureLists.spaced {
+    padding-top: 35px;
+}
+
+ul.featureLists li {
+    list-style-type:     square;
+    list-style-position: outside;
+    font-size:           14.5px;
+    margin-bottom:       12px; 
+}
+
+ul.featureLists li span {
+    position: relative;
+    left:     12px;
+}
+
 /* the '.simple' points to body lists, and avoids the sidebar lists */
 ul.simple li ul li {
 	padding-bottom: 10px;

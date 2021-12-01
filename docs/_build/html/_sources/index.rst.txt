@@ -5,25 +5,7 @@
 
   notebooks/installation
   notebooks/example_datasets
-
-
-.. toctree::
-  :maxdepth: 2
-  :caption: Workflows
-  :hidden:
-
-  notebooks/keras_binary_classification
-  notebooks/keras_multi-label_classification
-  notebooks/keras_sequence_classification
-  notebooks/keras_image_classification
-  notebooks/keras_regression
-  notebooks/keras_tabular_forecasting
-  notebooks/keras_image_forecasting
-  notebooks/pytorch_binary_classification
-  notebooks/pytorch_multi-label_classification
-  notebooks/pytorch_regression
-  notebooks/tensorflow_binary_classification
-  notebooks/heterogeneous_features
+  tutorials
 
 
 .. toctree::
@@ -99,15 +81,17 @@
   
   </br>
   <center>
-    <b>→ End-to-end deep learning experiment tracking with tightly integrated pre & post processing.</b>
-    </br></br>
-    <i style="color: #505050;">On a mission to accelerate open science by making deep learning reproducible & accessible.</i>
+    <b>→ AIQC accelerates research teams with simple deep learning pipelines.</b>
+    </br>
+    </br>
+    <i class="intro" style="color:gray">An open source Python framework for conducting rapid, rigorous, and reproducible experiments.</i>
+    </br>
+    </br>
+    </br>
   </center>
-  </br>
-  </br>
 
 
-.. image:: images/framework_june14.png
+.. image:: images/framework_dec1.png
   :width: 100%
   :align: center
   :alt: framework
@@ -116,13 +100,28 @@
 .. raw:: html
   
   </br></br>
-  <ul style="text-align: center; list-style-position: inside;">
-    <li class="extra-bullets">Pipelines with tweakable parameters for data prep, model evalaution, and post-processing.</li>
-    <li class="extra-bullets">Achieve end-to-end reproducibility by recording every step in the process.</li>
-  </ul>
+  <p class="intro">
+    Today's deep learning tools do not adequately address the following <i>data wrangling</i> problems:
+  </p>
+  <ol class="intro">
+    <li><span>
+      <b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't account for multiple dimensions, columns, & dtypes. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
+    </span></li>
+    <li><span>
+      <b>Experiment Tracking</b> - Tuning parameters and architectures requires many training runs that must be evaluated with metrics and charts. However, leading tools are only designed for a single run and don't keep track of performance. Validation splits and/or cross-validation folds compound these problems.
+    </span></li>
+    <li><span>
+      <b>Postprocessing</b> - When making predictions, if the original encoder-decoder pair wasn't saved, then how should new samples be encoded? How do we know that the schema of new data matches the schema of the original data? These problems are compounded if multiple encoders were involved.
+    </span></li>
+  </ol>
   </br>
+  <p class="intro bigP">
+    Adding to the complexity, different <b>protocols</b> are required based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample). 
+  </p>
+  <p class="intro bigP" style="margin-bottom:40px">
+    In attempting to solve these problems ad hoc, individuals end up writing lots of tangled code and stitching together a Frankenstein set of tools. Doing so requires knowledge of not only data science but also software engineering, which places a skillset burden on the research team. The <i>DIY</i> approach is not maintainable. 
+  </p>
 
-|
 
 ----
 
@@ -130,7 +129,7 @@
   
   </br>
   <center>
-    <b>→ Write 95% less code by integrating AIQC workflows into your research:</b>
+    <b>→ Write 98% less code by adopting AIQC's best practice <a href='tutorials.html'>workflows</a>.</b>
   </center>
   </br></br>
 
@@ -213,7 +212,7 @@
   <ul style="text-align: center; list-style-position: inside;">
     <li class="extra-bullets">
       <a href='notebooks/tensorflow_binary_classification.html'>
-        Also compatible with TensorFlow 2 for model maintenance and training loop customization.
+        Compatible with TensorFlow 2 for model maintenance and training loop customization.
       </a>
     </li>
     <li class="extra-bullets">
@@ -244,6 +243,7 @@
 
 .. raw:: html
 
+  </br>
   </br>
   </br>
   <center>
@@ -285,19 +285,28 @@ Overview
 I. Rapidly prepare folded data for analysis without leakage.
 ============================================================
 
-.. image:: images/pipeline_25sec_compress.gif
+.. figure:: images/pipeline_25sec_compress.gif
   :width: 100%
   :alt: pipeline.gif
 
-- Make datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
 
-- Designate columns by name as either Features or Labels.
+.. raw:: html
 
-- Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
+  <ul class="featureLists spaced">
+    <li><span>
+      Register datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
+    </span></li>
+    <li><span>
+      Designate columns by name as either Features or Labels.
+    </span></li>
+    <li><span>
+      Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
+    </span></li>
+    <li><span>
+      Apply encoders by dtype (`float64`) without leaking test/ validation data.
+    </span></li>
+  </ul>
 
-- Apply encoders by dtype (`float64`) without leaking test/ validation data.
-
-|
 
 II. Train many variations of an algorithm in a queue.
 =====================================================
@@ -306,15 +315,24 @@ II. Train many variations of an algorithm in a queue.
   :width: 100%
   :alt: hyperparameters.gif
 
-- Queue many training jobs for hyperparameter tuning & cross-validation.
 
-- Automatically pass hyperparameters into training functions as `**kwargs`.
+.. raw:: html
 
-- Tweak the model topology as a param (`params['extra_conv3D_layer']=True`).
+  <ul class="featureLists spaced">
+    <li><span>
+      Queue many training jobs for hyperparameter tuning & cross-validation.
+    </span></li>
+    <li><span>
+      Pass hyperparameters into training functions as `**hp` kwargs.
+    </span></li>
+    <li><span>
+      Tweak the topology as a parameter (`if hp['third_conv_layer']==True`).
+    </span></li>
+    <li><span>
+      Repeat a job to to give it a chance to perform well (`repeat_count=3`).
+    </span></li>
+  </ul>
 
-- Repeat a job to to give it a chance to perform well (`repeat_count=3`).
-
-|
 
 III. Evaluate algorithm performance with metrics & charts.
 ==========================================================
@@ -323,24 +341,40 @@ III. Evaluate algorithm performance with metrics & charts.
    :width: 100%
    :alt: plots.gif
 
-- Automated performance metrics & visualizations for every split/ fold.
 
-- Captures per-epoch history metrics for learning curves.
+.. raw:: html
 
-- Define multi-metric success criteria for early stopping.
+  <ul class="featureLists spaced">
+    <li><span>
+      Automated performance metrics & visualizations for every split/ fold.
+    </span></li>
+    <li><span>
+      Captures per-epoch history metrics for learning curves.
+    </span></li>
+    <li><span>
+      Define multi-metric success criteria for early stopping.
+    </span></li>
+  </ul>
 
-|
 
 IV. Effortlessly track, reproduce, & prove experiments.
 =======================================================
 
-- Automatically records all workflow steps in a local SQLite database file.
 
-- During inference, original preprocessing is automatically applied to new samples.
+.. raw:: html
 
-- No infrastructure hassle; `aiqc.setup()` creates the database for you.
+  <ul class="featureLists">
+    <li><span>
+      Automatically records all workflow steps in a local SQLite database file.
+    </span></li>
+    <li><span>
+      No infrastructure hassle; `aiqc.setup()` creates the database for you.
+    </span></li>
+    <li><span>
+      During inference, original preprocessing is automatically applied to new samples.
+    </span></li>
+  </ul>
 
-|
 
 V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials</notebooks/keras_multi-label_classification.ipynb>` to guide you.
 =================================================================================================================================================
@@ -357,8 +391,16 @@ V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials<
    aiqc.setup() 
 
 
-- :ref:`Example datasets </notebooks/example_datasets.ipynb>` built into package.
+.. raw:: html
 
-- Use any IDE (Jupyter, RStudio, VSCode, PyCharm, Spyder) & OS (Win, Mac, Lin).
-
-- Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.
+  <ul class="featureLists">
+    <li><span>
+        <a href='notebooks/example_datasets.ipynb'>Example datasets</a> built into package.
+    </span></li>
+    <li><span>
+      Use any IDE (Jupyter, RStudio, VS Code, PyCharm, Spyder) & OS (Win, Mac, Lin).
+    </span></li>
+    <li><span>
+      Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.
+    </span></li>
+  </ul>
