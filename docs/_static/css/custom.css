@@ -52,21 +52,21 @@ ol.intro {
 }
 
 ol.intro li span {
-    position: relative;
-    left:     12px;
+    color: #6c6c6c;
 }
 
 li.shadowBox {
-    padding: 18px;
-    border: 1px solid lightgray;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    list-style-type:     None;
+    width:              99%;
+    padding:            18px 22px 18px 22px;
+    border:             1px solid lightgray;
+    border-radius:      12px;
+    margin-bottom:      25px;
+    list-style-type:    None;
 
-    box-shadow: 4px 4px lightgray;
-    -moz-box-shadow: 4px 4px lightgray;
+    box-shadow:         4px 4px lightgray;
+    -moz-box-shadow:    4px 4px lightgray;
     -webkit-box-shadow: 4px 4px lightgray;
-    -o-box-shadow: 4px 4px lightgray;
+    -o-box-shadow:      4px 4px lightgray;
 }
 
 /* list of features */

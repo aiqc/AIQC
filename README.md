@@ -28,14 +28,14 @@
 </br>
 
 <p align='center'>
- Today's deep learning tools do not adequately address the following data wrangling problems:
+ Deep learning is difficult to implement because leading tools skip the following <i>data wrangling</i> challenges:
 </p>
 
 </br>
 
 <ol>
 	<li>
-		<b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't handle multiple dimensions, columns, & dtypes. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
+		<b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't handle multiple dimensions, columns, & types. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
 	</li>
 	</br>
 	<li>
@@ -49,11 +49,10 @@
 
 </br>
 
-
 <p align='center'>
 	Adding to the complexity, different <b>protocols</b> are required based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample).
 </p>
-
+</br>
 <p align='center'>
 	In attempting to solve these problems ad hoc, individuals end up writing lots of tangled code and stitching together a Frankenstein set of tools. Doing so requires knowledge of not only data science but also software engineering, which places a skillset burden on the research team. The <i>DIY</i> approach is not maintainable.
 </p>
