@@ -51,15 +51,22 @@ ol.intro {
     padding-left: 45px;
 }
 
-ol.intro li {
-    list-style-type:     decimal;
-    list-style-position: outside;
-    margin-bottom:       12px;
-}
-
 ol.intro li span {
     position: relative;
     left:     12px;
+}
+
+li.shadowBox {
+    padding: 18px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    list-style-type:     None;
+
+    box-shadow: 4px 4px lightgray;
+    -moz-box-shadow: 4px 4px lightgray;
+    -webkit-box-shadow: 4px 4px lightgray;
+    -o-box-shadow: 4px 4px lightgray;
 }
 
 /* list of features */

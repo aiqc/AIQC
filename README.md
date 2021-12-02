@@ -35,7 +35,7 @@
 
 <ol>
 	<li>
-		<b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't account for multiple dimensions, columns, & dtypes. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
+		<b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't handle multiple dimensions, columns, & dtypes. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
 	</li>
 	</br>
 	<li>

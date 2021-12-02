@@ -369,14 +369,14 @@
   Today's deep learning tools do not adequately address the following <i>data wrangling</i> problems:
 </p>
 <ol class="intro">
-  <li><span>
-    <b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't account for multiple dimensions, columns, & dtypes. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
+  <li class="shadowBox"><span>
+    <b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't handle multiple dimensions, columns, & dtypes. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
   </span></li>
-  <li><span>
-    <b>Experiment Tracking</b> - Tuning parameters and architectures requires many training runs that must be evaluated with metrics and charts. However, leading tools are only designed for a single run and don't keep track of performance. Validation splits and/or cross-validation folds compound these problems.
+  <li class="shadowBox"><span>
+    <b>Experiment Tracking</b> - Tuning parameters and architectures requires evaluating many training runs with metrics and charts. However, leading tools are only designed for a single run and don't keep track of performance. Validation splits and/or cross-validation folds compound these problems.
   </span></li>
-  <li><span>
-    <b>Postprocessing</b> - If the encoder-decoder pairs weren't saved, then how should inference samples be encoded and predictions be decoded? How do we know that inference samples have the right schema? Did encoders spawn extra columns? These problems are compounded if multiple encoders were used.
+  <li class="shadowBox"><span>
+    <b>Postprocessing</b> - If the encoder-decoder pairs weren't saved, then how should new samples be encoded and predictions be decoded? Do new samples have the same schema as the training samples? Did encoders spawn extra columns? Multiple encoders compound these problems.
   </span></li>
 </ol>
 </br>
