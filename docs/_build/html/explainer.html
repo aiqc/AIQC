@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta property="og:title" content="AI Explained" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://aiqc.readthedocs.io/explainer.html" />
+  <meta property="og:site_name" content="AIQC" />
+  <meta property="og:description" content=",,, Unsupervised, given what you know about these spreadsheet rows, generate a new row.,, Supervised, given what you know about these spreadsheet columns, predict this column.,, Reinforcement, give..." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
+  <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
+  <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search &mdash; AIQC</title>
+  <title>AI Explained &mdash; AIQC</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -22,10 +30,10 @@
         <script src="_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
-    <script src="_static/searchtools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mission" href="mission.html" />
+    <link rel="prev" title="Inference" href="notebooks/inference.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,7 +45,7 @@
             <img src="_static/aiqc_logo_wide_white_docs_300px.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -265,8 +273,8 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">About</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="explainer.html">AI Explained</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AI Explained</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mission.html">Mission</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
@@ -308,8 +316,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Search</li>
+      <li>AI Explained</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/explainer.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -317,22 +326,189 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search functionality.
-    </p>
-  </div>
-  </noscript>
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
 
-  
-  <div id="search-results">
-  
-  </div>
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="ai-explained">
+<h1>AI Explained<a class="headerlink" href="#ai-explained" title="Permalink to this headline"></a></h1>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  In conversation, people are often amazed how simple artificial intelligence really is.
+  </br>Here is what the three main types of AI do in layman terms:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Unsupervised</strong></p></td>
+<td><p>given what you know about these spreadsheet rows, generate a new row.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Supervised</strong></p></td>
+<td><p>given what you know about these spreadsheet columns, predict this column.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Reinforcement</strong></p></td>
+<td><p>given your track record and available options, make an attempt toward a goal.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  <i>Supervised learning</i> is great for automating complex, repetitive tasks.</br>It helps us answer two types of questions:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Categorize</strong></p></td>
+<td><p>what is it? benign vs malignant? landmine vs rock? approve vs deny? fake vs real?</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Quantify</strong></p></td>
+<td><p>how much? price? distance? volume? age? radioactivity? gene expression?</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/categorize_quantify.png"><img alt="categorize_quantify" class="align-center" src="_images/categorize_quantify.png" style="width: 85%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  Let's bring <i>supervised categorization</i> to life with an example.</br>Say we want to categorize animals and we have the following columns:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Features</strong></p></td>
+<td><p>informative columns like <cite>num_legs</cite>, <cite>color</cite>, <cite>has_shell</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Label</strong></p></td>
+<td><p>the <cite>species</cite> column that we want to predict.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/turtle_ruler.png"><img alt="turtle_ruler" class="align-center" src="_images/turtle_ruler.png" style="width: 45%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  We need an equation that predicts our <i>label (species)</i> when we show it set of <i>features (characteristics)</i>.</br>We call this equation an <i>algorithm</i>. Here is an oversimplified example:
+</p><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">species</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_legs</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">color</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">has_shell</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="explain">
+  During the training process, the algorithm will attempt to predict the species using the features. If it gets it wrong, then it will automatically adjust its parameters (x, y, z) until it makes accurate predictions. With repetition, the algorithm molds to the data like a memory foam mattress.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/memory_foam.png"><img alt="memory_foam" class="align-center" src="_images/memory_foam.png" style="width: 40%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  Practitioners oversee the <i>tuning</i> of an algorithm much like a chef cooking supper. If the food doesn't fit in the pan, switch to a larger pan (aka <i>architecture</i>) with deeper/ taller layers. If the food is cooking too fast, turn down the knobs (aka <i>hyperparameters</i>) like the "learning rate." At first the number of options seems overwhelming, but you quickly realize that you'll only need to learn a handful of common dinner recipes.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/cooking.png"><img alt="cooking" class="align-center" src="_images/cooking.png" style="width: 55%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  There are different types of algorithms for working with different types of data:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Linear</strong></p></td>
+<td><p>tabular data like spreadsheets.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Convolve</strong></p></td>
+<td><p>images and video.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Recur</strong></p></td>
+<td><p>time series data.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="explain">
+  They can be mixed and matched to handle almost any scenario.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  And that's really all there is to it. The rest is just figuring out how to feed your data into/ out of the algorithms, which is where AIQC comes into play.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="notebooks/inference.html" class="btn btn-neutral float-left" title="Inference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mission.html" class="btn btn-neutral float-right" title="Mission" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
@@ -351,14 +527,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(false);
       });
-  </script>
-  <script>
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script id="searchindexloader"></script>
-   
-
+  </script> 
 
 </body>
 </html>

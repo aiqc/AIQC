@@ -24,6 +24,7 @@
   :caption: About
   :hidden:
 
+  explainer
   mission
   community
   links
