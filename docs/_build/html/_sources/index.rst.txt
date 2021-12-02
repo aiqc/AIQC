@@ -262,14 +262,12 @@
 ----
 
 |
-|
 
 .. image:: images/pydata.png
   :width: 100%
   :align: center
   :alt: pydata
 
-|
 |
 |
 
