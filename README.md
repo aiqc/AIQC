@@ -13,9 +13,9 @@
 
 </br>
 
-<p align='center'><b>AIQC accelerates research teams with simple deep learning pipelines.</b></p>
+<p align='center'><b>AIQC accelerates research teams with an open source framework for deep learning pipelines.</b></p>
 </br>
-<p align='center'><i>An open source Python framework for conducting rapid, rigorous, and reproducible experiments.</i></p>
+<p align='center'><i>A simple Python framework for conducting rapid, rigorous, and reproducible experiments.</i></p>
 
 
 </br>

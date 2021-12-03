@@ -122,7 +122,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    The tricky part is that we need to figure out the right values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) so that our algorithm makes accurate predictions ⚖️ To do this by hand, we would simply use trial-and-error; make a change to the value of <i>x</i>, and then determine if that change either improved the model or made it worse.
+    The challenging part is that we need to figure out the right values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) so that our algorithm makes accurate predictions ⚖️ To do this by hand, we would simply use trial-and-error; make a change to the value of <i>x</i>, and then determine if that change either improved the model or made it worse.
   </p>
 
 |
@@ -209,7 +209,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    Data scientists oversee the training of an algorithm much like a chefs cooks a supper 🎛️ The heat is what actually cooks the food, but there are still a few things that the chef controls: 
+    A data scientist oversees the training of an algorithm much like a chef cooks a meal 🎛️ The heat is what actually cooks the food, but there are still a few things that the chef controls: 
 
 
 .. list-table::
