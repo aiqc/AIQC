@@ -17,7 +17,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    Most of us are all too familiar with the concept of a spreadsheet; where each row represents a record, and each column provides information that describes about that record. Let us then, examine the two major types of AI analysis in the context of a spreadsheet:
+    Most of us are all too familiar with the concept of a spreadsheet; where each <i>row</i> represents a record, and each <i>column</i> provides information about those records. Let us then, examine the two major types of AI analysis in the context of a spreadsheet:
   </p>
 
 
@@ -25,10 +25,10 @@ AI Explained
   :widths: 15, 85
   :align: center
 
-  * - **Generative**
+  * - **Generate**
     - Given what we know about rows 1:1000 → generate row 1001.
 
-  * - **Discriminative**
+  * - **Discriminate**
     - Given what we know about columns A:F → determine the values of column G.
 
 |
@@ -70,7 +70,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    As an example, let's pretend we work at a zoo and have a spreadsheet about animals 🐢 We want to use supervised learning in order to predict the species of a given animal.
+    As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals 🐢 We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
   </p>
 
 
@@ -79,7 +79,7 @@ AI Explained
   :align: center
   
   * - **Features**
-    - informative columns like `num_legs`, `color`, `has_shell`.
+    - informative columns like `num_legs`, `has_wings`, `has_shell`.
 
   * - **Label**
     - the `species` column that we want to predict.
@@ -108,21 +108,21 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    In order to automate this process 🔌 we need build an equation that predicts our <i>label</i> when we show it set of <i>features</i>. We call this equation an <i>algorithm</i>. Here is our simplified example:
+    To automate this process 🔌 we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
   </p>
   
 |
 
 .. code-block:: python
 
-  species = (num_legs * x) + (color * y) + (has_shell * z)
+  species = (num_legs * x) + (has_wings * y) + (has_shell * z)
 
 |
 
 .. raw:: html
 
   <p class="explain">
-    The tricky part is that we need to figure out the values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) that will return the correct label no matter what features we show it ⚖️ To do this manually, we could simply use trial-and-error; make a change to <i>x</i> and see if that improves the <i>accuracy</i> of the model until we have something that performs reasonably well.
+    The tricky part is that we need to figure out the right values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) so that our algorithm makes accurate predictions ⚖️ To do this by hand, we would simply use trial-and-error; make a change to the value of <i>x</i>, and then determine if that change either improved the model or made it worse.
   </p>
 
 |
@@ -134,22 +134,22 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    This is where the magic of AI comes into play 🔮 It simply automates that trial-and-error ¯\_(ツ)_/¯. Computers can rapidly compute and keep track of thousands of parameters at once.
+    Fortunately, computers can rapidly perform these repetetitive calculations on our behalf. This is where the magic of AI comes into play 🔮 It simply automates that trial-and-error.
   </p>
 
 |
 
-.. image:: images/gradient.png
+.. image:: images/gradients.png
   :width: 80%
   :align: center
-  :alt: gradient
+  :alt: gradients
 
 |
 
 .. raw:: html
 
   <p class="explain">
-    During each <i>batch</i>, the algorithm looks at a few rows at a time, attempts to make predictions about them, checks how off the mark those predictions are, and updates its <i>weights</i> to try to minimize any errors. It tracks how changes in each weight impact the performance of the model.
+    During each training <i>batch</i>, the algorithm: (1) looks at a few of our rows, (2) attempts to make predictions about those rows, (3) checks how accurate those predictions are, (4) and updates its <i>weights</i> in order to minimize any errors.
   </p>
 
 |
@@ -209,7 +209,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    Data scientists oversee the training of an algorithm much like a chefs cooks a supper 🎛️ The heat is what actually cooks the food, but there's still a few things that the chef controls (aka <i>tunes</i>): 
+    Data scientists oversee the training of an algorithm much like a chefs cooks a supper 🎛️ The heat is what actually cooks the food, but there are still a few things that the chef controls: 
 
 
 .. list-table::
@@ -217,10 +217,10 @@ AI Explained
   :align: center
   
   * - **Architecture**
-    - If the food doesn't fit in the pan, switch to a larger pan with deeper/ taller "layers."
+    - If the food doesn't fit in the pan, switch to a larger pan with deeper/ taller *layers*.
 
   * - **Hyperparameters**
-    - If it's cooking too fast, then turn down knobs like the "learning rate."
+    - If it's cooking too fast, then turn down knobs like the *learning rate*.
 
 |
 
@@ -234,7 +234,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    At first, the number of options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='tutorials.html'>recipes</a> in order to get by.
+    At first, the number of <i>tuning</i> options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='tutorials.html'>recipes</a> in order to get by.
   </p>
 
 |
@@ -247,7 +247,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    And that's really all there is to it 🏄‍♂️ The rest is just figuring out how to feed your data into/ out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
+    And that's really all there is to it 🏄‍♂️ The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
   </p>
 
 |
