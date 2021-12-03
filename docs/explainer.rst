@@ -2,28 +2,33 @@
 AI Explained
 ############
 
+*Taking a look behind the curtain of artificial intelligence.*
+
+----
+
+.. image:: images/oz.png
+  :width: 30%
+  :align: center
+  :alt: oz
+
 |
 
 .. raw:: html
 
   <p class="explain">
-    In conversation, people are often amazed how simple artificial intelligence really is.
-    </br>Here is what the three main types of AI do in layman terms:
+    Most people are, perhaps more than they would prefer, generally familiar with spreadsheets. When you break down what the two fundamental types of AI do in terms of a spreadsheet, then these abstract concepts suddenly become much more approachable:
   </p>
 
 
 .. list-table::
   :widths: 40, 80
   :align: center
-  
-  * - **Unsupervised**
-    - given what you know about these spreadsheet rows, generate a new row.
 
-  * - **Supervised**
-    - given what you know about these spreadsheet columns, predict this column.
+  * - **Supervised Learning**
+    - given what we know about these columns, predict the values of this other column.
 
-  * - **Reinforcement**
-    - given your track record and available options, make an attempt toward a goal.
+  * - **Unsupervised Learning**
+    - given what we know about these rows, generate a new row.
 
 |
 
@@ -34,7 +39,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    <i>Supervised learning</i> is great for automating complex, repetitive tasks.</br>It helps us answer two types of questions: 
+    Let's dig into <i>supervised learning</i> a bit. It's highly practical because it's great for automating repetitive, complex tasks. It helps us answer two import kinds of questions: 
   </p>
 
 
@@ -64,7 +69,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    Let's bring <i>supervised categorization</i> to life with an example.</br>Say we want to categorize animals and we have the following columns:
+    As an example, let's pretend we work at a zoo and have a spreadsheet about animals. We want to use supervised learning in order to predict the species of a given animal.
   </p>
 
 
@@ -77,6 +82,12 @@ AI Explained
 
   * - **Label**
     - the `species` column that we want to predict.
+
+.. raw:: html
+
+  <p class="explain">
+    We learn about the <i>features</i> in order to predict the <i>labels</i>.
+  </p>
 
 |
 
@@ -94,7 +105,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    We need an equation that predicts our <i>label (species)</i> when we show it set of <i>features (characteristics)</i>.</br>We call this equation an <i>algorithm</i>. Here is an oversimplified example:
+    In order to do this automatically, we need build an equation that predicts our <i>label</i> when we show it set of <i>features</i>. We call this equation an <i>algorithm</i>. Here is an oversimplified example:
   </p>
   
 .. code-block:: python
@@ -105,7 +116,11 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    During the training process, the algorithm will attempt to predict the species using the features. If it gets it wrong, then it will automatically adjust its parameters (x, y, z) until it makes accurate predictions. With repetition, the algorithm molds to the data like a memory foam mattress. 
+    We need to figure out the values for the <i>parameters</i> (x, y, z) that will return the correct label no matter what features we show it. To do this manually, we could simply use trial-and-error; make a change to <i>x</i> and see if that improves the <i>accuracy</i> of the model.
+  </p>
+  
+  <p class="explain">
+    This is where the magic of AI comes into play. It just automates that trial-and-error ¯\_(ツ)_/¯. However, it is capable of rapidly computing and keeping track of thousands of parameters at once, so it can handle complex data. With repetition, the model molds to the features like a memory foam mattress.
   </p>
 
 |
@@ -124,7 +139,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    Practitioners oversee the <i>tuning</i> of an algorithm much like a chef cooking supper. If the food doesn't fit in the pan, switch to a larger pan (aka <i>architecture</i>) with deeper/ taller layers. If the food is cooking too fast, turn down the knobs (aka <i>hyperparameters</i>) like the "learning rate." At first the number of options seems overwhelming, but you quickly realize that you'll only need to learn a handful of common dinner recipes.
+    Data scientists oversee the training of an algorithm much like a chefs cooks a supper. The heat is what actually cooks the food, but there's still a few things that the chef controls (aka <i>tunes</i>). If the food is cooking too fast, then turn down the knobs (aka <i>hyperparameters</i>) like the "learning rate." If the food doesn't fit in the pan, then switch to a larger pan (aka <i>architecture</i>) with deeper/ taller "layers." At first, the number of options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='tutorials.html'>recipes</a> in order to get by.
   </p>
 
 |
