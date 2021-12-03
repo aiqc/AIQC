@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/explainer.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Taking a look behind the curtain of artificial intelligence. oz,,, Supervised Learning, given what we know about these columns, predict the values of this other column.,, Unsupervised Learning, giv..." />
+  <meta property="og:description" content="Taking a look behind the curtain of artificial intelligence. oz,,,, Generative, Given what we know about rows 1:1000 → generate row 1001.,, Discriminative, Given what we know about columns A:F → de..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -354,23 +354,24 @@
 <h1>AI Explained<a class="headerlink" href="#ai-explained" title="Permalink to this headline"></a></h1>
 <p><em>Taking a look behind the curtain of artificial intelligence.</em></p>
 <hr class="docutils" />
-<a class="reference internal image-reference" href="_images/oz.png"><img alt="oz" class="align-center" src="_images/oz.png" style="width: 30%;" /></a>
+<a class="reference internal image-reference" href="_images/oz.png"><img alt="oz" class="align-center" src="_images/oz.png" style="width: 35%;" /></a>
 <div class="line-block">
+<div class="line"><br /></div>
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  Most people are, perhaps more than they would prefer, generally familiar with spreadsheets. When you break down what the two fundamental types of AI do in terms of a spreadsheet, then these abstract concepts suddenly become much more approachable:
+  Most of us are all too familiar with the concept of a spreadsheet; where each row represents a record, and each column provides information that describes about that record. Let us then, examine the two major types of AI analysis in the context of a spreadsheet:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 67%" />
+<col style="width: 15%" />
+<col style="width: 85%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>Supervised Learning</strong></p></td>
-<td><p>given what we know about these columns, predict the values of this other column.</p></td>
+<tr class="row-odd"><td><p><strong>Generative</strong></p></td>
+<td><p>Given what we know about rows 1:1000 → generate row 1001.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Unsupervised Learning</strong></p></td>
-<td><p>given what we know about these rows, generate a new row.</p></td>
+<tr class="row-even"><td><p><strong>Discriminative</strong></p></td>
+<td><p>Given what we know about columns A:F → determine the values of column G.</p></td>
 </tr>
 </tbody>
 </table>
@@ -382,18 +383,18 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  Let's dig into <i>supervised learning</i> a bit. It's highly practical because it's great for automating repetitive, complex tasks. It helps us answer two import kinds of questions:
+  <i>Discriminative</i> analysis is highly practical because it can help us answer two important questions:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 67%" />
+<col style="width: 15%" />
+<col style="width: 85%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Categorize</strong></p></td>
-<td><p>what is it? benign vs malignant? landmine vs rock? approve vs deny? fake vs real?</p></td>
+<td><p>What is it - benign vs malignant? landmine vs rock? approve vs deny? fake vs real?</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Quantify</strong></p></td>
-<td><p>how much? price? distance? volume? age? radioactivity? gene expression?</p></td>
+<td><p>How much - price? distance? volume? age? radioactivity? gene expression?</p></td>
 </tr>
 </tbody>
 </table>
@@ -409,11 +410,11 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  As an example, let's pretend we work at a zoo and have a spreadsheet about animals. We want to use supervised learning in order to predict the species of a given animal.
+  As an example, let's pretend we work at a zoo and have a spreadsheet about animals 🐢 We want to use supervised learning in order to predict the species of a given animal.
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 67%" />
+<col style="width: 20%" />
+<col style="width: 80%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Features</strong></p></td>
@@ -424,13 +425,16 @@
 </tr>
 </tbody>
 </table>
-<p class="explain">
-  We learn about the <i>features</i> in order to predict the <i>labels</i>.
-</p><div class="line-block">
+<div class="line-block">
 <div class="line"><br /></div>
 </div>
 <a class="reference internal image-reference" href="_images/turtle_ruler.png"><img alt="turtle_ruler" class="align-center" src="_images/turtle_ruler.png" style="width: 45%;" /></a>
 <div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  We learn about the <i>features</i> in order to predict the <i>label</i>.
+</p><div class="line-block">
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
@@ -438,16 +442,36 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  In order to do this automatically, we need build an equation that predicts our <i>label</i> when we show it set of <i>features</i>. We call this equation an <i>algorithm</i>. Here is an oversimplified example:
-</p><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">species</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_legs</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">color</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">has_shell</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+  In order to automate this process 🔌 we need build an equation that predicts our <i>label</i> when we show it set of <i>features</i>. We call this equation an <i>algorithm</i>. Here is our simplified example:
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">species</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_legs</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">color</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">has_shell</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p class="explain">
-  We need to figure out the values for the <i>parameters</i> (x, y, z) that will return the correct label no matter what features we show it. To do this manually, we could simply use trial-and-error; make a change to <i>x</i> and see if that improves the <i>accuracy</i> of the model.
-</p>
-
+  The tricky part is that we need to figure out the values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) that will return the correct label no matter what features we show it ⚖️ To do this manually, we could simply use trial-and-error; make a change to <i>x</i> and see if that improves the <i>accuracy</i> of the model until we have something that performs reasonably well.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p class="explain">
-  This is where the magic of AI comes into play. It just automates that trial-and-error ¯\_(ツ)_/¯. However, it is capable of rapidly computing and keeping track of thousands of parameters at once, so it can handle complex data. With repetition, the model molds to the features like a memory foam mattress.
+  This is where the magic of AI comes into play 🔮 It simply automates that trial-and-error ¯\_(ツ)_/¯. Computers can rapidly compute and keep track of thousands of parameters at once.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/gradient.png"><img alt="gradient" class="align-center" src="_images/gradient.png" style="width: 80%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  During each <i>batch</i>, the algorithm looks at a few rows at a time, attempts to make predictions about them, checks how off the mark those predictions are, and updates its <i>weights</i> to try to minimize any errors. It tracks how changes in each weight impact the performance of the model.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -455,17 +479,9 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <p class="explain">
-  Data scientists oversee the training of an algorithm much like a chefs cooks a supper. The heat is what actually cooks the food, but there's still a few things that the chef controls (aka <i>tunes</i>). If the food is cooking too fast, then turn down the knobs (aka <i>hyperparameters</i>) like the "learning rate." If the food doesn't fit in the pan, then switch to a larger pan (aka <i>architecture</i>) with deeper/ taller "layers." At first, the number of options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='tutorials.html'>recipes</a> in order to get by.
+  With repetition, the model molds to the features like a memory foam mattress.
 </p><div class="line-block">
-<div class="line"><br /></div>
-</div>
-<a class="reference internal image-reference" href="_images/cooking.png"><img alt="cooking" class="align-center" src="_images/cooking.png" style="width: 55%;" /></a>
-<div class="line-block">
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
@@ -484,15 +500,15 @@
 <td><p>tabular data like spreadsheets.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Convolve</strong></p></td>
-<td><p>images and video.</p></td>
+<td><p>images and video 📸.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Recur</strong></p></td>
-<td><p>time series data.</p></td>
+<td><p>time series data ⏱️.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="explain">
-  They can be mixed and matched to handle almost any scenario.
+  They can be mixed and matched to handle almost any real-life scenario.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -501,7 +517,38 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  And that's really all there is to it. The rest is just figuring out how to feed your data into/ out of the algorithms, which is where AIQC comes into play.
+  Data scientists oversee the training of an algorithm much like a chefs cooks a supper 🎛️ The heat is what actually cooks the food, but there's still a few things that the chef controls (aka <i>tunes</i>):<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Architecture</strong></p></td>
+<td><p>If the food doesn’t fit in the pan, switch to a larger pan with deeper/ taller “layers.”</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Hyperparameters</strong></p></td>
+<td><p>If it’s cooking too fast, then turn down knobs like the “learning rate.”</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/cooking.png"><img alt="cooking" class="align-center" src="_images/cooking.png" style="width: 55%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  At first, the number of options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='tutorials.html'>recipes</a> in order to get by.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  And that's really all there is to it 🏄‍♂️ The rest is just figuring out how to feed your data into/ out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
