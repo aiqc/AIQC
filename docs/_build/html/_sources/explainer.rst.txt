@@ -144,11 +144,11 @@ AI Explained
   :align: center
   :alt: gradients
 
-|
 
 .. raw:: html
 
-  <p class="explain">
+  </br>
+  <p class="caption">
     During each training <i>batch</i>, the algorithm: (1) looks at a few of our rows, (2) attempts to make predictions about those rows, (3) checks how accurate those predictions are, (4) and updates its <i>weights</i> in order to minimize any errors.
   </p>
 

@@ -110,11 +110,21 @@ iframe {
 }
 /* --- End: Main page --- */
 
+/* --- Start: Explainer page --- */
 p.explain {
     font-size:  15px;
     text-align: center;
 }
 
+p.caption {
+    border-left: 4px solid lightgray;
+    padding-left: 15px;
+    text-align: left;
+    color: gray;
+    font-size: 13px;
+}
+/* --- End: Explainer page --- */  
+    
 /* --- Start: compatibility table index page --- */
 .compatibility {
 	width:			100%; 

@@ -2,6 +2,10 @@
 Use Cases & Tutorials
 #####################
 
+.. |br| raw:: html
+
+  <br/>
+
 ..
   Without this comment, `make html` throws warning about page beginning w horizontal line below.
 
@@ -15,45 +19,67 @@ Use Cases & Tutorials
 
   </br>
   <p class="intro">
-  Follow along with the notebooks below in order to get a feel for the different use cases, data types, and analytical workflows that AIQC supports. Then adapt the workflow to your data source to make your own predictive algorithm. Reference the compatibility chart on the main page as this is not an exhaustive list. 
+    AI isn't just about talking robots. It's highly efficient at automating practical tasks.
+  </p>  
+  <p class="intro">
+    Follow along with the tutorials below in order to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
   </p>
 
-----
+  </p>
+  </br>
 
-Keras
-=====
+
+.. list-table::
+  :widths: 25, 30, 20
+  :header-rows: 1
+  :align: center
+  
+  * - Use Case
+    - Analysis Type
+    - Tutorial
+    
+  * - Detect epileptic seizure
+    - Binary classification of |br| time series/ sequence data
+    - :ref:`Keras </notebooks/keras_sequence_classification.ipynb>`
+    
+  * - Detect brain tumor
+    - Binary classification of images
+    - :ref:`Keras </notebooks/keras_image_classification.ipynb>`
+
+  * - Detect naval mine
+    - Binary classification of tabular data
+    - :ref:`Keras </notebooks/keras_binary_classification.ipynb>`, :ref:`TensorFlow </notebooks/tensorflow_binary_classification.ipynb>`, |br| :ref:`PyTorch </notebooks/pytorch_binary_classification.ipynb>`
+
+  * - Categorize plant species
+    - Multi-label classification of tabular data
+    - :ref:`Keras </notebooks/keras_multi-label_classification.ipynb>`, :ref:`PyTorch </notebooks/pytorch_multi-label_classification.ipynb>`
+
+  * - Predict exoplanet temperature
+    - Quantification of tabular data
+    - :ref:`Keras </notebooks/keras_regression.ipynb>`
+
+  * - Predict real estate prices
+    - Quantification of tabular data
+    - :ref:`PyTorch </notebooks/pytorch_regression.ipynb>`
+
+  * - Forecast lunar trajectory
+    - Walk forward images
+    - :ref:`Keras </notebooks/keras_image_forecasting.ipynb>`
+
+  * - Forecast weather
+    - Walk forward time series/ sequence data
+    - :ref:`Keras </notebooks/keras_tabular_forecasting.ipynb>`
+
+  * - Categorize galaxy
+    - Binary classification with heterogenous  |br| features (image & tabular)
+    - :ref:`Keras </notebooks/heterogeneous_features.ipynb>`
+
 
 .. raw:: html
+
+  </br>
+  <p class="intro" style="color:gray;"><i>
+    Reference the compatibility chart on the main page for a comprehensive list</br> of all supported types of data, tools, and analysis.
+  </i></p>
   
-  <ul class="featureLists">
-    <li><a href='notebooks/keras_binary_classification.html'>Binary classification of tabular data - naval mine detection.</a></li>
-    <li><a href='notebooks/keras_multi-label_classification.html'>Multi-label classification of tabular data - categorize species of plant.</a></li>
-    <li><a href='notebooks/keras_sequence_classification.html'>Binary classification of time series/ sequence data - epileptic seizure detection.</a></li>
-    <li><a href='notebooks/keras_image_classification.html'>Binary classification of images - brain tumor detection.</a></li>
-    <li><a href='notebooks/keras_regression.html'>Quantification of tabular data - predict real estate prices.</a></li>
-    <li><a href='notebooks/keras_image_forecasting.html'>Forecasting images - lunar trajectory.</a></li>
-    <li><a href='notebooks/keras_tabular_forecasting.html'>Forecasting time series/ sequence data - weather prediction.</a></li>
-  </ul>
-
-
-PyTorch
-=======
-
-.. raw:: html
-  
-  <ul class="featureLists">
-    <li><a href='notebooks/pytorch_binary_classification.html'>Binary categorization of tabular data - naval mine detection.</a></li>
-    <li><a href='notebooks/pytorch_multi-label_classification.html'>Multi-label categorization of tabular data - categorize species of plant.</a></li>
-    <li><a href='notebooks/pytorch_regression.html'>Quantification of tabular data - predict real estate prices.</a></li>
-  </ul>
-
-
-Other
-=======
-
-.. raw:: html
-  
-  <ul class="featureLists">
-    <li><a href='notebooks/tensorflow_binary_classification.html'>Classic TensorFlow training loop.</a></li>
-    <li><a href='notebooks/heterogeneous_features.html'>Heterogeneous (mixed data types) - categorize bar vs spiral galaxy.</a></li>
-  </ul>
+|

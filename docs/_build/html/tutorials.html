@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/tutorials.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="use_cases Keras: PyTorch: Other:" />
+  <meta property="og:description" content="use_cases,,, Use Case, Analysis Type, Tutorial,,, Detect epileptic seizure, Binary classification of time series/ sequence data, Keras,, Detect brain tumor, Binary classification of images, Keras,,..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -102,12 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/example_datasets.html#Remote-Data">Remote Data</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Use Cases &amp; Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#keras">Keras</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pytorch">PyTorch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#other">Other</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Use Cases &amp; Tutorials</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -355,32 +350,70 @@
 <a class="reference internal image-reference" href="_images/banner_use_cases.png"><img alt="use_cases" class="align-center" src="_images/banner_use_cases.png" style="width: 100%;" /></a>
 </br>
 <p class="intro">
-Follow along with the notebooks below in order to get a feel for the different use cases, data types, and analytical workflows that AIQC supports. Then adapt the workflow to your data source to make your own predictive algorithm. Reference the compatibility chart on the main page as this is not an exhaustive list.
-</p><hr class="docutils" />
-<section id="keras">
-<h2>Keras<a class="headerlink" href="#keras" title="Permalink to this headline"></a></h2>
-<ul class="featureLists">
-  <li><a href='notebooks/keras_binary_classification.html'>Binary classification of tabular data - naval mine detection.</a></li>
-  <li><a href='notebooks/keras_multi-label_classification.html'>Multi-label classification of tabular data - categorize species of plant.</a></li>
-  <li><a href='notebooks/keras_sequence_classification.html'>Binary classification of time series/ sequence data - epileptic seizure detection.</a></li>
-  <li><a href='notebooks/keras_image_classification.html'>Binary classification of images - brain tumor detection.</a></li>
-  <li><a href='notebooks/keras_regression.html'>Quantification of tabular data - predict real estate prices.</a></li>
-  <li><a href='notebooks/keras_image_forecasting.html'>Forecasting images - lunar trajectory.</a></li>
-  <li><a href='notebooks/keras_tabular_forecasting.html'>Forecasting time series/ sequence data - weather prediction.</a></li>
-</ul></section>
-<section id="pytorch">
-<h2>PyTorch<a class="headerlink" href="#pytorch" title="Permalink to this headline"></a></h2>
-<ul class="featureLists">
-  <li><a href='notebooks/pytorch_binary_classification.html'>Binary categorization of tabular data - naval mine detection.</a></li>
-  <li><a href='notebooks/pytorch_multi-label_classification.html'>Multi-label categorization of tabular data - categorize species of plant.</a></li>
-  <li><a href='notebooks/pytorch_regression.html'>Quantification of tabular data - predict real estate prices.</a></li>
-</ul></section>
-<section id="other">
-<h2>Other<a class="headerlink" href="#other" title="Permalink to this headline"></a></h2>
-<ul class="featureLists">
-  <li><a href='notebooks/tensorflow_binary_classification.html'>Classic TensorFlow training loop.</a></li>
-  <li><a href='notebooks/heterogeneous_features.html'>Heterogeneous (mixed data types) - categorize bar vs spiral galaxy.</a></li>
-</ul></section>
+  AI isn't just about talking robots. It's highly efficient at automating practical tasks.
+</p>
+<p class="intro">
+  Follow along with the tutorials below in order to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
+</p>
+
+</p>
+</br><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 40%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Use Case</p></th>
+<th class="head"><p>Analysis Type</p></th>
+<th class="head"><p>Tutorial</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Detect epileptic seizure</p></td>
+<td><p>Binary classification of <br/> time series/ sequence data</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_sequence_classification.html"><span class="std std-ref">Keras</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Detect brain tumor</p></td>
+<td><p>Binary classification of images</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_image_classification.html"><span class="std std-ref">Keras</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Detect naval mine</p></td>
+<td><p>Binary classification of tabular data</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_binary_classification.html"><span class="std std-ref">Keras</span></a>, <a class="reference internal" href="notebooks/tensorflow_binary_classification.html"><span class="std std-ref">TensorFlow</span></a>, <br/> <a class="reference internal" href="notebooks/pytorch_binary_classification.html"><span class="std std-ref">PyTorch</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Categorize plant species</p></td>
+<td><p>Multi-label classification of tabular data</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_multi-label_classification.html"><span class="std std-ref">Keras</span></a>, <a class="reference internal" href="notebooks/pytorch_multi-label_classification.html"><span class="std std-ref">PyTorch</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Predict exoplanet temperature</p></td>
+<td><p>Quantification of tabular data</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_regression.html"><span class="std std-ref">Keras</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Predict real estate prices</p></td>
+<td><p>Quantification of tabular data</p></td>
+<td><p><a class="reference internal" href="notebooks/pytorch_regression.html"><span class="std std-ref">PyTorch</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Forecast lunar trajectory</p></td>
+<td><p>Walk forward images</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_image_forecasting.html"><span class="std std-ref">Keras</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Forecast weather</p></td>
+<td><p>Walk forward time series/ sequence data</p></td>
+<td><p><a class="reference internal" href="notebooks/keras_tabular_forecasting.html"><span class="std std-ref">Keras</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Categorize galaxy</p></td>
+<td><p>Binary classification with heterogenous  <br/> features (image &amp; tabular)</p></td>
+<td><p><a class="reference internal" href="notebooks/heterogeneous_features.html"><span class="std std-ref">Keras</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</br>
+<p class="intro" style="color:gray;"><i>
+  Reference the compatibility chart on the main page for a comprehensive list</br> of all supported types of data, tools, and analysis.
+</i></p><div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 
 
