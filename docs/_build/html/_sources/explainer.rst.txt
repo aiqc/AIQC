@@ -17,7 +17,7 @@ AI Explained
 .. raw:: html
 
   <p class="explain">
-    Most of us are all too familiar with the concept of a spreadsheet; where each <i>row</i> represents a record, and each <i>column</i> provides information about those records. Let us then, examine the two major types of AI analysis in the context of a spreadsheet:
+    If you understand spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in our spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
   </p>
 
 
@@ -25,10 +25,10 @@ AI Explained
   :widths: 15, 85
   :align: center
 
-  * - **Generate**
+  * - **Generative**
     - Given what we know about rows 1:1000 → generate row 1001.
 
-  * - **Discriminate**
+  * - **Discriminative**
     - Given what we know about columns A:F → determine the values of column G.
 
 |
@@ -79,10 +79,10 @@ AI Explained
   :align: center
   
   * - **Features**
-    - informative columns like `num_legs`, `has_wings`, `has_shell`.
+    - Informative columns like `num_legs`, `has_wings`, `has_shell`.
 
   * - **Label**
-    - the `species` column that we want to predict.
+    - The `species` column that we want to predict.
 
 |
 
@@ -185,13 +185,13 @@ AI Explained
   :align: center
   
   * - **Linear**
-    - tabular data like spreadsheets.
+    - Tabular data like spreadsheets.
 
-  * - **Convolve**
-    - images and video 📸.
+  * - **Convolutional**
+    - Images and video 📸.
 
-  * - **Recur**
-    - time series data ⏱️.
+  * - **Recurrent**
+    - Time series data ⏱️.
 
 
 .. raw:: html
