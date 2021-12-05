@@ -1,23 +1,24 @@
 ############
-AI Explained
+How AI Works
 ############
 
-*Taking a look behind the curtain of artificial intelligence.*
+*Boiling artificial intelligence down to its fundamental concepts.*
 
 ----
 
-.. image:: images/oz.png
-  :width: 35%
-  :align: center
-  :alt: oz
-
 |
+
+.. image:: images/gears.png
+  :width: 50%
+  :align: center
+  :alt: gears
+
 |
 
 .. raw:: html
 
   <p class="explain">
-    If you understand spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in our spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
+    If you are generally familiar with spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in a spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
   </p>
 
 
@@ -148,14 +149,14 @@ AI Explained
 .. raw:: html
 
   </br>
-  <p class="caption">
-    During each training <i>batch</i>, the algorithm: (1) looks at a few of our rows, (2) attempts to make predictions about those rows, (3) checks how accurate those predictions are, (4) and updates its <i>weights</i> in order to minimize any errors.
+  <p class="figCaption" style="text-align: left;">
+    The figure above demonstrates what happens during a training <i>batch</i>: (1) the algorithm looks at a few rows, (2) makes predictions about those rows using its existing weights, (3) checks how accurate those predictions are, (4) adjusts its weights in an attempt to minimize future errors. It's like finding the bottom of a valley by rolling a ball down it.
   </p>
 
 |
 
 .. image:: images/memory_foam.png
-  :width: 40%
+  :width: 35%
   :align: center
   :alt: memory_foam
 
@@ -250,4 +251,12 @@ AI Explained
     And that's really all there is to it 🏄‍♂️ The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
   </p>
 
+|
+
+
+.. image:: images/oz.png
+  :width: 35%
+  :align: center
+  :alt: oz
+  
 |

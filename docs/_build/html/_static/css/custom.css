@@ -73,6 +73,15 @@ li.shadowBox {
     -o-box-shadow:      4px 4px lightgray;
 }
 
+li.shadowBox:hover {
+    border:             1px solid #adadad;
+    border-radius:      9px;
+    box-shadow:         4px 4px #adadad;
+    -moz-box-shadow:    4px 4px #adadad;
+    -webkit-box-shadow: 4px 4px #adadad;
+    -o-box-shadow:      4px 4px #adadad;
+}
+
 /* list of features */
 ul.featureLists {
     padding-bottom: 50px;
@@ -116,15 +125,74 @@ p.explain {
     text-align: center;
 }
 
-p.caption {
+.figCaption {
     border-left: 4px solid lightgray;
     padding-left: 15px;
-    text-align: left;
     color: gray;
     font-size: 13px;
 }
 /* --- End: Explainer page --- */  
+
+/* --- Start: Services page --- */
+.quickLinks {
+    display: flex;
+    width:   90%;
+    margin:  30px auto 35px auto;/*center*/
+}
+
+.quickLinks div {
+    flex:             auto;
+    margin:           8px;
+    padding:          8px;
+    border-radius:    30px;
+    text-align:       center;
+    background-image: linear-gradient(to bottom right, #c6ebf7, #fcfcfc);
+    font-size:        13.5px;
+    border-collapse:  collapse; 
+}
+
+.quickLinks div:hover {
+    background-image: linear-gradient(to bottom right, #d7eff7, #fcfcfc);
+}
+
+.quickLinks div a:hover {
+    text-decoration:  underline;
+}
+
+.svcBox {
+    padding:            16px 20px 16px 20px;
+    border:             1px solid #b6cfde;
+    border-radius:      12px;
+    margin-bottom:      25px;
+    margin-left:        8%;
+
+    box-shadow:         4px 4px #b6cfde;
+    -moz-box-shadow:    4px 4px #b6cfde;
+    -webkit-box-shadow: 4px 4px #b6cfde;
+    -o-box-shadow:      4px 4px #b6cfde;
+}
+
+.svcBox:hover {
+    border:             1px solid #7d98a8;
+    border-radius:      9px;
+    box-shadow:         4px 4px #7d98a8;
+    -moz-box-shadow:    4px 4px #7d98a8;
+    -webkit-box-shadow: 4px 4px #7d98a8;
+    -o-box-shadow:      4px 4px #7d98a8;
+}
+
+.svcHeader {
+    font-weight:   bold;
+    margin-bottom: 6px;
+    font-size:     15px;
+}
     
+.svcDescribe {
+    font-size: 14px;
+    margin-left: 20px;
+}
+/* --- End: Services page --- */
+
 /* --- Start: compatibility table index page --- */
 .compatibility {
 	width:			100%; 

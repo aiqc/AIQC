@@ -71,6 +71,7 @@ html_theme_options = {
 	, 'display_version': False
 	, 'sticky_navigation': False
 	, 'collapse_navigation': False
+    , 'prev_next_buttons_location': None
 }
 
 hight_language = 'python3'

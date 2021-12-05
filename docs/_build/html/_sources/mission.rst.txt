@@ -21,9 +21,7 @@ Deep learning has the power to accelerate scientific discoveries by acting as a 
 
 Earth's natural resources are being destroyed, and it's beyond our current capabilities to repair the environment. In order to survive here and elsewhere, we need to make major advances in non-linear fields such as synthetic biology (to heal the earth) and small-scale nuclear power (to fuel its progress). We can't physically transport 10 billion people off of this planet. 
 
-  * `Kennedy - Peace; our survival demands unified, systematic action. <https://youtu.be/0fkKnfk4k40?t=368>`__
-  * `Kennedy - Moon; lead the holistic advancement of science for the good of mankind. <https://youtu.be/WZyRbnpGyzQ?t=183>`__
-
+|
 
 1. Accelerate science by making deep learning accessible.
 =========================================================
@@ -45,3 +43,14 @@ Earth's natural resources are being destroyed, and it's beyond our current capab
 
   * The majority of research doesn't happen in the cloud, it's performed on the personal computers of individuals. We empower the non-cloud researchers: the academic/ institute HPCers, the remote server SSH'ers, and everyday laptop warriors.
   * If the entire scientific community does not have access to the toolset used to conduct the experiment, then, again, it is not reproducible.
+
+|
+
+----
+
+|
+
+  * `Kennedy - Peace; our survival demands unified, systematic action. <https://youtu.be/0fkKnfk4k40?t=368>`__
+  * `Kennedy - Moon; lead the holistic advancement of science for the good of mankind. <https://youtu.be/WZyRbnpGyzQ?t=183>`__
+  
+|

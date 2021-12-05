@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta property="og:title" content="AI Explained" />
+  <meta property="og:title" content="How AI Works" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/explainer.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Taking a look behind the curtain of artificial intelligence. oz,,,, Generative, Given what we know about rows 1:1000 → generate row 1001.,, Discriminative, Given what we know about columns A:F → de..." />
+  <meta property="og:description" content="Boiling artificial intelligence down to its fundamental concepts., gears,,, Generative, Given what we know about rows 1:1000 → generate row 1001.,, Discriminative, Given what we know about columns ..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Explained &mdash; AIQC</title>
+  <title>How AI Works &mdash; AIQC</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
@@ -269,7 +269,7 @@
 </ul>
 <p class="caption"><span class="caption-text">About</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">AI Explained</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How AI Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mission.html">Mission</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
@@ -311,7 +311,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>AI Explained</li>
+      <li>How AI Works</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/explainer.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -345,17 +345,19 @@
     text-align: unset;
 }
 </style>
-<section id="ai-explained">
-<h1>AI Explained<a class="headerlink" href="#ai-explained" title="Permalink to this headline"></a></h1>
-<p><em>Taking a look behind the curtain of artificial intelligence.</em></p>
+<section id="how-ai-works">
+<h1>How AI Works<a class="headerlink" href="#how-ai-works" title="Permalink to this headline"></a></h1>
+<p><em>Boiling artificial intelligence down to its fundamental concepts.</em></p>
 <hr class="docutils" />
-<a class="reference internal image-reference" href="_images/oz.png"><img alt="oz" class="align-center" src="_images/oz.png" style="width: 35%;" /></a>
 <div class="line-block">
 <div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="_images/gears.png"><img alt="gears" class="align-center" src="_images/gears.png" style="width: 50%;" /></a>
+<div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  If you understand spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in our spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
+  If you are generally familiar with spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in a spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 15%" />
@@ -463,12 +465,12 @@
 </div>
 <a class="reference internal image-reference" href="_images/gradients.png"><img alt="gradients" class="align-center" src="_images/gradients.png" style="width: 80%;" /></a>
 </br>
-<p class="caption">
-  During each training <i>batch</i>, the algorithm: (1) looks at a few of our rows, (2) attempts to make predictions about those rows, (3) checks how accurate those predictions are, (4) and updates its <i>weights</i> in order to minimize any errors.
+<p class="figCaption" style="text-align: left;">
+  The figure above demonstrates what happens during a training <i>batch</i>: (1) the algorithm looks at a few rows, (2) makes predictions about those rows using its existing weights, (3) checks how accurate those predictions are, (4) adjusts its weights in an attempt to minimize future errors. It's like finding the bottom of a valley by rolling a ball down it.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<a class="reference internal image-reference" href="_images/memory_foam.png"><img alt="memory_foam" class="align-center" src="_images/memory_foam.png" style="width: 40%;" /></a>
+<a class="reference internal image-reference" href="_images/memory_foam.png"><img alt="memory_foam" class="align-center" src="_images/memory_foam.png" style="width: 35%;" /></a>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -545,15 +547,16 @@
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
+<a class="reference internal image-reference" href="_images/oz.png"><img alt="oz" class="align-center" src="_images/oz.png" style="width: 35%;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="notebooks/inference.html" class="btn btn-neutral float-left" title="Inference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mission.html" class="btn btn-neutral float-right" title="Mission" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
