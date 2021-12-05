@@ -219,6 +219,10 @@ p.explain {
 	color: 		#000;
 }
 
+.done:hover {
+    background: radial-gradient(#d9ffd9, #adeaad) !important;
+}
+
 .extra-bullets {
 	font-size: 		90%;
 	list-style:		circle; 
