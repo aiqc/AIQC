@@ -26,6 +26,7 @@ Professional Services
   :width: 30%
   :align: center
   :alt: DMAIC
+  :class: no-scaled-link
 
 
 .. raw:: html

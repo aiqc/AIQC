@@ -50,13 +50,7 @@
    "outputs": [],
    "source": [
     "import aiqc\n",
-    "from aiqc import datum\n",
-    "\n",
-    "from sklearn.preprocessing import StandardScaler\n",
-    "import keras\n",
-    "from keras.models import Sequential\n",
-    "from keras.layers import LSTM, Dense\n",
-    "from keras.callbacks import History"
+    "from aiqc import datum"
    ]
   },
   {
@@ -76,9 +70,20 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "id": "cc43c390-d99a-476b-9fc4-a7c8c5fabee9",
+   "metadata": {},
+   "source": [
+    "This dataset is comprised of:\n",
+    "    \n",
+    "- *Features* = a sequence of electroencephalogram (EEG) readings.\n",
+    "- *Label* = presence of an epileptic seizure."
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "ambient-lancaster",
+   "id": "3d7a0de2-5c54-417d-9317-364403ff710c",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -300,6 +305,20 @@
    ],
    "source": [
     "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7ba9a1a5-258c-404a-94ed-920fabc14536",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import StandardScaler\n",
+    "import keras\n",
+    "from keras.models import Sequential\n",
+    "from keras.layers import LSTM, Dense\n",
+    "from keras.callbacks import History"
    ]
   },
   {

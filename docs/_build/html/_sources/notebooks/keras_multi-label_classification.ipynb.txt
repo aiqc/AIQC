@@ -26,19 +26,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "id": "b7c3dd77-3c18-4acd-b851-da824c387b50",
    "metadata": {},
    "outputs": [],
    "source": [
     "import aiqc\n",
-    "from aiqc import datum\n",
-    "\n",
-    "import keras\n",
-    "from keras.models import Sequential\n",
-    "from keras.layers import Dense, Dropout\n",
-    "from keras.callbacks import History\n",
-    "from sklearn.preprocessing import OneHotEncoder, StandardScaler"
+    "from aiqc import datum"
    ]
   },
   {
@@ -60,6 +54,16 @@
   {
    "cell_type": "markdown",
    "id": "vital-accident",
+   "metadata": {},
+   "source": [
+    "This data is comprised of:\n",
+    "- *Labels* = the species of the plant.\n",
+    "- *Features* = phenotypes of the plant sample."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2d9eda3d-061f-44ab-bf1c-65e78e5ac641",
    "metadata": {},
    "source": [
     "Reference [Example Datasets](example_datasets.ipynb) for more information."
@@ -174,28 +178,16 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
-   "id": "virgin-communication",
+   "execution_count": null,
+   "id": "bd8a1e0b-02b5-4ce8-8ba2-9d1e487fd19b",
    "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "sepal_length    float64\n",
-       "sepal_width     float64\n",
-       "petal_length    float64\n",
-       "petal_width     float64\n",
-       "species          object\n",
-       "dtype: object"
-      ]
-     },
-     "execution_count": 5,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
-    "df.dtypes"
+    "import keras\n",
+    "from keras.models import Sequential\n",
+    "from keras.layers import Dense, Dropout\n",
+    "from keras.callbacks import History\n",
+    "from sklearn.preprocessing import OneHotEncoder, StandardScaler"
    ]
   },
   {

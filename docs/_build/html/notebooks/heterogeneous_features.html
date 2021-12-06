@@ -271,12 +271,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../explainer.html">How AI Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
@@ -609,8 +606,15 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">aiqc</span>
 <span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">keras</span>
 <span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
@@ -702,6 +706,7 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </table>
 </div></div>
 </div>
+<hr class="docutils" />
 <p>From a single <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> we’ll specify a <code class="docutils literal notranslate"><span class="pre">Label</span></code> and <code class="docutils literal notranslate"><span class="pre">Feature</span></code> before encoding them.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -896,7 +901,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_27_0.png" src="../_images/notebooks_heterogeneous_features_27_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_29_0.png" src="../_images/notebooks_heterogeneous_features_29_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -913,7 +918,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_28_0.png" src="../_images/notebooks_heterogeneous_features_28_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_30_0.png" src="../_images/notebooks_heterogeneous_features_30_0.png" />
 </div>
 </div>
 <p>Although it is easy enough to distinguish between the two types with the naked eye, you start to realize that a <em>bar</em> galaxy is almost like a degraded <em>spiral</em> galaxy. Like anything else, there is a gray area in whether or not the band of stars/ rectangle of light connecting the two main galactic arms is to be considered a “bar” or more of an oval.</p>
@@ -932,7 +937,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_31_0.png" src="../_images/notebooks_heterogeneous_features_31_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_33_0.png" src="../_images/notebooks_heterogeneous_features_33_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -949,7 +954,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_32_0.png" src="../_images/notebooks_heterogeneous_features_32_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_34_0.png" src="../_images/notebooks_heterogeneous_features_34_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -2967,7 +2972,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_88_0.png" src="../_images/notebooks_heterogeneous_features_88_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_90_0.png" src="../_images/notebooks_heterogeneous_features_90_0.png" />
 </div>
 </div>
 </section>

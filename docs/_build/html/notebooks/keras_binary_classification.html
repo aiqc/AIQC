@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/keras_binary_classification.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Detecting Naval Mines with Binary Classification of Sonar Data. mines[2]: import keras from keras.models import Sequential from keras.layers import Dense, Dropout from keras.callbacks import Histor..." />
+  <meta property="og:description" content="Detecting Naval Mines with Binary Classification of Sonar Data. mines[ ]: import aiqc from aiqc import datum Example Data: This dataset is comprised of: Features= sonar readings that have been boun..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -271,12 +271,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../explainer.html">How AI Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
@@ -596,18 +593,11 @@ div.rendered_html tbody tr:hover {
 <p><em>Detecting Naval Mines with Binary Classification of Sonar Data.</em></p>
 <p><img alt="mines" src="../_images/mines.png" /></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">keras</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span>
-<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">PowerTransformer</span>
-
-<span class="kn">import</span> <span class="nn">aiqc</span>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
 <span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
 </pre></div>
 </div>
@@ -615,6 +605,11 @@ div.rendered_html tbody tr:hover {
 <hr class="docutils" />
 <section id="Example-Data">
 <h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p>This dataset is comprised of:</p>
+<ul class="simple">
+<li><p><em>Features</em> = sonar readings that have been bounced off a distant object.</p></li>
+<li><p><em>Label</em> = either a rock or metal structure (potentially a naval mine).</p></li>
+</ul>
 <p>Reference <a class="reference internal" href="example_datasets.html"><span class="doc">Example Datasets</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -807,6 +802,20 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 <hr class="docutils" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">keras</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">PowerTransformer</span><span class="c1">## a) High-Level API</span>
+</pre></div>
+</div>
+</div>
 </section>
 <section id="a)-High-Level-API">
 <h2>a) High-Level API<a class="headerlink" href="#a)-High-Level-API" title="Permalink to this headline"></a></h2>

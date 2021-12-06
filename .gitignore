@@ -8,6 +8,7 @@ Untitled.ipynb
 **/__pycache__/
 __pycache__/
 /.vscode
+.vscode
 
 # Distribution / packaging
 /dist

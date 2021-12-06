@@ -12,6 +12,7 @@ How AI Works
   :width: 50%
   :align: center
   :alt: gears
+  :class: no-scaled-link
 
 |
 
@@ -61,6 +62,7 @@ How AI Works
   :width: 85%
   :align: center
   :alt: categorize_quantify
+  :class: no-scaled-link
 
 |
 
@@ -91,6 +93,7 @@ How AI Works
   :width: 45%
   :align: center
   :alt: turtle_ruler
+  :class: no-scaled-link
 
 |
 
@@ -159,6 +162,7 @@ How AI Works
   :width: 35%
   :align: center
   :alt: memory_foam
+  :class: no-scaled-link
 
 |
 
@@ -229,6 +233,7 @@ How AI Works
   :width: 55%
   :align: center
   :alt: cooking
+  :class: no-scaled-link
 
 |
 
@@ -258,5 +263,6 @@ How AI Works
   :width: 35%
   :align: center
   :alt: oz
+  :class: no-scaled-link
   
 |

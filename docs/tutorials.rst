@@ -13,6 +13,7 @@ Use Cases & Tutorials
   :width: 100%
   :align: center
   :alt: use_cases
+  :class: no-scaled-link
 
 
 .. raw:: html

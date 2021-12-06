@@ -39,8 +39,16 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "import aiqc\n",
-    "\n",
+    "import aiqc"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "11823a0a-ab10-47f8-9061-56d6b2f3de2e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
     "import keras\n",
     "from keras.models import Sequential\n",
     "from keras.layers import Conv1D, MaxPool1D, UpSampling1D\n",

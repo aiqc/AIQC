@@ -11,6 +11,7 @@ Community
   :width: 100%
   :align: center
   :alt: community banner
+  :class: no-scaled-link
 
 ********
 Purpose.
@@ -213,8 +214,9 @@ Choosing a license
 ==================
 
 .. image:: images/license_badge.png
-  :width: 20%
+  :width: 30%
   :alt: OSI-BSD Badge
+  :class: no-scaled-link
 
 AIQC is made open source under the `Berkeley Software Distribution (BSD) 3-Clause <https://github.com/aiqc/aiqc/blob/main/LICENSE>`__ license. This license is approved by the `Open Source Initiative (OSI) <https://choosealicense.com/appendix/>`__, which is preferred by `NumFOCUS <https://numfocus.org/projects-overview>`__. 3-Clause BSD is used by notable projects including: NumPy, Scikit-learn, Dask, Matplotlib, IPython, and Jupyter.
 

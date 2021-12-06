@@ -271,12 +271,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../explainer.html">How AI Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
@@ -608,19 +605,16 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">aiqc</span>
 <span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-
-<span class="kn">import</span> <span class="nn">keras</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Reshape</span>
-<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span><span class="p">,</span> <span class="n">StandardScaler</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>
 </div>
 <hr class="docutils" />
 <section id="Example-Data">
 <h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p>This dataset is comprised of:</p>
+<ul class="simple">
+<li><p><em>Features</em> = daily weather statistics (temperature, humidity, wind, pressure).</p></li>
+</ul>
 <p>Reference <a class="reference internal" href="example_datasets.html"><span class="doc">Example Datasets</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -737,7 +731,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_keras_tabular_forecasting_10_1.png" src="../_images/notebooks_keras_tabular_forecasting_10_1.png" />
+<img alt="../_images/notebooks_keras_tabular_forecasting_11_1.png" src="../_images/notebooks_keras_tabular_forecasting_11_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -762,7 +756,21 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_keras_tabular_forecasting_11_1.png" src="../_images/notebooks_keras_tabular_forecasting_11_1.png" />
+<img alt="../_images/notebooks_keras_tabular_forecasting_12_1.png" src="../_images/notebooks_keras_tabular_forecasting_12_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">keras</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Reshape</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
 </div>
 </div>
 <hr class="docutils" />
@@ -1688,7 +1696,7 @@ array([[ 99.42948 ,  22.078543,  63.977283],
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_keras_tabular_forecasting_63_1.png" src="../_images/notebooks_keras_tabular_forecasting_63_1.png" />
+<img alt="../_images/notebooks_keras_tabular_forecasting_65_1.png" src="../_images/notebooks_keras_tabular_forecasting_65_1.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1722,7 +1730,7 @@ array([[ 99.42948 ,  22.078543,  63.977283],
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_keras_tabular_forecasting_65_1.png" src="../_images/notebooks_keras_tabular_forecasting_65_1.png" />
+<img alt="../_images/notebooks_keras_tabular_forecasting_67_1.png" src="../_images/notebooks_keras_tabular_forecasting_67_1.png" />
 </div>
 </div>
 <p>We’re not exactly ready to start our own weather channel, but there is definitely evidence of learning.</p>

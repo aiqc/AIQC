@@ -16,6 +16,7 @@ Deep learning has the power to accelerate the rate of scientific discovery by ac
   :width: 70%
   :align: center
   :alt: AIQC logo wide
+  :class: no-scaled-link
 
 |
 
