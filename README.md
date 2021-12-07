@@ -79,8 +79,8 @@
 </p>
 
 <p align="center">
-	<a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/pydata_logo.png" alt="conference"/>
+	<a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" width="275" alt="PSF">
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/pydata_logo.png" width="220" alt="conference"/>
 	</a>
 </p>
 
