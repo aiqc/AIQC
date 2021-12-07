@@ -67,7 +67,7 @@
 
 <p align="center">
 	<a href="https://wiki.python.org/psf/ScientificWG/Charter_v3">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" alt="sponsor"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" width="275" alt="PSF"/>
 	</a>
 </p>
 
@@ -79,7 +79,7 @@
 </p>
 
 <p align="center">
-	<a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" width="275" alt="PSF">
+	<a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/">
 		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/pydata_logo.png" width="220" alt="conference"/>
 	</a>
 </p>
