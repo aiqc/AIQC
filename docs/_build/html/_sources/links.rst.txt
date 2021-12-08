@@ -2,6 +2,8 @@
 Links
 *****
 
+|
+
 ..
    External links must include 'https://' or 'http://' otherwise it will be treated as an internal page.
 
@@ -13,29 +15,30 @@ Links
   * - Website
     - Description
 
+  * - `GitHub <https://github.com/aiqc/aiqc/>`__
+    - Source code.
+
   * - `ReadTheDocs <https://aiqc.readthedocs.io/>`__
-    - Documentation. You are here.
+    - Documentation. *You are here.*
 
   * - `PyPI <https://pypi.org/project/aiqc/>`__
     - Python package.
 
-  * - `GitHub <https://github.com/aiqc/aiqc/>`__
-    - Source code and discussion board.
-
   * - `Docker Hub <https://hub.docker.com/u/aiqc>`__
-    - Hosts container images for rapid environment setup.
+    - Container images.
 
   * - `Medium <https://aiqc.medium.com>`__
-    - Community blog.
+    - Blogs about pain points & best practices.
 
   * - `YouTube <https://www.youtube.com/watch?v=cN7d8c-3Vxc&list=PLzDUt2WiohNj7MUrYL3YxoPbXjt5iDEPz/>`__
-    - Video with overview, mission, and demo.
+    - Video with overview, mission, & demo.
 
   * - `LinkedIn <https://www.linkedin.com/company/aiqc>`__
-    - Posts and updates
-
-  * - `Twitter <https://twitter.com/LayneSadler>`__
-    - Posts and updates
+    - Posts & updates
 
   * - `Slack <https://aiqc.slack.com>`__
     - Community chat.
+
+|
+|
+|

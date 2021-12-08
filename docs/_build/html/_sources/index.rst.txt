@@ -239,6 +239,8 @@
   :align: center
   :alt: framework
   :target: https://wiki.python.org/psf/ScientificWG/Charter_v3
+  :class: no-scaled-link
+
 
 .. raw:: html
 
@@ -255,6 +257,7 @@
   :align: center
   :alt: framework
   :target: https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/
+  :class: no-scaled-link
 
 |
 
@@ -266,6 +269,7 @@
   :width: 100%
   :align: center
   :alt: pydata
+  :class: no-scaled-link
 
 |
 |

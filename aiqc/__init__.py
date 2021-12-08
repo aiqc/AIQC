@@ -20,7 +20,7 @@ import sklearn
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold #mandatory separate import.
 from sklearn.feature_extraction.text import CountVectorizer
 # Deep learning.
-from tensorflow import keras
+import tensorflow as tf
 import torch
 # Visualization.
 import plotly.graph_objects as go
@@ -4251,15 +4251,15 @@ class Algorithm(BaseModel):
 
 	# --- used by `select_fn_lose()` ---
 	def keras_regression_lose(**hp):
-		loser = keras.losses.MeanAbsoluteError()
+		loser = tf.keras.losses.MeanAbsoluteError()
 		return loser
 	
 	def keras_binary_lose(**hp):
-		loser = keras.losses.BinaryCrossentropy()
+		loser = tf.keras.losses.BinaryCrossentropy()
 		return loser
 	
 	def keras_multiclass_lose(**hp):
-		loser = keras.losses.CategoricalCrossentropy()
+		loser = tf.keras.losses.CategoricalCrossentropy()
 		return loser
 
 	def pytorch_binary_lose(**hp):
@@ -4282,7 +4282,7 @@ class Algorithm(BaseModel):
 	 - `**hp` needs to be included because that's how it is called in training loop.
 	"""
 	def keras_optimize(**hp):
-		optimizer = keras.optimizers.Adamax(learning_rate=0.01)
+		optimizer = tf.keras.optimizers.Adamax(learning_rate=0.01)
 		return optimizer
 
 	def pytorch_optimize(model, **hp):
@@ -6517,7 +6517,7 @@ class Predictor(BaseModel):
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
 			h5 = h5py.File(temp_file_name, 'r')
-			model = keras.models.load_model(h5, compile=True)
+			model = tf.keras.models.load_model(h5, compile=True)
 			os.remove(temp_file_name)
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
@@ -6886,7 +6886,7 @@ class Prediction(BaseModel):
 
 class TrainingCallback():
 	class Keras():
-		class MetricCutoff(keras.callbacks.Callback):
+		class MetricCutoff(tf.keras.callbacks.Callback):
 			"""
 			- Worried that these inner functions are not pickling during multi-processing.
 			https://stackoverflow.com/a/8805244/5739514

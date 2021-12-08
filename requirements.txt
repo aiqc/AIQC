@@ -11,7 +11,7 @@ peewee==3.14.3
 scikit-learn==0.24.1
 # The version required by tensorflow. It didn't accept 1.20.
 numpy==1.19.5
-pandas==1.3.4
+pandas>=1.1.0
 Pillow==8.1.2
 pyarrow==3.0.0
 fastparquet==0.7.1

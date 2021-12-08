@@ -1,5 +1,5 @@
-import keras
-from keras import layers
+import tensorflow as tf
+import tensorflow.keras.layers as layers
 
 import torch
 import torch.nn as nn
@@ -132,7 +132,7 @@ Each test takes a slightly different approach to `fn_optimizer`.
 
 # ------------------------ KERAS TABULAR MULTICLASS ------------------------
 def keras_multiclass_fn_build(features_shape, label_shape, **hp):
-	model = keras.models.Sequential()
+	model = tf.keras.models.Sequential()
 	model.add(layers.Dense(units=features_shape[0], activation='relu', kernel_initializer='he_uniform'))
 	model.add(layers.Dropout(0.2))
 	model.add(layers.Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
@@ -140,7 +140,7 @@ def keras_multiclass_fn_build(features_shape, label_shape, **hp):
 	return model
 
 def keras_multiclass_fn_optimize(**hp):
-	optimizer = keras.optimizers.Adamax(hp['learning_rate'])
+	optimizer = tf.keras.optimizers.Adamax(hp['learning_rate'])
 	return optimizer
 
 def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
@@ -160,7 +160,7 @@ def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_ev
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, epochs = hp['epoch_count']
-		, callbacks=[keras.callbacks.History()]
+		, callbacks=[tf.keras.callbacks.History()]
 	)
 	return model
 
@@ -249,7 +249,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS TABULAR BINARY ------------------------
 def keras_binary_fn_build(features_shape, label_shape, **hp):
-	model = keras.models.Sequential()
+	model = tf.keras.models.Sequential()
 	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	model.add(layers.Dropout(0.30))
 	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
@@ -270,7 +270,7 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 		, verbose = 0
 		, batch_size = 3
 		, epochs = hp['epochs']
-		, callbacks = [keras.callbacks.History()]
+		, callbacks = [tf.keras.callbacks.History()]
 	)
 	return model
 
@@ -422,7 +422,7 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS TABULAR REGRESSION ------------------------
 def keras_regression_fn_build(features_shape, label_shape, **hp):
-	model = keras.models.Sequential()
+	model = tf.keras.models.Sequential()
 	model.add(layers.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
 	model.add(layers.Dropout(0.15))
 	model.add(layers.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
@@ -430,7 +430,7 @@ def keras_regression_fn_build(features_shape, label_shape, **hp):
 	return model
 
 def keras_regression_fn_optimize(**hp):
-	optimizer = keras.optimizers.RMSprop()
+	optimizer = tf.keras.optimizers.RMSprop()
 	return optimizer
 
 def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
@@ -448,7 +448,7 @@ def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_ev
 		, verbose = 0
 		, batch_size = 3
 		, epochs = hp['epochs']
-		, callbacks = [keras.callbacks.History()]
+		, callbacks = [tf.keras.callbacks.History()]
 	)
 	return model
 
@@ -554,7 +554,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS IMAGE BINARY ------------------------
 def keras_image_binary_fn_build(features_shape, label_shape, **hp):
-	model = keras.models.Sequential()
+	model = tf.keras.models.Sequential()
 	# incoming features_shape = channels * rows * columns
 	# https://keras.io/api/layers/reshaping_layers/reshape/
 	# https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv1D
@@ -605,7 +605,7 @@ def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_
 		)
 		, verbose = 0
 		, batch_size = hp['batch_size']
-		, callbacks=[keras.callbacks.History(), cutoffs]
+		, callbacks=[tf.keras.callbacks.History(), cutoffs]
 		, epochs = hp['epoch_count']
 	)
 	return model
@@ -680,12 +680,12 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 
 # ------------------------ KERAS SEQUENCE BINARY ------------------------
 def keras_sequence_binary_fn_build(features_shape, label_shape, **hp):    
-	model = keras.models.Sequential()
-	model.add(keras.layers.LSTM(
+	model = tf.keras.models.Sequential()
+	model.add(layers.LSTM(
 		hp['neuron_count']
 		, input_shape=(features_shape[0], features_shape[1])
 	))
-	model.add(keras.layers.Dense(units=label_shape[0], activation='sigmoid'))
+	model.add(layers.Dense(units=label_shape[0], activation='sigmoid'))
 	return model
 
 def keras_sequence_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
@@ -700,7 +700,7 @@ def keras_sequence_binary_fn_train(model, loser, optimizer, samples_train, sampl
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, epochs = hp['epochs']
-		, callbacks = [keras.callbacks.History()]
+		, callbacks = [tf.keras.callbacks.History()]
 	)
 	return model
 
@@ -780,20 +780,20 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 
 # ------------------------ KERAS TABULAR FORECAST ------------------------
 def keras_tabular_forecast_fn_build(features_shape, label_shape, **hp):
-	model = keras.models.Sequential()
-	model.add(keras.layers.GRU(
+	model = tf.keras.models.Sequential()
+	model.add(layers.GRU(
 			hp['neuron_count']
 			, input_shape=(features_shape[0], features_shape[1])
 			, return_sequences=False
 			, activation='tanh'
 	))
 	# Automatically flattens.
-	model.add(keras.layers.Dense(label_shape[0]*label_shape[1]*hp['dense_multiplier'], activation='tanh'))
-	model.add(keras.layers.Dropout(0.3))
-	model.add(keras.layers.Dense(label_shape[0]*label_shape[1], activation='tanh'))
-	model.add(keras.layers.Dropout(0.3))
+	model.add(layers.Dense(label_shape[0]*label_shape[1]*hp['dense_multiplier'], activation='tanh'))
+	model.add(layers.Dropout(0.3))
+	model.add(layers.Dense(label_shape[0]*label_shape[1], activation='tanh'))
+	model.add(layers.Dropout(0.3))
 	# Reshape to be 3D.
-	model.add(keras.layers.Reshape((label_shape[0], label_shape[1])))
+	model.add(layers.Reshape((label_shape[0], label_shape[1])))
 	
 	return model
 
@@ -810,7 +810,7 @@ def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samp
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, epochs = hp['epochs']
-		, callbacks = [keras.callbacks.History()]
+		, callbacks = [tf.keras.callbacks.History()]
 	)
 	return model
 
@@ -927,7 +927,7 @@ def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_eval
 
 	## --- Metrics ---
 	acc = torchmetrics.Accuracy()
-	# Mirrors `keras.model.History.history` object.
+	# Mirrors `tf.keras.model.History.history` object.
 	history = {
 		'loss':list(), 'accuracy': list(), 
 		'val_loss':list(), 'val_accuracy':list()
@@ -1060,7 +1060,7 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 
 	## --- Metrics ---
 	acc = torchmetrics.Accuracy()
-	# Modeled after `keras.model.History.history` object.
+	# Modeled after `tf.keras.model.History.history` object.
 	history = {
 		'loss':list(), 'accuracy': list(), 
 		'val_loss':list(), 'val_accuracy':list()
@@ -1205,7 +1205,7 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
 
-	# Modeled after `keras.model.History.history` object.
+	# Modeled after `tf.keras.model.History.history` object.
 	history = {
 		'loss':list(), 'expVar': list(), 
 		'val_loss':list(), 'val_expVar':list()
@@ -1374,7 +1374,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 
 	## --- Metrics ---
 	acc = torchmetrics.Accuracy()
-	# Modeled after `keras.model.History.history` object.
+	# Modeled after `tf.keras.model.History.history` object.
 	history = {
 		'loss':list(), 'accuracy': list(), 
 		'val_loss':list(), 'val_accuracy':list()
@@ -1478,7 +1478,7 @@ def keras_image_forecast_fn_build(features_shape, label_shape, **hp):
 	- https://www.tensorflow.org/api_docs/python/tf/keras/layers/ConvLSTM2D
 	- If data_format='channels_last' 5D tensor with shape: (samples, time, rows, cols, channels)
 	"""
-	model = keras.models.Sequential()
+	model = tf.keras.models.Sequential()
 	model.add(layers.Conv1D(64*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
 	model.add(layers.MaxPool1D( 2, padding='same'))
 	model.add(layers.Conv1D(32*hp['multiplier'], 3, activation=hp['activation'], padding='same'))
@@ -1512,13 +1512,13 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 		)
 		, verbose = 0
 		, batch_size = hp['batch_size']
-		, callbacks=[keras.callbacks.History()]
+		, callbacks=[tf.keras.callbacks.History()]
 		, epochs = hp['epoch_count']
 	)
 	return model
 
 # def keras_image_forecast_fn_lose(**hp):
-# 	loser = keras.losses.BCEWithLogitsLoss()
+# 	loser = tf.keras.losses.BCEWithLogitsLoss()
 # 	return loser
 
 def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
