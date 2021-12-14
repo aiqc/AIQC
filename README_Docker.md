@@ -1,7 +1,7 @@
 # ============ BUILDING IMAGE ============
 
 `brew install docker`
-Via the UI: (1) login, (2) set sensible resource constraints.
+Via the UI: (1) login, (2) set sensible hardware resource constraints.
 
 # Overview
 - `Dockerfile` is used to locally build the container image.

@@ -273,12 +273,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../explainer.html">How AI Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
@@ -613,7 +610,7 @@ div.rendered_html tbody tr:hover {
 <h2>1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code><a class="headerlink" href="#1.-Ingest-a-Dataset" title="Permalink to this headline"></a></h2>
 <section id="Object-Relational-Model-(ORM)">
 <h3>Object Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h3>
-<p><img alt="Datasets" src="../_images/dimensions.png" /></p>
+<img alt="Datasets" src="../_images/dimensions.png" />
 <p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different dimensionalities of data:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> - 2D constructed from either an array/dataframe or a tabular file.</p></li>
@@ -1700,7 +1697,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 <section id="id11">
 <h4>ORM<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">Window</span></code> object is provided in order to facilitate sliding windows for unsupervised/ self-supervised time series forecasting and backcasting. It assumes that the last time point is the most recent (aka ascending time).</p>
-<p><img alt="Windows" src="../_images/sliding_windows.png" /></p>
+<img alt="Windows" src="../_images/sliding_windows.png" />
 <p><strong>Concept of a sliding sample:</strong></p>
 <p>The ‘sample’ refers to the highest dimension of the data that is batched just before training.</p>
 <ul class="simple">
@@ -1909,7 +1906,7 @@ dict_keys([&#39;validation&#39;, &#39;train&#39;, &#39;test&#39;])
 <section id="id12">
 <h4>ORM<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h4>
 <p><em>Reference the</em><a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a><em>to learn more about folding.</em></p>
-<p><img alt="Cross Folds" src="../_images/cross_fold.png" /></p>
+<img alt="Cross Folds" src="../_images/cross_fold.png" />
 <p>We refer to the left out fold (blue) as the <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> and the remaining training data as the <code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code> (green).</p>
 <blockquote>
 <div><p><em>In the future, we may introduce more folding ``strategies`` aside from leave-one-out.</em></p>
@@ -1926,7 +1923,7 @@ prediction on a normally good model).</p>
 to do something undersized like “150 samples in their dataset and a <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> &gt; 3 with <code class="docutils literal notranslate"><span class="pre">unique_classes</span></code> &gt; 4,” then you may run into edge cases.</p>
 </div></blockquote>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">Splitset.samples</span></code>, there is a <code class="docutils literal notranslate"><span class="pre">Fold.samples</span></code> dictionary of sample indices with the following <code class="docutils literal notranslate"><span class="pre">.keys()</span></code>: * <code class="docutils literal notranslate"><span class="pre">samples['folds_train_combined']</span></code> - all the included folds. * <code class="docutils literal notranslate"><span class="pre">samples['fold_validation']</span></code> - the fold that got left out.</p>
-<p><img alt="cross fold objects" src="../_images/cross_fold_objects.png" /></p>
+<img alt="cross fold objects" src="../_images/cross_fold_objects.png" />
 </section>
 <section id="Specifying-Foldsets">
 <h4>Specifying Foldsets<a class="headerlink" href="#Specifying-Foldsets" title="Permalink to this headline"></a></h4>
@@ -2059,7 +2056,7 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </section>
 <section id="b)-Interpolate-Features-with-Interpolaterset.">
 <h3>b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.<a class="headerlink" href="#b)-Interpolate-Features-with-Interpolaterset." title="Permalink to this headline"></a></h3>
-<p><img alt="interpolate" src="../_images/interpolate_windows.png" /></p>
+<img alt="interpolate" src="../_images/interpolate_windows.png" />
 <p>The fact that time series data is windowed presents challenges to preprocessing the training and evaluation splits/ folds separately in order to avoid leakage:</p>
 <ul class="simple">
 <li><p>For 3D <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> interpolation is simply ran separately on each 2D array.</p></li>

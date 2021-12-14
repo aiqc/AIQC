@@ -273,12 +273,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../explainer.html">How AI Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mission.html">Mission</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../mission.html#why-does-aiqc-exist">Why Does AIQC Exist?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../community.html">Community</a><ul>
@@ -675,10 +672,11 @@ To get started, run `aiqc.setup()`.
 <h2>Environment<a class="headerlink" href="#Environment" title="Permalink to this headline"></a></h2>
 <section id="Python-Version">
 <h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline"></a></h3>
-<p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was originally developed on 3.7.6 and then upgraded to 3.8.7. We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing python installations and virtualenvs.</p>
+<p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was developed on Python 3.7.12 in order to ensure compatibility with Google Colab.</p>
+<p>We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing Python installations and virtualenvs.</p>
 <p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is in the root of the github.com/aiqc/aiqc repository.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -688,12 +686,12 @@ To get started, run `aiqc.setup()`.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;3.8.7 (default, Jan 28 2021, 17:14:59) \n[Clang 12.0.0 (clang-1200.0.31.1)]&#39;
+&#39;3.7.12 (default, Dec 10 2021, 10:49:04) \n[Clang 13.0.0 (clang-1300.0.29.3)]&#39;
 </pre></div></div>
 </div>
 <section id="Pickle-Disclaimer">
@@ -706,7 +704,7 @@ To get started, run `aiqc.setup()`.
 <h3>Operating System<a class="headerlink" href="#Operating-System" title="Permalink to this headline"></a></h3>
 <p>AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:</p>
 <ul class="simple">
-<li><p>macOS 10.15+</p></li>
+<li><p>macOS 10.15 and 11.6.1</p></li>
 <li><p>Linux (Ubuntu, Alpine, RHEL).</p></li>
 <li><p>Windows 10 (and WSL).</p></li>
 </ul>
@@ -782,7 +780,6 @@ v14.7.0
 </section>
 <section id="Deprecated:-manually-building-extension-process-for-plotly&lt;=5.0.0">
 <h5><em>Deprecated:</em> manually building extension process for plotly&lt;=5.0.0<a class="headerlink" href="#Deprecated:-manually-building-extension-process-for-plotly<=5.0.0" title="Permalink to this headline"></a></h5>
-<p><em>Deprecated:</em> If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -792,16 +789,17 @@ v14.7.0
 <span class="c1">#!jupyter labextension install jupyterlab-plotly</span>
 <span class="c1">#!jupyter labextension check jupyterlab-plotly</span>
 <span class="c1">#!jupyter lab build</span>
+
+<span class="c1">#After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</span>
 </pre></div>
 </div>
 </div>
-<p><em>Deprecated:</em> After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</p>
 </section>
 </section>
 </section>
 <section id="Optional---Swap-Space-for-Failover-Memory">
 <h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline"></a></h3>
-<p>It’s good practice to configure “swap space” on your machine so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD.</p>
+<p>On local machines, it is good practice to configure “swap space” so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD.</p>
 <hr class="docutils" />
 </section>
 </section>

@@ -32,8 +32,8 @@ Professional Services
 .. raw:: html
   
   <center>
-    <div class="figCaption" style="width: 34%; margin-top: 15px;">
-      <i>Six Sigma DMAIC process improvement.</i>
+    <div class="figCaption" style="width: 45%; margin-top: 15px;">
+      <i>Applying Six Sigma's DMAIC process improvement<br/>to artificial intelligence.</i>
     </div>
   </center>
 
@@ -82,7 +82,7 @@ Phase II - Implementation
 
   <div class="svcBox">
     <div class="svcHeader">
-      4. &nbsp;Prepare the computing environment.
+      4. &nbsp;Provision the computing environment.
     </div>
     <div class="svcDescribe">
       Install the AIQC Python software package and its dependencies. Setup the customers' AIQC database. Verify that there are sufficient computing resources (memory, processors, disk storage) for the problem at hand.
@@ -98,19 +98,36 @@ Phase II - Implementation
     </div>
   </div>
 
-  
   <div class="svcBox">
     <div class="svcHeader">
-      6. &nbsp;Train predictive algorithm.
+      6. &nbsp;Train predictive algorithms.
     </div>
     <div class="svcDescribe">
-      Design neural network architectures to receive and tease apart the data into actionable information. Tune the topology and hyperparameters during training experiments. Evaluate models to determine which one will provide the best tradeoff between accuracy and real-world generalizability. Produce a tangible report of metrics and charts that document the performance of the model.
+      Design neural network architectures to receive and tease apart the data into actionable information. Tune the topology and hyperparameters during training experiments.
     </div>
   </div>
 
   <div class="svcBox">
     <div class="svcHeader">
-      7. &nbsp;Demonstration & training.
+      7. &nbsp;Evaluate model performance.
+    </div>
+    <div class="svcDescribe">
+      Determine which model will provide the best tradeoff between accuracy and real-world generalizability. Produce a tangible report of metrics and charts that document the performance of the model.
+    </div>
+  </div>
+
+  <div class="svcBox">
+    <div class="svcHeader">
+      8. &nbsp;Rank predictive features.
+    </div>
+    <div class="svcDescribe">
+      Interpret the model by quantifying how much each feature is contributing to predictions. Perform permutations that provide a ranking of what data is most important to the model.
+    </div>
+  </div>
+
+  <div class="svcBox">
+    <div class="svcHeader">
+      9. &nbsp;Demonstration & training.
     </div>
     <div class="svcDescribe">
       A live demo to showcase the performance of the model to stakeholders by making predictions on data that the algorithm has not seen yet. Train the customer employees that will be responsible for running the model going forward.
@@ -120,7 +137,7 @@ Phase II - Implementation
   
   <div class="svcBox">
     <div class="svcHeader">
-      8. &nbsp;Deploy the algorithm.
+      10. &nbsp;Deploy the algorithm.
     </div>
     <div class="svcDescribe">
       What computing environment will be used to make predictions using the algorithm going forward? Will the model be ran manually; ad hoc by a member of the customers team or would the customer prefer to have AIQC run predictions in batches? Alternatively, would the customer prefer to run the model using a web-service fronted by an API and/or a webapp?
@@ -136,10 +153,10 @@ Phase III - Monitoring
 
   <div class="svcBox">
     <div class="svcHeader">
-      9. &nbsp;Maintain algorithm performance.
+      11. &nbsp;Maintain algorithm performance.
     </div>
     <div class="svcDescribe">
-      As the world changes, will your algorithm be generalizable enough to handle those changes or will the performance of the model start to drift? Is the model slightly biased or mishandling specific scenarios? It is possible that it will need to be retrained before it starts impacting business metrics, but we won't know if we fail to monitor it.
+      As the world changes, will your algorithm be generalizable enough to handle those changes or will the performance of the model start to drift? In practice, is the model slightly biased or mishandling specific scenarios? It is possible that it will need to be retrained before it starts impacting business metrics, but we won't know if we fail to monitor it.
     </div>
   </div>
 

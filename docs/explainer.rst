@@ -73,7 +73,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals 🐢 We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
+    As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals 🐢&nbsp;We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
   </p>
 
 
@@ -112,7 +112,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    To automate this process 🔌 we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
+    To automate this process 🔌&nbsp;we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
   </p>
   
 |
@@ -120,6 +120,14 @@ How AI Works
 .. code-block:: python
 
   species = (num_legs * x) + (has_wings * y) + (has_shell * z)
+
+
+.. raw:: html
+
+  </br>
+  <p class="figCaption" style="text-align: left;">
+    The mock equation above is nearly identical to a real neural network where the input neurons are connected directly to a single output neuron. However, in practice, neural networks contain multiple <i>layers</i> of sequential equations that support thousands of interwoven parameters.
+  </p>
 
 |
 
@@ -214,7 +222,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    A data scientist oversees the training of an algorithm much like a chef cooks a meal 🎛️ The heat is what actually cooks the food, but there are still a few things that the chef controls: 
+    A data scientist oversees the training of an algorithm much like a chef cooks a meal 🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls: 
 
 
 .. list-table::
@@ -253,7 +261,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    And that's really all there is to it 🏄‍♂️ The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
+    And that's really all there is to it 🏄‍♂️&nbsp;The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
   </p>
 
 |

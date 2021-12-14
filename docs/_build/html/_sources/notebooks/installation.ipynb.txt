@@ -139,23 +139,25 @@
    "source": [
     "### Python Version\n",
     "\n",
-    "Requires Python 3+ (check your deep learning library's Python requirements). AIQC was originally developed on 3.7.6 and then upgraded to 3.8.7. We highly recommend `pyenv` for managing python installations and virtualenvs.\n",
+    "Requires Python 3+ (check your deep learning library's Python requirements). AIQC was developed on Python 3.7.12 in order to ensure compatibility with Google Colab. \n",
+    "\n",
+    "We highly recommend `pyenv` for managing Python installations and virtualenvs.\n",
     "\n",
     "Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI `setup.py` is in the root of the github.com/aiqc/aiqc repository."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 1,
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "'3.8.7 (default, Jan 28 2021, 17:14:59) \\n[Clang 12.0.0 (clang-1200.0.31.1)]'"
+       "'3.7.12 (default, Dec 10 2021, 10:49:04) \\n[Clang 13.0.0 (clang-1300.0.29.3)]'"
       ]
      },
-     "execution_count": 3,
+     "execution_count": 1,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -187,7 +189,7 @@
    "source": [
     "AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:\n",
     "\n",
-    "- macOS 10.15+\n",
+    "- macOS 10.15 and 11.6.1\n",
     "- Linux (Ubuntu, Alpine, RHEL).\n",
     "- Windows 10 (and WSL).\n",
     "\n",
@@ -260,7 +262,9 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {},
+   "metadata": {
+    "tags": []
+   },
    "source": [
     "#### Optional - Plotly in JupyterLab\n",
     "This requires the following dependencies:"
@@ -290,10 +294,14 @@
    "metadata": {},
    "source": [
     "##### New: simplified, pre-built extension for plotly>=5.0.0\n",
-    "The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.\n",
-    "\n",
-    "##### *Deprecated:* manually building extension process for plotly<=5.0.0\n",
-    "*Deprecated:* If you want to render Plotly graphs withing within JupyterLab, then you need the . Please be aware that this extension may take a bit of troubleshooting to get working in your environment, but rest assured that it is worth it."
+    "The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "##### *Deprecated:* manually building extension process for plotly<=5.0.0"
    ]
   },
   {
@@ -305,14 +313,9 @@
     "# Deprecated\n",
     "#!jupyter labextension install jupyterlab-plotly\n",
     "#!jupyter labextension check jupyterlab-plotly\n",
-    "#!jupyter lab build"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "*Deprecated:* After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel)."
+    "#!jupyter lab build\n",
+    "\n",
+    "#After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel)."
    ]
   },
   {
@@ -326,7 +329,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "It’s good practice to configure “swap space” on your machine so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD."
+    "On local machines, it is good practice to configure “swap space” so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD."
    ]
   },
   {
@@ -828,7 +831,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.7"
+   "version": "3.7.12"
   }
  },
  "nbformat": 4,

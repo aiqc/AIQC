@@ -1,11 +1,11 @@
 version: "3"
 services: 
   aiqc:
-    image: "hashrocketsyntax/aiqc:dev_desktop_v3.0.2_py3.7.12-bullseye"
+    image: "aiqc/dev:v3.0.22"
     deploy:
       resources:
         limits:
-          # Maximum is docker app was 8. Needs string, not int. Accepts "0.5".
+          # Maximum in docker app was 8. Needs string, not int. Accepts "0.5".
           cpus: "7"
           # Maximum in docker app was 16.
           memory: 15G
@@ -24,4 +24,5 @@ services:
     # Serves notebooks from local directory: `/home/aiqc_usr`.
     # Access via: <http://127.0.0.1:8888/lab>.
     user: "aiqc_usr" #otherwise jupyter will complain about `--allow-root` even if you `su - aiqc_usr` to switch user first.
-    command: bash -c "jupyter lab --no-browser --port 8888 --ip 0.0.0.0 --ServerApp.token='' --ServerApp.password=''"
+    command: >
+      bash -c "jupyter lab --no-browser --port 8888 --ip 0.0.0.0 --ServerApp.token='' --ServerApp.password=''"

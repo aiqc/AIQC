@@ -35,6 +35,7 @@ RUN sudo apt -y install nodejs
 RUN sudo apt -y install pandoc
 
 # --- Python packages ---
+# I think `--no-cache-dir` is causing problems with tensorflow dependencies.
 RUN pip install --no-cache-dir --default-timeout=100 --upgrade pip
 # Developer packages
 # if reqs.txt doesn't change then it will used a cached layer.
