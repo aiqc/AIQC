@@ -4556,7 +4556,7 @@ class Algorithm(BaseModel):
 		id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 5
+		, permutation_count:int = 7
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, hide_test:bool = False
@@ -4694,7 +4694,6 @@ class Plot():
 	"""
 
 	def __init__(self):
-
 		self.plot_template = dict(layout=go.Layout(
 			font=dict(family='Avenir', color='#FAFAFA'),
 			title=dict(x=0.05, y=0.95),
@@ -4704,11 +4703,8 @@ class Plot():
 			hovermode='closest',
 			hoverlabel=dict(
 				bgcolor="#0F0F0F",
-				font=dict(
-					family="Avenir",
-					size=15
-				)
-			)))
+				font=dict(family="Avenir", size=15)
+		)))
 
 	def performance(self, dataframe:object):
 		# The 2nd metric is the last 
@@ -4840,6 +4836,7 @@ class Plot():
 			fig_acc.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 			fig_acc.show()
 		fig_loss.show()
+
 
 	def confusion_matrix(self, cm_by_split, labels):
 		for split, cm in cm_by_split.items():
@@ -4979,6 +4976,27 @@ class Plot():
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.show()
+	
+
+	def feature_importance(self, dataframe:object, feature_id:int, permutation_count:int, height:int):
+		importance_srs = dataframe['Importance']
+		pad = importance_srs.iloc[-1]*0.12
+		range_max, range_min = importance_srs.iloc[-1]+pad, importance_srs[0]-pad
+		
+		fig = px.bar(
+			dataframe, x='Importance', y='Feature', text='Feature', orientation='h', height=height,
+			title=f"Feature Importance<br><sub>feature.id: {feature_id}</sub>",
+			color='Color', color_discrete_map=dict(positive='#48d8d8', negative='#ffc0c0'),
+		)
+		fig.update_traces(textposition='outside', textfont_size=12, marker=dict(line=dict(width=0)))
+		fig.update_layout(template=self.plot_template, showlegend=False)
+		fig.update_yaxes(visible=False)
+		fig.update_xaxes(
+			title=f"Importance<br><sup>[training loss - (median loss of {permutation_count} permutations)]</sup>"
+			, range=[range_min, range_max]
+		)
+		fig.show()
+
 
 
 
@@ -5000,7 +5018,7 @@ class Queue(BaseModel):
 		algorithm_id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 5
+		, permutation_count:int = 7
 		, hide_test:bool = False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
@@ -6302,7 +6320,7 @@ class Job(BaseModel):
 						samples[key_train]['features'][make_index(ci, dimension)] = feature_subset
 					else:
 						samples[key_train]['features'][fi][make_index(ci, dimension)]= feature_subset
-					avg_loss = statistics.mean(permutations_feature)
+					avg_loss = statistics.median(permutations_feature)
 					permutations_features[feature_id][col] =  avg_loss - loss_baseline
 		else:
 			permutations_features = None
@@ -6988,6 +7006,7 @@ class Predictor(BaseModel):
 
 
 
+
 class Prediction(BaseModel):
 	"""
 	- Many-to-Many for making predictions after of the training experiment.
@@ -7077,7 +7096,34 @@ class Prediction(BaseModel):
 		dataframe = dataframe.round(3)
 
 		Plot().roc_curve(dataframe=dataframe)
+	
 
+	def plot_feature_importance(id:int, height:int=None):
+		prediction = Prediction.get_by_id(id)
+		permutations_features = prediction.permutations_features
+		permutation_count = prediction.predictor.job.queue.permutation_count
+
+		# Remember the Featureset may contain multiple Features.
+		for feature_id, dikt in permutations_features.items():
+			# Sort by loss
+			sort = {k: v for k, v in sorted(dikt.items(), key=lambda item: item[1])}
+			features = list(sort.keys())
+			loss = list(sort.values())
+			colors = ['negative' if x < 0 else 'positive' for x in loss]
+				
+			dkt = dict(Feature=features, Importance=loss, Color=colors)
+			dataframe = pd.DataFrame(dkt)
+			
+			if (height is None):
+				num_features = len(features)
+				height = num_features*35
+		
+			Plot().feature_importance(
+				dataframe = dataframe
+				, feature_id = feature_id
+				, permutation_count = permutation_count
+				, height = height
+			)
 
 #==================================================
 # MID-TRAINING CALLBACKS
