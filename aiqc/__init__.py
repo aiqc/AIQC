@@ -4695,13 +4695,14 @@ class Plot():
 
 	def __init__(self):
 		self.plot_template = dict(layout=go.Layout(
-			font=dict(family='Avenir', color='#FAFAFA'),
-			title=dict(x=0.05, y=0.95),
-			titlefont=dict(family='Avenir'),
-			plot_bgcolor='#181B1E',
-			paper_bgcolor='#181B1E',
-			hovermode='closest',
-			hoverlabel=dict(
+			font=dict(family='Avenir', color='#FAFAFA')
+			, title=dict(x=0.05, y=0.95)
+			, titlefont=dict(family='Avenir')
+			, title_pad=dict(b=50, t=20)
+			, plot_bgcolor='#181B1E'
+			, paper_bgcolor='#181B1E'
+			, hovermode='closest'
+			, hoverlabel=dict(
 				bgcolor="#0F0F0F",
 				font=dict(family="Avenir", size=15)
 		)))
@@ -7116,7 +7117,7 @@ class Prediction(BaseModel):
 			
 			if (height is None):
 				num_features = len(features)
-				height = num_features*35
+				height = num_features*25+120
 		
 			Plot().feature_importance(
 				dataframe = dataframe
