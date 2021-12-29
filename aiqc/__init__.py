@@ -345,7 +345,7 @@ def get_db():
 		- Howerver, adapt for AWS because it does not work over NFS <https://www.sqlite.org/wal.html>
 		- To switch back to Journal mode you can just skip `pragmas` <https://docs.peewee-orm.com/en/latest/peewee/database.html>
 		"""
-		db = SqliteExtDatabase(path, pragmas=dict(journal_mode='wal', cache_size= -1024*1024))#1GB
+		db = SqliteExtDatabase(path)
 		return db
 
 
@@ -2377,29 +2377,33 @@ class Feature(BaseModel):
 			else:
 				raise ValueError(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
 
-			current_shape = feature_array.shape
+			old_shape = feature_array.shape
 			new_shape = []
 			for i in featureshaper.reshape_indices:
 				if (type(i) == int):
-					new_shape.append(current_shape[i])
+					new_shape.append(old_shape[i])
 				elif (type(i) == str):
 					new_shape.append(int(i))
 				elif (type(i)== tuple):
-					indices = [current_shape[idx] for idx in i]
+					indices = [old_shape[idx] for idx in i]
 					new_shape.append(math.prod(indices))
 			new_shape = tuple(new_shape)
 
 			try:
 				feature_array = feature_array.reshape(new_shape)
 			except:
-				raise ValueError(f"\nYikes - Failed to rearrange the feature shape {current_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
+				raise ValueError(f"\nYikes - Failed to rearrange the feature of shape:<{old_shape}> into new shape:<{new_shape}> based on the `reshape_indices`:<{reshape_indices}> provided. Make sure both shapes have the same multiplication product.\n")
 			
+			column_position = featureshaper.column_position
+			if (old_shape[-1] != new_shape[column_position]):
+				raise ValueError(f"\nYikes - Reshape succeeded, but expected the last dimension of the old shape:<{old_shape[-1]}> to match the dimension found <{old_shape[column_position]}> in the new shape's `featureshaper.column_position:<{column_position}>.\n")
+
 			# Unsupervised labels.
 			if ((window_id!='skip') and (feature.windows.count()>0) and (window.samples_shifted is not None)):
 				try:
 					label_array = label_array.reshape(new_shape)
 				except:
-					raise ValueError(f"\nYikes - Failed to rearrange the label shape {current_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
+					raise ValueError(f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
 
 
 		if (_library == 'pytorch'):
@@ -2574,6 +2578,33 @@ class Feature(BaseModel):
 	def make_featureshaper(id:int, reshape_indices:tuple):
 		featureshaper = Featureshaper.from_feature(feature_id=id, reshape_indices=reshape_indices)
 		return featureshaper
+	
+
+	def get_encoded_column_names(id:int):
+		"""
+		- The order of columns changes during encoding.
+		- OHE generates multiple encoded columns from a single column e.g. 'color=green'.
+		- `encoded_column_names` proactively lists names from `fit.categories_`
+		"""
+		feature = Feature.get_by_id(id)
+		encodersets = feature.encodersets
+
+		if (encodersets.count()==0):
+			all_encoded_column_names = feature.columns
+		else:
+			encoderset = encodersets[-1]
+			featurecoders = encoderset.featurecoders
+			num_featurecoders = featurecoders.count()
+			if (num_featurecoders==0):
+				all_encoded_column_names = feature.columns
+			else:
+				all_encoded_column_names = []
+				for i, fc in enumerate(featurecoders):
+					all_encoded_column_names += fc.encoded_column_names
+					if ((i+1==num_featurecoders) and (len(fc.leftover_columns)>0)):
+						all_encoded_column_names += fc.leftover_columns
+		return all_encoded_column_names
+
 
 
 
@@ -3919,7 +3950,7 @@ class Labelcoder(BaseModel):
 					because you may not be able to programmatically decode your raw predictions 
 					when it comes time for inference (aka non-training predictions):
 
-					[Binarizer, KernelCenterer, Normalizer, PolynomialFeatures]
+					[Binarizer, KernelCenterer, Normalizer, PolynomialFeatures, SplineTransformer]
 				"""))
 
 			"""
@@ -4100,13 +4131,14 @@ class Labelcoder(BaseModel):
 class Featurecoder(BaseModel):
 	"""
 	- An Encoderset can have a chain of Featurecoders.
-	- Encoders are applied sequential, meaning the columns encoded by `index=0` 
+	- Encoders are applied sequentially, meaning the columns encoded by `index=0` 
 	  are not available to `index=1`.
-	- Much validation because real-life encoding errors are cryptic and deep for beginners.
+	- Lots of validation here because real-life encoding errors are cryptic and deep for beginners.
 	"""
 	index = IntegerField()
 	sklearn_preprocess = PickleField()
 	matching_columns = JSONField()
+	encoded_column_names = JSONField()
 	leftover_columns = JSONField()
 	leftover_dtypes = JSONField()
 	original_filter = JSONField()
@@ -4151,11 +4183,12 @@ class Featurecoder(BaseModel):
 			, verbose = verbose
 		)
 
+		stringified_encoder = str(sklearn_preprocess)
 		if (
 			(
-				(str(sklearn_preprocess).startswith("LabelBinarizer"))
+				(stringified_encoder.startswith("LabelBinarizer"))
 				or 
-				(str(sklearn_preprocess).startswith("LabelEncoder"))
+				(stringified_encoder.startswith("LabelEncoder"))
 			)
 			and
 			(len(matching_columns) > 1)
@@ -4172,7 +4205,7 @@ class Featurecoder(BaseModel):
 				time or switch to another encoder.
 			"""))
 
-		# 4. Test fitting the encoder to matching columns.
+		# Test fitting the encoder to matching columns.
 		samples_to_encode = feature.to_numpy(columns=matching_columns)
 		# Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
 		f_shape = samples_to_encode.shape
@@ -4188,7 +4221,7 @@ class Featurecoder(BaseModel):
 			, samples_to_fit = samples_to_encode
 		)
 
-		# 5. Test encoding the whole dataset using fitted encoder on matching columns.
+		# Test transforming the whole dataset using fitted encoder on matching columns.
 		try:
 			Labelcoder.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
@@ -4202,6 +4235,20 @@ class Featurecoder(BaseModel):
 			"""))
 		else:
 			pass
+		
+		# Record the names of OHE generated columns for feature importance.
+		if (stringified_encoder.startswith("OneHotEncoder")):
+			# Assumes OHE fits 2D.
+			encoder = fitted_encoders[0]
+			encoded_column_names = []
+			for i, mc in matching_columns:
+				# Each column the encoder fits on has a different array of categories. 
+				values = encoder.categories_[i]
+				for v in values:
+					col_name = f"{mc}={v}"
+					encoded_column_names.append(col_name)
+		else:
+			encoded_column_names = matching_columns 
 
 		featurecoder = Featurecoder.create(
 			index = index
@@ -4209,6 +4256,7 @@ class Featurecoder(BaseModel):
 			, is_categorical = is_categorical
 			, sklearn_preprocess = sklearn_preprocess
 			, matching_columns = matching_columns
+			, encoded_column_names = encoded_column_names
 			, leftover_columns = leftover_columns
 			, leftover_dtypes = initial_dtypes#pruned
 			, original_filter = original_filter
@@ -4220,12 +4268,40 @@ class Featurecoder(BaseModel):
 
 class Featureshaper(BaseModel):
 	reshape_indices = PickleField()#tuple has no json equivalent
+	column_position = IntegerField()#the dimension used for columns aka width. etymologically, dimensions aren't zero-based.
 	feature = ForeignKeyField(Feature, backref='featureshapers')
 
 	def from_feature(feature_id:int, reshape_indices:tuple):
 		feature = Feature.get_by_id(feature_id)
+		# Determines the `column_position`, which gets confirmed during preprocess().
+		# Flatten the `reshape_indices` tuple.
+		reshape_flat = []
+		for elem in reshape_indices:
+			if (type(elem)==tuple):
+				for i in elem:
+					reshape_flat.append(i)
+			else:
+				reshape_flat.append(elem)
+		# Only keep the ints.
+		ints = [i for i in reshape_flat if type(i)==int]
+		error_msg = "\nYikes - The highest integer-based index in `reshape_indices` is assumed to represent columns (aka width). If the highest integer-based index is found in a nested tuple or not found at all, then downstream processes (e.g. feature importance permutations) won't know which position represents columns.\n"
+		if (len(ints)>0):
+			# Also prevents a completely empty tuple.
+			max_int = max(ints)
+			if (max_int==0):
+				raise ValueError(error_msg)
+			else:
+				try:
+					# This will fail if the highest int was in a nested tuple.
+					column_position = reshape_indices.index(max_int)
+				except:
+					raise ValueError(error_msg)
+		else:
+			raise ValueError(error_msg)
+
 		featureshaper = Featureshaper.create(
-			reshape_indices=reshape_indices
+			reshape_indices = reshape_indices
+			, column_position = column_position
 			, feature = feature
 		)
 		return featureshaper
@@ -4480,6 +4556,7 @@ class Algorithm(BaseModel):
 		id:int
 		, splitset_id:int
 		, repeat_count:int = 1
+		, permutation_count:int = 5
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, hide_test:bool = False
@@ -4490,6 +4567,7 @@ class Algorithm(BaseModel):
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
 			, repeat_count = repeat_count
+			, permutation_count = permutation_count
 			, hide_test = hide_test
 		)
 		return queue
@@ -4768,7 +4846,6 @@ class Plot():
 			# change each element of z to type string for annotations
 			cm_text = [[str(y) for y in x] for x in cm]
 
-			# set up figure
 			fig = ff.create_annotated_heatmap(
 				cm
 				, x=labels
@@ -4796,7 +4873,6 @@ class Plot():
 									textangle=-90,
 									xref="paper",
 									yref="paper"))
-
 
 			fig.update_layout(
 				title=f"Confusion Matrix: {split.capitalize()}"
@@ -4826,7 +4902,6 @@ class Plot():
 
 			fig.update_traces(hovertemplate =
 							  """predicted: %{x}<br>actual: %{y}<br>count: %{z}<extra></extra>""")
-
 			fig.show()
 
 
@@ -4911,6 +4986,7 @@ class Queue(BaseModel):
 	repeat_count = IntegerField()
 	run_count = IntegerField()
 	hide_test = BooleanField()
+	permutation_count = IntegerField()
 	aws_uid = CharField(null=True)
 
 	algorithm = ForeignKeyField(Algorithm, backref='queues') 
@@ -4924,7 +5000,8 @@ class Queue(BaseModel):
 		algorithm_id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, hide_test:bool=False
+		, permutation_count:int = 5
+		, hide_test:bool = False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 	):
@@ -5084,6 +5161,7 @@ class Queue(BaseModel):
 			, repeat_count = repeat_count
 			, algorithm = algorithm
 			, splitset = splitset
+			, permutation_count = permutation_count
 			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, hide_test = hide_test
@@ -5739,7 +5817,7 @@ class Job(BaseModel):
 
 
 	def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
-		"""Sometimes these still fail (e.g. ROC when only 1 class of label is predicted)."""
+		"""Rarely, these still fail (e.g. ROC when only 1 class of label is predicted)."""
 		if (analysis_type == "classification_binary"):
 			average = "binary"
 			roc_average = "micro"
@@ -6001,19 +6079,24 @@ class Job(BaseModel):
 		return transformed_features
 
 
-	def predict(samples:dict, predictor_id:int, splitset_id:int=None):
+	def predict(samples:dict, predictor_id:int, splitset_id:int=None, key_train:str=None):
 		"""
 		Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
 		- `splitset_id` refers to a splitset provided for inference, not training.
-		- `has_labels` is used by inference process. Unsupervised also uses it for self-supervision.
+		- `has_labels=False` is used during pure inference. Unsupervised also uses it for self-supervision.
+		- `key_train` is used during permutation, but not during inference.
 		"""
 		predictor = Predictor.get_by_id(predictor_id)
-		hyperparamcombo = predictor.job.hyperparamcombo
-		algorithm = predictor.job.queue.algorithm
+		job = predictor.job
+		hyperparamcombo = job.hyperparamcombo
+		queue = job.queue
+		permutation_count = queue.permutation_count
+		algorithm = queue.algorithm
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
-		splitset = predictor.job.queue.splitset
+		splitset = queue.splitset
+		features = splitset.get_features()
 		supervision = splitset.supervision
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
@@ -6035,15 +6118,17 @@ class Job(BaseModel):
 		elif (hyperparamcombo is None):
 			hp = {} #`**` cannot be None.
 
-		if ((has_labels==True)):
+		predictions = {}
+		probabilities = {}
+		if (has_labels==True):
+			"""
+			In the future, if you want to do per-class feature importance call start by calling `predictor.get_label_names()` here.
+			"""
 			fn_lose = dill_deserialize(algorithm.fn_lose)
 			loser = fn_lose(**hp)
 			if (loser is None):
 				raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
 
-		predictions = {}
-		probabilities = {}
-		if (has_labels==True):
 			metrics = {}
 			plot_data = {}
 
@@ -6056,31 +6141,34 @@ class Job(BaseModel):
 				# Outputs numpy.
 
 				if (has_labels == True):
+					# Reassigning so that permutation can use original data.
+					data_labels = data['labels']
 					# https://keras.io/api/losses/probabilistic_losses/
 					if (library == 'keras'):
-						loss = loser(data['labels'], probs)
+						loss = loser(data_labels, probs)
 					elif (library == 'pytorch'):
 						tz_probs = torch.FloatTensor(probs)
-						if (algorithm.analysis_type == 'classification_binary'):
-							loss = loser(tz_probs, data['labels'])
+						if (analysis_type == 'classification_binary'):
+							loss = loser(tz_probs, data_labels)
 							# convert back to numpy for metrics and plots.
-							data['labels'] = data['labels'].detach().numpy()
-						elif (algorithm.analysis_type == 'classification_multi'):
-							flat_labels = data['labels'].flatten().to(torch.long)
+							data_labels = data_labels.detach().numpy()
+						elif (analysis_type == 'classification_multi'):				
+							flat_labels = data_labels.flatten().to(torch.long)
 							loss = loser(tz_probs, flat_labels)
-							# convert back to *OHE* numpy for metrics and plots.
-							data['labels'] = data['labels'].detach().numpy()
+							# Convert back to *OHE* numpy for metrics and plots. 
+							# Reassigning so that permutes can use original data.
+							data_labels = data_labels.detach().numpy()
 							from sklearn.preprocessing import OneHotEncoder
 							OHE = OneHotEncoder(sparse=False)
-							data['labels'] = OHE.fit_transform(data['labels'])
+							data_labels = OHE.fit_transform(data_labels)
 
 					metrics[split] = Job.split_classification_metrics(
-						data['labels'], preds, probs, analysis_type
+						data_labels, preds, probs, analysis_type
 					)
 					metrics[split]['loss'] = float(loss)
 
 					plot_data[split] = Job.split_classification_plots(
-						data['labels'], preds, probs, analysis_type
+						data_labels, preds, probs, analysis_type
 					)
 				
 				# During prediction Keras OHE output gets made ordinal for metrics.
@@ -6093,7 +6181,7 @@ class Job(BaseModel):
 						empty_arr[marker_position] = 1
 						predictions[split].append(empty_arr)
 					predictions[split] = np.array(predictions[split])
-
+				
 		# Used by both supervised and unsupervised.
 		elif (analysis_type=="regression"):
 			# The raw output values *is* the continuous prediction itself.
@@ -6105,19 +6193,121 @@ class Job(BaseModel):
 
 				#https://keras.io/api/losses/regression_losses/
 				if (has_labels==True):
+					# Reassigning so that permutation can use original data.
+					data_labels = data['labels']
 					if (library == 'keras'):
-						loss = loser(data['labels'], preds)
+						loss = loser(data_labels, preds)
 					elif (library == 'pytorch'):
 						tz_preds = torch.FloatTensor(preds)
-						loss = loser(tz_preds, data['labels'])
+						loss = loser(tz_preds, data_labels)
 						# After obtaining loss, make labels numpy again for metrics.
-						data['labels'] = data['labels'].detach().numpy()
+						data_labels = data_labels.detach().numpy()
 						# `preds` object is still numpy.
 
 					# These take numpy inputs.
-					metrics[split] = Job.split_regression_metrics(data['labels'], preds)
+					metrics[split] = Job.split_regression_metrics(data_labels, preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
+		
+		### Feature Importance -  similar to loss above, but different enough not to refactor.
+		nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
+		if (
+			(permutation_count>0) and (has_labels==True) and 
+			(key_train is not None) and (len(nonImage_features)>0)
+		):
+			# Only 'train' because permutation is expensive and the learned patterns.
+			loss_baseline = metrics[key_train]['loss']
+			permutations_features = {}#['feature_id']['feature_column']
+			if (library == 'pytorch'):
+				if (analysis_type=='classification_multi'):
+					flat_labels = samples[key_train]['labels'].flatten().to(torch.long)
+
+			for fi, feature in enumerate(features):
+				if (feature.dataset.dataset_type=='image'):
+					continue #preserves the index for accessing `samples[split]['features']`
+				feature_id = str(feature.id)
+				permutations_features[feature_id] = {}
+				# `feature_data` is copied out for shuffling.
+				if (len(features)==1):
+					feature_data = samples[key_train]['features']
+				else:
+					feature_data = samples[key_train]['features'][fi]
+				if (library == 'pytorch'):
+					feature_data = feature_data.detach().numpy()
+					# The source is still tensor, but the copy is numpy.
+				
+				# Figure out which dimension contains the feature column.
+				ndim = feature_data.ndim
+				feature_shapers = feature.featureshapers
+				if (feature_shapers.count()>0):
+					dimension = feature_shapers[-1].column_position
+				else:
+					dimension = ndim-1
+				
+				# Expands the categorical columns.
+				encoded_column_names = feature.get_encoded_column_names()
+				for ci, col in enumerate(encoded_column_names):
+					# Stores the losses of each permutation before taking the mean.
+					permutations_feature = []
+					# Dynamically access dimension and column: 
+					# https://stackoverflow.com/a/70511277/5739514
+					all = slice(None)
+					def make_index(ci, dimension):
+						return (all,) * dimension + ([ci], Ellipsis)
+					# This is never reassigned aka clean for reuse.
+					feature_subset = feature_data[make_index(ci, dimension)]
+					subset_shape = feature_subset.shape
+
+					for pi in range(permutation_count):
+						# Fetch the fresh subset and shuffle it.
+						subset_shuffled = feature_subset.flatten()
+						np.random.shuffle(subset_shuffled)#don't assign
+						subset_shuffled = subset_shuffled.reshape(subset_shape)
+						# Overwrite source feature column with shuffled data. Torch can be accessed via slicing.
+						if (library == 'pytorch'): 
+							subset_shuffled = torch.FloatTensor(subset_shuffled)
+						if (len(features)==1):
+							samples[key_train]['features'][make_index(ci, dimension)] = subset_shuffled
+						else:
+							samples[key_train]['features'][fi][make_index(ci, dimension)] = subset_shuffled
+
+						if (library == 'keras'):
+							if ("classification" in analysis_type):
+								preds_shuffled, probs_shuffled = fn_predict(model, samples[key_train])
+								loss = loser(samples[key_train]['labels'], probs_shuffled)
+							elif (analysis_type == "regression"):
+								preds_shuffled = fn_predict(model, samples[key_train])
+								loss = loser(samples[key_train]['labels'], preds_shuffled)
+						elif (library == 'pytorch'):
+							feature_data = torch.FloatTensor(feature_data)
+							if ("classification" in analysis_type):
+								preds_shuffled, probs_shuffled = fn_predict(model, samples[key_train])						
+								probs_shuffled = torch.FloatTensor(probs_shuffled)
+								if (analysis_type == 'classification_binary'):
+									loss = loser(probs_shuffled, samples[key_train]['labels'])
+								elif (analysis_type == 'classification_multi'):
+									loss = loser(probs_shuffled, flat_labels)#defined above
+							elif (analysis_type == 'regression'):
+								preds_shuffled = fn_predict(model, samples[key_train])
+								preds_shuffled = torch.FloatTensor(preds_shuffled)
+								loss = loser(preds_shuffled, samples[key_train]['labels'])
+							# Convert tensors back to numpy for permuting again.
+							feature_data = feature_data.detach().numpy()
+						loss = float(loss)
+						permutations_feature.append(loss)
+					if (library == 'pytorch'): 
+						feature_subset = torch.FloatTensor(feature_subset)
+					# Restore the unshuffled feature column back to source.				
+					if (len(features)==1):
+						samples[key_train]['features'][make_index(ci, dimension)] = feature_subset
+					else:
+						samples[key_train]['features'][fi][make_index(ci, dimension)]= feature_subset
+					avg_loss = statistics.mean(permutations_feature)
+					permutations_features[feature_id][col] =  avg_loss - loss_baseline
+		else:
+			permutations_features = None
+		# plot data.
+			
 		"""
 		Format predictions for saving:
 		- Decode predictions before saving.
@@ -6125,7 +6315,7 @@ class Job(BaseModel):
 		"""
 		if (supervision=='supervised'):
 			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
-				job=predictor.job, label=predictor.job.queue.splitset.label
+				job=job, label=splitset.label
 			)
 
 			if ((fitted_encoders is not None) and (hasattr(fitted_encoders, 'inverse_transform'))):
@@ -6142,13 +6332,13 @@ class Job(BaseModel):
 		
 		elif (supervision=='unsupervised'):
 			"""
-			- Decode the unsupervised predictions back into original Features.
+			- Decode the unsupervised predictions back into original (reshaped) Features.
 			- Unsupervised prevents multiple features.
 			"""
 			# Remember `fitted_encoders` is a list of lists.
 			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
-				job = predictor.job
-				, feature = predictor.job.queue.splitset.get_features()[0]
+				job = job
+				, feature = features[0]
 			)
 
 			if (encoderset is not None):
@@ -6164,7 +6354,6 @@ class Job(BaseModel):
 						originally_3d = False
 						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
 
-					
 					encoded_column_names = []
 					for i, fc in enumerate(encoderset.featurecoders):
 						# Figure out the order in which columns were encoded.
@@ -6202,7 +6391,7 @@ class Job(BaseModel):
 					# Now we have `decoded_data` but its columns needs to be reordered to match original.
 					# OHE, text extraction are condensed at this point.
 					# Mapping of original col names {0:"first_column_name"}
-					original_col_names = predictor.job.queue.splitset.get_features()[0].dataset.get_main_file().columns
+					original_col_names = features[0].dataset.get_main_file().columns
 					original_dict = {}
 					for i, name in enumerate(original_col_names):
 						original_dict[i] = name
@@ -6280,6 +6469,7 @@ class Job(BaseModel):
 		prediction = Prediction.create(
 			predictions = predictions
 			, probabilities = probabilities
+			, permutations_features = permutations_features
 			, metrics = metrics
 			, metrics_aggregate = metrics_aggregate
 			, plot_data = plot_data
@@ -6430,7 +6620,7 @@ class Job(BaseModel):
 
 		# Use the predictor object to make predictions and obtain metrics.
 		try:
-			Job.predict(samples=samples, predictor_id=predictor.id)
+			Job.predict(samples=samples, predictor_id=predictor.id, key_train=key_train)
 		except:
 			predictor.delete_instance()
 			raise
@@ -6461,7 +6651,6 @@ def execute_jobs(job_statuses:list, verbose:bool=False):
 """
 
 
-
 class FittedEncoderset(BaseModel):
 	"""
 	- Job uses this to save the fitted_encoders, which are later used for inference.
@@ -6489,9 +6678,9 @@ class FittedLabelcoder(BaseModel):
 
 
 
+
 class Predictor(BaseModel):
 	"""
-	- This was refactored from "Predictor" to "Predictor"
 	- Regarding metrics, the label encoder was fit on training split labels.
 	"""
 	repeat_index = IntegerField()
@@ -6776,7 +6965,26 @@ class Predictor(BaseModel):
 			samples=samples, predictor_id=id, splitset_id=splitset_id
 		)
 		return prediction
-
+	
+	def get_label_names(id:int):
+		predictor = Predictor.get_by_id(id)
+		job = predictor.job
+		label = job.queue.splitset.label
+		if (label is not None):
+			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(job=job, label=label)
+			if (labelcoder is not None):
+				if hasattr(fitted_encoders,'categories_'):
+					labels = list(fitted_encoders.categories_[0])
+				elif hasattr(fitted_encoders,'classes_'):
+					# Used by LabelBinarizer, LabelEncoder, MultiLabelBinarizer
+					labels = fitted_encoders.classes_.tolist()
+				else:
+					labels = predictor.job.queue.splitset.label.unique_classes
+			else:
+				labels = predictor.job.queue.splitset.label.unique_classes
+		else:
+			labels = None
+		return labels
 
 
 
@@ -6789,9 +6997,10 @@ class Prediction(BaseModel):
 	  in the future. This forces us to  validate dtypes and columns after the fact.
 	"""
 	predictions = PickleField()
+	permutations_features = JSONField(null=True)#float per feature.
 	probabilities = PickleField(null=True) # Not used for regression.
-	metrics = PickleField(null=True) #inference
-	metrics_aggregate = PickleField(null=True) #inference.
+	metrics = PickleField(null=True) #Not used for inference
+	metrics_aggregate = PickleField(null=True) #Not used for inference.
 	plot_data = PickleField(null=True) # No regression-specific plots yet.
 
 	predictor = ForeignKeyField(Predictor, backref='predictions')
@@ -6806,29 +7015,19 @@ class Prediction(BaseModel):
 	"""
 	def plot_confusion_matrix(id:int):
 		prediction = Prediction.get_by_id(id)
+		predictor = prediction.predictor
 		prediction_plot_data = prediction.plot_data
-		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
+		analysis_type = predictor.job.queue.algorithm.analysis_type
+		labels = predictor.get_label_names()
+		
 		if (analysis_type == "regression"):
 			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
 		cm_by_split = {}
 
-		labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
-			job=prediction.predictor.job, label=prediction.predictor.job.queue.splitset.label
-		)
-
-		if (labelcoder is not None):
-			if hasattr(fitted_encoders,'categories_'):
-				labels = list(fitted_encoders.categories_[0])
-			elif hasattr(fitted_encoders,'classes_'):
-				labels = fitted_encoders.classes_.tolist()
-		else:
-			unique_classes = prediction.predictor.job.queue.splitset.label.unique_classes
-			labels = list(unique_classes)
-
 		for split, data in prediction_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
 
-		Plot().confusion_matrix(cm_by_split=cm_by_split, labels= labels)
+		Plot().confusion_matrix(cm_by_split=cm_by_split, labels=labels)
 
 
 	def plot_precision_recall(id:int):
