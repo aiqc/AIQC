@@ -18,7 +18,7 @@
 
 
 <p align='center'>
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec1.png" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec30.png" alt="framework"/>
 </p>
 
 </br>
@@ -50,7 +50,7 @@
 </p>
 </br>
 <p align='center'>
-	In attempting to solve these problems ad hoc, individuals end up writing lots of tangled code and stitching together a Frankenstein set of tools. Doing so requires knowledge of not only data science but also software engineering, which places a skillset burden on the research team. The <i>DIY</i> approach is not maintainable.
+	In attempting to solve these problems ad hoc, individuals end up writing <i>custom code</i> for each experiment and <i>stitching together</i> different sets of tools. Doing so requires knowledge of not only data science but also software engineering, which places a <i>skillset burden</i> on the research team. The <i>DIY</i> approach is not maintainable. 
 </p>
 
 

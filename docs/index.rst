@@ -92,7 +92,7 @@
   </center>
 
 
-.. image:: images/framework_dec1.png
+.. image:: images/framework_dec30.png
   :width: 100%
   :align: center
   :alt: framework
@@ -120,7 +120,7 @@
     Adding to the complexity, different <b>protocols</b> are required based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample). 
   </p>
   <p class="intro bigP" style="margin-bottom:40px">
-    In attempting to solve these problems ad hoc, individuals end up writing lots of <i>tangled code</i> and <i>stitching together</i> a Frankenstein set of tools. Doing so requires knowledge of not only data science but also software engineering, which places a <i>skillset burden</i> on the research team. The <i>DIY</i> approach is not maintainable. 
+    In attempting to solve these problems ad hoc, individuals end up writing <i>custom code</i> for each experiment and <i>stitching together</i> different sets of tools. Doing so requires knowledge of not only data science but also software engineering, which places a <i>skillset burden</i> on the research team. The <i>DIY</i> approach is not maintainable. 
   </p>
 
 
