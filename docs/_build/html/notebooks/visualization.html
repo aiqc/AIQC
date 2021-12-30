@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/visualization.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Prerequisites: Plotly is used for all charts to provide an interactive experience: hover, toggle, and zoom. Reference the Installation notebook for information about configuring Plotly. However, st..." />
+  <meta property="og:description" content="Prerequisites: Plotly is used for interactive charts (hover, toggle, zoom). Reference the Installation section for information about configuring Plotly. However, static images are used in this note..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -112,17 +112,17 @@
 <li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Classification">Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Individual-Job-Metrics">Individual Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Queue-Metrics">Queue Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Queue-Visualization">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Individual-Job-Visualization">Individual Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Job-Visualization">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Job-Metrics">Job Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Regression">Regression</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Individual Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Aggregate-Queue-Metrics">Aggregate Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Aggregate-Queue-Visualization">Aggregate Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Individual Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Job Visualization</a></li>
 </ul>
 </li>
 </ul>
@@ -246,7 +246,6 @@
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#iii)-Future,-cluster-execution.">iii) Future, cluster execution.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
@@ -594,19 +593,20 @@ div.rendered_html tbody tr:hover {
 <h1>Visualization &amp; Metrics<a class="headerlink" href="#Visualization-&-Metrics" title="Permalink to this headline"></a></h1>
 <section id="Prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for all charts to provide an interactive experience: hover, toggle, and zoom. Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> notebook for information about configuring Plotly. However, static images are used in this notebook due to recent difficulty with 3rd party JS on the documentation portal.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for interactive charts (hover, toggle, zoom). Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> section for information about configuring Plotly. However, static images are used in this notebook due to lack of support for 3rd party JS in the documentation portal.</p>
 </section>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
-<p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, the <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> and <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> of each training <code class="docutils literal notranslate"><span class="pre">Job</span></code> are automatically populated with metrics for each split/ fold of samples evaluated against the model. The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
+<p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
 <ul class="simple">
 <li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, they go about producing these artifacts differently. For example, ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots. Note that unsupervised/ self-supervised models are also considered a regression.</p></li>
 </ul>
 <hr class="docutils" />
-<p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly create some examples.</p>
+<p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly generate a couple examples.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -620,9 +620,9 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="Classification">
 <h2>Classification<a class="headerlink" href="#Classification" title="Permalink to this headline"></a></h2>
-<p>Below we’re just quickly generating some trained models to work with.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<p>Let’s quickly generate a trained classification model to inspect.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -632,79 +632,22 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [00:28&lt;00:00,  3.54s/it]
-</pre></div></div>
-</div>
-<section id="Individual-Job-Metrics">
-<h3>Individual Job Metrics<a class="headerlink" href="#Individual-Job-Metrics" title="Permalink to this headline"></a></h3>
-<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics by split/fold:</p>
+<section id="Queue-Visualization">
+<h3>Queue Visualization<a class="headerlink" href="#Queue-Visualization" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plot_performance</span></code> aka the “boomerang chart” is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds.</p>
+<p>When performing classification, the secondary training metric (non-loss) is ‘accuracy’.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="k">as</span> <span class="n">p</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
+    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">min_accuracy</span> <span class="o">=</span> <span class="mf">0.70</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;test&#39;: {&#39;accuracy&#39;: 0.9629629629629629,
-          &#39;f1&#39;: 0.9628482972136223,
-          &#39;loss&#39;: 0.17958050966262817,
-          &#39;precision&#39;: 0.9666666666666667,
-          &#39;recall&#39;: 0.9629629629629629,
-          &#39;roc_auc&#39;: 0.9876543209876543},
- &#39;train&#39;: {&#39;accuracy&#39;: 0.9705882352941176,
-           &#39;f1&#39;: 0.9705308775731311,
-           &#39;loss&#39;: 0.13190817832946777,
-           &#39;precision&#39;: 0.9729729729729729,
-           &#39;recall&#39;: 0.9705882352941176,
-           &#39;roc_auc&#39;: 0.9985582468281432},
- &#39;validation&#39;: {&#39;accuracy&#39;: 1.0,
-                &#39;f1&#39;: 1.0,
-                &#39;loss&#39;: 0.15124531090259552,
-                &#39;precision&#39;: 1.0,
-                &#39;recall&#39;: 1.0,
-                &#39;roc_auc&#39;: 1.0}}
-</pre></div></div>
-</div>
-<p>It also contains per-epoch <code class="docutils literal notranslate"><span class="pre">History</span></code> metrics calculated during model training.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accuracy&#39;])
-</pre></div></div>
-</div>
+<img alt="Classify Boomerang" src="../_images/plot_classify_boomerang.png" />
 </section>
 <section id="Queue-Metrics">
 <h3>Queue Metrics<a class="headerlink" href="#Queue-Metrics" title="Permalink to this headline"></a></h3>
@@ -720,9 +663,9 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">(</span>
     <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">)</span>
+    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;predictor_id&#39;</span>
+    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -763,277 +706,17 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
   </thead>
   <tbody>
     <tr>
-      <th>23</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
+      <th>0</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
       <td>train</td>
       <td>0.970588</td>
-      <td>0.970531</td>
-      <td>0.094776</td>
-      <td>0.972973</td>
+      <td>0.970582</td>
+      <td>0.116122</td>
+      <td>0.970851</td>
       <td>0.970588</td>
       <td>0.999135</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.059430</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>test</td>
-      <td>0.888889</td>
-      <td>0.885714</td>
-      <td>0.158564</td>
-      <td>0.916667</td>
-      <td>0.888889</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>train</td>
-      <td>0.941176</td>
-      <td>0.940715</td>
-      <td>0.140597</td>
-      <td>0.950000</td>
-      <td>0.941176</td>
-      <td>0.998414</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.090078</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>test</td>
-      <td>0.888889</td>
-      <td>0.885714</td>
-      <td>0.301731</td>
-      <td>0.916667</td>
-      <td>0.888889</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>train</td>
-      <td>0.960784</td>
-      <td>0.960648</td>
-      <td>0.100677</td>
-      <td>0.964912</td>
-      <td>0.960784</td>
-      <td>0.999135</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.101051</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>test</td>
-      <td>0.888889</td>
-      <td>0.885714</td>
-      <td>0.205332</td>
-      <td>0.916667</td>
-      <td>0.888889</td>
-      <td>0.995885</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>validation</td>
-      <td>0.904762</td>
-      <td>0.902778</td>
-      <td>0.190586</td>
-      <td>0.925926</td>
-      <td>0.904762</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>train</td>
-      <td>0.911765</td>
-      <td>0.910192</td>
-      <td>0.211756</td>
-      <td>0.930233</td>
-      <td>0.911765</td>
-      <td>0.992647</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>test</td>
-      <td>0.851852</td>
-      <td>0.844156</td>
-      <td>0.253303</td>
-      <td>0.897436</td>
-      <td>0.851852</td>
-      <td>0.995885</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>train</td>
-      <td>0.980392</td>
-      <td>0.980375</td>
-      <td>0.075605</td>
-      <td>0.981481</td>
-      <td>0.980392</td>
-      <td>0.998847</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.037085</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>test</td>
-      <td>0.888889</td>
-      <td>0.885714</td>
-      <td>0.113647</td>
-      <td>0.916667</td>
-      <td>0.888889</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>train</td>
-      <td>0.941176</td>
-      <td>0.940715</td>
-      <td>0.152959</td>
-      <td>0.950000</td>
-      <td>0.941176</td>
-      <td>0.998847</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>validation</td>
-      <td>0.904762</td>
-      <td>0.902778</td>
-      <td>0.176098</td>
-      <td>0.925926</td>
-      <td>0.904762</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>test</td>
-      <td>0.925926</td>
-      <td>0.925000</td>
-      <td>0.244709</td>
-      <td>0.939394</td>
-      <td>0.925926</td>
-      <td>0.981481</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>train</td>
-      <td>0.950980</td>
-      <td>0.950714</td>
-      <td>0.114393</td>
-      <td>0.957265</td>
-      <td>0.950980</td>
-      <td>0.998558</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.080222</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>test</td>
-      <td>0.888889</td>
-      <td>0.885714</td>
-      <td>0.186216</td>
-      <td>0.916667</td>
-      <td>0.888889</td>
-      <td>1.000000</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1041,11 +724,11 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>validation</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.151245</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
+      <td>0.952381</td>
+      <td>0.952137</td>
+      <td>0.157847</td>
+      <td>0.958333</td>
+      <td>0.952381</td>
       <td>1.000000</td>
     </tr>
     <tr>
@@ -1053,25 +736,51 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>1</td>
-      <td>train</td>
-      <td>0.970588</td>
-      <td>0.970531</td>
-      <td>0.131908</td>
-      <td>0.972973</td>
-      <td>0.970588</td>
-      <td>0.998558</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
       <td>test</td>
       <td>0.962963</td>
       <td>0.962848</td>
-      <td>0.179581</td>
+      <td>0.154691</td>
       <td>0.966667</td>
       <td>0.962963</td>
+      <td>0.995885</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>train</td>
+      <td>0.980392</td>
+      <td>0.980375</td>
+      <td>0.105167</td>
+      <td>0.981481</td>
+      <td>0.980392</td>
+      <td>0.999423</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>validation</td>
+      <td>0.952381</td>
+      <td>0.952137</td>
+      <td>0.194987</td>
+      <td>0.958333</td>
+      <td>0.952381</td>
+      <td>0.993197</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>test</td>
+      <td>0.888889</td>
+      <td>0.888235</td>
+      <td>0.259848</td>
+      <td>0.897727</td>
+      <td>0.888889</td>
       <td>0.987654</td>
     </tr>
   </tbody>
@@ -1080,21 +789,21 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </div>
 <p>These are also aggregated by metric across all splits/folds.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">(</span>
-    <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">,</span> <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">,</span> <span class="n">selected_stats</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">)</span>
+    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;predictor_id&#39;</span>
+    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1134,11 +843,11 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.962963</td>
-      <td>0.015969</td>
       <td>0.970588</td>
-      <td>0.977850</td>
+      <td>0.952381</td>
+      <td>0.007466</td>
+      <td>0.962963</td>
+      <td>0.961977</td>
     </tr>
     <tr>
       <th>1</th>
@@ -1146,11 +855,11 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>f1</td>
-      <td>1.000000</td>
+      <td>0.970582</td>
+      <td>0.952137</td>
+      <td>0.007563</td>
       <td>0.962848</td>
-      <td>0.016013</td>
-      <td>0.970531</td>
-      <td>0.977793</td>
+      <td>0.961856</td>
     </tr>
     <tr>
       <th>2</th>
@@ -1158,11 +867,11 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>loss</td>
-      <td>0.179581</td>
-      <td>0.131908</td>
-      <td>0.019577</td>
-      <td>0.151245</td>
-      <td>0.154245</td>
+      <td>0.157847</td>
+      <td>0.116122</td>
+      <td>0.018969</td>
+      <td>0.154691</td>
+      <td>0.142887</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1170,11 +879,11 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>precision</td>
-      <td>1.000000</td>
+      <td>0.970851</td>
+      <td>0.958333</td>
+      <td>0.005203</td>
       <td>0.966667</td>
-      <td>0.014458</td>
-      <td>0.972973</td>
-      <td>0.979880</td>
+      <td>0.965284</td>
     </tr>
     <tr>
       <th>4</th>
@@ -1182,11 +891,11 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>1</td>
       <td>recall</td>
-      <td>1.000000</td>
-      <td>0.962963</td>
-      <td>0.015969</td>
       <td>0.970588</td>
-      <td>0.977850</td>
+      <td>0.952381</td>
+      <td>0.007466</td>
+      <td>0.962963</td>
+      <td>0.961977</td>
     </tr>
     <tr>
       <th>5</th>
@@ -1195,70 +904,10 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>1</td>
       <td>roc_auc</td>
       <td>1.000000</td>
-      <td>0.987654</td>
-      <td>0.005512</td>
-      <td>0.998558</td>
-      <td>0.995404</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.045465</td>
-      <td>0.950980</td>
-      <td>0.946623</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>f1</td>
-      <td>1.000000</td>
-      <td>0.885714</td>
-      <td>0.046804</td>
-      <td>0.950714</td>
-      <td>0.945476</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>loss</td>
-      <td>0.186216</td>
-      <td>0.080222</td>
-      <td>0.044172</td>
-      <td>0.114393</td>
-      <td>0.126944</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-      <td>0.034024</td>
-      <td>0.957265</td>
-      <td>0.957977</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.045465</td>
-      <td>0.950980</td>
-      <td>0.946623</td>
+      <td>0.995885</td>
+      <td>0.001772</td>
+      <td>0.999135</td>
+      <td>0.998340</td>
     </tr>
     <tr>
       <th>11</th>
@@ -1266,468 +915,79 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
       <td>2</td>
       <td>2</td>
       <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.998558</td>
-      <td>0.000680</td>
-      <td>1.000000</td>
-      <td>0.999519</td>
+      <td>0.999423</td>
+      <td>0.987654</td>
+      <td>0.004807</td>
+      <td>0.993197</td>
+      <td>0.993425</td>
     </tr>
     <tr>
-      <th>12</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>accuracy</td>
-      <td>0.941176</td>
-      <td>0.904762</td>
-      <td>0.014931</td>
-      <td>0.925926</td>
-      <td>0.923955</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>f1</td>
-      <td>0.940715</td>
-      <td>0.902778</td>
-      <td>0.015564</td>
-      <td>0.925000</td>
-      <td>0.922831</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>loss</td>
-      <td>0.244709</td>
-      <td>0.152959</td>
-      <td>0.038960</td>
-      <td>0.176098</td>
-      <td>0.191255</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>precision</td>
-      <td>0.950000</td>
-      <td>0.925926</td>
-      <td>0.009851</td>
-      <td>0.939394</td>
-      <td>0.938440</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
+      <th>10</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
       <td>recall</td>
-      <td>0.941176</td>
-      <td>0.904762</td>
-      <td>0.014931</td>
-      <td>0.925926</td>
-      <td>0.923955</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>3</td>
-      <td>3</td>
-      <td>3</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.981481</td>
-      <td>0.008471</td>
-      <td>0.998847</td>
-      <td>0.993443</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.048423</td>
       <td>0.980392</td>
-      <td>0.956427</td>
+      <td>0.888889</td>
+      <td>0.038281</td>
+      <td>0.952381</td>
+      <td>0.940554</td>
     </tr>
     <tr>
-      <th>19</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
+      <th>9</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>precision</td>
+      <td>0.981481</td>
+      <td>0.897727</td>
+      <td>0.035314</td>
+      <td>0.958333</td>
+      <td>0.945847</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
       <td>f1</td>
-      <td>1.000000</td>
-      <td>0.885714</td>
-      <td>0.049897</td>
       <td>0.980375</td>
-      <td>0.955363</td>
+      <td>0.888235</td>
+      <td>0.038544</td>
+      <td>0.952137</td>
+      <td>0.940249</td>
     </tr>
     <tr>
-      <th>20</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>loss</td>
-      <td>0.113647</td>
-      <td>0.037085</td>
-      <td>0.031256</td>
-      <td>0.075605</td>
-      <td>0.075446</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-      <td>0.035728</td>
-      <td>0.981481</td>
-      <td>0.966049</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.048423</td>
+      <th>6</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>accuracy</td>
       <td>0.980392</td>
-      <td>0.956427</td>
+      <td>0.888889</td>
+      <td>0.038281</td>
+      <td>0.952381</td>
+      <td>0.940554</td>
     </tr>
     <tr>
-      <th>23</th>
-      <td>4</td>
-      <td>4</td>
-      <td>4</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.998847</td>
-      <td>0.000544</td>
-      <td>1.000000</td>
-      <td>0.999616</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>accuracy</td>
-      <td>0.911765</td>
-      <td>0.851852</td>
-      <td>0.026746</td>
-      <td>0.904762</td>
-      <td>0.889459</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>f1</td>
-      <td>0.910192</td>
-      <td>0.844156</td>
-      <td>0.029538</td>
-      <td>0.902778</td>
-      <td>0.885708</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
+      <th>8</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
       <td>loss</td>
-      <td>0.253303</td>
-      <td>0.190586</td>
-      <td>0.026051</td>
-      <td>0.211756</td>
-      <td>0.218549</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>precision</td>
-      <td>0.930233</td>
-      <td>0.897436</td>
-      <td>0.014552</td>
-      <td>0.925926</td>
-      <td>0.917865</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>recall</td>
-      <td>0.911765</td>
-      <td>0.851852</td>
-      <td>0.026746</td>
-      <td>0.904762</td>
-      <td>0.889459</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.992647</td>
-      <td>0.003009</td>
-      <td>0.995885</td>
-      <td>0.996177</td>
-    </tr>
-    <tr>
-      <th>30</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.046010</td>
-      <td>0.960784</td>
-      <td>0.949891</td>
-    </tr>
-    <tr>
-      <th>31</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>f1</td>
-      <td>1.000000</td>
-      <td>0.885714</td>
-      <td>0.047405</td>
-      <td>0.960648</td>
-      <td>0.948787</td>
-    </tr>
-    <tr>
-      <th>32</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>loss</td>
-      <td>0.205332</td>
-      <td>0.100677</td>
-      <td>0.049247</td>
-      <td>0.101051</td>
-      <td>0.135687</td>
-    </tr>
-    <tr>
-      <th>33</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-      <td>0.034162</td>
-      <td>0.964912</td>
-      <td>0.960526</td>
-    </tr>
-    <tr>
-      <th>34</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.046010</td>
-      <td>0.960784</td>
-      <td>0.949891</td>
-    </tr>
-    <tr>
-      <th>35</th>
-      <td>6</td>
-      <td>6</td>
-      <td>6</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.995885</td>
-      <td>0.001772</td>
-      <td>0.999135</td>
-      <td>0.998340</td>
-    </tr>
-    <tr>
-      <th>36</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.045387</td>
-      <td>0.941176</td>
-      <td>0.943355</td>
-    </tr>
-    <tr>
-      <th>37</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>f1</td>
-      <td>1.000000</td>
-      <td>0.885714</td>
-      <td>0.046668</td>
-      <td>0.940715</td>
-      <td>0.942143</td>
-    </tr>
-    <tr>
-      <th>38</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>loss</td>
-      <td>0.301731</td>
-      <td>0.090078</td>
-      <td>0.090255</td>
-      <td>0.140597</td>
-      <td>0.177469</td>
-    </tr>
-    <tr>
-      <th>39</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-      <td>0.034247</td>
-      <td>0.950000</td>
-      <td>0.955556</td>
-    </tr>
-    <tr>
-      <th>40</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.045387</td>
-      <td>0.941176</td>
-      <td>0.943355</td>
-    </tr>
-    <tr>
-      <th>41</th>
-      <td>7</td>
-      <td>7</td>
-      <td>7</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.998414</td>
-      <td>0.000748</td>
-      <td>1.000000</td>
-      <td>0.999471</td>
-    </tr>
-    <tr>
-      <th>42</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.047005</td>
-      <td>0.970588</td>
-      <td>0.953159</td>
-    </tr>
-    <tr>
-      <th>43</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>f1</td>
-      <td>1.000000</td>
-      <td>0.885714</td>
-      <td>0.048446</td>
-      <td>0.970531</td>
-      <td>0.952082</td>
-    </tr>
-    <tr>
-      <th>44</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>loss</td>
-      <td>0.158564</td>
-      <td>0.059430</td>
-      <td>0.041023</td>
-      <td>0.094776</td>
-      <td>0.104256</td>
-    </tr>
-    <tr>
-      <th>45</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-      <td>0.034714</td>
-      <td>0.972973</td>
-      <td>0.963213</td>
-    </tr>
-    <tr>
-      <th>46</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.888889</td>
-      <td>0.047005</td>
-      <td>0.970588</td>
-      <td>0.953159</td>
-    </tr>
-    <tr>
-      <th>47</th>
-      <td>8</td>
-      <td>8</td>
-      <td>8</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.999135</td>
-      <td>0.000408</td>
-      <td>1.000000</td>
-      <td>0.999712</td>
+      <td>0.259848</td>
+      <td>0.105167</td>
+      <td>0.063422</td>
+      <td>0.194987</td>
+      <td>0.186668</td>
     </tr>
   </tbody>
 </table>
 </div></div>
 </div>
 </section>
-<section id="Queue-Visualization">
-<h3>Queue Visualization<a class="headerlink" href="#Queue-Visualization" title="Permalink to this headline"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">plot_performance</span></code> aka the “boomerang chart” is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds.</p>
-<p>When performing classification, the secondary training metric (non-loss) is ‘accuracy’.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
-    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">min_accuracy</span> <span class="o">=</span> <span class="mf">0.70</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<img alt="Classify Boomerang" src="../_images/plot_classify_boomerang.png" />
-</section>
-<section id="Individual-Job-Visualization">
-<h3>Individual Job Visualization<a class="headerlink" href="#Individual-Job-Visualization" title="Permalink to this headline"></a></h3>
+<section id="Job-Visualization">
+<h3>Job Visualization<a class="headerlink" href="#Job-Visualization" title="Permalink to this headline"></a></h3>
 <p>Loss values in the first few epochs can often be extremely high before they plummet and become more gradual. This really stretches out the graph and makes it hard to see if the evaluation set is diverging or not. The <code class="docutils literal notranslate"><span class="pre">loss_skip_15pct:bool</span></code> parameter skips displaying the first 15% of epochs so that figure is more useful.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -1739,6 +999,16 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </div>
 </div>
 <img alt="Classify Learn" src="../_images/plot_classify_learn.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="Classify Features" src="../_images/plot_classify_features.png" />
 <p>These classification metrics are preformatted for plotting.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -1788,43 +1058,131 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 </div>
 </div>
 <img alt="Precision Recall" src="../_images/plot_precision_recall.png" />
-<hr class="docutils" />
 </section>
-</section>
-<section id="Regression">
-<h2>Regression<a class="headerlink" href="#Regression" title="Permalink to this headline"></a></h2>
+<section id="Job-Metrics">
+<h3>Job Metrics<a class="headerlink" href="#Job-Metrics" title="Permalink to this headline"></a></h3>
+<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics by split/fold:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">%%capture</span>
-<span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_regression&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="k">as</span> <span class="n">p</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:32&lt;00:00,  8.03s/it]
+{&#39;test&#39;: {&#39;accuracy&#39;: 0.9629629629629629,
+          &#39;f1&#39;: 0.9628482972136223,
+          &#39;loss&#39;: 0.15469132363796234,
+          &#39;precision&#39;: 0.9666666666666667,
+          &#39;recall&#39;: 0.9629629629629629,
+          &#39;roc_auc&#39;: 0.9958847736625513},
+ &#39;train&#39;: {&#39;accuracy&#39;: 0.9705882352941176,
+           &#39;f1&#39;: 0.9705818732424834,
+           &#39;loss&#39;: 0.11612199246883392,
+           &#39;precision&#39;: 0.9708513708513707,
+           &#39;recall&#39;: 0.9705882352941176,
+           &#39;roc_auc&#39;: 0.9991349480968857},
+ &#39;validation&#39;: {&#39;accuracy&#39;: 0.9523809523809523,
+                &#39;f1&#39;: 0.952136752136752,
+                &#39;loss&#39;: 0.15784651041030884,
+                &#39;precision&#39;: 0.9583333333333334,
+                &#39;recall&#39;: 0.9523809523809523,
+                &#39;roc_auc&#39;: 1.0}}
 </pre></div></div>
 </div>
+<p>It also contains per-epoch <code class="docutils literal notranslate"><span class="pre">History</span></code> metrics calculated during model training.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accuracy&#39;])
+</pre></div></div>
+</div>
+<p>Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;1&#39;: {&#39;petal_length&#39;: 0.2506590038537979,
+       &#39;petal_width&#39;: 1.5452145487070084,
+       &#39;sepal_length&#39;: 0.003435656428337097,
+       &#39;sepal_width&#39;: 0.3922399431467056}}
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="Regression">
+<h2>Regression<a class="headerlink" href="#Regression" title="Permalink to this headline"></a></h2>
+<p>Let’s quickly generate a trained quantification model to inspect.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%%capture</span>
+<span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_regression&#39;</span><span class="p">)</span>
+<span class="n">queue_regression</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <section id="id1">
-<h3>Individual Job Metrics<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<h3>Queue Visualization<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p>When performing regression, the secondary training metric (non-loss) is ‘r2’.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
+    <span class="n">max_loss</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">min_r2</span><span class="o">=</span><span class="mf">0.65</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<img alt="Regression Boomerang" src="../_images/plot_regression_boomerang.png" />
+</section>
+<section id="id2">
+<h3>Job Metrics<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
 <p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1837,23 +1195,23 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;test&#39;: {&#39;explained_variance&#39;: 0.7894243409529155,
-          &#39;loss&#39;: 0.3433103561401367,
-          &#39;mse&#39;: 0.21202397973530798,
-          &#39;r2&#39;: 0.7865474072073684},
- &#39;train&#39;: {&#39;explained_variance&#39;: 0.7772334144881416,
-           &#39;loss&#39;: 0.3257257640361786,
-           &#39;mse&#39;: 0.22540750832130774,
-           &#39;r2&#39;: 0.7745924916786923},
- &#39;validation&#39;: {&#39;explained_variance&#39;: 0.70325979950094,
-                &#39;loss&#39;: 0.40005412697792053,
-                &#39;mse&#39;: 0.38639962177247694,
-                &#39;r2&#39;: 0.6802937337531519}}
+{&#39;test&#39;: {&#39;explained_variance&#39;: 0.1023665892527974,
+          &#39;loss&#39;: 0.6583271026611328,
+          &#39;mse&#39;: 0.7793670124150162,
+          &#39;r2&#39;: 0.09934655089913158},
+ &#39;train&#39;: {&#39;explained_variance&#39;: 0.15700615272739094,
+           &#39;loss&#39;: 0.6809597611427307,
+           &#39;mse&#39;: 0.8548576908474455,
+           &#39;r2&#39;: 0.14514230915255444},
+ &#39;validation&#39;: {&#39;explained_variance&#39;: 0.20880938235215885,
+                &#39;loss&#39;: 0.6208290457725525,
+                &#39;mse&#39;: 0.7425323712073475,
+                &#39;r2&#39;: 0.18091056078803924}}
 </pre></div></div>
 </div>
 <p>It also contains per-epoch metrics calculated during model training.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1862,7 +1220,7 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1870,20 +1228,49 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#39;val_mean_squared_error&#39;])
 </pre></div></div>
 </div>
-</section>
-<section id="Aggregate-Queue-Metrics">
-<h3>Aggregate Queue Metrics<a class="headerlink" href="#Aggregate-Queue-Metrics" title="Permalink to this headline"></a></h3>
+<p>Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;3&#39;: {&#39;age&#39;: 0.0025349855422973633,
+       &#39;chas&#39;: 0.0029946565628051758,
+       &#39;crim&#39;: 2.4020671844482422e-05,
+       &#39;dis&#39;: 0.0034887194633483887,
+       &#39;indus&#39;: 0.000500798225402832,
+       &#39;lstat&#39;: 0.003727257251739502,
+       &#39;nox&#39;: 0.0028020739555358887,
+       &#39;ptratio&#39;: 0.004640340805053711,
+       &#39;rad&#39;: 0.028512001037597656,
+       &#39;rm&#39;: 0.0004666447639465332,
+       &#39;tax&#39;: 0.11411339044570923,
+       &#39;zn&#39;: 0.00947493314743042}}
+</pre></div></div>
+</div>
+</section>
+<section id="id3">
+<h3>Queue Metrics<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1918,135 +1305,102 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
   <tbody>
     <tr>
       <th>9</th>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
-      <td>12</td>
-      <td>12</td>
-      <td>test</td>
-      <td>0.809494</td>
-      <td>0.423333</td>
-      <td>0.289514</td>
-      <td>0.708535</td>
+      <td>train</td>
+      <td>0.200475</td>
+      <td>0.660347</td>
+      <td>0.823595</td>
+      <td>0.176405</td>
     </tr>
     <tr>
       <th>10</th>
-      <td>12</td>
-      <td>12</td>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
       <td>validation</td>
-      <td>0.722865</td>
-      <td>0.480268</td>
-      <td>0.521585</td>
-      <td>0.568441</td>
+      <td>0.233815</td>
+      <td>0.596068</td>
+      <td>0.710509</td>
+      <td>0.216236</td>
     </tr>
     <tr>
       <th>11</th>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
-      <td>12</td>
-      <td>12</td>
-      <td>train</td>
-      <td>0.795168</td>
-      <td>0.396511</td>
-      <td>0.321744</td>
-      <td>0.678256</td>
+      <td>test</td>
+      <td>0.104733</td>
+      <td>0.636857</td>
+      <td>0.774979</td>
+      <td>0.104418</td>
     </tr>
     <tr>
       <th>6</th>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
-      <td>11</td>
-      <td>11</td>
-      <td>test</td>
-      <td>0.779358</td>
-      <td>0.410134</td>
-      <td>0.274249</td>
-      <td>0.723904</td>
+      <td>train</td>
+      <td>0.171239</td>
+      <td>0.675939</td>
+      <td>0.839556</td>
+      <td>0.160444</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>11</td>
-      <td>11</td>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
       <td>validation</td>
-      <td>0.717331</td>
-      <td>0.432595</td>
-      <td>0.442124</td>
-      <td>0.634188</td>
+      <td>0.253439</td>
+      <td>0.606551</td>
+      <td>0.707181</td>
+      <td>0.219907</td>
     </tr>
     <tr>
       <th>8</th>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
-      <td>11</td>
-      <td>11</td>
-      <td>train</td>
-      <td>0.753201</td>
-      <td>0.379794</td>
-      <td>0.297251</td>
-      <td>0.702749</td>
+      <td>test</td>
+      <td>0.084613</td>
+      <td>0.657065</td>
+      <td>0.794649</td>
+      <td>0.081686</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
-      <td>10</td>
-      <td>10</td>
-      <td>test</td>
-      <td>0.805824</td>
-      <td>0.353231</td>
-      <td>0.213114</td>
-      <td>0.785450</td>
+      <td>train</td>
+      <td>0.130221</td>
+      <td>0.696391</td>
+      <td>0.879654</td>
+      <td>0.120346</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>10</td>
-      <td>10</td>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
       <td>validation</td>
-      <td>0.733818</td>
-      <td>0.387297</td>
-      <td>0.368265</td>
-      <td>0.695298</td>
+      <td>0.220656</td>
+      <td>0.600674</td>
+      <td>0.721751</td>
+      <td>0.203834</td>
     </tr>
     <tr>
       <th>5</th>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
-      <td>10</td>
-      <td>10</td>
-      <td>train</td>
-      <td>0.784331</td>
-      <td>0.332360</td>
-      <td>0.234408</td>
-      <td>0.765592</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
       <td>test</td>
-      <td>0.789424</td>
-      <td>0.343310</td>
-      <td>0.212024</td>
-      <td>0.786547</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>validation</td>
-      <td>0.703260</td>
-      <td>0.400054</td>
-      <td>0.386400</td>
-      <td>0.680294</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>train</td>
-      <td>0.777233</td>
-      <td>0.325726</td>
-      <td>0.225408</td>
-      <td>0.774592</td>
+      <td>0.061954</td>
+      <td>0.656068</td>
+      <td>0.816135</td>
+      <td>0.056857</td>
     </tr>
   </tbody>
 </table>
@@ -2054,16 +1408,16 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </div>
 <p>These are also aggregated by metric across all splits/folds.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">()</span>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -2098,220 +1452,156 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>explained_variance</td>
-      <td>0.789424</td>
-      <td>0.703260</td>
-      <td>0.038072</td>
-      <td>0.777233</td>
-      <td>0.756639</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>loss</td>
-      <td>0.400054</td>
-      <td>0.325726</td>
-      <td>0.031717</td>
-      <td>0.343310</td>
-      <td>0.356363</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>mse</td>
-      <td>0.386400</td>
-      <td>0.212024</td>
-      <td>0.079236</td>
-      <td>0.225408</td>
-      <td>0.274610</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>9</td>
-      <td>9</td>
-      <td>9</td>
-      <td>r2</td>
-      <td>0.786547</td>
-      <td>0.680294</td>
-      <td>0.047522</td>
-      <td>0.774592</td>
-      <td>0.747145</td>
-    </tr>
-    <tr>
       <th>4</th>
-      <td>10</td>
-      <td>10</td>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
       <td>explained_variance</td>
-      <td>0.805824</td>
-      <td>0.733818</td>
-      <td>0.030182</td>
-      <td>0.784331</td>
-      <td>0.774658</td>
+      <td>0.220656</td>
+      <td>0.061954</td>
+      <td>0.065000</td>
+      <td>0.130221</td>
+      <td>0.137610</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>10</td>
-      <td>10</td>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
       <td>loss</td>
-      <td>0.387297</td>
-      <td>0.332360</td>
-      <td>0.022643</td>
-      <td>0.353231</td>
-      <td>0.357629</td>
+      <td>0.696391</td>
+      <td>0.600674</td>
+      <td>0.039237</td>
+      <td>0.656068</td>
+      <td>0.651045</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>10</td>
-      <td>10</td>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
       <td>mse</td>
-      <td>0.368265</td>
-      <td>0.213114</td>
-      <td>0.068672</td>
-      <td>0.234408</td>
-      <td>0.271929</td>
+      <td>0.879654</td>
+      <td>0.721751</td>
+      <td>0.064873</td>
+      <td>0.816135</td>
+      <td>0.805847</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>10</td>
-      <td>10</td>
+      <td>14</td>
+      <td>14</td>
       <td>10</td>
       <td>r2</td>
-      <td>0.785450</td>
-      <td>0.695298</td>
-      <td>0.038677</td>
-      <td>0.765592</td>
-      <td>0.748780</td>
+      <td>0.203834</td>
+      <td>0.056857</td>
+      <td>0.060188</td>
+      <td>0.120346</td>
+      <td>0.127012</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>11</td>
-      <td>11</td>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
       <td>explained_variance</td>
-      <td>0.779358</td>
-      <td>0.717331</td>
-      <td>0.025426</td>
-      <td>0.753201</td>
-      <td>0.749963</td>
+      <td>0.253439</td>
+      <td>0.084613</td>
+      <td>0.068931</td>
+      <td>0.171239</td>
+      <td>0.169764</td>
     </tr>
     <tr>
       <th>9</th>
-      <td>11</td>
-      <td>11</td>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
       <td>loss</td>
-      <td>0.432595</td>
-      <td>0.379794</td>
-      <td>0.021636</td>
-      <td>0.410134</td>
-      <td>0.407508</td>
+      <td>0.675939</td>
+      <td>0.606551</td>
+      <td>0.029293</td>
+      <td>0.657065</td>
+      <td>0.646518</td>
     </tr>
     <tr>
       <th>10</th>
-      <td>11</td>
-      <td>11</td>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
       <td>mse</td>
-      <td>0.442124</td>
-      <td>0.274249</td>
-      <td>0.074311</td>
-      <td>0.297251</td>
-      <td>0.337875</td>
+      <td>0.839556</td>
+      <td>0.707181</td>
+      <td>0.054965</td>
+      <td>0.794649</td>
+      <td>0.780462</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>11</td>
-      <td>11</td>
+      <td>15</td>
+      <td>15</td>
       <td>11</td>
       <td>r2</td>
-      <td>0.723904</td>
-      <td>0.634188</td>
-      <td>0.038293</td>
-      <td>0.702749</td>
-      <td>0.686947</td>
+      <td>0.219907</td>
+      <td>0.081686</td>
+      <td>0.056611</td>
+      <td>0.160444</td>
+      <td>0.154012</td>
     </tr>
     <tr>
       <th>12</th>
-      <td>12</td>
-      <td>12</td>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
       <td>explained_variance</td>
-      <td>0.809494</td>
-      <td>0.722865</td>
-      <td>0.037914</td>
-      <td>0.795168</td>
-      <td>0.775842</td>
+      <td>0.233815</td>
+      <td>0.104733</td>
+      <td>0.054712</td>
+      <td>0.200475</td>
+      <td>0.179674</td>
     </tr>
     <tr>
       <th>13</th>
-      <td>12</td>
-      <td>12</td>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
       <td>loss</td>
-      <td>0.480268</td>
-      <td>0.396511</td>
-      <td>0.034923</td>
-      <td>0.423333</td>
-      <td>0.433371</td>
+      <td>0.660347</td>
+      <td>0.596068</td>
+      <td>0.026557</td>
+      <td>0.636857</td>
+      <td>0.631090</td>
     </tr>
     <tr>
       <th>14</th>
-      <td>12</td>
-      <td>12</td>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
       <td>mse</td>
-      <td>0.521585</td>
-      <td>0.289514</td>
-      <td>0.102650</td>
-      <td>0.321744</td>
-      <td>0.377614</td>
+      <td>0.823595</td>
+      <td>0.710509</td>
+      <td>0.046318</td>
+      <td>0.774979</td>
+      <td>0.769694</td>
     </tr>
     <tr>
       <th>15</th>
-      <td>12</td>
-      <td>12</td>
+      <td>16</td>
+      <td>16</td>
       <td>12</td>
       <td>r2</td>
-      <td>0.708535</td>
-      <td>0.568441</td>
-      <td>0.060187</td>
-      <td>0.678256</td>
-      <td>0.651744</td>
+      <td>0.216236</td>
+      <td>0.104418</td>
+      <td>0.046274</td>
+      <td>0.176405</td>
+      <td>0.165686</td>
     </tr>
   </tbody>
 </table>
 </div></div>
 </div>
 </section>
-<section id="Aggregate-Queue-Visualization">
-<h3>Aggregate Queue Visualization<a class="headerlink" href="#Aggregate-Queue-Visualization" title="Permalink to this headline"></a></h3>
-<p>When performing regression, the secondary training metric (non-loss) is ‘r2’.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
-    <span class="n">max_loss</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">min_r2</span><span class="o">=</span><span class="mf">0.65</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<img alt="Regression Boomerang" src="../_images/plot_regression_boomerang.png" />
-</section>
-<section id="id2">
-<h3>Individual Job Visualization<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<section id="id4">
+<h3>Job Visualization<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -2322,6 +1612,16 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </div>
 </div>
 <img alt="Regression Learn" src="../_images/plot_regression_learn.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="Regression Features" src="../_images/plot_regression_features.png" />
 </section>
 </section>
 </section>

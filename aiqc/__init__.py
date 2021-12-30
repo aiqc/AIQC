@@ -6228,7 +6228,7 @@ class Job(BaseModel):
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
 		
-		### Feature Importance -  similar to loss above, but different enough not to refactor.
+		# Feature Importance - code is similar to loss above, but different enough not to refactor.
 		nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
 		if (
 			(permutation_count>0) and (has_labels==True) and 
@@ -6236,7 +6236,7 @@ class Job(BaseModel):
 		):
 			# Only 'train' because permutation is expensive and the learned patterns.
 			loss_baseline = metrics[key_train]['loss']
-			permutations_features = {}#['feature_id']['feature_column']
+			feature_importance = {}#['feature_id']['feature_column']
 			if (library == 'pytorch'):
 				if (analysis_type=='classification_multi'):
 					flat_labels = samples[key_train]['labels'].flatten().to(torch.long)
@@ -6245,7 +6245,7 @@ class Job(BaseModel):
 				if (feature.dataset.dataset_type=='image'):
 					continue #preserves the index for accessing `samples[split]['features']`
 				feature_id = str(feature.id)
-				permutations_features[feature_id] = {}
+				feature_importance[feature_id] = {}
 				# `feature_data` is copied out for shuffling.
 				if (len(features)==1):
 					feature_data = samples[key_train]['features']
@@ -6322,9 +6322,9 @@ class Job(BaseModel):
 					else:
 						samples[key_train]['features'][fi][make_index(ci, dimension)]= feature_subset
 					avg_loss = statistics.median(permutations_feature)
-					permutations_features[feature_id][col] =  avg_loss - loss_baseline
+					feature_importance[feature_id][col] =  avg_loss - loss_baseline
 		else:
-			permutations_features = None
+			feature_importance = None
 		# plot data.
 			
 		"""
@@ -6488,7 +6488,7 @@ class Job(BaseModel):
 		prediction = Prediction.create(
 			predictions = predictions
 			, probabilities = probabilities
-			, permutations_features = permutations_features
+			, feature_importance = feature_importance
 			, metrics = metrics
 			, metrics_aggregate = metrics_aggregate
 			, plot_data = plot_data
@@ -7017,7 +7017,7 @@ class Prediction(BaseModel):
 	  in the future. This forces us to  validate dtypes and columns after the fact.
 	"""
 	predictions = PickleField()
-	permutations_features = JSONField(null=True)#float per feature.
+	feature_importance = JSONField(null=True)#float per feature.
 	probabilities = PickleField(null=True) # Not used for regression.
 	metrics = PickleField(null=True) #Not used for inference
 	metrics_aggregate = PickleField(null=True) #Not used for inference.
@@ -7101,30 +7101,33 @@ class Prediction(BaseModel):
 
 	def plot_feature_importance(id:int, height:int=None):
 		prediction = Prediction.get_by_id(id)
-		permutations_features = prediction.permutations_features
-		permutation_count = prediction.predictor.job.queue.permutation_count
+		feature_importance = prediction.feature_importance
 
-		# Remember the Featureset may contain multiple Features.
-		for feature_id, dikt in permutations_features.items():
-			# Sort by loss
-			sort = {k: v for k, v in sorted(dikt.items(), key=lambda item: item[1])}
-			features = list(sort.keys())
-			loss = list(sort.values())
-			colors = ['negative' if x < 0 else 'positive' for x in loss]
+		if (feature_importance is not None):
+			permutation_count = prediction.predictor.job.queue.permutation_count
+			# Remember the Featureset may contain multiple Features.
+			for feature_id, dikt in feature_importance.items():
+				# Sort by loss
+				sort = {k: v for k, v in sorted(dikt.items(), key=lambda item: item[1])}
+				features = list(sort.keys())
+				loss = list(sort.values())
+				colors = ['negative' if x < 0 else 'positive' for x in loss]
+					
+				dkt = dict(Feature=features, Importance=loss, Color=colors)
+				dataframe = pd.DataFrame(dkt)
 				
-			dkt = dict(Feature=features, Importance=loss, Color=colors)
-			dataframe = pd.DataFrame(dkt)
+				if (height is None):
+					num_features = len(features)
+					height = num_features*25+120
 			
-			if (height is None):
-				num_features = len(features)
-				height = num_features*25+120
-		
-			Plot().feature_importance(
-				dataframe = dataframe
-				, feature_id = feature_id
-				, permutation_count = permutation_count
-				, height = height
-			)
+				Plot().feature_importance(
+					dataframe = dataframe
+					, feature_id = feature_id
+					, permutation_count = permutation_count
+					, height = height
+				)
+		else:
+			raise ValueError("\nYikes - Feature importance was not calculated for this analysis.\n")
 
 #==================================================
 # MID-TRAINING CALLBACKS

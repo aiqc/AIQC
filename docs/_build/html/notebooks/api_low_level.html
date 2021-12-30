@@ -112,17 +112,17 @@
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Classification">Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Metrics">Individual Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Metrics">Queue Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Visualization">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Individual-Job-Visualization">Individual Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Job-Visualization">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#Job-Metrics">Job Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Regression">Regression</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#id1">Individual Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Metrics">Aggregate Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#Aggregate-Queue-Visualization">Aggregate Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="visualization.html#id2">Individual Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id1">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id2">Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id3">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="visualization.html#id4">Job Visualization</a></li>
 </ul>
 </li>
 </ul>
@@ -246,7 +246,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#iii)-Future,-cluster-execution.">iii) Future, cluster execution.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
@@ -2251,8 +2250,9 @@ No more Featurecoders can be added to this Encoderset.
 <section id="id14">
 <h3>ORM<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h3>
 <p>When working with architectures that are highly dimensional such convolutional and recurrent networks (Conv1D, Conv2D, Conv3D / ConvLSTM1D, ConvLSTM2D, ConvLSTM3D), you’ll often find yourself needing to reshape data to fit a layer’s required input shape.</p>
+<p>AIQC ingestion &amp; preprocessing favors a <em>“channels_first”</em> (samples, channels, rows, columns) approach as opposed to <em>“channels_last”</em> (samples, rows, columns, channels).</p>
 <ul class="simple">
-<li><p><em>Reducing unused dimensions</em> - When working with grayscale/ single channel images (1 channel * 25 rows * 25 columns) there is no sense using Conv2D just to handle that 1 channel.</p></li>
+<li><p><em>Reducing unused dimensions</em> - When working with grayscale/ single channel images (1 channel, 25 rows, 25 columns) there is no sense using Conv2D just to handle that 1 channel.</p></li>
 <li><p><em>Adding wrapper dimensions</em> - Perhaps your data is a fit for ConvLSTM1D, but that layer is only supported in the nightly TensorFlow build so you want to add a wrapper dimension in order to use the production-ready ConvLSTM2D.</p></li>
 </ul>
 <p>It is difficult do this on the fly during training (aka after the fact) because you need to: add reshaping layers/ views to your model, intercept and reshape the data in your post-processing functions, and, by this point, the data is in a variety of tensor formats. It’s also more efficient to do this wrangling once up front rather than repeatedly on every training run.</p>
@@ -2275,6 +2275,7 @@ No more Featurecoders can be added to this Encoderset.
 <span class="n">feature_array</span> <span class="o">=</span> <span class="n">feature_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><em>Warning:</em> if your model is unsupervised (aka generative or self-supervised), then it must output data in <em>“column (aka width) last”</em> shape. Otherwise, automated column decoding will be applied along the wrong dimension.</p>
 </section>
 <section id="Reshaping-by-Index">
 <h3>Reshaping by Index<a class="headerlink" href="#Reshaping-by-Index" title="Permalink to this headline"></a></h3>
@@ -2286,16 +2287,16 @@ No more Featurecoders can be added to this Encoderset.
 </section>
 <section id="Reshaping-Explicitly">
 <h3>Reshaping Explicitly<a class="headerlink" href="#Reshaping-Explicitly" title="Permalink to this headline"></a></h3>
-<p>But what if the dimensions we want cannot be expressed by rearranging the existing indices? You might have been wondering why <code class="docutils literal notranslate"><span class="pre">str</span></code> appeared in the loop above. If you define a string-based number, then that number will be used as the dimension.</p>
-<p>So if I wanted to add an extra wrapper dimension to my data, I would simply do</p>
+<p>But what if the dimensions we want cannot be expressed by rearranging the existing indices? You might have been wondering why <code class="docutils literal notranslate"><span class="pre">str</span></code> appeared in the loop above. If you define a string-based number, then that number will be used as directly as the value at that position.</p>
+<p>So if I wanted to add an extra wrapper dimension to my data to serve as a single color channel, I would simply do:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="Multiplicative-Reshaping">
 <h3>Multiplicative Reshaping<a class="headerlink" href="#Multiplicative-Reshaping" title="Permalink to this headline"></a></h3>
-<p>Sometimes you need to stack/nest dimensions. This requires multiplying one shape index by another. For example, if I have a 3 separate hours worth of data and I want to treat it at 180 minutes, then I need to go from a shape of (3 hours * 60 minutes) to (180 minutes). Just provide the shape indices that you want to multiply in a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<p>Sometimes you need to stack/nest dimensions. This requires multiplying one shape index by another. For example, if I have a 3 separate hours worth of data and I want to treat it as 180 minutes, then I need to go from a shape of (3 hours * 60 minutes) to (180 minutes). Just provide the shape indices that you want to multiply in a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -2757,19 +2758,26 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="p">,</span> <span class="n">permutation_count</span> <span class="o">=</span> <span class="mi">7</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">repeat_count:int</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> (&gt; 1 of course) is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Predictors</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">repeat_count:int=1</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> (&gt; 1 of course) is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Predictors</span></code>.</p></li>
 </ul>
 <blockquote>
 <div><p>Due to the fact that training is a <em>nondeterministic</em> process, we get different weights each time we train a model, even if we use the same set of parameters. Perhaps you’ve have the right topology and parameters, but, this time around, the model just didn’t recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition.</p>
 </div></blockquote>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool=False</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
 </ul>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">permutation_count:int=7</span></code> controls the number of times each feature column is shuffled before it’s impact on loss is compared to the baseline training loss before the median taken. Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>.</p></li>
+</ul>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;7&gt;</span> <span class="pre">permutations)]</span></code></p>
+</div></blockquote>
 <section id="a)-Job-objects.">
 <h3>a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#a)-Job-objects." title="Permalink to this headline"></a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Queue represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
@@ -2808,12 +2816,6 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 </li>
 <li><p>It is a known bug that the <code class="docutils literal notranslate"><span class="pre">aiqc.TrainingCallbacks.Keras.MetricCutoff</span></code> class does not work with `` as of Python 3.8.</p></li>
 <li><p>Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.</p></li>
-</ul>
-</section>
-<section id="iii)-Future,-cluster-execution.">
-<h4>iii) Future, cluster execution.<a class="headerlink" href="#iii)-Future,-cluster-execution." title="Permalink to this headline"></a></h4>
-<ul class="simple">
-<li><p>In the future, we look to provide options for horizontal and vertical scale via either AWS or Azure.</p></li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[66]:
