@@ -15,12 +15,13 @@
 
 
 </br>
-
+</br>
 
 <p align='center'>
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec30.png" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" alt="framework"/>
 </p>
 
+</br>
 </br>
 
 <p align='center'>

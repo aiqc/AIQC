@@ -55,25 +55,28 @@ ol.intro {
     padding-left: 45px;
 }
 
+ol.intro li {
+    width:           99%;
+    padding:         18px 22px 18px 22px;
+    margin-bottom:   25px;
+    list-style-type: None;
+}
+
 ol.intro li span {
     color: #6c6c6c;
 }
 
-li.shadowBox {
-    width:              99%;
-    padding:            18px 22px 18px 22px;
-    border:             1px solid lightgray;
+.shadowBox {
     border-radius:      12px;
-    margin-bottom:      25px;
-    list-style-type:    None;
-
+    background:       white;
+    border:             1px solid lightgray;
     box-shadow:         4px 4px lightgray;
     -moz-box-shadow:    4px 4px lightgray;
     -webkit-box-shadow: 4px 4px lightgray;
     -o-box-shadow:      4px 4px lightgray;
 }
 
-li.shadowBox:hover {
+.shadowBox:hover {
     border:             1px solid #adadad;
     border-radius:      9px;
     box-shadow:         4px 4px #adadad;
@@ -121,6 +124,47 @@ iframe {
 #overview h1 {
     display: none !important;;
 }
+
+/* ^ shadowBox class also applies to these items */
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-item {
+    flex: 22%;
+    margin: 26px;
+}
+
+.flex-top {
+    margin-top: 26px;
+    height:     92px;
+}
+
+.flex-image {
+    display:       block;
+    margin-left:   auto;
+    margin-right:  auto;
+    width:         75%;
+    border-radius: 0px !important;
+}
+
+.flex-bottom {
+    text-align:    center;
+    font-family:   arial;
+    color:       rgb(64, 152, 206);
+    font-size:     14px;
+    margin-bottom: 33px;
+}
+
+.flex-bottom a {
+    color: inherit;
+}
+
+.flex-bottom a span {
+    text-decoration: underline;
+}
+
 /* --- End: Main page --- */
 
 /* --- Start: Explainer page --- */

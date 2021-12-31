@@ -86,13 +86,11 @@
     </br>
     </br>
     <i class="intro" style="color:gray">A simple Python framework for conducting rapid, rigorous, and reproducible experiments.</i>
-    </br>
-    </br>
-    </br>
+    </br></br></br></br>    
   </center>
 
 
-.. image:: images/framework_dec30.png
+.. image:: images/framework_dec31.png
   :width: 100%
   :align: center
   :alt: framework
@@ -100,7 +98,7 @@
 
 .. raw:: html
   
-  </br></br>
+  </br></br></br>
   <p class="intro">
     Deep learning is difficult to implement because leading tools skip the following <i>data wrangling</i> challenges:
   </p>
@@ -123,6 +121,51 @@
 	  The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon the research team.
   </p>
   </br>
+
+----
+
+.. raw:: html
+  
+  <br/>
+  <div class="flex-container">
+    <div class="flex-item shadowBox">
+      <div class="flex-top">
+        <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
+          <image class="flex-image" src='_images/psf_logo.png'/ style="margin-top:28px; width:82%;">
+        </a>
+      </div>
+      <div class="flex-bottom">
+        <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
+          ↳ <span>Sponsored by</span>
+        </a>
+      </div>
+    </div>
+    <div class="flex-item shadowBox">
+       <div class="flex-top">
+        <a href="https://aiqc.medium.com/" target="_blank">
+          <image class="flex-image" src='_images/tds_logo_bw.png' />
+        </a>
+      </div>
+      <div class="flex-bottom">
+        <a href="https://aiqc.medium.com/" target="_blank">
+          ↳ <span>Blogged by</span>
+        </a>
+      </div>
+    </div>
+    <div class="flex-item shadowBox">
+      <div class="flex-top">
+        <a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" target="_blank">
+         <image class="flex-image" src='_images/pydata_logo.png' />
+        </a>
+      </div>
+      <div class="flex-bottom">
+        <a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" target="_blank">
+          ↳ <span>Presented at</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <br/><br/>
 
 
 ----
@@ -206,63 +249,14 @@
   </tr>
   -->
   </table>
-
-  </br></br>
-
-----
-
-
-.. raw:: html
   
   </br>
   <center>
-    <i style="color:gray;">Thanks to the support and sponsorship of:</i>
+    <i class="intro" style="color:gray">Supports the most popular data types, analytical use cases, and deep learning libraries.</i>
   </center>
   </br>
 
-.. image:: images/psf_wide.png
-  :width: 36%
-  :align: center
-  :alt: framework
-  :target: https://wiki.python.org/psf/ScientificWG/Charter_v3
-  :class: no-scaled-link
-
-
-.. raw:: html
-
-  </br>
-  </br>
-  </br>
-  <center>
-    <i style="color:gray;">As seen at the PyData Global 2021 conference:</i>
-  </center>
-  </br>
-
-.. image:: images/pydata_logo.png
-  :width: 25%
-  :align: center
-  :alt: framework
-  :target: https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/
-  :class: no-scaled-link
-
-|
-
 ----
-
-|
-
-.. image:: images/pydata.png
-  :width: 100%
-  :align: center
-  :alt: pydata
-  :class: no-scaled-link
-
-|
-|
-
-----
-
-|
 
 ..
   Overview <h1> is intentionally hidden by CSS.

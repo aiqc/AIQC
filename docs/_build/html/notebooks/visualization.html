@@ -120,9 +120,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Regression">Regression</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Job Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Job Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -1179,87 +1179,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 <img alt="Regression Boomerang" src="../_images/plot_regression_boomerang.png" />
 </section>
 <section id="id2">
-<h3>Job Metrics<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
-<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;test&#39;: {&#39;explained_variance&#39;: 0.1023665892527974,
-          &#39;loss&#39;: 0.6583271026611328,
-          &#39;mse&#39;: 0.7793670124150162,
-          &#39;r2&#39;: 0.09934655089913158},
- &#39;train&#39;: {&#39;explained_variance&#39;: 0.15700615272739094,
-           &#39;loss&#39;: 0.6809597611427307,
-           &#39;mse&#39;: 0.8548576908474455,
-           &#39;r2&#39;: 0.14514230915255444},
- &#39;validation&#39;: {&#39;explained_variance&#39;: 0.20880938235215885,
-                &#39;loss&#39;: 0.6208290457725525,
-                &#39;mse&#39;: 0.7425323712073475,
-                &#39;r2&#39;: 0.18091056078803924}}
-</pre></div></div>
-</div>
-<p>It also contains per-epoch metrics calculated during model training.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#39;val_mean_squared_error&#39;])
-</pre></div></div>
-</div>
-<p>Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;3&#39;: {&#39;age&#39;: 0.0025349855422973633,
-       &#39;chas&#39;: 0.0029946565628051758,
-       &#39;crim&#39;: 2.4020671844482422e-05,
-       &#39;dis&#39;: 0.0034887194633483887,
-       &#39;indus&#39;: 0.000500798225402832,
-       &#39;lstat&#39;: 0.003727257251739502,
-       &#39;nox&#39;: 0.0028020739555358887,
-       &#39;ptratio&#39;: 0.004640340805053711,
-       &#39;rad&#39;: 0.028512001037597656,
-       &#39;rm&#39;: 0.0004666447639465332,
-       &#39;tax&#39;: 0.11411339044570923,
-       &#39;zn&#39;: 0.00947493314743042}}
-</pre></div></div>
-</div>
-</section>
-<section id="id3">
-<h3>Queue Metrics<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<h3>Queue Metrics<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
@@ -1600,8 +1520,8 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </div></div>
 </div>
 </section>
-<section id="id4">
-<h3>Job Visualization<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+<section id="id3">
+<h3>Job Visualization<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -1622,6 +1542,86 @@ dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#3
 </div>
 </div>
 <img alt="Regression Features" src="../_images/plot_regression_features.png" />
+</section>
+<section id="id4">
+<h3>Job Metrics<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;test&#39;: {&#39;explained_variance&#39;: 0.1023665892527974,
+          &#39;loss&#39;: 0.6583271026611328,
+          &#39;mse&#39;: 0.7793670124150162,
+          &#39;r2&#39;: 0.09934655089913158},
+ &#39;train&#39;: {&#39;explained_variance&#39;: 0.15700615272739094,
+           &#39;loss&#39;: 0.6809597611427307,
+           &#39;mse&#39;: 0.8548576908474455,
+           &#39;r2&#39;: 0.14514230915255444},
+ &#39;validation&#39;: {&#39;explained_variance&#39;: 0.20880938235215885,
+                &#39;loss&#39;: 0.6208290457725525,
+                &#39;mse&#39;: 0.7425323712073475,
+                &#39;r2&#39;: 0.18091056078803924}}
+</pre></div></div>
+</div>
+<p>It also contains per-epoch metrics calculated during model training.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#39;val_mean_squared_error&#39;])
+</pre></div></div>
+</div>
+<p>Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;3&#39;: {&#39;age&#39;: 0.0025349855422973633,
+       &#39;chas&#39;: 0.0029946565628051758,
+       &#39;crim&#39;: 2.4020671844482422e-05,
+       &#39;dis&#39;: 0.0034887194633483887,
+       &#39;indus&#39;: 0.000500798225402832,
+       &#39;lstat&#39;: 0.003727257251739502,
+       &#39;nox&#39;: 0.0028020739555358887,
+       &#39;ptratio&#39;: 0.004640340805053711,
+       &#39;rad&#39;: 0.028512001037597656,
+       &#39;rm&#39;: 0.0004666447639465332,
+       &#39;tax&#39;: 0.11411339044570923,
+       &#39;zn&#39;: 0.00947493314743042}}
+</pre></div></div>
+</div>
 </section>
 </section>
 </section>
