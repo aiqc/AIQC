@@ -18,7 +18,7 @@ Use Cases & Tutorials
 
 .. raw:: html
 
-  </br>
+  </br></br>
   <p class="intro">
     Follow along with the tutorials below in order to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
   </p>
@@ -35,7 +35,11 @@ Use Cases & Tutorials
   * - Use Case
     - Analysis Type
     - Tutorial
-    
+
+  * - Categorize plant species
+    - Multi-label classification of tabular data
+    - :ref:`Keras </notebooks/keras_multi-label_classification.ipynb>`, :ref:`PyTorch </notebooks/pytorch_multi-label_classification.ipynb>`
+
   * - Detect epileptic seizure
     - Binary classification of |br| time series/ sequence data
     - :ref:`Keras </notebooks/keras_sequence_classification.ipynb>`
@@ -47,10 +51,6 @@ Use Cases & Tutorials
   * - Detect naval mine
     - Binary classification of tabular data
     - :ref:`Keras </notebooks/keras_binary_classification.ipynb>`, :ref:`TensorFlow </notebooks/tensorflow_binary_classification.ipynb>`, |br| :ref:`PyTorch </notebooks/pytorch_binary_classification.ipynb>`
-
-  * - Categorize plant species
-    - Multi-label classification of tabular data
-    - :ref:`Keras </notebooks/keras_multi-label_classification.ipynb>`, :ref:`PyTorch </notebooks/pytorch_multi-label_classification.ipynb>`
 
   * - Predict exoplanet temperature
     - Quantification of tabular data
@@ -72,12 +72,5 @@ Use Cases & Tutorials
     - Binary classification with heterogenous  |br| features (image & tabular)
     - :ref:`Keras </notebooks/heterogeneous_features.ipynb>`
 
-
-.. raw:: html
-
-  </br>
-  <p class="intro" style="color:gray;"><i>
-    Reference the compatibility chart on the main page for a comprehensive list</br> of all supported types of data, tools, and analysis.
-  </i></p>
-  
+| 
 |

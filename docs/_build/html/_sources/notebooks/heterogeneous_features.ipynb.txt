@@ -114,9 +114,9 @@
    "source": [
     "Using the built-in structured data about 40 galaxies, we'll derive:\n",
     "\n",
-    "- A binary, categorical label: `morphology`.\n",
-    "- Categorical and numeric metadata features: `clarity`, `angle`.\n",
-    "- A manifest detailing where to find our image files: `url`."
+    "* A binary, categorical label: `morphology`.\n",
+    "* Categorical and numeric metadata features: `clarity`, `angle`.\n",
+    "* A manifest detailing where to find our image files: `url`."
    ]
   },
   {

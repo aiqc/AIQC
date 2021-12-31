@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/index.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="framework I. Rapidly prepare folded data for analysis without leakage.: pipeline.gif II. Train many variations of an algorithm in a queue.: hyperparameters.gif III. Evaluate algorithm performance w..." />
+  <meta property="og:description" content="framework visualizations.gif" />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png" />
@@ -417,7 +417,7 @@
   </div>
 </div>
 <br/><br/><hr class="docutils" />
-</br>
+</br></br>
 <center>
   <b>→ Write 98% less code by adopting AIQC's best practice <a href='tutorials.html'>workflows</a>.</b>
 </center>
@@ -494,96 +494,23 @@
 <center>
   <i class="intro" style="color:gray">Supports the most popular data types, analytical use cases, and deep learning libraries.</i>
 </center>
-</br><hr class="docutils" />
+</br></br><hr class="docutils" />
 <section id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h1>
-<section id="i-rapidly-prepare-folded-data-for-analysis-without-leakage">
-<h2>I. Rapidly prepare folded data for analysis without leakage.<a class="headerlink" href="#i-rapidly-prepare-folded-data-for-analysis-without-leakage" title="Permalink to this headline"></a></h2>
-<figure class="align-default">
-<a class="reference internal image-reference" href="_images/pipeline_25sec_compress.gif"><img alt="pipeline.gif" src="_images/pipeline_25sec_compress.gif" style="width: 100%;" /></a>
-</figure>
-<ul class="featureLists spaced">
-  <li><span>
-    Register datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
-  </span></li>
-  <li><span>
-    Designate columns by name as either Features or Labels.
-  </span></li>
-  <li><span>
-    Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
-  </span></li>
-  <li><span>
-    Apply encoders by dtype (`float64`) without leaking test/ validation data.
-  </span></li>
-</ul></section>
-<section id="ii-train-many-variations-of-an-algorithm-in-a-queue">
-<h2>II. Train many variations of an algorithm in a queue.<a class="headerlink" href="#ii-train-many-variations-of-an-algorithm-in-a-queue" title="Permalink to this headline"></a></h2>
-<a class="reference internal image-reference" href="_images/hyperparam_25sec_compress.gif"><img alt="hyperparameters.gif" src="_images/hyperparam_25sec_compress.gif" style="width: 100%;" /></a>
-<ul class="featureLists spaced">
-  <li><span>
-    Queue many training jobs for hyperparameter tuning & cross-validation.
-  </span></li>
-  <li><span>
-    Pass hyperparameters into training functions as `**hp` kwargs.
-  </span></li>
-  <li><span>
-    Tweak the topology as a parameter (`if hp['third_conv_layer']==True`).
-  </span></li>
-  <li><span>
-    Repeat a job to to give it a chance to perform well (`repeat_count=3`).
-  </span></li>
-</ul></section>
-<section id="iii-evaluate-algorithm-performance-with-metrics-charts">
-<h2>III. Evaluate algorithm performance with metrics &amp; charts.<a class="headerlink" href="#iii-evaluate-algorithm-performance-with-metrics-charts" title="Permalink to this headline"></a></h2>
-<a class="reference internal image-reference" href="_images/plots_25sec_compress.gif"><img alt="plots.gif" src="_images/plots_25sec_compress.gif" style="width: 100%;" /></a>
-<ul class="featureLists spaced">
-  <li><span>
-    Automated performance metrics & visualizations for every split/ fold.
-  </span></li>
-  <li><span>
-    Captures per-epoch history metrics for learning curves.
-  </span></li>
-  <li><span>
-    Define multi-metric success criteria for early stopping.
-  </span></li>
-</ul></section>
-<section id="iv-effortlessly-track-reproduce-prove-experiments">
-<h2>IV. Effortlessly track, reproduce, &amp; prove experiments.<a class="headerlink" href="#iv-effortlessly-track-reproduce-prove-experiments" title="Permalink to this headline"></a></h2>
-<ul class="featureLists">
-  <li><span>
-    Automatically records all workflow steps in a local SQLite database file.
-  </span></li>
-  <li><span>
-    No infrastructure hassle; `aiqc.setup()` creates the database for you.
-  </span></li>
-  <li><span>
-    During inference, original preprocessing is automatically applied to new samples.
-  </span></li>
-</ul></section>
-<section id="v-easy-to-install-with-tutorials-to-guide-you">
-<h2>V. Easy to <a class="reference internal" href="notebooks/installation.html"><span class="std std-ref">install</span></a>. With <a class="reference internal" href="notebooks/keras_multi-label_classification.html"><span class="std std-ref">tutorials</span></a> to guide you.<a class="headerlink" href="#v-easy-to-install-with-tutorials-to-guide-you" title="Permalink to this headline"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
-<span class="kn">import</span> <span class="nn">aiqc</span>
-
-<span class="c1"># Data for tutorials.</span>
-<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-
-<span class="c1"># Creates &amp; connects to the database.</span>
-<span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-</pre></div>
-</div>
-<ul class="featureLists">
-  <li><span>
-      <a href='notebooks/example_datasets.ipynb'>Example datasets</a> built into package.
-  </span></li>
-  <li><span>
-    Use any IDE (Jupyter, RStudio, VS Code, PyCharm, Spyder) & OS (Win, Mac, Lin).
-  </span></li>
-  <li><span>
-    Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.
-  </span></li>
-</ul></section>
-</section>
+</br></br>
+<center>
+  <b>→ Automated visualizations for evaluating every split & fold of every model.</b>
+</center>
+</br></br><a class="reference internal image-reference" href="_images/visualizations.gif"><img alt="visualizations.gif" src="_images/visualizations.gif" style="width: 100%;" /></a>
+</br></br></br>
+<center>
+  <p style="font-size:18px;"><i>Let's get started!</i></p>
+  </br>
+  <a href="tutorials.html">
+    <button class="btn btn--stripe btn--radius">→ Use Cases & Tutorials</button>
+  </a>
+</center>
+</br></br></section>
 
 
            </div>

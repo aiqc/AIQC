@@ -172,7 +172,7 @@
 
 .. raw:: html
   
-  </br>
+  </br></br>
   <center>
     <b>→ Write 98% less code by adopting AIQC's best practice <a href='tutorials.html'>workflows</a>.</b>
   </center>
@@ -254,138 +254,40 @@
   <center>
     <i class="intro" style="color:gray">Supports the most popular data types, analytical use cases, and deep learning libraries.</i>
   </center>
-  </br>
+  </br></br>
 
 ----
 
 ..
   Overview <h1> is intentionally hidden by CSS.
 
-
 ########
 Overview
 ########
 
 
-I. Rapidly prepare folded data for analysis without leakage.
-============================================================
+.. raw:: html
+  
+  </br></br>
+  <center>
+    <b>→ Automated visualizations for evaluating every split & fold of every model.</b>
+  </center>
+  </br></br>
 
-.. figure:: images/pipeline_25sec_compress.gif
+
+.. image:: images/visualizations.gif
   :width: 100%
-  :alt: pipeline.gif
+  :alt: visualizations.gif
 
 
 .. raw:: html
 
-  <ul class="featureLists spaced">
-    <li><span>
-      Register datasets from files (csv, parquet), structures (pandas, numpy), & images (pillow).
-    </span></li>
-    <li><span>
-      Designate columns by name as either Features or Labels.
-    </span></li>
-    <li><span>
-      Easily split, fold, & stratify samples (`size_validation=0.12`, `fold_count=5`).
-    </span></li>
-    <li><span>
-      Apply encoders by dtype (`float64`) without leaking test/ validation data.
-    </span></li>
-  </ul>
-
-
-II. Train many variations of an algorithm in a queue.
-=====================================================
-
-.. image:: images/hyperparam_25sec_compress.gif
-  :width: 100%
-  :alt: hyperparameters.gif
-
-
-.. raw:: html
-
-  <ul class="featureLists spaced">
-    <li><span>
-      Queue many training jobs for hyperparameter tuning & cross-validation.
-    </span></li>
-    <li><span>
-      Pass hyperparameters into training functions as `**hp` kwargs.
-    </span></li>
-    <li><span>
-      Tweak the topology as a parameter (`if hp['third_conv_layer']==True`).
-    </span></li>
-    <li><span>
-      Repeat a job to to give it a chance to perform well (`repeat_count=3`).
-    </span></li>
-  </ul>
-
-
-III. Evaluate algorithm performance with metrics & charts.
-==========================================================
-
-.. image:: images/plots_25sec_compress.gif
-   :width: 100%
-   :alt: plots.gif
-
-
-.. raw:: html
-
-  <ul class="featureLists spaced">
-    <li><span>
-      Automated performance metrics & visualizations for every split/ fold.
-    </span></li>
-    <li><span>
-      Captures per-epoch history metrics for learning curves.
-    </span></li>
-    <li><span>
-      Define multi-metric success criteria for early stopping.
-    </span></li>
-  </ul>
-
-
-IV. Effortlessly track, reproduce, & prove experiments.
-=======================================================
-
-
-.. raw:: html
-
-  <ul class="featureLists">
-    <li><span>
-      Automatically records all workflow steps in a local SQLite database file.
-    </span></li>
-    <li><span>
-      No infrastructure hassle; `aiqc.setup()` creates the database for you.
-    </span></li>
-    <li><span>
-      During inference, original preprocessing is automatically applied to new samples.
-    </span></li>
-  </ul>
-
-
-V. Easy to :ref:`install </notebooks/installation.ipynb>`. With :ref:`tutorials</notebooks/keras_multi-label_classification.ipynb>` to guide you.
-=================================================================================================================================================
-
-.. code-block:: python
-
-   pip install --upgrade aiqc
-   import aiqc
-
-   # Data for tutorials.
-   from aiqc import datum 
-
-   # Creates & connects to the database.
-   aiqc.setup() 
-
-
-.. raw:: html
-
-  <ul class="featureLists">
-    <li><span>
-        <a href='notebooks/example_datasets.ipynb'>Example datasets</a> built into package.
-    </span></li>
-    <li><span>
-      Use any IDE (Jupyter, RStudio, VS Code, PyCharm, Spyder) & OS (Win, Mac, Lin).
-    </span></li>
-    <li><span>
-      Easy to learn, 2-step tutorials: `Pipeline` that feeds into an `Experiment`.
-    </span></li>
-  </ul>
+  </br></br></br>
+  <center>
+    <p style="font-size:18px;"><i>Let's get started!</i></p>
+    </br>
+    <a href="tutorials.html">
+      <button class="btn btn--stripe btn--radius">→ Use Cases & Tutorials</button>
+    </a>
+  </center>
+  </br></br>
