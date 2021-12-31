@@ -50,10 +50,8 @@
 </p>
 </br>
 <p align='center'>
-	In attempting to solve these problems ad hoc, individuals end up writing <i>custom code</i> for each experiment and <i>stitching together</i> different sets of tools. Doing so requires knowledge of not only data science but also software engineering, which places a <i>skillset burden</i> on the research team. The <i>DIY</i> approach is not maintainable. 
+	The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon the research team.
 </p>
-
-
 </br>
 
 ---

@@ -20,9 +20,6 @@ Use Cases & Tutorials
 
   </br>
   <p class="intro">
-    AI isn't just about talking robots. It's highly efficient at automating practical tasks.
-  </p>  
-  <p class="intro">
     Follow along with the tutorials below in order to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
   </p>
 

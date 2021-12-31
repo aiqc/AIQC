@@ -117,6 +117,10 @@ img {
 iframe {
 	border-radius: 15px;
 }
+
+#overview h1 {
+    display: none !important;;
+}
 /* --- End: Main page --- */
 
 /* --- Start: Explainer page --- */

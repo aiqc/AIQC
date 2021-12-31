@@ -119,9 +119,10 @@
   <p class="intro bigP">
     Adding to the complexity, different <b>protocols</b> are required based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample). 
   </p>
-  <p class="intro bigP" style="margin-bottom:40px">
-    In attempting to solve these problems ad hoc, individuals end up writing <i>custom code</i> for each experiment and <i>stitching together</i> different sets of tools. Doing so requires knowledge of not only data science but also software engineering, which places a <i>skillset burden</i> on the research team. The <i>DIY</i> approach is not maintainable. 
+  <p class="intro bigP">
+	  The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon the research team.
   </p>
+  </br>
 
 
 ----
@@ -208,21 +209,6 @@
 
   </br></br>
 
-  <ul style="text-align: center; list-style-position: inside;">
-    <li class="extra-bullets">
-      <a href='notebooks/tensorflow_binary_classification.html'>
-        Compatible with TensorFlow 2 for model maintenance and training loop customization.
-      </a>
-    </li>
-    <li class="extra-bullets">
-      <a href='notebooks/heterogeneous_features.html'>
-        Enables multi-modal analysis (e.g. combine histology images with medical records and doctor's notes).
-      </a>
-    </li>
-  </ul>
-
-  </br>
-
 ----
 
 
@@ -277,6 +263,10 @@
 ----
 
 |
+
+..
+  Overview <h1> is intentionally hidden by CSS.
+
 
 ########
 Overview
