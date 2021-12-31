@@ -289,9 +289,5 @@ Overview
     <a href="tutorials.html">
       <button class="btn btn--stripe btn--radius">→ Use Cases & Tutorials</button>
     </a>
-    </br></br>
-    <a href="tutorials.html">
-      <button class="glow-on-hover" type="button"><b>→</b>HOVER ME, THEN CLICK ME!</button>
-    </a> 
   </center>
-
+  </br></br>
