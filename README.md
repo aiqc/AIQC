@@ -24,49 +24,13 @@
 </br>
 </br>
 
-<p align='center'>
- Deep learning is difficult to implement because leading tools skip the following <i>data wrangling</i> challenges:
-</p>
-
-</br>
-
-<ol>
-	<li>
-		<b>Preprocessing</b> - Data must be encoded into a machine-readable format. Encoders don't handle multiple dimensions, columns, & types. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?
-	</li>
-	</br>
-	<li>
-		<b>Experiment Tracking</b> - Tuning parameters and architectures requires evaluating many training runs with metrics and charts. However, leading tools are only designed for a single run and don't keep track of performance. Validation splits and/or cross-validation folds compound these problems.
-	</li>
-	</br>
-	<li>
-		<b>Postprocessing</b> - If the encoder-decoder pairs weren't saved, then how should new samples be encoded and predictions be decoded? Do new samples have the same schema as the training samples? Did encoders spawn extra columns? Multiple encoders compound these problems.
-	</li>
-</ol>
-
-</br>
-
-<p align='center'>
-	Adding to the complexity, different <b>protocols</b> are required based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample).
-</p>
-</br>
-<p align='center'>
-	The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon the research team.
-</p>
-</br>
-
----
-
-</br>
-</br>
-
 <p align="center">
 	<i>Thanks to the support & sponsorship of:</i>
 </p>
 
 <p align="center">
 	<a href="https://wiki.python.org/psf/ScientificWG/Charter_v3">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_wide.png" width="275" alt="PSF"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_logo.png" width="275" alt="PSF"/>
 	</a>
 </p>
 
