@@ -1,8 +1,11 @@
-<!-- This page is formatted for GitHub's markdown renderer -->
+<!-- 
+	This page is formatted for GitHub's markdown renderer 
+	Not that GitHub does not allow for inline style or <script> tags.
+-->
 ![AIQC (wide)](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png)
 
 </br></br>
-<p align='center' style="font-size:30px;">📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></p>
+<h2 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></p>
 </br></br>
 
 ---
@@ -18,7 +21,7 @@
 </br>
 
 <p align='center'>
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" alt="framework" style="border-radius:15px;"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" width="85%" alt="framework"/>
 </p>
 
 </br>
@@ -30,7 +33,7 @@
 
 <p align="center">
 	<a href="https://wiki.python.org/psf/ScientificWG/Charter_v3">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_logo.png" width="275" alt="PSF" style="border-radius:15px;"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_logo.png" width="220" alt="PSF"/>
 	</a>
 </p>
 
