@@ -131,7 +131,7 @@
     <div class="flex-item shadowBox">
       <div class="flex-top">
         <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
-          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/psf_logo.png' style="margin-top:28px; width:82%;">
+          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/psf_logo.png'">
         </a>
       </div>
       <div class="flex-bottom">
@@ -287,7 +287,20 @@ Overview
     <p style="font-size:18px;"><i>Let's get started!</i></p>
     </br>
     <a href="tutorials.html">
-      <button class="btn btn--stripe btn--radius">→ Use Cases & Tutorials</button>
+      <div class="bttn"><b>→</b> <span>Use Cases & Tutorials</span></div>
     </a>
   </center>
   </br></br>
+
+
+.. raw:: html
+
+  <script>
+    function changeBorders() {
+      var gif = document.querySelector("img[alt='visualizations.gif']")
+      var img = document.querySelector("img[alt='framework']")
+      gif.style.border = "2px solid silver";
+      img.style.border = "2px solid silver";
+    }
+    window.onload = changeBorders;
+  </script>

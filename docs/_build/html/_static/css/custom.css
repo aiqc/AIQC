@@ -1,3 +1,4 @@
+/* --- Note that the Sphinx theme is using .bttn class --- */
 /* --- Start: Nav bar --- */
 .wy-side-nav-search {
 	background-color: #060606;
@@ -5,7 +6,7 @@
 
 .wy-side-nav-search input[type=text] {
 	width: 			80%;
-	border-color: 	#2b1f03;
+	border-color: 	#5f5d56;
 	border-width: 	2px;
 }
 
@@ -129,6 +130,9 @@ iframe {
 .flex-container {
     display: flex;
     flex-direction: row;
+    /*centers the responsive column version*/
+    align-items: center;
+    justify-content: center;
 }
 
 .flex-item {
@@ -165,166 +169,72 @@ iframe {
     text-decoration: underline;
 }
 
-.linkButton {
-    margin:           8px;
-    padding:          8px;
-    border-radius:    30px;
-    text-align:       center;
-    background-image: linear-gradient(to bottom right, #c6ebf7, #fcfcfc);
-    font-size:        13.5px;
-    border-collapse:  collapse; 
+@media (max-width: 650px) {
+    .flex-container {
+      flex-direction: column;
+    }
+    .flex-item {
+        width: 45%;
+    }
+    .flex-top {
+        margin-bottom: 12px;
+    }
 }
-
-.linkButton a {
-    color: inherit;
-}
-
-.linkButton a span {
-    text-decoration: underline;
-}
-
 /* MEGA BUTTON */
-@-webkit-keyframes stripe-slide {
-    0% {
-      background-position: 0% 0;
-    }
-    100% {
-      background-position: 100% 0;
-    }
-}
-@keyframes stripe-slide {
-    0% {
-        background-position: 0% 0;
-    }
-    100% {
-        background-position: 100% 0;
-    }
-}
 
-.btn {
-    overflow: visible;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    font: inherit;
-    line-height: normal;
-    cursor: pointer;
-    -moz-user-select: text;
-    display: block;
-    text-decoration: none;
-    text-transform: uppercase;
-    padding: 16px 36px 22px;
-    background-color: #fff;
-    color: #666;
-    border: 2px solid #666;
-    border-radius: 6px;
-    margin-bottom: 16px;
-    transition: all 0.5s ease;
-}
-.btn:-moz-focus-inner {
-    padding: 0;
-    border: 0;
-}
-.btn--stripe {
-    overflow: hidden;
-    position: relative;
-}
-.btn--stripe:after {
-    content: "";
-    display: block;
-    height: 7px;
-    width: 100%;
-    background-image: repeating-linear-gradient(45deg, #666, #666 1px, transparent 2px, transparent 5px);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    border-top: 1px solid #666;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background-size: 7px 7px;
-}
-.btn--stripe:hover {
-    background-color: #666;
-    color: #fff;
-    border-color: #000;
-}
-.btn--stripe:hover:after {
-    background-image: repeating-linear-gradient(45deg, #fff, #fff 1px, transparent 2px, transparent 5px);
-    border-top: 1px solid #000;
-    -webkit-animation: stripe-slide 12s infinite linear forwards;
-            animation: stripe-slide 12s infinite linear forwards;
+.bttn {
+    position:           relative;
+    vertical-align:     middle;
+    color:            black;
+    font-family:        Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
+    font-size:          15px;
+    display:            inline-block;
+    height:             65px;
+    text-align:         center;
+    transition:         0.8s;
+    padding:            20px 20px 24px 20px;
+    cursor:             pointer;
+    border:             2px solid rgb(24, 24, 24);
+    border-radius:      10px;
+    -webkit-transition: 0.8s;
 }
 
-.btn--radius {
-    border-radius: 36px;
+.bttn:hover {
+    border:         5px solid silver;
+    border-radius:  15px;
+    padding-bottom: 10px;
+    background:   rgb(29, 29, 29);
 }
 
-
-
-
-
-
-
-
-.glow-on-hover {
-    width: 220px;
-    height: 50px;
-    border: none;
-    outline: none;
-    color: #fff;
-    background: #111;
-    cursor: pointer;
-    position: relative;
-    z-index: 0;
-    border-radius: 10px;
+.bttn:hover span, .bttn:hover b {
+    color:     rgb(255, 230, 89);
 }
 
-.glow-on-hover:before {
-    content: '';
-    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-    position: absolute;
-    top: -2px;
-    left:-2px;
-    background-size: 400%;
-    z-index: -1;
-    filter: blur(5px);
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    animation: glowing 20s linear infinite;
-    opacity: 0;
-    transition: opacity .3s ease-in-out;
-    border-radius: 10px;
+.bttn::before, .bttn::after {
+    width:              100%;
+    height:             100%;
+    z-index:            0;
+    content:            '';
+    position:           absolute;
+    top:                0;
+    left:               0;
+    box-sizing:         border-box;
+    -webkit-transform: scale(0);
+    transition:        0.8s;
 }
 
-.glow-on-hover:active {
-    color: #000
+.bttn::before {
+    -webkit-transform-origin: 100% 0%;
 }
 
-.glow-on-hover:active:after {
-    background: transparent;
+.bttn::after {
+    -webkit-transform-origin: 0% 100%;
 }
 
-.glow-on-hover:hover:before {
-    opacity: 1;
-}
-
-.glow-on-hover:after {
-    z-index: -1;
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #111;
-    left: 0;
-    top: 0;
-    border-radius: 10px;
-}
-
-@keyframes glowing {
-    0% { background-position: 0 0; }
-    50% { background-position: 400% 0; }
-    100% { background-position: 0 0; }
+.bttn:hover::after, .bttn:hover::before {
+    border-radius:     10px;
+    border:            2px solid whitesmoke;
+    -webkit-transform: scale(1);
 }
 /* --- End: Main page --- */
 
@@ -335,10 +245,10 @@ p.explain {
 }
 
 .figCaption {
-    border-left: 4px solid lightgray;
+    border-left:  4px solid lightgray;
     padding-left: 15px;
-    color: gray;
-    font-size: 13px;
+    color:      gray;
+    font-size:    13px;
 }
 /* --- End: Explainer page --- */  
 
