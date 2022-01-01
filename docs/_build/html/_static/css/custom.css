@@ -169,7 +169,8 @@ iframe {
     text-decoration: underline;
 }
 
-@media (max-width: 650px) {
+/* Responsiveness */
+@media (max-width: 922px) {
     .flex-container {
       flex-direction: column;
     }
@@ -178,6 +179,13 @@ iframe {
     }
     .flex-top {
         margin-bottom: 12px;
+    }
+    .DMAIC-left {
+        width:         50%;
+        margin-bottom: 32px;
+    }
+    .DMAIC-right {
+        width: 80%;
     }
 }
 /* MEGA BUTTON */
@@ -238,79 +246,6 @@ iframe {
 }
 /* --- End: Main page --- */
 
-/* --- Start: Explainer page --- */
-p.explain {
-    font-size:  15px;
-    text-align: center;
-}
-
-.figCaption {
-    border-left:  4px solid lightgray;
-    padding-left: 15px;
-    color:      gray;
-    font-size:    13px;
-}
-/* --- End: Explainer page --- */  
-
-/* --- Start: Services page --- */
-.quickLinks {
-    display: flex;
-    width:   90%;
-    margin:  30px auto 35px auto;/*center*/
-}
-
-.quickLinks div {
-    flex:             auto;
-    margin:           8px;
-    padding:          8px;
-    border-radius:    30px;
-    text-align:       center;
-    background-image: linear-gradient(to bottom right, #c6ebf7, #fcfcfc);
-    font-size:        13.5px;
-    border-collapse:  collapse; 
-}
-
-.quickLinks div:hover {
-    background-image: linear-gradient(to bottom right, #d7eff7, #fcfcfc);
-}
-
-.quickLinks div a:hover {
-    text-decoration:  underline;
-}
-
-.svcBox {
-    padding:            16px 20px 16px 20px;
-    border:             1px solid #b6cfde;
-    border-radius:      12px;
-    margin-bottom:      25px;
-    margin-left:        8%;
-
-    box-shadow:         4px 4px #b6cfde;
-    -moz-box-shadow:    4px 4px #b6cfde;
-    -webkit-box-shadow: 4px 4px #b6cfde;
-    -o-box-shadow:      4px 4px #b6cfde;
-}
-
-.svcBox:hover {
-    border:             1px solid #7d98a8;
-    border-radius:      9px;
-    box-shadow:         4px 4px #7d98a8;
-    -moz-box-shadow:    4px 4px #7d98a8;
-    -webkit-box-shadow: 4px 4px #7d98a8;
-    -o-box-shadow:      4px 4px #7d98a8;
-}
-
-.svcHeader {
-    font-weight:   bold;
-    margin-bottom: 6px;
-    font-size:     15px;
-}
-    
-.svcDescribe {
-    font-size: 14px;
-    margin-left: 20px;
-}
-/* --- End: Services page --- */
 
 /* --- Start: compatibility table index page --- */
 .compatibility {
@@ -382,3 +317,99 @@ p.explain {
 	font-size:	130%;
 }
 /* --- End: compatibility table index page --- */
+
+
+/* --- Start: Explainer page --- */
+p.explain {
+    font-size:  15px;
+    text-align: center;
+}
+
+.figCaption {
+    border-left:  4px solid lightgray;
+    padding-left: 15px;
+    color:      gray;
+    font-size:    13px;
+}
+/* --- End: Explainer page --- */  
+
+/* --- Start: Services page --- */
+#professional-services h1 {
+    text-align: center;
+}
+
+.quickLinks {
+    color:         black;
+    display:         flex;
+    width:           90%;
+    margin:          30px auto 35px auto;/*center*/
+}
+
+.quickLinks div {
+    flex:             auto;
+    margin:           18px 8px 18px 8px;
+    padding:          8px;
+    border-radius:    30px;
+    text-align:       center;
+    background-image: linear-gradient(to bottom right, #c6ebf7, #fcfcfc);
+    font-size:        13.5px;
+    border-collapse:  collapse; 
+}
+
+.quickLinks div:hover {
+    background-image: linear-gradient(to bottom right, #d7eff7, #fcfcfc);
+}
+
+.quickLinks div a {
+    color:            inherit;
+}
+
+.quickLinks div a:hover {
+    text-decoration:  underline;
+}
+
+/* See Responsiveness section above*/
+.DMAIC-left {
+    flex:          75%;
+}
+
+.DMAIC-img {
+    width:         60%;
+    display:       block;
+    margin-left:   auto;
+    margin-right:  auto;
+}
+
+.svcBox {
+    padding:            16px 20px 16px 20px;
+    border:             1px solid #b6cfde;
+    border-radius:      12px;
+    margin-bottom:      25px;
+    margin-left:        8%;
+
+    box-shadow:         4px 4px #b6cfde;
+    -moz-box-shadow:    4px 4px #b6cfde;
+    -webkit-box-shadow: 4px 4px #b6cfde;
+    -o-box-shadow:      4px 4px #b6cfde;
+}
+
+.svcBox:hover {
+    border:             1px solid #7d98a8;
+    border-radius:      9px;
+    box-shadow:         4px 4px #7d98a8;
+    -moz-box-shadow:    4px 4px #7d98a8;
+    -webkit-box-shadow: 4px 4px #7d98a8;
+    -o-box-shadow:      4px 4px #7d98a8;
+}
+
+.svcHeader {
+    font-weight:   bold;
+    margin-bottom: 6px;
+    font-size:     15px;
+}
+    
+.svcDescribe {
+    font-size:     14px;
+    margin-left:   20px;
+}
+/* --- End: Services page --- */

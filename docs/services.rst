@@ -3,9 +3,13 @@ Professional Services
 #####################
 
 .. raw:: html
-
+  
+  </br>
   <p class="explain">
-    Wondering how deep learning can improve the operational efficiency of your organization while simultaneously enabling you to derive new insight from existing data? <i>AIQC, Inc's</i> professional services can help your organization realize the benefits of AI without hiring an in-house data science department.
+    AIQC consulting can help your team <i>do more with less</i>.
+  </p>
+  <p class="explain">
+    Improve operational efficiency while simultaneously deriving new insight from existing data.
   </p>
 
   <div class="quickLinks">
@@ -21,25 +25,25 @@ Professional Services
   </div>
 
 
-
-.. image:: images/DMAIC.png
-  :width: 30%
-  :align: center
-  :alt: DMAIC
-  :class: no-scaled-link
+----
 
 
 .. raw:: html
   
-  <center>
-    <div class="figCaption" style="width: 45%; margin-top: 15px;">
-      <i>Applying Six Sigma's DMAIC process improvement<br/>to artificial intelligence.</i>
+  </br></br>
+  <div class="flex-container">
+    <div class="DMAIC-left">
+      <image class="DMAIC-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/DMAIC.png'">
     </div>
-  </center>
+    <div class="DMAIC-right figCaption">
+      </br>
+      <p style="font-size:14px;">Solve real world problems with artificial intelligence by applying the <i>Six Sigma - DMAIC</i> approach to process improvement.</p>
+    </div>
+  </div>
+  </br>
+
 
 |
-
-----
 
 Phase I - Consultation
 ======================
@@ -169,10 +173,10 @@ Phase III - Monitoring
 .. raw:: html
 
   <center>
-    <p>Ready to begin your AI transformation?</p>
-    <div class="quickLinks" style="width:20%">
+    <p><i>Ready to begin your AI transformation?</i></p>
+    <div class="quickLinks" style="width:24%;">
       <div>
-        <a href="mailto:layne.sadler@gmail.com?subject=AIQC Services&body=Hi Layne,%0D%0A %0D%0AI read about AIQC and I would like to discuss how you might be help our organization with our... [describe the problem you are facing]%0D%0A %0D%0AYou can reach me at... [phone/ timezone]"" style="font-size:16px;">→ Contact Us</a>
+        <a href="https://forms.gle/zDPKBVFhZmgvaU3b9" style="font-size:16px;">→ Contact Us</a>
       </div>
     </div>
   </center>
