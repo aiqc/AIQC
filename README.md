@@ -1,9 +1,9 @@
 <!-- This page is formatted for GitHub's markdown renderer -->
 ![AIQC (wide)](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png)
 
-</br>
-<h3 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h3>
-</br>
+</br></br>
+<p align='center' style="font-size:30px;">📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></p>
+</br></br>
 
 ---
 
@@ -18,7 +18,7 @@
 </br>
 
 <p align='center'>
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" alt="framework" style="border-radius:15px;"/>
 </p>
 
 </br>
@@ -30,7 +30,7 @@
 
 <p align="center">
 	<a href="https://wiki.python.org/psf/ScientificWG/Charter_v3">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_logo.png" width="275" alt="PSF"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/psf_logo.png" width="275" alt="PSF" style="border-radius:15px;"/>
 	</a>
 </p>
 
