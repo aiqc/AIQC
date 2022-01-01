@@ -5,7 +5,7 @@
 ![AIQC (wide)](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png)
 
 </br></br>
-<h2 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></p>
+<h2 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h2>
 </br></br>
 
 ---
@@ -21,7 +21,7 @@
 </br>
 
 <p align='center'>
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" width="85%" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" width="95%" alt="framework"/>
 </p>
 
 </br>
