@@ -1,12 +1,12 @@
-#####################
-Professional Services
-#####################
+##########
+Consulting
+##########
 
 .. raw:: html
   
   </br>
   <p class="explain">
-    AIQC consulting can help your team <i>do more with less</i>.
+    AIQC professional services can help your team <i>do more with less</i>.
   </p>
   <p class="explain">
     Improve operational efficiency while simultaneously deriving new insight from existing data.

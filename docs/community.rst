@@ -1,17 +1,19 @@
-#########
-Community
-#########
+###########
+Open Source
+###########
 
 ..
   Without this comment, `make html` throws warning about page beginning w horizontal line below.
 
 ----
 
-.. image:: images/LARP.png
+.. image:: images/celebrate_circle.png
   :width: 100%
   :align: center
   :alt: community banner
   :class: no-scaled-link
+
+|
 
 ********
 Purpose.

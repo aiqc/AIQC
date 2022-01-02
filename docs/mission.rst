@@ -1,6 +1,6 @@
-#######
-Mission
-#######
+###########
+Our Mission
+###########
 
 *Why Does AIQC Exist?*
 

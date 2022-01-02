@@ -3,9 +3,9 @@
   :caption: Getting Started
   :hidden:
 
-  notebooks/installation
-  notebooks/example_datasets
   tutorials
+  notebooks/example_datasets
+  notebooks/installation
 
 
 .. toctree::
@@ -24,10 +24,11 @@
   :caption: About
   :hidden:
 
-  explainer
   mission
+  explainer
+  consulting
   community
-  links
+
 
 ..
   Without this comment, `make html` throws warning about page beginning improperly.
