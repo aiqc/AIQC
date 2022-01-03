@@ -4556,7 +4556,7 @@ class Algorithm(BaseModel):
 		id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 7
+		, permutation_count:int = 0
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, hide_test:bool = False
@@ -5019,7 +5019,7 @@ class Queue(BaseModel):
 		algorithm_id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 7
+		, permutation_count:int = 0
 		, hide_test:bool = False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
@@ -7506,6 +7506,7 @@ class Experiment():
 		, fn_train:object
 		, splitset_id:int
 		, repeat_count:int = 1
+		, permutation_count:int = 0
 		, hide_test:bool = False
 		, fn_optimize:object = None
 		, fn_predict:object = None
@@ -7539,6 +7540,7 @@ class Experiment():
 		queue = algorithm.make_queue(
 			splitset_id = splitset_id
 			, repeat_count = repeat_count
+			, permutation_count = permutation_count
 			, hide_test = hide_test
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id

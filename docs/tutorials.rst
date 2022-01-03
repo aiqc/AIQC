@@ -9,7 +9,7 @@ Use Cases & Tutorials
 ..
   Without this comment, `make html` throws warning about page beginning w horizontal line below.
 
-.. image:: images/banner_use_cases.png
+.. image:: images/banner_use_cases_2.png
   :width: 100%
   :align: center
   :alt: use_cases
@@ -40,13 +40,17 @@ Use Cases & Tutorials
     - Multi-label classification of tabular data
     - :ref:`Keras </notebooks/keras_multi-label_classification.ipynb>`, :ref:`PyTorch </notebooks/pytorch_multi-label_classification.ipynb>`
 
-  * - Detect epileptic seizure
-    - Binary classification of |br| time series/ sequence data
-    - :ref:`Keras </notebooks/keras_sequence_classification.ipynb>`
-    
   * - Detect brain tumor
     - Binary classification of images
     - :ref:`Keras </notebooks/keras_image_classification.ipynb>`
+
+  * - Design drugs
+    - Feature importance for binary |br| classification of tabular data.
+    - :ref:`Keras </notebooks/keras_binary_mapk.ipynb>`    
+
+  * - Detect epileptic seizure
+    - Binary classification of |br| time series/ sequence data
+    - :ref:`Keras </notebooks/keras_sequence_classification.ipynb>`    
 
   * - Detect naval mine
     - Binary classification of tabular data

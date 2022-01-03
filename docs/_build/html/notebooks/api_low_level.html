@@ -2763,7 +2763,7 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="p">,</span> <span class="n">permutation_count</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="p">,</span> <span class="n">permutation_count</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2778,10 +2778,10 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool=False</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
 </ul>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">permutation_count:int=7</span></code> controls the number of times each feature column is shuffled before it’s impact on loss is compared to the baseline training loss before the median taken. Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permutation_count:int</span></code> controls the number of times each feature column is shuffled before it’s impact on loss is compared to the baseline training loss before the median taken. Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>. If you are rapidly training exploratory models on many columns, then you can set <code class="docutils literal notranslate"><span class="pre">permutation_count=0</span></code>.</p></li>
 </ul>
 <blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;7&gt;</span> <span class="pre">permutations)]</span></code></p>
+<div><p><code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;5&gt;</span> <span class="pre">permutations)]</span></code></p>
 </div></blockquote>
 <section id="a)-Job-objects.">
 <h3>a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#a)-Job-objects." title="Permalink to this headline"></a></h3>
