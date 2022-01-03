@@ -13,7 +13,7 @@
    "id": "2cf1508d-9a38-4e8f-bb52-c2d523878c17",
    "metadata": {},
    "source": [
-    "*In silico compound selection using permuted feature importance of neural networks to rank the structural importance of high throughput screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.*"
+    "*In silico compound selection using permuted feature importance of neural networks to rank High Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.*"
    ]
   },
   {
