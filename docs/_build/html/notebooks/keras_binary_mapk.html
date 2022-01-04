@@ -607,7 +607,6 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>The purpose of this analysis is to use <em>permuted feature importance</em> to understand which chemical structures are driving the activation of the target. The predictions of a machine learning algorithm don’t have to be a black box.</p>
 <hr class="docutils" />
-<p>The dataset is unbalanced by a factor of 162-to-1, inactive-to-active. We’ll sample that down to a ratio of 1.3-to-1.0</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[153]:
 </pre></div>
@@ -617,35 +616,14 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dataset_unbalanced</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;MAPK_unbalanced.parquet&quot;</span><span class="p">)</span>
-<span class="n">dataset_active</span> <span class="o">=</span> <span class="n">dataset_unbalanced</span><span class="p">[</span><span class="n">dataset_unbalanced</span><span class="p">[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Active&quot;</span><span class="p">]</span>
-<span class="n">dataset_inactive</span> <span class="o">=</span> <span class="n">dataset_unbalanced</span><span class="p">[</span><span class="n">dataset_unbalanced</span><span class="p">[</span><span class="s2">&quot;Outcome&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Inactive&quot;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">balance_factor</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dataset_active</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mf">1.3</span><span class="p">))</span>
-<span class="n">dataset_inactive</span> <span class="o">=</span> <span class="n">dataset_inactive</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">active_multiplied</span><span class="p">)</span>
-<span class="n">dataset_balanced</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dataset_active</span><span class="p">,</span> <span class="n">dataset_inactive</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
 <p>Since we have so many columns, we will examine their variation en masse in order to determine how we want to encode them.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[158]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">features</span> <span class="o">=</span> <span class="n">dataset_unbalanced</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;MAPK_bioassay.parquet&quot;</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;Outcome&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -659,12 +637,13 @@ div.rendered_html tbody tr:hover {
 <span class="n">features_nonbinary</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset_unbalanced</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">values</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">pass</span> <span class="c1">#no variation</span>
     <span class="k">elif</span> <span class="p">(</span><span class="n">values</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
         <span class="n">features_binary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># None appeared ordinal.</span>
         <span class="n">features_nonbinary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Binary Features = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">features_binary</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
@@ -682,6 +661,9 @@ Non-binary Features = 31
 </pre></div></div>
 </div>
 <hr class="docutils" />
+</section>
+<section id="Preprocessing">
+<h1>Preprocessing<a class="headerlink" href="#Preprocessing" title="Permalink to this headline"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[163]:
 </pre></div>
@@ -699,7 +681,7 @@ Non-binary Features = 31
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
-    <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">dataset_balanced</span>
+    <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
 
     <span class="c1"># --- Label preprocessing ---</span>
     <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;Outcome&#39;</span>
@@ -780,6 +762,9 @@ No more Featurecoders can be added to this Encoderset.
 
 </pre></div></div>
 </div>
+</section>
+<section id="Modeling">
+<h1>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
@@ -1276,6 +1261,9 @@ No more Featurecoders can be added to this Encoderset.
 <img alt="matrixTrain" src="../_images/docking_matrix_train.png" />
 <img alt="matrixTest" src="../_images/docking_matrix_test.png" />
 <hr class="docutils" />
+</section>
+<section id="Interpretation">
+<h1>Interpretation<a class="headerlink" href="#Interpretation" title="Permalink to this headline"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">Experiment.permutation_count</span></code> parameter determines how many times each feature is permuted and run back through the model. The median difference in loss is then compared to the baseline loss of the model.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -1300,13 +1288,13 @@ No more Featurecoders can be added to this Encoderset.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_ind</span>
 
-<span class="n">active</span> <span class="o">=</span> <span class="n">dataset_balanced</span><span class="p">[</span><span class="n">dataset_balanced</span><span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Active&#39;</span><span class="p">]</span>
-<span class="n">inactive</span> <span class="o">=</span> <span class="n">dataset_balanced</span><span class="p">[</span><span class="n">dataset_balanced</span><span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Inactive&#39;</span><span class="p">]</span>
+<span class="n">active</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Active&#39;</span><span class="p">]</span>
+<span class="n">inactive</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Inactive&#39;</span><span class="p">]</span>
 <span class="n">top_6</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NumHBD&#39;</span><span class="p">,</span><span class="s1">&#39;NumRot&#39;</span><span class="p">,</span><span class="s1">&#39;WBN_LP_L_0.25&#39;</span><span class="p">,</span><span class="s1">&#39;HBA_05_ARC&#39;</span><span class="p">,</span><span class="s1">&#39;WBN_LP_H_1.00&#39;</span><span class="p">,</span><span class="s1">&#39;WBN_EN_H_1.00&#39;</span><span class="p">]</span>
 
 <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">top_6</span><span class="p">:</span>
     <span class="n">ttest_sig</span> <span class="o">=</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">active</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">inactive</span><span class="p">[</span><span class="n">col</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="mf">0.05</span>
-    <span class="n">px</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="n">dataset_balanced</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Outcome&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Significant P-value: </span><span class="si">{</span><span class="n">ttest_sig</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">px</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;Outcome&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Significant P-value: </span><span class="si">{</span><span class="n">ttest_sig</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

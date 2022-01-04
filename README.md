@@ -10,16 +10,16 @@
 <h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
 </br></br></br></br>
 
-<p align='center'><b>AIQC accelerates research teams with an open source framework for deep learning pipelines.</b></p>
+<p align='center'><b>→ AIQC is an open source framework for MLOps.</b></p>
 </br>
-<p align='center'><i>A simple Python framework for conducting rapid, rigorous, and reproducible experiments.</i></p>
+<p align='center'><i>Accelerating scientific research with an API for data preprocessing, experiment tracking, & model evaluation.</i></p>
 
 
 </br>
 </br>
 
 <p align='center'>
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_dec31.png" width="95%" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mlops.png" width="95%" alt="framework"/>
 </p>
 
 </br>

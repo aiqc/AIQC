@@ -83,15 +83,15 @@
   
   </br>
   <center>
-    <b>→ AIQC accelerates research teams with an open source framework for deep learning pipelines.</b>
+    <b>→ AIQC is an open source framework for MLOps.</b>
     </br>
     </br>
-    <i class="intro" style="color:gray">A simple Python framework for conducting rapid, rigorous, and reproducible experiments.</i>
+    <i class="intro" style="color:gray">Accelerating scientific research with an API for data preprocessing, experiment tracking, & model evaluation.</i>
     </br></br></br></br>    
   </center>
 
 
-.. image:: images/framework_dec31.png
+.. image:: images/framework_mlops.png
   :width: 100%
   :align: center
   :alt: framework
@@ -101,7 +101,7 @@
   
   </br></br></br>
   <p class="intro">
-    Deep learning is difficult to implement because leading tools skip the following <i>data wrangling</i> challenges:
+    AIQC makes deep learning accessible by solving the following <i>data wrangling</i> challenges:
   </p>
   <ol class="intro">
     <li class="shadowBox">
@@ -271,7 +271,7 @@ Overview
   
   </br></br>
   <center>
-    <b>→ Automated visualizations for evaluating every split & fold of every model.</b>
+    <b>→ Automated visualizations for evaluating each split & fold of every model.</b>
   </center>
   </br></br>
 

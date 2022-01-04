@@ -66,3 +66,4 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 - When I ran into problems with broken image references on ReadTheDocs, I ran `make clean` to delete the `/_build` folder and then `make html`.
 - The `nbsphinx==0.8.6` maintainer fixed a bug where it was not working with Jinja2(v3). 
 - Don't delete 'make.bat' or 'Makefile'.
+- When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.

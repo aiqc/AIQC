@@ -63,14 +63,6 @@
    ]
   },
   {
-   "cell_type": "markdown",
-   "id": "46bd401e-4bcd-4911-af36-02273fedfcc0",
-   "metadata": {},
-   "source": [
-    "The dataset is unbalanced by a factor of 162-to-1, inactive-to-active. We'll sample that down to a ratio of 1.3-to-1.0"
-   ]
-  },
-  {
    "cell_type": "code",
    "execution_count": 153,
    "id": "ed4694c9-bfdf-4eb3-9702-2bb73494a60b",
@@ -78,30 +70,6 @@
    "outputs": [],
    "source": [
     "import pandas as pd"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 21,
-   "id": "efb5710b-4b32-41a5-80d4-65c66c347cc7",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "dataset_unbalanced = pd.read_parquet(\"MAPK_unbalanced.parquet\")\n",
-    "dataset_active = dataset_unbalanced[dataset_unbalanced[\"Outcome\"] == \"Active\"]\n",
-    "dataset_inactive = dataset_unbalanced[dataset_unbalanced[\"Outcome\"] == \"Inactive\"]"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 25,
-   "id": "389bd328-ad1e-4a41-9ffd-336ecd2ed1e6",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "balance_factor = round(int(dataset_active.shape[0]*1.3))\n",
-    "dataset_inactive = dataset_inactive.sample(active_multiplied)\n",
-    "dataset_balanced = pd.concat([dataset_active, dataset_inactive])"
    ]
   },
   {
@@ -119,7 +87,8 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "features = dataset_unbalanced.columns.tolist()\n",
+    "df = pd.read_parquet(\"MAPK_bioassay.parquet\")\n",
+    "features = df.columns.tolist()\n",
     "features.remove('Outcome')"
    ]
   },
@@ -145,12 +114,13 @@
     "features_nonbinary = []\n",
     "\n",
     "for col in features:\n",
-    "    values = len(dataset_unbalanced[col].value_counts().tolist())\n",
+    "    values = len(df[col].value_counts().tolist())\n",
     "    if (values == 1):\n",
     "        pass #no variation\n",
     "    elif (values == 2):\n",
     "        features_binary.append(col)\n",
     "    else:\n",
+    "        # None appeared ordinal.\n",
     "        features_nonbinary.append(col)\n",
     "        \n",
     "print(f\"Binary Features = {len(features_binary)} \")\n",
@@ -171,9 +141,17 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "id": "4125b691-3080-406a-9363-698f687953e0",
+   "metadata": {},
+   "source": [
+    "# Preprocessing"
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 163,
-   "id": "522372cd-e83e-4296-866e-3b8480278a96",
+   "id": "66085372-8a9b-4a95-a335-8afeb6a25e16",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -258,7 +236,7 @@
    "source": [
     "splitset = aiqc.Pipeline.Tabular.make(\n",
     "    # --- Data source ---\n",
-    "    df_or_path = dataset_balanced\n",
+    "    df_or_path = df\n",
     "\n",
     "    # --- Label preprocessing ---\n",
     "    , label_column = 'Outcome'\n",
@@ -275,6 +253,14 @@
     "    , size_test = 0.26\n",
     "    , size_validation = None\n",
     ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fcfb2f27-07ff-4063-8caa-da9abe162d98",
+   "metadata": {},
+   "source": [
+    "# Modeling"
    ]
   },
   {
@@ -880,6 +866,14 @@
   },
   {
    "cell_type": "markdown",
+   "id": "6417b0c2-67d0-44fa-a19b-f421f456e4f5",
+   "metadata": {},
+   "source": [
+    "# Interpretation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "id": "f5ffd7c9-41e5-4394-be2b-c7c8e8f78d8f",
    "metadata": {},
    "source": [
@@ -932,13 +926,13 @@
    "source": [
     "from scipy.stats import ttest_ind\n",
     "\n",
-    "active = dataset_balanced[dataset_balanced['Outcome']=='Active']\n",
-    "inactive = dataset_balanced[dataset_balanced['Outcome']=='Inactive']\n",
+    "active = df[df['Outcome']=='Active']\n",
+    "inactive = df[df['Outcome']=='Inactive']\n",
     "top_6 = ['NumHBD','NumRot','WBN_LP_L_0.25','HBA_05_ARC','WBN_LP_H_1.00','WBN_EN_H_1.00']\n",
     "\n",
     "for col in top_6:\n",
     "    ttest_sig = ttest_ind(active[col], inactive[col])[1]<0.05\n",
-    "    px.box(dataset_balanced, x=\"Outcome\", y=col, title=f\"Significant P-value: {ttest_sig}\", height=50).show()"
+    "    px.box(df, x=\"Outcome\", y=col, title=f\"Significant P-value: {ttest_sig}\", height=50).show()"
    ]
   },
   {
