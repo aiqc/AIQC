@@ -6384,6 +6384,7 @@ class Job(BaseModel):
 						# Figure out how many columns they account for in the encoded data.
 						if ("OneHotEncoder" in stringified_encoder):
 							num_matching_columns = 0
+							# One array per orginal column.
 							for c in fitted_encoder.categories_:
 								num_matching_columns += len(c)
 						else:

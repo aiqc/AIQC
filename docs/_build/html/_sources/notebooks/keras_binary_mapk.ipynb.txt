@@ -13,7 +13,7 @@
    "id": "2cf1508d-9a38-4e8f-bb52-c2d523878c17",
    "metadata": {},
    "source": [
-    "*In silico compound selection using permuted feature importance of neural networks to rank High Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.*"
+    "*In silico interpretation of compound selection using permuted feature importance of neural networks to rank High Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.*"
    ]
   },
   {
@@ -51,7 +51,7 @@
    "id": "46fa1d76-3236-47e0-92b9-34616c3a8a47",
    "metadata": {},
    "source": [
-    "The purpose of this analysis is to use *permuted feature importance* to understand which chemical structures are driving the activation of the target. The predictions of a machine learning algorithm don't have to be a black box. "
+    "The purpose of this analysis is to use *permuted feature importance* to understand which chemical structures are driving the activation of the target."
    ]
   },
   {

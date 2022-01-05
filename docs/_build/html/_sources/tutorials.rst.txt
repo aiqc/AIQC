@@ -45,7 +45,7 @@ Use Cases & Tutorials
     - :ref:`Keras </notebooks/keras_image_classification.ipynb>`
 
   * - Design drugs
-    - Feature importance for binary |br| classification of tabular data.
+    - Feature importance for binary |br| classification of tabular data
     - :ref:`Keras </notebooks/keras_binary_mapk.ipynb>`    
 
   * - Detect epileptic seizure
