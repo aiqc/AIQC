@@ -236,7 +236,7 @@
   
   </br></br>
   <center>
-    <b>→ Discover the insight trapped inside of your raw data faster with deep learning.</b>
+    <b>→ Discover the insight hidden in your raw data faster with deep learning.</b>
   </center>
   </br></br>
 
