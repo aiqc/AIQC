@@ -9,7 +9,7 @@ Use Cases & Tutorials
 ..
   Without this comment, `make html` throws warning about page beginning w horizontal line below.
 
-.. image:: images/banner_use_cases_2.png
+.. image:: images/banner_use_cases_jan9.png
   :width: 100%
   :align: center
   :alt: use_cases
@@ -46,7 +46,11 @@ Use Cases & Tutorials
 
   * - Design drugs
     - Feature importance for binary |br| classification of tabular data
-    - :ref:`Keras </notebooks/keras_binary_mapk.ipynb>`    
+    - :ref:`Keras </notebooks/keras_binary_mapk.ipynb>`
+  
+  * - Discover & validate genes
+    - Feature importance for multi-label |br| classification of tabular data
+    - :ref:`Keras </notebooks/keras_binary_tcga.ipynb>` 
 
   * - Detect epileptic seizure
     - Binary classification of |br| time series/ sequence data

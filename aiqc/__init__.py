@@ -40,7 +40,6 @@ import multiprocessing
 # - Spawn/ pickle dictates (1) where execute_jobs func is placed, (2) if MetricsCutoff func works, (3) if tqdm output is visible.
 # - Update: now MetricsCutoff is not working in `fork` mode.
 # - Wrote the `poll_progress` func for 'spawn' situations.
-# - If everything hits the fan, `run_jobs(in_background=False)` for a normal for loop.
 # - Tried `concurrent.futures` but it only works with `.py` from command line.
 
 if (os.name != 'nt'):
@@ -4982,7 +4981,7 @@ class Plot():
 	def feature_importance(self, dataframe:object, feature_id:int, permutation_count:int, height:int):
 		importance_srs = dataframe['Importance']
 		pad = importance_srs.iloc[-1]*0.12
-		range_max, range_min = importance_srs.iloc[-1]+pad, importance_srs[0]-pad
+		range_max, range_min = importance_srs.iloc[-1]+pad, importance_srs.iloc[0]-pad
 		
 		fig = px.bar(
 			dataframe, x='Importance', y='Feature', text='Feature', orientation='h', height=height,
@@ -7100,10 +7099,9 @@ class Prediction(BaseModel):
 		Plot().roc_curve(dataframe=dataframe)
 	
 
-	def plot_feature_importance(id:int, height:int=None):
+	def plot_feature_importance(id:int, top_n:int=None, height:int=None):
 		prediction = Prediction.get_by_id(id)
 		feature_importance = prediction.feature_importance
-
 		if (feature_importance is not None):
 			permutation_count = prediction.predictor.job.queue.permutation_count
 			# Remember the Featureset may contain multiple Features.
@@ -7116,9 +7114,12 @@ class Prediction(BaseModel):
 					
 				dkt = dict(Feature=features, Importance=loss, Color=colors)
 				dataframe = pd.DataFrame(dkt)
-				
+
+				if (top_n is not None):
+					#nlargest returns in descending which would invert plot range.
+					dataframe = dataframe.nlargest(top_n,'Importance').sort_values('Importance', ascending=True)
 				if (height is None):
-					num_features = len(features)
+					num_features = dataframe.shape[0]
 					height = num_features*25+120
 			
 				Plot().feature_importance(
