@@ -289,6 +289,8 @@
       <div>Pipeline()</div><div>Experiment()</div>
     </div>
 
+  </br></br>
+  <i class="intro" style="color:gray">Move beyond `X_train, y_test` scripting with an object-oriented framework validated by relational rules.</i>
   </center>
   </br></br>
 
