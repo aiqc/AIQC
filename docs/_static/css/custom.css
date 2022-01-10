@@ -316,6 +316,41 @@ iframe {
 .checkmark {
 	font-size:	130%;
 }
+
+.blockz-title {
+    font-family: arial;
+    color: #8e8e8e;
+    font-size: 15.5px;
+    font-weight: bold;
+}
+
+.blockz div {
+    display: inline-block;
+    margin: 6px;
+    padding: 8px;
+    border-radius: 5px;
+    font-family: arial, Helvetica;
+    font-size: 14px;
+
+}
+
+.low-level div {
+    border: 2px solid #deb887;
+    color: #291e0f;
+    background: #f5deb3;
+}
+
+.high-level div  {
+    border: 2px solid #b59bd0;
+    color: #251634;
+    background: #ddcaf0;
+}
+
+.blockz .etc {
+    color:rgb(148, 148, 148);
+    font-family: arial;
+    font-size: 13px;
+}
 /* --- End: compatibility table index page --- */
 
 
