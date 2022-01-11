@@ -68,22 +68,22 @@ ol.intro li span {
 }
 
 .shadowBox {
-    border-radius:      12px;
+    border-radius:      18px;
     background:       white;
     border:             1px solid lightgray;
-    box-shadow:         4px 4px lightgray;
-    -moz-box-shadow:    4px 4px lightgray;
-    -webkit-box-shadow: 4px 4px lightgray;
-    -o-box-shadow:      4px 4px lightgray;
+    box-shadow:         3px 3px lightgray;
+    -moz-box-shadow:    3px 3px lightgray;
+    -webkit-box-shadow: 3px 3px lightgray;
+    -o-box-shadow:      3px 3px lightgray;
 }
 
 .shadowBox:hover {
     border:             1px solid #adadad;
-    border-radius:      9px;
-    box-shadow:         4px 4px #adadad;
-    -moz-box-shadow:    4px 4px #adadad;
-    -webkit-box-shadow: 4px 4px #adadad;
-    -o-box-shadow:      4px 4px #adadad;
+    border-radius:      25px;
+    box-shadow:         3px 3px #adadad;
+    -moz-box-shadow:    3px 3px #adadad;
+    -webkit-box-shadow: 3px 3px #adadad;
+    -o-box-shadow:      3px 3px #adadad;
 }
 
 /* list of features */
