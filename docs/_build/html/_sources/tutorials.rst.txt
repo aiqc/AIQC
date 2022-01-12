@@ -34,7 +34,7 @@ Use Cases & Tutorials
   
   * - Use Case
     - Analysis Type
-    - Tutorial
+    - Notebook
 
   * - Categorize plant species
     - Multi-label classification of tabular data

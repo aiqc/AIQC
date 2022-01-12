@@ -198,13 +198,13 @@ How AI Works
   :align: center
   
   * - **Linear**
-    - Tabular data like spreadsheets.
+    - Tabular: spreadsheets & tables 🧮.
 
   * - **Convolutional**
-    - Images and video 📸.
+    - Grid-like: images, videos, & networks 📸.
 
   * - **Recurrent**
-    - Time series data ⏱️.
+    - Ordered: time & text ⏱️.
 
 
 .. raw:: html
@@ -263,14 +263,24 @@ How AI Works
   <p class="explain">
     And that's really all there is to it 🏄‍♂️&nbsp;The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
   </p>
+  </br>
 
-|
 
 
-.. image:: images/oz.png
-  :width: 35%
+.. image:: https://imgs.xkcd.com/comics/machine_learning.png
+  :width: 40%
   :align: center
   :alt: oz
   :class: no-scaled-link
+
+
+.. raw:: html
+
+  </br>
+  <center>
+    <small style="color:gray">
+      <i>The classic <a href="https://xkcd.com/1838/">xkcd</a> comic.</i>
+    </small>
+  </center>
   
 |

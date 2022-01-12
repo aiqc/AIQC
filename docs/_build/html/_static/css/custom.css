@@ -340,10 +340,18 @@ iframe {
     background: #f5deb3;
 }
 
+.low-level div:hover {
+    border: 2px solid #c7a377;
+}
+
 .high-level div  {
     border: 2px solid #b59bd0;
     color: #251634;
     background: #ddcaf0;
+}
+
+.high-level div:hover {
+    border: 2px solid #987db5;
 }
 
 .blockz .etc {
