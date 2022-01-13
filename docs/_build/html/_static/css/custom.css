@@ -318,10 +318,9 @@ iframe {
 }
 
 .blockz-title {
-    font-family: arial;
+    font-family: Lato, proxima-nova, Helvetica Neue, Arial, sans-serif;
     color: #8e8e8e;
-    font-size: 15.5px;
-    font-weight: bold;
+    font-size: 16px;
 }
 
 .blockz div {
