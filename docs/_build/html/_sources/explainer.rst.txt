@@ -198,13 +198,13 @@ How AI Works
   :align: center
   
   * - **Linear**
-    - Tabular: spreadsheets & tables 🧮.
+    - 🧮 Tabular: spreadsheets & tables.
 
   * - **Convolutional**
-    - Grid-like: images, videos, & networks 📸.
+    - 📸 Positional: images, videos, & networks.
 
   * - **Recurrent**
-    - Ordered: time & text ⏱️.
+    - ⏱️ Ordered: time & text.
 
 
 .. raw:: html

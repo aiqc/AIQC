@@ -28,6 +28,7 @@
   explainer
   consulting
   community
+  compare
 
 
 ..
@@ -142,6 +143,40 @@
 
 ----
 
+.. raw:: html
+
+  </br></br>
+  <center>
+    <b>→ &nbsp; Goodbye, <i>(X_train, y_test)</i> scripts. &nbsp; Hello, object-oriented machine learning.</b>
+    </br></br></br></br>
+    
+    <div class="blockz-container">
+      <div class="blockz-title">Low-Level API</div>
+      </br>
+      <div class="blockz low-level">
+        <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoderset()</div>
+        <div>Algorithm()</div><div>Hyperparamset()</div><div>Job()</div><div>Queue()</div><div>Prediction()</div>
+        <span class="etc"><i>etc.</i></span>
+      </div>
+
+      </br></br>
+
+      <div class="blockz-title">High-Level API</div>
+      </br>
+      <div class="blockz high-level">
+        <div>Pipeline()</div><div>Experiment()</div>
+      </div>
+    </div>
+
+    </br></br>
+    <a href="compare.html" target="_blank">
+      <i>How does AIQC compare to other experiment trackers?</i>
+    </a>
+  </center>
+  </br></br>
+
+
+----
 
 .. raw:: html
   
@@ -226,37 +261,6 @@
   </br>
   <center>
     <i class="intro" style="color:gray">Supports the most popular data types, analytical use cases, and deep learning libraries.</i>
-  </center>
-  </br></br>
-
-----
-
-.. raw:: html
-
-  </br></br>
-  <center>
-    <b>→ Leverage AIQC's object-oriented building blocks for machine learning.</b>
-    </br></br></br></br>
-    
-    <div class="blockz-title">Low-Level API</div>
-    </br>
-    <div class="blockz low-level">
-      <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoder()</div>
-      </br>
-      <div>Algorithm()</div><div>Hyperparamset()</div><div>Job()</div><div>Queue()</div><div>Prediction()</div>
-      <span class="etc"><i>etc.</i></span>
-    </div>
-
-    </br></br>
-
-    <div class="blockz-title">High-Level API</div>
-    </br>
-    <div class="blockz high-level">
-      <div>Pipeline()</div><div>Experiment()</div>
-    </div>
-
-  </br></br>
-  <i class="intro" style="color:gray">Move beyond `X_train, y_test` scripting with an object-oriented framework validated by relational rules.</i>
   </center>
   </br></br>
 

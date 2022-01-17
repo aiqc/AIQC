@@ -122,7 +122,7 @@ iframe {
 	border-radius: 15px;
 }
 
-#overview h1 {
+#overview h1, #competition h1 {
     display: none !important;;
 }
 
@@ -277,6 +277,17 @@ iframe {
     background: radial-gradient(#d9ffd9, #adeaad) !important;
 }
 
+.medium {
+    background: #fff2ccff !important;
+    color:      #000;
+}
+
+.medium:hover {
+    background: radial-gradient(rgb(255, 248, 232), rgb(255, 235, 176)) !important;
+}
+
+/* --- end compatibility table --- */
+
 .extra-bullets {
 	font-size: 		90%;
 	list-style:		circle; 
@@ -295,6 +306,12 @@ iframe {
 	background: #131313FF !important;
 	color: 		white;
 	font-size: 	100% !important;
+}
+
+.row-head {
+	background: #131313FF !important;
+	color: 		white;
+	font-size: 	88% !important;
 }
 
 .top-left {
@@ -317,10 +334,18 @@ iframe {
 	font-size:	130%;
 }
 
+.blockz-container {
+    border:        2px solid #e3e3e3;
+    border-radius: 25px;
+    width:         83%;
+    background:  white;
+    padding:       23px;
+}
+
 .blockz-title {
     font-family: Lato, proxima-nova, Helvetica Neue, Arial, sans-serif;
-    color: #8e8e8e;
-    font-size: 16px;
+    color: #828282;
+    font-size: 16.5px;
 }
 
 .blockz div {
