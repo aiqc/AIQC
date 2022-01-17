@@ -87,7 +87,7 @@
     <b>→ AIQC is an open source framework for MLOps.</b>
     </br>
     </br>
-    <i class="intro" style="color:gray">Accelerating scientific research with an API for data preprocessing, experiment tracking, & model evaluation.</i>
+    <i class="intro" style="color:gray">Accelerating scientific research with a simple API for data preprocessing, experiment tracking, & model evaluation.</i>
     </br></br></br></br>    
   </center>
 
@@ -147,7 +147,7 @@
 
   </br></br>
   <center>
-    <b>→ &nbsp; Goodbye, obscure <i>(X_train, y_test)</i> scripts. &nbsp; Hello, object-oriented machine learning.</b>
+    <b>→ &nbsp; Goodbye, vague scripts <i>(X_train, y_test)</i>. &nbsp; Hello, object-oriented machine learning.</b>
     </br></br></br></br>
     
     <div class="blockz-container">
@@ -170,7 +170,7 @@
 
     </br></br>
     <a href="compare.html" target="_blank">
-      <i>How does AIQC compare to other experiment trackers?</i>
+      <i>↳ How does AIQC compare to other experiment trackers?</i>
     </a>
   </center>
   </br></br>
