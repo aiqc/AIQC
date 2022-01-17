@@ -147,14 +147,14 @@
 
   </br></br>
   <center>
-    <b>→ &nbsp; Goodbye, <i>(X_train, y_test)</i> scripts. &nbsp; Hello, object-oriented machine learning.</b>
+    <b>→ &nbsp; Goodbye, obscure <i>(X_train, y_test)</i> scripts. &nbsp; Hello, object-oriented machine learning.</b>
     </br></br></br></br>
     
     <div class="blockz-container">
       <div class="blockz-title">Low-Level API</div>
       </br>
       <div class="blockz low-level">
-        <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoderset()</div>
+        <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoder()</div>
         <div>Algorithm()</div><div>Hyperparamset()</div><div>Job()</div><div>Queue()</div><div>Prediction()</div>
         <span class="etc"><i>etc.</i></span>
       </div>

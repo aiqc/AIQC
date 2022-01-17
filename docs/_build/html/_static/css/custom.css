@@ -362,6 +362,7 @@ iframe {
     border: 2px solid #deb887;
     color: #291e0f;
     background: #f5deb3;
+    margin-bottom: 4px;
 }
 
 .low-level div:hover {
