@@ -125,7 +125,7 @@ Phase II - Implementation
       8. &nbsp;Rank predictive features.
     </div>
     <div class="svcDescribe">
-      Interpret the model by quantifying how much each feature is contributing to predictions. Perform permutations that provide a ranking of what data is most important to the model.
+      Interpret the model by quantifying how much each feature is contributing to predictions. Perform permutations that provide a ranking of what characteristics are most important to the model.
     </div>
   </div>
 
