@@ -238,9 +238,9 @@
     "\n",
     "    # --- Training options ---\n",
     "    , repeat_count      = 2\n",
-    "    , permutation_count = 5\n",
+    "    , permutate_count = 5\n",
     "    , hyperparameters   = hyperparameters\n",
-    "    , pick_percent      = None\n",
+    "    , search_percent      = None\n",
     "\n",
     "    # --- Data source ---\n",
     "    , splitset_id       = splitset.id\n",
@@ -468,7 +468,7 @@
    "id": "f5ffd7c9-41e5-4394-be2b-c7c8e8f78d8f",
    "metadata": {},
    "source": [
-    "The `Experiment.permutation_count` parameter determines how many times each feature is permuted and run back through the model. The median difference in loss is then compared to the baseline loss of the model."
+    "The `Experiment.permute_count` parameter determines how many times each feature is permuted and run back through the model. The median difference in loss is then compared to the baseline loss of the model."
    ]
   },
   {

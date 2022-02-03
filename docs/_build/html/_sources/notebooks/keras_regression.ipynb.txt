@@ -458,7 +458,7 @@
     "    # --- Training options ---\n",
     "    , repeat_count = 1\n",
     "    , hyperparameters = hyperparameters\n",
-    "    , pick_percent = None\n",
+    "    , search_percent = None\n",
     "    \n",
     "    # --- Data source ---\n",
     "    , splitset_id = splitset.id\n",

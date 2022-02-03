@@ -164,7 +164,7 @@ def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_ev
 	)
 	return model
 
-def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [9, 12]
 		, "batch_size": [3]
@@ -274,7 +274,7 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 	)
 	return model
 
-def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
@@ -343,11 +343,12 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None):
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
 
-def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [25, 50]
 		, "epochs": [75, 150]
@@ -416,6 +417,7 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None):
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -452,7 +454,7 @@ def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_ev
 	)
 	return model
 
-def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [24, 48]
 		, "epochs": [50, 75]
@@ -548,6 +550,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None):
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -704,7 +707,7 @@ def keras_sequence_binary_fn_train(model, loser, optimizer, samples_train, sampl
 	)
 	return model
 
-def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('epilepsy.parquet')
 	# testing Featurepolater 3D.
 	df['sensor_1'][999] = np.NaN
@@ -774,6 +777,7 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
 		, foldset_id = foldset_id
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -814,7 +818,7 @@ def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samp
 	)
 	return model
 
-def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('delhi_climate.parquet')
 	df['temperature'][0] = np.NaN
 	df['temperature'][13] = np.NaN
@@ -894,6 +898,7 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -961,7 +966,7 @@ def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_eval
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
-def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	file_path = datum.get_path('sonar.csv')
 
 	dataset = Dataset.Tabular.from_path(
@@ -1030,6 +1035,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None):
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -1097,7 +1103,7 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
-def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	if fold_count is not None:
 		file_path = datum.get_path('iris_10x.tsv')
 	else:
@@ -1168,6 +1174,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None):
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -1245,7 +1252,7 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 		history['val_expVar'].append(float(eval_expVar))
 	return model, history
  
-def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
+def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	file_path = datum.get_path('houses.csv')
 
 	dataset = Dataset.Tabular.from_path(
@@ -1325,6 +1332,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None):
 		, foldset_id = foldset_id
 		, hyperparamset_id = hyperparamset.id
 		, repeat_count = repeat_count
+		, permute_count = permute_count
 	)
 	return queue
 
@@ -1586,31 +1594,31 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 	
 
 # ------------------------ TEST BATCH CALLER ------------------------
-def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None):
+def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	if (name == 'keras_multiclass'):
-		queue = make_test_queue_keras_multiclass(repeat_count, fold_count)
+		queue = make_test_queue_keras_multiclass(repeat_count, fold_count, permute_count)
 	elif (name == 'keras_binary'):
-		queue = make_test_queue_keras_binary(repeat_count, fold_count)
+		queue = make_test_queue_keras_binary(repeat_count, fold_count, permute_count)
 	elif (name == 'keras_text_binary'):
-		queue = make_test_queue_keras_text_binary(repeat_count, fold_count)
+		queue = make_test_queue_keras_text_binary(repeat_count, fold_count, permute_count)
 	elif (name == 'keras_regression'):
-		queue = make_test_queue_keras_regression(repeat_count, fold_count)
+		queue = make_test_queue_keras_regression(repeat_count, fold_count, permute_count)
+	elif (name == 'keras_sequence_binary'):
+		queue = make_test_queue_keras_sequence_binary(repeat_count, fold_count, permute_count)
+	elif (name == 'keras_tabular_forecast'):
+		queue = make_test_queue_keras_tabular_forecast(repeat_count, fold_count, permute_count)
+	elif (name == 'pytorch_binary'):
+		queue = make_test_queue_pytorch_binary(repeat_count, fold_count, permute_count)
+	elif (name == 'pytorch_multiclass'):
+		queue = make_test_queue_pytorch_multiclass(repeat_count, fold_count, permute_count)
+	elif (name == 'pytorch_regression'):
+		queue = make_test_queue_pytorch_regression(repeat_count, fold_count, permute_count)
 	elif (name == 'keras_image_binary'):
 		queue = make_test_queue_keras_image_binary(repeat_count, fold_count)
-	elif (name == 'keras_sequence_binary'):
-		queue = make_test_queue_keras_sequence_binary(repeat_count, fold_count)
-	elif (name == 'keras_tabular_forecast'):
-		queue = make_test_queue_keras_tabular_forecast(repeat_count, fold_count)
-	elif (name == 'keras_image_forecast'):
-		queue = make_test_queue_keras_image_forecast(repeat_count, fold_count)
-	elif (name == 'pytorch_binary'):
-		queue = make_test_queue_pytorch_binary(repeat_count, fold_count)
-	elif (name == 'pytorch_multiclass'):
-		queue = make_test_queue_pytorch_multiclass(repeat_count, fold_count)
-	elif (name == 'pytorch_regression'):
-		queue = make_test_queue_pytorch_regression(repeat_count, fold_count)
 	elif (name == 'pytorch_image_binary'):
 		queue = make_test_queue_pytorch_image_binary(repeat_count, fold_count)
+	elif (name == 'keras_image_forecast'):
+		queue = make_test_queue_keras_image_forecast(repeat_count, fold_count)
 	else:
 		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'tests.list_test_queues()'.\n")
 	return queue

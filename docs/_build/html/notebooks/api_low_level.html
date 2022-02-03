@@ -2623,8 +2623,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <h5>Random selection strategy.<a class="headerlink" href="#Random-selection-strategy." title="Permalink to this headline"></a></h5>
 <p>Testing many different combinations in your initial runs can be a good way to get a feel for the parameter space. Although if you are doing this you’ll find that many of your combinations are a bit too similar. So randomly sampling (with replacement) a few of them is a less computationally expensive way to go about this.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">pick_count:int</span></code> the fixed # of combinations to sample.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pick_percent:float</span></code> a % of combinations to sample.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">search_count:int</span></code> the fixed # of combinations to sample.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">search_percent:float</span></code> a % of combinations to sample.</p></li>
 </ul>
 </section>
 <section id="Bayesian-selection-strategy.">
@@ -2638,8 +2638,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
     <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">pick_count</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">pick_percent</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">search_count</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">search_percent</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2764,7 +2764,7 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="p">,</span> <span class="n">permutation_count</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="p">,</span> <span class="n">permute_count</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2779,7 +2779,8 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
 <li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool=False</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
 </ul>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">permutation_count:int</span></code> controls the number of times each feature column is shuffled before it’s impact on loss is compared to the baseline training loss before the median taken. Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>. If you are rapidly training exploratory models on many columns, then you can set <code class="docutils literal notranslate"><span class="pre">permutation_count=0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permute_count:int=3</span></code> controls the number of times each feature column is shuffled before it’s impact on loss is compared to the baseline training loss before the median taken. Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>. If you have many columns and all you care about is the final prediction, then it may make sense to set <code class="docutils literal notranslate"><span class="pre">permute_count=0</span></code> because permutations are computationally expensive &amp; difficult to
+parallelize.</p></li>
 </ul>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;5&gt;</span> <span class="pre">permutations)]</span></code></p>
