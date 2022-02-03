@@ -4555,7 +4555,7 @@ class Algorithm(BaseModel):
 		id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 0
+		, permute_count:int = 0
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
 		, hide_test:bool = False
@@ -4566,7 +4566,7 @@ class Algorithm(BaseModel):
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id
 			, repeat_count = repeat_count
-			, permutation_count = permutation_count
+			, permute_count = permute_count
 			, hide_test = hide_test
 		)
 		return queue
@@ -4978,7 +4978,7 @@ class Plot():
 		fig.show()
 	
 
-	def feature_importance(self, dataframe:object, feature_id:int, permutation_count:int, height:int):
+	def feature_importance(self, dataframe:object, feature_id:int, permute_count:int, height:int):
 		importance_srs = dataframe['Importance']
 		pad = importance_srs.iloc[-1]*0.12
 		range_max, range_min = importance_srs.iloc[-1]+pad, importance_srs.iloc[0]-pad
@@ -4992,7 +4992,7 @@ class Plot():
 		fig.update_layout(template=self.plot_template, showlegend=False)
 		fig.update_yaxes(visible=False)
 		fig.update_xaxes(
-			title=f"Importance<br><sup>[training loss - (median loss of {permutation_count} permutations)]</sup>"
+			title=f"Importance<br><sup>[training loss - (median loss of {permute_count} permutations)]</sup>"
 			, range=[range_min, range_max]
 		)
 		fig.show()
@@ -5004,7 +5004,7 @@ class Queue(BaseModel):
 	repeat_count = IntegerField()
 	run_count = IntegerField()
 	hide_test = BooleanField()
-	permutation_count = IntegerField()
+	permute_count = IntegerField()
 	aws_uid = CharField(null=True)
 
 	algorithm = ForeignKeyField(Algorithm, backref='queues') 
@@ -5018,7 +5018,7 @@ class Queue(BaseModel):
 		algorithm_id:int
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 0
+		, permute_count:int = 0
 		, hide_test:bool = False
 		, hyperparamset_id:int = None
 		, foldset_id:int = None
@@ -5179,7 +5179,7 @@ class Queue(BaseModel):
 			, repeat_count = repeat_count
 			, algorithm = algorithm
 			, splitset = splitset
-			, permutation_count = permutation_count
+			, permute_count = permute_count
 			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, hide_test = hide_test
@@ -6109,7 +6109,7 @@ class Job(BaseModel):
 		job = predictor.job
 		hyperparamcombo = job.hyperparamcombo
 		queue = job.queue
-		permutation_count = queue.permutation_count
+		permute_count = queue.permute_count
 		algorithm = queue.algorithm
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
@@ -6228,9 +6228,10 @@ class Job(BaseModel):
 				plot_data = None
 		
 		# Feature Importance - code is similar to loss above, but different enough not to refactor.
+		# Warning - tf cant be imported on multiple Py processes. Making parallel permutation challening.
 		nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
 		if (
-			(permutation_count>0) and (has_labels==True) and 
+			(permute_count>0) and (has_labels==True) and 
 			(key_train is not None) and (len(nonImage_features)>0)
 		):
 			# Only 'train' because permutation is expensive and the learned patterns.
@@ -6276,7 +6277,7 @@ class Job(BaseModel):
 					feature_subset = feature_data[make_index(ci, dimension)]
 					subset_shape = feature_subset.shape
 
-					for pi in range(permutation_count):
+					for pi in range(permute_count):
 						# Fetch the fresh subset and shuffle it.
 						subset_shuffled = feature_subset.flatten()
 						np.random.shuffle(subset_shuffled)#don't assign
@@ -7103,7 +7104,7 @@ class Prediction(BaseModel):
 		prediction = Prediction.get_by_id(id)
 		feature_importance = prediction.feature_importance
 		if (feature_importance is not None):
-			permutation_count = prediction.predictor.job.queue.permutation_count
+			permute_count = prediction.predictor.job.queue.permute_count
 			# Remember the Featureset may contain multiple Features.
 			for feature_id, dikt in feature_importance.items():
 				# Sort by loss
@@ -7125,7 +7126,7 @@ class Prediction(BaseModel):
 				Plot().feature_importance(
 					dataframe = dataframe
 					, feature_id = feature_id
-					, permutation_count = permutation_count
+					, permute_count = permute_count
 					, height = height
 				)
 		else:
@@ -7508,7 +7509,7 @@ class Experiment():
 		, fn_train:object
 		, splitset_id:int
 		, repeat_count:int = 1
-		, permutation_count:int = 0
+		, permute_count:int = 0
 		, hide_test:bool = False
 		, fn_optimize:object = None
 		, fn_predict:object = None
@@ -7542,7 +7543,7 @@ class Experiment():
 		queue = algorithm.make_queue(
 			splitset_id = splitset_id
 			, repeat_count = repeat_count
-			, permutation_count = permutation_count
+			, permute_count = permute_count
 			, hide_test = hide_test
 			, hyperparamset_id = hyperparamset_id
 			, foldset_id = foldset_id

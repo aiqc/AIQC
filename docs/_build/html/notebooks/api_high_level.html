@@ -659,7 +659,6 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> process starts with raw data. A Dataset object is generated from that data and prepared for training based on the parameters the user provides to the <code class="docutils literal notranslate"><span class="pre">Pipeline.make</span></code> method. To get started, set the <code class="docutils literal notranslate"><span class="pre">dataFrame_or_filePath</span></code> equal to the dataframe we just fetched. It’s the only argument that’s actually required so</p>
 <p>Import any scikit-learn encoders that you want to use to encode labels and/ or features. Any encoders that you pass in will need to be instantiated with the attributes you want them to use.</p>
 <blockquote>
 <div><p>Reference the <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code> section of the low-level API for more detail on how to include/ exclude specific <code class="docutils literal notranslate"><span class="pre">Featureset</span></code> columns by name/dtype. The <code class="docutils literal notranslate"><span class="pre">feature_encoders</span></code> argument seen below takes a list of dictionaries as input, where each dictionary contains the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> for a <code class="docutils literal notranslate"><span class="pre">Featurecoder</span></code>.</p>
@@ -673,6 +672,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> process starts with raw data. A Dataset object is generated from that data and prepared for training based on the parameters the user provides to the <code class="docutils literal notranslate"><span class="pre">Pipeline.make</span></code> method. To get started, set the <code class="docutils literal notranslate"><span class="pre">df_or_path</span></code> equal to the dataframe we just fetched.</p>
 <p>Rather than wrangling your data with many lines of data science code, just set the arguments below and AIQC takes care of the rest: stratification (including continuous dtypes), validation splits, cross-validation folds, and dtype/column specific encoders to be applied on-read.</p>
 <blockquote>
 <div><p>Don’t use <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> unless your (total sample count / fold_count) still gives you an accurate representation of your sample population. You can try it with the ‘iris_10x.tsv’ datum.</p>

@@ -789,29 +789,29 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
-    <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
-    <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">df_or_path</span>                <span class="o">=</span> <span class="n">df</span>
+    <span class="p">,</span> <span class="n">dtype</span>                   <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># --- Label preprocessing ---</span>
-    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_interpolater</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_column</span>            <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_interpolater</span>      <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">label_encoder</span>           <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># --- Feature preprocessing ---</span>
-    <span class="p">,</span> <span class="n">feature_cols_excluded</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">,</span><span class="s1">&#39;wind&#39;</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">feature_interpolaters</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_window</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size_window</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">size_shift</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">feature_encoders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="p">,</span> <span class="n">feature_cols_excluded</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">,</span><span class="s1">&#39;wind&#39;</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">feature_interpolaters</span>   <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">feature_window</span>          <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size_window</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">size_shift</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">feature_encoders</span>        <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
         <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="p">,</span> <span class="n">feature_reshape_indices</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># --- Stratification ---</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.12</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.18</span>
-    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">bin_count</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">size_test</span>               <span class="o">=</span> <span class="mf">0.12</span>
+    <span class="p">,</span> <span class="n">size_validation</span>         <span class="o">=</span> <span class="mf">0.18</span>
+    <span class="p">,</span> <span class="n">fold_count</span>              <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">bin_count</span>               <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -922,25 +922,25 @@ No more Featurecoders can be added to this Encoderset.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
-    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>
+    <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+    <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>
 
     <span class="c1"># --- Model functions ---</span>
-    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
+    <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
+    <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
+    <span class="p">,</span> <span class="n">fn_lose</span>         <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span>     <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
+    <span class="p">,</span> <span class="n">fn_predict</span>      <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
 
     <span class="c1"># --- Training options ---</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="p">,</span> <span class="n">repeat_count</span>    <span class="o">=</span> <span class="mi">2</span>
     <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">pick_percent</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">pick_percent</span>    <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># --- Data source ---</span>
-    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">splitset_id</span>     <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">foldset_id</span>      <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">hide_test</span>       <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span>
 </pre></div>
 </div>
