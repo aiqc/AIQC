@@ -9,8 +9,8 @@ Competition
   <center>
     <b>→ Expect more from your experiment tracker.</b>
     </br></br></br>
-    <p class="intro">AIQC is <i>data-aware</i> (e.g. splits, encoders, shapes, dtypes) and <i>analysis-aware</i> (e.g. supervision), which enables it to orchestrate the preprocessing & evaluation of each split/ fold during training & inference. Whereas alternative tools expect users to manually prepare their data and log their training artifacts.</p>
-    <p class="intro">Model training is the easiest part of a machine learning experiment. The real challenge is the <i>data wrangling</i> both upstream and downstream of the experiment that vary greatly based on data type and analysis type.</p>
+    <p class="intro">AIQC is <b><i>data-aware</i></b> (e.g. splits, encoders, shapes, dtypes) and <b><i>analysis-aware</i></b> (e.g. supervision), which enables it to orchestrate the preprocessing & evaluation of each split/ fold during training & inference. Whereas alternative tools expect users to manually prepare their data and log their training artifacts.</p>
+    <p class="intro">Model training is the easiest part of a machine learning experiment. The real challenge is the <b><i>data wrangling</i></b> both upstream and downstream of the experiment that vary greatly based on data type and analysis type.</p>
     </br></br>
 
   <table class="compatibility" valign="center">
@@ -97,26 +97,36 @@ Competition
 ----
 
 .. raw:: html
-
+  
   </br>
+  <p class="intro">
+    If you are familiar with how Keras abstracts Tensorflow, AIQC can be thought of as a one level higher than Keras in that orchestrates the tuning of multiple models. However, unlike Keras, it (a) supports both Tensorflow & PyTorch, (b) does not remove the opportunity for customization, (c) evaluates models, and (d) orchestrates pre & post processing of data. 
+  </p>
+  </br>
+
+.. image:: images/do_more.png
+  :width: 90%
+  :alt: do_more.png
+
+
+.. raw:: html
+
+  </br></br></br>
   <p class="intro">
     AIQC provides building blocks for the machine learning lifecycle in the form an object-oriented, low-level API (e.g. Dataset, Features, Label, Splitset, Algorithm, etc.) and an easy-to-use high-level API (Pipeline, Experiment).
   </p>
   <p class="intro">
-    The low-level API doubles as an ORM for a relational database, which not only makes AIQC objects persistent & queryable, but also allows for the construction of validation rules using relationships. Thus the blocks can be stacked into workflows for various data types (e.g. Tabular, Sequence, Image), analysis types (e.g. supervised,  self-supervised), and analysis subtypes (e.g. regression, binary-classify, multi-label-classify). There is no work required on behalf of users to configure the database because a SQLite file is automatically created when running `aiqc.setup()`. Another benefit of using an ORM approach is that there's no need to maintain a separate server for running an experiment tracker's REST API. The ORM shares the Python session with the user's code which makes for a more unified and portable experience. The end result is fully object-oriented & reproducible machine learning.
+    The low-level API doubles as an ORM for a relational database, which not only makes AIQC objects persistent & queryable, but also allows for the construction of validation rules using relationships. Thus the blocks can be stacked into workflows for various data types (e.g. Tabular, Sequence, Image), analysis types (e.g. supervised,  self-supervised), and analysis subtypes (e.g. regression, binary-classify, multi-label-classify). 
   </p>
   <p class="intro">
-    If you are familiar with how Keras abstracts Tensorflow, AIQC can be thought of as a one level higher than Keras in that orchestrates the tuning of multiple models. However, unlike Keras, it (a) supports both Tensorflow & PyTorch, (b) does not remove the opportunity for customization, (c) evaluates models, and (d) orchestrates pre & post processing of data.
+    There is no work required on behalf of users to configure the database because a SQLite file is automatically created when running `aiqc.setup()`. Another benefit of using an ORM approach is that there's no need to maintain a separate server for running an experiment tracker's REST API. The ORM shares the Python session with the user's code which makes for a more unified and portable experience. The end result is fully object-oriented & reproducible machine learning.
   </p>
-  <p class="intro">
-    AIQC takes pride in solving tedious challenges such as: (1) evaluation bias, (2) data leakage, (3) multivariate decoding, (4) continuous stratification -- no matter how many folds or dimensions are involved.</br>Reference our blogs on <i>Towards Data Science <<a href="https://aiqc.medium.com" target="_blank">aiqc.medium.com</a>></i> for more details.
-  </p>
-  </br></br>
-
-
+  </br>
+  
 .. image:: images/visualizations.gif
   :width: 100%
   :alt: visualizations.gif
+
 
 .. raw:: html
 
@@ -126,5 +136,14 @@ Competition
       Automatic metrics & charts for all splits & folds of every model based on `analysis_type`.
     </i>
   </center>
+  </br>
 
-|
+----
+
+.. raw:: html
+
+  </br>
+  <p class="intro">
+    AIQC takes pride in solving tedious challenges such as: (1) evaluation bias, (2) data leakage, (3) multivariate decoding, (4) continuous stratification -- no matter how many folds or dimensions are involved.</br>Reference our blogs on <i>Towards Data Science <<a href="https://aiqc.medium.com" target="_blank">aiqc.medium.com</a>></i> for more details.
+  </p>
+  </br>

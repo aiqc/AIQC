@@ -26,7 +26,6 @@
 
   mission
   explainer
-  consulting
   community
   compare
 
