@@ -83,10 +83,10 @@
   
   </br>
   <center>
-    <b>→ AIQC is an open source framework for MLOps.</b>
+    <b style="font-size: 18px;"><i>What discovery will you make today?</i></b>
     </br>
     </br>
-    <i class="intro" style="color:gray">Accelerating scientific research with a simple API for data preprocessing, experiment tracking, & model evaluation.</i>
+    <i class="intro" style="color:gray">AIQC accelerates research with a simple API for open source MLops.</i>
     </br></br></br></br>    
   </center>
 
