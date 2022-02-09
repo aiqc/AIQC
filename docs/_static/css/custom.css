@@ -1,13 +1,13 @@
 /* --- Note that the Sphinx theme is using .bttn class --- */
 /* --- Start: Nav bar --- */
 .wy-side-nav-search {
-	background-color: #060606;
+    background-color: #060606;
 }
 
 .wy-side-nav-search input[type=text] {
-	width: 			80%;
-	border-color: 	#5f5d56;
-	border-width: 	2px;
+    width:          80%;
+    border-color:   #5f5d56;
+    border-width:   2px;
 }
 
 /* 
@@ -15,24 +15,24 @@ width auto was rendering 0px wide for .svg files
 https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
 */
 .wy-side-nav-search .wy-dropdown > a img.logo, .wy-side-nav-search > a img.logo {
-	width: 275px;
+    width: 275px;
 }
 
 .wy-nav-side {
-	background-color: #060606;
-	background-image: linear-gradient(#060606, #252523);
+    background-color: #060606;
+    background-image: linear-gradient(#060606, #252523);
 }
 
 /* margin is for the advert on free version of RTD*/
 .wy-menu-vertical {
-	padding-left: 	8px;
-	margin-bottom: 	150px;
+    padding-left:   8px;
+    margin-bottom:  150px;
 }
 
 /* sidebar captions aka sections*/
 .wy-menu > .caption > span.caption-text {
-	color: 		#cca439;
-	font-size: 	11.5px;
+    color:      #cca439;
+    font-size:  11.5px;
 }
 
 /* --- End: Nav bar --- */
@@ -110,16 +110,16 @@ ul.featureLists li span {
 
 /* the '.simple' points to body lists, and avoids the sidebar lists */
 ul.simple li ul li {
-	padding-bottom: 10px;
-	padding-top: 	10px;
+    padding-bottom: 10px;
+    padding-top:    10px;
 }
 
 img {
-	border-radius: 15px;
+    border-radius: 15px;
 }
 
 iframe {
-	border-radius: 15px;
+    border-radius: 15px;
 }
 
 #overview h1, #competition h1 {
@@ -249,28 +249,28 @@ iframe {
 
 /* --- Start: compatibility table index page --- */
 .compatibility {
-	width:			100%; 
-	*/border: 		2px solid black;
-	table-layout: 	fixed;
-	text-align:		center;
+    width:          100%; 
+    */border:       2px solid black;
+    table-layout:   fixed;
+    text-align:     center;
 }
 
 .compatibility td {
-	vertical-align: middle;
-	border: 		2.5px solid #fbfbfb;
-	background: 	#EFEFEF;
-	height: 		100px;
-	font-size: 		85%;
-	border-collapse: separate; 
+    vertical-align: middle;
+    border:         2.5px solid #fbfbfb;
+    background:     #EFEFEF;
+    height:         100px;
+    font-size:      85%;
+    border-collapse: separate; 
 }
 
 .compatibility td small {
-	color: gray;
+    color: gray;
 }
 
 .done {
-	background: #bcf5bc !important;
-	color: 		#000;
+    background: #bcf5bc !important;
+    color:      #000;
 }
 
 .done:hover {
@@ -289,12 +289,12 @@ iframe {
 
 
 .last {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 /* id is for blank cell, whereas class is for header cell*/
 #top-left {
-	background: #fcfcfc;
+    background: #fcfcfc;
 }
 
 .top-left {
@@ -302,27 +302,27 @@ iframe {
 }
 
 .tbl-head {
-	background: #131313FF !important;
-	color: 		white;
-	font-size: 	100% !important;
+    background: #131313FF !important;
+    color:      white;
+    font-size:  100% !important;
 }
 
 .row-head {
-	background: #131313FF !important;
-	color: 		white;
-	font-size: 	88% !important;
+    background: #131313FF !important;
+    color:      white;
+    font-size:  88% !important;
 }
 
 .bottom-left {
-	border-bottom-left-radius:	22px;
+    border-bottom-left-radius:  22px;
 }
 
 .top-right {
-	border-top-right-radius:	22px;
+    border-top-right-radius:    22px;
 }
 
 .bottom-right {
-	border-bottom-right-radius:	22px;
+    border-bottom-right-radius: 22px;
 }
 
 .qc td{
@@ -338,8 +338,12 @@ iframe {
     background: #E6E6E6 !important;
 }
 
+.purple {
+    color: #8a569d;
+}
+
 .checkmark {
-	font-size:	130%;
+    font-size:  130%;
 }
 
 .extra-bullets {
