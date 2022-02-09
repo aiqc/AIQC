@@ -351,7 +351,7 @@
   <b style="font-size: 18px;"><i>What discovery will you make today?</i></b>
   </br>
   </br>
-  <i class="intro" style="color:gray">AIQC accelerates research with a simple API for open source MLops.</i>
+  <i class="intro" style="color:gray; font-size: 14.5px !important;">AIQC accelerates research with a simple framework for best practice MLops.</i>
   </br></br></br></br>
 </center><a class="reference internal image-reference" href="_images/framework_mlops.png"><img alt="framework" class="align-center" src="_images/framework_mlops.png" style="width: 100%;" /></a>
 <br/></br>
@@ -396,36 +396,7 @@
 <br/><br/><hr class="docutils" />
 </br></br>
 <center>
-  <b>→ &nbsp; Goodbye, boilerplate scripts <i>(X_train, y_test)</i>. &nbsp; Hello, object-oriented machine learning.</b>
-  </br></br></br></br>
-
-  <div class="blockz-container">
-    <div class="blockz-title">Low-Level API</div>
-    </br>
-    <div class="blockz low-level">
-      <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoder()</div>
-      <div>Algorithm()</div><div>Hyperparamset()</div><div>Job()</div><div>Queue()</div><div>Prediction()</div>
-      <span class="etc"><i>etc.</i></span>
-    </div>
-
-    </br></br>
-
-    <div class="blockz-title">High-Level API</div>
-    </br>
-    <div class="blockz high-level">
-      <div>Pipeline()</div><div>Experiment()</div>
-    </div>
-  </div>
-
-  </br></br>
-  <a href="compare.html" target="_blank">
-    <i>↳ How does AIQC compare to other experiment trackers?</i>
-  </a>
-</center>
-</br></br><hr class="docutils" />
-</br></br>
-<center>
-  <b>→ Write 98% less code with AIQC's simple yet rigorous <a href='tutorials.html'>workflows</a>.</b>
+  <b>→ Write 98% less code with rapid, rigorous, & reproducible <a href='tutorials.html'>workflows</a>.</b>
 </center>
 </br></br><table class="compatibility" valign="center">
 <tr>
@@ -496,40 +467,97 @@
 -->
 </table>
 
+</br></br>
+<p class="intro bigP">
+  AIQC provides structured <b>protocols</b> that automate <i>data wrangling</i> processes that vary based on:</br> <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image),</br> and <i>data dimensionality</i> (e.g. timepoints per sample).
+</p>
+<p class="intro bigP">
+  The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon a research team.
+</p>
+</br><hr class="docutils" />
+</br></br>
+<center>
+  <b>→ How do you quality control (QC) your machine learning lifecycle?</b>
+</center>
+</br></br>
+
+<table class="compatibility qc" valign="center">
+  <colgroup>
+     <col span="1" style="width: 32%;">
+     <col span="1" style="width: 14%;">
+     <col span="1" style="width: 14%;">
+     <col span="1" style="width: 14%;">
+     <col span="1" style="width: 26%;">
+  </colgroup>
+
+  <tr>
+    <td id="top-left"></td>
+    <td class="tbl-head  top-left">Train</td>
+    <td class="tbl-head">Validation</td>
+    <td class="tbl-head">Test</td>
+    <td class="tbl-head  top-right">Inference</td>
+  </tr>
+  <tr>
+    <td class="top-left alt-gray">Prevent <b><i>evaluation bias</i></b> with 3-way+ stratification.</td>
+    <td class="alt-gray">Split</br>or</br>Folds</td>
+    <td class="alt-gray">Split</br>or</br>Folds</td>
+    <td class="alt-gray">Holdout</br>split</td>
+    <td class="best-practice"><b><i>Verify the schema</i></b> of incoming samples.</td>
+  </tr>
+
+  <tr>
+    <td class="alt-darkerGray">Prevent <b><i>data leakage</i></b> with </br>fit-on-train preprocessing.</td>
+    <td class="alt-darkerGray"><i>fit()</i>’s</br>&</br><i>transform()</i>’s</td>
+    <td class="alt-darkerGray">Apply</br><i>transform()</i>’s</td>
+    <td class="alt-darkerGray">Apply</br><i>transform()</i>’s</td>
+    <td class="best-practice alt-darkerGray">Help prevent <b><i>data drift</i></b> </br>by using original preprocessors.</td>
+  </tr>
+
+  <tr>
+    <td class="alt-gray">Detect <b><i>overfitting</i></b> by evaluating each split/ fold of every model.</td>
+    <td class="alt-gray">Metrics</br>&</br>charts</td>
+    <td class="alt-gray">Metrics</br>&</br>charts</td>
+    <td class="alt-gray">Metrics</br>&</br>charts</td>
+    <td class="alt-gray">Detect <b><i>model rot</i></b> by reevaluating with supervised datasets.</td>
+  </tr>
+
+  <tr>
+    <td class="bottom-left alt-darkerGray">Ensure <b><i>reproducibility</i></b> by recording the entire workflow.</td>
+    <td class="bottom-right alt-darkerGray" colspan="4">Easily query experiment metadata</br>e.g. <i>`aiqc.Algorithm.get_by_id(n).fn_build`</i></td>
+  </tr>
+</table>
+
 </br>
 <center>
-  <i class="intro" style="color:gray">Supports the most popular data types, analytical use cases, and deep learning libraries.</i>
+  <a href="compare.html" target="_blank">
+    <i>↳ How does AIQC compare to other experiment trackers?</i>
+  </a>
 </center>
 </br></br><hr class="docutils" />
 </br></br>
 <center>
-  <b>→ Discover the insight hidden in your raw data with deep learning.</b>
-</center>
-</br></br>
+  <b>→ &nbsp; Goodbye, boilerplate scripts <i>(X_train, y_test)</i>. &nbsp; Hello, object-oriented machine learning.</b>
+  </br></br></br></br>
 
-<p class="intro">
-  AIQC makes deep learning more accessible by solving the following <i>data wrangling</i> challenges:
-</p>
-</br>
-<ol class="intro">
-  <li class="shadowBox">
-    <b>Preprocessing</b><span> - Data must be encoded into a machine-readable format. Encoders don't handle multiple dimensions, columns, & types. Leakage occurs if splits/folds aren't encoded separately. Lack of validation splits causes evaluation bias. Which samples were used for training?</span>
-  </li>
-  <li class="shadowBox">
-    <b>Experiment Tracking</b><span> - Tuning parameters and architectures requires evaluating many training runs with metrics and charts. However, leading tools are only designed for a single run and don't keep track of performance. Validation splits and/or cross-validation folds compound these problems.</span>
-  </li>
-  <li class="shadowBox">
-    <b>Postprocessing</b><span> - If the encoder-decoder pairs weren't saved, then how should new samples be encoded and predictions be decoded? Do new samples have the same schema as the training samples? Did encoders spawn extra columns? Multiple encoders compound these problems.</span>
-  </li>
-</ol>
-</br></br>
-<p class="intro bigP">
-  Adding to the complexity, different <b>protocols</b> are required based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample).
-</p>
-<p class="intro bigP">
-        The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon the research team.
-</p>
-</br><hr class="docutils" />
+  <div class="blockz-container" style="width:83%;">
+    <div class="blockz-title">Low-Level API</div>
+    </br>
+    <div class="blockz low-level">
+      <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoder()</div>
+      <div>Algorithm()</div><div>Hyperparamset()</div><div>Job()</div><div>Queue()</div><div>Prediction()</div>
+      <span class="etc"><i>etc.</i></span>
+    </div>
+  </div>
+  </br>
+  <div class="blockz-container" style="width:41%;margin-top:16px;">
+    <div class="blockz-title">High-Level API</div>
+    </br>
+    <div class="blockz high-level">
+      <div>Pipeline()</div><div>Experiment()</div>
+    </div>
+  </div>
+</center>
+</br></br><hr class="docutils" />
 <section id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h1>
 </br></br>

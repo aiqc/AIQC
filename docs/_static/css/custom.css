@@ -286,20 +286,19 @@ iframe {
     background: radial-gradient(rgb(255, 248, 232), rgb(255, 235, 176)) !important;
 }
 
-/* --- end compatibility table --- */
 
-.extra-bullets {
-	font-size: 		90%;
-	list-style:		circle; 
-	margin-bottom: 	12px;
-}
 
 .last {
 	visibility: hidden;
 }
 
+/* id is for blank cell, whereas class is for header cell*/
 #top-left {
 	background: #fcfcfc;
+}
+
+.top-left {
+    border-top-left-radius: 22px;
 }
 
 .tbl-head {
@@ -314,10 +313,6 @@ iframe {
 	font-size: 	88% !important;
 }
 
-.top-left {
-	border-top-left-radius: 22px;
-}
-
 .bottom-left {
 	border-bottom-left-radius:	22px;
 }
@@ -330,14 +325,32 @@ iframe {
 	border-bottom-right-radius:	22px;
 }
 
+.qc td{
+    height: 75px;
+    padding: 8px;
+}
+
+.alt-gray {
+    background: #F2F2F2;
+}
+
+.alt-darkerGray {
+    background: #E6E6E6 !important;
+}
+
 .checkmark {
 	font-size:	130%;
+}
+
+.extra-bullets {
+    font-size:      90%;
+    list-style:     circle; 
+    margin-bottom:  12px;
 }
 
 .blockz-container {
     border:        2px solid #e3e3e3;
     border-radius: 25px;
-    width:         83%;
     background:  white;
     padding:       23px;
 }
