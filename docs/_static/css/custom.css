@@ -49,6 +49,51 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
 /* --- End: Nav bar --- */
 
 /* --- Start: Main page --- */
+.headerz-light {
+    font-family:    'Exo'; 
+    color:          #333;
+    letter-spacing: .01rem;
+    font-weight:    400;
+    font-size:      17.5px; 
+}
+
+.headerz-dark {
+    font-family:    'Exo'; 
+    color:          #efefef;
+    letter-spacing: .03rem;
+    font-weight:    200;
+    font-size:      18.5px; 
+}
+
+.titlez {
+    font-size:      21px !important; 
+}
+
+.goldz-light {
+    color:          #a48c0b;
+}
+
+.goldz-highlight {
+    color:          #937f10;
+    font-size:      105%;
+}
+
+.goldz-dark {
+    color:          #ddcd75;
+}
+
+.textz {
+    font-family:    Abel;
+}
+
+.linx-light:link {
+    color:          #333;
+}
+
+.linx-light:visited {
+    color:          #333;
+}
+
 .intro {
     font-size:  14px;
 }
@@ -77,8 +122,12 @@ ol.intro li span {
     color: #6c6c6c;
 }
 
-.linx {
-    font-size: 14.5px;
+.linx:link {
+    color:          #ddcd75;
+}
+
+.linx:visited {
+    color:          #ddcd75;
 }
 
 .shadowBox {
@@ -136,7 +185,7 @@ iframe {
     border-radius: 15px;
 }
 
-#overview h1, #competition h1 {
+#overview h1, #competition h1, #use-cases h1 {
     display: none !important;;
 }
 
@@ -170,8 +219,8 @@ iframe {
 .flex-bottom {
     text-align:    center;
     font-family:   arial;
-    color:       rgb(64, 152, 206);
-    font-size:     14px;
+    color:         rgb(64, 152, 206);
+    font-size:     15px;
     margin-bottom: 33px;
 }
 
@@ -209,7 +258,7 @@ iframe {
     vertical-align:     middle;
     color:            black;
     font-family:        Lato,proxima-nova,Helvetica Neue,Arial,sans-serif;
-    font-size:          15px;
+    font-size:          16.5px;
     display:            inline-block;
     height:             65px;
     text-align:         center;
@@ -263,10 +312,12 @@ iframe {
 
 /* --- Start: compatibility table index page --- */
 .compatibility {
-    width:          100%; 
-    */border:       2px solid black;
-    table-layout:   fixed;
-    text-align:     center;
+    font-family:   Abel;
+    font-size:     17px;
+    width:         100%; 
+    */border:      2px solid black;
+    table-layout:  fixed;
+    text-align:    center;
 }
 
 .compatibility td {
@@ -300,8 +351,6 @@ iframe {
     background: radial-gradient(rgb(255, 248, 232), rgb(255, 235, 176)) !important;
 }
 
-
-
 .last {
     visibility: hidden;
 }
@@ -318,7 +367,7 @@ iframe {
 .tbl-head {
     background: #131313FF !important;
     color:      white;
-    font-size:  100% !important;
+    font-size:  105% !important;
 }
 
 .row-head {
@@ -340,7 +389,7 @@ iframe {
 }
 
 .qc td{
-    height: 75px;
+    height: 80px;
     padding: 8px;
 }
 
@@ -350,10 +399,6 @@ iframe {
 
 .alt-darkerGray {
     background: #E6E6E6 !important;
-}
-
-.purple {
-    color: #a48c0b;
 }
 
 .checkmark {
@@ -374,19 +419,19 @@ iframe {
 }
 
 .blockz-title {
-    font-family: Lato, proxima-nova, Helvetica Neue, Arial, sans-serif;
-    color: #828282;
-    font-size: 16.5px;
+    font-family:    Abel;
+    color:          #828282;
+    font-size:      18px;
+    letter-spacing: 0.02em;
 }
 
 .blockz div {
-    display: inline-block;
-    margin: 6px;
-    padding: 8px;
-    border-radius: 5px;
-    font-family: arial, Helvetica;
-    font-size: 14px;
-
+    display:        inline-block;
+    margin:         6px;
+    padding:        10px;
+    border-radius:  5px;
+    font-family:    Abel;
+    font-size:      15px;
 }
 
 .low-level div {

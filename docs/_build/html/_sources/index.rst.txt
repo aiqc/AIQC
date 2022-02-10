@@ -81,22 +81,22 @@
 
 .. raw:: html
   
-  <div style="background:#252523; height:80px; border-top-left-radius:25px;border-top-right-radius:25px;">
+  <div style="background:#252523; height:80px; border-top-left-radius:25px; border-top-right-radius:25px;">
     </br></br>
     <center>
-      <span style="font-size: 20px; font-family: 'Exo'; color:#fbfbfb; letter-spacing: .03rem;">What <i style="color:#ddcd75">discovery</i> will you make today?</span>
+      <span class="headerz titlez headerz-dark">What <i class="goldz-dark">discovery</i> will you make today?</span>
     </center>
   </div>
-  <div style="height: 45px; overflow: hidden;">
+  <div style="height: 60px; overflow: hidden;">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
       <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
     </svg>
   </div>
-  </br></br></br>
+  </br></br></br></br>
   <center>
-    <span class="intro" style="color:gray; font-size: 17px !important; font-family: 'Abel';">AIQC accelerates research with a simple framework for best practice MLops.</span>  
+    <span class="intro" style="color:#868686; font-size:18px !important; font-family:'Abel'; letter-spacing: 0.01em;">AIQC accelerates research with a simple framework for best practice MLops.</span>  
   </center>
-  </br></br></br>
+  </br></br>
 
 .. 
   The image border is styled by script below.
@@ -109,7 +109,7 @@
 
 .. raw:: html
   
-  <br/></br>
+  <br/></br></br>
   <div class="flex-container">
     <div class="flex-item shadowBox">
       <div class="flex-top">
@@ -119,7 +119,7 @@
       </div>
       <div class="flex-bottom">
         <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
-          ↳ <span>Sponsored by</span>
+          ↳ <span class="textz">Sponsored by</span>
         </a>
       </div>
     </div>
@@ -131,7 +131,7 @@
       </div>
       <div class="flex-bottom">
         <a href="https://aiqc.medium.com/" target="_blank">
-          ↳ <span>Blogged by</span>
+          ↳ <span class="textz">Blogged by</span>
         </a>
       </div>
     </div>
@@ -143,7 +143,7 @@
       </div>
       <div class="flex-bottom">
         <a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" target="_blank">
-          ↳ <span>Presented at</span>
+          ↳ <span class="textz">Presented at</span>
         </a>
       </div>
     </div>
@@ -151,27 +151,29 @@
   
   </br></br>
   
-  <div style="height: 100px; overflow: hidden; transform: rotate(180deg);">
+  <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
       <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
     </svg>
   </div>
+
   <div style="background-image: linear-gradient(#252523, #fcfcfc);">
+    </br></br>
     <center>
-      <b style="color:#efefef">Refine your raw data into scientific <span style="color:#ddcd75">insight</span>.</b>
+      <span class="headerz headerz-dark">Refine your raw data into scientific <span class="goldz-dark">insight</span>.</span>
       </br></br></br>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" alt="abstraction" width="85%" style="display:block;">
       </br></br>
       <a class="linx" href="compare.html" target="_blank">
-        <i>↳ How does AIQC compare to other experiment trackers?</i>
+        <span class="textz" style="color:#626262; font-size:16.5px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
       </a>
     </center>
-    </br></br></br></br>
+    </br></br></br></br></br>
   </div>
 
-  </br></br></br></br>
+  </br></br></br></br></br></br>
   <center>
-    <b>Write 98% less code with rapid, rigorous, & reproducible <a href='tutorials.html'>workflows</a>.</b>
+    <span class="headerz-light">Write <span class="goldz-light">98% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</span>
   </center>
   </br></br>
   
@@ -245,21 +247,21 @@
   </table>
 
   </br></br>
-  <p class="intro bigP">
-    AIQC provides structured <b>protocols</b> that automate <i>data wrangling</i> processes that vary based on:</br> <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image),</br> and <i>data dimensionality</i> (e.g. timepoints per sample). 
+  <p class="intro bigP textz" style="font-size:15.5px; line-height:140%;">
+    AIQC provides structured protocols that automate <i>data wrangling</i> processes that vary based on:</br> <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image),</br> and <i>data dimensionality</i> (e.g. timepoints per sample). 
   </p>
-  <p class="intro bigP">
+  <p class="intro bigP textz" style="font-size:15.5px; line-height:140%;">
     The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon a research team.
   </p>
-  </br>
+  </br></br></br></br>
 
-----
-
-.. raw:: html
-  
-  </br></br>
   <center>
-    <b>How do you quality control (QC) your machine learning lifecycle?</b>
+    <hr style="width:35%;">
+  </center>
+  
+  </br></br></br></br>
+  <center>
+    <span class="headerz-light">How do you <span class="goldz-light">quality control (QC)</span> your machine learning lifecycle?</span>
   </center>
   </br></br>
 
@@ -280,45 +282,44 @@
       <td class="tbl-head  top-right">Inference</td>
     </tr>
     <tr>
-      <td class="top-left alt-gray">Prevent <b class="purple"><i>evaluation bias</i></b> with 3-way+ stratification.</td>
+      <td class="top-left alt-gray">Prevent <span class="goldz-highlight">evaluation bias</span> with 3-way+ stratification.</td>
       <td class="alt-gray">Split</br>or Folds</td>
       <td class="alt-gray">Split</br>or Folds</td>
       <td class="alt-gray">Holdout</br>split</td>
-      <td class="best-practice"><b class="purple"><i>Verify the schema</i></b> of incoming samples.</td>
+      <td class="best-practice"><span class="goldz-highlight">Verify the schema</span> of incoming samples.</td>
     </tr>
     
     <tr>
-      <td class="alt-darkerGray">Prevent <b class="purple"><i>data leakage</i></b> with </br>fit-on-train preprocessing.</td>
-      <td class="alt-darkerGray"><i>fit()</i>’s &</br><i>transform()</i>’s</td>
-      <td class="alt-darkerGray">Apply</br><i>transform()</i>’s</td>
-      <td class="alt-darkerGray">Apply</br><i>transform()</i>’s</td>
-      <td class="best-practice alt-darkerGray">Help prevent <b class="purple"><i>data drift</i></b> </br>by using original preprocessors.</td>
+      <td class="alt-darkerGray">Prevent <span class="goldz-highlight">data leakage</span> with </br>fit-on-train preprocessing.</td>
+      <td class="alt-darkerGray">fit()’s &</br>transform()’s</td>
+      <td class="alt-darkerGray">Apply</br>transform()’s</td>
+      <td class="alt-darkerGray">Apply</br>transform()’s</td>
+      <td class="best-practice alt-darkerGray">Help prevent <span class="goldz-highlight">data drift</span> </br>by using original preprocessors.</td>
     </tr>
 
     <tr>
-      <td class="alt-gray">Detect <b class="purple"><i>overfitting</i></b> by evaluating each split/ fold of every model.</td>
+      <td class="alt-gray">Detect <span class="goldz-highlight">overfitting</span> by evaluating each split/ fold of every model.</td>
       <td class="alt-gray">Metrics</br>& charts</td>
       <td class="alt-gray">Metrics</br>& charts</td>
       <td class="alt-gray">Metrics</br>& charts</td>
-      <td class="alt-gray">Detect <b class="purple"><i>model rot</i></b> by reevaluating with supervised datasets.</td>
+      <td class="alt-gray">Detect <span class="goldz-highlight">model rot</span> by reevaluating with supervised datasets.</td>
     </tr>
 
     <tr>
-      <td class="bottom-left alt-darkerGray">Ensure <b class="purple"><i>reproducibility</i></b> by recording the entire workflow.</td>
-      <td class="bottom-right alt-darkerGray" colspan="4">Easily query experiment metadata</br>e.g. <i>`aiqc.Algorithm.get_by_id(n).fn_build`</i></td>
+      <td class="bottom-left alt-darkerGray">Ensure <span class="goldz-highlight">reproducibility</span> by recording the entire workflow.</td>
+      <td class="bottom-right alt-darkerGray" colspan="4">Easily query experiment metadata</br>e.g. `aiqc.Algorithm.get_by_id(n).fn_build`</td>
     </tr>
   </table>
-  </br></br>
+  </br></br></br></br>
 
-
-----
-
-.. raw:: html
-
-  </br></br>
   <center>
-    <b>Goodbye, boilerplate scripts <i>(X_train, y_test)</i>. &nbsp; Hello, object-oriented machine learning.</b>
-    </br></br></br></br>
+    <hr style="width:35%;">
+  </center>
+
+  </br></br></br></br>
+  <center>
+    <span class="headerz-light" style="line-height:190%;">Goodbye, boilerplate scripts <i>(X_train, y_test)</i>.</br>Hello, <span class="goldz-light">object-oriented</span> machine learning.</span>
+    </br></br></br>
     
     <div class="blockz-container" style="width:83%;">
       <div class="blockz-title">Low-Level API</div>
@@ -350,15 +351,14 @@ Overview
 
 .. raw:: html
 
-
   <div style="background-image: linear-gradient(#fcfcfc, #252523);">
-    </br></br></br></br>
+    </br></br></br></br></br></br>
     <center>
-      <b>Automated visualizations for evaluating each split & fold of every model.</b>
-      </br></br></br>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/visualizations.gif" alt="abstraction" width="85%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/visualizations.gif" alt="visualizations" width="85%" style="display:block;">
+      </br></br>
+      <span class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating </br>each split & fold of every model.</span>
     </center>
-    </br></br>
+    </br>
   </div>
   <div style="height: 100px; overflow: hidden;">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
@@ -367,20 +367,24 @@ Overview
   </div>
 
 
-.. raw:: html
-
   </br></br></br>
   <center>
-    <p style="font-size:18px;"><i>Let's get started!</i></p>
+    <p style="font-size:18px; font-family:Exo;"><i>Let's get started!</i></p>
     </br>
     <a href="tutorials.html">
-      <div class="bttn"><b>→</b> <span>Use Cases & Tutorials</span></div>
+      <div class="bttn"><b>→</b> <span class="textz">Use Cases & Tutorials</span></div>
     </a>
   </center>
-  </br></br>
+  </br></br></br>
 
+  <div style="height:100px; overflow:hidden;">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;  transform:rotate(180deg);">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+    </svg>
+  </div>
+  <div style="height:50px; background:#252523; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  </div>
 
-.. raw:: html
 
   <script>
     window.addEventListener('load', function() {
@@ -389,8 +393,8 @@ Overview
     });
 
     window.addEventListener('load', function() {
-      var gif = document.querySelector("img[alt='visualizations.gif']")
-      gif.style.border = "2px solid silver";
+      var footy = document.querySelector("footer")
+      footy.style.display = "none";
     });
 
     window.addEventListener('load', function() {

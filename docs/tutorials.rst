@@ -1,3 +1,6 @@
+..
+  Overview <h1> is intentionally hidden by CSS.
+
 #########
 Use Cases
 #########
@@ -20,7 +23,7 @@ Use Cases
 
   </br></br>
   <p class="intro">
-    Follow along with the tutorials below in order to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
+    Browse the tutorials below to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
   </p>
 
   </p>
