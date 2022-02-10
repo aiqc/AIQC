@@ -81,14 +81,22 @@
 
 .. raw:: html
   
-  </br>
+  <div style="background:#252523; height:80px; border-top-left-radius:25px;border-top-right-radius:25px;">
+    </br></br>
+    <center>
+      <span style="font-size: 20px; font-family: 'Exo'; color:#fbfbfb; letter-spacing: .03rem;">What <i style="color:#ddcd75">discovery</i> will you make today?</span>
+    </center>
+  </div>
+  <div style="height: 45px; overflow: hidden;">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+    </svg>
+  </div>
+  </br></br></br>
   <center>
-    <b style="font-size: 18px;"><i>What discovery will you make today?</i></b>
-    </br>
-    </br>
-    <i class="intro" style="color:gray; font-size: 14.5px !important;">AIQC accelerates research with a simple framework for best practice MLops.</i>
-    </br></br></br></br>    
+    <span class="intro" style="color:gray; font-size: 17px !important; font-family: 'Abel';">AIQC accelerates research with a simple framework for best practice MLops.</span>  
   </center>
+  </br></br></br>
 
 .. 
   The image border is styled by script below.
@@ -144,35 +152,28 @@
   </br></br>
   
   <div style="height: 100px; overflow: hidden; transform: rotate(180deg);">
-  <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-    <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
-  </svg>
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+    </svg>
   </div>
   <div style="background-image: linear-gradient(#252523, #fcfcfc);">
     <center>
-      <b style="color:#efefef">Refine your raw data into scientific insight.</b>
+      <b style="color:#efefef">Refine your raw data into scientific <span style="color:#ddcd75">insight</span>.</b>
       </br></br></br>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" width="80%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" alt="abstraction" width="85%" style="display:block;">
       </br></br>
       <a class="linx" href="compare.html" target="_blank">
         <i>↳ How does AIQC compare to other experiment trackers?</i>
       </a>
     </center>
+    </br></br></br></br>
   </div>
 
-  </br></br></br>
-
-
-.. raw:: html
-  
-  </br></br>
+  </br></br></br></br>
   <center>
-    <b>→ Write 98% less code with rapid, rigorous, & reproducible <a href='tutorials.html'>workflows</a>.</b>
+    <b>Write 98% less code with rapid, rigorous, & reproducible <a href='tutorials.html'>workflows</a>.</b>
   </center>
   </br></br>
-
-
-.. raw:: html
   
   <table class="compatibility" valign="center">
   <tr>
@@ -337,9 +338,7 @@
       </div>
     </div>
   </center>
-  </br></br>
-
-----
+  </br></br></br></br>
 
 ..
   Overview <h1> is intentionally hidden by CSS.
@@ -350,17 +349,22 @@ Overview
 
 
 .. raw:: html
-  
-  </br></br>
-  <center>
-    <b>Automated visualizations for evaluating each split & fold of every model.</b>
-  </center>
-  </br></br>
 
 
-.. image:: images/visualizations.gif
-  :width: 100%
-  :alt: visualizations.gif
+  <div style="background-image: linear-gradient(#fcfcfc, #252523);">
+    </br></br></br></br>
+    <center>
+      <b>Automated visualizations for evaluating each split & fold of every model.</b>
+      </br></br></br>
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/visualizations.gif" alt="abstraction" width="85%" style="display:block;">
+    </center>
+    </br></br>
+  </div>
+  <div style="height: 100px; overflow: hidden;">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+    </svg>
+  </div>
 
 
 .. raw:: html
@@ -379,13 +383,23 @@ Overview
 .. raw:: html
 
   <script>
-    function changeBorders() {
+    window.addEventListener('load', function() {
+      var breadcrumbs = document.querySelector("div.rst-content div[role='navigation']")
+      breadcrumbs.style.display = "none";
+    });
+
+    window.addEventListener('load', function() {
       var gif = document.querySelector("img[alt='visualizations.gif']")
-      var framework = document.querySelector("img[alt='framework']")
-      var abstraction = document.querySelector("img[alt='abstraction']")
       gif.style.border = "2px solid silver";
+    });
+
+    window.addEventListener('load', function() {
+      var framework = document.querySelector("img[alt='framework']")
       framework.style.border = "2px solid silver";
+    });
+
+    window.addEventListener('load', function() {
+      var abstraction = document.querySelector("img[alt='abstraction']")
       abstraction.style.border = "2px solid #ececec";
-    }
-    window.onload = changeBorders;
+    });
   </script>

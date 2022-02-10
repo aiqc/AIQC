@@ -346,8 +346,11 @@
 <center>
   <b>→ Expect more from your Experiment Tracker.</b>
   </br></br></br>
-  <p class="intro">The AIQC framework is <b><i>data-aware</i></b> (e.g. splits, folds, encoders, shapes, dtypes) and <b><i>analysis-aware</i></b> (e.g. supervision, binary/ multi). This enables automated data wrangling during pre-processing, model evaluation, and post-processing for each split during both training & inference. It helps machine learning engineers by not only <i>saving hours worth of data wrangling</i> but also <i>preventing evaluation bias and overfitting</i> during model training.</p>
-  <p class="intro">While AIQC actively helps <i>structure the analysis</i>, alternative tools take a more <i>passive</i> approach. They expect users to manually prepare their own data and log their own training artifacts. These tools can't assist with the actual data science workflow because they know nothing about the data involved and the analysis being conducted.
+  <p class="intro">AIQC natively abstracts the components of TensorFlow & PyTorch for hyperparameter tuning & automated model evaluation. Practitioners don't have to submit their static code to a batch execution scheduler.</p>
+
+  <p class="intro">The framework is not only <b><i>analysis-aware</i></b> (e.g. supervision, binary/ multi), but also <b><i>data-aware</i></b> (e.g. splits, folds, encoders, shapes, dtypes). This enables it to automate the <i>data wrangling</i> of multiple splits/ folds during pre-processing and post-processing using the PyData stack (sklearn, NumPy, Pandas). It helps researchers by <i>saving hours worth of data wrangling</i> as well as <i>preventing evaluation bias & overfitting</i> during model training.</p>
+
+  <p class="intro">While AIQC actively helps <i>structure the analysis</i>, alternative tools take a more <i>passive</i> approach. They expect users to manually prepare their own data and log their own training artifacts. These tools can't assist with the actual data science workflow because they know about neither the data involved nor the analysis being conducted.
   </br></br>
 
 <table class="compatibility" valign="center">
@@ -432,7 +435,7 @@
 </br><hr class="docutils" />
 </br>
 <p class="intro">
-  AIQC takes pride in solving tedious challenges such as: (1) evaluation bias, (2) data leakage, (3) multivariate decoding, (4) continuous stratification -- no matter how many folds or dimensions are involved.</br>Reference our blogs on <i>Towards Data Science <<a href="https://aiqc.medium.com" target="_blank">aiqc.medium.com</a>></i> for more details.
+  AIQC takes pride in solving tedious challenges such as: (1) evaluation bias, (2) data leakage, (3) multivariate decoding, (4) continuous stratification -- no matter how many folds or data dimensions are involved.</br>Reference our blogs on <i>Towards Data Science <<a href="https://aiqc.medium.com" target="_blank">aiqc.medium.com</a>></i> for more details.
 </p>
 </br></section>
 
