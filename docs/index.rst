@@ -81,7 +81,7 @@
 
 .. raw:: html
   
-  <div style="background:#252523; height:80px; border-top-left-radius:25px; border-top-right-radius:25px;">
+  <div style="background:#252523; height:80px; border-top-left-radius:25px; border-top-right-radius:25px; padding-bottom:10px;">
     </br></br>
     <center>
       <span class="headerz titlez headerz-dark">What <i class="goldz-dark">discovery</i> will you make today?</span>
@@ -387,16 +387,6 @@ Overview
 
 
   <script>
-    window.addEventListener('load', function() {
-      var breadcrumbs = document.querySelector("div.rst-content div[role='navigation']")
-      breadcrumbs.style.display = "none";
-    });
-
-    window.addEventListener('load', function() {
-      var footy = document.querySelector("footer")
-      footy.style.display = "none";
-    });
-
     window.addEventListener('load', function() {
       var framework = document.querySelector("img[alt='framework']")
       framework.style.border = "2px solid silver";
