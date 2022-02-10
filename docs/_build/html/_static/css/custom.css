@@ -191,11 +191,11 @@ iframe {
 
 /* hides the breadcrumbs on main page */
 .rst-content > div:first-of-type {
-    display: none !important;;
+    display: none !important;
 }
 
 .rst-content > footer:first-of-type {
-    display: none !important;;
+    display: none !important;
 }
 
 
