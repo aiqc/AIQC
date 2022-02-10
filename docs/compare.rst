@@ -7,10 +7,10 @@ Competition
 
   </br>
   <center>
-    <b>→ Expect more from your experiment tracker.</b>
+    <b>→ Expect more from your Experiment Tracker.</b>
     </br></br></br>
-    <p class="intro">AIQC is <b><i>data-aware</i></b> (e.g. splits, encoders, shapes, dtypes) and <b><i>analysis-aware</i></b> (e.g. supervision), which enables it to orchestrate the preprocessing & evaluation of each split/ fold during training & inference. Whereas alternative tools expect users to manually prepare their data and log their training artifacts.</p>
-    <p class="intro">Model training is the easiest part of a machine learning experiment. The real challenge is the <b><i>data wrangling</i></b> both upstream and downstream of the experiment that vary greatly based on data type and analysis type.</p>
+    <p class="intro">The AIQC framework is <b><i>data-aware</i></b> (e.g. splits, folds, encoders, shapes, dtypes) and <b><i>analysis-aware</i></b> (e.g. supervision, binary/ multi). This enables automated data wrangling during pre-processing, model evaluation, and post-processing for each split during both training & inference. It helps machine learning engineers by not only <i>saving hours worth of data wrangling</i> but also <i>preventing evaluation bias and overfitting</i> during model training.</p>
+    <p class="intro">While AIQC actively helps <i>structure the analysis</i>, alternative tools take a more <i>passive</i> approach. They expect users to manually prepare their own data and log their own training artifacts. These tools can't assist with the actual data science workflow because they know nothing about the data involved and the analysis being conducted.
     </br></br>
 
   <table class="compatibility" valign="center">
@@ -90,50 +90,6 @@ Competition
   <center>
     <i class="intro" style="color:gray">
       This comparison is only included due to unanimous request from users to help them understand the benefits. Please don’t hesitate to raise a GitHub discussion so information can be corrected.
-    </i>
-  </center>
-  </br>
-
-----
-
-.. raw:: html
-  
-  </br>
-  <p class="intro">
-    If you are familiar with how Keras abstracts Tensorflow, AIQC can be thought of as a one level higher than Keras in that orchestrates the tuning of multiple models. However, unlike Keras, it (a) supports both Tensorflow & PyTorch, (b) does not remove the opportunity for customization, (c) evaluates models, and (d) orchestrates pre & post processing of data. 
-  </p>
-  </br>
-
-.. image:: images/do_more.png
-  :width: 90%
-  :alt: do_more.png
-
-
-.. raw:: html
-
-  </br></br></br>
-  <p class="intro">
-    AIQC provides building blocks for the machine learning lifecycle in the form an object-oriented, low-level API (e.g. Dataset, Features, Label, Splitset, Algorithm, etc.) and an easy-to-use high-level API (Pipeline, Experiment).
-  </p>
-  <p class="intro">
-    The low-level API doubles as an ORM for a relational database, which not only makes AIQC objects persistent & queryable, but also allows for the construction of validation rules using relationships. Thus the blocks can be stacked into workflows for various data types (e.g. Tabular, Sequence, Image), analysis types (e.g. supervised,  self-supervised), and analysis subtypes (e.g. regression, binary-classify, multi-label-classify). 
-  </p>
-  <p class="intro">
-    There is no work required on behalf of users to configure the database because a SQLite file is automatically created when running `aiqc.setup()`. Another benefit of using an ORM approach is that there's no need to maintain a separate server for running an experiment tracker's REST API. The ORM shares the Python session with the user's code which makes for a more unified and portable experience. The end result is fully object-oriented & reproducible machine learning.
-  </p>
-  </br>
-  
-.. image:: images/visualizations.gif
-  :width: 100%
-  :alt: visualizations.gif
-
-
-.. raw:: html
-
-  </br></br>
-  <center>
-    <i class="intro" style="color:gray">
-      Automatic metrics & charts for all splits & folds of every model based on `analysis_type`.
     </i>
   </center>
   </br>

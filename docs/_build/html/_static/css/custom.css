@@ -38,7 +38,6 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
 /* --- End: Nav bar --- */
 
 /* --- Start: Main page --- */
-/* intro paragraphs */
 .intro {
     font-size:  14px;
 }
@@ -65,6 +64,10 @@ ol.intro li {
 
 ol.intro li span {
     color: #6c6c6c;
+}
+
+.linx {
+    font-size: 14.5px;
 }
 
 .shadowBox {
@@ -339,7 +342,7 @@ iframe {
 }
 
 .purple {
-    color: #8a569d;
+    color: #a48c0b;
 }
 
 .checkmark {

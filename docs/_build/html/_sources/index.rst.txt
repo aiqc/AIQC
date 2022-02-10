@@ -90,6 +90,8 @@
     </br></br></br></br>    
   </center>
 
+.. 
+  The image border is styled by script below.
 
 .. image:: images/framework_mlops.png
   :width: 100%
@@ -138,9 +140,28 @@
       </div>
     </div>
   </div>
-  <br/><br/>
+  
+  </br></br>
+  
+  <div style="height: 100px; overflow: hidden; transform: rotate(180deg);">
+  <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+    <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+  </svg>
+  </div>
+  <div style="background-image: linear-gradient(#252523, #fcfcfc);">
+    <center>
+      <b style="color:#efefef">Refine your raw data into scientific insight.</b>
+      </br></br></br>
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" width="80%" style="display:block;">
+      </br></br>
+      <a class="linx" href="compare.html" target="_blank">
+        <i>↳ How does AIQC compare to other experiment trackers?</i>
+      </a>
+    </center>
+  </div>
 
-----
+  </br></br></br>
+
 
 .. raw:: html
   
@@ -237,7 +258,7 @@
   
   </br></br>
   <center>
-    <b>→ How do you quality control (QC) your machine learning lifecycle?</b>
+    <b>How do you quality control (QC) your machine learning lifecycle?</b>
   </center>
   </br></br>
 
@@ -286,13 +307,6 @@
       <td class="bottom-right alt-darkerGray" colspan="4">Easily query experiment metadata</br>e.g. <i>`aiqc.Algorithm.get_by_id(n).fn_build`</i></td>
     </tr>
   </table>
-  
-  </br>
-  <center>
-    <a href="compare.html" target="_blank">
-      <i>↳ How does AIQC compare to other experiment trackers?</i>
-    </a>
-  </center>
   </br></br>
 
 
@@ -302,7 +316,7 @@
 
   </br></br>
   <center>
-    <b>→ &nbsp; Goodbye, boilerplate scripts <i>(X_train, y_test)</i>. &nbsp; Hello, object-oriented machine learning.</b>
+    <b>Goodbye, boilerplate scripts <i>(X_train, y_test)</i>. &nbsp; Hello, object-oriented machine learning.</b>
     </br></br></br></br>
     
     <div class="blockz-container" style="width:83%;">
@@ -339,7 +353,7 @@ Overview
   
   </br></br>
   <center>
-    <b>→ Automated visualizations for evaluating each split & fold of every model.</b>
+    <b>Automated visualizations for evaluating each split & fold of every model.</b>
   </center>
   </br></br>
 
@@ -367,9 +381,11 @@ Overview
   <script>
     function changeBorders() {
       var gif = document.querySelector("img[alt='visualizations.gif']")
-      var img = document.querySelector("img[alt='framework']")
+      var framework = document.querySelector("img[alt='framework']")
+      var abstraction = document.querySelector("img[alt='abstraction']")
       gif.style.border = "2px solid silver";
-      img.style.border = "2px solid silver";
+      framework.style.border = "2px solid silver";
+      abstraction.style.border = "2px solid #ececec";
     }
     window.onload = changeBorders;
   </script>
