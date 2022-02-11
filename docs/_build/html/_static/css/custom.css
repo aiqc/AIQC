@@ -8,17 +8,15 @@
     src: url("../fonts/Abel-Regular.ttf");
 }
 
-
+/* if need to resize for mobile
 @media only screen and (max-width: 925px) {
-  small {
-    display: none;
-  }
 }
+*/
 
 /* --- Note that the Sphinx theme is using .bttn class --- */
 /* --- Start: Nav bar --- */
 .wy-side-nav-search {
-    background-color: #060606;
+    background-image: linear-gradient(#060606, #090909);
 }
 
 .wy-side-nav-search input[type=text] {
@@ -42,9 +40,9 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
     width: 275px;
 }
 
+/* Remember, this runs underneath the top logo section so it's extra dark to compensate for that distance.  */
 .wy-nav-side {
-    background-color: #060606;
-    background-image: linear-gradient(#060606, #252523);
+    background-image: linear-gradient(#000, #252523);
 }
 
 /* margin is for the advert on free version of RTD*/
@@ -343,17 +341,19 @@ iframe {
 .compatibility {
     font-family:   Abel;
     font-size:     17px;
-    width:         100%; 
+    width:         90%; 
     */border:      2px solid black;
     table-layout:  fixed;
     text-align:    center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .compatibility td {
     vertical-align: middle;
     border:         2.5px solid #fbfbfb;
     background:     #EFEFEF;
-    height:         100px;
+    height:         80px;
     font-size:      85%;
     border-collapse: separate; 
 }
@@ -431,7 +431,12 @@ iframe {
 }
 
 .checkmark {
-    font-size:  130%;
+    font-size:       150%;
+    color:           #393939;
+}
+
+a .checkmark {
+    text-decoration: underline;
 }
 
 .extra-bullets {

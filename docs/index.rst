@@ -180,56 +180,58 @@
   <table class="compatibility" valign="center">
     <tr>
       <td id="top-left"></td>
-      <td class="tbl-head  top-left">Tabular</br><small>(2D: array, df, file,</br>single site time series)</small></td>
-      <td class="tbl-head">Sequence</br><small>(3D: files, channels,</br>multi site time series)</small></td>
-      <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br> grayscale video)</small></td>
+      <td class="tbl-head  top-left">Tabular</br><small>(2D)</small></td>
+      <td class="tbl-head">Sequence</br><small>(3D)</small></td>
+      <td class="tbl-head  top-right">Image</br><small>(4D)</small></td>
     </tr>
     <tr>
       <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
       <td class="done">
-        Keras (<a href='notebooks/keras_binary_classification.html'>binary</a>,
-        <a href='notebooks/keras_multi-label_classification.html'>multi</a>)
-        <br/><span class="checkmark">✓</span><br/>
-        PyTorch (<a href='notebooks/pytorch_binary_classification.html'>binary</a>,
-        <a href='notebooks/pytorch_multi-label_classification.html'>multi</a>)
+        <a href='notebooks/keras_binary_tcga.html'>
+          <span class="checkmark">✓</span>
+        </a>
       </td>
       <td class="done">
-        Keras (<a href='notebooks/sequence_classification.html'>binary</a>,
-        multi</a>)
-        <br/><span class="checkmark">✓</span><br/>
-        PyTorch (binary, multi)
+        <a href='notebooks/sequence_classification.html'>
+          <span class="checkmark">✓</span>
+        </a>
       </td>
       <td class="done">
-        Keras (<a href='notebooks/image_classification.html'>binary</a>,
-        multi</a>)
-        <br/><span class="checkmark">✓</span><br/>
-        PyTorch (binary, multi) 
+        <a href='notebooks/image_classification.html'>
+          <span class="checkmark">✓</span>
+        </a>
       </td>
     </tr>
     
     <tr>
       <td class="tbl-head">Quantification</br><small>(regression)</small></td>
       <td class="done">
-        <a href='notebooks/keras_regression.html'>Keras</a>
-        <br/><span class="checkmark">✓</span><br/>
-        <a href='notebooks/pytorch_regression.html'>PyTorch</a>
+        <a href='notebooks/keras_regression.html'>
+          <span class="checkmark">✓</span>
+        </a>
       </td>
-      <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
-      <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+      <td class="done">
+        <span class="checkmark">✓</span>
+      </td>
+      <td class="done">
+        <span class="checkmark">✓</span>
+      </td>
     </tr>
 
     <tr>
-      <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate walk forward)</small></td>
+      <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate)</small></td>
       <td class="done">
-        <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
-        <br/><span class="checkmark">✓</span><br/>
-        PyTorch
+        <a href='notebooks/keras_tabular_forecasting.html'>
+          <span class="checkmark">✓</span>
+        </a>
       </td>
-      <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+      <td class="done">
+        <span class="checkmark">✓</span>
+      </td>
       <td class="done bottom-right">
-        <a href='notebooks/keras_image_forecasting.html'>Keras</a><br/>
-        <span class="checkmark">✓</span><br/>
-        PyTorch</td>
+        <a href='notebooks/keras_image_forecasting.html'>
+          <span class="checkmark">✓</span>
+        </a>
     </tr>
     
     <!--
@@ -265,7 +267,7 @@
   </center>
   </br></br>
 
-  <table class="compatibility qc" valign="center">
+  <table class="compatibility qc" valign="center" style="width: 100% !important">
     <colgroup>
        <col span="1" style="width: 32%;">
        <col span="1" style="width: 14%;">
