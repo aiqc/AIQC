@@ -176,81 +176,81 @@
     <div class="headerz-light">Write <span class="goldz-light">98% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</div>
   </center>
   </br></br>
-  
-  <table class="compatibility" valign="center">
-  <tr>
-    <td id="top-left"></td>
-    <td class="tbl-head  top-left">Tabular</br><small>(2D: array, df, file,</br>single site time series)</small></td>
-    <td class="tbl-head">Sequence</br><small>(3D: files, channels,</br>multi site time series)</small></td>
-    <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br> grayscale video)</small></td>
-  </tr>
-  <tr>
-    <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
-    <td class="done">
-      Keras (<a href='notebooks/keras_binary_classification.html'>binary</a>,
-      <a href='notebooks/keras_multi-label_classification.html'>multi</a>)
-      <br/><span class="checkmark">✓</span><br/>
-      PyTorch (<a href='notebooks/pytorch_binary_classification.html'>binary</a>,
-      <a href='notebooks/pytorch_multi-label_classification.html'>multi</a>)
-    </td>
-    <td class="done">
-      Keras (<a href='notebooks/sequence_classification.html'>binary</a>,
-      multi</a>)
-      <br/><span class="checkmark">✓</span><br/>
-      PyTorch (binary, multi)
-    </td>
-    <td class="done">
-      Keras (<a href='notebooks/image_classification.html'>binary</a>,
-      multi</a>)
-      <br/><span class="checkmark">✓</span><br/>
-      PyTorch (binary, multi) 
-    </td>
-  </tr>
-  
-  <tr>
-    <td class="tbl-head">Quantification</br><small>(regression)</small></td>
-    <td class="done">
-      <a href='notebooks/keras_regression.html'>Keras</a>
-      <br/><span class="checkmark">✓</span><br/>
-      <a href='notebooks/pytorch_regression.html'>PyTorch</a>
-    </td>
-    <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
-    <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
-  </tr>
 
-  <tr>
-    <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate walk forward)</small></td>
-    <td class="done">
-      <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
-      <br/><span class="checkmark">✓</span><br/>
-      PyTorch
-    </td>
-    <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
-    <td class="done bottom-right">
-      <a href='notebooks/keras_image_forecasting.html'>Keras</a><br/>
-      <span class="checkmark">✓</span><br/>
-      PyTorch</td>
-  </tr>
-  
-  <!--
-  <tr>
-    <td class="tbl-head tbl-head-Generation">Forecast</br></td>
-    <td class="done">
-      <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
-      <br/><span class="checkmark">✓</span><br/>
-      PyTorch
-    </td>
-    <td>Coming soon.</td>
-    <td class="coming-soon">Coming soon.</td>
-  </tr>
-  -->
+  <table class="compatibility" valign="center">
+    <tr>
+      <td id="top-left"></td>
+      <td class="tbl-head  top-left">Tabular</br><small>(2D: array, df, file,</br>single site time series)</small></td>
+      <td class="tbl-head">Sequence</br><small>(3D: files, channels,</br>multi site time series)</small></td>
+      <td class="tbl-head  top-right">Image</br><small>(4D: multi image,</br> grayscale video)</small></td>
+    </tr>
+    <tr>
+      <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
+      <td class="done">
+        Keras (<a href='notebooks/keras_binary_classification.html'>binary</a>,
+        <a href='notebooks/keras_multi-label_classification.html'>multi</a>)
+        <br/><span class="checkmark">✓</span><br/>
+        PyTorch (<a href='notebooks/pytorch_binary_classification.html'>binary</a>,
+        <a href='notebooks/pytorch_multi-label_classification.html'>multi</a>)
+      </td>
+      <td class="done">
+        Keras (<a href='notebooks/sequence_classification.html'>binary</a>,
+        multi</a>)
+        <br/><span class="checkmark">✓</span><br/>
+        PyTorch (binary, multi)
+      </td>
+      <td class="done">
+        Keras (<a href='notebooks/image_classification.html'>binary</a>,
+        multi</a>)
+        <br/><span class="checkmark">✓</span><br/>
+        PyTorch (binary, multi) 
+      </td>
+    </tr>
+    
+    <tr>
+      <td class="tbl-head">Quantification</br><small>(regression)</small></td>
+      <td class="done">
+        <a href='notebooks/keras_regression.html'>Keras</a>
+        <br/><span class="checkmark">✓</span><br/>
+        <a href='notebooks/pytorch_regression.html'>PyTorch</a>
+      </td>
+      <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+      <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+    </tr>
+
+    <tr>
+      <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate walk forward)</small></td>
+      <td class="done">
+        <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
+        <br/><span class="checkmark">✓</span><br/>
+        PyTorch
+      </td>
+      <td class="done">Keras<br/><span class="checkmark">✓</span><br/>PyTorch</td>
+      <td class="done bottom-right">
+        <a href='notebooks/keras_image_forecasting.html'>Keras</a><br/>
+        <span class="checkmark">✓</span><br/>
+        PyTorch</td>
+    </tr>
+    
+    <!--
+    <tr>
+      <td class="tbl-head tbl-head-Generation">Forecast</br></td>
+      <td class="done">
+        <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
+        <br/><span class="checkmark">✓</span><br/>
+        PyTorch
+      </td>
+      <td>Coming soon.</td>
+      <td class="coming-soon">Coming soon.</td>
+    </tr>
+    -->
   </table>
 
   </br></br>
-  <p class="intro bigP textz" style="font-size:15.5px; line-height:140%;">
-    AIQC provides structured protocols that automate <i>data wrangling</i> processes that vary based on:</br> <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image),</br> and <i>data dimensionality</i> (e.g. timepoints per sample). 
+  <p class="intro bigP textz" style="font-size:15.5px; line-height:140%; margin-left:13%;margin-right:13%; margin-bottom:25px;">
+    AIQC provides structured protocols that automate <i>data wrangling</i> processes that vary based on: <i>analysis type</i> (e.g. categorize, quantify, generate), <i>data type</i> (e.g. spreadsheet, sequence, image), and <i>data dimensionality</i> (e.g. timepoints per sample). 
   </p>
-  <p class="intro bigP textz" style="font-size:15.5px; line-height:140%;">
+  <p class="intro bigP textz" style="font-size:15.5px; line-height:140%; margin-left:13%;margin-right:13%;">
     The <i>DIY</i> approach of patching together <i>custom code and toolsets</i> for each analysis is not maintainable because it places a <i>skillset burden</i> of both data science and software engineering upon a research team.
   </p>
   </br></br></br></br>

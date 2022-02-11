@@ -9,6 +9,12 @@
 }
 
 
+@media only screen and (max-width: 925px) {
+  small {
+    display: none;
+  }
+}
+
 /* --- Note that the Sphinx theme is using .bttn class --- */
 /* --- Start: Nav bar --- */
 .wy-side-nav-search {
@@ -77,9 +83,9 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
 }
 
 .titlez {
-    font-size:      21px !important;
-    margin-left:    23%;
-    margin-right:   23%;
+    font-size:      20px !important;
+    margin-left:    16%;
+    margin-right:   16%;
 }
 
 .goldz-light {
