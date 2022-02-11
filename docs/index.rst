@@ -81,10 +81,10 @@
 
 .. raw:: html
   
-  <div style="background-image: linear-gradient(#1c1c1a, #252523); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; padding-bottom:10px;">
+  <div style="background-image: linear-gradient(#1c1c1a, #252523); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
     </br></br>
     <center>
-      <span class="headerz titlez headerz-dark">What <i class="goldz-dark">discovery</i> will you make today?</span>
+      <div class="headerz titlez headerz-dark">What <i class="goldz-dark">discovery</i> will you make today?</div>
     </center>
   </div>
   <div style="height: 60px; overflow: hidden;">
@@ -94,7 +94,7 @@
   </div>
   </br></br></br></br>
   <center>
-    <span class="intro" style="color:#868686; font-size:18px !important; font-family:'Abel'; letter-spacing: 0.01em;">AIQC accelerates research with a simple framework for best practice MLops.</span>  
+    <div class="intro" style="color:#868686; font-size:18px !important; font-family:'Abel'; letter-spacing: 0.01em; margin-left: 21%; margin-right:21%">AIQC accelerates research with a simple framework for best practice MLops.</div>  
   </center>
   </br></br>
 
@@ -160,7 +160,7 @@
   <div style="background-image: linear-gradient(#252523, #fcfcfc);">
     </br></br>
     <center>
-      <span class="headerz headerz-dark">Refine your raw data into scientific <span class="goldz-dark">insight</span>.</span>
+      <div class="headerz headerz-dark">Refine your raw data into scientific <span class="goldz-dark">insight</span>.</div>
       </br></br></br>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" alt="abstraction" width="90%" style="display:block;">
       </br></br>
@@ -173,7 +173,7 @@
 
   </br></br></br></br></br></br>
   <center>
-    <span class="headerz-light">Write <span class="goldz-light">98% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</span>
+    <div class="headerz-light">Write <span class="goldz-light">98% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</div>
   </center>
   </br></br>
   
@@ -261,7 +261,7 @@
   
   </br></br></br></br>
   <center>
-    <span class="headerz-light">How do you <span class="goldz-light">quality control (QC)</span> your machine learning lifecycle?</span>
+    <div class="headerz-light">How do you <span class="goldz-light">quality control (QC)</span> your machine learning lifecycle?</div>
   </center>
   </br></br>
 
@@ -318,7 +318,7 @@
 
   </br></br></br></br>
   <center>
-    <span class="headerz-light" style="line-height:190%;">Goodbye, boilerplate scripts <i>(X_train, y_test)</i>.</br>Hello, <span class="goldz-light">object-oriented</span> machine learning.</span>
+    <div class="headerz-light" style="line-height:190%;">Goodbye, boilerplate scripts <i>(X_train, y_test)</i>.</br>Hello, <span class="goldz-light">object-oriented</span> machine learning.</div>
     </br></br></br>
     
     <div class="blockz-container" style="width:83%;">
@@ -356,7 +356,7 @@ Overview
     <center>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/visualizations.gif" alt="visualizations" width="85%" style="display:block;">
       </br></br>
-      <span class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating </br>each split & fold of every model.</span>
+      <div class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating each split & fold of every model.</div>
     </center>
     </br>
   </div>
