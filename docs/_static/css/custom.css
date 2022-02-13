@@ -439,6 +439,14 @@ a .checkmark {
     text-decoration: underline;
 }
 
+.compare-bullets {
+    font-size:      85%; 
+    margin-left:    8% !important; 
+    margin-right:   8%; 
+    list-style:     square !important;
+    color:          #6c6c6c;
+}
+
 .extra-bullets {
     font-size:      90%;
     list-style:     circle; 

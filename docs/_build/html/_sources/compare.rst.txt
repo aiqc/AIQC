@@ -9,12 +9,33 @@ Competition
   <center>
     <b>→ Expect more from your Experiment Tracker.</b>
     </br></br></br>
-    <p class="intro">AIQC natively abstracts the components of TensorFlow & PyTorch for hyperparameter tuning & automated model evaluation. Practitioners don't have to submit their static code to a batch execution scheduler.</p>
+  
+    <p class="intro">
+      The AIQC framework provides teams a standardized approach that helps them train better agorithms in less time. The reason why it is able to do so is that the framework is not only <b>analysis-aware</b> (e.g. supervision, binary/ multi), but also <b>data-aware</b> (e.g. splits, folds, encoders, shapes, dtypes). 
+    </p>
+  </center>
 
-    <p class="intro">The framework is not only <b><i>analysis-aware</i></b> (e.g. supervision, binary/ multi), but also <b><i>data-aware</i></b> (e.g. splits, folds, encoders, shapes, dtypes). This enables it to automate the <i>data wrangling</i> of multiple splits/ folds during pre-processing and post-processing using the PyData stack (sklearn, NumPy, Pandas). It helps researchers by <i>saving hours worth of data wrangling</i> as well as <i>preventing evaluation bias & overfitting</i> during model training.</p>
+  <ul>
+    <li class="compare-bullets">
+      Users define the type of transformations (e.g encoding, interpolation, walk forward, etc.) they want to make to their dataset, and then AIQC intelligently coordinates the <i>data wrangling</i> of each split/ fold during both the pre & post processing stages of analysis.
+    </li></br>
+    <li class="compare-bullets">
+      AIQC abstracts the components (build, train, optimize, etc.) of TensorFlow & PyTorch. So it can easily pass Pythonic parameters into these components during hypertuning. Furthermore, because it is data-aware, it automatically evaluates every model with metrics & charts for each split/ fold.
+    </li> 
+  </ul>
 
-    <p class="intro">While AIQC actively helps <i>structure the analysis</i>, alternative tools take a more <i>passive</i> approach. They expect users to manually prepare their own data and log their own training artifacts. These tools can't assist with the actual data science workflow because they know about neither the data involved nor the analysis being conducted.
-    </br></br>
+  <center>
+    <p class="intro">
+      This two-pronged approach leads to significant time savings and more generalizable models. By simplifying both data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce validation splits/ folds into their workflow. Which, in turn, helps users prevent <i>evaluation bias & overfitting</i> during model training.
+    </p>
+
+    <hr style="width:35%;">
+
+    <p class="intro">
+      While AIQC actively helps <i>structure the analysis</i>, alternative tools take a more <i>passive</i> approach. They expect users to manually prepare their own data and log their own training artifacts. They can't assist with the actual data science workflow because they know about neither the data involved nor the analysis being conducted. Many supposed "MLops" tools are really batch execution schedulers marketing to data science teams.
+    </p>
+  </center>
+  </br></br>
 
   <table class="compatibility" valign="center">
   <tr>
