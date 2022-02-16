@@ -81,7 +81,7 @@
 
 .. raw:: html
   
-  <div style="background-image: linear-gradient(#1c1c1a, #252523); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
+  <div style="background-image: linear-gradient(#8a8a8a, #252523); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
     </br></br>
     <center>
       <div class="headerz titlez headerz-dark">What <i class="goldz-dark">discovery</i> will you make today?</div>
@@ -94,7 +94,7 @@
   </div>
   </br></br></br></br>
   <center>
-    <div class="intro" style="color:#868686; font-size:18px !important; font-family:'Abel'; letter-spacing: 0.01em; margin-left: 21%; margin-right:21%">AIQC accelerates research with a simple framework for best practice MLops.</div>  
+    <div class="intro" style="color:#868686; font-size:18px !important; font-family:'Abel'; letter-spacing: 0.02em; margin-left: 23%; margin-right:23%; line-height: 145%;">AIQC accelerates research with a simple framework for best practice MLops.</div>  
   </center>
   </br></br>
 

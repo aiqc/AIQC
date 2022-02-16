@@ -81,7 +81,7 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
 }
 
 .titlez {
-    font-size:      20px !important;
+    font-size:      22px !important;
     margin-left:    16%;
     margin-right:   16%;
 }
@@ -488,13 +488,13 @@ a .checkmark {
 }
 
 .high-level div  {
-    border: 2px solid #b59bd0;
+    border: 2px solid #8fbd8f;
     color: #251634;
-    background: #ddcaf0;
+    background: #bcf5bc;
 }
 
 .high-level div:hover {
-    border: 2px solid #987db5;
+    border: 2px solid #68ac68;
 }
 
 .blockz .etc {

@@ -17,7 +17,7 @@ Competition
 
   <ul>
     <li class="compare-bullets">
-      Users define the type of transformations (e.g encoding, interpolation, walk forward, etc.) they want to make to their dataset, and then AIQC intelligently coordinates the <i>data wrangling</i> of each split/ fold during both the pre & post processing stages of analysis.
+      Users define the types of transformations (e.g encoding, interpolation, walk forward, etc.) they want to make to their dataset, and then AIQC intelligently coordinates the <i>data wrangling</i> of each split/ fold during both the pre & post processing stages of analysis.
     </li></br>
     <li class="compare-bullets">
       AIQC abstracts the components (build, train, optimize, etc.) of TensorFlow & PyTorch. So it can easily pass Pythonic parameters into these components during hypertuning. Furthermore, because it is data-aware, it automatically evaluates every model with metrics & charts for each split/ fold.
@@ -26,7 +26,7 @@ Competition
 
   <center>
     <p class="intro">
-      This two-pronged approach leads to significant time savings and more generalizable models. By simplifying both data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce validation splits/ folds into their workflow. Which, in turn, helps users prevent <i>evaluation bias & overfitting</i> during model training.
+      This two-pronged approach leads to significant time savings and more generalizable models. By simplifying both data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce <i>validation</i> splits/ folds into their workflow. Which, in turn, helps users prevent <i>evaluation bias & overfitting</i> during model training.
     </p>
 
     <hr style="width:35%;">
