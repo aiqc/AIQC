@@ -58,7 +58,7 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 ## Quirks.
 
 - There were too many notebooks so I put them in 'tutorials.rst' and now the "WARNING: document isn't included in any toctree" is to be expected.
-- If the build fails remotely, then check for dependency issues here: https://github.com/spatialaudio/nbsphinx/issues
+- If the build fails remotely, then check for dependency issues here <https://github.com/spatialaudio/nbsphinx/issues>
 - Don't forget to run `make html` if you want your changes to show up in the final documentation.
 - When adding/ removing/ renaming files to the toctrees, I have to run `make html` twice: once with with and without the `html_sidebars` line of `conf.py` uncommented and then again with it commented.
 - Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
@@ -67,3 +67,5 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 - The `nbsphinx==0.8.6` maintainer fixed a bug where it was not working with Jinja2(v3). 
 - Don't delete 'make.bat' or 'Makefile'.
 - When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.
+- When adding fonts to `/_static/fonts` you need to register it in css with `@font-face`.
+- Used this site for favicons <https://icoconvert.com/> `.ico` format.

@@ -85,3 +85,13 @@ Examples
 
 | 
 |
+
+.. raw:: html
+
+  <script>
+    window.addEventListener('load', function() {
+      var framework = document.querySelector("thead")
+      framework.style.background = "#122536";
+      framework.style.color = "white";
+    });
+  </script>
