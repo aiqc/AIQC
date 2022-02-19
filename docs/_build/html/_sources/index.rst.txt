@@ -384,7 +384,7 @@ Overview
       <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
-  <div style="height:50px; background-image: linear-gradient(#252523, #1c1c1a); border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  <div style="height:50px; background-image: linear-gradient(#122536, #122536); border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
   </div>
 
 
