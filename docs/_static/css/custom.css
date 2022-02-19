@@ -8,6 +8,12 @@
     src: url("../fonts/Abel-Regular.ttf");
 }
 
+@font-face {
+    font-family: "MontserratAlternates";
+    src: url("../fonts/MontserratAlternates-Regular.ttf");
+}
+
+
 /* if need to resize for mobile
 @media only screen and (max-width: 925px) {
 }
@@ -61,17 +67,18 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
 
 /* --- Start: Main page --- */
 .headerz-light {
-    font-family:    'Exo'; 
+    font-family:    'MontserratAlternates'; 
     color:          #333;
     letter-spacing: .01rem;
     font-weight:    400;
     font-size:      17.5px;
     margin-right:   20%;
     margin-left:    20%;
+    line-height:    175%;
 }
 
 .headerz-dark {
-    font-family:    'Exo'; 
+    font-family:    'MontserratAlternates'; 
     color:          #efefef;
     letter-spacing: .03rem;
     font-weight:    200;
