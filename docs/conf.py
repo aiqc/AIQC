@@ -60,7 +60,7 @@ html_static_path = ['_static']
 # Create a CSS file at path: `.../docs/_static/css/custom.css`.
 html_css_files = ['css/custom.css']
 # See my css solution for svg: https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
-html_logo = 'images/aiqc_logo_wide_white_docs_300px.svg'
+html_logo = 'images/aiqc_logo_square_blues.svg'
 html_favicon = 'images/favicon.ico'
 html_show_sphinx = False
 html_show_copyright = False

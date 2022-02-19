@@ -4,7 +4,7 @@
   :hidden:
 
   tutorials
-  notebooks/example_datasets
+  notebooks/datasets
   notebooks/installation
 
 
@@ -81,7 +81,7 @@
 
 .. raw:: html
   
-  <div style="background-image: linear-gradient(#8a8a8a, #252523); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
+  <div style="background-image: linear-gradient(#24435f, #122536); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
     </br></br>
     <center>
       <div class="headerz titlez headerz-dark">What <i class="goldz-dark">discovery</i> will you make today?</div>
@@ -89,7 +89,7 @@
   </div>
   <div style="height: 60px; overflow: hidden;">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
   </br></br></br></br>
@@ -101,7 +101,7 @@
 .. 
   The image border is styled by script below.
 
-.. image:: images/framework_mlops.png
+.. image:: images/framework_feb19.png
   :width: 100%
   :align: center
   :alt: framework
@@ -153,14 +153,14 @@
   
   <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
 
-  <div style="background-image: linear-gradient(#252523, #fcfcfc);">
+  <div style="background-image: linear-gradient(#122536, #fcfcfc);">
     </br></br>
     <center>
-      <div class="headerz headerz-dark">Refine your raw data into scientific <span class="goldz-dark">insight</span>.</div>
+      <div class="headerz headerz-dark">Refine raw data into actionable <span class="goldz-dark">insight</span>.</div>
       </br></br></br>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" alt="abstraction" width="90%" style="display:block;">
       </br></br>
@@ -353,7 +353,7 @@ Overview
 
 .. raw:: html
 
-  <div style="background-image: linear-gradient(#fcfcfc, #252523);">
+  <div style="background-image: linear-gradient(#fcfcfc, #122536);">
     </br></br></br></br></br></br>
     <center>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/visualizations.gif" alt="visualizations" width="85%" style="display:block;">
@@ -364,7 +364,7 @@ Overview
   </div>
   <div style="height: 100px; overflow: hidden;">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
 
@@ -381,7 +381,7 @@ Overview
 
   <div style="height:100px; overflow:hidden;">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;  transform:rotate(180deg);">
-      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#252523;"></path>
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
   <div style="height:50px; background-image: linear-gradient(#252523, #1c1c1a); border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
@@ -391,7 +391,7 @@ Overview
   <script>
     window.addEventListener('load', function() {
       var framework = document.querySelector("img[alt='framework']")
-      framework.style.border = "2px solid silver";
+      framework.style.border = "2px solid #40566b";
     });
 
     window.addEventListener('load', function() {

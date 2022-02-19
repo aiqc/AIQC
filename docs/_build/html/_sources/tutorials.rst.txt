@@ -1,9 +1,9 @@
 ..
   Overview <h1> is intentionally hidden by CSS.
 
-#########
-Use Cases
-#########
+########
+Examples
+########
 
 .. |br| raw:: html
 
