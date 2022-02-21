@@ -13,7 +13,9 @@
 <h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
 </br></br></br></br>
 
-<a href="https://aiqc.readthedocs.io/">
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_logo_wide.png" width="95%" alt="framework"/>
-</a>
+<center>
+	<a href="https://aiqc.readthedocs.io/">
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_logo_wide.png" width="95%" alt="framework"/>
+	</a>
+</center>
 </br></br></br></br>
