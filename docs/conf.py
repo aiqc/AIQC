@@ -88,9 +88,9 @@ hight_language = 'python3'
 # https://www.linkedin.com/post-inspector/
 ogp_site_url = "https://aiqc.readthedocs.io/"
 ogp_site_name = "AIQC"
-ogp_image = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_wide_meta_tags.png"
+ogp_image = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png"
 ogp_image_alt = "Artificial Intelligence Quality Control"
 ogp_type = "website"
 ogp_custom_meta_tags = [
-    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_wide_meta_tags.png" />',
+    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />',
 ]

@@ -344,11 +344,11 @@
   </br></br></br></br>
 
 ..
-  Overview <h1> is intentionally hidden by CSS.
+  AIQC <h1> is intentionally hidden by CSS. This header is used for link previews.
 
-########
-Overview
-########
+####
+AIQC
+####
 
 
 .. raw:: html
