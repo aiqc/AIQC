@@ -101,7 +101,7 @@
 .. 
   The image border is styled by script below.
 
-.. image:: images/framework_logo_wide.png
+.. image:: images/framework_feb23.png
   :width: 100%
   :align: center
   :alt: framework

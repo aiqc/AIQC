@@ -15,7 +15,7 @@
 
 <center>
 	<a href="https://aiqc.readthedocs.io/">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_logo_wide.png" width="95%" alt="framework"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_feb23.png" width="95%" alt="framework"/>
 	</a>
 </center>
 </br></br></br></br>
