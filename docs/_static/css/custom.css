@@ -19,6 +19,11 @@
 }
 */
 
+.wy-body-for-nav {
+    background-image: linear-gradient(to bottom, #111, #424242);
+    background-attachment: fixed;
+}
+
 /* --- Note that the Sphinx theme is using .bttn class --- */
 /* --- Start: Nav bar --- */
 .wy-side-nav-search {
