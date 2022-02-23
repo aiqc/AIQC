@@ -344,31 +344,42 @@
 <h1>Competition<a class="headerlink" href="#competition" title="Permalink to this headline"></a></h1>
 </br>
 <center>
-  <b>→ Expect more from your Experiment Tracker.</b>
+  <b style="font-family:Abel; font-size:20px;">Expect More from your Experiment Tracker</b>
   </br></br></br>
 
-  <p class="intro">
-    The AIQC framework provides teams a standardized approach that helps them train better agorithms in less time. The reason why it is able to do so is that the framework is not only <b>analysis-aware</b> (e.g. supervision, binary/ multi), but also <b>data-aware</b> (e.g. splits, folds, encoders, shapes, dtypes).
+  <p class="intro" style="width:90%;">
+    The AIQC framework provides teams a standardized methodology that for training better agorithms in less time. The reason why it is able to do so is that the framework is not only <b>data-aware</b> (e.g. splits, folds, encoders, shapes, dtypes) but also <b>analysis-aware</b> (e.g. supervision, binary/ multi).
   </p>
 </center>
 
-<ul>
-  <li class="compare-bullets">
-    Users define the types of transformations (e.g encoding, interpolation, walk forward, etc.) they want to make to their dataset, and then AIQC intelligently coordinates the <i>data wrangling</i> of each split/ fold during both the pre & post processing stages of analysis.
-  </li></br>
-  <li class="compare-bullets">
-    AIQC abstracts the components (build, train, optimize, etc.) of TensorFlow & PyTorch. So it can easily pass Pythonic parameters into these components during hypertuning. Furthermore, because it is data-aware, it automatically evaluates every model with metrics & charts for each split/ fold.
-  </li>
-</ul>
+
+<div class="flex-container" style="margin-bottom:25px; margin-top:20px;">
+  <div class="flex-item">
+    <div class="intro" style="text-align:center; line-height:24px;">
+      <div class="shadowBox" style="padding:22px;">
+        <b>Data-Aware</b></br>
+        Users define the transformations (e.g encoding, interpolation, walk forward, etc.) they want to make to their dataset. Then AIQC automatically coordinates the <i>data wrangling</i> of each split/ fold during both the pre & post processing stages of analysis.
+      </div>
+    </div>
+  </div>
+  <div class="flex-item">
+    <div class="intro" style="text-align:center; line-height:24px;">
+      <div class="shadowBox" style="padding:22px;">
+        <b>Analysis-Aware</b></br>
+        Users define model components (e.g. build, train, optimize, loss, etc.), hyperparameters, and an analysis type. Then AIQC automatically trains and evaluates every model with metrics & charts for each split/ fold. It also handles decoding & inference.
+      </div>
+    </div>
+  </div>
+</div>
 
 <center>
-  <p class="intro">
-    This two-pronged approach leads to significant time savings and more generalizable models. By simplifying both data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce <i>validation</i> splits/ folds into their workflow. Which, in turn, helps users prevent <i>evaluation bias & overfitting</i> during model training.
+  <p class="intro" style="width:90%; margin-bottom:35px;">
+    This declarative approach leads to significant time savings and more generalizable models. By simplifying both data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce <i>validation</i> splits/ folds into their workflow. Which, in turn, helps prevent <i>evaluation bias & overfitting</i> during model training.
   </p>
 
   <hr style="width:35%;">
 
-  <p class="intro">
+  <p class="intro" style="width:90%; margin-top:35px;">
     While AIQC actively helps <i>structure the analysis</i>, alternative tools take a more <i>passive</i> approach. They expect users to manually prepare their own data and log their own training artifacts. They can't assist with the actual data science workflow because they know about neither the data involved nor the analysis being conducted. Many supposed "MLops" tools are really batch execution schedulers marketing to data science teams.
   </p>
 </center>
