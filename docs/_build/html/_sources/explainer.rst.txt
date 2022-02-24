@@ -192,7 +192,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    There are different types of algorithms for working with different types of data:
+    There are different types of algorithms (aka neural network architectures) for working with different types of data:
   </p>
 
 
@@ -214,6 +214,76 @@ How AI Works
 
   <p class="explain">
     They can be mixed and matched to handle almost any real-life scenario.
+  </p>
+
+|
+
+----
+
+|
+
+.. raw:: html
+
+  <p class="explain">
+    Within an algorithm, the data is passed through different types of <i>layers</i> that are comprised of <i>neurons</i>:
+  </p>
+
+
+.. list-table::
+  :widths: 20, 40
+  :align: center
+  
+  * - **Input**
+    - Receives the data. Mirrors the shape of incoming data.
+
+  * - **Hidden**
+    - Learns from the patterns in the data. # of layers & neurons varies based on data complexity.
+
+  * - **Output**
+    - Compares the data to the real label. Mirrors the shape of the labels (# of categories).
+
+|
+
+.. raw:: html
+
+  <p class="explain">
+    The goal is to shape the <i>topology</i> of the network so that it can successfully tease apart the patterns in the data to make the right predictions.
+  </p>
+
+|
+
+.. image:: images/topology_rectangle.png
+  :width: 95%
+  :align: center
+  :alt: oz
+  :class: no-scaled-link
+
+|
+
+
+.. raw:: html
+
+  <p class="figCaption" style="text-align: left;">
+    The neurons in a given layer are connected to the neurons in the next layer.
+    These connections are like wires (aka edges) that weave together a <i>network</i> of neurons. 
+    As the data passes through each wire, it is multiplied by that wire's adjustable <i>weight</i> that we mentioned previously.
+    In this way, the weights act like amplifiers that adjust the voltage passing through the network.
+    Meanwhile, the neurons are like <i>nodes</i> or lightbulbs that light up with different intensities based on the strength of the voltage they receive from all of their incoming wires.
+    The <i>bias</i> neurons don't actually touch the data. They act like a y-intercept (think <i>b</i> in <i>y = mx + b</i>).
+  </p>
+
+|
+
+.. youtube:: S5WAswaJRjw
+  :width: 66%
+  :align: center
+
+|
+
+.. raw:: html
+
+  <p class="explain">
+    A much simpler analogy is that a neural network is like a galtonboard (aka "bean machine"). 
   </p>
 
 |

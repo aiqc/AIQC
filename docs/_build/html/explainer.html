@@ -480,7 +480,7 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  There are different types of algorithms for working with different types of data:
+  There are different types of algorithms (aka neural network architectures) for working with different types of data:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 33%" />
@@ -500,6 +500,61 @@
 </table>
 <p class="explain">
   They can be mixed and matched to handle almost any real-life scenario.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  Within an algorithm, the data is passed through different types of <i>layers</i> that are comprised of <i>neurons</i>:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Input</strong></p></td>
+<td><p>Receives the data. Mirrors the shape of incoming data.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Hidden</strong></p></td>
+<td><p>Learns from the patterns in the data. # of layers &amp; neurons varies based on data complexity.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Output</strong></p></td>
+<td><p>Compares the data to the real label. Mirrors the shape of the labels (# of categories).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  The goal is to shape the <i>topology</i> of the network so that it can successfully tease apart the patterns in the data to make the right predictions.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="oz" class="no-scaled-link align-center" src="_images/topology_rectangle.png" style="width: 95%;" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="figCaption" style="text-align: left;">
+  The neurons in a given layer are connected to the neurons in the next layer.
+  These connections are like wires (aka edges) that weave together a <i>network</i> of neurons.
+  As the data passes through each wire, it is multiplied by that wire's adjustable <i>weight</i> that we mentioned previously.
+  In this way, the weights act like amplifiers that adjust the voltage passing through the network.
+  Meanwhile, the neurons are like <i>nodes</i> or lightbulbs that light up with different intensities based on the strength of the voltage they receive from all of their incoming wires.
+  The <i>bias</i> neurons don't actually touch the data. They act like a y-intercept (think <i>b</i> in <i>y = mx + b</i>).
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="video_wrapper align-center" style="padding-bottom: 37.125000%; padding-top: 30px; position: relative; text-align: center; width: 66%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/S5WAswaJRjw" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  A much simpler analogy is that a neural network is like a galtonboard (aka "bean machine").
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
