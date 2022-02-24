@@ -6,7 +6,10 @@ How AI Works
 
 ----
 
-|
+.. raw:: html
+
+  </br>
+
 
 .. image:: images/gears.png
   :width: 50%
@@ -261,7 +264,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    And that's really all there is to it 🏄‍♂️&nbsp;The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
+    It's really that simple. The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
   </p>
   </br>
 

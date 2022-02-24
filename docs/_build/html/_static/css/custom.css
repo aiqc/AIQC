@@ -215,7 +215,12 @@ iframe {
 }
 
 #aiqc h1, #competition h1, #examples h1 {
-    display: none !important;;
+    display: none !important;
+}
+
+h1, h2, h3, h5 {
+    font-family: Abel !important;
+    color:#122536;
 }
 
 /* hides the breadcrumbs on main page */
