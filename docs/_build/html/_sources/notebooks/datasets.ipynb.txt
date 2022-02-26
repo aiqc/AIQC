@@ -18,12 +18,20 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "This notebook contains information about how to use the files that are either:\n",
+    "This notebook contains information about the prepackaged datasets that are referenced throughout the documentation. These datasets are either:\n",
     "\n",
-    "* Included with the AIQC Python package (a few KB).\n",
-    "* Remotely stored in the AIQC GitHub repository.\n",
+    "* Included directly within the AIQC Python package itself (KB)\n",
+    "  * https://github.com/aiqc/AIQC/tree/main/aiqc/data\n",
     "\n",
-    "You'll find that these files are used throughout the documentation as they are well suited for classification (multi & binary) and regression models."
+    "* Stored remotely in the AIQC GitHub repository (MB).\n",
+    "  * https://github.com/aiqc/AIQC/tree/main/remote_datum"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
    ]
   },
   {
@@ -42,15 +50,6 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "import os; os.chdir(\"/Users/Layne/Desktop/AIQC\")"
-   ]
-  },
-  {
-   "cell_type": "code",
    "execution_count": 2,
    "metadata": {},
    "outputs": [],
@@ -63,7 +62,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> The module is named `datum` so that it does not overlap with commonly used words like 'data', 'files', or 'datasets'."
+    "The module for interacting with the datasets is called `datum` so that it does not overlap with commonly used names like 'data' or 'datasets'."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
    ]
   },
   {
@@ -553,7 +559,9 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {},
+   "metadata": {
+    "tags": []
+   },
    "source": [
     "## Remote Data"
    ]
@@ -726,6 +734,35 @@
    "metadata": {},
    "source": [
     "At this point, you can use either the [high](api_high_level.html) or [low](api_low_level.html) level AIQC APIs [e.g. `aiqc.Dataset.Image.from_ulrs()`] to ingest that data and work with it as normal."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "## Alternative Sources"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "If the datasets described above do not satisfy your use case, then have a look at the following repositories:\n",
+    "\n",
+    "* UCI: <https://archive.ics.uci.edu/ml/datasets.php>\n",
+    "* Kaggle: <https://www.kaggle.com/datasets>\n",
+    "* Quilt: <https://open.quiltdata.com/>\n",
+    "* sklearn: <https://scikit-learn.org/stable/datasets/toy_dataset.html>\n",
+    "* seaborn: <https://github.com/mwaskom/seaborn-data>"
    ]
   }
  ],

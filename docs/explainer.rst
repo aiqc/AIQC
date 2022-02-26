@@ -295,7 +295,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    A data scientist oversees the training of an neural network much like a chef cooks a meal 🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls: 
+    A data scientist oversees the training of an neural network much like a chef prepares a meal 🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls: 
 
 
 .. list-table::

@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/datasets.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="This notebook contains information about how to use the files that are either: Included with the AIQC Python package (a few KB)., Remotely stored in the AIQC GitHub repository.. You’ll find that th..." />
+  <meta property="og:description" content="This notebook contains information about the prepackaged datasets that are referenced throughout the documentation. These datasets are either: Included directly within the AIQC Python package itsel..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
@@ -592,24 +593,23 @@ div.rendered_html tbody tr:hover {
 <section id="Datasets">
 <h1>Datasets<a class="headerlink" href="#Datasets" title="Permalink to this headline"></a></h1>
 <hr class="docutils" />
-<p>This notebook contains information about how to use the files that are either:</p>
+<p>This notebook contains information about the prepackaged datasets that are referenced throughout the documentation. These datasets are either:</p>
 <ul class="simple">
-<li><p>Included with the AIQC Python package (a few KB).</p></li>
-<li><p>Remotely stored in the AIQC GitHub repository.</p></li>
+<li><p>Included directly within the AIQC Python package itself (KB)</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/aiqc/AIQC/tree/main/aiqc/data">https://github.com/aiqc/AIQC/tree/main/aiqc/data</a></p></li>
 </ul>
-<p>You’ll find that these files are used throughout the documentation as they are well suited for classification (multi &amp; binary) and regression models.</p>
+</li>
+<li><p>Stored remotely in the AIQC GitHub repository (MB).</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/aiqc/AIQC/tree/main/remote_datum">https://github.com/aiqc/AIQC/tree/main/remote_datum</a></p></li>
+</ul>
+</li>
+</ul>
+<hr class="docutils" />
 <section id="Prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
 <p>If you’ve already completed the instructions on the <a class="reference external" href="installation.html">Installation</a> page, then let’s get started.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;/Users/Layne/Desktop/AIQC&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -620,9 +620,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<blockquote>
-<div><p>The module is named <code class="docutils literal notranslate"><span class="pre">datum</span></code> so that it does not overlap with commonly used words like ‘data’, ‘files’, or ‘datasets’.</p>
-</div></blockquote>
+<p>The module for interacting with the datasets is called <code class="docutils literal notranslate"><span class="pre">datum</span></code> so that it does not overlap with commonly used names like ‘data’ or ‘datasets’.</p>
+<hr class="docutils" />
 </section>
 <section id="Prepackaged-Local-Data">
 <h2>Prepackaged Local Data<a class="headerlink" href="#Prepackaged-Local-Data" title="Permalink to this headline"></a></h2>
@@ -1113,6 +1112,18 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <p>At this point, you can use either the <a class="reference external" href="api_high_level.html">high</a> or <a class="reference external" href="api_low_level.html">low</a> level AIQC APIs [e.g. <code class="docutils literal notranslate"><span class="pre">aiqc.Dataset.Image.from_ulrs()</span></code>] to ingest that data and work with it as normal.</p>
+<hr class="docutils" />
+</section>
+<section id="Alternative-Sources">
+<h2>Alternative Sources<a class="headerlink" href="#Alternative-Sources" title="Permalink to this headline"></a></h2>
+<p>If the datasets described above do not satisfy your use case, then have a look at the following repositories:</p>
+<ul class="simple">
+<li><p>UCI: <a class="reference external" href="https://archive.ics.uci.edu/ml/datasets.php">https://archive.ics.uci.edu/ml/datasets.php</a></p></li>
+<li><p>Kaggle: <a class="reference external" href="https://www.kaggle.com/datasets">https://www.kaggle.com/datasets</a></p></li>
+<li><p>Quilt: <a class="reference external" href="https://open.quiltdata.com/">https://open.quiltdata.com/</a></p></li>
+<li><p>sklearn: <a class="reference external" href="https://scikit-learn.org/stable/datasets/toy_dataset.html">https://scikit-learn.org/stable/datasets/toy_dataset.html</a></p></li>
+<li><p>seaborn: <a class="reference external" href="https://github.com/mwaskom/seaborn-data">https://github.com/mwaskom/seaborn-data</a></p></li>
+</ul>
 </section>
 </section>
 
