@@ -799,7 +799,7 @@ v14.7.0
 </section>
 <section id="Optional---Swap-Space-for-Failover-Memory">
 <h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline"></a></h3>
-<p>On local machines, it is good practice to configure “swap space” so that if you run out of memory/ RAM it will simply spill over onto the swap partition (dynamic is possible) of your hard drive as opposed to risking out-of-memory crashes. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for using swap in production, but you can get by with NVMe/ SSD.</p>
+<p>On local machines, it is good practice to configure “swap space.” This way, if your processes run out of memory/ RAM, then the excess information will simply spill over onto the (potentially dynamically sized) swap partition of your hard drive, as opposed to causing an out-of-memory crash. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for usage with swap, but you could get by with NVMe/ SSD.</p>
 <hr class="docutils" />
 </section>
 </section>
