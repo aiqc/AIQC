@@ -1,18 +1,16 @@
+# Internal modules
+import aiqc
+from aiqc.orm import *
+from aiqc.utils import torch_batcher
+from aiqc import datum
+# External modules
 import tensorflow as tf
 import tensorflow.keras.layers as layers
-
 import torch
 import torch.nn as nn
 import torchmetrics
-
 from sklearn.preprocessing import *
-
 import numpy as np
-
-import aiqc
-from aiqc import *
-# Still required even with `*` above.
-from aiqc import datum 
 
 
 name = "tests"
@@ -925,7 +923,7 @@ def pytorch_binary_fn_optimize(model, **hp):
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = aiqc.torch_batcher(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1059,7 +1057,7 @@ def pytorch_multiclass_lose(**hp):
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = aiqc.torch_batcher(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=hp['batch_size'], enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1207,7 +1205,7 @@ def pytorch_regression_fn_build(features_shape, label_shape, **hp):
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from torchmetrics.functional import explained_variance as expVar
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = aiqc.torch_batcher(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
@@ -1375,7 +1373,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	#https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d
 	#https://pytorch.org/docs/stable/generated/torch.reshape.html
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = aiqc.torch_batcher(
+	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
 		batch_size=5, enforce_sameSize=False, allow_1Sample=False
 	)
