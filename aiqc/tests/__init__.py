@@ -1,7 +1,7 @@
 # Internal modules
 import aiqc
 from aiqc.orm import *
-from aiqc.utils import torch_batcher
+from aiqc.utils import torch_batcher, div255, mult255
 from aiqc import datum
 # External modules
 import tensorflow as tf
@@ -595,7 +595,7 @@ def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_
 		{"metric":"val_loss", "cutoff":0.50, "above_or_below":"below"},
 		{"metric":"loss", "cutoff":0.50, "above_or_below":"below"}
 	]
-	cutoffs = aiqc.TrainingCallback.Keras.MetricCutoff(metrics_cuttoffs)
+	cutoffs = TrainingCallback.Keras.MetricCutoff(metrics_cuttoffs)
 	
 	model.fit(
 		samples_train["features"]
@@ -715,11 +715,11 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	df['sensor_170'][0] = np.NaN
 
 	label_df = df[['seizure']]
-	dataset_tab = aiqc.Dataset.Tabular.from_pandas(label_df)
+	dataset_tab = Dataset.Tabular.from_pandas(label_df)
 	label = dataset_tab.make_label(columns='seizure')
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')	
-	sensor_dataset = aiqc.Dataset.Sequence.from_numpy(sensor_arr3D)
+	sensor_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)
 	feature = sensor_dataset.make_feature()
 	
 	interpolaterset = feature.make_interpolaterset()
@@ -753,7 +753,7 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	else:
 		foldset_id = None
 	
-	algorithm = aiqc.Algorithm.make(
+	algorithm = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
 		, fn_build = keras_sequence_binary_fn_build
@@ -849,7 +849,7 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		size_test = 0.17
 		size_validation = 0.16
 
-	splitset = aiqc.Splitset.make(
+	splitset = Splitset.make(
 		feature_ids = [feature.id]
 		, label_id = None
 		, size_test = 0.17
@@ -873,7 +873,7 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	else:
 		foldset_id = None
 
-	algorithm = aiqc.Algorithm.make(
+	algorithm = Algorithm.make(
 		library = "keras"
 		, analysis_type = "regression"
 		, fn_build = keras_tabular_forecast_fn_build
@@ -1535,7 +1535,7 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 	feature.make_window(size_window=1, size_shift=2)
 	encoderset = feature.make_encoderset()
 	encoderset.make_featurecoder(
-		sklearn_preprocess= FunctionTransformer(aiqc.div255, inverse_func=aiqc.mult255)
+		sklearn_preprocess= FunctionTransformer(div255, inverse_func=mult255)
 		, dtypes = 'float64'
 	)
 	feature.make_featureshaper(reshape_indices=(0,3,4))
