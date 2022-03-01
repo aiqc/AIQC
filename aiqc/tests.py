@@ -1,4 +1,6 @@
 # Internal modules
+from cProfile import label
+from json import encoder
 from . import datum
 from .utils import torch_batcher, div255, mult255, TrainingCallback
 from .orm import *
@@ -124,7 +126,6 @@ For example when creating an `def test_method()... Algorithm.fn_build`
 
 Each test takes a slightly different approach to `fn_optimizer`.
 """
-
 # ------------------------ KERAS TABULAR MULTICLASS ------------------------
 def keras_multiclass_fn_build(features_shape, label_shape, **hp):
 	model = tf.keras.models.Sequential()
@@ -134,9 +135,11 @@ def keras_multiclass_fn_build(features_shape, label_shape, **hp):
 	model.add(layers.Dense(units=label_shape[0], activation='softmax'))
 	return model
 
+
 def keras_multiclass_fn_optimize(**hp):
 	optimizer = tf.keras.optimizers.Adamax(hp['learning_rate'])
 	return optimizer
+
 
 def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	model.compile(
@@ -159,6 +162,7 @@ def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_ev
 	)
 	return model
 
+
 def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [9, 12]
@@ -172,18 +176,15 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, pe
 	else:
 		file_path = datum.get_path('iris.tsv')
 
-	dataset = Dataset.Tabular.from_path(
+	d_id = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'tsv'
 		, dtype = None
-	)
-	d_id = dataset.id
+	).id
 	
 	label_column = 'species'
-	label = Label.from_dataset(dataset_id=d_id, columns=[label_column])
-	l_id = label.id
-	feature = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column])
-	f_id = feature.id
+	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -192,55 +193,51 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, pe
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
+	s_id = Splitset.make(
 		feature_ids = [f_id]
 		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = Foldset.from_splitset(splitset_id=splitset.id, fold_count=fold_count)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	encoderset = Encoderset.from_feature(feature_id=f_id)
-	e_id = encoderset.id
-
+	e_id = Encoderset.from_feature(feature_id=f_id).id
 	FeatureEncoder.from_encoderset(
-		encoderset_id=e_id
+		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, columns = ['petal_width']
 	)
-
 	FeatureEncoder.from_encoderset(
-		encoderset_id=e_id
+		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
 	)
 
-	LabelEncoder.from_label(label_id=l_id, sklearn_preprocess=OneHotEncoder(sparse=False)
+	LabelEncoder.from_label(label_id=l_id, sklearn_preprocess=OneHotEncoder(sparse=False))
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_multi"
 		, fn_build = keras_multiclass_fn_build
 		, fn_optimize = keras_multiclass_fn_optimize
 		, fn_train = keras_multiclass_fn_train
-	)
-	a_id = algorithm.id
+	).id
 
-	hyperparamset = Hyperparamset.from_algorithm(
-		algorithm_id = a_id
-		, hyperparameters = hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
 	queue = Queue.from_algorithm(
 		algorithm_id = a_id
-		, splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -257,11 +254,12 @@ def keras_binary_fn_build(features_shape, label_shape, **hp):
 	model.add(layers.Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
 	return model
 
+
 def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	model.compile(
-		loss=loser
-		, optimizer=optimizer
-		, metrics=['accuracy']
+		loss = loser
+		, optimizer = optimizer
+		, metrics = ['accuracy']
 	)
 	model.fit(
 		samples_train['features'], samples_train['labels']
@@ -273,6 +271,7 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 	)
 	return model
 
+
 def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [25, 50]
@@ -281,20 +280,16 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permut
 
 	file_path = datum.get_path('sonar.csv')
 
-	d = Dataset.Tabular.from_path(
+	d_id = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'csv'
 		, name = 'rocks n radio'
 		, dtype = None
-	)
-	d_id = d.id
+	).id
 	
 	label_column = 'object'
-	label = Label.from_dataset(dataset_id=d_id)
-	l_id = label.id
-
-	feature = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column])
-	f_id = feature.id
+	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -303,52 +298,52 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permut
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
+	s_id = Splitset.make(
 		feature_ids = [f_id]
 		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = Foldset.from_splitset(splitset_id=splitset.id, fold_count=fold_count)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(splitset_id=s_id, fold_count=fold_count).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	LabelEncoder.from_label(lable_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False))
+	LabelEncoder.from_label(
+		lable_id = l_id
+		, sklearn_preprocess = LabelBinarizer(sparse_output=False)
+	)
 
-
-	encoderset = Encoderset.from_feature(feature_id=f_id)
+	e_id = Encoderset.from_feature(feature_id=f_id).id
 	FeatureEncoder.from_encoderset(
-		encoderset_id = encoderset.id
+		encoderset_id = e_id
 		, sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['float64']
 	)
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
 		, fn_build = keras_binary_fn_build
 		, fn_train = keras_binary_fn_train
-	)
-	a_id = algorithm_id
+	).id
 
-	hyperparamset = Hyperparamset.from_algorithm(
-		algorithm_id=a_id.id, hyperparameters=hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
 	queue = Queue.from_algorithm(
 		algorithm_id = a_id
-		, splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
 	return queue
 
-###
+
 def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [25, 50]
@@ -357,17 +352,16 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, p
 
 	file_path = datum.get_path('spam.csv')
 
-	dataset = Dataset.Text.from_path(
+	d_id = Dataset.Text.from_path(
 		file_path = file_path
 		, source_file_format = 'csv'
 		, name = 'text test dataset'
 		, dtype = None
-	)
+	).id
 	
 	label_column = 'label'
-	label = dataset.make_label(columns=[label_column])
-
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -376,47 +370,45 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, p
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
+	s_id = Splitset.make(
 		feature_ids = [feature.id]
 		, label_id = label.id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(splitset_id=s_id, fold_count=fold_count).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	label.make_labelcoder(
-		sklearn_preprocess = LabelBinarizer(sparse_output=False)
+	LabelEncoder.from_label(
+		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
 	)
 
-	encoderset = feature.make_encoderset()
-
-	encoderset.make_featurecoder(
-		sklearn_preprocess = CountVectorizer(max_features = 200)
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		encoderset_id=e_id
+		, sklearn_preprocess = CountVectorizer(max_features = 200)
 		, columns=['TextData']
 	)
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
 		, fn_build = keras_binary_fn_build
 		, fn_train = keras_binary_fn_train
-	)
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
@@ -432,9 +424,11 @@ def keras_regression_fn_build(features_shape, label_shape, **hp):
 	model.add(layers.Dense(units=label_shape[0], kernel_initializer='normal'))
 	return model
 
+
 def keras_regression_fn_optimize(**hp):
 	optimizer = tf.keras.optimizers.RMSprop()
 	return optimizer
+
 
 def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	model.compile(
@@ -455,6 +449,7 @@ def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_ev
 	)
 	return model
 
+
 def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
 		"neuron_count": [24, 48]
@@ -471,12 +466,14 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, pe
 	df['indus'][10] = np.NaN
 	df['age'][19] = np.NaN
 	
-	dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	d_id = Dataset.Tabular.from_pandas(dataframe=df).id
 	
 	label_column = 'price'
-	label = dataset.make_label(columns=[label_column])
-	label.make_labelpolater(
-		interpolate_kwargs = dict(
+	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
+	
+	LabelInterpolater.from_label(
+		label_id = l_id
+		, interpolate_kwargs = dict(
 			method = 'linear'
 			, limit_direction = 'both'
 			, limit_area = None
@@ -484,11 +481,32 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, pe
 			, order = 1
 		)
 	)
+	LabelEncoder.from_label(
+		label_id = l_id
+		, sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
+	)
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
-	interpolaterset = feature.make_interpolaterset()
-	interpolaterset.make_featurepolater(columns='nox')
-	interpolaterset.make_featurepolater(dtypes='float64')
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
+	
+	i_id = Interpolaterset.from_feature(feature_id=f_id).id
+	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, columns='nox')
+	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes='float64')
+	
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		encoderset_id=e_id
+		, include = False
+		, dtypes = ['int64']
+		, sklearn_preprocess = MinMaxScaler(copy=False)
+	)
+	# Expect double None (dtypes,columns) to use all columns because nothing is excluded.
+	FeatureEncoder.from_encoderset(
+		encoderset_id=e_id
+		, include = False
+		, dtypes = None
+		, columns = None
+		, sklearn_preprocess = OrdinalEncoder()
+	)
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -497,59 +515,40 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, pe
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
 		, bin_count = 3
-	)
+	).id
 
-	if fold_count is not None:
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
+	if (fold_count is not None):
+		fs_id = Foldset.from_splitset(
+			splitset_id = s_id
+			, fold_count = fold_count
 			, bin_count = 3
-		)
-		foldset_id = foldset.id
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	label.make_labelcoder(
-		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
-	)
-
-	encoderset = feature.make_encoderset()
-
-
-	encoderset.make_featurecoder(
-		include = False
-		, dtypes = ['int64']
-		, sklearn_preprocess = MinMaxScaler(copy=False)
-	)
-	# We expect double None (dtypes,columns) to use all columns because nothing is excluded.
-	encoderset.make_featurecoder(
-		include = False
-		, dtypes = None
-		, columns = None
-		, sklearn_preprocess = OrdinalEncoder()
-	)
-
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "regression"
 		, fn_build = keras_regression_fn_build
 		, fn_train = keras_regression_fn_train
 		, fn_optimize = keras_regression_fn_optimize
-	)
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
@@ -585,6 +584,7 @@ def keras_image_binary_fn_build(features_shape, label_shape, **hp):
 	model.add(layers.Dense(units=label_shape[0], activation='sigmoid'))
 	return model
 
+
 def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
 	model.compile(
 		optimizer=optimizer
@@ -614,6 +614,7 @@ def keras_image_binary_fn_train(model, loser, optimizer, samples_train, samples_
 	)
 	return model
 
+
 def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"include_2nd_dense": [True]
@@ -630,15 +631,14 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	}
 
 	df = datum.to_pandas(name='brain_tumor.csv')
-
 	# Dataset.Tabular
-	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
-	label = dataset_tabular.make_label(columns=['status'])
+	dt_id = Dataset.Tabular.from_pandas(dataframe=df).id
+	l_id = Label.from_dataset(dataset_id=dt_id, columns=['status']).id
 
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	dataset_image = Dataset.Image.from_urls_pillow(urls=image_urls)
-	feature = dataset_image.make_feature()
+	di_id = Dataset.Image.from_urls_pillow(urls=image_urls).id
+	f_id = Feature.from_dataset(dataset_id=di_id).id
 	
 	if (fold_count is not None):
 		size_test = 0.25
@@ -647,36 +647,36 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		,label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
 		, fn_build = keras_image_binary_fn_build
 		, fn_train = keras_image_binary_fn_train
-	)
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 	)
 	return queue
@@ -691,6 +691,7 @@ def keras_sequence_binary_fn_build(features_shape, label_shape, **hp):
 	))
 	model.add(layers.Dense(units=label_shape[0], activation='sigmoid'))
 	return model
+
 
 def keras_sequence_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	model.compile(
@@ -708,6 +709,7 @@ def keras_sequence_binary_fn_train(model, loser, optimizer, samples_train, sampl
 	)
 	return model
 
+
 def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('epilepsy.parquet')
 	# testing Featurepolater 3D.
@@ -716,21 +718,22 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	df['sensor_150'][130] = np.NaN
 	df['sensor_152'][22] = np.NaN
 	df['sensor_170'][0] = np.NaN
-
+	
 	label_df = df[['seizure']]
-	dataset_tab = Dataset.Tabular.from_pandas(label_df)
-	label = dataset_tab.make_label(columns='seizure')
+	dt_id = Dataset.Tabular.from_pandas(label_df).id
+	l_id = Label.from_dataset(dataset_id=dt_id, columns='seizure').id
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')	
-	sensor_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)
-	feature = sensor_dataset.make_feature()
+	ds_id = Dataset.Sequence.from_numpy(sensor_arr3D).id
+	f_id = Feature.from_dataset(dataset_id=ds_id).id
 	
-	interpolaterset = feature.make_interpolaterset()
-	interpolaterset.make_featurepolater(dtypes="float64")
+	i_id = Interpolaterset.from_feature(feature_id=f_id).id
+	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes="float64")
 	
-	encoderset = feature.make_encoderset()
-	encoderset.make_featurecoder(
-		sklearn_preprocess = StandardScaler()
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, sklearn_preprocess = StandardScaler()
 		, columns = ['0']
 	)
 	
@@ -741,27 +744,26 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 		size_test = 0.22
 		size_validation = 0.12
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 	
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "classification_binary"
 		, fn_build = keras_sequence_binary_fn_build
 		, fn_train = keras_sequence_binary_fn_train
-	)
+	).id
 	
 	hyperparameters = {
 		"neuron_count": [25]
@@ -769,15 +771,16 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 		, "epochs": [5]
 	}
 	
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, hyperparamset_id = h_id
+		, foldset_id = fs_id
 		, repeat_count = repeat_count
-		, foldset_id = foldset_id
 		, permute_count = permute_count
 	)
 	return queue
@@ -802,6 +805,7 @@ def keras_tabular_forecast_fn_build(features_shape, label_shape, **hp):
 	
 	return model
 
+
 def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	model.compile(
 		loss=loser
@@ -819,29 +823,30 @@ def keras_tabular_forecast_fn_train(model, loser, optimizer, samples_train, samp
 	)
 	return model
 
+
 def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('delhi_climate.parquet')
 	df['temperature'][0] = np.NaN
 	df['temperature'][13] = np.NaN
+	
+	d_id = Dataset.Tabular.from_pandas(dataframe=df).id
 
-	dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	f_id = Feature.from_dataset(dataset_id=d_id).id
+	
+	i_id = Interpolaterset.from_feature(feature_id=f_id).id
+	FeatureInterpolater(interpolaterset_id=i_id, dtypes=['float64'])
 
-	feature = dataset.make_feature()
+	Window.from_feature(feature_id=f_id, size_window=28, size_shift=14)
 
-	interpolaterset = feature.make_interpolaterset()
-	interpolaterset.make_featurepolater(dtypes=['float64'])
-
-	feature.make_window(size_window=28, size_shift=14)
-
-	encoderset = feature.make_encoderset()
-
-	encoderset.make_featurecoder(
-		sklearn_preprocess = RobustScaler(copy=False)
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, sklearn_preprocess = RobustScaler(copy=False)
 		, columns = ['wind', 'pressure']
 	)
-
-	encoderset.make_featurecoder(
-		sklearn_preprocess = StandardScaler()
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, sklearn_preprocess = StandardScaler()
 		, dtypes = ['float64', 'int64']
 	)
 
@@ -852,36 +857,28 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		size_test = 0.17
 		size_validation = 0.16
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = None
-		, size_test = 0.17
-		, size_validation = 0.16
-	)
-
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
+	s_id = Splitset.make(
+		feature_ids = [f_id]
 		, label_id = None
 		, size_test = size_test
 		, size_validation = size_validation
 		, bin_count = None
 		, unsupervised_stratify_col = 'day_of_year'
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "regression"
 		, fn_build = keras_tabular_forecast_fn_build
 		, fn_train = keras_tabular_forecast_fn_train
-	)
+	).id
 
 	hyperparameters = {
 		"neuron_count": [8,10]
@@ -890,14 +887,15 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 		, "dense_multiplier": [1]
 	}
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
@@ -917,12 +915,14 @@ def pytorch_binary_fn_build(features_shape, label_shape, **hp):
 	)
 	return model
 
+
 def pytorch_binary_fn_optimize(model, **hp):
 	optimizer = torch.optim.Adamax(
 		model.parameters()
 		, lr=hp['learning_rate']
 	)
 	return optimizer
+
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
@@ -967,20 +967,30 @@ def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_eval
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
+
 def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	file_path = datum.get_path('sonar.csv')
-
-	dataset = Dataset.Tabular.from_path(
+	
+	d_id = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'csv'
 		, name = 'rocks n radio'
 		, dtype = None
-	)
+	).id
 	
 	label_column = 'object'
-	label = dataset.make_label(columns=[label_column])
+	l_id = Label.from_dataset(dataset_id=d_id, columns=label_column).id
+	LabelEncoder.from_label(
+		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
+	)
 
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
+		, dtypes = ['float64']
+	).id
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -989,52 +999,40 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, perm
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	encoderset = feature.make_encoderset()
-
-	label.make_labelcoder(
-		sklearn_preprocess = LabelBinarizer(sparse_output=False)
-	)
-
-	encoderset.make_featurecoder(
-		sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
-		, dtypes = ['float64']
-	)
-
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "pytorch"
 		, analysis_type = "classification_binary"
 		, fn_build = pytorch_binary_fn_build
 		, fn_train = pytorch_binary_fn_train
-	)
+	).id
 
 	hyperparameters = {
 		"learning_rate": [0.01, 0.005]
 		, "epoch_count": [50]
 	}
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
-
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
@@ -1054,9 +1052,11 @@ def pytorch_multiclass_fn_build(features_shape, num_classes, **hp):
 	)
 	return model
 
+
 def pytorch_multiclass_lose(**hp):
 	loser = nn.CrossEntropyLoss(reduction=hp['reduction'])
 	return loser
+
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
@@ -1104,22 +1104,22 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
+
 def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
-	if fold_count is not None:
+	if (fold_count is not None):
 		file_path = datum.get_path('iris_10x.tsv')
 	else:
 		file_path = datum.get_path('iris.tsv')
 
-	dataset = Dataset.Tabular.from_path(
+	d_id = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'tsv'
 		, dtype = None
-	)
+	).id
 	
 	label_column = 'species'
-	label = dataset.make_label(columns=[label_column])
-
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1128,52 +1128,47 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, 
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
-	if fold_count is not None:
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+	if (fold_count is not None):
+		fs_id = Foldset.from_splitset(splitset_id=s_id, fold_count=fold_count).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	label.make_labelcoder(
-		sklearn_preprocess = OrdinalEncoder()
-	)
+	LabelEncoder.from_label(label_id=l_id, sklearn_preprocess=OrdinalEncoder())
 
-	encoderset = feature.make_encoderset()
-
-	encoderset.make_featurecoder(
-		sklearn_preprocess = StandardScaler(copy=False)
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		feature_id=e_id
+		, sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
 	)
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "pytorch"
 		, analysis_type = "classification_multi"
 		, fn_build = pytorch_multiclass_fn_build
 		, fn_train = pytorch_multiclass_fn_train
-	)
+	).id
 
 	hyperparameters = {
 		"reduction": ['mean', 'sum']
 		, "batch_size": [3, 5]
 	}
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
-
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
@@ -1187,7 +1182,8 @@ def pytorch_regression_lose(**hp):
 	elif (hp['loss_type'] == 'mse'):
 		loser = nn.MSELoss()
 	return loser	
-	
+
+
 def pytorch_regression_fn_build(features_shape, label_shape, **hp):
 	nc = hp['neuron_count']
 	model = torch.nn.Sequential(
@@ -1204,6 +1200,7 @@ def pytorch_regression_fn_build(features_shape, label_shape, **hp):
 		nn.Linear(nc, label_shape[0])
 	)
 	return model
+
 
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	from torchmetrics.functional import explained_variance as expVar
@@ -1252,21 +1249,21 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 		history['val_loss'].append(float(eval_loss))
 		history['val_expVar'].append(float(eval_expVar))
 	return model, history
- 
+
+
 def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	file_path = datum.get_path('houses.csv')
 
-	dataset = Dataset.Tabular.from_path(
+	d_id = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'csv'
 		, name = 'real estate stats'
 		, dtype = None
-	)
+	).id
 	
 	label_column = 'price'
-	label = dataset.make_label(columns=[label_column])
-
-	feature = dataset.make_feature(exclude_columns=[label_column])
+	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
+	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1275,63 +1272,66 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, 
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
 		, bin_count = 3
-	)
+	).id
 
-	if fold_count is not None:
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
+	if (fold_count is not None):
+		fs_id = Foldset.from_splitset(
+			splitset_id = s_id
+			, fold_count = fold_count
 			, bin_count = 3
-		)
-		foldset_id = foldset.id
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	label.make_labelcoder(
-		sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
-	)
+	LabelEncoder.from_label(
+		label_id = l_id
+		, sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
+	).id
 
-	encoderset = feature.make_encoderset()
+	e_id = Encoderset.from_feature(feature_id=f_id).id
 
-	encoderset.make_featurecoder(
-		include = False
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, include = False
 		, dtypes = ['int64']
 		, sklearn_preprocess = MinMaxScaler(copy=False)
 	)
-	# We expect double None to use all columns because nothing is excluded.
-	encoderset.make_featurecoder(
-		include = False
+	# Expect double None to use all columns because nothing is excluded.
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, include = False
 		, dtypes = None
 		, columns = None
 		, sklearn_preprocess = OrdinalEncoder()
-	)
+	)		
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "pytorch"
 		, analysis_type = "regression"
 		, fn_build = pytorch_regression_fn_build
 		, fn_train = pytorch_regression_fn_train
 		, fn_lose = pytorch_regression_lose
-	)
+	).id
 
 	hyperparameters = {
 		"neuron_count": [22,24]
 		, "loss_type": ["mae","mse"]
 	}
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
-
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count
 	)
@@ -1370,6 +1370,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 		, nn.Sigmoid()
 	)
 	return model
+
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
 	# incoming features_shape = channels * rows * columns
@@ -1417,6 +1418,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 		history['val_accuracy'].append(float(eval_acc))
 	return model, history
 
+
 def pytorch_image_binary_fn_predict(model, samples_predict):
 	probability = model(samples_predict['features'])
 	# Convert tensor back to numpy for AIQC metrics.
@@ -1425,17 +1427,18 @@ def pytorch_image_binary_fn_predict(model, samples_predict):
 	# Both objects are numpy.
 	return prediction, probability
 
+
 def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None):
 	df = datum.to_pandas(name='brain_tumor.csv')
 	# Dataset.Tabular
-	dataset_tabular = Dataset.Tabular.from_pandas(dataframe=df)
-	label = dataset_tabular.make_label(columns=['status'])
+	dt_id = Dataset.Tabular.from_pandas(dataframe=df).id
+	l_id = Label.from_dataset(dataset_id=dt_id, columns=['status']).id
 
 	# Dataset.Image
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	dataset_image = Dataset.Image.from_urls_pillow(urls=image_urls)
-	feature = dataset_image.make_feature()
-	feature.make_featureshaper(reshape_indices=(0,2,3))
+	di_id = Dataset.Image.from_urls_pillow(urls=image_urls).id
+	f_id = Feature.from_dataset(dataset_id=di_id).id
+	FeatureShaper.from_feature(feature_id=f_id, reshape_indices=(0,2,3))
 	
 	if (fold_count is not None):
 		size_test = 0.25
@@ -1444,32 +1447,32 @@ def make_test_queue_pytorch_image_binary(repeat_count:int=1, fold_count:int=None
 		size_test = 0.18
 		size_validation = 0.14
 
-	splitset = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "pytorch"
 		, analysis_type = "classification_binary"
 		, fn_build = pytorch_image_binary_fn_build
 		, fn_train = pytorch_image_binary_fn_train
 		, fn_predict = pytorch_image_binary_fn_predict
-	)
+	).id
 
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
 		, hyperparamset_id = None #network takes a while.
 		, repeat_count = repeat_count
 	)
@@ -1505,6 +1508,7 @@ def keras_image_forecast_fn_build(features_shape, label_shape, **hp):
 	model.add(layers.Conv1D(50, 3, activation='relu', padding='same'))# removing sigmoid
 	return model
 
+
 def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	model.compile(
 		optimizer=optimizer
@@ -1526,22 +1530,27 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 	)
 	return model
 
+
 # def keras_image_forecast_fn_lose(**hp):
 # 	loser = tf.keras.losses.BCEWithLogitsLoss()
 # 	return loser
 
+
 def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
 	folder_path = 'remote_datum/image/liberty_moon/images'
-	image_dataset = Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')
+	di_id = Dataset.Image.from_folder_pillow(
+		folder_path=folder_path, ingest=False, dtype='float64'
+	).id
 
-	feature = image_dataset.make_feature()
-	feature.make_window(size_window=1, size_shift=2)
-	encoderset = feature.make_encoderset()
-	encoderset.make_featurecoder(
-		sklearn_preprocess= FunctionTransformer(div255, inverse_func=mult255)
+	f_id = Feature.from_dataset(dataset_id=di_id).id
+	Window.from_feature(feature_id=f_id, size_window=1, size_shift=2)
+	e_id = Encoderset.from_feature(feature_id=f_id).id
+	FeatureEncoder.from_encoderset(
+		encoderset_id = e_id
+		, sklearn_preprocess = FunctionTransformer(div255, inverse_func=mult255)
 		, dtypes = 'float64'
 	)
-	feature.make_featureshaper(reshape_indices=(0,3,4))
+	FeatureShaper.from_feature(feature_id=f_id, reshape_indices=(0,3,4))
 
 	if (fold_count is not None):
 		size_test = 0.15
@@ -1550,27 +1559,26 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		size_test = 0.15
 		size_validation = None#small dataset
 
-	splitset = Splitset.make(
-		feature_ids = feature.id
+	s_id = Splitset.make(
+		feature_ids = [f_id]
 		, size_test = size_test
 		, size_validation = size_validation
-	)
+	).id
 
 	if (fold_count is not None):
-		foldset = splitset.make_foldset(
-			fold_count = fold_count
-		)
-		foldset_id = foldset.id
+		fs_id = Foldset.from_splitset(
+			splitset_id=s_id, fold_count=fold_count
+		).id
 	else:
-		foldset_id = None
+		fs_id = None
 
-	algorithm = Algorithm.make(
+	a_id = Algorithm.make(
 		library = "keras"
 		, analysis_type = "regression"
 		, fn_build = keras_image_forecast_fn_build
 		, fn_train = keras_image_forecast_fn_train
 		# , fn_lose = keras_image_forecast_fn_lose
-	)
+	).id
 
 	hyperparameters = dict(
 		epoch_count = [150]
@@ -1579,19 +1587,18 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 		, activation = ['relu']
 		, multiplier = [3]
 	)
+	h_id = Hyperparamset.from_algorithm(
+		algorithm_id=a_id, hyperparameters=hyperparameters
+	).id
 
-	hyperparamset = algorithm.make_hyperparamset(
-		hyperparameters = hyperparameters
-	)
-
-	queue = algorithm.make_queue(
-		splitset_id = splitset.id
-		, foldset_id = foldset_id
-		, hyperparamset_id = hyperparamset.id
+	queue = Queue.from_algorithm(
+		algorithm_id = a_id
+		, splitset_id = s_id
+		, foldset_id = fs_id
+		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 	)
 	return queue
-
 	
 
 # ------------------------ TEST BATCH CALLER ------------------------
