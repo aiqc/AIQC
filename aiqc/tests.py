@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 import torchmetrics
 from sklearn.preprocessing import *
+from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import pandas as pd
 
@@ -163,10 +164,10 @@ def keras_multiclass_fn_train(model, loser, optimizer, samples_train, samples_ev
 
 def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
-		"neuron_count": [9, 12]
+		"neuron_count": [9]
 		, "batch_size": [3]
-		, "learning_rate": [0.03, 0.05]
-		, "epoch_count": [30, 60]
+		, "learning_rate": [0.03]
+		, "epoch_count": [10]
 	}
 
 	if (fold_count is not None):
@@ -272,8 +273,8 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 
 def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
-		"neuron_count": [25, 50]
-		, "epochs": [75, 150]
+		"neuron_count": [15]
+		, "epochs": [15]
 	}
 
 	file_path = datum.get_path('sonar.csv')
@@ -343,8 +344,8 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permut
 
 def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
-		"neuron_count": [25, 50]
-		, "epochs": [75, 150]
+		"neuron_count": [25]
+		, "epochs": [15]
 	}
 
 	file_path = datum.get_path('spam.csv')
@@ -368,8 +369,8 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, p
 		size_validation = 0.14
 
 	s_id = Splitset.make(
-		feature_ids = [feature.id]
-		, label_id = label.id
+		feature_ids = [f_id]
+		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
 	).id
@@ -449,8 +450,8 @@ def keras_regression_fn_train(model, loser, optimizer, samples_train, samples_ev
 
 def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	hyperparameters = {
-		"neuron_count": [24, 48]
-		, "epochs": [50, 75]
+		"neuron_count": [24]
+		, "epochs": [10]
 	}
 
 	df = datum.to_pandas('houses.csv')
@@ -616,15 +617,15 @@ def make_test_queue_keras_image_binary(repeat_count:int=1, fold_count:int=None):
 	hyperparameters = {
 		"include_2nd_dense": [True]
 		, "neuron_multiply": [1.0]
-		, "epoch_count": [250]
+		, "epoch_count": [10]
 		, "learning_rate": [0.01]
 		, "pool_size": [2]
 		, "dropout": [0.4]
 		, "batch_size": [8]
 		, "kernel_size": [3]
-		, "dense_neurons": [64]
-		, "2nd_dense_neurons": [24, 16]
-		, "cnn_init": ['he_normal', 'he_uniform']
+		, "dense_neurons": [32]
+		, "2nd_dense_neurons": [16]
+		, "cnn_init": ['he_normal']
 	}
 
 	df = datum.to_pandas(name='brain_tumor.csv')
@@ -878,9 +879,9 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	).id
 
 	hyperparameters = {
-		"neuron_count": [8,10]
+		"neuron_count": [8]
 		, "batch_size": [8]
-		, "epochs": [100]
+		, "epochs": [12]
 		, "dense_multiplier": [1]
 	}
 
@@ -1018,8 +1019,8 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, perm
 	).id
 
 	hyperparameters = {
-		"learning_rate": [0.01, 0.005]
-		, "epoch_count": [50]
+		"learning_rate": [0.01]
+		, "epoch_count": [10]
 	}
 	h_id = Hyperparamset.from_algorithm(
 		algorithm_id=a_id, hyperparameters=hyperparameters
@@ -1071,7 +1072,7 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 	}
 
 	## --- Training loop ---
-	epochs = 100
+	epochs = 10
 	for epoch in range(epochs):
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):      
@@ -1154,8 +1155,8 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, 
 	).id
 
 	hyperparameters = {
-		"reduction": ['mean', 'sum']
-		, "batch_size": [3, 5]
+		"reduction": ['mean']
+		, "batch_size": [5]
 	}
 	h_id = Hyperparamset.from_algorithm(
 		algorithm_id=a_id, hyperparameters=hyperparameters
@@ -1214,7 +1215,7 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 	}
 
 	## --- Training loop ---
-	epochs = 75
+	epochs = 10
 	for epoch in range(epochs):
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):      
@@ -1317,7 +1318,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, 
 	).id
 
 	hyperparameters = {
-		"neuron_count": [22,24]
+		"neuron_count": [22]
 		, "loss_type": ["mae","mse"]
 	}
 	h_id = Hyperparamset.from_algorithm(
@@ -1388,7 +1389,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	}
 
 	## --- Training loop ---
-	epochs = 25
+	epochs = 10
 	for epoch in range(epochs):
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):
@@ -1578,8 +1579,8 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 	).id
 
 	hyperparameters = dict(
-		epoch_count = [150]
-		, batch_size = [1]
+		epoch_count = [12]
+		, batch_size = [3]
 		, cnn_init = ['he_normal']
 		, activation = ['relu']
 		, multiplier = [3]
