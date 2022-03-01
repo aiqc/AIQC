@@ -2626,7 +2626,7 @@ class Interpolaterset(BaseModel):
 		- Extremely tricky to interpolate windowed splits separately.
 		"""
 		ip = Interpolaterset.get_by_id(id)
-		fps = ip.featurepolaters
+		fps = ip.featureinterpolaters
 		if (fps.count()==0):
 			raise ValueError("\nYikes - This Interpolaterset has no FeatureInterpolaters yet.\n")
 		dataset_type = ip.feature.dataset.dataset_type
@@ -2740,7 +2740,7 @@ class FeatureInterpolater(BaseModel):
 	leftover_dtypes = JSONField()
 	original_filter = JSONField()
 
-	interpolaterset = ForeignKeyField(Interpolaterset, backref='featurepolaters')
+	interpolaterset = ForeignKeyField(Interpolaterset, backref='featureinterpolaters')
 
 
 	def from_interpolaterset(
@@ -2757,7 +2757,7 @@ class FeatureInterpolater(BaseModel):
 		- Only `include=True` is allowed so that the dtype can be included.
 		"""
 		interpolaterset = Interpolaterset.get_by_id(interpolaterset_id)
-		existing_preprocs = interpolaterset.featurepolaters
+		existing_preprocs = interpolaterset.featureinterpolaters
 		feature = interpolaterset.feature
 
 		if (interpolate_kwargs is None):

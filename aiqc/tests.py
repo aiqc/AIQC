@@ -832,7 +832,7 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	f_id = Feature.from_dataset(dataset_id=d_id).id
 	
 	i_id = Interpolaterset.from_feature(feature_id=f_id).id
-	FeatureInterpolater(interpolaterset_id=i_id, dtypes=['float64'])
+	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes=['float64'])
 
 	Window.from_feature(feature_id=f_id, size_window=28, size_shift=14)
 
