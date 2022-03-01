@@ -82,7 +82,7 @@ class Pipeline():
 				if (label_interpolater is not None):
 					LabelInterpolater.from_label(label_id=label_id, **label_interpolater)
 				if (label_encoder is not None): 
-					LabelEncoder.from_label(label_id=label_id, **label_encoder)
+					LabelCoder.from_label(label_id=label_id, **label_encoder)
 			elif (label_column is None):
 				# Needs to know if label exists so that it can exlcude it.
 				label_id = None
@@ -205,7 +205,7 @@ class Pipeline():
 				if (label_interpolater is not None):
 					LabelInterpolater.from_label(label_id=l_id, **label_interpolater)					
 				if (label_encoder is not None): 
-					LabelEncoder.from_label(label_id=l_id, **label_encoder)
+					LabelCoder.from_label(label_id=l_id, **label_encoder)
 			elif (label_df_or_path is None):
 				l_id = None
 
@@ -300,7 +300,7 @@ class Pipeline():
 				if (label_interpolater is not None):
 					LabelInterpolater.from_label(label_id=l_id, **label_interpolater)
 				if (label_encoder is not None): 
-					LabelEncoder.from_label(label_id=l_id, **label_encoder)
+					LabelCoder.from_label(label_id=l_id, **label_encoder)
 
 			elif (label_df_or_path is None):
 				l_id = None

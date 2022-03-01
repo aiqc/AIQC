@@ -1,6 +1,4 @@
 # Internal modules
-from cProfile import label
-from json import encoder
 from . import datum
 from .utils import torch_batcher, div255, mult255, TrainingCallback
 from .orm import *
@@ -219,7 +217,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, pe
 		, dtypes = ['float64']
 	)
 
-	LabelEncoder.from_label(label_id=l_id, sklearn_preprocess=OneHotEncoder(sparse=False))
+	LabelCoder.from_label(label_id=l_id, sklearn_preprocess=OneHotEncoder(sparse=False))
 
 	a_id = Algorithm.make(
 		library = "keras"
@@ -310,9 +308,8 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permut
 	else:
 		fs_id = None
 
-	LabelEncoder.from_label(
-		lable_id = l_id
-		, sklearn_preprocess = LabelBinarizer(sparse_output=False)
+	LabelCoder.from_label(
+		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
 	)
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
@@ -382,7 +379,7 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, p
 	else:
 		fs_id = None
 
-	LabelEncoder.from_label(
+	LabelCoder.from_label(
 		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
 	)
 
@@ -481,7 +478,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, pe
 			, order = 1
 		)
 	)
-	LabelEncoder.from_label(
+	LabelCoder.from_label(
 		label_id = l_id
 		, sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
 	)
@@ -980,7 +977,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, perm
 	
 	label_column = 'object'
 	l_id = Label.from_dataset(dataset_id=d_id, columns=label_column).id
-	LabelEncoder.from_label(
+	LabelCoder.from_label(
 		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
 	)
 
@@ -1140,11 +1137,11 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, 
 	else:
 		fs_id = None
 
-	LabelEncoder.from_label(label_id=l_id, sklearn_preprocess=OrdinalEncoder())
+	LabelCoder.from_label(label_id=l_id, sklearn_preprocess=OrdinalEncoder())
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
 	FeatureEncoder.from_encoderset(
-		feature_id=e_id
+		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
 	)
@@ -1289,7 +1286,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, 
 	else:
 		fs_id = None
 
-	LabelEncoder.from_label(
+	LabelCoder.from_label(
 		label_id = l_id
 		, sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
 	).id

@@ -88,11 +88,11 @@ def create_db():
 			Label, Feature, 
 			Splitset, Featureset, Foldset, Fold, 
 			Interpolaterset, LabelInterpolater, FeatureInterpolater,
-			Encoderset, LabelEncoder, FeatureEncoder, 
+			Encoderset, LabelCoder, FeatureEncoder, 
 			Window, FeatureShaper,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction,
-			FittedEncoderset, FittedLabelEncoder,
+			FittedEncoderset, FittedLabelCoder,
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -1310,7 +1310,7 @@ class Label(BaseModel):
 				if (labelcoder_id=='latest'):
 					labelcoder = label.labelcoders[-1]
 				elif (isinstance(labelpolater_id, int)):
-					labelcoder = LabelEncoder.get_by_id(labelcoder_id)
+					labelcoder = LabelCoder.get_by_id(labelcoder_id)
 				else:
 					raise ValueError(f"\nYikes - Unexpected value <{labelcoder_id}> for `labelcoder_id` argument.\n")
 
@@ -1327,13 +1327,13 @@ class Label(BaseModel):
 					jobs = [j for j in queue.jobs if j.fold==fold]
 					for j in jobs:
 						if (j.fittedlabelcoders.count()==0):
-							FittedLabelEncoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
+							FittedLabelCoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
 					for j in jobs:
 						if (j.fittedlabelcoders.count()==0):
-							FittedLabelEncoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
+							FittedLabelCoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 
 				label_array = utils.encoder_transform_labels(
 					arr_labels=label_array,
@@ -2857,7 +2857,7 @@ class Encoderset(BaseModel):
 	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
 	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Feature.
 	- Although Encoderset seems uneccessary, you need something to sequentially group the FeatureEncoders onto.
-	- In future, maybe LabelEncoder gets split out from Encoderset and it becomes FeatureEncoderset.
+	- In future, maybe LabelCoder gets split out from Encoderset and it becomes FeatureEncoderset.
 	"""
 	encoder_count = IntegerField()
 	description = CharField(null=True)
@@ -2878,14 +2878,15 @@ class Encoderset(BaseModel):
 		return encoderset
 
 
-class LabelEncoder(BaseModel):
+class LabelCoder(BaseModel):
 	"""
+	- Warning: watchout for conflict with `sklearn.preprocessing.LabelEncoder()`
 	- `is_fit_train` toggles if the encoder is either `.fit(<training_split/fold>)` to 
 	  avoid bias or `.fit(<entire_dataset>)`.
 	- Categorical (ordinal and OHE) encoders are best applied to entire dataset in case 
 	  there are classes missing in the split/folds of validation/ test data.
 	- Whereas numerical encoders are best fit only to the training data.
-	- Because there's only 1 encoder that runs and it uses all columns, LabelEncoder 
+	- Because there's only 1 encoder that runs and it uses all columns, LabelCoder 
 	  is much simpler to validate and run in comparison to FeatureEncoder.
 	"""
 	only_fit_train = BooleanField()
@@ -2896,10 +2897,8 @@ class LabelEncoder(BaseModel):
 
 	label = ForeignKeyField(Label, backref='labelcoders')
 
-	def from_label(
-		label_id:int
-		, sklearn_preprocess:object
-	):
+
+	def from_label(label_id:int, sklearn_preprocess:object):
 		label = Label.get_by_id(label_id)
 
 		sklearn_preprocess, only_fit_train, is_categorical = utils.check_sklearn_attributes(
@@ -2935,7 +2934,7 @@ class LabelEncoder(BaseModel):
 			"""))
 		else:
 			pass    
-		lc = LabelEncoder.create(
+		lc = LabelCoder.create(
 			only_fit_train = only_fit_train
 			, sklearn_preprocess = sklearn_preprocess
 			, encoding_dimension = encoding_dimension
@@ -3005,13 +3004,13 @@ class FeatureEncoder(BaseModel):
 			(
 				(stringified_encoder.startswith("LabelBinarizer"))
 				or 
-				(stringified_encoder.startswith("LabelEncoder"))
+				(stringified_encoder.startswith("LabelCoder"))
 			)
 			and
 			(len(matching_columns) > 1)
 		):
 			raise ValueError(dedent("""
-				Yikes - `LabelBinarizer` or `LabelEncoder` cannot be run on 
+				Yikes - `LabelBinarizer` or `LabelCoder` cannot be run on 
 				multiple columns at once.
 
 				We have frequently observed inconsistent behavior where they 
@@ -3361,7 +3360,7 @@ class Queue(BaseModel):
 						if (labelcoder.is_categorical == False):
 							raise ValueError(dedent(f"""
 								Yikes - `Algorithm.analysis_type=='classification_*'`, but 
-								`LabelEncoder.sklearn_preprocess={stringified_labelcoder}` was not found in known 'classification' encoders:
+								`LabelCoder.sklearn_preprocess={stringified_labelcoder}` was not found in known 'classification' encoders:
 								{utils.categorical_encoders}
 							"""))
 
@@ -3370,10 +3369,10 @@ class Queue(BaseModel):
 							if (stringified_labelcoder.startswith("OneHotEncoder")):
 								raise ValueError(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
-								`LabelEncoder.sklearn_preprocess.startswith('OneHotEncoder')`.
+								`LabelCoder.sklearn_preprocess.startswith('OneHotEncoder')`.
 								This would result in a multi-column output, but binary classification
 								needs a single column output.
-								Go back and make a LabelEncoder with single column output preprocess like `Binarizer()` instead.
+								Go back and make a LabelCoder with single column output preprocess like `Binarizer()` instead.
 								"""))
 						elif ('_multi' in analysis_type):
 							if (library == 'pytorch'):
@@ -3381,30 +3380,30 @@ class Queue(BaseModel):
 								if (stringified_labelcoder.startswith("OneHotEncoder")):
 									raise ValueError(dedent("""
 									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
-									but `LabelEncoder.sklearn_preprocess.startswith('OneHotEncoder')`.
+									but `LabelCoder.sklearn_preprocess.startswith('OneHotEncoder')`.
 									This would result in a multi-column OHE output.
 									However, neither `nn.CrossEntropyLoss` nor `nn.NLLLoss` support multi-column input.
-									Go back and make a LabelEncoder with single column output preprocess like `OrdinalEncoder()` instead.
+									Go back and make a LabelCoder with single column output preprocess like `OrdinalEncoder()` instead.
 									"""))
 								elif (not stringified_labelcoder.startswith("OrdinalEncoder")):
 									print(dedent("""
 										Warning - When `(analysis_type=='classification_multi') and (library == 'pytorch')`
-										We recommend you use `sklearn.preprocessing.OrdinalEncoder()` as a LabelEncoder.
+										We recommend you use `sklearn.preprocessing.OrdinalEncoder()` as a LabelCoder.
 									"""))
 							else:
 								if (not stringified_labelcoder.startswith("OneHotEncoder")):
 									print(dedent("""
 										Warning - When performing non-PyTorch, multi-label classification on a single column,
-										we recommend you use `sklearn.preprocessing.OneHotEncoder()` as a LabelEncoder.
+										we recommend you use `sklearn.preprocessing.OneHotEncoder()` as a LabelCoder.
 									"""))
 					elif (
 						(labelcoder is None) and ('_multi' in analysis_type) and (library != 'pytorch')
 					):
 						print(dedent("""
 							Warning - When performing non-PyTorch, multi-label classification on a single column 
-							without using a LabelEncoder, Algorithm must have user-defined `fn_lose`, 
+							without using a LabelCoder, Algorithm must have user-defined `fn_lose`, 
 							`fn_optimize`, and `fn_predict`. We recommend you use 
-							`sklearn.preprocessing.OneHotEncoder()` as a LabelEncoder instead.
+							`sklearn.preprocessing.OneHotEncoder()` as a LabelCoder instead.
 						"""))
 
 					if (splitset.bin_count is not None):
@@ -3424,7 +3423,7 @@ class Queue(BaseModel):
 						if (labelcoder.is_categorical == True):
 							raise ValueError(dedent(f"""
 								Yikes - `Algorithm.analysis_type=='regression'`, but 
-								`LabelEncoder.sklearn_preprocess={stringified_labelcoder}` was found in known categorical encoders:
+								`LabelCoder.sklearn_preprocess={stringified_labelcoder}` was found in known categorical encoders:
 								{utils.categorical_encoders}
 							"""))
 
@@ -4189,7 +4188,7 @@ class Job(BaseModel):
 		"""
 		Format predictions for saving:
 		- Decode predictions before saving.
-		- Doesn't use any Label data, but does use LabelEncoder fit on the original Labels.
+		- Doesn't use any Label data, but does use LabelCoder fit on the original Labels.
 		"""
 		if (supervision=='supervised'):
 			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
@@ -4523,14 +4522,14 @@ class FittedEncoderset(BaseModel):
 	encoderset = ForeignKeyField(Encoderset, backref='fittedencodersets')
 
 
-class FittedLabelEncoder(BaseModel):
+class FittedLabelCoder(BaseModel):
 	"""
 	- See notes about FittedEncoderset.
 	"""
 	fitted_encoders = PickleField()
 
 	job = ForeignKeyField(Job, backref='fittedlabelcoders')
-	labelcoder = ForeignKeyField(LabelEncoder, backref='fittedlabelcoders')
+	labelcoder = ForeignKeyField(LabelCoder, backref='fittedlabelcoders')
 
 
 class Predictor(BaseModel):
@@ -4670,8 +4669,8 @@ class Predictor(BaseModel):
 		- Given a Feature, you want to know if it needs to be transformed,
 		  and, if so, how to transform it.
 		"""
-		fittedlabelcoders = FittedLabelEncoder.select().join(LabelEncoder).where(
-			FittedLabelEncoder.job==job, FittedLabelEncoder.labelcoder.label==label
+		fittedlabelcoders = FittedLabelCoder.select().join(LabelCoder).where(
+			FittedLabelCoder.job==job, FittedLabelCoder.labelcoder.label==label
 		)
 		if (not fittedlabelcoders):
 			return None, None
@@ -4763,7 +4762,7 @@ class Predictor(BaseModel):
 				if hasattr(fitted_encoders,'categories_'):
 					labels = list(fitted_encoders.categories_[0])
 				elif hasattr(fitted_encoders,'classes_'):
-					# Used by LabelBinarizer, LabelEncoder, MultiLabelBinarizer
+					# Used by LabelBinarizer, LabelCoder, MultiLabelBinarizer
 					labels = fitted_encoders.classes_.tolist()
 				else:
 					labels = predictor.job.queue.splitset.label.unique_classes
