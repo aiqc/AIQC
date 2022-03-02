@@ -1,9 +1,9 @@
 """
 Installation
-============
-- Create `/aiqc` app_dirs (an os-agnostic folder).
--- Create `config.json` for storing settings.
--- Create `aiqc.sqlite3` database.
+---
+Create `/aiqc` app_dirs (an os-agnostic folder).
+Create `config.json` for storing settings.
+Create `aiqc.sqlite3` database.
 """
 # Python modules
 import os, sys, platform, json, importlib, datetime

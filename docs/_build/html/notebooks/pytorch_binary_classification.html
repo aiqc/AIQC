@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
@@ -78,16 +79,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Line-Install">a) One-Line Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Config-File">Create Config File</a></li>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Database-File">Create Database File</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
@@ -203,14 +195,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id13">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
@@ -800,24 +792,20 @@ div.rendered_html tbody tr:hover {
 <p>5 rows × 61 columns</p>
 </div></div>
 </div>
+<hr class="docutils" />
+</section>
+<section id="Pipeline">
+<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference internal" href="api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information including how to work with non-tabular data.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
-<span class="kn">import</span> <span class="nn">torchmetrics</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
 </div>
-<hr class="docutils" />
-</section>
-<section id="a)-High-Level-API">
-<h2>a) High-Level API<a class="headerlink" href="#a)-High-Level-API" title="Permalink to this headline"></a></h2>
-<p>Reference <a class="reference internal" href="api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information including how to work with non-tabular data.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -873,6 +861,23 @@ No more Featurecoders can be added to this Encoderset.
 
 </pre></div></div>
 </div>
+<hr class="docutils" />
+</section>
+<section id="Modeling">
+<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">import</span> <span class="nn">torchmetrics</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">torch_batcher</span>
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -899,7 +904,7 @@ No more Featurecoders can be added to this Encoderset.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="c1">## --- Prepare mini batches for analysis ---</span>
-    <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">torch_batcher</span><span class="p">(</span>
+    <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">torch_batcher</span><span class="p">(</span>
         <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_1Sample</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
@@ -962,10 +967,9 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">]</span>
-<span class="p">}</span>
+<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">],</span> <span class="n">epoch_count</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1015,267 +1019,6 @@ No more Featurecoders can be added to this Encoderset.
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:08&lt;00:00,  2.01s/it]
-</pre></div></div>
-</div>
-<p>For more information on visualization of performance metrics, reference the <a class="reference external" href="visualization.html">Visualization &amp; Metrics</a> documentation.</p>
-<hr class="docutils" />
-</section>
-<section id="b)-Low-Level-API">
-<h2>b) Low-Level API<a class="headerlink" href="#b)-Low-Level-API" title="Permalink to this headline"></a></h2>
-<p>Reference <a class="reference internal" href="api_low_level.html"><span class="doc">Low-Level API Docs</span></a> for more information including how to work with non-tabular data and defining optimizers.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_label</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">labelcoder</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">make_labelcoder</span><span class="p">(</span>
-    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">(</span><span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">feature</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="n">label_column</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">featurecoder_0</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">make_featurecoder</span><span class="p">(</span>
-    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
-    <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-   This saves memory when concatenating the output of many encoders.
-
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;i&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;m&#39;, &#39;n&#39;, &#39;o&#39;, &#39;p&#39;, &#39;q&#39;, &#39;r&#39;, &#39;s&#39;, &#39;t&#39;, &#39;u&#39;, &#39;v&#39;, &#39;w&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;, &#39;aa&#39;, &#39;ab&#39;, &#39;ac&#39;, &#39;ad&#39;, &#39;ae&#39;, &#39;af&#39;, &#39;ag&#39;, &#39;ah&#39;, &#39;ai&#39;, &#39;aj&#39;, &#39;ak&#39;, &#39;al&#39;, &#39;am&#39;, &#39;an&#39;, &#39;ao&#39;, &#39;ap&#39;, &#39;aq&#39;, &#39;ar&#39;, &#39;as&#39;, &#39;at&#39;, &#39;au&#39;, &#39;av&#39;, &#39;aw&#39;, &#39;ax&#39;, &#39;ay&#39;, &#39;az&#39;, &#39;ba&#39;, &#39;bb&#39;, &#39;bc&#39;, &#39;bd&#39;, &#39;be&#39;, &#39;bf&#39;, &#39;bg&#39;, &#39;bh&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
-
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.22</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.12</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">12</span><span class="p">),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-
-        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">model</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="c1">## --- Prepare mini batches for analysis ---</span>
-    <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">torch_batcher</span><span class="p">(</span>
-        <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span>
-        <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_1Sample</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-
-    <span class="c1">## --- Metrics ---</span>
-    <span class="n">acc</span> <span class="o">=</span> <span class="n">torchmetrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
-    <span class="c1"># Mirrors `keras.model.History.history` object.</span>
-    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;loss&#39;</span><span class="p">:</span><span class="nb">list</span><span class="p">(),</span> <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(),</span>
-        <span class="s1">&#39;val_loss&#39;</span><span class="p">:</span><span class="nb">list</span><span class="p">(),</span> <span class="s1">&#39;val_accuracy&#39;</span><span class="p">:</span><span class="nb">list</span><span class="p">()</span>
-    <span class="p">}</span>
-
-    <span class="c1">## --- Training loop ---</span>
-    <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
-        <span class="c1">## --- Batch training ---</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batched_features</span><span class="p">):</span>
-            <span class="c1"># Make raw (unlabeled) predictions.</span>
-            <span class="n">batch_probability</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batched_features</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">loser</span><span class="p">(</span><span class="n">batch_probability</span><span class="p">,</span> <span class="n">batched_labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="c1"># Backpropagation.</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-            <span class="n">batch_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
-        <span class="c1">## --- Epoch metrics ---</span>
-        <span class="c1"># Overall performance on training data.</span>
-        <span class="n">train_probability</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-        <span class="n">train_loss</span> <span class="o">=</span> <span class="n">loser</span><span class="p">(</span><span class="n">train_probability</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
-        <span class="n">train_acc</span> <span class="o">=</span> <span class="n">acc</span><span class="p">(</span><span class="n">train_probability</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">short</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">train_loss</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">train_acc</span><span class="p">))</span>
-        <span class="c1"># Performance on evaluation data.</span>
-        <span class="n">eval_probability</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-        <span class="n">eval_loss</span> <span class="o">=</span> <span class="n">loser</span><span class="p">(</span><span class="n">eval_probability</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
-        <span class="n">eval_acc</span> <span class="o">=</span> <span class="n">acc</span><span class="p">(</span><span class="n">eval_probability</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">short</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">eval_loss</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">eval_acc</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span>
-</pre></div>
-</div>
-</div>
-<p>Optional, will be automatically selected based on <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> if left as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
-        <span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">optimizer</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
-    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="n">fn_optimize</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_hyperparamset</span><span class="p">(</span>
-    <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_queue</span><span class="p">(</span>
-    <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [00:04&lt;00:00,  2.18s/it]
 </pre></div></div>
 </div>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="visualization.html">Visualization &amp; Metrics</a> documentation.</p>

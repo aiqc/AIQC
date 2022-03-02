@@ -81,16 +81,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Line-Install">a) One-Line Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Config-File">Create Config File</a></li>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Database-File">Create Database File</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
@@ -206,14 +197,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id13">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
@@ -607,8 +598,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
 </pre></div>
 </div>
 </div>
@@ -816,7 +806,7 @@ div.rendered_html tbody tr:hover {
       <td>forecasting</td>
       <td>N/A</td>
       <td>N/A</td>
-      <td>1 color x 100 tall x 120 wide</td>
+      <td>1 color x 50 tall x 60 wide</td>
       <td>15</td>
       <td>moon glides from top left to bottom right</td>
       <td>remote</td>

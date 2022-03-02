@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
@@ -78,16 +79,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Line-Install">a) One-Line Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Config-File">Create Config File</a></li>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Database-File">Create Database File</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
@@ -203,14 +195,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id13">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
@@ -602,22 +594,29 @@ div.rendered_html tbody tr:hover {
 <p>Unfortunately, the gene names were not published with the dataset. I contacted the submitting organization, but they were not able to provide an index.</p>
 </div></blockquote>
 <p>Although the oncogene relationships already known (the tumors are named after gene complexes), the purpose of this experiment is to validate that neural networks can be used to rapidly reveal these patterns in the presence of highly dimensional data. This methodology could also be repurposed for delineating biomarkers of different stages/ subtypes within a single disease.</p>
-<hr class="docutils" />
-</section>
-<section id="Preprocessing">
-<h1>Preprocessing<a class="headerlink" href="#Preprocessing" title="Permalink to this headline"></a></h1>
-<p>Prior to ingestion:</p>
-<ul class="simple">
-<li><p>Balanced the dataset based on the ‘Class’ column, which essentially meant deleting 150 BRCA samples.</p></li>
-<li><p>Filtered out low expression frequency (EF) genes, but that still left over 19.5K genes.</p></li>
-</ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+<section id="Pipeline">
+<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<p>Prior to ingestion:</p>
+<ul class="simple">
+<li><p>Balanced the dataset based on the ‘Class’ column, which essentially meant deleting 150 BRCA samples.</p></li>
+<li><p>Filtered out low expression frequency (EF) genes, but that still left over 19.5K genes.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
 </div>
@@ -647,44 +646,43 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+<hr class="docutils" />
 </section>
 <section id="Modeling">
-<h1>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h1>
+<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[200]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">keras</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">Activation</span>
-<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[201]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
 
     <span class="c1"># First hidden layer.</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;first_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;first_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">())</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
 
     <span class="c1"># Output layer</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[205]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -697,26 +695,25 @@ div.rendered_html tbody tr:hover {
         <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">History</span><span class="p">()]</span>
+        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[202]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">optimizer</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[203]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -733,7 +730,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[213]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -764,8 +761,8 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <p>Ironically, the neural network takes less than 30 seconds to train. Whereas the feature permutations take 3+ hours.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[214]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -773,35 +770,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  50%|█████████████████▌                 | 1/2 [3:10:21&lt;3:10:21, 11421.46s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-Queue was gracefully interrupted.
-
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-
-</pre></div></div>
-</div>
 <p>The patterns must be shockingly absolute. After our first try with a single hidden layer, we achieve a perfect score. This is surprisingly given the use of a validation and test split, and given the fact that there are 4 different categories.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[215]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -809,91 +780,8 @@ Queue was gracefully interrupted.
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[215]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>hyperparamcombo_id</th>
-      <th>job_id</th>
-      <th>repeat_index</th>
-      <th>predictor_id</th>
-      <th>split</th>
-      <th>accuracy</th>
-      <th>f1</th>
-      <th>loss</th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>roc_auc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>240</td>
-      <td>240</td>
-      <td>0</td>
-      <td>671</td>
-      <td>train</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.103631</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>240</td>
-      <td>240</td>
-      <td>0</td>
-      <td>671</td>
-      <td>validation</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.127999</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>240</td>
-      <td>240</td>
-      <td>0</td>
-      <td>671</td>
-      <td>test</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.134419</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -914,6 +802,7 @@ Queue was gracefully interrupted.
 </div>
 <img alt="geneConfusion" src="../_images/gene_confusion.png" />
 <hr class="docutils" />
+</section>
 </section>
 <section id="Interpretation">
 <h1>Interpretation<a class="headerlink" href="#Interpretation" title="Permalink to this headline"></a></h1>
@@ -939,7 +828,7 @@ Queue was gracefully interrupted.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>

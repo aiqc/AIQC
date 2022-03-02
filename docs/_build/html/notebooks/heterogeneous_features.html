@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
@@ -78,16 +79,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Line-Install">a) One-Line Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Config-File">Create Config File</a></li>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Database-File">Create Database File</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
@@ -203,14 +195,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id13">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
@@ -599,25 +591,12 @@ example, consider combining a doctor’s annotations with electronic medical rec
 layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </div></blockquote>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">keras</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
 </div>
@@ -627,7 +606,7 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 <section id="Tabular-Data">
 <h3>Tabular Data<a class="headerlink" href="#Tabular-Data" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[199]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -642,7 +621,7 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 <li><p>A manifest detailing where to find our image files: <code class="docutils literal notranslate"><span class="pre">url</span></code>.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[200]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -651,7 +630,7 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[200]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -708,67 +687,74 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 <hr class="docutils" />
 <p>From a single <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> we’ll specify a <code class="docutils literal notranslate"><span class="pre">Label</span></code> and <code class="docutils literal notranslate"><span class="pre">Feature</span></code> before encoding them.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dataset_tab</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span></span><span class="n">dataset_tab</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">dataset_tab</span><span class="o">.</span><span class="n">make_label</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">])</span>
+<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">Label</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label</span><span class="o">.</span><span class="n">make_labelcoder</span><span class="p">(</span><span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">OrdinalEncoder</span><span class="p">())</span>
+<span></span><span class="n">LabelCoder</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
+    <span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">OrdinalEncoder</span><span class="p">()</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;Labelcoder: 1&gt;
+&lt;LabelCoder: 10&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">feature_tab</span> <span class="o">=</span> <span class="n">dataset_tab</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">,</span><span class="s1">&#39;url&#39;</span><span class="p">])</span>
+<span></span><span class="n">feature_tab</span> <span class="o">=</span> <span class="n">Feature</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
+    <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">,</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">feature_tab</span><span class="o">.</span><span class="n">make_encoderset</span><span class="p">()</span>
+<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">Encoderset</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature_tab</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span><span class="o">.</span><span class="n">make_featurecoder</span><span class="p">(</span>
-    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">(),</span>
-    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;clarity&#39;</span><span class="p">]</span>
+<span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_encoderset</span><span class="p">(</span>
+    <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+    <span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;clarity&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -779,38 +765,39 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
+=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+        This saves memory when concatenating the output of many encoders.
+
+
 ___/ featurecoder_index: 0 \_________
 
-
-=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-   This saves memory when concatenating the output of many encoders.
-
-=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+=&gt; The column(s) below matched your filter(s) featurecoder filters.
 
 [&#39;clarity&#39;]
 
-=&gt; The remaining column(s) and dtype(s) can be used in downstream Featurecoder(s):
+=&gt; The remaining column(s) and dtype(s) are available for downstream featurecoder(s):
 {&#39;angle&#39;: &#39;object&#39;}
 
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;Featurecoder: 1&gt;
+&lt;FeatureCoder: 18&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span><span class="o">.</span><span class="n">make_featurecoder</span><span class="p">(</span>
-    <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(),</span>
-    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span>
+<span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_encoderset</span><span class="p">(</span>
+    <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">()</span>
+    <span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -821,28 +808,28 @@ ___/ featurecoder_index: 0 \_________
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
+=&gt; Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+        This would have generated &#39;scipy.sparse.csr.csr_matrix&#39;, causing Keras training to fail.
+
+
 ___/ featurecoder_index: 1 \_________
 
-
-=&gt; Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
-   This would have generated &#39;scipy.sparse.csr.csr_matrix&#39;, causing Keras training to fail.
-
-=&gt; The column(s) below matched your filter(s) and were ran through a test-encoding successfully.
+=&gt; The column(s) below matched your filter(s) featurecoder filters.
 
 [&#39;angle&#39;]
 
-=&gt; Done. All feature column(s) have encoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
+=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
+No more FeatureCoders can be added to this Encoderset.
 
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;Featurecoder: 2&gt;
+&lt;FeatureCoder: 19&gt;
 </pre></div></div>
 </div>
 </section>
@@ -850,7 +837,7 @@ No more Featurecoders can be added to this Encoderset.
 <h3>Image Data<a class="headerlink" href="#Image-Data" title="Permalink to this headline"></a></h3>
 <p>Construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from that manifest and use it as a 2nd <code class="docutils literal notranslate"><span class="pre">Feature</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -859,11 +846,11 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dataset_img</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_urls</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
+<span></span><span class="n">dataset_img</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_urls_pillow</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -872,22 +859,21 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🖼️ Validating Images 🖼️: 100%|███████████████████████| 40/40 [00:04&lt;00:00,  9.09it/s]
-🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 40/40 [00:04&lt;00:00,  8.51it/s]
+🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 40/40 [00:06&lt;00:00,  6.14it/s]
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[173]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">example_images</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">to_pillow</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset_img</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span></span><span class="n">example_images</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">to_pillow</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dataset_img</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p><strong>Bar galaxies</strong></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[189]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -896,15 +882,15 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[189]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_29_0.png" src="../_images/notebooks_heterogeneous_features_29_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_28_0.png" src="../_images/notebooks_heterogeneous_features_28_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[218]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -913,17 +899,17 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[218]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_30_0.png" src="../_images/notebooks_heterogeneous_features_30_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_29_0.png" src="../_images/notebooks_heterogeneous_features_29_0.png" />
 </div>
 </div>
 <p>Although it is easy enough to distinguish between the two types with the naked eye, you start to realize that a <em>bar</em> galaxy is almost like a degraded <em>spiral</em> galaxy. Like anything else, there is a gray area in whether or not the band of stars/ rectangle of light connecting the two main galactic arms is to be considered a “bar” or more of an oval.</p>
 <p><strong>Spiral galaxies</strong></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[192]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -932,15 +918,15 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[192]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_33_0.png" src="../_images/notebooks_heterogeneous_features_33_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_32_0.png" src="../_images/notebooks_heterogeneous_features_32_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[193]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -949,30 +935,30 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[193]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_34_0.png" src="../_images/notebooks_heterogeneous_features_34_0.png" />
+<img alt="../_images/notebooks_heterogeneous_features_33_0.png" src="../_images/notebooks_heterogeneous_features_33_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">feature_img</span> <span class="o">=</span> <span class="n">dataset_img</span><span class="o">.</span><span class="n">make_feature</span><span class="p">()</span>
+<span></span><span class="n">feature_img</span> <span class="o">=</span> <span class="n">Feature</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_img</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>We have only 40 samples, so we’ll keep our validation and test <em>splits</em> small, and definitely forgo cross-validation.</p>
 <p>Notice how we pass in both the <em>tabular</em> and <em>image</em> Features. As described in the low-level API documentation, the first feature in the list is used to determine stratification.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">feature_img</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.125</span>
@@ -990,77 +976,97 @@ No more Featurecoders can be added to this Encoderset.
 <p>Hyperparameters are passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> <em>kwargs</em>, which allows you to tweak both the topology and the params alike.</p>
 <p>Below we see two towers, feedforward for tabular data and convolutional for image data, that are eventually concatenated together.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">feature_shapes</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
 
     <span class="c1"># Feed forward tower using the first Feature.</span>
-    <span class="n">ff_input</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">feature_shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">ff</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;ff_neurons&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">ff_input</span><span class="p">)</span>
-    <span class="n">ff</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">ff</span><span class="p">)</span>
-    <span class="n">model_ff</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">ff_input</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span>
+    <span class="n">ff_input</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">feature_shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;ff_neurons&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">ff_input</span><span class="p">)</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">ff</span><span class="p">)</span>
+    <span class="n">model_ff</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">ff_input</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span>
 
     <span class="c1"># Convolutional tower using the second Feature.</span>
-    <span class="n">cnn_input</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">feature_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+    <span class="n">cnn_input</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">feature_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
         <span class="mi">16</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
         <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn_input</span><span class="p">)</span>
-    <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="c1">#cnn = l.MaxPool1D(pool_size=2)(cnn)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
 
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
         <span class="mi">16</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
         <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="c1">#cnn = l.MaxPool1D(pool_size=2)(cnn)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
 
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
         <span class="mi">32</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
         <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="c1">#cnn = l.MaxPool1D(pool_size=2)(cnn)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;4th_cnn&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_4th&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Conv1D</span><span class="p">(</span>
             <span class="mi">32</span><span class="o">*</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;cnn_multiply&#39;</span><span class="p">],</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
             <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
             <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
-        <span class="c1">#cnn = layers.MaxPooling1D(pool_size=2)(cnn)</span>
-        <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
-        <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
+        <span class="c1">#cnn = l.MaxPool1D(pool_size=2)(cnn)</span>
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;dropout&#39;</span><span class="p">])(</span><span class="n">cnn</span><span class="p">)</span>
 
     <span class="c1"># Perform one dense layer on CNN output, so that the tabular data</span>
     <span class="c1"># can talk directly to the</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">cnn</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">cnn</span><span class="p">)</span>
-    <span class="n">model_cnn</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">cnn_input</span><span class="p">,</span> <span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">cnn</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">cnn</span><span class="p">)</span>
+    <span class="n">model_cnn</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cnn_input</span><span class="p">,</span> <span class="n">cnn</span><span class="p">)</span>
 
-    <span class="n">concat</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">model_ff</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">model_cnn</span><span class="o">.</span><span class="n">output</span><span class="p">])</span>
-    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;concat_neurons&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">concat</span><span class="p">)</span>
-    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">join</span><span class="p">)</span>
-    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
-    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">concat</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">model_ff</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">model_cnn</span><span class="o">.</span><span class="n">output</span><span class="p">])</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;concat_neurons&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">concat</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
 
-    <span class="n">join</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">join</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)(</span><span class="n">join</span><span class="p">)</span>
 
 
-    <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">model_ff</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">model_cnn</span><span class="o">.</span><span class="n">input</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="n">join</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">model_ff</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">model_cnn</span><span class="o">.</span><span class="n">input</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="n">join</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[108]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1076,8 +1082,8 @@ No more Featurecoders can be added to this Encoderset.
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.80</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span> <span class="c1">#5 samples in validation set.</span>
     <span class="p">]</span>
-    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
+    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
 
 
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
@@ -1098,16 +1104,15 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <p>You can also customize the functions for loss, optimization, and prediction - but we’ll just run with the defaults for binary classification analysis.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[109]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
     <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
     <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-
     <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1117,34 +1122,31 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <p>Define the parameters that will be passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> argument in the functions above.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[110]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;epoch_count&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">300</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-
-    <span class="p">,</span> <span class="s2">&quot;ff_neurons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-
-    <span class="p">,</span> <span class="s2">&quot;cnn_multiply&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;dropout&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;he_normal&#39;</span><span class="p">]</span>
-    <span class="p">,</span> <span class="s2">&quot;4th_cnn&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
-
-    <span class="p">,</span> <span class="s2">&quot;concat_neurons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="p">]</span>
-<span class="p">}</span>
+<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">epoch_count</span> <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">ff_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">cnn_multiply</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">dropout</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;he_normal&#39;</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">cnn_4th</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">concat_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[111]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_hyperparamset</span><span class="p">(</span>
-    <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+<span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+    <span class="n">algorithm_id</span><span class="o">=</span><span class="n">algorithm</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1155,12 +1157,13 @@ No more Featurecoders can be added to this Encoderset.
 <h2>Train Models<a class="headerlink" href="#Train-Models" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> runs the same model multiple times due to the fact that neural networks are non-deterministic.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[112]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">make_queue</span><span class="p">(</span>
-    <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+    <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="p">)</span>
@@ -1168,7 +1171,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[113]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1177,7 +1180,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[114]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1198,7 +1201,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-:: Epoch #115 ::
+:: Epoch #84 ::
 Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
 [{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
  {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
@@ -1210,7 +1213,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮:  10%|████                                     | 1/10 [00:12&lt;01:52, 12.53s/it]
+🔮 Training Models 🔮:  10%|████                                     | 1/10 [00:19&lt;02:53, 19.30s/it]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1218,170 +1221,8 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-:: Epoch #167 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
 
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  20%|████████▏                                | 2/10 [00:28&lt;01:54, 14.26s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #21 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  30%|████████████▎                            | 3/10 [00:32&lt;01:09,  9.94s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #66 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  40%|████████████████▍                        | 4/10 [00:41&lt;00:56,  9.35s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #138 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  50%|████████████████████▌                    | 5/10 [00:55&lt;00:55, 11.02s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #105 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  60%|████████████████████████▌                | 6/10 [01:06&lt;00:44, 11.14s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #104 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  70%|████████████████████████████▋            | 7/10 [01:17&lt;00:33, 11.16s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #167 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  80%|████████████████████████████████▊        | 8/10 [01:33&lt;00:25, 12.66s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #281 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
-
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:  90%|████████████████████████████████████▉    | 9/10 [01:59&lt;00:16, 16.64s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-:: Epoch #95 ::
-Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
-[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
- {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
+Queue was gracefully interrupted.
 
 </pre></div></div>
 </div>
@@ -1390,1589 +1231,8 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|████████████████████████████████████████| 10/10 [02:09&lt;00:00, 12.90s/it]
+
 </pre></div></div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="Interpret-Results">
-<h2>Interpret Results<a class="headerlink" href="#Interpret-Results" title="Permalink to this headline"></a></h2>
-<p>The <em>boomerang</em> chart shows how each model performed across all of its splits [and or folds].</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
-    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">min_accuracy</span> <span class="o">=</span> <span class="mf">0.70</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<img alt="galaxyBoomerang" src="../_images/galaxy_boomerang.png" />
-<p>Let’s dig into that green model with precise loss.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[132]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[133]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[133]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>param</th>
-      <th>value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>epoch_count</td>
-      <td>300</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>learning_rate</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>batch_size</td>
-      <td>5</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>ff_neurons</td>
-      <td>5</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>cnn_multiply</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>dropout</td>
-      <td>0.5</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>init</td>
-      <td>he_normal</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>4th_cnn</td>
-      <td>True</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>concat_neurons</td>
-      <td>64</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<p>Not exactly the smoothest curve, and it seems like we could have learned more with a bit of patience, but, then again, it always seems that way.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">loss_skip_15pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<img alt="galaxyLearn" src="../_images/galaxy_learn.png" />
-<p>The charts below show how it performed when running predictions against each split in the dataset.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[140]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<img alt="galaxyRoc" src="../_images/galaxy_roc.png" />
-<p>Interestingly enough, the model is performing poorly on the <em>training</em> split. I guess that’s what you get when you set <code class="docutils literal notranslate"><span class="pre">dropout=0.5</span></code>. You can tell that it hasn’t learned all of the spiral patterns yet by examining the matrix.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<img alt="galaxyConfusion" src="../_images/galaxy_confusion.png" />
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<img alt="galaxyPr" src="../_images/galaxy_pr.png" />
-<p>We have all of the metrics for every run precalculated and at our disposal.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[161]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[161]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>hyperparamcombo_id</th>
-      <th>job_id</th>
-      <th>repeat_index</th>
-      <th>predictor_id</th>
-      <th>metric</th>
-      <th>maximum</th>
-      <th>minimum</th>
-      <th>pstdev</th>
-      <th>median</th>
-      <th>mean</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.571429</td>
-      <td>0.175093</td>
-      <td>0.800000</td>
-      <td>0.790476</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>f1</td>
-      <td>1.000000</td>
-      <td>0.571429</td>
-      <td>0.175093</td>
-      <td>0.800000</td>
-      <td>0.790476</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>loss</td>
-      <td>0.657118</td>
-      <td>0.433796</td>
-      <td>0.101170</td>
-      <td>0.638489</td>
-      <td>0.576468</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.500000</td>
-      <td>0.235702</td>
-      <td>1.000000</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.157135</td>
-      <td>0.666667</td>
-      <td>0.777778</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.136083</td>
-      <td>0.833333</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>accuracy</td>
-      <td>0.800000</td>
-      <td>0.571429</td>
-      <td>0.098111</td>
-      <td>0.750000</td>
-      <td>0.707143</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>f1</td>
-      <td>0.857143</td>
-      <td>0.666667</td>
-      <td>0.079808</td>
-      <td>0.800000</td>
-      <td>0.774603</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>loss</td>
-      <td>0.626964</td>
-      <td>0.515694</td>
-      <td>0.050871</td>
-      <td>0.619902</td>
-      <td>0.587520</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>precision</td>
-      <td>0.750000</td>
-      <td>0.500000</td>
-      <td>0.103935</td>
-      <td>0.666667</td>
-      <td>0.638889</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>roc_auc</td>
-      <td>0.948980</td>
-      <td>0.666667</td>
-      <td>0.126159</td>
-      <td>0.916667</td>
-      <td>0.844104</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>accuracy</td>
-      <td>0.800000</td>
-      <td>0.571429</td>
-      <td>0.094281</td>
-      <td>0.714286</td>
-      <td>0.695238</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>f1</td>
-      <td>0.857143</td>
-      <td>0.666667</td>
-      <td>0.078121</td>
-      <td>0.777778</td>
-      <td>0.767196</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>loss</td>
-      <td>2.118411</td>
-      <td>0.551639</td>
-      <td>0.683482</td>
-      <td>0.824062</td>
-      <td>1.164704</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>precision</td>
-      <td>0.750000</td>
-      <td>0.500000</td>
-      <td>0.102203</td>
-      <td>0.636364</td>
-      <td>0.628788</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>roc_auc</td>
-      <td>0.938776</td>
-      <td>0.666667</td>
-      <td>0.128273</td>
-      <td>0.666667</td>
-      <td>0.757370</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>accuracy</td>
-      <td>0.857143</td>
-      <td>0.571429</td>
-      <td>0.123443</td>
-      <td>0.800000</td>
-      <td>0.742857</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>f1</td>
-      <td>0.875000</td>
-      <td>0.571429</td>
-      <td>0.129110</td>
-      <td>0.800000</td>
-      <td>0.748810</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>loss</td>
-      <td>0.754951</td>
-      <td>0.465973</td>
-      <td>0.118053</td>
-      <td>0.619605</td>
-      <td>0.613510</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.500000</td>
-      <td>0.204544</td>
-      <td>0.777778</td>
-      <td>0.759259</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.157135</td>
-      <td>0.666667</td>
-      <td>0.777778</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>roc_auc</td>
-      <td>0.928571</td>
-      <td>0.750000</td>
-      <td>0.072955</td>
-      <td>0.833333</td>
-      <td>0.837302</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>accuracy</td>
-      <td>1.000000</td>
-      <td>0.785714</td>
-      <td>0.097822</td>
-      <td>0.800000</td>
-      <td>0.861905</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>f1</td>
-      <td>1.000000</td>
-      <td>0.750000</td>
-      <td>0.108012</td>
-      <td>0.800000</td>
-      <td>0.850000</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>loss</td>
-      <td>0.606985</td>
-      <td>0.564041</td>
-      <td>0.019458</td>
-      <td>0.603421</td>
-      <td>0.591483</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.900000</td>
-      <td>0.047140</td>
-      <td>1.000000</td>
-      <td>0.966667</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.642857</td>
-      <td>0.163037</td>
-      <td>0.666667</td>
-      <td>0.769841</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.833333</td>
-      <td>0.072717</td>
-      <td>0.862245</td>
-      <td>0.898526</td>
-    </tr>
-    <tr>
-      <th>30</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>accuracy</td>
-      <td>0.800000</td>
-      <td>0.428571</td>
-      <td>0.164579</td>
-      <td>0.750000</td>
-      <td>0.659524</td>
-    </tr>
-    <tr>
-      <th>31</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>f1</td>
-      <td>0.857143</td>
-      <td>0.600000</td>
-      <td>0.108637</td>
-      <td>0.787879</td>
-      <td>0.748341</td>
-    </tr>
-    <tr>
-      <th>32</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>loss</td>
-      <td>0.761833</td>
-      <td>0.552645</td>
-      <td>0.095547</td>
-      <td>0.566346</td>
-      <td>0.626942</td>
-    </tr>
-    <tr>
-      <th>33</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>precision</td>
-      <td>0.750000</td>
-      <td>0.428571</td>
-      <td>0.138643</td>
-      <td>0.684211</td>
-      <td>0.620927</td>
-    </tr>
-    <tr>
-      <th>34</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.928571</td>
-      <td>0.033672</td>
-      <td>1.000000</td>
-      <td>0.976190</td>
-    </tr>
-    <tr>
-      <th>35</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>roc_auc</td>
-      <td>0.933673</td>
-      <td>0.416667</td>
-      <td>0.213995</td>
-      <td>0.750000</td>
-      <td>0.700113</td>
-    </tr>
-    <tr>
-      <th>36</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>accuracy</td>
-      <td>0.892857</td>
-      <td>0.714286</td>
-      <td>0.072921</td>
-      <td>0.800000</td>
-      <td>0.802381</td>
-    </tr>
-    <tr>
-      <th>37</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>f1</td>
-      <td>0.896552</td>
-      <td>0.750000</td>
-      <td>0.060827</td>
-      <td>0.800000</td>
-      <td>0.815517</td>
-    </tr>
-    <tr>
-      <th>38</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>loss</td>
-      <td>3.542673</td>
-      <td>0.412229</td>
-      <td>1.423016</td>
-      <td>0.649813</td>
-      <td>1.534905</td>
-    </tr>
-    <tr>
-      <th>39</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.600000</td>
-      <td>0.166296</td>
-      <td>0.866667</td>
-      <td>0.822222</td>
-    </tr>
-    <tr>
-      <th>40</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.143297</td>
-      <td>0.928571</td>
-      <td>0.865079</td>
-    </tr>
-    <tr>
-      <th>41</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>roc_auc</td>
-      <td>0.969388</td>
-      <td>0.666667</td>
-      <td>0.127678</td>
-      <td>0.750000</td>
-      <td>0.795351</td>
-    </tr>
-    <tr>
-      <th>42</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>accuracy</td>
-      <td>0.821429</td>
-      <td>0.714286</td>
-      <td>0.046291</td>
-      <td>0.800000</td>
-      <td>0.778571</td>
-    </tr>
-    <tr>
-      <th>43</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>f1</td>
-      <td>0.857143</td>
-      <td>0.750000</td>
-      <td>0.048596</td>
-      <td>0.848485</td>
-      <td>0.818543</td>
-    </tr>
-    <tr>
-      <th>44</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>loss</td>
-      <td>0.975309</td>
-      <td>0.299485</td>
-      <td>0.292846</td>
-      <td>0.845627</td>
-      <td>0.706807</td>
-    </tr>
-    <tr>
-      <th>45</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>precision</td>
-      <td>0.750000</td>
-      <td>0.600000</td>
-      <td>0.067822</td>
-      <td>0.736842</td>
-      <td>0.695614</td>
-    </tr>
-    <tr>
-      <th>46</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>47</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>roc_auc</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.136083</td>
-      <td>0.833333</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>48</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>accuracy</td>
-      <td>0.800000</td>
-      <td>0.571429</td>
-      <td>0.098111</td>
-      <td>0.750000</td>
-      <td>0.707143</td>
-    </tr>
-    <tr>
-      <th>49</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>f1</td>
-      <td>0.800000</td>
-      <td>0.571429</td>
-      <td>0.099442</td>
-      <td>0.758621</td>
-      <td>0.710016</td>
-    </tr>
-    <tr>
-      <th>50</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>loss</td>
-      <td>3.459070</td>
-      <td>0.547876</td>
-      <td>1.352021</td>
-      <td>0.636163</td>
-      <td>1.547703</td>
-    </tr>
-    <tr>
-      <th>51</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>precision</td>
-      <td>1.000000</td>
-      <td>0.500000</td>
-      <td>0.204275</td>
-      <td>0.733333</td>
-      <td>0.744444</td>
-    </tr>
-    <tr>
-      <th>52</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>recall</td>
-      <td>0.785714</td>
-      <td>0.666667</td>
-      <td>0.056120</td>
-      <td>0.666667</td>
-      <td>0.706349</td>
-    </tr>
-    <tr>
-      <th>53</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>roc_auc</td>
-      <td>0.811224</td>
-      <td>0.666667</td>
-      <td>0.068145</td>
-      <td>0.666667</td>
-      <td>0.714853</td>
-    </tr>
-    <tr>
-      <th>54</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>accuracy</td>
-      <td>0.800000</td>
-      <td>0.714286</td>
-      <td>0.040406</td>
-      <td>0.714286</td>
-      <td>0.742857</td>
-    </tr>
-    <tr>
-      <th>55</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>f1</td>
-      <td>0.857143</td>
-      <td>0.750000</td>
-      <td>0.047423</td>
-      <td>0.764706</td>
-      <td>0.790616</td>
-    </tr>
-    <tr>
-      <th>56</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>loss</td>
-      <td>0.722628</td>
-      <td>0.473485</td>
-      <td>0.102240</td>
-      <td>0.620068</td>
-      <td>0.605394</td>
-    </tr>
-    <tr>
-      <th>57</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>precision</td>
-      <td>0.750000</td>
-      <td>0.600000</td>
-      <td>0.062361</td>
-      <td>0.650000</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>58</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>recall</td>
-      <td>1.000000</td>
-      <td>0.928571</td>
-      <td>0.033672</td>
-      <td>1.000000</td>
-      <td>0.976190</td>
-    </tr>
-    <tr>
-      <th>59</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>roc_auc</td>
-      <td>0.933673</td>
-      <td>0.666667</td>
-      <td>0.110120</td>
-      <td>0.833333</td>
-      <td>0.811224</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[162]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[162]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>hyperparamcombo_id</th>
-      <th>job_id</th>
-      <th>repeat_index</th>
-      <th>predictor_id</th>
-      <th>split</th>
-      <th>accuracy</th>
-      <th>f1</th>
-      <th>loss</th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>roc_auc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>29</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>train</td>
-      <td>0.714286</td>
-      <td>0.764706</td>
-      <td>0.473485</td>
-      <td>0.650000</td>
-      <td>0.928571</td>
-      <td>0.933673</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.857143</td>
-      <td>0.620068</td>
-      <td>0.750000</td>
-      <td>1.000000</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>9</td>
-      <td>9</td>
-      <td>4</td>
-      <td>31</td>
-      <td>test</td>
-      <td>0.714286</td>
-      <td>0.750000</td>
-      <td>0.722628</td>
-      <td>0.600000</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>train</td>
-      <td>0.750000</td>
-      <td>0.758621</td>
-      <td>0.547876</td>
-      <td>0.733333</td>
-      <td>0.785714</td>
-      <td>0.811224</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.800000</td>
-      <td>3.459070</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>8</td>
-      <td>8</td>
-      <td>4</td>
-      <td>30</td>
-      <td>test</td>
-      <td>0.571429</td>
-      <td>0.571429</td>
-      <td>0.636163</td>
-      <td>0.500000</td>
-      <td>0.666667</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>train</td>
-      <td>0.821429</td>
-      <td>0.848485</td>
-      <td>0.299485</td>
-      <td>0.736842</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.857143</td>
-      <td>0.845627</td>
-      <td>0.750000</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>9</td>
-      <td>9</td>
-      <td>3</td>
-      <td>29</td>
-      <td>test</td>
-      <td>0.714286</td>
-      <td>0.750000</td>
-      <td>0.975309</td>
-      <td>0.600000</td>
-      <td>1.000000</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>train</td>
-      <td>0.892857</td>
-      <td>0.896552</td>
-      <td>0.412229</td>
-      <td>0.866667</td>
-      <td>0.928571</td>
-      <td>0.969388</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.800000</td>
-      <td>3.542673</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>8</td>
-      <td>8</td>
-      <td>3</td>
-      <td>28</td>
-      <td>test</td>
-      <td>0.714286</td>
-      <td>0.750000</td>
-      <td>0.649813</td>
-      <td>0.600000</td>
-      <td>1.000000</td>
-      <td>0.750000</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.857143</td>
-      <td>0.566346</td>
-      <td>0.750000</td>
-      <td>1.000000</td>
-      <td>0.750000</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>train</td>
-      <td>0.750000</td>
-      <td>0.787879</td>
-      <td>0.552645</td>
-      <td>0.684211</td>
-      <td>0.928571</td>
-      <td>0.933673</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>9</td>
-      <td>9</td>
-      <td>2</td>
-      <td>27</td>
-      <td>test</td>
-      <td>0.428571</td>
-      <td>0.600000</td>
-      <td>0.761833</td>
-      <td>0.428571</td>
-      <td>1.000000</td>
-      <td>0.416667</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>train</td>
-      <td>0.785714</td>
-      <td>0.750000</td>
-      <td>0.606985</td>
-      <td>0.900000</td>
-      <td>0.642857</td>
-      <td>0.862245</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.800000</td>
-      <td>0.564041</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>8</td>
-      <td>8</td>
-      <td>2</td>
-      <td>26</td>
-      <td>test</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.603421</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>train</td>
-      <td>0.857143</td>
-      <td>0.875000</td>
-      <td>0.465973</td>
-      <td>0.777778</td>
-      <td>1.000000</td>
-      <td>0.928571</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.800000</td>
-      <td>0.619605</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.833333</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>9</td>
-      <td>9</td>
-      <td>1</td>
-      <td>25</td>
-      <td>test</td>
-      <td>0.571429</td>
-      <td>0.571429</td>
-      <td>0.754951</td>
-      <td>0.500000</td>
-      <td>0.666667</td>
-      <td>0.750000</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>train</td>
-      <td>0.714286</td>
-      <td>0.777778</td>
-      <td>0.551639</td>
-      <td>0.636364</td>
-      <td>1.000000</td>
-      <td>0.938776</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.857143</td>
-      <td>0.824062</td>
-      <td>0.750000</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>8</td>
-      <td>8</td>
-      <td>1</td>
-      <td>24</td>
-      <td>test</td>
-      <td>0.571429</td>
-      <td>0.666667</td>
-      <td>2.118411</td>
-      <td>0.500000</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>train</td>
-      <td>0.750000</td>
-      <td>0.800000</td>
-      <td>0.515694</td>
-      <td>0.666667</td>
-      <td>1.000000</td>
-      <td>0.948980</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.857143</td>
-      <td>0.619902</td>
-      <td>0.750000</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>9</td>
-      <td>9</td>
-      <td>0</td>
-      <td>23</td>
-      <td>test</td>
-      <td>0.571429</td>
-      <td>0.666667</td>
-      <td>0.626964</td>
-      <td>0.500000</td>
-      <td>1.000000</td>
-      <td>0.916667</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>validation</td>
-      <td>0.800000</td>
-      <td>0.800000</td>
-      <td>0.657118</td>
-      <td>1.000000</td>
-      <td>0.666667</td>
-      <td>0.666667</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>train</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.433796</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>8</td>
-      <td>8</td>
-      <td>0</td>
-      <td>22</td>
-      <td>test</td>
-      <td>0.571429</td>
-      <td>0.571429</td>
-      <td>0.638489</td>
-      <td>0.500000</td>
-      <td>0.666667</td>
-      <td>0.833333</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<p>We can also inspect the actual predictions for each split, which have been automatically <code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code>’ed back from their encoded values.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;test&#39;: array([&#39;bar&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;],
-       dtype=object),
- &#39;validation&#39;: array([&#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;], dtype=object),
- &#39;train&#39;: array([&#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;spiral&#39;, &#39;bar&#39;,
-        &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;spiral&#39;,
-        &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;spiral&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;,
-        &#39;spiral&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;, &#39;bar&#39;], dtype=object)}
-</pre></div></div>
-</div>
-<p>Let’s dig into our recorded experiment to pull out the samples within the training set that were misclassified by comparing them to their actual labels.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">train_predicted</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">train_samples</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">splitset</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">train_actual</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">splitset</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">train_samples</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">comparison</span> <span class="o">=</span> <span class="n">train_predicted</span> <span class="o">==</span> <span class="n">train_actual</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">train_misclassifications</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">comparison</span><span class="o">==</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">train_samples_miss</span> <span class="o">=</span> <span class="p">[</span><span class="n">train_samples</span><span class="p">[</span><span class="n">miss</span><span class="p">]</span> <span class="k">for</span> <span class="n">miss</span> <span class="ow">in</span> <span class="n">train_misclassifications</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">img_miss</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">to_pillow</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="n">train_samples_miss</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Here is an example of a spiral that was missclassified as a bar.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">img_miss</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_heterogeneous_features_90_0.png" src="../_images/notebooks_heterogeneous_features_90_0.png" />
-</div>
 </div>
 </section>
 </section>

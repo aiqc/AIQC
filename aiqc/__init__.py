@@ -12,12 +12,12 @@ def setup():
 	create_db()
 
 
-#==================================================
-# HIGH LEVEL API 
-#==================================================
+"""
+High-Level API
+├── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/api_high_level.html
+└── Examples = https://aiqc.readthedocs.io/en/latest/tutorials.html
+"""
 class Pipeline():
-	"""Create Dataset, Feature, Label, Splitset, and Foldset."""
-
 	def parse_tabular_input(dataFrame_or_filePath:object, dtype:object=None):
 		"""Create the dataset from either df or file."""
 		d = dataFrame_or_filePath

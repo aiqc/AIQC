@@ -81,16 +81,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a)-One-Line-Install">a) One-Line Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Create-Config-File">Create Config File</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Create-Database-File">Create Database File</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#Config-File">Config File</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
@@ -206,14 +197,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id13">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
@@ -630,12 +621,12 @@ To get started, run `aiqc.setup()`.
 =&gt; Info - it appears the following folder does not exist on your system:
 /Users/layne/Library/Application Support/aiqc/
 
-=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
+=&gt; Fix - you can attempt to fix this by running `aiqc.config.create_folder()`.
 
 =&gt; Success - created folder at file path:
 /Users/layne/Library/Application Support/aiqc/
 
-=&gt; Next run `aiqc.create_config()`.
+=&gt; Next run `aiqc.config.create_config()`.
 
 
 =&gt; Success - the following file path already exists on your system:
@@ -646,7 +637,7 @@ To get started, run `aiqc.setup()`.
 /Users/layne/Library/Application Support/aiqc/config.json
 
 
-=&gt; Next run `aiqc.create_db()`.
+=&gt; Next run `aiqc.orm.create_db()`.
 
 
 =&gt; Success - created database file at path:
@@ -657,9 +648,9 @@ To get started, run `aiqc.setup()`.
 
 </pre></div></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">setup()</span></code> only needs to be ran once. Going forward, just <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>. Don’t use <code class="docutils literal notranslate"><span class="pre">as</span></code> when importing.</p>
+<p>This command only needs to be ran once. If you run it again, it skip the creation of any configuration folders and files that already exist.</p>
 <blockquote>
-<div><p>Technically, the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import, but we don’t want to get in the habit of running system commands without explicit user consent.</p>
+<div><p>Although the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import the package, the AIQC developers make a concious choice of not running system commands without explicit user consent.</p>
 </div></blockquote>
 <p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
 <blockquote>
@@ -824,166 +815,17 @@ v14.7.0
 <li><p>Upgrade <code class="docutils literal notranslate"><span class="pre">pip</span></code> itself: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span></code></p></li>
 <li><p>Install<code class="docutils literal notranslate"><span class="pre">wheel</span></code> is recommended: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">wheel</span></code></p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-</pre></div>
-</div>
-</div>
 <hr class="docutils" />
 </section>
-<section id="AIQC-Config-&amp;-Database">
-<h2>AIQC Config &amp; Database<a class="headerlink" href="#AIQC-Config-&-Database" title="Permalink to this headline"></a></h2>
-<section id="a)-One-Line-Install">
-<h3>a) One-Line Install<a class="headerlink" href="#a)-One-Line-Install" title="Permalink to this headline"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">setup()</span></code> method just runs the following methods in one go: <code class="docutils literal notranslate"><span class="pre">create_folder()</span></code>, <code class="docutils literal notranslate"><span class="pre">create_config()</span></code>, and <code class="docutils literal notranslate"><span class="pre">create_db()</span></code>.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-=&gt; Info - it appears the following folder does not exist on your system:
-/Users/layne/Library/Application Support/aiqc/
-
-=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
-
-=&gt; Success - created folder at file path:
-/Users/layne/Library/Application Support/aiqc/
-
-=&gt; Next run `aiqc.create_config()`.
-
-
-=&gt; Success - the following file path already exists on your system:
-/Users/layne/Library/Application Support/aiqc/
-
-
-=&gt; Success - created config file for settings at path:
-/Users/layne/Library/Application Support/aiqc/config.json
-
-
-=&gt; Next run `aiqc.create_db()`.
-
-
-=&gt; Success - created database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-💾  Success - created all database tables.  💾
-
-</pre></div></div>
-</div>
-</section>
-<section id="b)-Or-Line-by-Line-Configuration">
-<h3>b) Or Line-by-Line Configuration<a class="headerlink" href="#b)-Or-Line-by-Line-Configuration" title="Permalink to this headline"></a></h3>
-<p>If you need to troubleshoot your installation, then run the installation steps one-by-one.</p>
-<section id="Create-Config-File">
-<h4>Create Config File<a class="headerlink" href="#Create-Config-File" title="Permalink to this headline"></a></h4>
-<p>Enter the following commands one-by-one and follow any instructions returned by the command prompt to resolve errors should they arise.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_folder</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-=&gt; Info - it appears the following folder does not exist on your system:
-/Users/layne/Library/Application Support/aiqc/
-
-=&gt; Fix - you can attempt to fix this by running `aiqc.create_folder()`.
-
-=&gt; Success - created folder at file path:
-/Users/layne/Library/Application Support/aiqc/
-
-=&gt; Next run `aiqc.create_config()`.
-
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_config</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Success - the following file path already exists on your system:
-/Users/layne/Library/Application Support/aiqc/
-
-
-=&gt; Success - created config file for settings at path:
-/Users/layne/Library/Application Support/aiqc/config.json
-
-
-=&gt; Next run `aiqc.create_db()`.
-
-</pre></div></div>
-</div>
-<p>If you run the <code class="docutils literal notranslate"><span class="pre">.create_*()</span></code> commands in the future, don’t worry, they won’t overwrite your existing data. They will detect the presence of the data and skip creation.</p>
-</section>
-<section id="Create-Database-File">
-<h4>Create Database File<a class="headerlink" href="#Create-Database-File" title="Permalink to this headline"></a></h4>
-<p>This creates a SQLite database file that AIQC uses to reproducibly record experiments.</p>
-<p>Only now that the configuration exists can we create the database tables. After creating the config, the AIQC module should reload itself automatically. If you encounter errors, reference the Troubleshooting section below.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Success - created database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-💾  Success - created all database tables.  💾
-
-</pre></div></div>
-</div>
-</section>
-</section>
 <section id="Config-File">
-<h3>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline"></a></h3>
+<h2>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline"></a></h2>
 <p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -993,22 +835,22 @@ v14.7.0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;created_at&#39;: &#39;2021-02-04 18:23:01.707030&#39;,
+{&#39;created_at&#39;: &#39;2022-03-02 10:57:12.603550&#39;,
  &#39;config_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/config.json&#39;,
  &#39;db_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3&#39;,
- &#39;sys.version&#39;: &#39;3.8.7 (default, Jan 28 2021, 17:14:59) \n[Clang 12.0.0 (clang-1200.0.31.1)]&#39;,
+ &#39;sys.version&#39;: &#39;3.7.12 (default, Dec 10 2021, 10:49:04) \n[Clang 13.0.0 (clang-1300.0.29.3)]&#39;,
  &#39;platform.python_implementation()&#39;: &#39;CPython&#39;,
- &#39;sys.prefix&#39;: &#39;/Users/layne/.pyenv/versions/3.8.7/envs/jupyterlab3&#39;,
+ &#39;sys.prefix&#39;: &#39;/Users/layne/.pyenv/versions/3.7.12/envs/aiqc_dev&#39;,
  &#39;os.name&#39;: &#39;posix&#39;,
- &#39;platform.version()&#39;: &#39;Darwin Kernel Version 19.6.0: Sun Jul  5 00:43:10 PDT 2020; root:xnu-6153.141.1~9/RELEASE_X86_64&#39;,
+ &#39;platform.version()&#39;: &#39;Darwin Kernel Version 20.6.0: Tue Oct 12 18:33:42 PDT 2021; root:xnu-7195.141.8~1/RELEASE_X86_64&#39;,
  &#39;platform.java_ver()&#39;: [&#39;&#39;, &#39;&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], [&#39;&#39;, &#39;&#39;, &#39;&#39;]],
  &#39;platform.win32_ver()&#39;: [&#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;],
  &#39;platform.libc_ver()&#39;: [&#39;&#39;, &#39;&#39;],
- &#39;platform.mac_ver()&#39;: [&#39;10.15.6&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], &#39;x86_64&#39;]}
+ &#39;platform.mac_ver()&#39;: [&#39;11.6.1&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], &#39;x86_64&#39;],
+ &#39;aws_api_key&#39;: None}
 </pre></div></div>
 </div>
 <hr class="docutils" />
-</section>
 </section>
 <section id="Location-of-AIQC-Files">
 <h2>Location of AIQC Files<a class="headerlink" href="#Location-of-AIQC-Files" title="Permalink to this headline"></a></h2>
@@ -1040,11 +882,11 @@ v14.7.0
 <h3>a) One-Liner<a class="headerlink" href="#a)-One-Liner" title="Permalink to this headline"></a></h3>
 <p>Both <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> and <code class="docutils literal notranslate"><span class="pre">rebuild:bool=False</span></code>, so it only does what you command it to do.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">orm</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1070,11 +912,11 @@ v14.7.0
 <section id="b)-Or-Line-by-Line">
 <h3>b) Or Line-by-Line<a class="headerlink" href="#b)-Or-Line-by-Line" title="Permalink to this headline"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">orm</span><span class="o">.</span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1090,11 +932,11 @@ v14.7.0
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
+<span></span><span class="n">aiqc</span><span class="o">.</span><span class="n">orm</span><span class="o">.</span><span class="n">create_db</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

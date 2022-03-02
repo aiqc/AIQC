@@ -1,14 +1,16 @@
+"""
+Plots
+└── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html
+"""
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
 
 
 class Plot():
-	"""
-	Data is prepared in the Queue and Predictor classes
-	before being fed into the methods below.
-	"""
+	"""Data is prepared in the Queue and Predictor classes before being fed into the methods below."""
 	def __init__(self):
+		"""__init__ defines a template that is passed to the other plots."""
 		self.plot_template = dict(
             layout=go.Layout(
 			    font=dict(family='Avenir', color='#FAFAFA')

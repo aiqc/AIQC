@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
@@ -78,16 +79,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Config-&amp;-Database">AIQC Config &amp; Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Line-Install">a) One-Line Install</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line-Configuration">b) Or Line-by-Line Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Config-File">Create Config File</a></li>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Create-Database-File">Create Database File</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
@@ -203,14 +195,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id13">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-Labelpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">Labelpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-Labelcoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-Labelcoder">Creating a <code class="docutils literal notranslate"><span class="pre">Labelcoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
@@ -591,7 +583,6 @@ div.rendered_html tbody tr:hover {
 <h1>Feature Importance for Drug Discovery<a class="headerlink" href="#Feature-Importance-for-Drug-Discovery" title="Permalink to this headline"></a></h1>
 <p><em>In silico interpretation of compound selection using permuted feature importance of neural networks to rank High Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.</em></p>
 <img alt="docking" src="../_images/docking_banner.png" />
-<hr class="docutils" />
 <p>This dataset is comprised of:</p>
 <ul class="simple">
 <li><p><em>Features</em> - 155 structural screening criteria for each compound.</p></li>
@@ -601,6 +592,15 @@ div.rendered_html tbody tr:hover {
 <div><p><em>Source:</em> PubChem Bioassay from Scripps Research Institute Molecular Screening Center. <a class="reference external" href="https://archive.ics.uci.edu/ml/datasets/PubChem+Bioassay+Data">https://archive.ics.uci.edu/ml/datasets/PubChem+Bioassay+Data</a></p>
 </div></blockquote>
 <p>The purpose of this analysis is to use <em>permuted feature importance</em> to understand which chemical structures are driving the activation of the target.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[163]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+</pre></div>
+</div>
+</div>
 <hr class="docutils" />
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[153]:
@@ -656,21 +656,20 @@ Non-binary Features = 31
 </pre></div></div>
 </div>
 <hr class="docutils" />
-</section>
-<section id="Preprocessing">
-<h1>Preprocessing<a class="headerlink" href="#Preprocessing" title="Permalink to this headline"></a></h1>
+<section id="Pipeline">
+<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<p>Due to the fact that we have a shortage of active compounds and are ultimately interested in the patterns of feature importance, we’ll forgo the generalizable rigor of validation splits/folds.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[163]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
 </div>
-<p>Due to the fact that we have a shortage of active compounds and are ultimately interested in the patterns of feature importance, we’ll forgo the generalizable rigor of validation splits/folds.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -696,82 +695,18 @@ Non-binary Features = 31
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;NEG_01_NEG&#39;, &#39;NEG_02_NEG&#39;, &#39;NEG_03_NEG&#39;, &#39;NEG_04_NEG&#39;, &#39;NEG_05_NEG&#39;, &#39;NEG_06_NEG&#39;, &#39;NEG_07_NEG&#39;, &#39;NEG_03_POS&#39;, &#39;NEG_04_POS&#39;, &#39;NEG_05_POS&#39;, &#39;NEG_06_POS&#39;, &#39;NEG_07_POS&#39;, &#39;NEG_01_HBD&#39;, &#39;NEG_02_HBD&#39;, &#39;NEG_03_HBD&#39;, &#39;NEG_04_HBD&#39;, &#39;NEG_05_HBD&#39;, &#39;NEG_06_HBD&#39;, &#39;NEG_07_HBD&#39;, &#39;NEG_03_HBA&#39;, &#39;NEG_04_HBA&#39;, &#39;NEG_05_HBA&#39;, &#39;NEG_06_HBA&#39;, &#39;NEG_07_HBA&#39;, &#39;NEG_02_ARC&#39;, &#39;NEG_03_ARC&#39;, &#39;NEG_04_ARC&#39;, &#39;NEG_05_ARC&#39;, &#39;NEG_06_ARC&#39;, &#39;NEG_07_ARC&#39;, &#39;NEG_02_HYP&#39;, &#39;NEG_03_HYP&#39;, &#39;NEG_04_HYP&#39;, &#39;NEG_05_HYP&#39;, &#39;NEG_06_HYP&#39;, &#39;NEG_07_HYP&#39;, &#39;POS_03_POS&#39;, &#39;POS_04_POS&#39;, &#39;POS_05_POS&#39;, &#39;POS_06_POS&#39;, &#39;POS_07_POS&#39;, &#39;POS_02_HBD&#39;, &#39;POS_03_HBD&#39;, &#39;POS_04_HBD&#39;, &#39;POS_05_HBD&#39;, &#39;POS_06_HBD&#39;, &#39;POS_07_HBD&#39;, &#39;POS_03_HBA&#39;, &#39;POS_04_HBA&#39;, &#39;POS_05_HBA&#39;, &#39;POS_06_HBA&#39;, &#39;POS_07_HBA&#39;, &#39;POS_02_ARC&#39;, &#39;POS_03_ARC&#39;, &#39;POS_04_ARC&#39;, &#39;POS_05_ARC&#39;, &#39;POS_06_ARC&#39;, &#39;POS_07_ARC&#39;, &#39;POS_02_HYP&#39;, &#39;POS_03_HYP&#39;, &#39;POS_04_HYP&#39;, &#39;POS_05_HYP&#39;, &#39;POS_06_HYP&#39;, &#39;POS_07_HYP&#39;, &#39;HBD_03_HBD&#39;, &#39;HBD_04_HBD&#39;, &#39;HBD_05_HBD&#39;, &#39;HBD_06_HBD&#39;, &#39;HBD_07_HBD&#39;, &#39;HBD_03_HBA&#39;, &#39;HBD_04_HBA&#39;, &#39;HBD_05_HBA&#39;, &#39;HBD_06_HBA&#39;, &#39;HBD_07_HBA&#39;, &#39;HBD_02_ARC&#39;, &#39;HBD_03_ARC&#39;, &#39;HBD_04_ARC&#39;, &#39;HBD_05_ARC&#39;, &#39;HBD_06_ARC&#39;, &#39;HBD_07_ARC&#39;, &#39;HBD_02_HYP&#39;, &#39;HBD_03_HYP&#39;, &#39;HBD_04_HYP&#39;, &#39;HBD_05_HYP&#39;, &#39;HBD_06_HYP&#39;, &#39;HBD_07_HYP&#39;, &#39;HBA_03_HBA&#39;, &#39;HBA_04_HBA&#39;, &#39;HBA_05_HBA&#39;, &#39;HBA_06_HBA&#39;, &#39;HBA_07_HBA&#39;, &#39;HBA_03_ARC&#39;, &#39;HBA_04_ARC&#39;, &#39;HBA_05_ARC&#39;, &#39;HBA_06_ARC&#39;, &#39;HBA_07_ARC&#39;, &#39;HBA_02_HYP&#39;, &#39;HBA_03_HYP&#39;, &#39;HBA_04_HYP&#39;, &#39;HBA_05_HYP&#39;, &#39;HBA_06_HYP&#39;, &#39;HBA_07_HYP&#39;, &#39;ARC_01_ARC&#39;, &#39;ARC_02_ARC&#39;, &#39;ARC_03_ARC&#39;, &#39;ARC_04_ARC&#39;, &#39;ARC_05_ARC&#39;, &#39;ARC_06_ARC&#39;, &#39;ARC_07_ARC&#39;, &#39;ARC_02_HYP&#39;, &#39;ARC_03_HYP&#39;, &#39;ARC_04_HYP&#39;, &#39;ARC_05_HYP&#39;, &#39;ARC_06_HYP&#39;, &#39;ARC_07_HYP&#39;, &#39;HYP_01_HYP&#39;, &#39;HYP_02_HYP&#39;, &#39;HYP_03_HYP&#39;, &#39;HYP_04_HYP&#39;, &#39;HYP_05_HYP&#39;, &#39;HYP_06_HYP&#39;, &#39;HYP_07_HYP&#39;, &#39;BBB&#39;]
-
-=&gt; The remaining column(s) and dtype(s) are available for downstream featurecoder(s):
-{&#39;BadGroup&#39;: &#39;int64&#39;,
- &#39;MW&#39;: &#39;float64&#39;,
- &#39;NumHBA&#39;: &#39;int64&#39;,
- &#39;NumHBD&#39;: &#39;int64&#39;,
- &#39;NumRot&#39;: &#39;int64&#39;,
- &#39;PSA&#39;: &#39;float64&#39;,
- &#39;WBN_EN_H_0.25&#39;: &#39;float64&#39;,
- &#39;WBN_EN_H_0.50&#39;: &#39;float64&#39;,
- &#39;WBN_EN_H_0.75&#39;: &#39;float64&#39;,
- &#39;WBN_EN_H_1.00&#39;: &#39;float64&#39;,
- &#39;WBN_EN_L_0.25&#39;: &#39;float64&#39;,
- &#39;WBN_EN_L_0.50&#39;: &#39;float64&#39;,
- &#39;WBN_EN_L_0.75&#39;: &#39;float64&#39;,
- &#39;WBN_EN_L_1.00&#39;: &#39;float64&#39;,
- &#39;WBN_GC_H_0.25&#39;: &#39;float64&#39;,
- &#39;WBN_GC_H_0.50&#39;: &#39;float64&#39;,
- &#39;WBN_GC_H_0.75&#39;: &#39;float64&#39;,
- &#39;WBN_GC_H_1.00&#39;: &#39;float64&#39;,
- &#39;WBN_GC_L_0.25&#39;: &#39;float64&#39;,
- &#39;WBN_GC_L_0.50&#39;: &#39;float64&#39;,
- &#39;WBN_GC_L_0.75&#39;: &#39;float64&#39;,
- &#39;WBN_GC_L_1.00&#39;: &#39;float64&#39;,
- &#39;WBN_LP_H_0.25&#39;: &#39;float64&#39;,
- &#39;WBN_LP_H_0.50&#39;: &#39;float64&#39;,
- &#39;WBN_LP_H_0.75&#39;: &#39;float64&#39;,
- &#39;WBN_LP_H_1.00&#39;: &#39;float64&#39;,
- &#39;WBN_LP_L_0.25&#39;: &#39;float64&#39;,
- &#39;WBN_LP_L_0.50&#39;: &#39;float64&#39;,
- &#39;WBN_LP_L_0.75&#39;: &#39;float64&#39;,
- &#39;WBN_LP_L_1.00&#39;: &#39;float64&#39;,
- &#39;XLogP&#39;: &#39;float64&#39;}
-
-
-=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-   This saves memory when concatenating the output of many encoders.
-
-
-___/ featurecoder_index: 1 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;WBN_GC_L_0.25&#39;, &#39;WBN_GC_H_0.25&#39;, &#39;WBN_GC_L_0.50&#39;, &#39;WBN_GC_H_0.50&#39;, &#39;WBN_GC_L_0.75&#39;, &#39;WBN_GC_H_0.75&#39;, &#39;WBN_GC_L_1.00&#39;, &#39;WBN_GC_H_1.00&#39;, &#39;WBN_EN_L_0.25&#39;, &#39;WBN_EN_H_0.25&#39;, &#39;WBN_EN_L_0.50&#39;, &#39;WBN_EN_H_0.50&#39;, &#39;WBN_EN_L_0.75&#39;, &#39;WBN_EN_H_0.75&#39;, &#39;WBN_EN_L_1.00&#39;, &#39;WBN_EN_H_1.00&#39;, &#39;WBN_LP_L_0.25&#39;, &#39;WBN_LP_H_0.25&#39;, &#39;WBN_LP_L_0.50&#39;, &#39;WBN_LP_H_0.50&#39;, &#39;WBN_LP_L_0.75&#39;, &#39;WBN_LP_H_0.75&#39;, &#39;WBN_LP_L_1.00&#39;, &#39;WBN_LP_H_1.00&#39;, &#39;XLogP&#39;, &#39;PSA&#39;, &#39;NumRot&#39;, &#39;NumHBA&#39;, &#39;NumHBD&#39;, &#39;MW&#39;, &#39;BadGroup&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
-
-</pre></div></div>
-</div>
+<hr class="docutils" />
 </section>
 <section id="Modeling">
-<h1>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h1>
+<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">keras</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">Activation</span>
-<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">History</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OrdinalEncoder</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
+<span class="kn">from</span> <span class="nn">aiqc.uitls</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
 </pre></div>
 </div>
 </div>
@@ -781,37 +716,37 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
 
     <span class="c1"># First hidden layer.</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;first_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;first_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">())</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
 
     <span class="c1"># Second hidden layer.</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;second_layer&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;after_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;after_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">())</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;third_layer&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">):</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;after_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;after_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">())</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;fourth_layer&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">):</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;after_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;after_neurons&#39;</span><span class="p">],</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;init&#39;</span><span class="p">]))</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">())</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Activation</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]))</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
 
     <span class="c1"># Output layer</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">model</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">m</span>
 </pre></div>
 </div>
 </div>
@@ -831,7 +766,7 @@ No more Featurecoders can be added to this Encoderset.
     <span class="n">metric_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_precision&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.75</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
     <span class="p">]</span>
-    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metric_cuttoffs</span><span class="p">)</span>
+    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metric_cuttoffs</span><span class="p">)</span>
 
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
         <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
@@ -839,7 +774,7 @@ No more Featurecoders can be added to this Encoderset.
         <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">History</span><span class="p">()]</span>
+        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
@@ -1256,6 +1191,7 @@ No more Featurecoders can be added to this Encoderset.
 <img alt="matrixTrain" src="../_images/docking_matrix_train.png" />
 <img alt="matrixTest" src="../_images/docking_matrix_test.png" />
 <hr class="docutils" />
+</section>
 </section>
 <section id="Interpretation">
 <h1>Interpretation<a class="headerlink" href="#Interpretation" title="Permalink to this headline"></a></h1>

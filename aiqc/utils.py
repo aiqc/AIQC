@@ -16,9 +16,7 @@ import sklearn
 
 
 def listify(supposed_lst:object=None):
-	"""
-	When only providing a single element, it's easy to forget to put it inside a list!
-	"""
+	"""When only providing a single element, it's easy to forget to put it inside a list!"""
 	if (supposed_lst is not None):
 		if (not isinstance(supposed_lst, list)):
 			supposed_lst = [supposed_lst]

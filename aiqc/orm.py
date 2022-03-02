@@ -1,3 +1,15 @@
+"""
+Low-Level API
+└── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/api_low_level.html
+
+This is an Object-Relational Model (ORM) for the database that keeps track of the workflow.
+
+There is a circular depedency between: Model(BaseModel), db.create_tables(Models), BaseModel(db).
+In an attempt to fix this, I was able to refactor the Models into separate files by introducing 
+a new file that to handle db.create_tables(Models). However, when creating/ deleting the db file 
+I couldn't dynamically reload the Models without restarting the kernel and rerunning setup().
+I tried all kinds of importlib.reload(), but decided to move on.
+"""
 # Local modules
 from .config import app_dir
 from .plots import Plot
@@ -46,9 +58,10 @@ def get_db():
 		print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
 	else:
 		"""
-		- Use Write Ahead Lock (WAL) mode by default because it supports concurrent writes.
-		- Howerver, adapt for AWS because it does not work over NFS <https://www.sqlite.org/wal.html>
-		- To switch back to Journal mode you can just skip `pragmas` <https://docs.peewee-orm.com/en/latest/peewee/database.html>
+		Write Ahead Lock (WAL) mode supports concurrent writes, but not NFS (AWS EFS)
+		└── <sqlite.org/wal.html>
+		Default is Journal mode and it is set in `pragmas`
+		└── <docs.peewee-orm.com/en/latest/peewee/database.html>
 		"""
 		db = SqliteExtDatabase(path)
 		return db
@@ -60,21 +73,21 @@ def create_db():
 	db_exists = os.path.exists(db_path)
 	if db_exists:
 		print(f"\n=> Skipping database file creation as a database file already exists at path:\n{db_path}\n")
+		db = get_db()
 	else:
 		# Create sqlite file for db.
 		try:
 			db = get_db()
+			# This `reload` is needed after I refactored Models into orm.py
+			importlib.reload(sys.modules[__name__])
 		except:
 			print(
 				f"=> Yikes - failed to create database file at path:\n{db_path}\n\n" \
 				f"===================================\n"
 			)
 			raise
-		print(f"\n=> Success - created database file at path:\n{db_path}\n")
-	### Added this reload during modularization. Table creation was failing without it.
-	importlib.reload(sys.modules[__name__])
+		print(f"\n=> Success - created database file at path:\n{db_path}\n")	
 	
-	db = get_db()
 	# Create tables inside db.
 	tables = db.get_tables()
 	table_count = len(tables)

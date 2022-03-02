@@ -35,14 +35,6 @@
    ]
   },
   {
-   "cell_type": "markdown",
-   "id": "professional-upset",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
    "cell_type": "code",
    "execution_count": 2,
    "id": "6c683eaf-7ca6-44cc-adbe-5e02bd735d1f",
@@ -308,20 +300,6 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "7ba9a1a5-258c-404a-94ed-920fabc14536",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "from sklearn.preprocessing import StandardScaler\n",
-    "import keras\n",
-    "from keras.models import Sequential\n",
-    "from keras.layers import LSTM, Dense\n",
-    "from keras.callbacks import History"
-   ]
-  },
-  {
    "cell_type": "markdown",
    "id": "unlike-killing",
    "metadata": {},
@@ -334,7 +312,7 @@
    "id": "initial-bracket",
    "metadata": {},
    "source": [
-    "## a) High-Level API"
+    "## Pipeline"
    ]
   },
   {
@@ -365,6 +343,16 @@
    "outputs": [],
    "source": [
     "seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "e6bb2180-f623-4c95-a0a2-29110d1e88cf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import StandardScaler"
    ]
   },
   {
@@ -430,19 +418,43 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "id": "7bc286ca-6c92-4e21-af28-8239ca6fe422",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4afac5f6-e460-4eda-82fb-a893dce0cbd2",
+   "metadata": {},
+   "source": [
+    "## Modeling"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7ba9a1a5-258c-404a-94ed-920fabc14536",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import tensorflow as tf\n",
+    "from tensorflow.keras import layers as l"
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "dying-thread",
+   "id": "24b73534-8d82-4dae-af56-ddc3fa2a9c84",
    "metadata": {},
    "outputs": [],
    "source": [
     "def fn_build(features_shape, label_shape, **hp):    \n",
-    "    model = Sequential()\n",
-    "    model.add(LSTM(\n",
-    "        hp['neuron_count']\n",
-    "        , input_shape=(features_shape[0], features_shape[1])\n",
-    "    ))\n",
-    "    model.add(Dense(units=label_shape[0], activation='sigmoid'))\n",
+    "    m = tf.keras.models.Sequential()\n",
+    "    m.add(l.LSTM(hp['neuron_count'], input_shape=(features_shape[0], features_shape[1])))\n",
+    "    m.add(l.Dense(units=label_shape[0], activation='sigmoid'))\n",
     "    return model"
    ]
   },
@@ -465,7 +477,7 @@
     "        , verbose = 0\n",
     "        , batch_size = hp['batch_size']\n",
     "        , epochs = hp['epochs']\n",
-    "        , callbacks = [History()]\n",
+    "        , callbacks = [tf.keras.callbacks.History()]\n",
     "    )\n",
     "    return model"
    ]
@@ -477,11 +489,11 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "hyperparameters = {\n",
-    "    \"neuron_count\": [25]\n",
-    "    , \"batch_size\": [8]\n",
-    "    , \"epochs\": [5, 10]\n",
-    "}"
+    "hyperparameters = dict(\n",
+    "    neuron_count = [25]\n",
+    "    , batch_size = [8]\n",
+    "    , epochs     = [5, 10]\n",
+    ")"
    ]
   },
   {
@@ -539,290 +551,6 @@
    "metadata": {},
    "source": [
     "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "confidential-fight",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "contrary-aggregate",
-   "metadata": {},
-   "source": [
-    "## b) Low-Level API"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 16,
-   "id": "intimate-degree",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "df = datum.to_pandas('epilepsy.parquet')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 17,
-   "id": "brilliant-exclusion",
-   "metadata": {
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "label_df = df[['seizure']]"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 18,
-   "id": "facial-narrow",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 19,
-   "id": "planned-desert",
-   "metadata": {
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "dataset_tabular = aiqc.Dataset.Tabular.from_pandas(label_df)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 20,
-   "id": "piano-necessity",
-   "metadata": {
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "label = dataset_tabular.make_label(columns='seizure')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 21,
-   "id": "accepting-indiana",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:05<00:00, 194.69it/s]\n"
-     ]
-    }
-   ],
-   "source": [
-    "dataset_sequence = aiqc.Dataset.Sequence.from_numpy(\n",
-    "    ndarray3D_or_npyPath = seq_ndarray3D\n",
-    "    , column_names = ['EEG']\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 22,
-   "id": "accompanied-discovery",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "feature = dataset_sequence.make_feature()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 23,
-   "id": "dangerous-alexander",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "encoderset = feature.make_encoderset()"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 24,
-   "id": "employed-track",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "\n",
-      "=> Info - System overriding user input to set `sklearn_preprocess.copy=False`.\n",
-      "   This saves memory when concatenating the output of many encoders.\n",
-      "\n",
-      "\n",
-      "___/ featurecoder_index: 0 \\_________\n",
-      "\n",
-      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
-      "\n",
-      "['EEG']\n",
-      "\n",
-      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
-      "No more Featurecoders can be added to this Encoderset.\n",
-      "\n"
-     ]
-    }
-   ],
-   "source": [
-    "encoderset = encoderset.make_featurecoder(\n",
-    "    sklearn_preprocess = StandardScaler()\n",
-    "    , columns = ['EEG']\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 25,
-   "id": "rural-orleans",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "splitset = aiqc.Splitset.make(\n",
-    "    feature_ids = [feature.id]\n",
-    "    , label_id = label.id\n",
-    "    , size_test = 0.22\n",
-    "    , size_validation = 0.12\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 26,
-   "id": "remarkable-argentina",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "def fn_build(features_shape, label_shape, **hp):    \n",
-    "    model = Sequential()\n",
-    "    model.add(LSTM(\n",
-    "        hp['neuron_count']\n",
-    "        , input_shape=(features_shape[0], features_shape[1])\n",
-    "    ))\n",
-    "    model.add(Dense(units=label_shape[0], activation='sigmoid'))\n",
-    "    return model"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 27,
-   "id": "modular-variety",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
-    "    model.compile(\n",
-    "        loss=loser\n",
-    "        , optimizer=optimizer\n",
-    "        , metrics=['accuracy']\n",
-    "    )\n",
-    "    model.fit(\n",
-    "        samples_train['features'], samples_train['labels']\n",
-    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
-    "        , verbose = 0\n",
-    "        , batch_size = hp['batch_size']\n",
-    "        , epochs = hp['epochs']\n",
-    "        , callbacks = [History()]\n",
-    "    )\n",
-    "    return model"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 28,
-   "id": "organic-credits",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "algorithm = aiqc.Algorithm.make(\n",
-    "    library = \"keras\"\n",
-    "    , analysis_type = \"classification_binary\"\n",
-    "    , fn_build = fn_build\n",
-    "    , fn_train = fn_train\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 29,
-   "id": "earned-shell",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "hyperparameters = {\n",
-    "    \"neuron_count\": [25]\n",
-    "    , \"batch_size\": [8]\n",
-    "    , \"epochs\": [5, 10]\n",
-    "}"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 30,
-   "id": "christian-change",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "hyperparamset = algorithm.make_hyperparamset(\n",
-    "    hyperparameters = hyperparameters\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 31,
-   "id": "generous-flour",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "queue = algorithm.make_queue(\n",
-    "    splitset_id = splitset.id\n",
-    "    , hyperparamset_id = hyperparamset.id\n",
-    "    , repeat_count = 2\n",
-    ")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 32,
-   "id": "governing-income",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [01:53<00:00, 28.32s/it]\n"
-     ]
-    }
-   ],
-   "source": [
-    "queue.run_jobs()"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "explicit-joint",
-   "metadata": {},
-   "source": [
-    "Reference [Low-Level API Docs](api_high_level.ipynb) for more information including how to work with non-tabular data and defining optimizers."
    ]
   }
  ],
