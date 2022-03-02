@@ -207,12 +207,12 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, pe
 		fs_id = None
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, columns = ['petal_width']
 	)
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
@@ -314,7 +314,7 @@ def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permut
 	)
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['float64']
@@ -385,7 +385,7 @@ def make_test_queue_keras_text_binary(repeat_count:int=1, fold_count:int=None, p
 	)
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id=e_id
 		, sklearn_preprocess = CountVectorizer(max_features = 200)
 		, columns=['TextData']
@@ -491,14 +491,14 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, pe
 	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes='float64')
 	
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id=e_id
 		, include = False
 		, dtypes = ['int64']
 		, sklearn_preprocess = MinMaxScaler(copy=False)
 	)
 	# Expect double None (dtypes,columns) to use all columns because nothing is excluded.
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id=e_id
 		, include = False
 		, dtypes = None
@@ -729,7 +729,7 @@ def make_test_queue_keras_sequence_binary(repeat_count:int=1, fold_count:int=Non
 	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes="float64")
 	
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler()
 		, columns = ['0']
@@ -837,12 +837,12 @@ def make_test_queue_keras_tabular_forecast(repeat_count:int=1, fold_count:int=No
 	Window.from_feature(feature_id=f_id, size_window=28, size_shift=14)
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = RobustScaler(copy=False)
 		, columns = ['wind', 'pressure']
 	)
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler()
 		, dtypes = ['float64', 'int64']
@@ -984,7 +984,7 @@ def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, perm
 
 	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['float64']
@@ -1141,7 +1141,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, 
 	LabelCoder.from_label(label_id=l_id, sklearn_preprocess=OrdinalEncoder())
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
@@ -1294,14 +1294,14 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, 
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
 
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, include = False
 		, dtypes = ['int64']
 		, sklearn_preprocess = MinMaxScaler(copy=False)
 	)
 	# Expect double None to use all columns because nothing is excluded.
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, include = False
 		, dtypes = None
@@ -1543,7 +1543,7 @@ def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None
 	f_id = Feature.from_dataset(dataset_id=di_id).id
 	Window.from_feature(feature_id=f_id, size_window=1, size_shift=2)
 	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureEncoder.from_encoderset(
+	FeatureCoder.from_encoderset(
 		encoderset_id = e_id
 		, sklearn_preprocess = FunctionTransformer(div255, inverse_func=mult255)
 		, dtypes = 'float64'

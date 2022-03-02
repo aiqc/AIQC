@@ -21,8 +21,7 @@ import numpy as np
 from PIL import Image as Imaje
 # Preprocessing & metrics.
 import sklearn #mandatory to import modules separately.
-from sklearn.model_selection import train_test_split, StratifiedKFold, KFold 
-#from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 # Deep learning.
 import tensorflow as tf
 import torch
@@ -32,8 +31,7 @@ def get_path_db():
 	from .config import get_config
 	aiqc_config = get_config()
 	if (aiqc_config is None):
-		# get_config() will print a null condition.
-		pass
+		pass# get_config() will print a null condition.
 	else:
 		db_path = aiqc_config['db_path']
 		return db_path
@@ -88,7 +86,7 @@ def create_db():
 			Label, Feature, 
 			Splitset, Featureset, Foldset, Fold, 
 			Interpolaterset, LabelInterpolater, FeatureInterpolater,
-			Encoderset, LabelCoder, FeatureEncoder, 
+			Encoderset, LabelCoder, FeatureCoder, 
 			Window, FeatureShaper,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Jobset, Job, Predictor, Prediction,
@@ -1265,7 +1263,7 @@ class Label(BaseModel):
 
 	def preprocess(
 		id:int
-		, labelpolater_id:str = 'latest'
+		, labelinterpolater_id:str = 'latest'
 		#, imputerset_id:str='latest'
 		#, outlierset_id:str='latest'
 		, labelcoder_id:str = 'latest'
@@ -1281,16 +1279,16 @@ class Label(BaseModel):
 			fold = _job.fold
 
 		# Interpolate
-		if ((labelpolater_id!='skip') and (label.labelpolaters.count()>0)):
-			if (labelpolater_id=='latest'):
-				labelpolater = label.labelpolaters[-1]
-			elif isinstance(labelpolater_id, int):
-				labelpolater = LabelInterpolater.get_by_id(labelpolater_id)
+		if ((labelinterpolater_id!='skip') and (label.labelinterpolaters.count()>0)):
+			if (labelinterpolater_id=='latest'):
+				labelinterpolater = label.labelinterpolaters[-1]
+			elif isinstance(labelinterpolater_id, int):
+				labelinterpolater = LabelInterpolater.get_by_id(labelinterpolater_id)
 			else:
-				raise ValueError(f"\nYikes - Unexpected value <{labelpolater_id}> for `labelpolater_id` argument.\n")
+				raise ValueError(f"\nYikes - Unexpected value <{labelinterpolater_id}> for `labelinterpolater_id` argument.\n")
 
-			labelpolater = label.labelpolaters[-1]
-			label_array = labelpolater.interpolate(array=label_array, samples=samples)
+			labelinterpolater = label.labelinterpolaters[-1]
+			label_array = labelinterpolater.interpolate(array=label_array, samples=samples)
 		
 		#Encode
 		# During inference the old labelcoder may be used so we have to nest the count.
@@ -1309,7 +1307,7 @@ class Label(BaseModel):
 			elif (label.labelcoders.count()>0):
 				if (labelcoder_id=='latest'):
 					labelcoder = label.labelcoders[-1]
-				elif (isinstance(labelpolater_id, int)):
+				elif (isinstance(labelinterpolater_id, int)):
 					labelcoder = LabelCoder.get_by_id(labelcoder_id)
 				else:
 					raise ValueError(f"\nYikes - Unexpected value <{labelcoder_id}> for `labelcoder_id` argument.\n")
@@ -1846,7 +1844,7 @@ class Feature(BaseModel):
 			if (len(leftover_columns) == 0):
 				print(
 					f"=> Done. All feature column(s) have {class_name}(s) associated with them.\n" \
-					f"No more FeatureEncoders can be added to this Encoderset.\n"
+					f"No more FeatureCoders can be added to this Encoderset.\n"
 				)
 			elif (len(leftover_columns) > 0):
 				print(
@@ -2519,7 +2517,7 @@ class LabelInterpolater(BaseModel):
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
 
-	label = ForeignKeyField(Label, backref='labelpolaters')
+	label = ForeignKeyField(Label, backref='labelinterpolaters')
 
 	def from_label(
 		label_id:int
@@ -2856,8 +2854,8 @@ class Encoderset(BaseModel):
 	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
 	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
 	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Feature.
-	- Although Encoderset seems uneccessary, you need something to sequentially group the FeatureEncoders onto.
-	- In future, maybe LabelCoder gets split out from Encoderset and it becomes FeatureEncoderset.
+	- Although Encoderset seems uneccessary, you need something to sequentially group the FeatureCoders onto.
+	- In future, maybe LabelCoder gets split out from Encoderset and it becomes FeatureCoderset.
 	"""
 	encoder_count = IntegerField()
 	description = CharField(null=True)
@@ -2887,7 +2885,7 @@ class LabelCoder(BaseModel):
 	  there are classes missing in the split/folds of validation/ test data.
 	- Whereas numerical encoders are best fit only to the training data.
 	- Because there's only 1 encoder that runs and it uses all columns, LabelCoder 
-	  is much simpler to validate and run in comparison to FeatureEncoder.
+	  is much simpler to validate and run in comparison to FeatureCoder.
 	"""
 	only_fit_train = BooleanField()
 	is_categorical = BooleanField()
@@ -2945,9 +2943,9 @@ class LabelCoder(BaseModel):
 		return lc
 
 
-class FeatureEncoder(BaseModel):
+class FeatureCoder(BaseModel):
 	"""
-	- An Encoderset can have a chain of FeatureEncoders.
+	- An Encoderset can have a chain of FeatureCoders.
 	- Encoders are applied sequentially, meaning the columns encoded by `index=0` 
 	  are not available to `index=1`.
 	- Lots of validation here because real-life encoding errors are cryptic and deep for beginners.
@@ -3066,7 +3064,7 @@ class FeatureEncoder(BaseModel):
 		else:
 			encoded_column_names = matching_columns 
 
-		featurecoder = FeatureEncoder.create(
+		featurecoder = FeatureCoder.create(
 			index = index
 			, only_fit_train = only_fit_train
 			, is_categorical = is_categorical

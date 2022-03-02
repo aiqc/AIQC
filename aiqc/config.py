@@ -32,7 +32,7 @@ def check_exists_folder():
 	else:
 		print(
 			f"=> Info - it appears the following folder does not exist on your system:\n{app_dir}\n\n" \
-			f"=> Fix - you can attempt to fix this by running `aiqc.create_folder()`.\n"
+			f"=> Fix - you can attempt to fix this by running `aiqc.config.create_folder()`.\n"
 		)
 		return False
 
@@ -61,7 +61,7 @@ def create_folder():
 			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`os.makedirs('{app_dir}')\n")
 		print(
 			f"=> Success - created folder at file path:\n{app_dir}\n\n" \
-			f"=> Next run `aiqc.create_config()`.\n"
+			f"=> Next run `aiqc.config.create_config()`.\n"
 		)
 
 
@@ -77,7 +77,7 @@ def check_permissions_folder():
 				# We don't want an error here because it needs to return False.
 				print(
 					f"=> Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n\n" \
-					f"=> Fix - you can attempt to fix this by running `aiqc.grant_permissions_folder()`.\n"
+					f"=> Fix - you can attempt to fix this by running `aiqc.config.grant_permissions_folder()`.\n"
 				)
 
 			try:
@@ -122,7 +122,7 @@ def check_permissions_folder():
 				if not writeable:
 					print(f"\n=> Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n")
 				if not readable or not writeable:
-					print("\n=> Fix - you can attempt to fix this by running `aiqc.grant_permissions_folder()`.\n")
+					print("\n=> Fix - you can attempt to fix this by running `aiqc.config.grant_permissions_folder()`.\n")
 					return False
 	else:
 		return False
@@ -199,7 +199,7 @@ def create_config():
 			except:
 				print(
 					f"=> Yikes - failed to create config file at path:\n{default_config_path}\n\n" \
-					f"=> Fix - you can attempt to fix this by running `aiqc.check_permissions_folder()`.\n" \
+					f"=> Fix - you can attempt to fix this by running `aiqc.config.check_permissions_folder()`.\n" \
 					f"==================================="
 				)
 				raise
