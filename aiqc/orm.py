@@ -3050,12 +3050,14 @@ class FeatureCoder(BaseModel):
 		else:
 			pass
 		
+		###
 		# Record the names of OHE generated columns for feature importance.
 		if (stringified_encoder.startswith("OneHotEncoder")):
 			# Assumes OHE fits 2D.
 			encoder = fitted_encoders[0]
 			encoded_column_names = []
-			for i, mc in matching_columns:
+
+			for i, mc in enumerate(matching_columns):
 				# Each column the encoder fits on has a different array of categories. 
 				values = encoder.categories_[i]
 				for v in values:

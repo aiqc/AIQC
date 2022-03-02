@@ -283,7 +283,7 @@ class Pipeline():
 					, dtype = label_dtype
 				).id
 				
-				l_id = Label.from_dataset(dataset_id=d_id, columns=label_column).id
+				l_id = Label.from_dataset(dataset_id=dt_id, columns=label_column).id
 				if (label_interpolater is not None):
 					LabelInterpolater.from_label(label_id=l_id, **label_interpolater)
 				if (label_encoder is not None): 

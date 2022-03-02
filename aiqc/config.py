@@ -19,10 +19,10 @@ default_db_path = app_dir + "aiqc.sqlite3"
 # API URL format 'https://{api_id}.execute-api.{region}.amazonaws.com/{stage}/'.
 aws_api_root = "https://qzdvq719pa.execute-api.us-east-1.amazonaws.com/Stage_AIQC/"
 
+
 #==================================================
 # FOLDER
 #==================================================
-
 def check_exists_folder():
 	# If Windows does not have permission to read the folder, it will fail when trailing backslashes \\ provided.
 	app_dir_exists = os.path.exists(app_dir_no_trailing_slash)
