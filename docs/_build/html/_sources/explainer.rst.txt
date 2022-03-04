@@ -11,19 +11,12 @@ How AI Works
   </br>
 
 
-.. image:: images/gears.png
-  :width: 50%
-  :align: center
-  :alt: gears
-  :class: no-scaled-link
-
-|
-
 .. raw:: html
 
   <p class="explain">
     If you are generally familiar with spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in a spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
   </p>
+
 
 
 .. list-table::
@@ -35,6 +28,15 @@ How AI Works
 
   * - **Discriminative**
     - Given what we know about columns A:F → determine the values of column G.
+
+|
+
+
+.. image:: images/analysis_type.png
+  :width: 75%
+  :align: center
+  :alt: gears
+  :class: no-scaled-link
 
 |
 
@@ -129,7 +131,7 @@ How AI Works
 
   </br>
   <p class="figCaption" style="text-align: left;">
-    The mock equation above is nearly identical to a real neural network where the input neurons are connected directly to a single output neuron. However, in practice, neural networks contain multiple <i>layers</i> of sequential equations that support thousands of interwoven parameters.
+    The mock equation above is actually nearly identical to a real neural network with no hidden layers.
   </p>
 
 |
@@ -137,7 +139,7 @@ How AI Works
 .. raw:: html
 
   <p class="explain">
-    The challenging part is that we need to figure out the right values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) so that our algorithm makes accurate predictions ⚖️ To do this by hand, we would simply use trial-and-error; make a change to the value of <i>x</i>, and then determine if that change either improved the model or made it worse.
+    The challenging part is that we need to figure out the right values (aka <i>weights</i>) for the <i>parameters</i> (x, y, z) so that our algorithm makes accurate predictions ⚖️ To do this by hand, we would simply use trial-and-error; change the value of <i>x</i>, and then see if that change either improved the model or made it worse.
   </p>
 
 |
@@ -302,7 +304,7 @@ How AI Works
   :widths: 20, 80
   :align: center
   
-  * - **Architecture**
+  * - **Topology**
     - If the food doesn't fit in the pan, switch to a larger pan with deeper/ taller *layers*.
 
   * - **Hyperparameters**
