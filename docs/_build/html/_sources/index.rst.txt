@@ -162,7 +162,7 @@
     <center>
       <div class="headerz headerz-dark">Refine raw data into actionable <span class="goldz-dark">insight</span>.</div>
       </br></br></br>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/abstraction.png" alt="abstraction" width="90%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/training_abstraction_lines.png" alt="abstraction" width="90%" style="display:block;">
       </br></br>
       <a class="linx" href="compare.html" target="_blank">
         <span class="textz" style="color:#626262; font-size:16.5px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
