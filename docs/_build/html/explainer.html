@@ -337,7 +337,10 @@
 <h1>How AI Works<a class="headerlink" href="#how-ai-works" title="Permalink to this headline"></a></h1>
 <p><em>Boiling artificial intelligence down to its fundamental concepts.</em></p>
 <hr class="docutils" />
-</br><p class="explain">
+</br>
+<center>
+  <h3>Types of Analysis</h3>
+</center><p class="explain">
   If you are generally familiar with spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in a spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
@@ -361,22 +364,28 @@
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+</br>
+<center>
+  <h3>Subtypes of Analysis</h3>
+</center>
+
+</br>
 <p class="explain">
-  <i>Discriminative</i> analysis is highly practical because it can help us answer two important questions:
+  In this tutorial, we will focus on <i>discriminative</i> analysis as it is highly practical and easier to understand. This subtype of analysis helps us answer two important kinds of questions:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 15%" />
-<col style="width: 85%" />
+<col style="width: 14%" />
+<col style="width: 11%" />
+<col style="width: 74%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Categorize</strong></p></td>
-<td><p>What is it - benign vs malignant? landmine vs rock? approve vs deny? fake vs real?</p></td>
+<td><p>What is it?</p></td>
+<td><p>e.g. benign vs malignant? landmine vs rock? approve vs deny?</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Quantify</strong></p></td>
-<td><p>How much - price? distance? volume? age? radioactivity? gene expression?</p></td>
+<td><p>How much?</p></td>
+<td><p>e.g. price? distance? volume? age? radioactivity? gene expression?</p></td>
 </tr>
 </tbody>
 </table>
@@ -388,21 +397,24 @@
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<p class="explain">
+</br>
+<center>
+  <h3>Variables</h3>
+</center><p class="explain">
   As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals 🐢&nbsp;We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 15%" />
+<col style="width: 25%" />
+<col style="width: 60%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Features</strong></p></td>
+<td><p>Indepent Variable <em>(X)</em></p></td>
 <td><p>Informative columns like <cite>num_legs</cite>, <cite>has_wings</cite>, <cite>has_shell</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Label</strong></p></td>
+<td><p>Dependent Variable <em>(y)</em></p></td>
 <td><p>The <cite>species</cite> column that we want to predict.</p></td>
 </tr>
 </tbody>
@@ -420,9 +432,11 @@
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+</br>
+<center>
+  <h3>Algorithm</h3>
+</center>
+
 <p class="explain">
   To automate this process 🔌&nbsp;we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
 </p><div class="line-block">
@@ -431,7 +445,6 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">species</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_legs</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">has_wings</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">has_shell</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>
-</br>
 <p class="figCaption" style="text-align: left;">
   The mock equation above is actually nearly identical to a real neural network with no hidden layers.
 </p><div class="line-block">
@@ -443,18 +456,25 @@
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+</br>
+<center>
+  <h3>Gradient Descent</h3>
+</center>
+
 <p class="explain">
   Fortunately, computers can rapidly perform these repetetitive calculations on our behalf. This is where the magic of AI comes into play 🔮 It simply automates that trial-and-error.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<a class="reference internal image-reference" href="_images/gradients.png"><img alt="gradients" class="align-center" src="_images/gradients.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/gradient.png"><img alt="gradient" class="align-center" src="_images/gradient.png" style="width: 80%;" /></a>
 </br>
 <p class="figCaption" style="text-align: left;">
-  The figure above demonstrates what happens during a training <i>batch</i>: (1) the algorithm looks at a few rows, (2) makes predictions about those rows using its existing weights, (3) checks how accurate those predictions are, (4) adjusts its weights in an attempt to minimize future errors. It's like finding the bottom of a valley by rolling a ball down it.
+  The figure above demonstrates what happens during a training <i>batch</i>:
+  (1) the algorithm looks at a few rows,
+  (2) makes predictions about those rows using its existing weights,
+  (3) checks how accurate those predictions are,
+  (4) adjusts its weights in an attempt to minimize future errors.
+  It's like finding the bottom of a valley by rolling a ball down it.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -468,25 +488,31 @@
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+</br>
+<center>
+  <h3>Architectures</h3>
+</center>
+
 <p class="explain">
   There are different types of algorithms (aka neural network architectures) for working with different types of data:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 67%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 50%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Linear</strong></p></td>
-<td><p>🧮 Tabular: spreadsheets &amp; tables.</p></td>
+<td><p>🧮 Tabular</p></td>
+<td><p>e.g. spreadsheets &amp; tables.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Convolutional</strong></p></td>
-<td><p>📸 Positional: images, videos, &amp; networks.</p></td>
+<td><p>📸 Positional</p></td>
+<td><p>e.g. images, videos, &amp; networks.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Recurrent</strong></p></td>
-<td><p>⏱️ Ordered: time &amp; text.</p></td>
+<td><p>⏱️ Ordered</p></td>
+<td><p>e.g. time, text, &amp; DNA.</p></td>
 </tr>
 </tbody>
 </table>
@@ -496,11 +522,88 @@
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
+</br>
+<center>
+  <h3>Networks</h3>
+</center>
+
+<p class="explain">
+  Graph theory is a mathematical discipline that represents connected objects as networks comprised of:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 58%" />
+<col style="width: 26%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Nodes</strong></p></td>
+<td><p>participants in the network</p></td>
+<td><p>e.g. lightbulbs</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Edges</strong></p></td>
+<td><p>connect (aka link) the nodes together</p></td>
+<td><p>e.g. wires</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="lights" class="no-scaled-link align-center" src="_images/lights.png" style="width: 50%;" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  Within an algorithm, the data is passed through different types of <i>layers</i> that are comprised of <i>neurons</i>:
+  In a neural network, the <i>nodes are neurons</i> 💡 and the <i>edges are weights</i>.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+</br>
+<center>
+  <h3>Topology</h3>
+</center>
+
+<p class="explain">
+  The structure of the neural network is referred to as the <i>topology</i>.
+  The diagram below shows the topology of a linear architecture.
+  Although it may seem overwhelming at first, the mechanisms of the individual components are actually quite simple.
+  We'll start with the big picture and then deconstruct it to understand what each piece does.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="oz" class="no-scaled-link align-center" src="_images/topology_rectangle.png" style="width: 95%;" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="figCaption" style="text-align: left;">
+  Running with our network analogy - as data passes through each wire, it is multiplied by that wire's adjustable <i>weight</i> that we mentioned previously.
+  In this way, the weights act like amplifiers that adjust the voltage passing through the network.
+  Meanwhile, the neurons are like lightbulbs with degrees of brilliance based on the strength of the voltage they receive from all of their incoming wires.
+  The <i>bias</i> neurons don't actually touch the data. They act like a y-intercept (think <i>b</i> in <i>y = mx + b</i>).
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  If things still aren't making sense, try thinking of a neural network as a galtonboard (aka "bean machine"). The goal is to shape the <i>topology</i>
+  of the network so that it can successfully tease apart the patterns in the data to make the right predictions.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="video_wrapper align-center" style="padding-bottom: 37.125000%; padding-top: 30px; position: relative; text-align: center; width: 66%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/S5WAswaJRjw" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div><div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+</br>
+<center>
+  <h3>Layers</h3>
+</center>
+
+<p class="explain">
+  Within a neural network, there are different types of <i>layers</i>:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 33%" />
@@ -521,51 +624,124 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p class="explain">
-  The goal is to shape the <i>topology</i> of the network so that it can successfully tease apart the patterns in the data to make the right predictions.
-</p><div class="line-block">
-<div class="line"><br /></div>
-</div>
-<img alt="oz" class="no-scaled-link align-center" src="_images/topology_rectangle.png" style="width: 95%;" />
+<img alt="layers" class="no-scaled-link align-center" src="_images/layers.png" style="width: 30%;" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p class="figCaption" style="text-align: left;">
-  The neurons in a given layer are connected to the neurons in the next layer.
-  These connections are like wires (aka edges) that weave together a <i>network</i> of neurons.
-  As the data passes through each wire, it is multiplied by that wire's adjustable <i>weight</i> that we mentioned previously.
-  In this way, the weights act like amplifiers that adjust the voltage passing through the network.
-  Meanwhile, the neurons are like <i>nodes</i> or lightbulbs that light up with different intensities based on the strength of the voltage they receive from all of their incoming wires.
-  The <i>bias</i> neurons don't actually touch the data. They act like a y-intercept (think <i>b</i> in <i>y = mx + b</i>).
-</p><div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="video_wrapper align-center" style="padding-bottom: 37.125000%; padding-top: 30px; position: relative; text-align: center; width: 66%">
-<iframe allowfullscreen="true" src="https://www.youtube.com/embed/S5WAswaJRjw" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
-</iframe></div><div class="line-block">
-<div class="line"><br /></div>
-</div>
 <p class="explain">
-  A much simpler analogy is that a neural network is like a galtonboard (aka "bean machine").
+  Coming back to our zoo example, the number of input neurons in our input layer would be equal to the number of features,
+  and the number of output neurons in our output layer would be equal to the number of possible species.
+</p>
+
+<p class="explain">
+ The number of hidden layers and the amount of hidden neurons in those layers will vary based on the complexity of the
+ problem we are trying to solve 🦏 Classifying rhinos vs mosquitoes based on their weight is such a simple task that it would
+ not require any hidden layers at all 🐆 However, delineating the subtle differences between types of big cats
+ (lynx, ocelot, tiger, cougar, panther) may require several layers in order to tease apart their differences.
+ For example, the first hidden layer might check for spotted vs striped fur, while the second hidden layer determines the color of that marking.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
 <hr class="docutils" />
+</br>
+<center>
+  <h3>Biological Neurons</h3>
+</center>
+
+<p class="explain">
+  How does a neuron in the brain process information?
+</p><img alt="neuron" class="no-scaled-link align-center" src="_images/neuron.png" style="width: 60%;" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  A data scientist oversees the training of an neural network much like a chef prepares a meal 🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls:<table class="colwidths-given docutils align-center">
+  In the brain, networks of neurons work together to respond to an incoming stimulus 🧠
+  They repeatedly pass information to downstream neurons in the form of neurotransmitters.
+</p>
+
+<p class="explain">
+  However, neurons only forward information if certain conditions are met.
+  As the neuron receives incoming signals, it builds up an electrically charged chemical concentration (aka <i>action potential</i>) inside its cell membrane ⚡
+  When this concentration exceeds a certain threshold, it fires a <i>spike</i>.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="squid" class="no-scaled-link align-center" src="_images/squid.png" style="width: 100%;" />
+</br>
+<p class="figCaption" style="text-align: left;">
+  The Hodgkin-Huxley duo discovered these phenomena by observing the rate at which neurons in giant squids fired spikes based on variations in current 🦑
+  <i>Trappenburg, Fundamentals of Computational Neuroscience. 2nd edition, 2010</i>
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+</br>
+<center>
+  <h3>Artificial Neurons</h3>
+</center>
+
+<p class="explain">
+  How does an artificial neuron process information?
+</p>
+
+<p class="explain">
+ Similar to how a biological neuron aggregates an <i>action potential</i> based on input from preceding neurons ➕
+ an artificial neuron aggregates a <i>weighted sum</i> by adding up all of the values of its incoming weights.
+</p><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<img alt="activation" class="no-scaled-link align-center" src="_images/activation.png" style="width: 60%;" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p class="explain">
+  How then is the spiking threshold for artificial neurons determined? Any way we program it!
+  The weighted sum can be ran through any <i>activation function</i> of our choosing.
+</p>
+</br>
+<p class="explain">
+  Different layers make use of different activation functions:
+</p><table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 88%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Input</strong></p></td>
+<td><p>In a linear network, the receiving layer does not have an activation function.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Hidden</strong></p></td>
+<td><p>The de facto activation function is <em>ReLU</em>. Rarely, <em>Tanh</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Output</strong></p></td>
+<td><p><em>Sigmoid</em> for binary classification. <em>Softmax</em> for multi-label classification. None for regression.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+</br>
+<center>
+  <h3>Tuning</h3>
+</center>
+
+<p class="explain">
+  A data scientist oversees the training of an neural network much like a chef prepares a meal 🔥🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls:<table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 20%" />
 <col style="width: 80%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><strong>Duration</strong></p></td>
+<td><p>Food isn’t fully cooked? Train for more <em>epochs</em> or decrease the size of each <em>batch</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Parameters</strong></p></td>
+<td><p>Burning? Turn down <em>learning rate</em>. Tastes bad? Change <em>initialization</em> &amp; <em>activation</em> spices.</p></td>
+</tr>
 <tr class="row-odd"><td><p><strong>Topology</strong></p></td>
 <td><p>If the food doesn’t fit in the pan, switch to a larger pan with deeper/ taller <em>layers</em>.</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Hyperparameters</strong></p></td>
-<td><p>If it’s cooking too fast, then turn down knobs like the <em>learning rate</em>.</p></td>
 </tr>
 </tbody>
 </table>
