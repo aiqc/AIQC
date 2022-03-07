@@ -170,8 +170,7 @@ Deep Learning 101
 
   </br>
   <p class="explain">
-    Ultimately, we want to design an algorithm that predicts the category of our label.
-    This algorithm will need samples to learn from as well as samples for <i>evaluating</i> its performance.
+    Our predictive algorithm will need samples to learn from as well as samples for <i>evaluating</i> its performance.
   </p>
   </br>
   
@@ -191,6 +190,23 @@ Deep Learning 101
     So we <i>split</i> our dataset into subsets for these purposes. 
     It's important that the distribution of each subset is <i>representatitive</i> of the broader population because we want our algorithm to be able to <i><a href="https://aiqc.medium.com/memorization-isnt-learning-it-s-overfitting-b3163fe6a8b4" target="_blank">generalize</a></i>.
   </p>
+
+
+.. list-table::
+  :widths: 7, 5, 31
+  :align: center
+  
+  * - **Train**
+    - 67%
+    - What the algorithm is trained on/ learns from.
+
+  * - **Validation**
+    - 21%
+    - What the model is evaluated against during training.
+
+  * - **Test**
+    - 12%
+    - Blind *holdout* for evaluating the model at the end of training.
 
 |
 |
@@ -272,7 +288,8 @@ Deep Learning 101
 
   </br>
   <p class="explain">
-    Now we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
+    Now we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. 
+    ✨ Here is our simplified example:
   </p>
   
 |
@@ -334,6 +351,7 @@ Deep Learning 101
     (4) adjusts its weights in an attempt to minimize future errors. 
     It's like finding the bottom of a valley by rolling a ball down it.
   </p>
+  </br>
 
 |
 
@@ -390,6 +408,7 @@ Deep Learning 101
 
 .. raw:: html
 
+  </br>
   <p class="explain">
     They can be mixed and matched to handle almost any real-life scenario.
   </p>
@@ -439,7 +458,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-    In a neural network, the <i>nodes are neurons</i> 💡 and the <i>edges are weights</i>.
+    In a neural network, the 💡 <i>nodes are neurons</i> and the 🔌 <i>edges are weights</i>.
   </p>
 
 
@@ -853,16 +872,4 @@ Deep Learning 101
   </center>
 
 |
-|
-
-----
-
-|
-
-.. raw:: html
-
-  <center>
-    <small style="color:gray"><i>© AIQC, Inc. 2022</i></small>
-  </center>
-
 |
