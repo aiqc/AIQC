@@ -518,7 +518,7 @@ def make_test_queue_keras_regression(repeat_count:int=1, fold_count:int=None, pe
 		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-		, bin_count = 3
+		, bin_count = 5
 	).id
 
 	if (fold_count is not None):
@@ -1275,7 +1275,7 @@ def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, 
 		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
-		, bin_count = 3
+		, bin_count = None #test.
 	).id
 
 	if (fold_count is not None):

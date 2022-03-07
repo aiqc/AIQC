@@ -1,10 +1,12 @@
-############
-How AI Works
-############
+#################
+Deep Learning 101
+#################
 
-*Boiling artificial intelligence down to its fundamental concepts.*
+*Boiling down a neural network to its fundamental concepts.*
 
 ----
+
+|
 
 .. raw:: html
 
@@ -13,9 +15,7 @@ How AI Works
     <h3>Types of Analysis</h3>
   </center>
 
-
-.. raw:: html
-
+  </br>
   <p class="explain">
     If you are generally familiar with spreadsheets then you are already half way to understanding AI. For the purpose of this discussion, let's assume that each <i>row</i> in a spreadsheet represents a record, and each <i>column</i> provides information about that record. Bearing this in mind, there are two major types of AI:
   </p>
@@ -42,8 +42,12 @@ How AI Works
   :class: no-scaled-link
 
 |
+|
+|
 
 ----
+
+|
 
 .. raw:: html
   
@@ -59,16 +63,16 @@ How AI Works
 
 
 .. list-table::
-  :widths: 15, 12, 78
+  :widths: 15, 12, 70
   :align: center
   
   * - **Categorize**
     - What is it?
-    - e.g. benign vs malignant? landmine vs rock? approve vs deny?
+    - e.g. benign vs malignant? which species? landmine vs rock? 
 
   * - **Quantify**
     - How much?
-    - e.g. price? distance? volume? age? radioactivity? gene expression?
+    - e.g. price? distance? weight? age? radioactivity?
 
 |
 
@@ -80,7 +84,32 @@ How AI Works
 
 |
 
+.. raw:: html
+  
+  </br>
+  <p class="explain">
+    Digging one layer deeper, there are two types of categorization:
+  </p>
+
+
+.. list-table::
+  :widths: 12, 30, 10
+  :align: center
+  
+  * - **Binary**
+    - Checking for the presence of a single condition
+    - e.g. tumor
+
+  * - **Multi-Label**
+    - When there are many possible outcomes
+    - e.g. species
+
+|
+|
+
 ----
+
+|
 
 .. raw:: html
 
@@ -91,6 +120,7 @@ How AI Works
 
 .. raw:: html
 
+  </br>
   <p class="explain">
     As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals 🐢&nbsp;We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
   </p>
@@ -125,8 +155,113 @@ How AI Works
   </p>
 
 |
+|
 
 ----
+
+|
+
+.. raw:: html
+
+  </br>
+  <center>
+    <h3>Stratification</h3>
+  </center>
+
+  </br>
+  <p class="explain">
+    Ultimately, we want to design an algorithm that predicts the category of our label.
+    This algorithm will need samples to learn from as well as samples for <i>evaluating</i> its performance.
+  </p>
+  </br>
+  
+
+
+.. image:: images/stratification.png
+  :width: 85%
+  :align: center
+  :alt: turtle_ruler
+  :class: no-scaled-link
+
+
+.. raw:: html
+
+  </br></br>
+  <p class="explain">
+    So we <i>split</i> our dataset into subsets for these purposes. 
+    It's important that the distribution of each subset is <i>representatitive</i> of the broader population because we want our algorithm to be able to <i><a href="https://aiqc.medium.com/memorization-isnt-learning-it-s-overfitting-b3163fe6a8b4" target="_blank">generalize</a></i>.
+  </p>
+
+|
+|
+
+----
+
+|
+
+.. raw:: html
+
+  </br>
+  <center>
+    <h3>Encoding & Decoding</h3>
+  </center>
+
+  </br>
+  <p class="explain">
+    Before an algorithm can interact with the data, it needs to be <a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" target="_blank">encoded</a> into numeric format. 
+  </p>
+  </br>
+
+
+.. list-table::
+  :widths: 15, 10, 80
+  :align: center
+
+  * - **Binarize**
+    - Categorical
+    - 1 means presence, 0 means absence.
+  
+  * - **OneHotEncode(OHE)**
+    - Categorical
+    - Expand a single multi-category col into many binary cols.
+
+  * - **Ordinal**
+    - Categorical
+    - [Bad form] Each category is assigned an integer [0,1,2].
+
+  * - **Scale**
+    - Continuous
+    - Shrink the range of values between -1:1 or 0:1.
+
+.. raw:: html
+
+  <p class="figCaption" style="text-align: left;">
+    Normalization also <a href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4" target="_blank">helps features start on equal footing and prevent gradient explosion</a>.
+  </p>
+
+|
+
+.. image:: images/encode_decode.png
+  :width: 50%
+  :align: center
+  :alt: encoding
+  :class: no-scaled-link
+
+|
+
+.. raw:: html
+ 
+  <p class="explain">
+    After the algorithm makes its prediction, 📞 that information needs to be decoded back into its orginal format
+    so that it can be understood by practitioners.
+  </p>
+
+|
+|
+
+----
+
+|
 
 .. raw:: html
 
@@ -135,8 +270,9 @@ How AI Works
     <h3>Algorithm</h3>
   </center>
 
+  </br>
   <p class="explain">
-    To automate this process 🔌&nbsp;we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
+    Now we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
   </p>
   
 |
@@ -149,7 +285,7 @@ How AI Works
 .. raw:: html
 
   <p class="figCaption" style="text-align: left;">
-    The mock equation above is actually nearly identical to a real neural network with no hidden layers.
+    This mock equation is actually identical to a neural network with neither hidden layers nor bias neurons.
   </p>
 
 |
@@ -161,9 +297,11 @@ How AI Works
   </p>
 
 |
+|
 
 ----
 
+|
 
 .. raw:: html
 
@@ -172,6 +310,7 @@ How AI Works
     <h3>Gradient Descent</h3>
   </center>
 
+  </br>
   <p class="explain">
     Fortunately, computers can rapidly perform these repetetitive calculations on our behalf. This is where the magic of AI comes into play 🔮 It simply automates that trial-and-error.
   </p>
@@ -213,8 +352,11 @@ How AI Works
   </p>
   
 |
+|
   
 ----
+
+|
 
 .. raw:: html
   
@@ -223,6 +365,7 @@ How AI Works
     <h3>Architectures</h3>
   </center>
 
+  </br>
   <p class="explain">
     There are different types of algorithms (aka neural network architectures) for working with different types of data:
   </p>
@@ -252,9 +395,11 @@ How AI Works
   </p>
 
 |
+|
 
 ----
 
+|
 
 .. raw:: html
   
@@ -263,6 +408,7 @@ How AI Works
     <h3>Networks</h3>
   </center>
 
+  </br>
   <p class="explain">
     Graph theory is a mathematical discipline that represents connected objects as networks comprised of:
   </p>
@@ -298,8 +444,11 @@ How AI Works
 
 
 |
+|
 
 ----
+
+|
 
 .. raw:: html
 
@@ -308,6 +457,7 @@ How AI Works
     <h3>Topology</h3>
   </center>
 
+  </br>
   <p class="explain">
     The structure of the neural network is referred to as the <i>topology</i>.
     The diagram below shows the topology of a linear architecture.
@@ -354,6 +504,8 @@ How AI Works
 
 ----
 
+|
+
 .. raw:: html
 
   </br>
@@ -361,6 +513,7 @@ How AI Works
     <h3>Layers</h3>
   </center>
 
+  </br>
   <p class="explain">
     Within a neural network, there are different types of <i>layers</i>:
   </p>
@@ -374,10 +527,13 @@ How AI Works
     - Receives the data. Mirrors the shape of incoming data.
 
   * - **Hidden**
-    - Learns from the patterns in the data. # of layers & neurons varies based on data complexity.
+    - Learns from the patterns in data. # of layers & neurons varies based on data complexity.
 
   * - **Output**
     - Compares the data to the real label. Mirrors the shape of the labels (# of categories).
+  
+  * - **Regulatory**
+    - [Not pictured here] *Dropout, BatchNorm, MaxPool* help keep the network balanced.
 
 |
 
@@ -395,7 +551,7 @@ How AI Works
     Coming back to our zoo example, the number of input neurons in our input layer would be equal to the number of features, 
     and the number of output neurons in our output layer would be equal to the number of possible species.
   </p>
-
+  </br>
   <p class="explain">
    The number of hidden layers and the amount of hidden neurons in those layers will vary based on the complexity of the 
    problem we are trying to solve 🦏 Classifying rhinos vs mosquitoes based on their weight is such a simple task that it would 
@@ -405,8 +561,11 @@ How AI Works
   </p>
 
 |
+|
 
 ----
+
+|
 
 .. raw:: html
 
@@ -415,6 +574,7 @@ How AI Works
     <h3>Biological Neurons</h3>
   </center>
 
+  </br>
   <p class="explain">
     How does a neuron in the brain process information? 
   </p>
@@ -433,7 +593,7 @@ How AI Works
     In the brain, networks of neurons work together to respond to an incoming stimulus 🧠
     They repeatedly pass information to downstream neurons in the form of neurotransmitters.
   </p>
-
+  </br>
   <p class="explain">
     However, neurons only forward information if certain conditions are met.
     As the neuron receives incoming signals, it builds up an electrically charged chemical concentration (aka <i>action potential</i>) inside its cell membrane ⚡
@@ -458,8 +618,11 @@ How AI Works
   </p>
 
 |
+|
 
 ----
+
+|
 
 .. raw:: html
 
@@ -468,6 +631,7 @@ How AI Works
     <h3>Artificial Neurons</h3>
   </center>
 
+  </br>
   <p class="explain">
     How does an artificial neuron process information?
   </p>
@@ -493,7 +657,7 @@ How AI Works
     How then is the spiking threshold for artificial neurons determined? Any way we program it! 
     The weighted sum can be ran through any <i>activation function</i> of our choosing.
   </p>
-  </br>
+  </br></br>
   <p class="explain">
     Different layers make use of different activation functions:
   </p>
@@ -513,8 +677,91 @@ How AI Works
     - *Sigmoid* for binary classification. *Softmax* for multi-label classification. None for regression.
 
 |
+|
 
 ----
+
+|
+
+.. raw:: html
+
+  </br>
+  <center>
+    <h3>Performance Metrics</h3>
+  </center>
+  
+  </br>
+  <p class="explain">
+    How does the algorithm know if its predictions are accurate? As mentioned in the sections above,
+    it calculates the difference between its predicted label and the actual label. There are different
+    strategies for calculating this <b><a href="https://keras.io/api/losses/" target="_blank">loss</a></b>:
+  </p>
+
+
+.. list-table::
+  :widths: 35, 25
+  :align: center
+  
+  * - **BinaryCrossentropy**
+    - Binary classification.
+
+  * - **CategoricalCrossentropy**
+    - Multi-label classification.
+
+  * - **MeanSquaredError or MeanAbsoluteError.**
+    - Used for regression.
+
+|
+
+.. raw:: html
+
+  <p class="explain">
+   Although neural networks are great at minimizing loss, this metric is hard for humans to understand 📉
+   The following two <b><a href="https://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics">metrics</a></b>
+   are easy to understand because they both max out at 1.0 aka 100%:
+  </p>
+
+
+.. list-table::
+  :widths: 12, 15 
+  :align: center
+  
+  * - **Accuracy**
+    - Classification.
+
+  * - **R²**
+    - Regression.
+
+|
+
+.. raw:: html
+
+  <p class="explain">
+    A <i>learning curve</i> keeps track of these metrics over the course of model training:
+  </p>
+
+
+.. image:: images/plot_classify_learn.png
+  :width: 90%
+  :align: center
+  :alt: learning_curve
+  :class: no-scaled-link
+
+|
+
+.. raw:: html
+
+  <p class="explain">
+    Have a look at the other <a href='notebooks/visualization.html' target="_blank">visualizations & metrics</a>
+     provided by AIQC.
+  </p>
+
+|
+|
+
+----
+
+|
 
 .. raw:: html
 
@@ -523,12 +770,14 @@ How AI Works
     <h3>Tuning</h3>
   </center>
 
+  </br>
   <p class="explain">
-    A data scientist oversees the training of an neural network much like a chef prepares a meal 🔥🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls: 
+    A data scientist oversees the training of an neural network much like a chef prepares a meal 🔥🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls:
+  </p>
 
 
 .. list-table::
-  :widths: 20, 80
+  :widths: 18, 80
   :align: center
 
   * - **Duration**
@@ -540,6 +789,8 @@ How AI Works
   * - **Topology**
     - If the food doesn't fit in the pan, switch to a larger pan with deeper/ taller *layers*.
 
+  * - **Regulation**
+    - Overfitting on the same old recipes? Add more *Dropout* to mix things up.
 
 |
 
@@ -552,11 +803,13 @@ How AI Works
 |
 
 .. raw:: html
-
+  
+  </br>
   <p class="explain">
     At first, the number of <i>tuning</i> options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='tutorials.html'>recipes</a> in order to get by.
   </p>
 
+|
 |
 
 ----
@@ -565,11 +818,17 @@ How AI Works
 
 .. raw:: html
 
+  </br>
+  <center>
+    <h3>Let's Get Started</h3>
+  </center>
+
+  </br>
   <p class="explain">
-    It's really that simple. The rest is just figuring out how to feed your data into and out of the algorithms, which is where <a href='index.html'>AIQC</a> comes into play.
+    It's really that simple. The rest is just figuring out how to feed your data into and out of the algorithms, 
+    which is where <a href='index.html' target="_blank">AIQC</a> comes into play.
   </p>
   </br>
-
 
 
 .. image:: https://imgs.xkcd.com/comics/machine_learning.png
@@ -584,8 +843,26 @@ How AI Works
   </br>
   <center>
     <small style="color:gray">
-      <i>The classic <a href="https://xkcd.com/1838/">xkcd</a> comic.</i>
+      <i>The classic <a href="https://xkcd.com/1838/" target="_blank">xkcd</a> comic.</i>
     </small>
+
+    </br></br></br></br>
+    <a href="tutorials.html">
+      <div class="bttn"><b>→</b> <span class="textz">Use Cases & Tutorials</span></div>
+    </a>
   </center>
-  
+
+|
+|
+
+----
+
+|
+
+.. raw:: html
+
+  <center>
+    <small style="color:gray"><i>© AIQC, Inc. 2022</i></small>
+  </center>
+
 |

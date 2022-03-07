@@ -24,9 +24,9 @@
   :caption: About
   :hidden:
 
-  mission
   explainer
   community
+  mission
   compare
 
 

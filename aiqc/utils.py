@@ -398,7 +398,7 @@ def stratifier_by_dtype_binCount(stratify_dtype:object, stratify_arr:object, bin
 		elif (bin_count is None):
 			stratifier = stratify_arr
 	return stratifier, bin_count
-
+	
 
 def floats_only(label:object):
 	# Prevent integer dtypes. It will ignore.
