@@ -21,8 +21,8 @@ class Plot():
                 , paper_bgcolor='#181B1E'
                 , hovermode='closest'
                 , hoverlabel=dict(
-                    bgcolor="#0F0F0F",
-                    font=dict(family="Avenir", size=15)
+                    bgcolor="#0F0F0F"
+                    , font=dict(family="Avenir", size=15)
                 )
             )
         )
@@ -301,9 +301,14 @@ class Plot():
 		for feature, impacts in feature_impacts.items():
 			fig.add_trace(go.Box(x=impacts, name=feature))
 		fig.update_layout(
-			title = f"Feature Importance<br><sub>feature.id: {feature_id}</sub>"
+			template = self.plot_template
+			, height = height
+			, title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count})</sub><br><br>"
+			, showlegend = False
 		)
 		fig.update_xaxes(
-			title = f"Importance<br><sup>[training loss - (median loss of {permute_count} permutations)]</sup>"
+			title = f"Importance<br><sup>[permuted column loss - training loss]</sup>",
+			# ticks not really showing.
+			tickangle=45, nticks=15, gridcolor='#383838'
 		)
 		fig.show()

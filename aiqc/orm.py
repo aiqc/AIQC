@@ -4895,13 +4895,11 @@ class Prediction(BaseModel):
 					medians, feature_cols, loss_impacts
 				))))
 				
-				# Descending order for the plots. We don't need the median anymore.
-				feature_cols.reverse(); loss_impacts.reverse()
 				if (top_n is not None):
 					if (top_n <= 0):
 						raise ValueError("\nYikes - `top_n` must be greater than or equal to 0.\n")
 					# Silently returns all rows if `top_n` > rows.
-					feature_cols, loss_impacts = feature_cols[0:top_n], loss_impacts[0:top_n]	
+					feature_cols, loss_impacts = feature_cols[:top_n], loss_impacts[:top_n]	
 				if (height is None):
 					height = len(feature_cols)*25+120
 				# zip them after top_n applied.
