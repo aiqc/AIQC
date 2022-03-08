@@ -296,21 +296,14 @@ class Plot():
 		fig.show()
 	
 
-	def feature_importance(self, dataframe:object, feature_id:int, permute_count:int, height:int):
-		importance_srs = dataframe['Importance']
-		pad = importance_srs.iloc[-1]*0.12
-		range_max, range_min = importance_srs.iloc[-1]+pad, importance_srs.iloc[0]-pad
-		
-		fig = px.bar(
-			dataframe, x='Importance', y='Feature', text='Feature', orientation='h', height=height,
-			title=f"Feature Importance<br><sub>feature.id: {feature_id}</sub>",
-			color='Color', color_discrete_map=dict(positive='#48d8d8', negative='#ffc0c0'),
+	def feature_importance(self, feature_impacts:object, feature_id:int, permute_count:int, height:int):
+		fig = go.Figure()
+		for feature, impacts in feature_impacts.items():
+			fig.add_trace(go.Box(x=impacts, name=feature))
+		fig.update_layout(
+			title = f"Feature Importance<br><sub>feature.id: {feature_id}</sub>"
 		)
-		fig.update_traces(textposition='outside', textfont_size=12, marker=dict(line=dict(width=0)))
-		fig.update_layout(template=self.plot_template, showlegend=False)
-		fig.update_yaxes(visible=False)
 		fig.update_xaxes(
-			title=f"Importance<br><sup>[training loss - (median loss of {permute_count} permutations)]</sup>"
-			, range=[range_min, range_max]
+			title = f"Importance<br><sup>[training loss - (median loss of {permute_count} permutations)]</sup>"
 		)
 		fig.show()

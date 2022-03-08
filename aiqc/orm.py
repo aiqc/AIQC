@@ -4141,11 +4141,9 @@ class Job(BaseModel):
 					permutations_feature = []
 					# Dynamically access dimension and column: 
 					# https://stackoverflow.com/a/70511277/5739514
-					all = slice(None)
-					def make_index(ci, dimension):
-						return (all,) * dimension + ([ci], Ellipsis)
+					col_index = (slice(None),) * dimension + ([ci], Ellipsis)
 					# This is never reassigned aka clean for reuse.
-					feature_subset = feature_data[make_index(ci, dimension)]
+					feature_subset = feature_data[col_index]
 					subset_shape = feature_subset.shape
 
 					for pi in range(permute_count):
@@ -4157,9 +4155,9 @@ class Job(BaseModel):
 						if (library == 'pytorch'): 
 							subset_shuffled = torch.FloatTensor(subset_shuffled)
 						if (len(features)==1):
-							samples[key_train]['features'][make_index(ci, dimension)] = subset_shuffled
+							samples[key_train]['features'][col_index] = subset_shuffled
 						else:
-							samples[key_train]['features'][fi][make_index(ci, dimension)] = subset_shuffled
+							samples[key_train]['features'][fi][col_index] = subset_shuffled
 
 						if (library == 'keras'):
 							if ("classification" in analysis_type):
@@ -4189,11 +4187,15 @@ class Job(BaseModel):
 						feature_subset = torch.FloatTensor(feature_subset)
 					# Restore the unshuffled feature column back to source.				
 					if (len(features)==1):
-						samples[key_train]['features'][make_index(ci, dimension)] = feature_subset
+						samples[key_train]['features'][col_index] = feature_subset
 					else:
-						samples[key_train]['features'][fi][make_index(ci, dimension)]= feature_subset
-					avg_loss = statistics.median(permutations_feature)
-					feature_importance[feature_id][col] =  avg_loss - loss_baseline
+						samples[key_train]['features'][fi][col_index]= feature_subset
+					med_loss = statistics.median(permutations_feature)
+					med_loss = med_loss - loss_baseline
+					loss_impacts = [loss - loss_baseline for loss in permutations_feature]
+					feature_importance[feature_id][col] = {}
+					feature_importance[feature_id][col]['median'] = med_loss
+					feature_importance[feature_id][col]['loss_impacts'] = loss_impacts
 		else:
 			feature_importance = None
 		# plot data.
@@ -4797,7 +4799,7 @@ class Prediction(BaseModel):
 	  in the future. This forces us to  validate dtypes and columns after the fact.
 	"""
 	predictions = PickleField()
-	feature_importance = JSONField(null=True)#float per feature.
+	feature_importance = JSONField(null=True)#['feature_id']['feature_column']{'median':float,'loss_impacts':list}
 	probabilities = PickleField(null=True) # Not used for regression.
 	metrics = PickleField(null=True) #Not used for inference
 	metrics_aggregate = PickleField(null=True) #Not used for inference.
@@ -4885,28 +4887,31 @@ class Prediction(BaseModel):
 		if (feature_importance is not None):
 			permute_count = prediction.predictor.job.queue.permute_count
 			# Remember the Featureset may contain multiple Features.
-			for feature_id, dikt in feature_importance.items():
-				# Sort by loss
-				sort = {k: v for k, v in sorted(dikt.items(), key=lambda item: item[1])}
-				features = list(sort.keys())
-				loss = list(sort.values())
-				colors = ['negative' if x < 0 else 'positive' for x in loss]
-					
-				dkt = dict(Feature=features, Importance=loss, Color=colors)
-				dataframe = pd.DataFrame(dkt)
-
+			for feature_id, feature_cols in feature_importance.items():
+				medians = [v['median'] for k,v in feature_cols.items()]
+				loss_impacts = [v['loss_impacts'] for k,v in feature_cols.items()]
+				# Sort lists together using 1st list as index = stackoverflow.com/a/9764364/5739514
+				medians, feature_cols, loss_impacts = (list(t) for t in zip(*sorted(zip(
+					medians, feature_cols, loss_impacts
+				))))
+				
+				# Descending order for the plots. We don't need the median anymore.
+				feature_cols.reverse(); loss_impacts.reverse()
 				if (top_n is not None):
-					#nlargest returns in descending which would invert plot range.
-					dataframe = dataframe.nlargest(top_n,'Importance').sort_values('Importance', ascending=True)
+					if (top_n <= 0):
+						raise ValueError("\nYikes - `top_n` must be greater than or equal to 0.\n")
+					# Silently returns all rows if `top_n` > rows.
+					feature_cols, loss_impacts = feature_cols[0:top_n], loss_impacts[0:top_n]	
 				if (height is None):
-					num_features = dataframe.shape[0]
-					height = num_features*25+120
-			
+					height = len(feature_cols)*25+120
+				# zip them after top_n applied.
+				feature_impacts = dict(zip(feature_cols, loss_impacts))
+
 				Plot().feature_importance(
-					dataframe = dataframe
+					feature_impacts = feature_impacts
 					, feature_id = feature_id
 					, permute_count = permute_count
 					, height = height
 				)
 		else:
-			raise ValueError("\nYikes - Feature importance was not calculated for this analysis.\n")
+			raise ValueError("\nYikes - Feature importance was not originally calculated for this analysis.\n")
