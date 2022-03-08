@@ -296,14 +296,22 @@ class Plot():
 		fig.show()
 	
 
-	def feature_importance(self, feature_impacts:object, feature_id:int, permute_count:int, height:int):
+	def feature_importance(self, 
+		feature_impacts:object, feature_id:int,
+		permute_count:int, height:int, top_n:int=None
+	):
+		if (top_n is not None):
+			title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count}, top_n:{top_n})</sub><br><br>"
+		elif (top_n is None):
+			title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count})</sub><br><br>"
+		
 		fig = go.Figure()
 		for feature, impacts in feature_impacts.items():
 			fig.add_trace(go.Box(x=impacts, name=feature))
 		fig.update_layout(
 			template = self.plot_template
 			, height = height
-			, title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count})</sub><br><br>"
+			, title = title
 			, showlegend = False
 		)
 		fig.update_xaxes(

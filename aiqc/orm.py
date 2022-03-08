@@ -4894,7 +4894,7 @@ class Prediction(BaseModel):
 				medians, feature_cols, loss_impacts = (list(t) for t in zip(*sorted(zip(
 					medians, feature_cols, loss_impacts
 				))))
-				
+			
 				if (top_n is not None):
 					if (top_n <= 0):
 						raise ValueError("\nYikes - `top_n` must be greater than or equal to 0.\n")
@@ -4910,6 +4910,7 @@ class Prediction(BaseModel):
 					, feature_id = feature_id
 					, permute_count = permute_count
 					, height = height
+					, top_n = top_n
 				)
 		else:
 			raise ValueError("\nYikes - Feature importance was not originally calculated for this analysis.\n")

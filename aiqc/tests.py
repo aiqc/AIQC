@@ -166,7 +166,7 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, pe
 	hyperparameters = {
 		"neuron_count": [9]
 		, "batch_size": [3]
-		, "learning_rate": [0.03]
+		, "learning_rate": [0.05]
 		, "epoch_count": [10]
 	}
 
