@@ -5,11 +5,25 @@ Consulting
 .. raw:: html
   
   </br>
+  <div style="background-image: linear-gradient(#24435f, #122536); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
+    </br></br></br>
+    <center>
+      <div class="headerz titlez headerz-dark">Ready to begin your AI <span class="goldz-dark">transformation</span>?</div>
+    </center>
+  </div>
+  <div style="height: 60px; overflow: hidden;">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
+    </svg>
+  </div>
+  </br></br></br>
+
   <center>
     <p class="explain" style="width:85%; line-height:1.75;">
       AIQC professional services can help your team <i>do more with less</i> by putting your data to work. 
-      Predictive algorithms provide a two-pronged benefit in that they <b>(1)</b> not only <i>improve operational efficiency</i> through automation 
-      <b>(2)</b> but also provide deep <i>business intelligence</i> about what information is driving <i>success metrics</i> through sensitivity analyis.
+      The reason why predictive algorithms are so transformative is that they not only <i>improve operational efficiency</i> 
+      through automation but also provide <i>business intelligence</i> about what information is driving <i>successful outcomes</i> 
+      via sensitivity analyis.
     </p>
   
     <div class="quickLinks">
@@ -25,36 +39,38 @@ Consulting
     </div>
 
     <p class="explain" style="width:85%; line-height:1.75;">
-      By engaging AIQC's machine learning engineers in a collaboration with your team, you can derive new <i>insight</i> 
-      and <i>augmented</i> capabilities from your existing data. First we work with you to gain a thorough understanding 
-      of the problem domain and data landscape. Then we utilize the AIQC platform to rigorously develop an algorithm 
-      to solve the problem.
+      By engaging AIQC's machine learning engineers in a collaboration with your team, you can augment your capabilities 
+      and derive new <i>insight</i> from your existing data. First we work with you to gain a thorough understanding of the 
+      problem domain and data landscape. Then we utilize the AIQC platform to rigorously develop an algorithm to solve the problem.
     </p>
   </center>
   </br>
-
-
-
-
-----
-
-
-.. raw:: html
   
-  </br></br>
-  <div class="flex-container">
-    <div class="DMAIC-left">
-      <image class="DMAIC-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/DMAIC.png'">
-    </div>
-    <div class="DMAIC-right figCaption">
-      </br>
-      <p style="font-size:14px;">Solve real-world problems with machine learning by applying the <i>Six Sigma DMAIC</i> approach to process improvement.</p>
-    </div>
+
+  <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
+    </svg>
+    </br></br></br>
   </div>
-  </br>
+  
+  <div style="background-image: linear-gradient(#122536, #fcfcfc);">
+    </br></br></br>
+    <div class="flex-container" style="width:95%">
+      <div class="DMAIC-left">
+        <image class="DMAIC-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/DMAIC.png'">
+      </div>
+      <div class="DMAIC-right figCaption">
+        </br>
+        <p style="line-height:1.63 !important; font-size:17px !important;">
+          Solve real-world problems with machine learning by applying the <i>Six Sigma DMAIC</i> approach to process improvement.
+        </p>
+      </div>
+    </div>
+    </br></br></br></br></br>
+  </div>  
+  </br></br></br></br>
 
-
-|
 
 Phase I - Consultation
 ======================
@@ -175,21 +191,18 @@ Phase III - Monitoring
     </div>
   </div>
 
-|
-
-----
-
-|
-
-.. raw:: html
-
+  </br></br></br>
   <center>
-    <p><i>Ready to begin your AI transformation?</i></p>
-    <div class="quickLinks" style="width:24%;">
-      <div>
-        <a href="https://forms.gle/zDPKBVFhZmgvaU3b9" style="font-size:16px;">→ Contact Us</a>
-      </div>
-    </div>
+    <a href="https://forms.gle/zDPKBVFhZmgvaU3b9" target="_blank">
+      <div class="bttn"><b>→</b> <span class="textz">Contact Us</span></div>
+    </a>
   </center>
+  </br></br></br>
 
-|
+  <div style="height:100px; overflow:hidden;">
+    <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;  transform:rotate(180deg);">
+      <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
+    </svg>
+  </div>
+  <div style="height:50px; background-image: linear-gradient(#122536, #122536); border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  </div>

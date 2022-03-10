@@ -214,7 +214,7 @@ iframe {
     border-radius: 15px;
 }
 
-#aiqc h1, #competition h1, #examples h1 {
+#aiqc h1, #competition h1, #examples h1, #consulting h1 {
     display: none !important;
 }
 
@@ -288,11 +288,13 @@ h1, h2, h3, h5 {
         margin-bottom: 12px;
     }
     .DMAIC-left {
-        width:         50%;
+        width:         60%;
         margin-bottom: 32px;
     }
     .DMAIC-right {
         width: 80%;
+        padding-right: 0%;
+        text-align: center;
     }
 }
 /* MEGA BUTTON */
@@ -524,15 +526,16 @@ a .checkmark {
 
 /* --- Start: Explainer page --- */
 p.explain {
-    font-size:  15px;
+    font-size:  16px;
     text-align: center;
+    font-family: Abel;
 }
 
 .figCaption {
-    border-left:  4px solid lightgray;
+    /*border-left:  4px solid lightgray;*/
     padding-left: 15px;
-    color:      gray;
-    font-size:    13px;
+    color:      white;
+    font-family:  Abel;
 }
 /* --- End: Explainer page --- */  
 
@@ -542,9 +545,10 @@ p.explain {
 }
 
 .quickLinks {
-    color:         black;
+    font-family:     Abel;
+    color:         rgb(0, 7, 12);
     display:         flex;
-    width:           90%;
+    width:           87%;
     margin:          30px auto 35px auto;/*center*/
 }
 
@@ -555,7 +559,7 @@ p.explain {
     border-radius:    30px;
     text-align:       center;
     background-image: linear-gradient(to bottom right, #c6ebf7, #fcfcfc);
-    font-size:        13.5px;
+    font-size:        14px;
     border-collapse:  collapse; 
 }
 
@@ -573,7 +577,12 @@ p.explain {
 
 /* See Responsiveness section above*/
 .DMAIC-left {
-    flex:          75%;
+    flex: 50%;
+}
+
+.DMAIC-right {
+    flex: 50%;
+    padding-right: 5%;
 }
 
 .DMAIC-img {
@@ -608,7 +617,8 @@ p.explain {
 .svcHeader {
     font-weight:   bold;
     margin-bottom: 6px;
-    font-size:     15px;
+    font-size:     15.5px;
+    font-family:   Abel;
 }
     
 .svcDescribe {
