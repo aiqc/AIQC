@@ -3887,10 +3887,11 @@ class Queue(BaseModel):
 		df_passed = df_passed.round(3)
 		dataframe = df_passed[['predictor_id', 'split', 'loss', name_metric_2]]
 
-		if dataframe.empty:
+		if (dataframe.empty):
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			return Plot().performance(dataframe=dataframe,call_display=call_display)
+			fig = Plot().performance(dataframe=dataframe,call_display=call_display)
+			if (call_display==False): return fig
 
 
 	def _aws_get_upload_url(id:int):
@@ -4653,12 +4654,12 @@ class Predictor(BaseModel):
 
 		history = predictor.history
 		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
-		Plot().learning_curve(
-			dataframe = dataframe
-			, analysis_type = analysis_type
-			, loss_skip_15pct = loss_skip_15pct
-			, call_display = call_display
+		
+		figs = Plot().learning_curve(
+			dataframe=dataframe, analysis_type=analysis_type
+			, loss_skip_15pct=loss_skip_15pct, call_display=call_display
 		)
+		if (call_display==False): return figs
 
 
 	def get_fitted_encoderset(job:object, feature:object):
@@ -4828,9 +4829,10 @@ class Prediction(BaseModel):
 		for split, data in prediction_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
 
-		Plot().confusion_matrix(
+		figs = Plot().confusion_matrix(
 			cm_by_split=cm_by_split, labels=labels, call_display=call_display
 		)
+		if (call_display==False): return figs
 
 
 	def plot_precision_recall(id:int, call_display:bool=True):
@@ -4854,7 +4856,8 @@ class Prediction(BaseModel):
 		dataframe = pd.concat(dfs, ignore_index=True)
 		dataframe = dataframe.round(3)
 
-		Plot().precision_recall(dataframe=dataframe, call_display=call_display)
+		fig = Plot().precision_recall(dataframe=dataframe, call_display=call_display)
+		if (call_display==False): return fig
 
 
 	def plot_roc_curve(id:int, call_display:bool=True):
@@ -4879,7 +4882,8 @@ class Prediction(BaseModel):
 		dataframe = pd.concat(dfs, ignore_index=True)
 		dataframe = dataframe.round(3)
 
-		Plot().roc_curve(dataframe=dataframe, call_display=call_display)
+		fig = Plot().roc_curve(dataframe=dataframe, call_display=call_display)
+		if (call_display==False): return fig
 	
 
 	def plot_feature_importance(
@@ -4887,7 +4891,9 @@ class Prediction(BaseModel):
 	):
 		prediction = Prediction.get_by_id(id)
 		feature_importance = prediction.feature_importance
-		if (feature_importance is not None):
+		if (feature_importance is None):
+			raise ValueError("\nYikes - Feature importance was not originally calculated for this analysis.\n")
+		else:
 			permute_count = prediction.predictor.job.queue.permute_count
 			# Remember the Featureset may contain multiple Features.
 			for feature_id, feature_cols in feature_importance.items():
@@ -4908,7 +4914,7 @@ class Prediction(BaseModel):
 				# zip them after top_n applied.
 				feature_impacts = dict(zip(feature_cols, loss_impacts))
 
-				Plot().feature_importance(
+				fig = Plot().feature_importance(
 					feature_impacts = feature_impacts
 					, feature_id = feature_id
 					, permute_count = permute_count
@@ -4916,5 +4922,4 @@ class Prediction(BaseModel):
 					, top_n = top_n
 					, call_display = call_display
 				)
-		else:
-			raise ValueError("\nYikes - Feature importance was not originally calculated for this analysis.\n")
+				if (call_display==False): return fig

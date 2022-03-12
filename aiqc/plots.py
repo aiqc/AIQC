@@ -75,8 +75,8 @@ class Plot():
 
 
 	def learning_curve(
-		self, dataframe:object,
-		analysis_type:str, loss_skip_15pct:bool=False, call_display:bool=True
+		self, dataframe:object, analysis_type:str, 
+		loss_skip_15pct:bool=False, call_display:bool=True
 	):
 		"""Dataframe rows are epochs and columns are metric names."""
 
