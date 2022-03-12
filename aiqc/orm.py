@@ -3844,10 +3844,8 @@ class Queue(BaseModel):
 
 
 	def plot_performance(
-		id:int
-		, max_loss:float=None
-		, min_accuracy:float=None
-		, min_r2:float=None
+		id:int, call_display:bool=True
+		, max_loss:float=None, min_accuracy:float=None, min_r2:float=None
 	):
 		"""
 		Originally I had `min_metric_2` not `min_accuracy` and `min_r2`,
@@ -3892,7 +3890,7 @@ class Queue(BaseModel):
 		if dataframe.empty:
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			Plot().performance(dataframe=dataframe)
+			return Plot().performance(dataframe=dataframe,call_display=call_display)
 
 
 	def _aws_get_upload_url(id:int):
@@ -4648,7 +4646,7 @@ class Predictor(BaseModel):
 		return hp
 
 		
-	def plot_learning_curve(id:int, loss_skip_15pct:bool=False):
+	def plot_learning_curve(id:int, loss_skip_15pct:bool=False, call_display:bool=True):
 		predictor = Predictor.get_by_id(id)
 		algorithm = predictor.job.queue.algorithm
 		analysis_type = algorithm.analysis_type
@@ -4659,6 +4657,7 @@ class Predictor(BaseModel):
 			dataframe = dataframe
 			, analysis_type = analysis_type
 			, loss_skip_15pct = loss_skip_15pct
+			, call_display = call_display
 		)
 
 
@@ -4815,7 +4814,7 @@ class Prediction(BaseModel):
 	- If we ever do non-deterministic algorithms then we would not have a 1-1 mapping 
 	  between Predictor and Prediction.
 	"""
-	def plot_confusion_matrix(id:int):
+	def plot_confusion_matrix(id:int, call_display:bool=True):
 		prediction = Prediction.get_by_id(id)
 		predictor = prediction.predictor
 		prediction_plot_data = prediction.plot_data
@@ -4829,10 +4828,12 @@ class Prediction(BaseModel):
 		for split, data in prediction_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
 
-		Plot().confusion_matrix(cm_by_split=cm_by_split, labels=labels)
+		Plot().confusion_matrix(
+			cm_by_split=cm_by_split, labels=labels, call_display=call_display
+		)
 
 
-	def plot_precision_recall(id:int):
+	def plot_precision_recall(id:int, call_display:bool=True):
 		prediction = Prediction.get_by_id(id)
 		predictor_plot_data = prediction.plot_data
 		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
@@ -4853,10 +4854,10 @@ class Prediction(BaseModel):
 		dataframe = pd.concat(dfs, ignore_index=True)
 		dataframe = dataframe.round(3)
 
-		Plot().precision_recall(dataframe=dataframe)
+		Plot().precision_recall(dataframe=dataframe, call_display=call_display)
 
 
-	def plot_roc_curve(id:int):
+	def plot_roc_curve(id:int, call_display:bool=True):
 		prediction = Prediction.get_by_id(id)
 		predictor_plot_data = prediction.plot_data
 		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
@@ -4878,10 +4879,12 @@ class Prediction(BaseModel):
 		dataframe = pd.concat(dfs, ignore_index=True)
 		dataframe = dataframe.round(3)
 
-		Plot().roc_curve(dataframe=dataframe)
+		Plot().roc_curve(dataframe=dataframe, call_display=call_display)
 	
 
-	def plot_feature_importance(id:int, top_n:int=None, height:int=None):
+	def plot_feature_importance(
+		id:int, call_display:bool=True, top_n:int=None, height:int=None
+	):
 		prediction = Prediction.get_by_id(id)
 		feature_importance = prediction.feature_importance
 		if (feature_importance is not None):
@@ -4911,6 +4914,7 @@ class Prediction(BaseModel):
 					, permute_count = permute_count
 					, height = height
 					, top_n = top_n
+					, call_display = call_display
 				)
 		else:
 			raise ValueError("\nYikes - Feature importance was not originally calculated for this analysis.\n")

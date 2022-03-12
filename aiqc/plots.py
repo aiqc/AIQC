@@ -2,6 +2,7 @@
 Plots
 └── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html
 """
+from xmlrpc.client import boolean
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
@@ -28,7 +29,7 @@ class Plot():
         )
 
 
-	def performance(self, dataframe:object):
+	def performance(self, dataframe:object, call_display:bool=True):
 		# The 2nd metric is the last 
 		name_metric_2 = dataframe.columns.tolist()[-1]
 		if (name_metric_2 == "accuracy"):
@@ -66,10 +67,17 @@ class Plot():
 		)
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.show()
+		
+		if (call_display==True):
+			fig.show()
+		else:
+			return fig
 
 
-	def learning_curve(self, dataframe:object, analysis_type:str, loss_skip_15pct:bool=False):
+	def learning_curve(
+		self, dataframe:object,
+		analysis_type:str, loss_skip_15pct:bool=False, call_display:bool=True
+	):
 		"""Dataframe rows are epochs and columns are metric names."""
 
 		# Spline seems to crash with too many points.
@@ -84,7 +92,7 @@ class Plot():
 
 		if loss_skip_15pct:
 			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
-
+		figs = []
 		fig_loss = px.line(
 			df_loss
 			, title = 'Training History: Loss'
@@ -152,11 +160,20 @@ class Plot():
 			)
 			fig_acc.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 			fig_acc.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-			fig_acc.show()
-		fig_loss.show()
+			if (call_display==True):
+				fig_acc.show()
+			else:
+				figs.append(fig_acc)
+
+		if (call_display==True):
+			fig_loss.show()
+		else:
+			figs.append(fig_loss)
+			return figs
 
 
-	def confusion_matrix(self, cm_by_split, labels):
+	def confusion_matrix(self, cm_by_split, labels, call_display:bool=True):
+		figs = []
 		for split, cm in cm_by_split.items():
 			# change each element of z to type string for annotations
 			cm_text = [[str(y) for y in x] for x in cm]
@@ -215,12 +232,18 @@ class Plot():
 				)
 			)
 
-			fig.update_traces(hovertemplate =
-							  """predicted: %{x}<br>actual: %{y}<br>count: %{z}<extra></extra>""")
-			fig.show()
+			fig.update_traces(
+				hovertemplate = """predicted: %{x}<br>actual: %{y}<br>count: %{z}<extra></extra>"""
+			)
+			if (call_display==True):
+				fig.show()
+			else:
+				figs.append(fig)
+		if (call_display==False):
+			return figs
 
 
-	def precision_recall(self, dataframe:object):
+	def precision_recall(self, dataframe:object, call_display:bool=True):
 		fig = px.line(
 			dataframe
 			, x = 'recall'
@@ -248,10 +271,13 @@ class Plot():
 		)
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.show()
+		if (call_display==True):
+			fig.show()
+		else:
+			return fig
 
 
-	def roc_curve(self, dataframe:object):
+	def roc_curve(self, dataframe:object, call_display:bool=True):
 		fig = px.line(
 			dataframe
 			, x = 'fpr'
@@ -293,12 +319,16 @@ class Plot():
 		)
 		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.show()
+		if (call_display==True):
+			fig.show()
+		else:
+			return fig
 	
 
-	def feature_importance(self, 
-		feature_impacts:object, feature_id:int,
-		permute_count:int, height:int, top_n:int=None
+	def feature_importance(
+		self, feature_impacts:object, feature_id:int,
+		permute_count:int, height:int, top_n:int=None,
+		call_display:bool=True
 	):
 		if (top_n is not None):
 			title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count}, top_n:{top_n})</sub><br><br>"
@@ -319,4 +349,7 @@ class Plot():
 			# ticks not really showing.
 			tickangle=45, nticks=15, gridcolor='#383838'
 		)
-		fig.show()
+		if (call_display==True):
+			fig.show()
+		else:
+			return fig
