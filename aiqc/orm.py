@@ -4896,6 +4896,7 @@ class Prediction(BaseModel):
 		else:
 			permute_count = prediction.predictor.job.queue.permute_count
 			# Remember the Featureset may contain multiple Features.
+			figs = []
 			for feature_id, feature_cols in feature_importance.items():
 				medians = [v['median'] for k,v in feature_cols.items()]
 				loss_impacts = [v['loss_impacts'] for k,v in feature_cols.items()]
@@ -4922,4 +4923,5 @@ class Prediction(BaseModel):
 					, top_n = top_n
 					, call_display = call_display
 				)
-				if (call_display==False): return fig
+				if (call_display==False): figs.append(fig)
+			if (call_display==False): return figs
