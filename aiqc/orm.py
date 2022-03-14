@@ -4320,10 +4320,13 @@ class Job(BaseModel):
 					predictions[split] = data.flatten()
 
 		if (has_labels==True):
-			# Aggregate metrics across splits/ folds.
-			# Alphabetize metrics dictionary by key.
-			for k,v in metrics.items():
-				metrics[k] = dict(natsorted(v.items()))
+			for split,stats in metrics.items():
+				# Alphabetize by metric name.
+				metrics[split] = dict(natsorted(stats.items()))
+				# Round the values for presentation.
+				for name,decimal in stats.items():
+					metrics[split][name] = round(decimal,3)
+
 			# Aggregate metrics across splits (e.g. mean, pstdev).
 			metric_names = list(list(metrics.values())[0].keys())
 			metrics_aggregate = {}
