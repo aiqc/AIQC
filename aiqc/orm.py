@@ -3884,7 +3884,6 @@ class Queue(BaseModel):
 		failed_runs_unique = list(set(failed_runs))
 		# Here the `~` inverts it to mean `.isNotIn()`
 		df_passed = df[~df['predictor_id'].isin(failed_runs_unique)]
-		df_passed = df_passed.round(3)
 		dataframe = df_passed[['predictor_id', 'split', 'loss', name_metric_2]]
 
 		if (dataframe.empty):
@@ -4857,7 +4856,6 @@ class Prediction(BaseModel):
 			df['split'] = split
 			dfs.append(df)
 		dataframe = pd.concat(dfs, ignore_index=True)
-		dataframe = dataframe.round(3)
 
 		fig = Plot().precision_recall(dataframe=dataframe, call_display=call_display)
 		if (call_display==False): return fig
@@ -4883,7 +4881,6 @@ class Prediction(BaseModel):
 			dfs.append(df)
 
 		dataframe = pd.concat(dfs, ignore_index=True)
-		dataframe = dataframe.round(3)
 
 		fig = Plot().roc_curve(dataframe=dataframe, call_display=call_display)
 		if (call_display==False): return fig
@@ -4914,7 +4911,7 @@ class Prediction(BaseModel):
 					# Silently returns all rows if `top_n` > rows.
 					feature_cols, loss_impacts = feature_cols[:top_n], loss_impacts[:top_n]	
 				if (height is None):
-					height = len(feature_cols)*25+120
+					height = len(feature_cols)*25+300
 				# zip them after top_n applied.
 				feature_impacts = dict(zip(feature_cols, loss_impacts))
 
