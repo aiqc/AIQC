@@ -3853,13 +3853,16 @@ class Queue(BaseModel):
 		if ("classification" in analysis_type):
 			if (score_type is None):
 				score_type = "accuracy"
-			if (score_type not in utils.metrics_classify):
-				raise ValueError(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.metrics_classify}\n")
+			else:
+				if (score_type not in utils.metrics_classify_cols):
+					raise ValueError(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.metrics_classify}\n")
 		elif (analysis_type == 'regression'):
 			if (score_type is None):
 				score_type = "r2"
-			if (score_type not in utils.metrics_regress):
-				raise ValueError(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
+			else:
+				if (score_type not in utils.metrics_regress_cols):
+					raise ValueError(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
+		score_display = utils.metrics_all[score_type]
 
 		if (min_score is None):
 			if (score_type=="r2"):
@@ -3892,7 +3895,8 @@ class Queue(BaseModel):
 				raise ValueError(msg)
 		else:
 			fig = Plot().performance(
-				dataframe=dataframe, call_display=call_display, score_type=score_type
+				dataframe=dataframe, call_display=call_display,
+				score_type=score_type, score_display=score_display
 			)
 			if (call_display==False):
 				return fig

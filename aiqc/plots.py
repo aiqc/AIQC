@@ -2,7 +2,6 @@
 Plots
 └── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html
 """
-from re import sub
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
@@ -29,16 +28,10 @@ class Plot():
         )
 
 
-	def performance(self, dataframe:object, score_type:str, call_display:bool=True):
-		#`score_type` accesses df column, whereas `score_display` displays in plot
-		score_display = sub("_", " ", score_type)
-		if (score_display == "r2"):
-			score_display = "R²"
-		elif ((score_display=="roc auc") or (score_display=="mse")):
-			score_display = score_display.upper()
-		else:
-			score_display = score_display.title()
-
+	def performance(
+		self, dataframe:object, score_type:str, 
+		score_display:str, call_display:bool=True,
+	):
 		fig = px.line(
 			dataframe
 			, title = 'Models Metrics by Split'

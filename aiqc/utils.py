@@ -20,9 +20,34 @@ categorical_encoders = [
 	'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
 ]
 
-# Used by `plot_performance`. r2 is -1:1, others are 0-1. Some of the 0s are asymptotes.
-metrics_classify = ['roc_auc', 'accuracy', 'precision', 'recall', 'f1']
-metrics_regress = ['r2', 'mse', 'explained_variance'] 
+# Used by plots and UI.
+metrics_classify = dict(
+	accuracy='Accuracy',
+	f1='F1',
+	roc_auc='ROC-AUC',
+	precision='Precision', 
+	recall='Recall',
+)
+metrics_classify_cols = list(metrics_classify.keys())
+metrics_regress = dict(
+	r2='R²',
+	mse='MSE',
+	explained_variance='ExpVar',
+)
+metrics_regress_cols = list(metrics_regress.keys())
+metrics_all = {**metrics_classify, **metrics_regress}
+
+def display_name(score_type:str):
+	"""Used in """
+	#`score_type` accesses df column, whereas `score_display` displays in plot
+	score_display = sub("_", " ", score_type)
+	if (score_display == "r2"):
+		score_display = "R²"
+	elif ((score_display=="roc auc") or (score_display=="mse")):
+		score_display = score_display.upper()
+	else:
+		score_display = score_display.title()
+	return score_display
 
 
 def listify(supposed_lst:object=None):
