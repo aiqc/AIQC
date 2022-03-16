@@ -29,9 +29,15 @@ class Plot():
         )
 
 
-	def performance(
-		self, dataframe:object, score_type:str, score_display:str, call_display:bool=True
-	):
+	def performance(self, dataframe:object, score_type:str, call_display:bool=True):
+		"""`score_type` accesses df column, whereas `score_display` displays in plot"""
+		if (score_type == "r2"):
+			score_display = "R²"
+		elif ((score_type=="roc_auc") or (score_type=="mse")):
+			score_display = score_type.upper()
+		else:
+			score_display = score_type.capitalize()
+
 		fig = px.line(
 			dataframe
 			, title = 'Models Metrics by Split'

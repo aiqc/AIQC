@@ -3699,12 +3699,7 @@ class Queue(BaseModel):
 		queue_predictions = list(queue_predictions)
 
 		if (not queue_predictions):
-			print(dedent("""
-				~:: Patience, young Padawan ::~
-
-				Completed, your Jobs are not. So Predictors to be had, there are None.
-			"""))
-			return None
+			raise ValueError("\nSorry - None of the Jobs in this Queue have completed yet.\n")
 
 		split_metrics = list(queue_predictions[0].metrics.values())
 		metric_names = list(split_metrics[0].keys())
@@ -3846,62 +3841,61 @@ class Queue(BaseModel):
 
 	def plot_performance(
 		id:int, call_display:bool=True,
-		max_loss:float=None, min_score:float=None, #score_type:str=None
+		max_loss:float=None, min_score:float=None, score_type:str=None
 	):
-		"`score` is the non-loss metric."
+		"""
+		- `score` is the non-loss metric.
+		- `call_display` True is for IDE whereas False is for the Dash UI.
+		"""
 		queue = Queue.get_by_id(id)
 		analysis_type = queue.algorithm.analysis_type
-
-		### if (score_type is None):
-
-		# Now we need to filter the df based on the specified criteria.
+		
 		if ("classification" in analysis_type):
-			if (min_score is None):
-				min_score = 0.0
-			min_metric_2 = min_score
-			name_metric_2 = "accuracy"
+			if (score_type is None):
+				score_type = "accuracy"
+			if (score_type not in utils.metrics_classify):
+				raise ValueError(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.metrics_classify}\n")
 		elif (analysis_type == 'regression'):
-			if (min_score is None):
+			if (score_type is None):
+				score_type = "r2"
+			if (score_type not in utils.metrics_regress):
+				raise ValueError(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
+
+		if (min_score is None):
+			if (score_type =="r2"):
 				min_score = -1.0
-			min_metric_2 = min_score
-			name_metric_2 = "r2"
+			else:
+				min_score = 0
+		elif (min_score is not None):
+			if (min_score > 1.0):
+				raise ValueError("\nYikes - `min_score` must be <= 1\n")
 
 		if (max_loss is None):
 			max_loss = float('inf')
-		###	
-		df = queue.metrics_to_pandas()
-		if (df is None):
-			# Warning message handled by `metrics_to_pandas() above`.
-			return None
-		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, name_metric_2, min_metric_2)
+		elif (max_loss < 0):
+			raise ValueError("\nYikes - `max_loss` must be >= 0\n")
+
+		df = queue.metrics_to_pandas()#handles empty
+		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, score_type, min_score)
 		failed = df.query(qry_str)
 		failed_runs = failed['predictor_id'].to_list()
 		failed_runs_unique = list(set(failed_runs))
 		# Here the `~` inverts it to mean `.isNotIn()`
 		df_passed = df[~df['predictor_id'].isin(failed_runs_unique)]
-		dataframe = df_passed[['predictor_id', 'split', 'loss', name_metric_2]]
-
-		# The 2nd metric is the last 
-		score_type = dataframe.columns.tolist()[-1]
-		if (score_type == "accuracy"):
-			score_display = "Accuracy"
-		elif (score_type == "r2"):
-			score_display = "R²"
-		else:
-			raise ValueError(dedent(f"""
-			Yikes - The name of the 2nd metric to plot was neither 'accuracy' nor 'r2'.
-			You provided: {score_type}.
-			The 2nd metric is supposed to be the last column of the dataframe provided.
-			"""))
+		dataframe = df_passed[['predictor_id', 'split', 'loss', score_type]]
 
 		if (dataframe.empty):
-			print("Yikes - There are no models that met the criteria specified.")
+			msg = "\nSorry - There are no models that meet the criteria specified.\n"
+			if (call_display==True):
+				print(msg)
+			elif (call_display==False):
+				raise ValueError(msg)
 		else:
 			fig = Plot().performance(
-				dataframe=dataframe, call_display=call_display,
-				score_type=score_type, score_display=score_display
+				dataframe=dataframe, call_display=call_display, score_type=score_type
 			)
-			if (call_display==False): return fig
+			if (call_display==False):
+				return fig
 
 
 	def _aws_get_upload_url(id:int):

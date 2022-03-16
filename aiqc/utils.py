@@ -14,6 +14,16 @@ from torch import split
 import tensorflow as tf
 import sklearn
 
+# Used during encoding validation.
+categorical_encoders = [
+	'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
+	'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
+]
+
+# Used by `plot_performance`. r2 is -1:1, others are 0-1. Some of the 0s are asymptotes.
+metrics_classify = ['roc_auc', 'accuracy', 'precision', 'recall', 'f1']
+metrics_regress = ['r2', 'mse', 'explained_variance'] 
+
 
 def listify(supposed_lst:object=None):
 	"""When only providing a single element, it's easy to forget to put it inside a list!"""
@@ -112,12 +122,6 @@ def tf_batcher(features:object, labels:object, batch_size:int=5):
 # Used by `sklearn.preprocessing.FunctionTransformer` to normalize images.
 def div255(X): return X/255
 def mult255(X): return X*255
-
-
-categorical_encoders = [
-	'OneHotEncoder', 'LabelEncoder', 'OrdinalEncoder', 
-	'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
-]
 
 
 def if_1d_make_2d(array:object):
@@ -961,7 +965,10 @@ def stage_data(
 
 
 def split_classification_metrics(labels_processed, predictions, probabilities, analysis_type):
-	"""Rarely, these still fail (e.g. ROC when only 1 class of label is predicted)."""
+	"""
+		- Be sure to register any new metrics in `metrics_classify` global.
+		- Very rarely, these still fail (e.g. ROC when only 1 class of label is predicted).
+	"""
 	if (analysis_type == "classification_binary"):
 		average = "binary"
 		roc_average = "micro"
@@ -986,6 +993,7 @@ def split_classification_metrics(labels_processed, predictions, probabilities, a
 
 
 def split_regression_metrics(data, predictions):
+	"""Be sure to register any new metrics in `metrics_regress` global."""
 	split_metrics = {}
 	data_shape = data.shape
 	# Unsupervised sequences and images have many data points for a single sample.
