@@ -31,13 +31,13 @@ class Plot():
 
 	def performance(self, dataframe:object, score_type:str, call_display:bool=True):
 		#`score_type` accesses df column, whereas `score_display` displays in plot
-		score_type = sub("_", " ", score_type)
-		if (score_type == "r2"):
+		score_display = sub("_", " ", score_type)
+		if (score_display == "r2"):
 			score_display = "R²"
-		elif ((score_type=="roc auc") or (score_type=="mse")):
-			score_display = score_type.upper()
+		elif ((score_display=="roc auc") or (score_display=="mse")):
+			score_display = score_display.upper()
 		else:
-			score_display = score_type.title()
+			score_display = score_display.title()
 
 		fig = px.line(
 			dataframe
