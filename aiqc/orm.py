@@ -3706,7 +3706,8 @@ class Queue(BaseModel):
 			"""))
 			return None
 
-		metric_names = list(list(queue_predictions[0].metrics.values())[0].keys())#bad.
+		split_metrics = list(queue_predictions[0].metrics.values())
+		metric_names = list(split_metrics[0].keys())
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if (m not in metric_names):
@@ -3844,36 +3845,30 @@ class Queue(BaseModel):
 
 
 	def plot_performance(
-		id:int, call_display:bool=True
-		, max_loss:float=None, min_accuracy:float=None, min_r2:float=None
+		id:int, call_display:bool=True,
+		max_loss:float=None, min_score:float=None, #score_type:str=None
 	):
-		"""
-		Originally I had `min_metric_2` not `min_accuracy` and `min_r2`,
-		but that would be confusing for users, so I went with informative 
-		erro messages instead.
-		"""
+		"`score` is the non-loss metric."
 		queue = Queue.get_by_id(id)
 		analysis_type = queue.algorithm.analysis_type
 
+		### if (score_type is None):
+
 		# Now we need to filter the df based on the specified criteria.
 		if ("classification" in analysis_type):
-			if (min_r2 is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_r2` if `'classification' in queue.analysis_type`.\n")
-			if (min_accuracy is None):
-				min_accuracy = 0.0
-			min_metric_2 = min_accuracy
+			if (min_score is None):
+				min_score = 0.0
+			min_metric_2 = min_score
 			name_metric_2 = "accuracy"
 		elif (analysis_type == 'regression'):
-			if (min_accuracy is not None):
-				raise ValueError("\nYikes - Cannot use argument `min_accuracy` if `queue.analysis_type='regression'`.\n")
-			if (min_r2 is None):
-				min_r2 = -1.0
-			min_metric_2 = min_r2
+			if (min_score is None):
+				min_score = -1.0
+			min_metric_2 = min_score
 			name_metric_2 = "r2"
 
 		if (max_loss is None):
 			max_loss = float('inf')
-			
+		###	
 		df = queue.metrics_to_pandas()
 		if (df is None):
 			# Warning message handled by `metrics_to_pandas() above`.
@@ -3886,10 +3881,26 @@ class Queue(BaseModel):
 		df_passed = df[~df['predictor_id'].isin(failed_runs_unique)]
 		dataframe = df_passed[['predictor_id', 'split', 'loss', name_metric_2]]
 
+		# The 2nd metric is the last 
+		score_type = dataframe.columns.tolist()[-1]
+		if (score_type == "accuracy"):
+			score_display = "Accuracy"
+		elif (score_type == "r2"):
+			score_display = "R²"
+		else:
+			raise ValueError(dedent(f"""
+			Yikes - The name of the 2nd metric to plot was neither 'accuracy' nor 'r2'.
+			You provided: {score_type}.
+			The 2nd metric is supposed to be the last column of the dataframe provided.
+			"""))
+
 		if (dataframe.empty):
 			print("Yikes - There are no models that met the criteria specified.")
 		else:
-			fig = Plot().performance(dataframe=dataframe,call_display=call_display)
+			fig = Plot().performance(
+				dataframe=dataframe, call_display=call_display,
+				score_type=score_type, score_display=score_display
+			)
 			if (call_display==False): return fig
 
 
@@ -4658,8 +4669,8 @@ class Predictor(BaseModel):
 		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
 		
 		figs = Plot().learning_curve(
-			dataframe=dataframe, analysis_type=analysis_type
-			, loss_skip_15pct=loss_skip_15pct, call_display=call_display
+			dataframe=dataframe, analysis_type=analysis_type,
+			loss_skip_15pct=loss_skip_15pct, call_display=call_display
 		)
 		if (call_display==False): return figs
 
@@ -4887,8 +4898,10 @@ class Prediction(BaseModel):
 	
 
 	def plot_feature_importance(
-		id:int, call_display:bool=True, top_n:int=None, height:int=None
+		id:int, call_display:bool=True, top_n:int=10, height:int=None
 	):
+		# Forcing `top_n` so that it doesn't load a billion features in the UI. 
+		# `top_n` Silently returns all features if `top_n` > features.
 		prediction = Prediction.get_by_id(id)
 		feature_importance = prediction.feature_importance
 		if (feature_importance is None):

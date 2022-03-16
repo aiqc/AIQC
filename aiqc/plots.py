@@ -18,39 +18,28 @@ class Plot():
                 , title=dict(x=0.05, y=0.95)
                 , titlefont=dict(family='Avenir')
                 , title_pad=dict(b=50, t=20)
-                , plot_bgcolor='#181B1E'
-                , paper_bgcolor='#181B1E'
+                , plot_bgcolor='#182d41'#'#181B1E'
+                , paper_bgcolor='#182d41'#'#181B1E'
                 , hovermode='closest'
                 , hoverlabel=dict(
-                    bgcolor="#0F0F0F"
+                    bgcolor="#122536"
                     , font=dict(family="Avenir", size=15)
                 )
             )
         )
 
 
-	def performance(self, dataframe:object, call_display:bool=True):
-		# The 2nd metric is the last 
-		name_metric_2 = dataframe.columns.tolist()[-1]
-		if (name_metric_2 == "accuracy"):
-			display_metric_2 = "Accuracy"
-		elif (name_metric_2 == "r2"):
-			display_metric_2 = "R²"
-		else:
-			raise ValueError(dedent(f"""
-			Yikes - The name of the 2nd metric to plot was neither 'accuracy' nor 'r2'.
-			You provided: {name_metric_2}.
-			The 2nd metric is supposed to be the last column of the dataframe provided.
-			"""))
-
+	def performance(
+		self, dataframe:object, score_type:str, score_display:str, call_display:bool=True
+	):
 		fig = px.line(
 			dataframe
 			, title = 'Models Metrics by Split'
 			, x = 'loss'
-			, y = name_metric_2
+			, y = score_type
 			, color = 'predictor_id'
 			, height = 600
-			, hover_data = ['predictor_id', 'split', 'loss', name_metric_2]
+			, hover_data = ['predictor_id', 'split', 'loss', score_type]
 			, line_shape='spline'
 		)
 		fig.update_traces(
@@ -61,12 +50,13 @@ class Plot():
 			)
 		)
 		fig.update_layout(
-			xaxis_title = "Loss"
-			, yaxis_title = display_metric_2
+			title_x=0.5#center
+			, xaxis_title = "Loss"
+			, yaxis_title = score_display
 			, template = self.plot_template
 		)
-		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+		fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 		
 		if (call_display==True):
 			fig.show()
@@ -90,7 +80,7 @@ class Plot():
 		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
 		df_loss = df_loss.round(3)
 
-		if loss_skip_15pct:
+		if (loss_skip_15pct):
 			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
 		figs = []
 		fig_loss = px.line(
@@ -122,8 +112,8 @@ class Plot():
 				, b = 0
 			),
 		)
-		fig_loss.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig_loss.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig_loss.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+		fig_loss.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 
 		if ("classification" in analysis_type):
 			df_acc = dataframe[['accuracy', 'val_accuracy']]
@@ -158,8 +148,8 @@ class Plot():
 					t = 5
 				),
 			)
-			fig_acc.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-			fig_acc.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+			fig_acc.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+			fig_acc.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 			if (call_display==True):
 				fig_acc.show()
 			else:
@@ -211,18 +201,20 @@ class Plot():
 				, legend_title='Sample Count'
 				, template=self.plot_template
 				, height=375  # if too small, it won't render in Jupyter.
-				, width=850
+				, width=850 # keeps squares square.
 				, yaxis=dict(
 					tickmode='linear'
 					, tick0=0.0
 					, dtick=1.0
+					, fixedrange=True#prevents zoom/pan
 					, tickfont = dict(
 						size=10
 					)
 				)
 				, xaxis=dict(
-					categoryorder='category descending',
-					 tickfont=dict(
+					categoryorder='category descending'
+					, fixedrange=True#prevents zoom/pan
+					, tickfont=dict(
 						size=10
 					)
 				)
@@ -269,8 +261,8 @@ class Plot():
 				, x=1
 			)
 		)
-		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+		fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 		if (call_display==True):
 			fig.show()
 		else:
@@ -317,8 +309,8 @@ class Plot():
 					, line = dict(dash='dot', width=2, color='#3b4043')
 			)]
 		)
-		fig.update_xaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
-		fig.update_yaxes(zeroline=False, gridcolor='#262B2F', tickfont=dict(color='#818487'))
+		fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+		fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 		if (call_display==True):
 			fig.show()
 		else:
@@ -327,8 +319,8 @@ class Plot():
 
 	def feature_importance(
 		self, feature_impacts:object, feature_id:int,
-		permute_count:int, height:int, top_n:int=None,
-		call_display:bool=True
+		permute_count:int, height:int, top_n:int,
+		call_display:bool
 	):
 		if (top_n is not None):
 			title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count}, top_n:{top_n})</sub><br><br>"
@@ -347,7 +339,7 @@ class Plot():
 		fig.update_xaxes(
 			title = f"Importance<br><sup>[permuted column loss - training loss]</sup>",
 			# ticks not really showing.
-			tickangle=45, nticks=15, gridcolor='#383838'
+			tickangle=45, nticks=15, gridcolor='#2c3c4a'
 		)
 		if (call_display==True):
 			fig.show()
