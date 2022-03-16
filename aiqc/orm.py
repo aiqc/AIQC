@@ -3862,7 +3862,7 @@ class Queue(BaseModel):
 				raise ValueError(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
 
 		if (min_score is None):
-			if (score_type =="r2"):
+			if (score_type=="r2"):
 				min_score = -1.0
 			else:
 				min_score = 0

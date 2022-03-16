@@ -2,7 +2,7 @@
 Plots
 └── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html
 """
-from xmlrpc.client import boolean
+from re import sub
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
@@ -30,13 +30,14 @@ class Plot():
 
 
 	def performance(self, dataframe:object, score_type:str, call_display:bool=True):
-		"""`score_type` accesses df column, whereas `score_display` displays in plot"""
+		#`score_type` accesses df column, whereas `score_display` displays in plot
+		score_type = sub("_", " ", score_type)
 		if (score_type == "r2"):
 			score_display = "R²"
-		elif ((score_type=="roc_auc") or (score_type=="mse")):
+		elif ((score_type=="roc auc") or (score_type=="mse")):
 			score_display = score_type.upper()
 		else:
-			score_display = score_type.capitalize()
+			score_display = score_type.title()
 
 		fig = px.line(
 			dataframe
