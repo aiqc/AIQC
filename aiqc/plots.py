@@ -5,6 +5,7 @@ Plots
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
+from re import sub
 
 
 class Plot():
@@ -65,77 +66,37 @@ class Plot():
 
 
 	def learning_curve(
-		self, dataframe:object, analysis_type:str, 
-		loss_skip_15pct:bool=False, call_display:bool=True
+		self, dataframe:object, history_pairs:dict,
+		skip_head:bool=False, call_display:bool=True
 	):
 		"""Dataframe rows are epochs and columns are metric names."""
-
+		if (skip_head==True):
+			dataframe = dataframe.tail(round(dataframe.shape[0]*.85))
 		# Spline seems to crash with too many points.
 		if (dataframe.shape[0] >= 400):
 			line_shape = 'linear'
 		elif (dataframe.shape[0] < 400):
 			line_shape = 'spline'
 
-		df_loss = dataframe[['loss','val_loss']]
-		df_loss = df_loss.rename(columns={"loss": "train_loss", "val_loss": "validation_loss"})
-		df_loss = df_loss.round(3)
-
-		if (loss_skip_15pct):
-			df_loss = df_loss.tail(round(df_loss.shape[0]*.85))
+		# Create a plot for every pair.
 		figs = []
-		fig_loss = px.line(
-			df_loss
-			, title = 'Training History: Loss'
-			, line_shape = line_shape
-		)
-		fig_loss.update_layout(
-			xaxis_title = "Epochs"
-			, yaxis_title = "Loss"
-			, legend_title = None
-			, template = self.plot_template
-			, height = 400
-			, yaxis = dict(
-				side = "right"
-				, tickmode = 'auto'# When loss is initially high, the 0.1 tickmarks are overwhelming.
-				, tick0 = -1
-				, nticks = 9
+		for train,val in history_pairs.items():
+			metric_name = sub("_"," ",train[6:])
+			df = dataframe[[train,val]]
+			fig = px.line(
+				df, title=f"Training History: {metric_name}", line_shape=line_shape
 			)
-			, legend = dict(
-				orientation="h"
-				, yanchor="bottom"
-				, y=1.02
-				, xanchor="right"
-				, x=1
-			)
-			, margin = dict(
-				t = 5
-				, b = 0
-			),
-		)
-		fig_loss.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
-		fig_loss.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
-
-		if ("classification" in analysis_type):
-			df_acc = dataframe[['accuracy', 'val_accuracy']]
-			df_acc = df_acc.rename(columns={"accuracy": "train_accuracy", "val_accuracy": "validation_accuracy"})
-			df_acc = df_acc.round(3)
-
-			fig_acc = px.line(
-			df_acc
-				, title = 'Training History: Accuracy'
-				, line_shape = line_shape
-			)
-			fig_acc.update_layout(
-				xaxis_title = "Epochs"
-				, yaxis_title = "accuracy"
+			fig.update_layout(
+				xaxis_title = "epochs"
+				, yaxis_title = metric_name
 				, legend_title = None
 				, height = 400
 				, template = self.plot_template
 				, yaxis = dict(
-				side = "right"
-				, tickmode = 'linear'
-				, tick0 = 0.0
-				, dtick = 0.05
+					side = "right"
+					, tickmode = 'linear'
+					, tick0 = 0.0
+					, dtick = 0.05
 				)
 				, legend = dict(
 					orientation="h"
@@ -144,21 +105,15 @@ class Plot():
 					, xanchor="right"
 					, x=1
 				)
-				, margin = dict(
-					t = 5
-				),
+				, margin=dict(t=5),
 			)
-			fig_acc.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
-			fig_acc.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+			fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
+			fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 			if (call_display==True):
-				fig_acc.show()
+				fig.show()
 			else:
-				figs.append(fig_acc)
-
-		if (call_display==True):
-			fig_loss.show()
-		else:
-			figs.append(fig_loss)
+				figs.append(fig)
+		if (call_display==False):
 			return figs
 
 

@@ -19,6 +19,7 @@ from . import utils
 import os, sys, io, random, itertools, h5py, gzip, statistics, requests, \
 	validators, math, pprint, datetime, scipy, pickle, importlib
 from textwrap import dedent
+from re import sub
 # External utils.
 from tqdm import tqdm #progress bar.
 from natsort import natsorted #file sorting.
@@ -3063,7 +3064,6 @@ class FeatureCoder(BaseModel):
 		else:
 			pass
 		
-		###
 		# Record the names of OHE generated columns for feature importance.
 		if (stringified_encoder.startswith("OneHotEncoder")):
 			# Assumes OHE fits 2D.
@@ -3323,6 +3323,7 @@ class Queue(BaseModel):
 	run_count = IntegerField()
 	hide_test = BooleanField()
 	permute_count = IntegerField()
+	runs_completed = IntegerField()
 	aws_uid = CharField(null=True)
 
 	algorithm = ForeignKeyField(Algorithm, backref='queues') 
@@ -3500,6 +3501,7 @@ class Queue(BaseModel):
 			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, hide_test = hide_test
+			, runs_completed = 0
 		)
 		try:
 			for c in combos:
@@ -3536,8 +3538,8 @@ class Queue(BaseModel):
 	def run_jobs(id:int):
 		"""
 		- Jobs re-use the same data instead of preprocessing it from scratch. 
-		- Samples are cached because post-processing has to transforms the data.
-		- The alternative is to `deepcopy()` the samples, but the memory pressure is too great.		
+		  ^ Samples are cached so they can be reused because post-processing alters the data.
+		    ^ The alternative is to `deepcopy()` the samples, but the memory pressure is too great.		
 		"""
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
@@ -3604,10 +3606,11 @@ class Queue(BaseModel):
 						)
 				os.remove(cached_samples)
 			except (KeyboardInterrupt):
-				# So that we don't get nasty error messages when interrupting a long running loop.
+				# Attempts to prevent irrelevant errors. Sometimes the messages slip through.
 				os.remove(cached_samples)
 				print("\nQueue was gracefully interrupted.\n")
 			except:
+				# Other training related errors.
 				os.remove(cached_samples)
 				raise
 
@@ -4530,6 +4533,9 @@ class Job(BaseModel):
 
 		# Don't force delete samples because we need it for runs with duplicated data.
 		del model
+		# Used by UI progress bar.
+		queue.runs_completed+=1
+		queue.save()
 		return job
 
 
@@ -4658,25 +4664,50 @@ class Predictor(BaseModel):
 		return hp
 
 		
-	def plot_learning_curve(id:int, loss_skip_15pct:bool=False, call_display:bool=True):
+	def plot_learning_curve(id:int, skip_head:bool=False, call_display:bool=True):
 		predictor = Predictor.get_by_id(id)
-		algorithm = predictor.job.queue.algorithm
-		analysis_type = algorithm.analysis_type
-
 		history = predictor.history
+		if (history=={}): raise ValueError("\nYikes - Predictor.history is empty.\n")
 		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
 		
+		# Get the`{train_*:validation_*}` matching pairs for plotting.
+		keys = list(history.keys())
+		# dict comprehension is for `return`ing. Don't use w `list.remove()`.
+		valz = []
+		trainz = []
+		for k in keys:
+			if isinstance(k, str):
+				original_k = k
+				if (k.startswith('val_')):
+					k = sub("val_","validation_",k)
+					valz.append(k)
+				else:
+					k = f"train_{k}"
+					trainz.append(k)
+				dataframe = dataframe.rename(columns={original_k:k})
+			else:
+				raise ValueError("\nYikes - Predictor.history keys must be strings.\n")
+		if (len(valz)!=len(trainz)):
+			raise ValueError("\nYikes - Number of history keys starting with 'val_' must match number of keys that don't start with 'val_'.\n")
+		if (len(keys)!=len(valz)+len(trainz)):
+			raise ValueError("\nYikes - User defined history contains keys that are not string type.\n")
+		history_pairs = {}
+		for t in trainz:
+			for v in valz:
+				if (sub("train_","validation_",t)==v):
+					history_pairs[t] = v
+
 		figs = Plot().learning_curve(
-			dataframe=dataframe, analysis_type=analysis_type,
-			loss_skip_15pct=loss_skip_15pct, call_display=call_display
+			dataframe=dataframe, history_pairs=history_pairs,
+			skip_head=skip_head, call_display=call_display
 		)
 		if (call_display==False): return figs
 
 
 	def get_fitted_encoderset(job:object, feature:object):
 		"""
-		- Given a Feature, you want to know if it needs to be transformed,
-		  and, if so, how to transform it.
+		Given a Feature, you want to know if it needs to be transformed,
+		and, if so, how to transform it.
 		"""
 		fittedencodersets = FittedEncoderset.select().join(Encoderset).where(
 			FittedEncoderset.job==job, FittedEncoderset.encoderset.feature==feature
