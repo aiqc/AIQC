@@ -3844,7 +3844,7 @@ class Queue(BaseModel):
 
 	def plot_performance(
 		id:int, call_display:bool=True,
-		max_loss:float=None, min_score:float=None, score_type:str=None
+		max_loss:float=None, min_score:float=None, score_type:str=None, height:int=None
 	):
 		"""
 		- `score` is the non-loss metric.
@@ -3897,9 +3897,12 @@ class Queue(BaseModel):
 			elif (call_display==False):
 				raise ValueError(msg)
 		else:
+			if (height is None):
+				height=560
 			fig = Plot().performance(
 				dataframe=dataframe, call_display=call_display,
-				score_type=score_type, score_display=score_display
+				score_type=score_type, score_display=score_display,
+				height=height
 			)
 			if (call_display==False):
 				return fig
@@ -4524,7 +4527,7 @@ class Job(BaseModel):
 			, repeat_index = repeat_index
 		)
 
-		# Use the predictor object to make predictions and obtain metrics.
+		# Use the Predictor object to make Prediction and its metrics.
 		try:
 			Job.predict(samples=samples, predictor_id=predictor.id, key_train=key_train)
 		except:
@@ -4660,7 +4663,10 @@ class Predictor(BaseModel):
 		"""This is actually a method of `Hyperparamcombo` so we just pass through."""
 		predictor = Predictor.get_by_id(id)
 		hyperparamcombo = predictor.job.hyperparamcombo
-		hp = hyperparamcombo.get_hyperparameters(as_pandas=as_pandas)
+		if (hyperparamcombo is not None):
+			hp = hyperparamcombo.get_hyperparameters(as_pandas=as_pandas)
+		else:
+			hp = None
 		return hp
 
 		

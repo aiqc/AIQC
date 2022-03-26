@@ -32,6 +32,7 @@ class Plot():
 	def performance(
 		self, dataframe:object, score_type:str, 
 		score_display:str, call_display:bool=True,
+		height:int=None
 	):
 		fig = px.line(
 			dataframe
@@ -39,7 +40,7 @@ class Plot():
 			, x = 'loss'
 			, y = score_type
 			, color = 'predictor_id'
-			, height = 600
+			, height = height
 			, hover_data = ['predictor_id', 'split', 'loss', score_type]
 			, line_shape='spline'
 		)
