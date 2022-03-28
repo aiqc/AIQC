@@ -118,25 +118,36 @@ class Plot():
 			return figs
 
 
-	def confusion_matrix(self, cm_by_split, labels, call_display:bool=True):
+	def confusion_matrix(self, cm_by_split, labels, call_display:bool=True, width:int=None):
+		# It's tricky to keep it square with the left axis title visible.
+		if (width is None):#"responsive"
+			actual_offset = -0.4
+			margin_left = 150
+			margin_right = 75
+			title_offset = 0.55
+		else:#"fixed"
+			actual_offset = -0.3
+			margin_left = 100
+			margin_right = 50
+			title_offset = 0.55
+			
+
 		figs = []
 		for split, cm in cm_by_split.items():
 			# change each element of z to type string for annotations
 			cm_text = [[str(y) for y in x] for x in cm]
 
 			fig = ff.create_annotated_heatmap(
-				cm
-				, x=labels
-				, y=labels
+				cm, x=labels, y=labels
 				, annotation_text=cm_text
 				, colorscale=px.colors.sequential.BuGn
-				, showscale=True
+				, showscale=False
 				, colorbar={"title": 'Count'})
 
 			# add custom xaxis title
 			fig.add_annotation(dict(font=dict(color="white", size=12),
-									x=0.5,
-									y=1.2,
+									x=0.5, 
+									y=1.3,
 									showarrow=False,
 									text="Predicted Label",
 									xref="paper",
@@ -144,7 +155,7 @@ class Plot():
 
 			# add custom yaxis title
 			fig.add_annotation(dict(font=dict(color="white", size=12),
-									x=-0.4,
+									x=actual_offset,
 									y=0.5,
 									showarrow=False,
 									text="Actual Label",
@@ -153,31 +164,29 @@ class Plot():
 									yref="paper"))
 
 			fig.update_layout(
-				title=f"Confusion Matrix: {split.capitalize()}"
-				, legend_title='Sample Count'
+				title = dict(
+					text = f"Confusion Matrix: {split.capitalize()}"
+					, y = 0.0
+					, x = title_offset
+					, xanchor = 'center'
+					, yanchor = 'bottom'
+				)
 				, template=self.plot_template
 				, height=375  # if too small, it won't render in Jupyter.
-				, width=850 # keeps squares square.
+				, width=width
 				, yaxis=dict(
 					tickmode='linear'
 					, tick0=0.0
 					, dtick=1.0
 					, fixedrange=True#prevents zoom/pan
-					, tickfont = dict(
-						size=10
-					)
+					, tickfont = dict(size=10)
 				)
 				, xaxis=dict(
-					categoryorder='category descending'
-					, fixedrange=True#prevents zoom/pan
-					, tickfont=dict(
-						size=10
-					)
+					categoryorder = 'category descending'
+					, fixedrange = True#prevents zoom/pan
+					, tickfont = dict(size=10)
 				)
-				, margin=dict(
-					r=325
-					, l=325
-				)
+				, margin = dict(r=margin_right, l=margin_left)#impacts y axis annotation x position
 			)
 
 			fig.update_traces(
@@ -203,8 +212,10 @@ class Plot():
 			legend_title = None
 			, template = self.plot_template
 			, height = 500
+			, xaxis = dict(title='Recall (Tₚ / Tₚ+Fₚ)')
 			, yaxis = dict(
-				side = "right"
+				title = 'Precision (Tₚ / Tₚ+Fₙ)'
+				, side = "right"
 				, tickmode = 'linear'
 				, tick0 = 0.0
 				, dtick = 0.05
