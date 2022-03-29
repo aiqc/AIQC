@@ -160,7 +160,7 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
                         [
                             dbc.Col(width="4"),
                             dbc.Col(
-                                dcc.Dropdown(id="multitron", multi=True className='ctr'),
+                                dcc.Dropdown(id="multitron", multi=True, className='multitron ctr'),
                                 width="4", align="center",
                             ),
                             dbc.Col(width="3"),
@@ -175,14 +175,14 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             ),
             html.Br(),html.Br(),html.Br(),
             dbc.Row(id="model_container"),
-            html.Br(),html.Br(),html.Br(),
+            html.Br(),
         ],
         className='page'
     )
 
 
     # Helper functions for callbacks.
-    def fetch_params(predictor:object):
+    def fetch_params(predictor:object, size:str):
         hyperparameters = predictor.get_hyperparameters()
         if (hyperparameters is not None):
             headers = [html.Th("parameter"), html.Th("value")]
@@ -192,7 +192,7 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             hp_table = dbc.Table(
                 table_header + table_body,
                 dark=True, hover=True, responsive=True,
-                striped=True, bordered=False, className='tbl tsmall ctr'}
+                striped=True, bordered=False, className=f"tbl {size} ctr"
             )
         else:
             msg = "Sorry - This model has no parameters."
@@ -321,6 +321,7 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             return dbc.Alert(str(err_msg), className='alert')
         else:
             fig = dcc.Graph(id="exp_plot", figure=fig, className='exp_plot_contain ctr')
+
             return fig
 
 
@@ -348,23 +349,22 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             raise PreventUpdate
         # The docs say to use `json.dumps`, but clickData is just a dict.
         predictor = new_click['points'][0]['customdata'][0]    
-        new_predCache = dict(id=predictor)
         predictor = orm.Predictor.get_by_id(predictor)
         title = f"Model ID: {predictor}"
         model_title = html.P(title, className='header')
-        hp_table = fetch_params(predictor)
-        
-        return [model_title, html.Br(), hp_table]
+        hp_table = fetch_params(predictor, "tbig")
+        return [model_title, hp_table]
 
 
     @app.callback(
         Output(component_id='model_container', component_property='children'),
         Input(component_id='multitron', component_property='value')
     )
-    def model_plotz(predictor_ids:list):
-        # Initially it is None as opposed to an empty list
-        if (predictor_ids is None):
-            raise PreventUpdate
+    def model_plots(predictor_ids:list):
+        # Initially it's None, but empty list when it's cleared.
+        if ((predictor_ids is None) or (not predictor_ids)):
+            msg = "Select up to two models from the dropdown above."
+            return dbc.Alert(msg, className='alert')
         pred_count = len(predictor_ids)
         if (pred_count==1):
             col_width = 12
@@ -413,7 +413,7 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             metrics_table = dbc.Table(
                 table_header + table_body,
                 dark=True, hover=True, responsive=True, 
-                striped=True, bordered=False, className='tbl tbig ctr'}
+                striped=True, bordered=False, className='tbl tbig ctr'
             )
 
             row = dbc.Row(
@@ -423,7 +423,7 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             big_column.append(html.Hr(className='hrz ctr'))
 
             # === HYPERPARAMETERS ===
-            hp_table = fetch_params(predictor)
+            hp_table = fetch_params(predictor, "tsmall")
             row = dbc.Row(
                 dbc.Col(hp_table, align="center")
             )
@@ -491,7 +491,7 @@ def launch(refresh_rate:int=None, server_runtime:dict=None):
             multi_cols.append(big_column)
         return multi_cols
 
-
+    # Bug: <github.com/plotly/jupyter-dash/issues/63>
     log = getLogger('werkzeug')
     log.setLevel(ERROR)
 
