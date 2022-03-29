@@ -4863,7 +4863,7 @@ class Prediction(BaseModel):
 	- If we ever do non-deterministic algorithms then we would not have a 1-1 mapping 
 	  between Predictor and Prediction.
 	"""
-	def plot_confusion_matrix(id:int, call_display:bool=True, width:int=850):
+	def plot_confusion_matrix(id:int, call_display:bool=True):
 		prediction = Prediction.get_by_id(id)
 		predictor = prediction.predictor
 		prediction_plot_data = prediction.plot_data
@@ -4877,18 +4877,8 @@ class Prediction(BaseModel):
 		for split, data in prediction_plot_data.items():
 			cm_by_split[split] = data['confusion_matrix']
 
-		if (width is None):
-			width = 500
-		elif (width=="auto"):
-			width = None
-		elif (width==500):
-			pass
-		else:
-			raise ValueError("\nYikes - `width` must be either: None, 500, or 'auto'.\n")
-
 		figs = Plot().confusion_matrix(
-			cm_by_split=cm_by_split, labels=labels, width=width,
-			call_display=call_display
+			cm_by_split=cm_by_split, labels=labels, call_display=call_display
 		)
 		if (call_display==False): return figs
 

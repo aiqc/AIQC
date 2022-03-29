@@ -101,7 +101,7 @@
 .. 
   The image border is styled by script below.
 
-.. image:: images/framework_feb23.png
+.. image:: images/framework_mar29.png
   :width: 100%
   :align: center
   :alt: framework
@@ -149,6 +149,12 @@
     </div>
   </div>
   
+  </br></br></br>
+
+  <center>
+    <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" alt="experiment_tracker" width="100%" style="display:block;">
+  </center>
+
   </br></br>
   
   <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
@@ -356,7 +362,7 @@ AIQC
   <div style="background-image: linear-gradient(#fcfcfc, #122536);">
     </br></br></br></br></br></br>
     <center>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/visualizations.gif" alt="visualizations" width="85%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/compare_models.gif" alt="visualizations" width="85%" style="display:block;">
       </br></br>
       <div class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating each split & fold of every model.</div>
     </center>

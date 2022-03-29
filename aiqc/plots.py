@@ -14,16 +14,16 @@ class Plot():
 		"""__init__ defines a template that is passed to the other plots."""
 		self.plot_template = dict(
             layout=go.Layout(
-			    font=dict(family='Avenir', color='#FAFAFA')
+			    font=dict(family='Abel', color='#FAFAFA', size=14)
                 , title=dict(x=0.05, y=0.95)
-                , titlefont=dict(family='Avenir')
+                , titlefont=dict(family='Abel')
                 , title_pad=dict(b=50, t=20)
-                , plot_bgcolor='#182d41'#'#181B1E'
-                , paper_bgcolor='#182d41'#'#181B1E'
+                , plot_bgcolor='#182d41'
+                , paper_bgcolor='#182d41'
                 , hovermode='closest'
                 , hoverlabel=dict(
                     bgcolor="#122536"
-                    , font=dict(family="Avenir", size=15)
+                    , font=dict(family="Abel", size=15)
                 )
             )
         )
@@ -56,6 +56,7 @@ class Plot():
 			, xaxis_title = "Loss"
 			, yaxis_title = score_display
 			, template = self.plot_template
+			, showlegend=False#gets way too busy
 		)
 		fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
@@ -88,7 +89,8 @@ class Plot():
 				df, title=f"Training History: {metric_name}", line_shape=line_shape
 			)
 			fig.update_layout(
-				xaxis_title = "epochs"
+				title_y = 1
+				, xaxis_title = "epochs"
 				, yaxis_title = metric_name
 				, legend_title = None
 				, height = 400
@@ -106,7 +108,6 @@ class Plot():
 					, xanchor="right"
 					, x=1
 				)
-				, margin=dict(t=5),
 			)
 			fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 			fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
@@ -118,20 +119,7 @@ class Plot():
 			return figs
 
 
-	def confusion_matrix(self, cm_by_split, labels, call_display:bool=True, width:int=None):
-		# It's tricky to keep it square with the left axis title visible.
-		if (width is None):#"responsive"
-			actual_offset = -0.4
-			margin_left = 150
-			margin_right = 75
-			title_offset = 0.55
-		else:#"fixed"
-			actual_offset = -0.3
-			margin_left = 100
-			margin_right = 50
-			title_offset = 0.55
-			
-
+	def confusion_matrix(self, cm_by_split, labels, call_display:bool=True):
 		figs = []
 		for split, cm in cm_by_split.items():
 			# change each element of z to type string for annotations
@@ -145,48 +133,51 @@ class Plot():
 				, colorbar={"title": 'Count'})
 
 			# add custom xaxis title
-			fig.add_annotation(dict(font=dict(color="white", size=12),
-									x=0.5, 
-									y=1.3,
-									showarrow=False,
-									text="Predicted Label",
-									xref="paper",
-									yref="paper"))
+			fig.add_annotation(dict(
+				font=dict(color="white", size=15)
+				, x=0.5
+				, y=1.3
+				, showarrow=False
+				, text="Predicted Label"
+				, xref="paper"
+				, yref="paper"
+			))
 
 			# add custom yaxis title
-			fig.add_annotation(dict(font=dict(color="white", size=12),
-									x=actual_offset,
-									y=0.5,
-									showarrow=False,
-									text="Actual Label",
-									textangle=-90,
-									xref="paper",
-									yref="paper"))
+			fig.add_annotation(dict(
+				font=dict(color="white", size=15)
+				, x=-0.4
+				, y=0.5
+				, showarrow=False
+				, text="Actual Label"
+				, textangle=-90
+				, xref="paper"
+				, yref="paper"
+			))
 
 			fig.update_layout(
 				title = dict(
 					text = f"Confusion Matrix: {split.capitalize()}"
 					, y = 0.0
-					, x = title_offset
+					, x = 0.55
 					, xanchor = 'center'
 					, yanchor = 'bottom'
 				)
 				, template=self.plot_template
 				, height=375  # if too small, it won't render in Jupyter.
-				, width=width
 				, yaxis=dict(
 					tickmode='linear'
 					, tick0=0.0
 					, dtick=1.0
 					, fixedrange=True#prevents zoom/pan
-					, tickfont = dict(size=10)
+					, tickfont = dict(size=13)
 				)
 				, xaxis=dict(
 					categoryorder = 'category descending'
 					, fixedrange = True#prevents zoom/pan
-					, tickfont = dict(size=10)
+					, tickfont = dict(size=13)
 				)
-				, margin = dict(r=margin_right, l=margin_left)#impacts y axis annotation x position
+				, margin = dict(r=75, l=150)#impacts y axis annotation x position
 			)
 
 			fig.update_traces(
