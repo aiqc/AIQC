@@ -41,14 +41,14 @@ aiqc.lab.launch()
 		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mar29.png" width="95%" alt="framework"/>
 	</a>
 </center>
-</br></br>
+</br></br></br>
 
 <center>
 	<a href="https://aiqc.readthedocs.io/">
 		<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
 	</a>
 </center>
-</br></br>
+</br></br></br>
 
 <center>
 	<a href="https://aiqc.readthedocs.io/">
