@@ -1,0 +1,192 @@
+/* 
+    The name of the file does not matter. I just didn't want to use 'custom' 
+    because that's used by the docs or 'style' in case that is hardcoded anywhere.
+*/
+/* ======== PAGE ======== */
+body {
+    background-color:       rgb(24; 45; 65);
+}
+
+.page {
+    background:             #182d41;
+    z-index:                111;
+}
+
+.ctr {
+    margin-left:            auto;
+    margin-right:           auto;
+}
+
+.hrz {
+    color:                  #40566b;
+    width:                  85%;
+    height:                 3px;
+    margin-top:             45px;
+    margin-bottom:          45px;
+}
+
+
+/* ======== NAV BAR ======== */
+.navig {
+    background-image:       linear-gradient(#1b344a, rgb(1, 10, 17));
+    height:                 48px;
+    /* These 3 stick it to top. */
+    position:               sticky;
+    top:                    0;
+    z-index:                999;
+}
+
+.logo {
+    position:               relative;
+    top:                    44%;
+    -webkit-transform:      translateY(-44%);
+    -ms-transform:          translateY(-44%);
+    transform:              translateY(-44%);
+}
+
+
+/* ======== MID BAR ======== */
+.middle_bar {
+    background-image:       linear-gradient(rgb(1, 10, 17), rgba(1, 10, 17, 0.7));
+    padding-top:            18px;
+    padding-bottom:         18px;
+    padding-left:           3%;
+    padding-right:          3%;
+    /* These 3 stick it to top. */
+    position:               sticky;
+    top:                    48px;/* same as nav height. */
+    z-index:                999;/* same as nav index. */
+}
+
+.prog_bar {
+    width:                  45%;
+    margin-bottom:          30px;
+    border:                 1px solid #6c757d;/* matches secondary color */
+    border-radius:          12px;
+    background:             none;
+    height:                 15px;
+    font-size:              12px;
+    color:                  rgb(1, 10, 17);
+}
+
+.up_arrow {
+    color:                  rgb(94, 118, 140);
+    text-decoration:        none;
+    font-size:              19px;
+}
+
+
+/* ======== CHART BUTTONS ======== */
+.exp_ctrl_row {
+    margin-left:            3%;
+    margin-top:             15px;
+}
+
+.ctrl_chart {
+    width:                  75%;
+}
+
+.ctrl_big {
+    min-width:              212px;
+}
+
+.ctrl_sm {
+    min-width:              160px;
+}
+
+.chart_button {
+    padding-top:            7px;
+    padding-bottom:         7px;
+    padding-left:           12px;
+    padding-right:          12px;
+    border-radius:          6px;
+    color:                  #43eac5;
+    border-color:           #43eac5;
+    font-weight:            lighter;
+}
+
+.ctrl_col_big {
+    min-width:              230px
+}
+
+.ctrl_col_sm {
+    min-width:              190px
+}
+
+
+/* ======== TABLES ======== */
+.hp_contain {
+    overflow-y:             scroll;
+    max-height:             100%;
+    margin-top:             20px;
+    padding-right:          5%;
+}
+
+.tbl {
+    text-align:             center; 
+    font-size:              14px;
+    /* it injects its own margin w/o this */
+    margin-bottom:          5px;
+    /* can't get border-radius to apply */
+}
+
+.tbig {
+    width:                  70%
+}
+
+.tsmall {
+    width:                  26%
+}
+
+/* bootstrap overrides many thead & tbody styles. */
+thead {
+    font-size:              14.5px;
+    color:                  white
+} 
+tbody {
+    border-top-color:       #484848
+}
+
+
+/* ======== PLOTS ======== */
+.exp_row {
+    margin-left:            3%;
+    height:                 500px;
+    margin-bottom:          15px;
+}
+
+.exp_plot_contain {
+    width:                  90%;
+    height:                 500px;
+}
+
+.plots {
+    width:                  90%;
+}
+
+
+/* ======== MISC ======== */
+.header {
+    color:              #ffda67;
+    font-size:          18px;
+    font-weight:        200;
+    font-stretch:       108%;
+    text-align:         center;
+}
+
+.alert {
+    width:              80%;
+    margin:             auto;
+    text-align:         center;
+    background:         #ffffff20;
+    border-radius:      12px;
+    border-color:       #ffffff00;
+    border-width:       4px;
+    padding:            25px;
+    color:              white;
+    font-weight:        lighter;
+}
+
+.spinner {
+    margin-left: 48%
+}
