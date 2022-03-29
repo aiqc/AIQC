@@ -151,11 +151,17 @@
   
   </br></br></br>
 
-  <center>
-    <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" alt="experiment_tracker" width="100%" style="display:block;">
-  </center>
+  <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" alt="experiment_tracker" width="100%" style="display:block;">
+  </br>
 
-  </br></br>
+  
+  <center style="margin-bottom:50px;">
+    <a class="linx" href="compare.html" target="_blank">
+      <span class="textz" style="color:#626262; font-size:17.5px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
+    </a>
+  </center>
+  <!-- 3 BRs or a 60% margin makes the shapes below get misaligned -->
+  
   
   <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
@@ -169,10 +175,6 @@
       <div class="headerz headerz-dark">Refine raw data into actionable <span class="goldz-dark">insight</span>.</div>
       </br></br></br>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/train_abstract_lines.png" alt="abstraction" width="93%" style="display:block;">
-      </br></br>
-      <a class="linx" href="compare.html" target="_blank">
-        <span class="textz" style="color:#626262; font-size:17.5px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
-      </a>
     </center>
     </br></br></br></br></br>
   </div>
