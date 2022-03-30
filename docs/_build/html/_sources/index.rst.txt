@@ -94,7 +94,7 @@
   </div>
   </br></br></br>
   <center>
-    <div class="intro" style="color:#828282; font-size:19px !important; font-family:'Abel'; letter-spacing: 0.03em; margin-left: 23%; margin-right:23%; line-height: 155%;">Accelerating research with a declarative API for end-to-end MLops</div>  
+    <div class="intro" style="color:#828282; font-size:19px !important; font-family:'Abel'; letter-spacing: 0.03em; margin-left: 26%; margin-right:26%; line-height: 155%;">Accelerating research with an open source framework for MLops</div>  
   </center>
   </br></br>
 
