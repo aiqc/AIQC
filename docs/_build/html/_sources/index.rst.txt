@@ -94,14 +94,14 @@
   </div>
   </br></br></br>
   <center>
-    <div class="intro" style="color:#828282; font-size:19px !important; font-family:'Abel'; letter-spacing: 0.03em; margin-left: 23%; margin-right:23%; line-height: 155%;">AIQC accelerates research with a simple framework for best practice MLops.</div>  
+    <div class="intro" style="color:#828282; font-size:19px !important; font-family:'Abel'; letter-spacing: 0.03em; margin-left: 23%; margin-right:23%; line-height: 155%;">Accelerating research with a declarative API for end-to-end MLops</div>  
   </center>
   </br></br>
 
 .. 
   The image border is styled by script below.
 
-.. image:: images/framework_mar29.png
+.. image:: images/framework_mar30.png
   :width: 100%
   :align: center
   :alt: framework
@@ -399,6 +399,11 @@ AIQC
   <script>
     window.addEventListener('load', function() {
       var framework = document.querySelector("img[alt='framework']")
+      framework.style.border = "2px solid #40566b";
+    });
+
+    window.addEventListener('load', function() {
+      var framework = document.querySelector("img[alt='experiment_tracker']")
       framework.style.border = "2px solid #40566b";
     });
 

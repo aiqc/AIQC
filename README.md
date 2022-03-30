@@ -14,31 +14,30 @@
 </br></br>
 
 ```python
+# 1. Create & connect to SQLite db
 pip install --upgrade aiqc
-
-
-# Create & connect to SQLite db
 import aiqc
 aiqc.setup()
 
 
-# Declare preprocessing steps
-aiqc.Pipeline.Tabular.make(…)
+# 2. Declare preprocessing steps
+aiqc.Pipeline.Tabular.make()
 
 
-# Declare model architectures
-aiqc.Experiment.make(…).run_jobs()
+# 3. Declare model architectures
+aiqc.Experiment.make().run_jobs()
 
 
-# Launch Dash app for evaluating models
-aiqc.lab.launch()
+# 4. Launch app to evaluate models
+from aiqc import Lab
+Lab.launch()
 ```
 
 </br></br>
 
 <center>
 	<a href="https://aiqc.readthedocs.io/">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mar29.png" width="95%" alt="framework"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mar30.png" width="95%" alt="framework"/>
 	</a>
 </center>
 </br></br></br>
