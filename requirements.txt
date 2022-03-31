@@ -1,7 +1,6 @@
 # pip install --upgrade -r requirements.txt
-pip
-# Without `wheel` dependencies attempt "legacy install"
-wheel
+# You can't upgrade pip and wheel as part of dependency install process.
+# You can't use same line comments in this file.
 # Keras-TF compatibility: https://github.com/keras-team/keras#release-and-compatibility
 tensorflow==2.7.0
 Keras==2.7.0
@@ -24,6 +23,8 @@ tqdm==4.59.0
 validators==0.18.2
 dill==0.3.3
 fsspec==0.9.0
+# 2.1.0 breaks JupyterDash
+Werkzeug==2.0.3
 dash==2.2.0
 dash-bootstrap-components==1.0.3
 # Does not require jupyter

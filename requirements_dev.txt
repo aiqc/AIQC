@@ -1,6 +1,8 @@
 # Run this to avoid typos: `pip install --upgrade -r requirements_dev.txt`
 # These dependencies are for: Build PyPI package. Build docs. Testing optional JupyterLab compatibility.
 # Packaging:
+pip
+wheel
 twine
 # Documentation:
 ipython==7.19.0

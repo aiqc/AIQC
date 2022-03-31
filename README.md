@@ -1,9 +1,9 @@
 <!-- 
 	This page is formatted for GitHub's markdown renderer 
-	Not that GitHub does not allow for inline style or <script> tags.
+	Note that GitHub does not allow for inline style or <script> tags.
 
-	Removing banner for now
-	![AIQC (wide)](https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/aiqc_logo_banner_controlroom.png)
+	It is also displayed on PyPI, which has slightly different formatting
+	e.g. can't use html <center> tags or markdown `> quotes`
 -->
 
 <a href="https://badge.fury.io/py/aiqc"><img src="https://badge.fury.io/py/aiqc.svg" alt="PyPI version" height="18"></a>
@@ -13,33 +13,34 @@
 <h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
 </br></br>
 
-<center>
-	<a href="https://aiqc.readthedocs.io/">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mar30.png" width="95%" alt="framework"/>
-	</a>
-</center>
+
+<a href="https://aiqc.readthedocs.io/">
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mar30.png" width="95%" alt="framework"/>
+</a>
 </br></br></br>
 
-<center>
-	<a href="https://aiqc.readthedocs.io/">
-		<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
-	</a>
-</center>
+
+<a href="https://aiqc.readthedocs.io/">
+	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
+</a>
 </br></br></br>
 
-<center>
-	<a href="https://aiqc.readthedocs.io/">
-		<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/compare_models.gif" width="95%" alt="compare_models"/>
-	</a>
-</center>
-</br></br>
+
+<a href="https://aiqc.readthedocs.io/">
+	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/compare_models.gif" width="95%" alt="compare_models"/>
+</a>
+</br></br></br>
 
 
-# TLDR
+# Install
 
 ```python
-# Create & connect to SQLite db
+pip install --upgrade pip
+pip install --upgrade wheel
 pip install --upgrade aiqc
+
+
+# Create & connect to SQLite db
 import aiqc
 aiqc.setup()
 
@@ -56,4 +57,7 @@ Tracker().start()
 # Declare & run models
 aiqc.Experiment.make().run_jobs()
 ```
-</br></br>
+
+> Official Installation Documentation:
+>
+> https://aiqc.readthedocs.io/en/latest/notebooks/installation.html

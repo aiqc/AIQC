@@ -606,7 +606,7 @@ div.rendered_html tbody tr:hover {
 <section id="Prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> Python package automatically includes &amp; enables the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension along with it - even if the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not installed yet. Interestingly enough, the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not a dependency of <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> package.</p>
-<p><strong>Known Issue -</strong><a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/49">JupyterLab Extension Not Pre-Built</a></p>
+<p>Known Issue - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/49">JupyterLab Extension Not Pre-Built</a>.</p>
 <p>JupyterLab must rebuild its assets in order to use the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension.</p>
 <hr class="docutils" />
 </section>
@@ -674,7 +674,9 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="Troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline"></a></h2>
-<p><strong>Known Bug -</strong><a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/33">JupyterDash Hung Port</a></p>
+<ol class="arabic simple">
+<li><p>Known Bug - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/33">JupyterDash Hung Port</a></p></li>
+</ol>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OSError: Address &#39;http://127.0.0.1:9991&#39; already in use.
 Try passing a different port to run_server.
 </pre></div>
@@ -686,7 +688,9 @@ Try passing a different port to run_server.
 </div>
 <p>Unfortunately, I haven’t found a way to tear down the hung server apart from manually terminating the OS process. Killing the JupyterLab session is not sufficient to release the port.</p>
 <p>Strangely, you can start an app on the same port repeatedly just fine.</p>
-<p><strong>Known Bug -</strong><a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/63">JupyterDash Werkzeug Deprecation Warnings</a></p>
+<ol class="arabic simple" start="2">
+<li><p>Known Bug - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/63">JupyterDash Werkzeug Deprecation Warnings</a></p></li>
+</ol>
 <p>The Plotly team has been working on cleaning up these issues.</p>
 </section>
 </section>
