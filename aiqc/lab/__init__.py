@@ -2,8 +2,8 @@
 from .. import orm
 from ..utils import metrics_classify, metrics_regress
 # Python modules.
-from logging import getLogger, ERROR
 import io
+from logging import getLogger, ERROR
 from contextlib import redirect_stdout
 
 from dash import dcc
@@ -36,11 +36,13 @@ class Tracker(object):
         refresh_seconds *= 1000
 
         runtime = dict(
-            #`external` browser tab | `inline` jupyter cell | `jupyterlab` jupyter tab
-            mode = "external" 
-            , debug = False # for examining errors and callback DAG.
+            # `external` browser tab | `inline` jupyter cell | `jupyterlab` jupyter tab
+            mode = "external"
+            # Examining errors and callback DAG.
+            , debug = False 
             , host = '127.0.0.1' 
-            , port = '9991'# just keep incrementing if it's "already in use".
+            # Just keep incrementing if it's "already in use".
+            , port = '9991'
         )
         if (server_runtime is not None):
             for parameter, value in server_runtime.items():
@@ -523,7 +525,7 @@ class Tracker(object):
                 big_column = dbc.Col(big_column, width=col_width)
                 multi_cols.append(big_column)
             return multi_cols
-        
+
         if (self.server_runtime['mode']=='external'):
             try:
                 f = io.StringIO()

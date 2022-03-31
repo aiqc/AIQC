@@ -1,4 +1,7 @@
 # pip install --upgrade -r requirements.txt
+pip
+# Without `wheel` dependencies attempt "legacy install"
+wheel
 # Keras-TF compatibility: https://github.com/keras-team/keras#release-and-compatibility
 tensorflow==2.7.0
 Keras==2.7.0
