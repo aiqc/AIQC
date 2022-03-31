@@ -528,6 +528,8 @@ class Tracker(object):
 
         if (self.server_runtime['mode']=='external'):
             try:
+                # Intercept & change Dash's launch message. 
+                # Doesn't work in shell, but does work in Jupyter.
                 f = io.StringIO()
                 with redirect_stdout(f):
                     app.run_server(**self.server_runtime)

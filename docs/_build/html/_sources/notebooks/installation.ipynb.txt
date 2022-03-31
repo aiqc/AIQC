@@ -368,7 +368,8 @@
     "* Be sure to include `--upgrade` when running the command above.\n",
     "  * The command above must often be ran twice (PyPI bug).\n",
     "* Upgrade `pip` itself: `pip install --upgrade pip`\n",
-    "* Install`wheel` is recommended: `pip install --upgrade wheel` "
+    "* Install`wheel` is recommended: `pip install --upgrade wheel` \n",
+    "* If you find yourself reinstalling unwanted packages from the cache, then use `pip install --upgrade --no-cache-dir aiqc`"
    ]
   },
   {

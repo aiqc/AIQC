@@ -3,7 +3,7 @@
 	Note that GitHub does not allow for inline style or <script> tags.
 
 	It is also displayed on PyPI, which has slightly different formatting
-	e.g. can't use html <center> tags or markdown `> quotes`
+	e.g. can't use html <center> tags.
 -->
 
 <a href="https://badge.fury.io/py/aiqc"><img src="https://badge.fury.io/py/aiqc.svg" alt="PyPI version" height="18"></a>
