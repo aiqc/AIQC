@@ -13,6 +13,7 @@
   :caption: Documentation
   :hidden:
 
+  notebooks/dashboard
   notebooks/visualization
   notebooks/api_high_level
   notebooks/api_low_level

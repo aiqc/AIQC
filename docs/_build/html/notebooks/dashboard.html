@@ -33,7 +33,9 @@
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualization &amp; Metrics" href="visualization.html" />
+    <link rel="prev" title="Install" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -97,7 +99,17 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dashboards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Experiment-Tracker">Experiment Tracker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Runtime">Runtime</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html#Overview">Overview</a></li>
@@ -593,16 +605,16 @@ div.rendered_html tbody tr:hover {
 <hr class="docutils" />
 <section id="Prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> Python package automatically includes &amp; enables the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension along with it - even if the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not installed yet. The <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> is not a dependency of <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code>.</p>
-<p>However, as of 03/31/2022, it is still <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/49">not a pre-built JupyterLab extension</a>. So JupyterLab must rebuild its assets in order to use the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> Python package automatically includes &amp; enables the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension along with it - even if the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not installed yet. Interestingly enough, the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not a dependency of <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> package.</p>
+<p><strong>Known Issue -</strong><a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/49">JupyterLab Extension Not Pre-Built</a></p>
+<p>JupyterLab must rebuild its assets in order to use the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension.</p>
 <hr class="docutils" />
 </section>
 <section id="Runtime">
 <h3>Runtime<a class="headerlink" href="#Runtime" title="Permalink to this headline"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app.</p>
-<p>It has 2 user-facing attributes:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">aiqc.lab.Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app. It has 2 user-facing attributes:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">refresh_seconds:int=5</span></code> determines the polling frequency.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refresh_seconds:int=5</span></code> determines the polling frequency (between 5 &amp; 30 seconds). This ensures that the UI has access to up-to-date database information.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">server_runtime:dict=None</span></code> is passed through to: <code class="docutils literal notranslate"><span class="pre">dash.Dash.app.run_server()</span></code> as **kwargs.</p></li>
 </ul>
 <p>These are the default <code class="docutils literal notranslate"><span class="pre">server_runtime</span></code> items, which are overridable:</p>
@@ -662,6 +674,7 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="Troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline"></a></h2>
+<p><strong>Known Bug -</strong><a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/33">JupyterDash Hung Port</a></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OSError: Address &#39;http://127.0.0.1:9991&#39; already in use.
 Try passing a different port to run_server.
 </pre></div>
@@ -673,6 +686,7 @@ Try passing a different port to run_server.
 </div>
 <p>Unfortunately, I haven’t found a way to tear down the hung server apart from manually terminating the OS process. Killing the JupyterLab session is not sufficient to release the port.</p>
 <p>Strangely, you can start an app on the same port repeatedly just fine.</p>
+<p><strong>Known Bug -</strong><a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/63">JupyterDash Werkzeug Deprecation Warnings</a></p>
 <p>The Plotly team has been working on cleaning up these issues.</p>
 </section>
 </section>
