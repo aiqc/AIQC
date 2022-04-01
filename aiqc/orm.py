@@ -4660,7 +4660,7 @@ class Predictor(BaseModel):
 
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):
-		"""This is actually a method of `Hyperparamcombo` so we just pass through."""
+		"""This is a proxy for `Hyperparamcombo.get_hyperparameters`"""
 		predictor = Predictor.get_by_id(id)
 		hyperparamcombo = predictor.job.hyperparamcombo
 		if (hyperparamcombo is not None):

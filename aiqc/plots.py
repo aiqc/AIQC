@@ -1,6 +1,7 @@
 """
 Plots
 └── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/visualization.html
+└── Data is prepared in the `plot_*` methods of the Queue and Predictor ORM classes.
 """
 import plotly.graph_objects as go
 import plotly.express as px
@@ -8,22 +9,33 @@ import plotly.figure_factory as ff
 from re import sub
 
 
-class Plot():
-	"""Data is prepared in the Queue and Predictor classes before being fed into the methods below."""
+def set_dash_font(fig:object):
+	"""Dash knows about `/lab/assets` for Abel .tff, but regular charts don't"""
+	return fig.update_layout(
+		font=dict(family="Abel, Avenir", size=14)
+		, titlefont=dict(family="Abel, Avenir")
+		, hoverlabel=dict(font=dict(family="Abel, Avenir"))
+	)
+
+
+class Plot(object):
 	def __init__(self):
-		"""__init__ defines a template that is passed to the other plots."""
+		"""
+		- Defines a template that is passed to the other plots.
+		- Font gets overriden to Abel below by Dash.
+		"""
 		self.plot_template = dict(
             layout=go.Layout(
-			    font=dict(family='Abel', color='#FAFAFA', size=14)
+			    font=dict(family="Avenir", color='#FAFAFA', size=13)
                 , title=dict(x=0.05, y=0.95)
-                , titlefont=dict(family='Abel')
+                , titlefont=dict(family="Avenir")
                 , title_pad=dict(b=50, t=20)
                 , plot_bgcolor='#182d41'
                 , paper_bgcolor='#182d41'
                 , hovermode='closest'
                 , hoverlabel=dict(
                     bgcolor="#122536"
-                    , font=dict(family="Abel", size=15)
+                    , font=dict(family="Avenir", size=15)
                 )
             )
         )
@@ -58,12 +70,14 @@ class Plot():
 			, template = self.plot_template
 			, showlegend=False#gets way too busy
 		)
+
 		fig.update_xaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 		fig.update_yaxes(zeroline=False, gridcolor='#2c3c4a', tickfont=dict(color='#818487'))
 		
 		if (call_display==True):
 			fig.show()
 		else:
+			fig = set_dash_font(fig)
 			return fig
 
 
@@ -114,6 +128,7 @@ class Plot():
 			if (call_display==True):
 				fig.show()
 			else:
+				fig = set_dash_font(fig)
 				figs.append(fig)
 		if (call_display==False):
 			return figs
@@ -186,6 +201,7 @@ class Plot():
 			if (call_display==True):
 				fig.show()
 			else:
+				fig = set_dash_font(fig)
 				figs.append(fig)
 		if (call_display==False):
 			return figs
@@ -224,6 +240,7 @@ class Plot():
 		if (call_display==True):
 			fig.show()
 		else:
+			fig = set_dash_font(fig)
 			return fig
 
 
@@ -272,6 +289,7 @@ class Plot():
 		if (call_display==True):
 			fig.show()
 		else:
+			fig = set_dash_font(fig)
 			return fig
 	
 
@@ -302,4 +320,5 @@ class Plot():
 		if (call_display==True):
 			fig.show()
 		else:
+			fig = set_dash_font(fig)
 			return fig

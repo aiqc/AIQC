@@ -252,6 +252,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
@@ -2342,9 +2343,6 @@ No more FeatureCoders can be added to this Encoderset.
 <li><p>The number of feature/ label columns is mutable due to encoders (e.g. OHE).</p></li>
 <li><p>Shapes can be less obvious in multi-dimensional scenarios like colored images.</p></li>
 </ul>
-<blockquote>
-<div><p>You can customize the metrics if you so desire (e.g. change the loss or accuracy), but they will only be applied to the training process/ <code class="docutils literal notranslate"><span class="pre">History</span></code> callback. We’ll see later that AIQC will calculate metrics for you automatically.</p>
-</div></blockquote>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[56]:
 </pre></div>
@@ -2403,7 +2401,7 @@ No more FeatureCoders can be added to this Encoderset.
 <li><p><code class="docutils literal notranslate"><span class="pre">samples_evaluate</span></code> - the appropriate data is made available for evaluation. For example, <code class="docutils literal notranslate"><span class="pre">Foldset.samples[fold_index]['fold_validation']</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset.samples['validation']</span></code>, or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['test']</span></code>.</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[59]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2423,11 +2421,28 @@ No more FeatureCoders can be added to this Encoderset.
         <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">3</span>
         <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">History</span><span class="p">()]</span>
+        <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
+</div>
+</section>
+<section id="Customizable-history">
+<h5>Customizable history<a class="headerlink" href="#Customizable-history" title="Permalink to this headline"></a></h5>
+<p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="visualization.html">visualization</a> section.</p>
+<ul class="simple">
+<li><p><em>Keras</em>: any <code class="docutils literal notranslate"><span class="pre">metrics=[]</span></code> specified are automatically added to the <code class="docutils literal notranslate"><span class="pre">History</span></code> callback object.</p></li>
+<li><p><em>PyTorch</em>: users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="pytorch_multi-label_classification.html">examples</a>.</p></li>
+</ul>
+<blockquote>
+<div><p>The schema of this dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(*:ndarray,</span> <span class="pre">val_*=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">val_loss</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">accuracy</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">val_accuracy</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
 </div>
 </section>
 <section id="Optional,-callback-to-stop-training-early.">
@@ -2769,7 +2784,7 @@ parallelize.</p></li>
 <p><em>Support for background processing has not been restored after decoupling the preprocessing pipelines from the Queue/Job logic.</em></p>
 <ul class="simple">
 <li><p>The Jobs loop is executed on a separate, parallel <code class="docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code></p></li>
-<li><p>Stop the Jobs with <code class="docutils literal notranslate"><span class="pre">queue.stop_jobs()</span></code>, which kills the parallel <em>Process</em> unless it already failed.</p></li>
+<li><p>Stop the Jobs with <code class="docutils literal notranslate"><span class="pre">queue.stop_jobs()</span></code> (also deprecated), which kills the parallel <em>Process</em> unless it already failed.</p></li>
 <li><p>The benefit is that you can continue to code while your models are trained. There is no performance boost.</p></li>
 <li><p>On Mac and Linux (Unix), <code class="docutils literal notranslate"><span class="pre">'fork'</span></code> multiprocessing is used (<code class="docutils literal notranslate"><span class="pre">force=True</span></code>), which allows us to display the progress bar. FYI, even in ‘fork’ mode, Python multiprocessing is much more fragile in Python 3.8, which seems to be caused by how pickling is handled in passing variables to the child process.</p></li>
 <li><p>On Windows, <code class="docutils literal notranslate"><span class="pre">'spawn'</span></code> multiprocessing is used, which requires polling:</p>
@@ -2838,6 +2853,15 @@ parallelize.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">input_shapes</span></code>: used by <code class="docutils literal notranslate"><span class="pre">get_model()</span></code> during inference.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">history</span></code>: per epoch metrics recorded during training.</p></li>
 </ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 <section id="Fetching-the-trained-model.">
 <h4>Fetching the trained model.<a class="headerlink" href="#Fetching-the-trained-model." title="Permalink to this headline"></a></h4>
 <div class="nbinput docutils container">
@@ -2845,8 +2869,7 @@ parallelize.</p></li>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">compiled_model</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
-<span class="n">compiled_model</span>
+<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -2858,6 +2881,19 @@ parallelize.</p></li>
 <div class="highlight"><pre>
 &lt;keras.engine.sequential.Sequential at 0x18227fe90&gt;
 </pre></div></div>
+</div>
+</section>
+<section id="Fetching-the-hyperparameters.">
+<h4>Fetching the hyperparameters.<a class="headerlink" href="#Fetching-the-hyperparameters." title="Permalink to this headline"></a></h4>
+<p>This method is just a proxy that passes argments to <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo.get_hyperparameters()</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>
