@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/dashboard.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="AIQC makes comparing and evaluating models an effortless process through its reactive Dash-Plotly user interface. The following dashboards put precalculated metrics & charts for each split/fold of ..." />
+  <meta property="og:description" content="AIQC makes comparing and evaluating models effortless with its reactive Dash-Plotly user interface. The following dashboards put precalculated metrics & charts for each split/fold of every model ri..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
@@ -102,12 +102,12 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Dashboards</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Experiment-Tracker">Experiment Tracker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Runtime">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Runtime">Runtime</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a><ul>
@@ -252,6 +252,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
@@ -594,7 +595,7 @@ div.rendered_html tbody tr:hover {
 <section id="Dashboards">
 <h1>Dashboards<a class="headerlink" href="#Dashboards" title="Permalink to this headline"></a></h1>
 <hr class="docutils" />
-<p>AIQC makes comparing and evaluating models an effortless process through its reactive <em>Dash-Plotly</em> user interface. The following dashboards put precalculated metrics &amp; charts for each split/fold of every model right at your fingertips. Reference the <a class="reference external" href="visualization.html">Visualization</a> section for more information about the precalculated plots and statistics.</p>
+<p>AIQC makes comparing and evaluating models effortless with its reactive <a class="reference external" href="https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e">Dash-Plotly</a> user interface. The following dashboards put precalculated metrics &amp; charts for each split/fold of every model right at your fingertips. Reference the <a class="reference external" href="visualization.html">Visualization</a> section for more information about the precalculated plots and statistics.</p>
 <section id="Experiment-Tracker">
 <h2>Experiment Tracker<a class="headerlink" href="#Experiment-Tracker" title="Permalink to this headline"></a></h2>
 <p>During the training process, practitioners continually improve their algorithm by experimenting with different combinations of neural network architectures and parameters. This iterative process generates a lot of post-processing data, and it’s difficult to figure out which model is the best just by staring at hundreds of rows of raw data.</p>
@@ -605,14 +606,18 @@ div.rendered_html tbody tr:hover {
 <p>How does a practition know that ‘model A’ is actually better than ‘model B’ for their use case? Is one model slightly more biased than the other? What characteristics in the data is each model relying on? Can we eek out a bit higher performance if we train for just a bit longer? The head-to-head comparison provides a deep dive that helps tease out the answers to these challenging questions.</p>
 <img alt="head2head" src="../_images/compare_models.gif" />
 <hr class="docutils" />
+</section>
 <section id="Prerequisites">
-<h3>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> Python package automatically includes &amp; enables the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension along with it - even if the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not installed yet. Interestingly enough, the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not a dependency of <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> package.</p>
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
+<p>The Dash app is shipped as part of the <code class="docutils literal notranslate"><span class="pre">aiqc</span></code> package, so they just work out-of-the-box.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> Python package automatically includes &amp; enables the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension along with it - even if the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not installed yet. Interestingly enough, the <code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code> package is not a dependency of <code class="docutils literal notranslate"><span class="pre">jupyter_dash</span></code> package.</p>
+</div></blockquote>
 <p><strong>Known Issue</strong> - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/49">JupyterLab Extension Not Pre-Built</a>; JupyterLab must rebuild its assets in order to use the <code class="docutils literal notranslate"><span class="pre">jupyterlab-dash</span></code> extension.</p>
 <hr class="docutils" />
 </section>
 <section id="Runtime">
-<h3>Runtime<a class="headerlink" href="#Runtime" title="Permalink to this headline"></a></h3>
+<h2>Runtime<a class="headerlink" href="#Runtime" title="Permalink to this headline"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">aiqc.lab.Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app. It has 2 user-facing attributes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">refresh_seconds:int=5</span></code> determines the polling frequency (between 5 &amp; 30 seconds). This ensures that the UI has access to up-to-date database information.</p></li>
@@ -671,10 +676,8 @@ div.rendered_html tbody tr:hover {
   func()
 </pre></div></div>
 </div>
-</section>
-</section>
 <section id="Troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline"></a></h2>
+<h3>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline"></a></h3>
 <p><strong>Known Bug</strong> - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/33">JupyterDash Hung Port</a></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OSError: Address &#39;http://127.0.0.1:9991&#39; already in use.
 Try passing a different port to run_server.
@@ -688,7 +691,8 @@ Try passing a different port to run_server.
 <p>Unfortunately, I haven’t found a way to tear down the hung server apart from manually terminating the OS process. Killing the JupyterLab session is not sufficient to release the port.</p>
 <p>Strangely, you can start an app on the same port repeatedly just fine.</p>
 <p><strong>Known Bug</strong> - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/63">JupyterDash Werkzeug Deprecation Warnings</a></p>
-<p>The Plotly team has been working on cleaning up these issues.</p>
+<p>The Plotly team has been working on cleaning up these issues as they migrate to Werkzeug 2.1.0</p>
+</section>
 </section>
 </section>
 
