@@ -18,7 +18,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "AIQC makes comparing and evaluating models effortless with its reactive [Dash-Plotly](https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e) user interface. The following dashboards put precalculated metrics & charts for each split/fold of every model right at your fingertips. Reference the [Visualization](visualization.html) section for more information about the precalculated plots and statistics."
+    "AIQC makes comparing and evaluating models effortless with its reactive [Dash-Plotly](https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e) user interface. The following dashboards put precalculated metrics & charts for each split/fold of every model right at your fingertips. \n",
+    "\n",
+    "> Reference the [Visualization](visualization.html) section for more information about the precalculated plots and statistics."
    ]
   },
   {
@@ -34,7 +36,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "During the training process, practitioners continually improve their algorithm by experimenting with different combinations of neural network architectures and parameters. This iterative process generates a lot of post-processing data, and it's difficult to figure out which model is the best just by staring at hundreds of rows of raw data."
+    "During the training process, practitioners continually improve their algorithm by experimenting with different combinations of architectures and parameters. This iterative process generates a lot of post-processing data, and it's difficult to figure out which model is the best just by staring at hundreds of rows of raw data."
    ]
   },
   {
@@ -57,7 +59,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "How does a practition know that 'model A' is actually better than 'model B' for their use case? Is one model slightly more biased than the other? What characteristics in the data is each model relying on? Can we eek out a bit higher performance if we train for just a bit longer? The head-to-head comparison provides a deep dive that helps tease out the answers to these challenging questions."
+    "The head-to-head comparison provides a deep dive that helps tease out the answers to challenging questions:\n",
+    "\n",
+    "> How does a practitioner know that 'model A' is actually better than 'model B' for their use case? Is one model slightly more biased than the other? What characteristics in the data is each model relying on? Can we get higher performance if we train for just a bit longer? "
    ]
   },
   {
@@ -276,7 +280,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The Plotly team has been working on cleaning up these issues as they migrate to Werkzeug 2.1.0"
+    "The Plotly team has since removed Werkzeug as a dependency."
    ]
   }
  ],

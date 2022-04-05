@@ -595,15 +595,21 @@ div.rendered_html tbody tr:hover {
 <section id="Dashboards">
 <h1>Dashboards<a class="headerlink" href="#Dashboards" title="Permalink to this headline"></a></h1>
 <hr class="docutils" />
-<p>AIQC makes comparing and evaluating models effortless with its reactive <a class="reference external" href="https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e">Dash-Plotly</a> user interface. The following dashboards put precalculated metrics &amp; charts for each split/fold of every model right at your fingertips. Reference the <a class="reference external" href="visualization.html">Visualization</a> section for more information about the precalculated plots and statistics.</p>
+<p>AIQC makes comparing and evaluating models effortless with its reactive <a class="reference external" href="https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e">Dash-Plotly</a> user interface. The following dashboards put precalculated metrics &amp; charts for each split/fold of every model right at your fingertips.</p>
+<blockquote>
+<div><p>Reference the <a class="reference external" href="visualization.html">Visualization</a> section for more information about the precalculated plots and statistics.</p>
+</div></blockquote>
 <section id="Experiment-Tracker">
 <h2>Experiment Tracker<a class="headerlink" href="#Experiment-Tracker" title="Permalink to this headline"></a></h2>
-<p>During the training process, practitioners continually improve their algorithm by experimenting with different combinations of neural network architectures and parameters. This iterative process generates a lot of post-processing data, and it’s difficult to figure out which model is the best just by staring at hundreds of rows of raw data.</p>
+<p>During the training process, practitioners continually improve their algorithm by experimenting with different combinations of architectures and parameters. This iterative process generates a lot of post-processing data, and it’s difficult to figure out which model is the best just by staring at hundreds of rows of raw data.</p>
 <img alt="tracker" src="../_images/experiment_tracker.gif" />
 </section>
 <section id="Compare-Models-Head-to-Head">
 <h2>Compare Models Head-to-Head<a class="headerlink" href="#Compare-Models-Head-to-Head" title="Permalink to this headline"></a></h2>
-<p>How does a practition know that ‘model A’ is actually better than ‘model B’ for their use case? Is one model slightly more biased than the other? What characteristics in the data is each model relying on? Can we eek out a bit higher performance if we train for just a bit longer? The head-to-head comparison provides a deep dive that helps tease out the answers to these challenging questions.</p>
+<p>The head-to-head comparison provides a deep dive that helps tease out the answers to challenging questions:</p>
+<blockquote>
+<div><p>How does a practitioner know that ‘model A’ is actually better than ‘model B’ for their use case? Is one model slightly more biased than the other? What characteristics in the data is each model relying on? Can we get higher performance if we train for just a bit longer?</p>
+</div></blockquote>
 <img alt="head2head" src="../_images/compare_models.gif" />
 <hr class="docutils" />
 </section>
@@ -691,7 +697,7 @@ Try passing a different port to run_server.
 <p>Unfortunately, I haven’t found a way to tear down the hung server apart from manually terminating the OS process. Killing the JupyterLab session is not sufficient to release the port.</p>
 <p>Strangely, you can start an app on the same port repeatedly just fine.</p>
 <p><strong>Known Bug</strong> - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/63">JupyterDash Werkzeug Deprecation Warnings</a></p>
-<p>The Plotly team has been working on cleaning up these issues as they migrate to Werkzeug 2.1.0</p>
+<p>The Plotly team has since removed Werkzeug as a dependency.</p>
 </section>
 </section>
 </section>
