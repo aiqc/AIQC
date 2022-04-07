@@ -6,8 +6,7 @@ import io
 from logging import getLogger, ERROR
 from contextlib import redirect_stdout
 
-from dash import dcc
-from dash import html
+from dash import dcc, html
 from dash.dependencies import Output, Input, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc

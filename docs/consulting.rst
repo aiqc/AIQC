@@ -62,7 +62,7 @@ Consulting
       </div>
       <div class="DMAIC-right figCaption">
         </br>
-        <p style="line-height:1.63 !important; font-size:17px !important;">
+        <p style="color:white; line-height:1.63 !important; font-size:17px !important;">
           Solve real-world problems with machine learning by applying the <i>Six Sigma DMAIC</i> approach to process improvement.
         </p>
       </div>
