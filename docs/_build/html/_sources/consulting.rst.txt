@@ -8,7 +8,7 @@ Consulting
   <div style="background-image: linear-gradient(#24435f, #122536); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
     </br></br></br>
     <center>
-      <div class="headerz titlez headerz-dark">Ready to begin your AI <span class="goldz-dark">transformation</span>?</div>
+      <div class="headerz titlez headerz-dark">Ready to accelerate your AI-enabled <span class="goldz-dark"> transformation</span>?</div>
     </center>
   </div>
   <div style="height: 60px; overflow: hidden;">

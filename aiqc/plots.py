@@ -161,13 +161,13 @@ class Plot(object):
 			# add custom yaxis title
 			fig.add_annotation(dict(
 				font=dict(color="white", size=15)
-				, x=-0.4
-				, y=0.5
+				, x = -0.19, y = 0.5
+				# https://plotly.com/python/figure-structure/#positioning-with-paper-container-coordinates-or-axis-domain-coordinates
+				, xref="x domain", yref="paper"
 				, showarrow=False
 				, text="Actual Label"
 				, textangle=-90
-				, xref="paper"
-				, yref="paper"
+
 			))
 
 			fig.update_layout(
@@ -192,7 +192,8 @@ class Plot(object):
 					, fixedrange = True#prevents zoom/pan
 					, tickfont = dict(size=13)
 				)
-				, margin = dict(r=75, l=150)#impacts y axis annotation x position
+				#, margin = dict(r=75, l=150)#impacts y axis annotation x position
+				, margin = dict(l=200)#impacts y axis annotation x position
 			)
 
 			fig.update_traces(
@@ -295,7 +296,8 @@ class Plot(object):
 
 	def feature_importance(
 		self, feature_impacts:object, feature_id:int,
-		permute_count:int, height:int, top_n:int,
+		permute_count:int, top_n:int,
+		height:int, margin_left:int,
 		call_display:bool
 	):
 		if (top_n is not None):
@@ -311,6 +313,7 @@ class Plot(object):
 			, height = height
 			, title = title
 			, showlegend = False
+			, margin = dict(l=margin_left)
 		)
 		fig.update_xaxes(
 			title = f"Importance<br><sup>[permuted column loss - training loss]</sup>",

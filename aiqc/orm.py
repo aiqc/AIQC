@@ -4933,7 +4933,7 @@ class Prediction(BaseModel):
 	
 
 	def plot_feature_importance(
-		id:int, call_display:bool=True, top_n:int=10, height:int=None
+		id:int, call_display:bool=True, top_n:int=10, height:int=None, margin_left:int=None
 	):
 		# Forcing `top_n` so that it doesn't load a billion features in the UI. 
 		# `top_n` Silently returns all features if `top_n` > features.
@@ -4949,17 +4949,22 @@ class Prediction(BaseModel):
 				medians = [v['median'] for k,v in feature_cols.items()]
 				loss_impacts = [v['loss_impacts'] for k,v in feature_cols.items()]
 				# Sort lists together using 1st list as index = stackoverflow.com/a/9764364/5739514
-				medians, feature_cols, loss_impacts = (list(t) for t in zip(*sorted(zip(
-					medians, feature_cols, loss_impacts
-				))))
-			
+				medians, feature_cols, loss_impacts = (list(t) for t in zip(*sorted(
+					zip(medians, feature_cols, loss_impacts),
+					reverse=True				
+				)))
+				
 				if (top_n is not None):
 					if (top_n <= 0):
 						raise ValueError("\nYikes - `top_n` must be greater than or equal to 0.\n")
 					# Silently returns all rows if `top_n` > rows.
-					feature_cols, loss_impacts = feature_cols[:top_n], loss_impacts[:top_n]	
+					feature_cols, loss_impacts = feature_cols[:top_n], loss_impacts[:top_n]
 				if (height is None):
 					height = len(feature_cols)*25+300
+				if (margin_left is None):
+					longest_col = len(max(feature_cols))
+					margin_left = longest_col*10
+					if (margin_left<100): margin_left=100
 				# zip them after top_n applied.
 				feature_impacts = dict(zip(feature_cols, loss_impacts))
 
@@ -4968,6 +4973,7 @@ class Prediction(BaseModel):
 					, feature_id = feature_id
 					, permute_count = permute_count
 					, height = height
+					, margin_left = margin_left
 					, top_n = top_n
 					, call_display = call_display
 				)

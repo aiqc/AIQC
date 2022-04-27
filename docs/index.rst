@@ -95,12 +95,10 @@
   </div>
   </br></br></br>
   <center>
-    <div class="intro" style="color:#828282; font-size:19px !important; font-family:'Abel'; letter-spacing: 0.03em; margin-left: 26%; margin-right:26%; line-height: 155%;">Accelerating research with an open source framework for declarative MLops</div>  
+    <div class="intro" style="color:#828282; font-size:19px !important; font-family:'Abel'; letter-spacing: 0.03em; margin-left: 26%; margin-right:26%; line-height: 155%;">Accelerating research with an open source framework for declarative MLOps</div>  
   </center>
   </br></br>
 
-.. 
-  The image border is styled by script below.
 
 .. image:: images/framework_mar30.png
   :width: 100%
@@ -398,16 +396,6 @@ AIQC
 
 
   <script>
-    window.addEventListener('load', function() {
-      var framework = document.querySelector("img[alt='framework']")
-      framework.style.border = "2px solid #40566b";
-    });
-
-    window.addEventListener('load', function() {
-      var framework = document.querySelector("img[alt='experiment_tracker']")
-      framework.style.border = "2px solid #40566b";
-    });
-
     window.addEventListener('load', function() {
       var abstraction = document.querySelector("img[alt='abstraction']")
       abstraction.style.border = "2px solid #ececec";
