@@ -241,7 +241,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "splitset = aiqc.Pipeline.Tabular(\n",
     "    df_or_path=df, label_column = 'species'\n",
     ")"
    ]

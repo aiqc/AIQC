@@ -16,8 +16,12 @@ def setup():
 High-Level API
 ├── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/api_high_level.html
 └── Examples = https://aiqc.readthedocs.io/en/latest/tutorials.html
+
+These classes really just bundle a bunch of low-level API commands they don't instantiate 
+real `Pipeline` objects bur rather `splitsets`. They use `__new__` because `__init__` 
+cannot return anything.
 """
-class Pipeline():
+class Pipeline:
 	def parse_tabular_input(dataFrame_or_filePath:object, dtype:object=None):
 		"""Create the dataset from either df or file."""
 		d = dataFrame_or_filePath
@@ -46,9 +50,10 @@ class Pipeline():
 		return dataset
 
 
-	class Tabular():
-		def make(
-			df_or_path:object
+	class Tabular:
+		def __new__(
+			cls
+			, df_or_path:object
 			, dtype:object = None
 			
 			, feature_cols_excluded:list = None
@@ -125,9 +130,10 @@ class Pipeline():
 			return splitset
 
 
-	class Sequence():
-		def make(
-			feature_ndarray3D_or_npyPath:object
+	class Sequence:
+		def __new__(
+			cls
+			, feature_ndarray3D_or_npyPath:object
 			, feature_dtype:object = None
 			, feature_cols_excluded:list = None
 			, feature_interpolaters:list = None
@@ -215,9 +221,10 @@ class Pipeline():
 			return splitset
 
 
-	class Image():
-		def make(
-			feature_folder_or_urls:str
+	class Image:
+		def __new__(
+			cls
+			, feature_folder_or_urls:str
 			, feature_dtype:str = None
 			, feature_interpolaters:list = None
 			, feature_window:dict = None
@@ -307,19 +314,19 @@ class Pipeline():
 			return splitset
 
 
-class Experiment():
+class Experiment:
 	"""
-	- Create Algorithm, Hyperparamset, Preprocess, and Queue.
-	- Put Preprocess here because it's weird to encode labels before you know what your final training layer looks like.
+	- Create Algorithm, Hyperparamset, preprocess, and Queue.
+	- Includes `preprocess` because it's weird to encode labels before you know what your final training layer looks like.
 	  Also, it's optional, so you'd have to access it from splitset before passing it in.
 	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
-
 
 	`encoder_feature`: List of dictionaries describing each encoder to run along with filters for different feature columns.
 	`encoder_label`: Single instantiation of an sklearn encoder: e.g. `OneHotEncoder()` that gets applied to the full label array.
 	"""
-	def make(
-		library:str
+	def __new__(
+		cls
+		, library:str
 		, analysis_type:str
 		, fn_build:object
 		, fn_train:object

@@ -100,12 +100,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Dashboards</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a><ul>
@@ -143,7 +143,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Hyperparameters">Hyperparameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment.make()"><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment()"><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -250,6 +250,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
@@ -724,7 +725,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
     <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
     <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -853,7 +854,7 @@ No more Featurecoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>

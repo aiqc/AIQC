@@ -9,6 +9,9 @@ In an attempt to fix this, I was able to refactor the Models into separate files
 a new file that to handle db.create_tables(Models). However, when creating/ deleting the db file 
 I couldn't dynamically reload the Models without restarting the kernel and rerunning setup().
 I tried all kinds of importlib.reload(), but decided to move on.
+
+If it is ever undertaken to refactor the methods used to create the model classes, read this:
+https://github.com/coleifer/peewee/issues/856
 """
 # Local modules
 from .config import app_dir

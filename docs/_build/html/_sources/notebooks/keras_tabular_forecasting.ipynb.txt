@@ -310,7 +310,7 @@
     }
    ],
    "source": [
-    "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "splitset = aiqc.Pipeline.Tabular(\n",
     "    # --- Data source ---\n",
     "    df_or_path                = df\n",
     "    , dtype                   = None\n",
@@ -452,7 +452,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "queue = aiqc.Experiment.make(\n",
+    "queue = aiqc.Experiment(\n",
     "    # --- Analysis type ---\n",
     "    library           = \"keras\"\n",
     "    , analysis_type   = \"regression\"\n",

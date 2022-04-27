@@ -174,7 +174,7 @@
     }
    ],
    "source": [
-    "splitset = aiqc.Pipeline.Tabular.make(\n",
+    "splitset = aiqc.Pipeline.Tabular(\n",
     "    # --- Data source ---\n",
     "    df_or_path = df\n",
     "    , dtype = None\n",
@@ -294,7 +294,7 @@
     }
    ],
    "source": [
-    "seq_splitset = aiqc.Pipeline.Sequence.make(\n",
+    "seq_splitset = aiqc.Pipeline.Sequence(\n",
     "    # --- Label preprocessing ---\n",
     "    label_df_or_path = label_df\n",
     "    , label_dtype = None\n",
@@ -401,7 +401,7 @@
     }
    ],
    "source": [
-    "img_splitset = aiqc.Pipeline.Image.make(\n",
+    "img_splitset = aiqc.Pipeline.Image(\n",
     "    # --- Label preprocessing ---\n",
     "    label_df_or_path = df\n",
     "    , label_dtype = None\n",
@@ -605,7 +605,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### `Experiment.make()`"
+    "### `Experiment()`"
    ]
   },
   {
@@ -621,7 +621,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "queue = aiqc.Experiment.make(\n",
+    "queue = aiqc.Experiment(\n",
     "    # --- Analysis type ---\n",
     "    library = \"keras\"\n",
     "    , analysis_type = \"classification_multi\"\n",

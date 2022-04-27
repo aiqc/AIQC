@@ -143,7 +143,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Hyperparameters">Hyperparameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment.make()"><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment()"><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -684,7 +684,7 @@ Non-binary Features = 31
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
     <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
 
@@ -844,7 +844,7 @@ Non-binary Features = 31
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span>             <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span>     <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>

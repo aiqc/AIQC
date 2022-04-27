@@ -102,12 +102,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Dashboards</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization &amp; Metrics</a><ul>
@@ -145,7 +145,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Hyperparameters">Hyperparameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Experiment.make()"><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Experiment()"><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -680,7 +680,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
     <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
     <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -773,7 +773,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">seq_splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">seq_splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span>
     <span class="c1"># --- Label preprocessing ---</span>
     <span class="n">label_df_or_path</span> <span class="o">=</span> <span class="n">label_df</span>
     <span class="p">,</span> <span class="n">label_dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -870,7 +870,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">img_splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">img_splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span>
     <span class="c1"># --- Label preprocessing ---</span>
     <span class="n">label_df_or_path</span> <span class="o">=</span> <span class="n">df</span>
     <span class="p">,</span> <span class="n">label_dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1033,15 +1033,15 @@ No more FeatureCoders can be added to this Encoderset.
 <p>Then pass these functions into the <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">library</span></code> and <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> help handle the model and its output behind the scenes. Current analysis types include: ‘classification_multi’, ‘classification_binary’, and ‘regression’.</p>
 </section>
-<section id="Experiment.make()">
-<h3><code class="docutils literal notranslate"><span class="pre">Experiment.make()</span></code><a class="headerlink" href="#Experiment.make()" title="Permalink to this headline"></a></h3>
+<section id="Experiment()">
+<h3><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code><a class="headerlink" href="#Experiment()" title="Permalink to this headline"></a></h3>
 <p>Now it’s time to bring together the data and logic into an <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
