@@ -101,7 +101,7 @@
 
 
 .. image:: images/framework_mar30.png
-  :width: 100%
+  :width: 93%
   :align: center
   :alt: framework
 
@@ -150,7 +150,9 @@
   
   </br></br></br>
 
-  <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" alt="experiment_tracker" width="100%" style="display:block;">
+  <center>
+    <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
+  </center>
   </br>
 
   
@@ -274,7 +276,7 @@
   </center>
   </br></br>
 
-  <table class="compatibility qc" valign="center" style="width: 100% !important">
+  <table class="compatibility qc" valign="center" style="width: 93% !important">
     <colgroup>
        <col span="1" style="width: 32%;">
        <col span="1" style="width: 14%;">
@@ -363,7 +365,7 @@ AIQC
   <div style="background-image: linear-gradient(#fcfcfc, #122536);">
     </br></br></br></br></br></br>
     <center>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/compare_models.gif" alt="visualizations" width="85%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
       </br></br>
       <div class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating each split & fold of every model.</div>
     </center>
@@ -397,7 +399,8 @@ AIQC
 
   <script>
     window.addEventListener('load', function() {
-      var abstraction = document.querySelector("img[alt='abstraction']")
-      abstraction.style.border = "2px solid #ececec";
+      var art = document.querySelector("div[itemprop='articleBody']")
+      art.style.borderRadius = "25px";
+      art.style.background = "#fdfdfd"; 
     });
   </script>

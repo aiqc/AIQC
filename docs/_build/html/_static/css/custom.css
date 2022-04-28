@@ -43,6 +43,10 @@
     letter-spacing: 0.02em;
 }
 
+.wy-nav-content {
+    background: #f2f2f2;
+}
+
 /* 
 width auto was rendering 0px wide for .svg files
 https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
@@ -405,7 +409,7 @@ h1, h2, h3, h5 {
 
 /* id is for blank cell, whereas class is for header cell*/
 #top-left {
-    background: #fcfcfc;
+    background: #fdfdfd;
 }
 
 .top-left {
