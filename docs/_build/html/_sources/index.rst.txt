@@ -104,7 +104,7 @@
   </br></br>
 
 
-.. image:: images/framework_mar30.png
+.. image:: images/framework_may4.png
   :width: 93%
   :align: center
   :alt: framework

@@ -15,7 +15,7 @@
 
 
 <a href="https://aiqc.readthedocs.io/">
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_mar30.png" width="95%" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/framework_may4.png" width="95%" alt="framework"/>
 </a>
 </br></br></br>
 
@@ -46,7 +46,7 @@ aiqc.setup()
 
 
 # Declare preprocessing steps
-aiqc.Pipeline.Tabular.make()
+aiqc.Pipeline.Tabular(...)
 
 
 # Launch app to monitor training
@@ -55,7 +55,7 @@ Tracker().start()
 
 
 # Declare & run models
-aiqc.Experiment.make().run_jobs()
+aiqc.Experiment(...).run_jobs()
 ```
 
 > Official Installation Documentation:
