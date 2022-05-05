@@ -35,6 +35,7 @@
 # Install
 
 ```python
+# Designed for Python 3.7.12 to mirror Google Colab
 pip install --upgrade pip
 pip install --upgrade wheel
 pip install --upgrade aiqc
@@ -61,3 +62,7 @@ aiqc.Experiment(...).run_jobs()
 > Official Installation Documentation:
 >
 > https://aiqc.readthedocs.io/en/latest/notebooks/installation.html
+
+
+</br></br>
+<h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
