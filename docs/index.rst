@@ -186,7 +186,7 @@
 
   </br></br></br></br></br></br>
   <center>
-    <div class="headerz-light">Write <span class="goldz-light">98% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</div>
+    <div class="headerz-light">Write <span class="goldz-light">90% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</div>
   </center>
   </br></br>
 
