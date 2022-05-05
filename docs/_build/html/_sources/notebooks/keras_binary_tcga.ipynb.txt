@@ -447,6 +447,30 @@
     "\n",
     "* If we had a 5th control group of benign samples, we could learned a lot more."
    ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cc173fe8-0af4-4884-a040-3da9212ddbd9",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "656aad8a-7c7a-4084-9e3a-0573bddb2ce3",
+   "metadata": {},
+   "source": [
+    "## Visualization & Interpretation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b1cf29f4-e131-4dec-a896-8affe128e185",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Dashboard](dashboard.html) documentation."
+   ]
   }
  ],
  "metadata": {

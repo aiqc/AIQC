@@ -484,10 +484,26 @@
   },
   {
    "cell_type": "markdown",
-   "id": "crude-perry",
+   "id": "660a1493-2ba1-4191-b02f-02a0065af3ad",
    "metadata": {},
    "source": [
-    "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6e9b06f7-b615-4454-9a69-0a542076bc4d",
+   "metadata": {},
+   "source": [
+    "## Visualization & Interpretation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "aa16c989-2170-4a61-9a31-2a8f78af282c",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Dashboard](dashboard.html) documentation."
    ]
   }
  ],

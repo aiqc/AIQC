@@ -419,10 +419,26 @@
   },
   {
    "cell_type": "markdown",
-   "id": "interesting-gabriel",
+   "id": "9956d4c3-d352-41bf-a31f-6f7a59b27d74",
    "metadata": {},
    "source": [
-    "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f7b22f93-98b5-4b14-8b96-4e69531e5ffd",
+   "metadata": {},
+   "source": [
+    "## Visualization & Interpretation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c72a5696-1635-4b06-a738-3ce5b96d6b04",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Dashboard](dashboard.html) documentation."
    ]
   }
  ],

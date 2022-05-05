@@ -486,6 +486,27 @@
    "source": [
     "queue.run_jobs()"
    ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Visualization & Interpretation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Dashboard](dashboard.html) documentation."
+   ]
   }
  ],
  "metadata": {

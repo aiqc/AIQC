@@ -519,10 +519,26 @@
   },
   {
    "cell_type": "markdown",
-   "id": "coordinated-disco",
+   "id": "9e90f921-dfe1-44d8-9022-964d7bb740a9",
    "metadata": {},
    "source": [
-    "For more information on visualization of performance metrics, reference the [Visualization & Metrics](visualization.html) documentation."
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f0bdff67-3872-4c1d-982a-2a46f4332a2a",
+   "metadata": {},
+   "source": [
+    "## Visualization & Interpretation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9afbe1e0-d2c3-4dca-abab-38d5eb130b38",
+   "metadata": {},
+   "source": [
+    "For more information on visualization of performance metrics, reference the [Dashboard](dashboard.html) documentation."
    ]
   }
  ],
