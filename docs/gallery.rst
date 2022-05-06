@@ -1,6 +1,3 @@
-..
-  Overview <h1> is intentionally hidden by CSS.
-
 #######
 Gallery
 #######
@@ -8,15 +5,36 @@ Gallery
 ----
 
 .. raw:: html
+ 
+  <center>
+    <div class="flex-container gallery-legend">
+      <div class="flex-item legend-item">
+        <div class="legend-left">
+          <div class="legend-dot dot-tool"></div>
+        </div>
+        <div class="legend-right">
+          Tutorial
+        </div>
+      </div>
+      <div class="flex-item legend-item">
+        <div class="legend-left">
+          <div class="legend-dot dot-analysis"></div>
+        </div>
+        <div class="legend-right">
+          Analysis
+        </div>
+      </div>
+      <div class="flex-item legend-item">
+        <div class="legend-left">
+          <div class="legend-dot dot-data"></div>
+        </div>
+        <div class="legend-right">
+          Data
+        </div>
+      </div>
+    </div>
+  </center>
 
-  </br>
-  <p class="intro">
-    Browse the tutorials below to get a feel for the different types of data and analytical workflows that AIQC supports. Adapt these workflows to your data sources in order to make your own predictive algorithms.
-  </p>
-
-
-.. raw:: html
-  
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
@@ -222,6 +240,7 @@ Gallery
           <div class="flex-tag tag-analysis">Regress</div>
           <div class="flex-tag tag-analysis">Forecast</div>
           <div class="flex-tag tag-data">Time</div>
+          <div class="flex-tag tag-data">Multivariate</div>
           <div class="flex-tag tag-data">Tabular</div>
         </div>
       </div>
@@ -254,7 +273,7 @@ Gallery
         <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">[Placeholder] Generative</div>
+        <div class="flex-title">[TBD] Generative</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">TBD</div>
           <div class="flex-tag tag-analysis">TBD</div>

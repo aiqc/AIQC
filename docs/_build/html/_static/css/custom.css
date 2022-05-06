@@ -14,11 +14,6 @@
 }
 
 
-/* if need to resize for mobile
-@media only screen and (max-width: 925px) {
-}
-*/
-
 .wy-body-for-nav {
     background-image: linear-gradient(to bottom, #111, #424242);
     background-attachment: fixed;
@@ -335,20 +330,65 @@ h1, h2, h3, h5 {
 }
 
 .tag-tool {
-    background:#bae8b3;
+    background:#bae8b380;
     color:#153c0f;
 }
 
 .tag-analysis {
-    background:#d4e9fb;
+    background:#d4e9fb90;
     color:#041626;
 }
 
 .tag-data {
-    background:#ffedb8;
+    background:#ffedb895;
     color:#181302;
 }
 
+.gallery-legend {
+    width: 68%;
+    min-width: 464px;
+    flex-wrap: wrap;
+    background: #ffffff96;
+    border: 2px #e6e6e6 solid;
+    border-radius: 20px;
+    margin: 40px 0px 20px 0px;
+    font-size: 17px;
+    color: #222;
+}
+
+.legend-item {
+    display: flex;
+}
+
+.legend-left {
+    width: 33%;
+}
+
+.legend-right {
+    width: 66%;
+    font-family: Abel;
+    color: #222;
+}
+
+.legend-dot {
+    height: 15px;
+    width: 15px;
+    border-radius: 4px;
+    float: right;
+    margin-top: 3px;
+}
+
+.dot-tool {
+    background:#bae8b3;
+}
+
+.dot-analysis {
+    background:#c1d9ee;
+}
+
+.dot-data {
+    background:#ffe189;;
+}
 /* Responsiveness */
 @media (max-width: 922px) {
     .flex-container {
