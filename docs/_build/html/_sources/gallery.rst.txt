@@ -88,7 +88,7 @@ Gallery
         <div class="flex-title">Cancer Gene Expression</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/keras_binary_tcga.html">
+            <a href="/en/latest/notebooks/keras_multi_tcga.html">
               TensorFlow
             </a>
           </div>
