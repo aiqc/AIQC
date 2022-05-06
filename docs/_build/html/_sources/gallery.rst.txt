@@ -41,7 +41,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/plants.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Identify Plants</div>
+        <div class="flex-title">🌱 Plant Species</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_multi-label_classification.html">
@@ -64,7 +64,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/brains.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Detect Brain Tumors</div>
+        <div class="flex-title">🧠 Detect Tumors</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_image_classification.html">
@@ -72,7 +72,8 @@ Gallery
             </a>
           </div>
           <div class="flex-tag tag-analysis">Classify</div>
-          <div class="flex-tag tag-analysis">binary</div>
+          <div class="flex-tag tag-analysis">Binary</div>
+          <div class="flex-tag tag-analysis">Convolve</div>
           <div class="flex-tag tag-data">Image</div>
         </div>
       </div>
@@ -85,10 +86,10 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/drugs.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Compound Screening</div>
+        <div class="flex-title">💊 Drug Design</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/keras_binary_mapk.html">
+            <a href="/en/latest/notebooks/keras_Binary_mapk.html">
               TensorFlow
             </a>
           </div>
@@ -103,7 +104,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/genes.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Cancer Gene Expression</div>
+        <div class="flex-title">🧬 Cancer Genes</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_multi_tcga.html">
@@ -124,7 +125,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/waves.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Detect Seizure</div>
+        <div class="flex-title">⚡ Detect Seizure</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_sequence_classification.html">
@@ -133,6 +134,8 @@ Gallery
           </div>
           <div class="flex-tag tag-analysis">Classify</div>
           <div class="flex-tag tag-analysis">Multi</div>
+          <div class="flex-tag tag-analysis">Recurrent</div>
+          <div class="flex-tag tag-analysis">Attentive</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Sequence</div>
           <div class="flex-tag tag-data">Univariate</div>
@@ -144,20 +147,20 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/mines.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Naval Mine Sweeping</div>
+        <div class="flex-title">💣 Mine Sweeping</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/keras_binary_classification.html">
+            <a href="/en/latest/notebooks/keras_Binary_classification.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tensorflow_binary_classification.html">
+            <a href="/en/latest/notebooks/tensorflow_Binary_classification.html">
               TF Classic
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/pytorch_binary_classification.html">
+            <a href="/en/latest/notebooks/pytorch_Binary_classification.html">
               PyTorch
             </a>
           </div>
@@ -175,7 +178,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/planets.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Exoplanet Temperatures</div>
+        <div class="flex-title">🌡️ Exoplanet Temps.</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_regression.html">
@@ -192,7 +195,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/houses.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Real Estate Prices</div>
+        <div class="flex-title">🏡 Real Estate Prices</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/pytorch_regression.html">
@@ -212,7 +215,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/moons.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Astronomy Trajectory</div>
+        <div class="flex-title">🪐 Astronomy Orbits</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_image_forecasting.html">
@@ -221,6 +224,8 @@ Gallery
           </div>
           <div class="flex-tag tag-analysis">Regress</div>
           <div class="flex-tag tag-analysis">Forecast</div>
+          <div class="flex-tag tag-analysis">Convolve</div>
+          <div class="flex-tag tag-analysis">Autoencode</div>
           <div class="flex-tag tag-data">Image</div>
         </div>
       </div>
@@ -230,7 +235,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/temps.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Climate of New Delhi</div>
+        <div class="flex-title">🌤️ Climate of India</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/keras_tabular_forecasting.html">
@@ -239,6 +244,8 @@ Gallery
           </div>
           <div class="flex-tag tag-analysis">Regress</div>
           <div class="flex-tag tag-analysis">Forecast</div>
+          <div class="flex-tag tag-analysis">Recurrent</div>
+          <div class="flex-tag tag-analysis">Attentive</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Multivariate</div>
           <div class="flex-tag tag-data">Tabular</div>
@@ -253,7 +260,7 @@ Gallery
         <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/spirals.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">Galaxy Form Factor</div>
+        <div class="flex-title">🌀 Galaxy Formations</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/heterogeneous_features.html">
@@ -273,7 +280,7 @@ Gallery
         <image class="gallery-img" src='https://www.news-medical.net/image.axd?picture=2020%2F9%2Fshutterstock_1086033464.jpg'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">[TBD] Generative</div>
+        <div class="flex-title">🐣 [TBD] Generative</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">TBD</div>
           <div class="flex-tag tag-analysis">TBD</div>
