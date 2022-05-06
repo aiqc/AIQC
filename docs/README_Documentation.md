@@ -53,6 +53,13 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 - `https://readthedocs.org/dashboard/aiqc/integrations/`
 - `https://github.com/aiqc/AIQC/settings/hooks`
 
+
+#### Redirects
+
+Only run when a page 404s
+
+- https://docs.readthedocs.io/en/stable/user-defined-redirects.html
+
 ---
 
 ## Quirks.

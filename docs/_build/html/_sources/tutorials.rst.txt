@@ -1,17 +1,17 @@
 ..
-  Overview <h1> is intentionally hidden by CSS.
+  https://readthedocs.org/dashboard/aiqc/redirects/
+  Redirects to the new gallery
 
-########
-Examples
-########
-
-..
-  Without this comment, `make html` throws warning about page beginning w horizontal line below.
+#########
+Tutorials
+#########
 
 .. raw:: html
 
   </br></br>
   <p class="intro" style="font-size:15px;">
     This page is deprecated. Please visit the new <a href="gallery.html">gallery</a> instead.
+    <br/>
+    You may need to clear your browser's cache if the style of the new page appears off.
   </p>
   </br></br>
