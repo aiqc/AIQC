@@ -351,7 +351,7 @@ h1, h2, h3, h5 {
 .flex-tag {
     display: flex;
     margin: 5px 5px 0px 0px;
-    padding: 1px 7px 2px 7px
+    padding: 1px 7px 2px 7px;
     font-size: 14px;
     border-radius: 25px;
 }
