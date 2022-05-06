@@ -3,7 +3,7 @@
   :caption: Getting Started
   :hidden:
 
-  tutorials
+  gallery
   notebooks/datasets
   notebooks/installation
 
