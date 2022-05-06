@@ -43,7 +43,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/brains.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Detect Brain Tumors</div>
@@ -64,7 +64,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/drugs.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Design Drugs</div>
@@ -82,7 +82,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/genes.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Cancer Gene Expression</div>
@@ -103,7 +103,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/waves.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Detect Seizure</div>
@@ -123,7 +123,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/mines.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Naval Mine Sweeping</div>
@@ -154,7 +154,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/planets.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Exoplanet Temperatures</div>
@@ -171,7 +171,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/houses.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Real Estate Prices</div>
@@ -191,7 +191,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/moons.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Astronomy Trajectory</div>
@@ -209,7 +209,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/temps.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Climate of New Delhi</div>
@@ -231,7 +231,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://images.prismic.io/digitalocean/0b619d51-a723-4748-997f-39ed5697a540_intro-to-cloud.jpg?auto=compress,format'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/spirals.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">Galaxy Form Factor</div>
