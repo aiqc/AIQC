@@ -13,6 +13,31 @@
     src: url("../fonts/MontserratAlternates-Regular.ttf");
 }
 
+/* Responsiveness */
+@media (max-width: 922px) {
+    .flex-container {
+      flex-direction: column;
+    }
+    .flex-item {
+        width: 45%;
+    }
+    .flex-top {
+        margin-bottom: 12px;
+    }
+    .DMAIC-left {
+        width:         60%;
+        margin-bottom: 32px;
+    }
+    .DMAIC-right {
+        width: 80%;
+        padding-right: 0%;
+        text-align: center;
+    }
+    .gallery-legend {
+        width: 40%;
+        min-width: 40%;
+    }
+}
 
 .wy-body-for-nav {
     background-image: linear-gradient(to bottom, #111, #424242);
@@ -293,6 +318,7 @@ h1, h2, h3, h5 {
 .flex-right {
     float: right;
     width: 100%;
+    padding-right: 9px;
 }
 
 .gallery-img {
@@ -344,6 +370,7 @@ h1, h2, h3, h5 {
     color:#181302;
 }
 
+/* see @media for Responsiveness */
 .gallery-legend {
     width: 68%;
     min-width: 464px;
@@ -366,6 +393,7 @@ h1, h2, h3, h5 {
 
 .legend-right {
     width: 66%;
+    margin-left: 8px;
     font-family: Abel;
     color: #222;
 }
@@ -389,29 +417,8 @@ h1, h2, h3, h5 {
 .dot-data {
     background:#ffe189;;
 }
-/* Responsiveness */
-@media (max-width: 922px) {
-    .flex-container {
-      flex-direction: column;
-    }
-    .flex-item {
-        width: 45%;
-    }
-    .flex-top {
-        margin-bottom: 12px;
-    }
-    .DMAIC-left {
-        width:         60%;
-        margin-bottom: 32px;
-    }
-    .DMAIC-right {
-        width: 80%;
-        padding-right: 0%;
-        text-align: center;
-    }
-}
-/* MEGA BUTTON */
 
+/* MEGA BUTTON */
 .bttn {
     position:           relative;
     vertical-align:     middle;
