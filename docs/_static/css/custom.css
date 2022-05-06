@@ -34,10 +34,16 @@
         text-align: center;
     }
     .gallery-legend {
-        width: 40%;
-        min-width: 40%;
+        width: 40% !important;
+        min-width: 40% !important;
     }
 }
+
+/* Mobile Top Bar*/
+.wy-nav-top a {
+    font-family: MontserratAlternates !important;
+}
+
 
 .wy-body-for-nav {
     background-image: linear-gradient(to bottom, #111, #424242);
