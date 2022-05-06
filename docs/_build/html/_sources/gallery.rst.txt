@@ -26,12 +26,12 @@ Gallery
         <div class="flex-title">Identify Plants</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_multi-label_classification.html">
+            <a href="/en/latest/notebooks/keras_multi-label_classification.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/pytorch_multi-label_classification.html">
+            <a href="/en/latest/notebooks/pytorch_multi-label_classification.html">
               PyTorch
             </a>
           </div>
@@ -49,7 +49,7 @@ Gallery
         <div class="flex-title">Detect Brain Tumors</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_image_classification.html">
+            <a href="/en/latest/notebooks/keras_image_classification.html">
               TensorFlow
             </a>
           </div>
@@ -70,7 +70,7 @@ Gallery
         <div class="flex-title">Design Drugs</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_binary_mapk.html">
+            <a href="/en/latest/notebooks/keras_binary_mapk.html">
               TensorFlow
             </a>
           </div>
@@ -88,7 +88,7 @@ Gallery
         <div class="flex-title">Cancer Gene Expression</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_binary_tcga.html">
+            <a href="/en/latest/notebooks/keras_binary_tcga.html">
               TensorFlow
             </a>
           </div>
@@ -109,7 +109,7 @@ Gallery
         <div class="flex-title">Detect Seizure</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_sequence_classification.html">
+            <a href="/en/latest/notebooks/keras_sequence_classification.html">
               TensorFlow
             </a>
           </div>
@@ -129,17 +129,17 @@ Gallery
         <div class="flex-title">Naval Mine Sweeping</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_binary_classification.html">
+            <a href="/en/latest/notebooks/keras_binary_classification.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/tensorflow_binary_classification.html">
+            <a href="/en/latest/notebooks/tensorflow_binary_classification.html">
               TF Classic
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/pytorch_binary_classification.html">
+            <a href="/en/latest/notebooks/pytorch_binary_classification.html">
               PyTorch
             </a>
           </div>
@@ -160,7 +160,7 @@ Gallery
         <div class="flex-title">Exoplanet Temperatures</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_regression.html">
+            <a href="/en/latest/notebooks/keras_regression.html">
               TensorFlow
             </a>
           </div>
@@ -177,7 +177,7 @@ Gallery
         <div class="flex-title">Real Estate Prices</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/pytorch_regression.html">
+            <a href="/en/latest/notebooks/pytorch_regression.html">
               PyTorch
             </a>
           </div>
@@ -197,7 +197,7 @@ Gallery
         <div class="flex-title">Astronomy Trajectory</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_image_forecasting.html">
+            <a href="/en/latest/notebooks/keras_image_forecasting.html">
               TensorFlow
             </a>
           </div>
@@ -215,7 +215,7 @@ Gallery
         <div class="flex-title">Climate of New Delhi</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/keras_tabular_forecasting.html">
+            <a href="/en/latest/notebooks/keras_tabular_forecasting.html">
               TensorFlow
             </a>
           </div>
@@ -237,7 +237,7 @@ Gallery
         <div class="flex-title">Galaxy Form Factor</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/notebooks/heterogeneous_features.html">
+            <a href="/en/latest/notebooks/heterogeneous_features.html">
               TensorFlow
             </a>
           </div>
