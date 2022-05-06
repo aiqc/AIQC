@@ -478,7 +478,8 @@ h1, h2, h3, h5 {
 
 /* id is for blank cell, whereas class is for header cell*/
 #top-left {
-    background: #fdfdfd;
+    background: #fff0;
+    border: 0px;
 }
 
 .top-left {
