@@ -532,11 +532,13 @@ h1, h2, h3, h5 {
 /* id is for blank cell, whereas class is for header cell*/
 #top-left {
     background: #fff0;
-    border: 0px;
+    border: 0px !important;
 }
 
 .top-left {
     border-top-left-radius: 22px;
+    border-top: 0px !important;
+    border-left: 0px !important;
 }
 
 .tbl-head {
@@ -553,14 +555,20 @@ h1, h2, h3, h5 {
 
 .bottom-left {
     border-bottom-left-radius:  22px;
+    border-bottom: 0px !important;
+    border-left: 0px !important;
 }
 
 .top-right {
     border-top-right-radius:    22px;
+    border-top: 0px !important;
+    border-right: 0px !important;
 }
 
 .bottom-right {
     border-bottom-right-radius: 22px;
+    border-bottom: 0px !important;
+    border-right: 0px !important;
 }
 
 .qc td{
