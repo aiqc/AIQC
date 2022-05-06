@@ -6,35 +6,6 @@ Gallery
 
 .. raw:: html
  
-  <center>
-    <div class="flex-container gallery-legend">
-      <div class="flex-item legend-item">
-        <div class="legend-left">
-          <div class="legend-dot dot-tool"></div>
-        </div>
-        <div class="legend-right">
-          Notebook
-        </div>
-      </div>
-      <div class="flex-item legend-item">
-        <div class="legend-left">
-          <div class="legend-dot dot-analysis"></div>
-        </div>
-        <div class="legend-right">
-          Analysis
-        </div>
-      </div>
-      <div class="flex-item legend-item">
-        <div class="legend-left">
-          <div class="legend-dot dot-data"></div>
-        </div>
-        <div class="legend-right">
-          Data
-        </div>
-      </div>
-    </div>
-  </center>
-
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
@@ -172,6 +143,35 @@ Gallery
     </div>
   </div>
   
+  <center>
+    <div class="flex-container gallery-legend">
+      <div class="flex-item legend-item">
+        <div class="legend-left">
+          <div class="legend-dot dot-tool"></div>
+        </div>
+        <div class="legend-right">
+          Notebook
+        </div>
+      </div>
+      <div class="flex-item legend-item">
+        <div class="legend-left">
+          <div class="legend-dot dot-analysis"></div>
+        </div>
+        <div class="legend-right">
+          Analysis
+        </div>
+      </div>
+      <div class="flex-item legend-item">
+        <div class="legend-left">
+          <div class="legend-dot dot-data"></div>
+        </div>
+        <div class="legend-right">
+          Data
+        </div>
+      </div>
+    </div>
+  </center>
+
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
