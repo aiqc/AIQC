@@ -13,7 +13,7 @@ Gallery
           <div class="legend-dot dot-tool"></div>
         </div>
         <div class="legend-right">
-          Tutorial
+          Notebook
         </div>
       </div>
       <div class="flex-item legend-item">
