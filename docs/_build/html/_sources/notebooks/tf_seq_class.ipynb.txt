@@ -453,7 +453,7 @@
    "source": [
     "def fn_build(features_shape, label_shape, **hp):    \n",
     "    m = tf.keras.models.Sequential()\n",
-    "    m.add(l.LSTM(hp['neuron_count'], input_shape=(features_shape[0], features_shape[1])))\n",
+    "    m.add(l.LSTM(hp['neuron_count'], input_shape=features_shape)))\n",
     "    m.add(l.Dense(units=label_shape[0], activation='sigmoid'))\n",
     "    return m"
    ]

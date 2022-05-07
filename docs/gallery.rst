@@ -108,10 +108,14 @@ Gallery
               TensorFlow
             </a>
           </div>
+          <div class="flex-tag tag-tool">
+            <a href="/en/latest/notebooks/torch_seq_class.html">
+              PyTorch
+            </a>
+          </div>
           <div class="flex-tag tag-analysis">Classify</div>
           <div class="flex-tag tag-analysis">Multi</div>
           <div class="flex-tag tag-analysis">Recur</div>
-          <div class="flex-tag tag-analysis">Attentive</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Sequence</div>
           <div class="flex-tag tag-data">Univariate</div>
@@ -250,7 +254,6 @@ Gallery
           <div class="flex-tag tag-analysis">Regress</div>
           <div class="flex-tag tag-analysis">Forecast</div>
           <div class="flex-tag tag-analysis">Recur</div>
-          <div class="flex-tag tag-analysis">Attentive</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Multivariate</div>
           <div class="flex-tag tag-data">Tabular</div>
