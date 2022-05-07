@@ -60,7 +60,7 @@ Gallery
         <div class="flex-title">💊 Drug Design</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/keras_Binary_mapk.html">
+            <a href="/en/latest/notebooks/keras_binary_mapk.html">
               TensorFlow
             </a>
           </div>
@@ -121,17 +121,17 @@ Gallery
         <div class="flex-title">💣 Mine Sweeping</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/keras_Binary_classification.html">
+            <a href="/en/latest/notebooks/keras_binary_classification.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tensorflow_Binary_classification.html">
+            <a href="/en/latest/notebooks/tensorflow_binary_classification.html">
               TF Classic
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/pytorch_Binary_classification.html">
+            <a href="/en/latest/notebooks/pytorch_binary_classification.html">
               PyTorch
             </a>
           </div>
