@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/torch_img_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Brain Tumor Detection via Binary Classification of Magnetic Resonance Imaging (MRI) Scans mri[1]: cd '~/Desktop/AIQC'[2]: import aiqc from aiqc import datum Pipeline: This dataset is comprised of: ..." />
+  <meta property="og:description" content="Brain Tumor Detection via Binary Classification of Magnetic Resonance Imaging (MRI) Scans mri[2]: import aiqc from aiqc import datum Pipeline: This dataset is comprised of: Features= folder of magn..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
@@ -594,23 +594,6 @@ div.rendered_html tbody tr:hover {
 <h1>PyTorch: Image Classify Binary<a class="headerlink" href="#PyTorch:-Image-Classify-Binary" title="Permalink to this headline"></a></h1>
 <p><em>Brain Tumor Detection via Binary Classification of Magnetic Resonance Imaging (MRI) Scans</em></p>
 <img alt="mri" src="../_images/mri.png" />
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">cd</span> <span class="s1">&#39;~/Desktop/AIQC&#39;</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-/Users/layne/Desktop/AIQC
-</pre></div></div>
-</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -677,7 +660,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:12&lt;00:00,  6.21it/s]
+🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 80/80 [00:12&lt;00:00,  6.16it/s]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -729,7 +712,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_torch_img_class_12_0.png" src="../_images/notebooks_torch_img_class_12_0.png" />
+<img alt="../_images/notebooks_torch_img_class_11_0.png" src="../_images/notebooks_torch_img_class_11_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -746,7 +729,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_torch_img_class_13_0.png" src="../_images/notebooks_torch_img_class_13_0.png" />
+<img alt="../_images/notebooks_torch_img_class_12_0.png" src="../_images/notebooks_torch_img_class_12_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -786,15 +769,7 @@ No more FeatureCoders can be added to this Encoderset.
   </thead>
   <tbody>
     <tr>
-      <th>63</th>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>60</th>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>6</th>
+      <th>34</th>
       <td>0</td>
     </tr>
     <tr>
@@ -802,11 +777,19 @@ No more FeatureCoders can be added to this Encoderset.
       <td>1</td>
     </tr>
     <tr>
-      <th>0</th>
-      <td>0</td>
+      <th>68</th>
+      <td>1</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>46</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>39</th>
       <td>0</td>
     </tr>
   </tbody>
@@ -824,42 +807,50 @@ No more FeatureCoders can be added to this Encoderset.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torchmetrics</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">torch_batcher</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-        <span class="c1">#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode=&#39;zeros&#39;)</span>
         <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span>
-            <span class="n">in_channels</span><span class="o">=</span><span class="mi">160</span> <span class="c1">#running with `in_channels` as the width of the image. which is index[1]</span>
-            <span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">56</span> <span class="c1">#arbitrary number. treating this as network complexity.</span>
-            <span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span>
-            <span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">in_channels</span><span class="o">=</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span>
         <span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span> <span class="c1">#wasnt learning with tanh</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span>
-            <span class="n">in_channels</span><span class="o">=</span><span class="mi">56</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
-            <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">in_channels</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span>
         <span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span> <span class="c1">#wasnt learning with tanh</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()</span><span class="c1"># output [5x1440]</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3840</span><span class="p">,</span><span class="mi">3840</span><span class="p">)</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">3840</span><span class="p">,</span><span class="mi">3840</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span>
+        <span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span> <span class="c1">#wasnt learning with tanh</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">720</span><span class="p">,</span><span class="mi">32</span><span class="p">)</span><span class="c1">#in,out</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3840</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
@@ -867,15 +858,15 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="c1">## --- Prepare mini batches for analysis ---</span>
-    <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">torch_batcher</span><span class="p">(</span>
+    <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">torch_batcher</span><span class="p">(</span>
         <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span>
-        <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_1Sample</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_1Sample</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="c1">## --- Metrics ---</span>
@@ -887,9 +878,7 @@ No more FeatureCoders can be added to this Encoderset.
     <span class="p">)</span>
 
     <span class="c1">## --- Training loop ---</span>
-    <span class="n">epochs</span> <span class="o">=</span> <span class="mi">40</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Epoch | Train_Loss | Eval_Loss | Train_Acc | Eval_Acc &quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------+------------+-----------+-----------+----------&quot;</span><span class="p">)</span>
+    <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
         <span class="c1"># --- Batch training ---</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batched_features</span><span class="p">):</span>
@@ -914,33 +903,26 @@ No more FeatureCoders can be added to this Encoderset.
         <span class="n">eval_acc</span> <span class="o">=</span> <span class="n">acc</span><span class="p">(</span><span class="n">eval_probability</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">short</span><span class="p">))</span>
         <span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">eval_loss</span><span class="p">))</span>
         <span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">eval_acc</span><span class="p">))</span>
-        <span class="c1"># Metric readout.</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">   | </span><span class="si">{</span><span class="n">train_loss</span><span class="si">}</span><span class="s2">       | </span><span class="si">{</span><span class="n">eval_loss</span><span class="si">}</span><span class="s2">      | </span><span class="si">{</span><span class="n">train_acc</span><span class="si">}</span><span class="s2">      | </span><span class="si">{</span><span class="n">eval_acc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># hyperparameters = dict(</span>
-<span class="c1">#     concave         = [False]</span>
-<span class="c1">#     , conv_blocks   = [4]</span>
-<span class="c1">#     , conv_neurons  = [24]</span>
-<span class="c1">#     , pool_size     = [2]</span>
-<span class="c1">#     , kernel_size   = [3]</span>
-<span class="c1">#     , batch_size    = [8] #8 did best. tried 5 and 6 again, no.</span>
-<span class="c1">#     , cnn_init      = [&#39;normal&#39;] #default is glorot</span>
-<span class="c1">#     , dense_blocks  = [1]</span>
-<span class="c1">#     , dense_neurons = [32] #64 did well.</span>
-<span class="c1">#     , epoch_count   = [500]</span>
-<span class="c1"># )</span>
+<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[</span><span class="mi">24</span><span class="p">],</span>
+    <span class="n">kernel_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+    <span class="n">epochs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">],</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -957,9 +939,8 @@ No more FeatureCoders can be added to this Encoderset.
     <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
 
     <span class="c1"># --- Training options ---</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">search_percent</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
 
     <span class="c1"># --- Data source ---</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">img_splitset</span><span class="o">.</span><span class="n">id</span>
@@ -969,56 +950,14 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮:   0%|                                                  | 0/2 [00:00&lt;?, ?it/s]
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-16-0b4e9c4c800d&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>queue<span class="ansi-blue-fg">.</span>run_jobs<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/Desktop/AIQC/aiqc/orm.py</span> in <span class="ansi-cyan-fg">run_jobs</span><span class="ansi-blue-fg">(id)</span>
-<span class="ansi-green-intense-fg ansi-bold">   3606</span>                                                         id<span class="ansi-blue-fg">=</span>rj<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>id<span class="ansi-blue-fg">,</span> repeat_index<span class="ansi-blue-fg">=</span>rj<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span>
-<span class="ansi-green-intense-fg ansi-bold">   3607</span>                                                         <span class="ansi-blue-fg">,</span> samples<span class="ansi-blue-fg">=</span>samples<span class="ansi-blue-fg">,</span> input_shapes<span class="ansi-blue-fg">=</span>input_shapes
-<span class="ansi-green-fg">-&gt; 3608</span><span class="ansi-red-fg">                                                         </span><span class="ansi-blue-fg">,</span> key_train<span class="ansi-blue-fg">=</span>key_train<span class="ansi-blue-fg">,</span> key_evaluation<span class="ansi-blue-fg">=</span>key_evaluation
-<span class="ansi-green-intense-fg ansi-bold">   3609</span>                                            )
-<span class="ansi-green-intense-fg ansi-bold">   3610</span>                                 os<span class="ansi-blue-fg">.</span>remove<span class="ansi-blue-fg">(</span>cached_samples<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/Desktop/AIQC/aiqc/orm.py</span> in <span class="ansi-cyan-fg">run</span><span class="ansi-blue-fg">(id, repeat_index, samples, input_shapes, key_train, key_evaluation)</span>
-<span class="ansi-green-intense-fg ansi-bold">   4488</span>                                 <span class="ansi-blue-fg">,</span> samples_train <span class="ansi-blue-fg">=</span> samples<span class="ansi-blue-fg">[</span>key_train<span class="ansi-blue-fg">]</span>
-<span class="ansi-green-intense-fg ansi-bold">   4489</span>                                 <span class="ansi-blue-fg">,</span> samples_evaluate <span class="ansi-blue-fg">=</span> samples_eval
-<span class="ansi-green-fg">-&gt; 4490</span><span class="ansi-red-fg">                                 </span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>hp
-<span class="ansi-green-intense-fg ansi-bold">   4491</span>                    )
-<span class="ansi-green-intense-fg ansi-bold">   4492</span>                         <span class="ansi-green-fg">if</span> <span class="ansi-blue-fg">(</span>model <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">&lt;ipython-input-12-32853abd5f0b&gt;</span> in <span class="ansi-cyan-fg">fn_train</span><span class="ansi-blue-fg">(model, loser, optimizer, samples_train, samples_evaluate, **hp)</span>
-<span class="ansi-green-intense-fg ansi-bold">      7</span>
-<span class="ansi-green-intense-fg ansi-bold">      8</span>     <span class="ansi-red-fg">## --- Metrics ---</span>
-<span class="ansi-green-fg">----&gt; 9</span><span class="ansi-red-fg">     </span>acc <span class="ansi-blue-fg">=</span> torchmetrics<span class="ansi-blue-fg">.</span>Accuracy<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     10</span>     <span class="ansi-red-fg"># Modeled after `keras.model.History.history` object.</span>
-<span class="ansi-green-intense-fg ansi-bold">     11</span>     history = dict(
-
-<span class="ansi-red-fg">NameError</span>: name &#39;torchmetrics&#39; is not defined
-</pre></div></div>
 </div>
 <hr class="docutils" />
 </section>

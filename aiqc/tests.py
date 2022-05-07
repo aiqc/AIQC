@@ -245,11 +245,11 @@ def make_test_queue_keras_multiclass(repeat_count:int=1, fold_count:int=None, pe
 # ------------------------ KERAS TABULAR BINARY ------------------------
 def keras_binary_fn_build(features_shape, label_shape, **hp):
 	model = tf.keras.models.Sequential()
-	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dense(15, activation='relu', kernel_initializer='he_uniform'))
 	model.add(layers.Dropout(0.30))
-	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dense(15, activation='relu', kernel_initializer='he_uniform'))
 	model.add(layers.Dropout(0.30))
-	model.add(layers.Dense(hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
+	model.add(layers.Dense(15, activation='relu', kernel_initializer='he_uniform'))
 	model.add(layers.Dense(units=label_shape[0], activation='sigmoid', kernel_initializer='glorot_uniform'))
 	return model
 
@@ -265,17 +265,16 @@ def keras_binary_fn_train(model, loser, optimizer, samples_train, samples_evalua
 		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
 		, verbose = 0
 		, batch_size = 3
-		, epochs = hp['epochs']
+		, epochs = 15
 		, callbacks = [tf.keras.callbacks.History()]
 	)
 	return model
 
 
 def make_test_queue_keras_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
-	hyperparameters = {
-		"neuron_count": [15]
-		, "epochs": [15]
-	}
+	## test for `None`
+	hyperparameters = {"neuron_count":[15], "epochs":[15]}
+	# hyperparameters = None
 
 	file_path = datum.get_path('sonar.csv')
 
