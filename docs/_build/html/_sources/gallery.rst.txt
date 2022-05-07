@@ -110,7 +110,7 @@ Gallery
           </div>
           <div class="flex-tag tag-analysis">Classify</div>
           <div class="flex-tag tag-analysis">Multi</div>
-          <div class="flex-tag tag-analysis">Recurrent</div>
+          <div class="flex-tag tag-analysis">Recur</div>
           <div class="flex-tag tag-analysis">Attentive</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Sequence</div>
@@ -186,7 +186,7 @@ Gallery
         <div class="flex-title">🌡️ Exoplanet Temps.</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_regression.html">
+            <a href="/en/latest/notebooks/tf_reg.html">
               TensorFlow
             </a>
           </div>
@@ -203,7 +203,7 @@ Gallery
         <div class="flex-title">🏡 Real Estate Prices</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/torch_regression.html">
+            <a href="/en/latest/notebooks/torch_reg.html">
               PyTorch
             </a>
           </div>
@@ -223,7 +223,7 @@ Gallery
         <div class="flex-title">🪐 Astronomy Orbits</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_img_forecasting.html">
+            <a href="/en/latest/notebooks/tf_img_forecast.html">
               TensorFlow
             </a>
           </div>
@@ -249,7 +249,7 @@ Gallery
           </div>
           <div class="flex-tag tag-analysis">Regress</div>
           <div class="flex-tag tag-analysis">Forecast</div>
-          <div class="flex-tag tag-analysis">Recurrent</div>
+          <div class="flex-tag tag-analysis">Recur</div>
           <div class="flex-tag tag-analysis">Attentive</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Multivariate</div>
