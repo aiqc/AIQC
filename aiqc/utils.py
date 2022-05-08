@@ -912,12 +912,11 @@ def stage_data(
 	, samples:dict
 	, library:str
 	, key_train:str
-	, key_evaluation:str=None
 ):
 	"""
 	- Remember, you `.fit()` on either training data or all data (categoricals).
 	- Then you transform the entire dataset because downstream processes may need the entire dataset:
-		e.g. fit imputer to training data, but then impute entire dataset so that encoders can use entire dataset.
+		e.g. fit imputer to training data, then impute entire dataset so that categorical encoders can fit on entire dataset.
 	- So we transform the entire dataset, then divide it into splits/ folds.
 	- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
 		work the same in both numpy and torch.
@@ -975,7 +974,7 @@ def stage_data(
 	- `[0]` accessess the first sample in each array.
 	- This shape does not influence the training loop's `batch_size`.
 	- Shapes are used later by `get_model()` to initialize it.
-	- Here the count refers to Features, not columns.
+	- Here the count refers to multimodal Features, not the number of columns.
 	"""
 	if (feature_count == 1):
 		features_shape = samples[key_train]['features'][0].shape

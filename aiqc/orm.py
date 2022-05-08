@@ -3540,9 +3540,8 @@ class Queue(BaseModel):
 
 	def run_jobs(id:int):
 		"""
-		- Jobs re-use the same data instead of preprocessing it from scratch. 
-		  ^ Samples are cached so they can be reused because post-processing alters the data.
-		    ^ The alternative is to `deepcopy()` the samples, but the memory pressure is too great.		
+		- Preprocessed data is cached across jobs.
+		- It must be read from disk each time because post-processing alters the data.
 		"""
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
@@ -3551,7 +3550,7 @@ class Queue(BaseModel):
 		library = queue.algorithm.library
 
 		if (foldset is None):
-			cached_samples = f"{app_dir}queue-{id}_cached_samples.gzip"
+			cache_path = f"{app_dir}queue-{id}_cached_samples.gzip"
 			jobs = list(queue.jobs)
 			# Repeat count means that a single Job can have multiple Predictors.
 			repeated_jobs = [] #tuple:(repeat_index, job)
@@ -3583,9 +3582,9 @@ class Queue(BaseModel):
 			samples, input_shapes = utils.stage_data(
 				splitset=splitset, job=job
 				, samples=samples, library=library
-				, key_train=key_train, key_evaluation=key_evaluation
+				, key_train=key_train
 			)
-			with gzip.open(cached_samples,'wb') as f:
+			with gzip.open(cache_path,'wb') as f:
 				pickle.dump(samples,f)
 
 			try:
@@ -3600,21 +3599,21 @@ class Queue(BaseModel):
 					)
 					if (matching_predictor.count()==0):
 						if (i>0):
-							with gzip.open(cached_samples,'rb') as f:
+							with gzip.open(cache_path,'rb') as f:
 								samples = pickle.load(f)
 						Job.run(
 							id=rj[1].id, repeat_index=rj[0]
 							, samples=samples, input_shapes=input_shapes
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
-				os.remove(cached_samples)
+				os.remove(cache_path)
 			except (KeyboardInterrupt):
-				# Attempts to prevent irrelevant errors. Sometimes the messages slip through.
-				os.remove(cached_samples)
+				# Attempts to prevent irrelevant errors, but sometimes they still slip through.
+				os.remove(cache_path)
 				print("\nQueue was gracefully interrupted.\n")
 			except:
 				# Other training related errors.
-				os.remove(cached_samples)
+				os.remove(cache_path)
 				raise
 
 		elif (foldset is not None):
@@ -3622,7 +3621,7 @@ class Queue(BaseModel):
 			# Each fold will contain unique, reusable data.
 			for e, fold in enumerate(folds):
 				print(f"\nRunning Jobs for Fold {e+1} out of {foldset.fold_count}:\n", flush=True)
-				cached_samples = f"{app_dir}queue-{id}_fold-{e}_cached_samples.gzip"
+				cache_path = f"{app_dir}queue-{id}_fold-{e}_cached_samples.gzip"
 				jobs = [j for j in queue.jobs if j.fold==fold]
 				repeated_jobs = [] #tuple:(repeat_index, job, fold)
 				for r in range(queue.repeat_count):
@@ -3654,10 +3653,10 @@ class Queue(BaseModel):
 				samples, input_shapes = utils.stage_data(
 					splitset=splitset, job=job
 					, samples=samples, library=library
-					, key_train=key_train, key_evaluation=key_evaluation
+					, key_train=key_train
 				)
 
-				with gzip.open(cached_samples,'wb') as f:
+				with gzip.open(cache_path,'wb') as f:
 					pickle.dump(samples,f)
 				try:
 					for i, rj in enumerate(tqdm(
@@ -3672,20 +3671,20 @@ class Queue(BaseModel):
 
 						if (matching_predictor.count()==0):
 							if (i>0):
-								with gzip.open(cached_samples,'rb') as f:
+								with gzip.open(cache_path,'rb') as f:
 									samples = pickle.load(f)
 							Job.run(
 								id=rj[1].id, repeat_index=rj[0]
 								, samples=samples, input_shapes=input_shapes
 								, key_train=key_train, key_evaluation=key_evaluation
 							)
-					os.remove(cached_samples)
+					os.remove(cache_path)
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
-					os.remove(cached_samples)
+					os.remove(cache_path)
 					print("\nQueue was gracefully interrupted.\n")
 				except:
-					os.remove(cached_samples)
+					os.remove(cache_path)
 					raise
 
 
@@ -4516,7 +4515,6 @@ class Job(BaseModel):
 			raise ValueError(f"""
 				Yikes - Duplicate run detected for Job<{job.id}> repeat_index<{repeat_index}>.
 				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
-				No action needed, the other queue will continue running to completion.
 			""")
 
 		predictor = Predictor.create(
