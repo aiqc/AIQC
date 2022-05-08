@@ -40,46 +40,6 @@
 ---
 
 ## How to run the tests.
+Reference `https://github.com/aiqc/AIQC/blob/main/run_tests.ipynb` for a notebook that can be used to run the tests. Please make a copy of this file and don't push it to the repo.
+
 The source code for tests is located in `aiqc/aiqc/tests/__init__.py`. The `run_jobs()` is called manually because we often need to inspect the `Queue` object.
-
-Once we are confident that our schema handles all data types and analysis types, we will invest more rigorous testing.
-```python
-import aiqc
-from aiqc import tests
-
-q1 = tests.make_test_queue('keras_binary')
-q1.run_jobs()
-
-q2 = tests.make_test_queue('keras_multiclass')
-q2.run_jobs()
-
-q3 = tests.make_test_queue('keras_regression')
-q3.run_jobs()
-
-q4 = tests.make_test_queue('keras_text_binary')
-q4.run_jobs()
-
-q5 = tests.make_test_queue('keras_image_binary')
-q5.run_jobs()
-
-q6 = tests.make_test_queue('keras_sequence_binary')
-q6.run_jobs()
-
-q7 = tests.make_test_queue('keras_tabular_forecast')
-q7.run_jobs()
-
-q8 = tests.make_test_queue('keras_image_forecast')
-q8.run_jobs()
-
-q9 = tests.make_test_queue('pytorch_binary')
-q9.run_jobs()
-
-q10 = tests.make_test_queue('pytorch_multiclass')
-q10.run_jobs()
-
-q11 = tests.make_test_queue('pytorch_regression')
-q11.run_jobs()
-
-q12 = tests.make_test_queue('pytorch_image_binary')
-q12.run_jobs()
-```
