@@ -25,7 +25,7 @@ Gallery
             </a>
           </div>
           <div class="flex-tag tag-analysis">Classify</div>
-          <div class="flex-tag tag-analysis">Multi</div>
+          <div class="flex-tag tag-analysis">Multi-label</div>
           <div class="flex-tag tag-data">Tabular</div>
         </div>
       </div>
@@ -88,7 +88,7 @@ Gallery
             </a>
           </div>
           <div class="flex-tag tag-analysis">Classify</div>
-          <div class="flex-tag tag-analysis">Multi</div>
+          <div class="flex-tag tag-analysis">Multi-label</div>
           <div class="flex-tag tag-data">Tabular</div>
         </div>
       </div>
@@ -114,7 +114,7 @@ Gallery
             </a>
           </div>
           <div class="flex-tag tag-analysis">Classify</div>
-          <div class="flex-tag tag-analysis">Multi</div>
+          <div class="flex-tag tag-analysis">Multi-label</div>
           <div class="flex-tag tag-analysis">Recur</div>
           <div class="flex-tag tag-data">Time</div>
           <div class="flex-tag tag-data">Sequence</div>
