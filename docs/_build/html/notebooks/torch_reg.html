@@ -842,7 +842,7 @@ No more Featurecoders can be added to this Encoderset.
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">import</span> <span class="nn">torchmetrics</span>
-<span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">torch_batcher</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">torch_batcher</span><span class="p">,</span> <span class="n">torch_shuffler</span>
 </pre></div>
 </div>
 </div>
@@ -894,6 +894,7 @@ No more Featurecoders can be added to this Encoderset.
     <span class="c1">## --- Training loop ---</span>
     <span class="n">epochs</span> <span class="o">=</span> <span class="mi">75</span>
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">torch_shuffler</span><span class="p">(</span><span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span><span class="p">)</span>
         <span class="c1"># --- Batch training ---</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batched_features</span><span class="p">):</span>
             <span class="c1"># Make raw (unlabeled) predictions.</span>
