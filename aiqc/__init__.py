@@ -36,7 +36,7 @@ class Pipeline:
 			elif ('.parquet' in d):
 				source_file_format='parquet'
 			else:
-				raise ValueError(dedent("""
+				raise Exception(dedent("""
 				Yikes - None of the following file extensions were found in the path you provided:
 				'.csv', '.tsv', '.parquet'
 				"""))
@@ -46,7 +46,7 @@ class Pipeline:
 				, dtype = dtype
 			)
 		else:
-			raise ValueError("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
+			raise Exception("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
 		return dataset
 
 
@@ -162,7 +162,7 @@ class Pipeline:
 				or
 				((label_df_or_path is not None) and (label_column is None))
 			):
-				raise ValueError("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
+				raise Exception("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
 
 			# ------ SEQUENCE FEATURE ------
 			ds_id = Dataset.Sequence.from_numpy(
@@ -251,7 +251,7 @@ class Pipeline:
 				or
 				((label_df_or_path is not None) and (label_column is None))
 			):
-				raise ValueError("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
+				raise Exception("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
 
 			if (isinstance(feature_folder_or_urls, str)):
 				di_id = Dataset.Image.from_folder_pillow(

@@ -31,7 +31,7 @@ class Tracker(object):
             - `server_runtime` is passed through to `dash.Dash.app.run_server()` as **kwargs.
         """
         if ((refresh_seconds < 5) or (refresh_seconds > 30)):
-            raise ValueError("\nYikes - `refresh_rate` must be between 5 and 30 seconds.\n")
+            raise Exception("\nYikes - `refresh_rate` must be between 5 and 30 seconds.\n")
         refresh_seconds *= 1000
 
         runtime = dict(
@@ -54,9 +54,9 @@ class Tracker(object):
 
     def stop(self):
         if (self._clean_run is None):
-            raise ValueError("\nYikes - Cannot stop app because it is not running yet.\n")
+            raise Exception("\nYikes - Cannot stop app because it is not running yet.\n")
         elif (self._clean_run is False):
-            raise ValueError("\nYikes - Cannot stop app due to known bug:\nhttps://github.com/plotly/jupyter-dash/issues/33\n")
+            raise Exception("\nYikes - Cannot stop app due to known bug:\nhttps://github.com/plotly/jupyter-dash/issues/33\n")
         else:
             JupyterDash._terminate_server_for_port(
                 self.server_runtime['host'], self.server_runtime['port'],

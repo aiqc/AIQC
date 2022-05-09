@@ -102,7 +102,7 @@ if (os.name != 'nt'):
 		proc_name = f"aiqc_queue_{queue.id}"
 		current_procs = [p.name for p in multiprocessing.active_children()]
 		if (proc_name not in current_procs):
-			raise ValueError(f"\nYikes - Cannot terminate `multiprocessing.Process.name` '{proc_name}' because it is not running.\n")
+			raise Exception(f"\nYikes - Cannot terminate `multiprocessing.Process.name` '{proc_name}' because it is not running.\n")
 
 		processes = multiprocessing.active_children()
 		for p in processes:

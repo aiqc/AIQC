@@ -267,12 +267,12 @@ def config_test_aws_api_key(api_key:str):
 	if (status_code==200):
 		print("\n=> Success - was able to connect to root of AIQC AWS API Gateway.\n")
 	else:
-		raise ValueError(f"\n=> Yikes - failed to connect to root of AIQC AWS API Gateway.\nHTTP Error Code = {status_code}.\n")
+		raise Exception(f"\n=> Yikes - failed to connect to root of AIQC AWS API Gateway.\nHTTP Error Code = {status_code}.\n")
 
 
 def _aws_get_api_key():
 	api_key = get_config()['aws_api_key']
 	if (api_key is None):
-		raise ValueError("\nYikes - `config['aws_api_key']` has not been set.\nRun `config_add_aws_api_key(api_key)` to define it.\n")
+		raise Exception("\nYikes - `config['aws_api_key']` has not been set.\nRun `config_add_aws_api_key(api_key)` to define it.\n")
 	elif (api_key is not None):
 		return api_key

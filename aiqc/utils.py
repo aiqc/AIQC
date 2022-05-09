@@ -3,6 +3,7 @@ Refactored these generic, non-relational functions out of the ORM.
 Many of them are used by multiple ORM classes.
 """
 import os, io, inspect, warnings, fsspec, operator, scipy, pprint
+from random import shuffle
 from textwrap import dedent
 from natsort import natsorted #file sorting.
 import dill as dill #complex serialization.
@@ -58,9 +59,9 @@ def listify(supposed_lst:object=None):
 		# If it was already a list, check it for emptiness and `None`.
 		elif (isinstance(supposed_lst, list)):
 			if (not supposed_lst):
-				raise ValueError("Yikes - The list you provided is empty.")
+				raise Exception("Yikes - The list you provided is empty.")
 			if (None in supposed_lst):
-				raise ValueError(dedent(
+				raise Exception(dedent(
 					f"Yikes - The list you provided contained `None` as an element." \
 					f"{supposed_lst}"
 				))
@@ -92,22 +93,21 @@ def dill_reveal_code(serialized_objekt:object, print_it:bool=True):
 	return code_str
 
 
-def torch_drop_invalid_batchSize(
+def torch_dropInvalidBatch(
 	batched_data:object
-	, batch_size = 5
+	, batch_size:int
 	, enforce_sameSize:bool=False
-	, allow_1Sample:bool=False
+	, allow_singleSample:bool=False
 ):
-	if (batch_size == 1):
-		print("\nWarning - `batch_size==1` can lead to errors.\nE.g. running BatchNormalization on a single sample.\n")
 	# Similar to a % remainder, this will only apply to the last element in the batch.
 	last_batch_size = batched_data[-1].shape[0]
-	if (
-		((allow_1Sample == False) and (last_batch_size == 1))
-		or 
-		((enforce_sameSize == True) and (batched_data[0].shape[0] != last_batch_size))
-	):
-		# So if there is a problem, just trim the last split.
+	# If there is a problem, then just trim the last split.
+	if (last_batch_size==1):
+		if (allow_singleSample==True):
+			print("\nWarning - The size of the last batch is 1,\n which commonly leads to PyTorch errors.\nTry using `torch_batcher(allow_singleSample=False)\n")
+		elif (allow_singleSample==False): 
+			batched_data = batched_data[:-1]
+	elif ((enforce_sameSize==True) and (batch_size!=last_batch_size)):
 		batched_data = batched_data[:-1]
 	return batched_data
 
@@ -116,14 +116,33 @@ def torch_batcher(
 	features:object
 	, labels:object
 	, batch_size = 5
-	, enforce_sameSize:bool=False
-	, allow_1Sample:bool=False
+	, enforce_sameSize:bool=True
+	, allow_singleSample:bool=False
 ):
-	features = split(features, batch_size)
-	labels = split(labels, batch_size)
+	"""
+	`enforce_sameSize=True` because tensors must have uniform shape
+	"""
+	if (batch_size==1):
+		if (allow_singleSample==False):
+			raise Exception("\nYikes - `batch_size==1` but `allow_singleSample==False`.\n")
+		elif (allow_singleSample==True):
+			print("\nWarning - PyTorch errors are common when `batch_size==1`.")
 	
-	features = torch_drop_invalid_batchSize(features)
-	labels = torch_drop_invalid_batchSize(labels)
+	# split() normally returns a tuple.
+	features = list(split(features, batch_size))
+	labels = list(split(labels, batch_size))
+
+	features = torch_dropInvalidBatch(features, batch_size, enforce_sameSize, allow_singleSample)
+	labels = torch_dropInvalidBatch(labels, batch_size, enforce_sameSize, allow_singleSample)
+	return features, labels
+
+
+def torch_shuffler(features:list, labels:list):
+	"""Assumes that the first index represents the batch."""
+	rand_idx = list(range(len(labels)))
+	shuffle(rand_idx)
+	features = [features[i] for i in rand_idx]
+	labels = [labels[i] for i in rand_idx]
 	return features, labels
 
 
@@ -145,8 +164,8 @@ def tf_batcher(features:object, labels:object, batch_size:int=5):
 
 
 # Used by `sklearn.preprocessing.FunctionTransformer` to normalize images.
-def div255(X): return X/255
-def mult255(X): return X*255
+def div255(x): return x/255
+def mult255(x): return x*255
 
 
 def if_1d_make_2d(array:object):
@@ -157,16 +176,16 @@ def if_1d_make_2d(array:object):
 
 def sorted_file_list(dir_path:str):
 	if (not os.path.exists(dir_path)):
-		raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(dir_path)`:\n{dir_path}\n")
+		raise Exception(f"\nYikes - The path you provided does not exist according to `os.path.exists(dir_path)`:\n{dir_path}\n")
 	path = os.path.abspath(dir_path)
 	if (os.path.isdir(path) == False):
-		raise ValueError(f"\nYikes - The path that you provided is not a directory:{path}\n")
+		raise Exception(f"\nYikes - The path that you provided is not a directory:{path}\n")
 	file_paths = os.listdir(path)
 	# prune hidden files and directories.
 	file_paths = [f for f in file_paths if not f.startswith('.')]
 	file_paths = [f for f in file_paths if not os.path.isdir(f)]
 	if not file_paths:
-		raise ValueError(f"\nYikes - The directory that you provided has no files in it:{path}\n")
+		raise Exception(f"\nYikes - The directory that you provided has no files in it:{path}\n")
 	# folder path is already absolute
 	file_paths = [os.path.join(path, f) for f in file_paths]
 	file_paths = natsorted(file_paths)
@@ -175,14 +194,14 @@ def sorted_file_list(dir_path:str):
 
 def arr_validate(ndarray):
 	if (type(ndarray).__name__ != 'ndarray'):
-		raise ValueError("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
+		raise Exception("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
 	if (ndarray.dtype.names is not None):
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 		Yikes - Sorry, we do not support NumPy Structured Arrays.
 		However, you can use the `dtype` dict and `column_names` to handle each column specifically.
 		"""))
 	if (ndarray.size == 0):
-		raise ValueError("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
+		raise Exception("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
 
 
 def colIndices_from_colNames(column_names:list, desired_cols:list):
@@ -204,7 +223,7 @@ def pandas_stringify_columns(df, columns):
 	- Pandas will assign a range of int-based columns if there are no column names.
 		So I want to coerce them to strings because I don't want both string and int-based 
 		column names for when calling columns programmatically, 
-		and more importantly, 'ValueError: parquet must have string column names'
+		and more importantly, 'Exception: parquet must have string column names'
 	"""
 	cols_raw = df.columns.to_list()
 	if (columns is None):
@@ -222,13 +241,13 @@ def pandas_stringify_columns(df, columns):
 
 def df_validate(dataframe:object, column_names:list):
 	if (dataframe.empty):
-		raise ValueError("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
+		raise Exception("\nYikes - The dataframe you provided is empty according to `df.empty`\n")
 
 	if (column_names is not None):
 		col_count = len(column_names)
 		structure_col_count = dataframe.shape[1]
 		if (col_count != structure_col_count):
-			raise ValueError(dedent(f"""
+			raise Exception(dedent(f"""
 			Yikes - The dataframe you provided has <{structure_col_count}> columns,
 			but you provided <{col_count}> columns.
 			"""))
@@ -267,7 +286,7 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 			actual_dtypes = dataframe.dtypes.to_dict()
 			for col_name, typ in actual_dtypes.items():
 				if (typ != dtype):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - You specified `dtype={dtype},
 					but Pandas did not convert it: `dataframe['{col_name}'].dtype == {typ}`.
 					You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
@@ -275,7 +294,7 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 		elif (isinstance(dtype, dict)):
 			for col_name, typ in dtype.items():
 				if (typ != dataframe[col_name].dtype):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - You specified `dataframe['{col_name}']:dtype('{typ}'),
 					but Pandas did not convert it: `dataframe['{col_name}'].dtype == {dataframe[col_name].dtype}`.
 					You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
@@ -296,7 +315,7 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 	for col_name, typ in actual_dtypes:
 		for et in excluded_types:
 			if (et in str(typ)):
-				raise ValueError(dedent(f"""
+				raise Exception(dedent(f"""
 				Yikes - You specified `dtype['{col_name}']:'{typ}',
 				but aiqc does not support the following dtypes: {excluded_types}
 				"""))
@@ -341,10 +360,10 @@ def path_to_df(
 	doesn't let you change column names easily, so using pyarrow for parquet.
 	""" 
 	if (not os.path.exists(path)):
-		raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
+		raise Exception(f"\nYikes - The path you provided does not exist according to `os.path.exists(path)`:\n{path}\n")
 
 	if (not os.path.isfile(path)):
-		raise ValueError(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
+		raise Exception(f"\nYikes - The path you provided is not a file according to `os.path.isfile(path)`:\n{path}\n")
 
 	if (source_file_format == 'tsv') or (source_file_format == 'csv'):
 		if (source_file_format == 'tsv') or (source_file_format is None):
@@ -361,7 +380,7 @@ def path_to_df(
 		)
 	elif (source_file_format == 'parquet'):
 		if (skip_header_rows != 'infer'):
-			raise ValueError(dedent("""
+			raise Exception(dedent("""
 			Yikes - The argument `skip_header_rows` is not supported for `source_file_format='parquet'`
 			because Parquet stores column names as metadata.\n
 			"""))
@@ -377,7 +396,7 @@ def size_shift_defined(size_window:int=None, size_shift:int=None):
 		or 
 		((size_window is not None) and (size_shift is None))
 	):
-		raise ValueError("\nYikes - `size_window` and `size_shift` must be used together or not at all.\n")
+		raise Exception("\nYikes - `size_window` and `size_shift` must be used together or not at all.\n")
 
 
 def values_to_bins(array_to_bin:object, bin_count:int):
@@ -420,7 +439,7 @@ def stratifier_by_dtype_binCount(stratify_dtype:object, stratify_arr:object, bin
 	# Reject binned objs.
 	elif (np.issubdtype(stratify_dtype, np.number) == False):
 		if (bin_count is not None):
-			raise ValueError(dedent("""
+			raise Exception(dedent("""
 				Yikes - Your Label is not numeric (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
 				Therefore, you cannot provide a value for `bin_count`.
 			\n"""))
@@ -434,15 +453,15 @@ def floats_only(label:object):
 	label_dtypes = set(label.get_dtypes().values())
 	for typ in label_dtypes:
 		if (not np.issubdtype(typ, np.floating)):
-			raise ValueError(f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n")
+			raise Exception(f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n")
 
 
 def verify_attributes(interpolate_kwargs:dict):
 	if (interpolate_kwargs['method'] == 'polynomial'):
-		raise ValueError("\nYikes - `method=polynomial` is prevented due to bug <https://stackoverflow.com/questions/67222606/interpolate-polynomial-forward-and-backward-missing-nans>.\n")
+		raise Exception("\nYikes - `method=polynomial` is prevented due to bug <https://stackoverflow.com/questions/67222606/interpolate-polynomial-forward-and-backward-missing-nans>.\n")
 	if ((interpolate_kwargs['axis'] != 0) and (interpolate_kwargs['axis'] != 'index')):
 		# This makes it so that you can run on sparse indices.
-		raise ValueError("\nYikes - `axis` must be either 0 or 'index'.\n")
+		raise Exception("\nYikes - `axis` must be either 0 or 'index'.\n")
 
 
 def run_interpolate(dataframe:object, interpolate_kwargs:dict):
@@ -454,7 +473,7 @@ def run_interpolate(dataframe:object, interpolate_kwargs:dict):
 def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 	#This function is used by Featurecoder too, so don't put label-specific things in here.
 	if (inspect.isclass(sklearn_preprocess)):
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 			Yikes - The encoder you provided is a class name, but it should be a class instance.\n
 			Class (incorrect): `OrdinalEncoder`
 			Instance (correct): `OrdinalEncoder()`
@@ -464,13 +483,13 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 	# Feels cleaner than this: https://stackoverflow.com/questions/14570802/python-check-if-object-is-instance-of-any-class-from-a-certain-module
 	coder_type = str(type(sklearn_preprocess))
 	if ('sklearn.preprocessing' not in coder_type):
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 			Yikes - At this point in time, only `sklearn.preprocessing` encoders are supported.
 			https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing
 		"""))
 	elif ('sklearn.preprocessing' in coder_type):
 		if (not hasattr(sklearn_preprocess, 'fit')):    
-			raise ValueError(dedent("""
+			raise Exception(dedent("""
 				Yikes - The `sklearn.preprocessing` method you provided does not have a `fit` method.\n
 				Please use one of the uppercase methods instead.
 				For example: use `RobustScaler` instead of `robust_scale`.
@@ -485,7 +504,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
 					"""))
 				except:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 						Yikes - Detected `sparse==True` attribute of {sklearn_preprocess}.
 						System attempted to override this to False, but failed.
 						FYI `sparse` is True by default if left blank.
@@ -502,7 +521,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 							System cannot handle `drop` yet when dynamically inverse_transforming predictions.
 					"""))
 				except:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 						Yikes - Detected `drop is not None` attribute of {sklearn_preprocess}.
 						System attempted to override this to None, but failed.
 					"""))
@@ -516,7 +535,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 							This saves memory when concatenating the output of many encoders.
 					"""))
 				except:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 						Yikes - Detected `copy==True` attribute of {sklearn_preprocess}.
 						System attempted to override this to False, but failed.
 						FYI `copy` is True by default if left blank, which consumes memory.\n
@@ -533,7 +552,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
 					"""))
 				except:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 						Yikes - Detected `sparse_output==True` attribute of {sklearn_preprocess}.
 						System attempted to override this to True, but failed.
 						Please try again with 'sparse_output=False'.
@@ -550,7 +569,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 							This changes the output shape of the 
 					"""))
 				except:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 						System attempted to override this to 'C', but failed.
 						Yikes - Detected `order=='F'` attribute of {sklearn_preprocess}.
 						Please try again with 'order='C'.
@@ -560,7 +579,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 		if (hasattr(sklearn_preprocess, 'encode')):
 			if (sklearn_preprocess.encode == 'onehot'):
 				# Multiple options here, so don't override user input.
-				raise ValueError(dedent(f"""
+				raise Exception(dedent(f"""
 					Yikes - Detected `encode=='onehot'` attribute of {sklearn_preprocess}.
 					FYI `encode` is 'onehot' by default if left blank and it predictors in 'scipy.sparse.csr.csr_matrix',
 					which causes Keras training to fail.\n
@@ -661,7 +680,7 @@ def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 						fit_encoder = sklearn_preprocess.fit(arr)
 						fitted_encoders.append(fit_encoder)
 				except:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 						Yikes - Encoder failed to fit the columns you filtered.\n
 						Either the data is dirty (e.g. contains NaNs),
 						or the encoder might not accept negative values (e.g. PowerTransformer.method='box-cox'),
@@ -855,7 +874,7 @@ def select_fn_lose(
 			fn_lose = pytorch_multiclass_lose
 	# After each of the predefined approaches above, check if it is still undefined.
 	if fn_lose is None:
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 		Yikes - You did not provide a `fn_lose`,
 		and we don't have an automated function for your combination of 'library' and 'analysis_type'
 		"""))
@@ -870,7 +889,7 @@ def select_fn_optimize(library:str):
 		fn_optimize = pytorch_optimize
 	# After each of the predefined approaches above, check if it is still undefined.
 	if (fn_optimize is None):
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 		Yikes - You did not provide a `fn_optimize`,
 		and we don't have an automated function for your 'library'
 		"""))
@@ -899,7 +918,7 @@ def select_fn_predict(
 
 	# After each of the predefined approaches above, check if it is still undefined.
 	if fn_predict is None:
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 		Yikes - You did not provide a `fn_predict`,
 		and we don't have an automated function for your combination of 'library' and 'analysis_type'
 		"""))
@@ -967,6 +986,7 @@ def stage_data(
 		if (feature_count == 1):
 			samples[split] = {"features": arr_features[indices]}
 		elif (feature_count > 1):
+			# List of arrays is the preferred format for `tf.model.fit(x)` with multiple features.
 			samples[split] = {"features": [arr_features[indices] for arr_features in features]}
 		samples[split]['labels'] = arr_labels[indices]
 	"""
@@ -1247,12 +1267,12 @@ def tabular_schemas_match(set_original, set_new):
 	cols_old = set_original.columns
 	cols_new = set_new.columns
 	if (cols_new != cols_old):
-		raise ValueError("\nYikes - New columns do not match original columns.\n")
+		raise Exception("\nYikes - New columns do not match original columns.\n")
 
 	typs_old = set_original.get_dtypes()
 	typs_new = set_new.get_dtypes()
 	if (typs_new != typs_old):
-		raise ValueError(dedent("""
+		raise Exception(dedent("""
 			Yikes - New dtypes do not match original dtypes.
 			The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
 		"""))
@@ -1264,14 +1284,14 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 	features_old = splitset_old.get_features()
 
 	if (len(features_new) != len(features_old)):
-		raise ValueError("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
+		raise Exception("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
 
 	for i, feature_new in enumerate(features_new):
 		feature_old = features_old[i]
 		feature_old_typ = feature_old.dataset.dataset_type
 		feature_new_typ = feature_new.dataset.dataset_type
 		if (feature_old_typ != feature_new_typ):
-			raise ValueError(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
+			raise Exception(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
 		tabular_schemas_match(feature_old, feature_new)
 
 		if (
@@ -1279,7 +1299,7 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 			or
 			((len(feature_new.windows)>0) and (len(feature_old.windows)==0))
 		):
-			raise ValueError("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
+			raise Exception("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
 
 		if (((len(feature_old.windows)>0) and (len(feature_new.windows)>0))):
 			window_old = feature_old.windows[-1]
@@ -1289,7 +1309,7 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 				or
 				(window_old.size_shift != window_new.size_shift)
 			):
-				raise ValueError("\nYikes - New Window and old Window schemas do not match.\n")
+				raise Exception("\nYikes - New Window and old Window schemas do not match.\n")
 
 	# Only verify Labels if the inference new Splitset provides Labels.
 	# Otherwise, it may be conducting pure inference.
@@ -1299,14 +1319,14 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 		label_new_typ = label_new.dataset.dataset_type
 
 		if (splitset_old.supervision == 'unsupervised'):
-			raise ValueError("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
+			raise Exception("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
 
 		elif (splitset_old.supervision == 'supervised'):
 			label_old =  splitset_old.label
 			label_old_typ = label_old.dataset.dataset_type
 		
 		if (label_old_typ != label_new_typ):
-			raise ValueError("\nYikes - New Label and original Label come from different `dataset_types`.\n")
+			raise Exception("\nYikes - New Label and original Label come from different `dataset_types`.\n")
 		if (label_new_typ == 'tabular'):
 			tabular_schemas_match(label_old, label_new)
 
@@ -1340,7 +1360,7 @@ class TrainingCallback():
 				for threshold in self.thresholds:
 					metric = logs.get(threshold['metric'])
 					if (metric is None):
-						raise ValueError(dedent(f"""
+						raise Exception(dedent(f"""
 						Yikes - The metric named '{threshold['metric']}' not found when running `logs.get('{threshold['metric']}')`
 						during `TrainingCallback.Keras.MetricCutoff.on_epoch_end`.
 						"""))
@@ -1352,7 +1372,7 @@ class TrainingCallback():
 					elif (above_or_below == 'below'):
 						statement = operator.le(metric, cutoff)
 					else:
-						raise ValueError(dedent(f"""
+						raise Exception(dedent(f"""
 						Yikes - Value for key 'above_or_below' must be either string 'above' or 'below'.
 						You provided:{above_or_below}
 						"""))

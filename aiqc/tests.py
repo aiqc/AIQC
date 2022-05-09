@@ -1,6 +1,6 @@
 # Internal modules
 from . import datum
-from .utils import torch_batcher, div255, mult255, TrainingCallback
+from .utils import torch_batcher, torch_shuffler, div255, mult255, TrainingCallback
 from .orm import *
 # External modules
 import tensorflow as tf
@@ -116,7 +116,7 @@ def list_test_queues(format:str=None):
 	elif (format in formats_lst):
 		return queues
 	else:
-		raise ValueError(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
+		raise Exception(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
 
 """
 Remember, `pickle` does not accept nested functions.
@@ -915,17 +915,18 @@ def pytorch_binary_fn_build(features_shape, label_shape, **hp):
 
 def pytorch_binary_fn_optimize(model, **hp):
 	optimizer = torch.optim.Adamax(
-		model.parameters()
-		, lr=hp['learning_rate']
+		model.parameters(), lr=hp['learning_rate']
 	)
 	return optimizer
 
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	## --- Prepare mini batches for analysis ---
+	# features has 140 samples so batch_size=6 means last batch has 2 samples.
+	# with batch_size 139 it will fail if allow_singleSample=True
 	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
-		batch_size=5, enforce_sameSize=False, allow_1Sample=False
+		batch_size=6, enforce_sameSize=True, allow_singleSample=False
 	)
 
 	## --- Metrics ---
@@ -939,8 +940,9 @@ def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_eval
 	## --- Training loop ---
 	epochs = hp['epoch_count']
 	for epoch in range(epochs):
+		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
 		## --- Batch training ---
-		for i, batch in enumerate(batched_features):      
+		for i, batch in enumerate(batched_features):
 			# Make raw (unlabeled) predictions.
 			batch_probability = model(batched_features[i])
 			batch_loss = loser(batch_probability, batched_labels[i])
@@ -1059,7 +1061,7 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 	## --- Prepare mini batches for analysis ---
 	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
-		batch_size=hp['batch_size'], enforce_sameSize=False, allow_1Sample=False
+		batch_size=hp['batch_size'], enforce_sameSize=False, allow_singleSample=False
 	)
 
 	## --- Metrics ---
@@ -1073,6 +1075,7 @@ def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_
 	## --- Training loop ---
 	epochs = 10
 	for epoch in range(epochs):
+		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):      
 			# Make raw (unlabeled) predictions.
@@ -1204,7 +1207,7 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 	## --- Prepare mini batches for analysis ---
 	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
-		batch_size=5, enforce_sameSize=False, allow_1Sample=False
+		batch_size=5, enforce_sameSize=False, allow_singleSample=False
 	)
 
 	# Modeled after `tf.keras.model.History.history` object.
@@ -1216,6 +1219,7 @@ def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_
 	## --- Training loop ---
 	epochs = 10
 	for epoch in range(epochs):
+		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):      
 			# Make raw (unlabeled) predictions.
@@ -1376,7 +1380,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	## --- Prepare mini batches for analysis ---
 	batched_features, batched_labels = torch_batcher(
 		samples_train['features'], samples_train['labels'],
-		batch_size=5, enforce_sameSize=False, allow_1Sample=False
+		batch_size=5, enforce_sameSize=False, allow_singleSample=False
 	)
 
 	## --- Metrics ---
@@ -1390,6 +1394,7 @@ def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, sample
 	## --- Training loop ---
 	epochs = 10
 	for epoch in range(epochs):
+		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
 		# --- Batch training ---
 		for i, batch in enumerate(batched_features):
 			# Make raw (unlabeled) predictions.
@@ -1625,5 +1630,5 @@ def make_test_queue(name:str, repeat_count:int=1, fold_count:int=None, permute_c
 	elif (name == 'keras_image_forecast'):
 		queue = make_test_queue_keras_image_forecast(repeat_count, fold_count)
 	else:
-		raise ValueError(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'tests.list_test_queues()'.\n")
+		raise Exception(f"\nYikes - The 'name' you specified <{name}> was not found.\nTip - Check the names in 'tests.list_test_queues()'.\n")
 	return queue

@@ -163,7 +163,7 @@ def list_datums(format:str=None):
 	elif (format in formats_lst):
 		return datums
 	else:
-		raise ValueError(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
+		raise Exception(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
 
 
 def get_path(name:str):

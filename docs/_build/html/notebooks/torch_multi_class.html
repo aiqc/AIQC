@@ -821,7 +821,7 @@ No more Featurecoders can be added to this Encoderset.
     <span class="c1">## --- Prepare mini batches for analysis ---</span>
     <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">torch_batcher</span><span class="p">(</span>
         <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span>
-        <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_1Sample</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_singleSample</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="c1">## --- Metrics ---</span>

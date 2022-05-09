@@ -486,7 +486,7 @@
     "    ## --- Prepare mini batches for analysis ---\n",
     "    batched_features, batched_labels = torch_batcher(\n",
     "        samples_train['features'], samples_train['labels'],\n",
-    "        batch_size=hp['batch_size'], enforce_sameSize=False, allow_1Sample=False\n",
+    "        batch_size=hp['batch_size'], enforce_sameSize=False, allow_singleSample=False\n",
     "    )\n",
     "\n",
     "    ## --- Metrics --- \n",

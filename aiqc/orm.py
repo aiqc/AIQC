@@ -205,12 +205,12 @@ class Dataset(BaseModel):
 		samples = utils.listify(samples)
 		dataset = Dataset.get_by_id(id)
 		if ((dataset.dataset_type == 'tabular') or (dataset.dataset_type == 'text')):
-			raise ValueError("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
+			raise Exception("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
 		elif (dataset.dataset_type == 'image'):
 			image = Dataset.Image.to_pillow(id=id, samples=samples)
 		elif (dataset.dataset_type == 'sequence'):
 			if (samples is not None):
-				raise ValueError("\nYikes - `Dataset.Sequence.to_pillow()` does not support a `samples` argument.\n")
+				raise Exception("\nYikes - `Dataset.Sequence.to_pillow()` does not support a `samples` argument.\n")
 			image = Dataset.Sequence.to_pillow(id=id)
 		return image
 
@@ -220,7 +220,7 @@ class Dataset(BaseModel):
 		samples = utils.listify(samples)
 
 		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'image'):
-			raise ValueError("\nYikes - This Dataset class does not have a `to_strings()` method.\n")
+			raise Exception("\nYikes - This Dataset class does not have a `to_strings()` method.\n")
 		elif (dataset.dataset_type == 'text'):
 			return Dataset.Text.to_strings(id=dataset.id, samples=samples)
 
@@ -260,13 +260,13 @@ class Dataset(BaseModel):
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
 			if (source_file_format not in accepted_formats):
-				raise ValueError(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
+				raise Exception(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
 
 			if (not os.path.exists(file_path)):
-				raise ValueError(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
+				raise Exception(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
 
 			if (not os.path.isfile(file_path)):
-				raise ValueError(dedent(
+				raise Exception(dedent(
 					f"Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:" \
 					f"{file_path}" \
 					f"But `dataset_type=='tabular'` only supports a single file, not an entire directory.`"
@@ -312,7 +312,7 @@ class Dataset(BaseModel):
 			column_names = utils.listify(column_names)
 
 			if (type(dataframe).__name__ != 'DataFrame'):
-				raise ValueError("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
+				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
 
 			dataset = Dataset.create(
 				dataset_type = Dataset.Tabular.dataset_type
@@ -347,7 +347,7 @@ class Dataset(BaseModel):
 
 			dimensions = len(ndarray.shape)
 			if (dimensions > 2) or (dimensions < 1):
-				raise ValueError(dedent(f"""
+				raise Exception(dedent(f"""
 				Yikes - Tabular Datasets only support 1D and 2D arrays.
 				Your array dimensions had <{dimensions}> dimensions.
 				"""))
@@ -407,22 +407,22 @@ class Dataset(BaseModel):
 		):
 			"""Both `ingest=False` and `_source_path=None` is possible"""
 			if ((ingest==False) and (isinstance(dtype, dict))):
-				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
+				raise Exception("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
 			# Fetch array from .npy if it is not an in-memory array.
 			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
 				if (not isinstance(ndarray3D_or_npyPath, str)):
-					raise ValueError("\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n")
+					raise Exception("\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n")
 				if (not os.path.exists(ndarray3D_or_npyPath)):
-					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
+					raise Exception("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
 				if (not os.path.isfile(ndarray3D_or_npyPath)):
-					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+					raise Exception("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
 				if (_source_path is not None):
 					# Path or url to 3D image.
 					source_path = _source_path
 				elif (_source_path is None):
 					source_path = ndarray3D_or_npyPath
 				if (not source_path.lower().endswith(".npy")):
-					raise ValueError("\nYikes - Path must end with '.npy' or '.NPY'\n")
+					raise Exception("\nYikes - Path must end with '.npy' or '.NPY'\n")
 				try:
 					# `allow_pickle=False` prevented it from reading the file.
 					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
@@ -442,7 +442,7 @@ class Dataset(BaseModel):
 			utils.arr_validate(ndarray_3D)
 
 			if (ndarray_3D.ndim != 3):
-				raise ValueError(dedent(f"""
+				raise Exception(dedent(f"""
 				Yikes - Sequence Datasets can only be constructed from 3D arrays.
 				Your array dimensions had <{ndarray_3D.ndim}> dimensions.
 				Tip: the shape of each internal array must be the same.
@@ -531,7 +531,7 @@ class Dataset(BaseModel):
 			elif (arr.shape[0]==4):
 				img = Imaje.fromarray(arr, 'RGBA')
 			else:
-				raise ValueError("\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n")
+				raise Exception("\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n")
 			return img
 
 
@@ -601,7 +601,7 @@ class Dataset(BaseModel):
 			for url in urls:
 				validation = validators.url(url)
 				if (validation != True): #`== False` doesn't work.
-					raise ValueError(f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n")
+					raise Exception(f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n")
 
 				img = Imaje.open(
 					requests.get(url, stream=True).raw
@@ -646,13 +646,13 @@ class Dataset(BaseModel):
 			# Fetch array from .npy if it is not an in-memory array.
 			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
 				if (not isinstance(ndarray4D_or_npyPath, str)):
-					raise ValueError("\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n")
+					raise Exception("\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n")
 				if (not os.path.exists(ndarray4D_or_npyPath)):
-					raise ValueError("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
+					raise Exception("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
 				if (not os.path.isfile(ndarray4D_or_npyPath)):
-					raise ValueError("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+					raise Exception("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
 				if (not ndarray4D_or_npyPath.lower().endswith('.npy')):
-					raise ValueError("\nYikes - Path must end with '.npy' or '.NPY'\n")
+					raise Exception("\nYikes - Path must end with '.npy' or '.NPY'\n")
 				source_path = ndarray4D_or_npyPath
 				try:
 					# `allow_pickle=False` prevented it from reading the file.
@@ -665,7 +665,7 @@ class Dataset(BaseModel):
 				source_path = None
 				ndarray_4D = ndarray4D_or_npyPath
 				if (ingest==False):
-					raise ValueError("\nYikes - If provided an in-memory array, then `ingest` cannot be False.\n")
+					raise Exception("\nYikes - If provided an in-memory array, then `ingest` cannot be False.\n")
 
 			file_count = ndarray_4D.shape[1]#This is the 3rd dimension
 			dataset = Dataset.create(
@@ -703,10 +703,10 @@ class Dataset(BaseModel):
 		):
 			column_names = utils.listify(column_names)
 			if ((ingest==False) and (isinstance(dtype, dict))):
-				raise ValueError("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
+				raise Exception("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
 			# Checking that the shape is 4D validates that each internal array is uniformly shaped.
 			if (ndarray_4D.ndim!=4):
-				raise ValueError("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`. Tip: shapes of each image array must be the same.\n")
+				raise Exception("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`. Tip: shapes of each image array must be the same.\n")
 			utils.arr_validate(ndarray_4D)
 			
 			if (paths is not None):
@@ -791,7 +791,7 @@ class Dataset(BaseModel):
 		):
 			for expectedString in strings:
 				if type(expectedString) !=  str:
-					raise ValueError(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
+					raise Exception(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
 
 			dataframe = pd.DataFrame(strings, columns=[Dataset.Text.column_name], dtype="object")
 			return Dataset.Text.from_pandas(dataframe, name)
@@ -804,10 +804,10 @@ class Dataset(BaseModel):
 			column_names:list = None
 		):
 			if Dataset.Text.column_name not in list(dataframe.columns):
-				raise ValueError("\nYikes - The `dataframe` you provided doesn't contain 'TextData' column. Please rename the column containing text data to 'TextData'`\n")
+				raise Exception("\nYikes - The `dataframe` you provided doesn't contain 'TextData' column. Please rename the column containing text data to 'TextData'`\n")
 
 			if dataframe[Dataset.Text.column_name].dtypes != 'O':
-				raise ValueError("\nYikes - The `dataframe` you provided contains 'TextData' column with incorrect dtype: column dtype != object\n")
+				raise Exception("\nYikes - The `dataframe` you provided contains 'TextData' column with incorrect dtype: column dtype != object\n")
 
 			dataset = Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
 			dataset.dataset_type = Dataset.Text.dataset_type
@@ -1126,7 +1126,7 @@ class Label(BaseModel):
 		columns = utils.listify(columns)
 
 		if (d.dataset_type != 'tabular' and d.dataset_type != 'text'):
-			raise ValueError(dedent(f"""
+			raise Exception(dedent(f"""
 			Yikes - Labels can only be created from `dataset_type='tabular' or 'text'`.
 			But you provided `dataset_type`: <{d.dataset_type}>
 			"""))
@@ -1136,7 +1136,7 @@ class Label(BaseModel):
 		# Check that the user-provided columns exist.
 		all_cols_found = all(col in d_cols for col in columns)
 		if not all_cols_found:
-			raise ValueError("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
+			raise Exception("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
 
 		# Check for duplicates of this label that already exist.
 		cols_aplha = sorted(columns)
@@ -1148,7 +1148,7 @@ class Label(BaseModel):
 				l_cols = l.columns
 				l_cols_alpha = sorted(l_cols)
 				if (cols_aplha == l_cols_alpha):
-					raise ValueError(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
+					raise Exception(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
 
 		column_count = len(columns)
 
@@ -1181,7 +1181,7 @@ class Label(BaseModel):
 				):
 					pass
 				else:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - When multiple columns are provided, they must be One Hot Encoded:
 					Unique values of your columns were neither (0,1) or (0.,1.) or (0.0,1.0).
 					The columns you provided contained these unique values: {all_uniques}
@@ -1196,12 +1196,12 @@ class Label(BaseModel):
 					arr = list(arr)
 					arr.remove(1)
 					if 1 in arr:
-						raise ValueError(dedent(f"""
+						raise Exception(dedent(f"""
 						Yikes - Label row <{i}> is supposed to be an OHE row,
 						but it contains multiple hot columns where value is 1.
 						"""))
 				else:
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - Label row <{i}> is supposed to be an OHE row,
 					but it contains no hot columns where value is 1.
 					"""))
@@ -1302,7 +1302,7 @@ class Label(BaseModel):
 			elif isinstance(labelinterpolater_id, int):
 				labelinterpolater = LabelInterpolater.get_by_id(labelinterpolater_id)
 			else:
-				raise ValueError(f"\nYikes - Unexpected value <{labelinterpolater_id}> for `labelinterpolater_id` argument.\n")
+				raise Exception(f"\nYikes - Unexpected value <{labelinterpolater_id}> for `labelinterpolater_id` argument.\n")
 
 			labelinterpolater = label.labelinterpolaters[-1]
 			label_array = labelinterpolater.interpolate(array=label_array, samples=samples)
@@ -1327,10 +1327,10 @@ class Label(BaseModel):
 				elif (isinstance(labelinterpolater_id, int)):
 					labelcoder = LabelCoder.get_by_id(labelcoder_id)
 				else:
-					raise ValueError(f"\nYikes - Unexpected value <{labelcoder_id}> for `labelcoder_id` argument.\n")
+					raise Exception(f"\nYikes - Unexpected value <{labelcoder_id}> for `labelcoder_id` argument.\n")
 
 				if ((_job is None) or (_samples_train is None)):
-					raise ValueError("Yikes - both `job_id` and `key_train` must be defined in order to use `labelcoder`")
+					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `labelcoder`")
 
 				fitted_encoders = utils.encoder_fit_labels(
 					arr_labels=label_array, samples_train=_samples_train,
@@ -1387,13 +1387,13 @@ class Feature(BaseModel):
 		d_cols = Dataset.get_main_file(dataset_id).columns
 		
 		if ((include_columns is not None) and (exclude_columns is not None)):
-			raise ValueError("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
+			raise Exception("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
 
 		if (include_columns is not None):
 			# check columns exist
 			all_cols_found = all(col in d_cols for col in include_columns)
 			if (not all_cols_found):
-				raise ValueError("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
+				raise Exception("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
 			# inclusion
 			columns = include_columns
 			# exclusion
@@ -1404,7 +1404,7 @@ class Feature(BaseModel):
 		elif (exclude_columns is not None):
 			all_cols_found = all(col in d_cols for col in exclude_columns)
 			if (not all_cols_found):
-				raise ValueError("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
+				raise Exception("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
 			# exclusion
 			columns_excluded = exclude_columns
 			# inclusion
@@ -1412,7 +1412,7 @@ class Feature(BaseModel):
 			for col in exclude_columns:
 				columns.remove(col)
 			if (not columns):
-				raise ValueError("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
+				raise Exception("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
 		else:
 			columns = d_cols
 			columns_excluded = None
@@ -1436,7 +1436,7 @@ class Feature(BaseModel):
 				else:
 					f_cols_alpha = None
 				if (cols_aplha == f_cols_alpha):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - This Dataset already has Feature <id:{f_id}> with the same columns.
 					Cannot create duplicate.
 					"""))
@@ -1487,7 +1487,7 @@ class Feature(BaseModel):
 		if (columns is not None):
 			for c in columns:
 				if c not in f_cols:
-					raise ValueError("\nYikes - Cannot fetch column '{c}' because it is not in `Feature.columns`.\n")
+					raise Exception("\nYikes - Cannot fetch column '{c}' because it is not in `Feature.columns`.\n")
 			f_cols = columns    
 
 		dataset_id = feature.dataset.id
@@ -1552,7 +1552,7 @@ class Feature(BaseModel):
 			elif isinstance(window_id, int):
 				window = Window.get_by_id(window_id)
 			else:
-				raise ValueError(f"\nYikes - Unexpected value <{window_id}> for `window_id` argument.\n")
+				raise Exception(f"\nYikes - Unexpected value <{window_id}> for `window_id` argument.\n")
 
 			# During encoding we'll need the raw rows, not window indices.
 			if ((_samples_train is not None) and (_job is not None) and (_fitted_feature is None)):
@@ -1571,7 +1571,7 @@ class Feature(BaseModel):
 			elif isinstance(interpolaterset_id, int):
 				ip = Interpolaterset.get_by_id(interpolaterset_id)
 			else:
-				raise ValueError(f"\nYikes - Unexpected value <{interpolaterset_id}> for `interpolaterset_id` argument.\n")
+				raise Exception(f"\nYikes - Unexpected value <{interpolaterset_id}> for `interpolaterset_id` argument.\n")
 
 			feature_array = ip.interpolate(array=feature_array, samples=samples, window=window)
 
@@ -1597,10 +1597,10 @@ class Feature(BaseModel):
 				elif (isinstance(encoderset_id, int)):
 					encoderset = Encoderset.get_by_id(encoderset_id)
 				else:
-					raise ValueError(f"\nYikes - Unexpected value <{encoderset_id}> for `encoderset_id` argument.\n")
+					raise Exception(f"\nYikes - Unexpected value <{encoderset_id}> for `encoderset_id` argument.\n")
 
 				if ((_job is None) or (_samples_train is None)):
-					raise ValueError("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
+					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
 
 				# This takes the entire array because it handles all features and splits.
 				fitted_encoders = utils.encoderset_fit_features(
@@ -1684,7 +1684,7 @@ class Feature(BaseModel):
 			elif isinstance(featureshaper_id, int):
 				featureshaper = FeatureShaper.get_by_id(featureshaper_id)
 			else:
-				raise ValueError(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
+				raise Exception(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
 
 			old_shape = feature_array.shape
 			new_shape = []
@@ -1701,18 +1701,18 @@ class Feature(BaseModel):
 			try:
 				feature_array = feature_array.reshape(new_shape)
 			except:
-				raise ValueError(f"\nYikes - Failed to rearrange the feature of shape:<{old_shape}> into new shape:<{new_shape}> based on the `reshape_indices`:<{reshape_indices}> provided. Make sure both shapes have the same multiplication product.\n")
+				raise Exception(f"\nYikes - Failed to rearrange the feature of shape:<{old_shape}> into new shape:<{new_shape}> based on the `reshape_indices`:<{reshape_indices}> provided. Make sure both shapes have the same multiplication product.\n")
 			
 			column_position = featureshaper.column_position
 			if (old_shape[-1] != new_shape[column_position]):
-				raise ValueError(f"\nYikes - Reshape succeeded, but expected the last dimension of the old shape:<{old_shape[-1]}> to match the dimension found <{old_shape[column_position]}> in the new shape's `featureshaper.column_position:<{column_position}>.\n")
+				raise Exception(f"\nYikes - Reshape succeeded, but expected the last dimension of the old shape:<{old_shape[-1]}> to match the dimension found <{old_shape[column_position]}> in the new shape's `featureshaper.column_position:<{column_position}>.\n")
 
 			# Unsupervised labels.
 			if ((window_id!='skip') and (feature.windows.count()>0) and (window.samples_shifted is not None)):
 				try:
 					label_array = label_array.reshape(new_shape)
 				except:
-					raise ValueError(f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
+					raise Exception(f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
 
 
 		if (_library == 'pytorch'):
@@ -1756,7 +1756,7 @@ class Feature(BaseModel):
 			# Get the leftover columns from the last one.
 			initial_columns = existing_preprocs[-1].leftover_columns
 			if (len(initial_columns) == 0):
-				raise ValueError(f"\nYikes - All features already have {class_name}s associated with them. Cannot add more preprocesses to this set.\n")
+				raise Exception(f"\nYikes - All features already have {class_name}s associated with them. Cannot add more preprocesses to this set.\n")
 		initial_dtypes = {}
 		for key,value in feature_dtypes.items():
 			for col in initial_columns:
@@ -1771,7 +1771,7 @@ class Feature(BaseModel):
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (typ not in set(initial_dtypes.values())):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - dtype '{typ}' was not found in remaining dtypes.
 					Remove '{typ}' from `dtypes` and try again.
 					"""))
@@ -1779,7 +1779,7 @@ class Feature(BaseModel):
 		if (columns is not None):
 			for c in columns:
 				if (col not in initial_columns):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - Column '{col}' was not found in remaining columns.
 					Remove '{col}' from `columns` and try again.
 					"""))
@@ -1790,7 +1790,7 @@ class Feature(BaseModel):
 			matching_columns = []
 			
 			if ((dtypes is None) and (columns is None)):
-				raise ValueError("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
+				raise Exception("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
 
 			if (dtypes is not None):
 				for typ in dtypes:
@@ -1807,7 +1807,7 @@ class Feature(BaseModel):
 					elif (c in matching_columns):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(dedent(f"""
+						raise Exception(dedent(f"""
 						Yikes - The column '{c}' was already included by `dtypes`, so this column-based filter is not valid.
 						Remove '{c}' from `columns` and try again.
 						"""))
@@ -1830,7 +1830,7 @@ class Feature(BaseModel):
 					elif (c not in matching_columns):
 						# We know from validation above that the column existed in initial_columns.
 						# Therefore, if it no longer exists it means that dtype_exclude got to it first.
-						raise ValueError(dedent(f"""
+						raise Exception(dedent(f"""
 						Yikes - The column '{c}' was already excluded by `dtypes`,
 						so this column-based filter is not valid.
 						Remove '{c}' from `dtypes` and try again.
@@ -1840,7 +1840,7 @@ class Feature(BaseModel):
 				inex_str = "inclusion"
 			elif (include == False):
 				inex_str = "exclusion"
-			raise ValueError(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
+			raise Exception(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
 
 		# 3b. Record the  output.
 		leftover_columns =  list(set(initial_columns) - set(matching_columns))
@@ -1930,9 +1930,9 @@ class Window(BaseModel):
 
 		if (record_shifted==True):
 			if ((size_window < 1) or (size_window > (sample_count - size_shift))):
-				raise ValueError("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
+				raise Exception("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
 			if ((size_shift < 1) or (size_shift > (sample_count - size_window))):
-				raise ValueError("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
+				raise Exception("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
 
 			window_count = math.floor((sample_count - size_window) / size_shift)
 			prune_shifted_lead = sample_count - ((window_count - 1)*size_shift + size_window)
@@ -2010,18 +2010,18 @@ class Splitset(BaseModel):
 		# --- Verify splits ---
 		if (size_test is not None):
 			if ((size_test <= 0.0) or (size_test >= 1.0)):
-				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
+				raise Exception("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			# Don't handle `has_test` here. Need to check label first.
 		
 		if ((size_validation is not None) and (size_test is None)):
-			raise ValueError("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
+			raise Exception("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
 
 		if (size_validation is not None):
 			if ((size_validation <= 0.0) or (size_validation >= 1.0)):
-				raise ValueError("\nYikes - `size_test` must be between 0.0 and 1.0\n")
+				raise Exception("\nYikes - `size_test` must be between 0.0 and 1.0\n")
 			sum_test_val = size_validation + size_test
 			if sum_test_val >= 1.0:
-				raise ValueError("\nYikes - Sum of `size_test` + `size_test` must be between 0.0 and 1.0 to leave room for training set.\n")
+				raise Exception("\nYikes - Sum of `size_test` + `size_test` must be between 0.0 and 1.0 to leave room for training set.\n")
 			"""
 			Have to run train_test_split twice do the math to figure out the size of 2nd split.
 			Let's say I want {train:0.67, validation:0.13, test:0.20}
@@ -2059,7 +2059,7 @@ class Splitset(BaseModel):
 					f_length = f_dataset.datasets.count()
 			feature_lengths.append(f_length)
 		if (len(set(feature_lengths)) != 1):
-			raise ValueError("Yikes - List of Features you provided contain different amounts of samples.")
+			raise Exception("Yikes - List of Features you provided contain different amounts of samples.")
 		sample_count = feature_lengths[0]		
 		arr_idx = np.arange(sample_count)
 
@@ -2082,9 +2082,9 @@ class Splitset(BaseModel):
 			# ------ Stratification prep ------
 			if (label_id is not None):
 				if (unsupervised_stratify_col is not None):
-					raise ValueError("\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n")
+					raise Exception("\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n")
 				if (len(feature.windows)>0):
-					raise ValueError("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
+					raise Exception("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
 
 				has_test = True
 				supervision = "supervised"
@@ -2097,7 +2097,7 @@ class Splitset(BaseModel):
 				l_length = label.dataset.get_main_file().shape['rows']				
 				if (label.dataset.id != f_dataset.id):
 					if (l_length != sample_count):
-						raise ValueError("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
+						raise Exception("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
 
 				# check for OHE cols and reverse them so we can still stratify ordinally.
 				if (stratify_arr.shape[1] > 1):
@@ -2109,7 +2109,7 @@ class Splitset(BaseModel):
 			elif (label_id is None):
 				if (len(feature_ids) > 1):
 					# Mainly because it would require multiple labels.
-					raise ValueError("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
+					raise Exception("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
 
 				has_test = False
 				supervision = "unsupervised"
@@ -2158,7 +2158,7 @@ class Splitset(BaseModel):
 
 				elif (unsupervised_stratify_col is None):
 					if (bin_count is not None):
-			 			raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
+			 			raise Exception("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
 					stratify_arr = None#Used in if statements below.
 
 
@@ -2249,7 +2249,7 @@ class Splitset(BaseModel):
 		# This is used by inference where we just want all of the samples.
 		elif(size_test is None):
 			if (unsupervised_stratify_col is not None):
-				raise ValueError("\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n")
+				raise Exception("\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n")
 
 			has_test = False
 			samples["train"] = arr_idx.tolist()
@@ -2335,7 +2335,7 @@ class Foldset(BaseModel):
 			fold_count = 5 # More likely than 4 to be evenly divisible.
 		else:
 			if (fold_count < 2):
-				raise ValueError(dedent(f"""
+				raise Exception(dedent(f"""
 				Yikes - Cross validation requires multiple folds.
 				But you provided `fold_count`: <{fold_count}>.
 				"""))
@@ -2402,7 +2402,7 @@ class Foldset(BaseModel):
 
 			elif (splitset.unsupervised_stratify_col is None):
 				if (bin_count is not None):
-					raise ValueError("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
+					raise Exception("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
 				stratify_arr = None#Used in if statements below.
 
 		# If the Labels are binned *overwite* the values w bin numbers. Otherwise untouched.
@@ -2438,7 +2438,7 @@ class Foldset(BaseModel):
 					print("\nInfo - Attempting to use ordinal bins as no `bin_count` was provided. This may fail if there are to many unique ordinal values.\n")
 			else:
 				if (bin_count is not None):
-					raise ValueError(dedent("""
+					raise Exception(dedent("""
 						Yikes - The column you are stratifying by is not a numeric dtype (neither `np.floating`, `np.signedinteger`, `np.unsignedinteger`).
 						Therefore, you cannot provide a value for `bin_count`.
 					\n"""))
@@ -2560,7 +2560,7 @@ class LabelInterpolater(BaseModel):
 			df = label.to_pandas()
 			utils.run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
-			raise ValueError("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
+			raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
 		else:
 			print("\n=> Tested interpolation of Label successfully.\n")
 
@@ -2602,7 +2602,7 @@ class LabelInterpolater(BaseModel):
 					df_labels = pd.concat([df_labels, df])
 			# df doesn't need to be sorted if it is going back to numpy.
 		else:
-			raise ValueError("\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n")
+			raise Exception("\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n")
 		arr_labels = df_labels.to_numpy()
 		return arr_labels
 
@@ -2643,7 +2643,7 @@ class Interpolaterset(BaseModel):
 		ip = Interpolaterset.get_by_id(id)
 		fps = ip.featureinterpolaters
 		if (fps.count()==0):
-			raise ValueError("\nYikes - This Interpolaterset has no FeatureInterpolaters yet.\n")
+			raise Exception("\nYikes - This Interpolaterset has no FeatureInterpolaters yet.\n")
 		dataset_type = ip.feature.dataset.dataset_type
 		columns = ip.feature.columns# Used for naming not slicing cols.
 
@@ -2709,7 +2709,7 @@ class Interpolaterset(BaseModel):
 					df = fp.interpolate(dataframe=df, samples=samples)#handles `samples=None`
 					# Overwrite the original column with the interpolated column.
 					if (dataframe.index.size != df.index.size):
-						raise ValueError("Yikes - Internal error. Index sizes inequal.")
+						raise Exception("Yikes - Internal error. Index sizes inequal.")
 					for c in fp.matching_columns:
 						dataframe[c] = df[c]
 			array = dataframe.to_numpy()
@@ -2730,7 +2730,7 @@ class Interpolaterset(BaseModel):
 					df_cols = fp.interpolate(dataframe=df_cols, samples=None)
 					# Overwrite columns.
 					if (dataframe.index.size != df_cols.index.size):
-						raise ValueError("Yikes - Internal error. Index sizes inequal.")
+						raise Exception("Yikes - Internal error. Index sizes inequal.")
 					for c in fp.matching_columns:
 						dataframe[c] = df_cols[c]
 				# Update the list. Might as well array it while accessing it.
@@ -2791,12 +2791,12 @@ class FeatureInterpolater(BaseModel):
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (not np.issubdtype(typ, np.floating)):
-					raise ValueError("\nYikes - All `dtypes` must match `np.issubdtype(dtype, np.floating`.\nYour dtype: <{typ}>")
+					raise Exception("\nYikes - All `dtypes` must match `np.issubdtype(dtype, np.floating`.\nYour dtype: <{typ}>")
 		if (columns is not None):
 			feature_dtypes = feature.get_dtypes()
 			for c in columns:
 				if (not np.issubdtype(feature_dtypes[c], np.floating)):
-					raise ValueError(f"\nYikes - The column <{c}> that you provided is not of dtype `np.floating`.\n")
+					raise Exception(f"\nYikes - The column <{c}> that you provided is not of dtype `np.floating`.\n")
 
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_preprocs
@@ -2855,11 +2855,11 @@ class FeatureInterpolater(BaseModel):
 						df_interp = pd.concat([df_interp, df])
 				df_interp = df_interp.sort_index()
 			else:
-				raise ValueError("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
+				raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
 		elif ((dataset_type=='sequence') or (dataset_type=='image')):
 			df_interp = utils.run_interpolate(dataframe, interpolate_kwargs)
 		else:
-			raise ValueError("\nYikes - Internal error. Unable to process FeatureInterpolater with dataset_type provided.\n")
+			raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with dataset_type provided.\n")
 		# Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
 		return df_interp
 
@@ -2943,7 +2943,7 @@ class LabelCoder(BaseModel):
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError(dedent("""
+			raise Exception(dedent("""
 			During testing, the encoder was successfully `fit()` on the labels,
 			but, it failed to `transform()` labels of the dataset as a whole.
 			"""))
@@ -3000,7 +3000,7 @@ class FeatureCoder(BaseModel):
 			only_fit_train = False
 			is_categorical = False
 			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
-				raise ValueError("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
+				raise Exception("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
 		else:
 			sklearn_preprocess, only_fit_train, is_categorical = utils.check_sklearn_attributes(
 				sklearn_preprocess, is_label=False
@@ -3024,7 +3024,7 @@ class FeatureCoder(BaseModel):
 			and
 			(len(matching_columns) > 1)
 		):
-			raise ValueError(dedent("""
+			raise Exception(dedent("""
 				Yikes - `LabelBinarizer` or `LabelCoder` cannot be run on 
 				multiple columns at once.
 
@@ -3060,7 +3060,7 @@ class FeatureCoder(BaseModel):
 				, samples_to_transform = samples_to_encode
 			)
 		except:
-			raise ValueError(dedent("""
+			raise Exception(dedent("""
 			During testing, the encoder was successfully `fit()` on the features,
 			but, it failed to `transform()` features of the dataset as a whole.\n
 			"""))
@@ -3121,15 +3121,15 @@ class FeatureShaper(BaseModel):
 			# Also prevents a completely empty tuple.
 			max_int = max(ints)
 			if (max_int==0):
-				raise ValueError(error_msg)
+				raise Exception(error_msg)
 			else:
 				try:
 					# This will fail if the highest int was in a nested tuple.
 					column_position = reshape_indices.index(max_int)
 				except:
-					raise ValueError(error_msg)
+					raise Exception(error_msg)
 		else:
-			raise ValueError(error_msg)
+			raise Exception(error_msg)
 
 		featureshaper = FeatureShaper.create(
 			reshape_indices = reshape_indices
@@ -3169,12 +3169,12 @@ class Algorithm(BaseModel):
 	):
 		library = library.lower()
 		if ((library != 'keras') and (library != 'pytorch')):
-			raise ValueError("\nYikes - Right now, the only libraries we support are 'keras' and 'pytorch'\nMore to come soon!\n")
+			raise Exception("\nYikes - Right now, the only libraries we support are 'keras' and 'pytorch'\nMore to come soon!\n")
 
 		analysis_type = analysis_type.lower()
 		supported_analyses = ['classification_multi', 'classification_binary', 'regression']
 		if (analysis_type not in supported_analyses):
-			raise ValueError(f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n")
+			raise Exception(f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n")
 
 		if (fn_predict is None):
 			fn_predict = utils.select_fn_predict(
@@ -3191,7 +3191,7 @@ class Algorithm(BaseModel):
 		for i, f in enumerate(funcs):
 			is_func = callable(f)
 			if (not is_func):
-				raise ValueError(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
+				raise Exception(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
 
 		fn_build = utils.dill_serialize(fn_build)
 		fn_optimize = utils.dill_serialize(fn_optimize)
@@ -3239,7 +3239,7 @@ class Hyperparamset(BaseModel):
 		, search_percent:float = None
 	):
 		if ((search_count is not None) and (search_percent is not None)):
-			raise ValueError("Yikes - Either `search_count` or `search_percent` can be provided, but not both.")
+			raise Exception("Yikes - Either `search_count` or `search_percent` can be provided, but not both.")
 
 		algorithm = Algorithm.get_by_id(algorithm_id)
 
@@ -3264,7 +3264,7 @@ class Hyperparamset(BaseModel):
 		# These are the random selection strategies.
 		if (search_count is not None):
 			if (search_count < 1):
-				raise ValueError(f"\nYikes - search_count:<{search_count}> cannot be less than 1.\n")
+				raise Exception(f"\nYikes - search_count:<{search_count}> cannot be less than 1.\n")
 			elif (search_count > hyperparamcombo_count):
 				print(f"\nInfo - search_count:<{search_count}> greater than the number of hyperparameter combinations:<{hyperparamcombo_count}>.\nProceeding with all combinations.\n")
 			else:
@@ -3273,7 +3273,7 @@ class Hyperparamset(BaseModel):
 				hyperparamcombo_count = len(params_combos_dicts)
 		elif (search_percent is not None):
 			if ((search_percent > 1.0) or (search_percent <= 0.0)):
-				raise ValueError(f"\nYikes - search_percent:<{search_percent}> must be between 0.0 and 1.0.\n")
+				raise Exception(f"\nYikes - search_percent:<{search_percent}> must be between 0.0 and 1.0.\n")
 			else:
 				select_count = math.ceil(hyperparamcombo_count * search_percent)
 				params_combos_dicts = random.sample(params_combos_dicts, select_count)
@@ -3371,11 +3371,11 @@ class Queue(BaseModel):
 
 				if ('classification' in analysis_type): 
 					if (np.issubdtype(label_dtype, np.floating)):
-						raise ValueError("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
+						raise Exception("Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.")
 
 					if (labelcoder is not None):
 						if (labelcoder.is_categorical == False):
-							raise ValueError(dedent(f"""
+							raise Exception(dedent(f"""
 								Yikes - `Algorithm.analysis_type=='classification_*'`, but 
 								`LabelCoder.sklearn_preprocess={stringified_labelcoder}` was not found in known 'classification' encoders:
 								{utils.categorical_encoders}
@@ -3384,7 +3384,7 @@ class Queue(BaseModel):
 						if ('_binary' in analysis_type):
 							# Prevent OHE w classification_binary
 							if (stringified_labelcoder.startswith("OneHotEncoder")):
-								raise ValueError(dedent("""
+								raise Exception(dedent("""
 								Yikes - `Algorithm.analysis_type=='classification_binary', but 
 								`LabelCoder.sklearn_preprocess.startswith('OneHotEncoder')`.
 								This would result in a multi-column output, but binary classification
@@ -3395,7 +3395,7 @@ class Queue(BaseModel):
 							if (library == 'pytorch'):
 								# Prevent OHE w pytorch.
 								if (stringified_labelcoder.startswith("OneHotEncoder")):
-									raise ValueError(dedent("""
+									raise Exception(dedent("""
 									Yikes - `(analysis_type=='classification_multi') and (library == 'pytorch')`, 
 									but `LabelCoder.sklearn_preprocess.startswith('OneHotEncoder')`.
 									This would result in a multi-column OHE output.
@@ -3438,7 +3438,7 @@ class Queue(BaseModel):
 				elif (analysis_type == 'regression'):
 					if (labelcoder is not None):
 						if (labelcoder.is_categorical == True):
-							raise ValueError(dedent(f"""
+							raise Exception(dedent(f"""
 								Yikes - `Algorithm.analysis_type=='regression'`, but 
 								`LabelCoder.sklearn_preprocess={stringified_labelcoder}` was found in known categorical encoders:
 								{utils.categorical_encoders}
@@ -3451,7 +3451,7 @@ class Queue(BaseModel):
 						and
 						(not np.issubdtype(label_dtype, np.signedinteger))
 					):
-						raise ValueError("Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
+						raise Exception("Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.")
 					
 					if (splitset.bin_count is None):
 						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")                   
@@ -3467,17 +3467,17 @@ class Queue(BaseModel):
 			# We already know these are OHE based on Label creation, so skip dtype, bin, and encoder checks.
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
-					raise ValueError("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
+					raise Exception("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
 
 		elif ((splitset.supervision=='unsupervised') and (algorithm.analysis_type!='regression')):
-			raise ValueError("\nYikes - AIQC only supports unsupervised analysis with `analysis_type=='regression'`.\n")
+			raise Exception("\nYikes - AIQC only supports unsupervised analysis with `analysis_type=='regression'`.\n")
 
 
 		if (foldset_id is not None):
 			foldset =  Foldset.get_by_id(foldset_id)
 			foldset_splitset = foldset.splitset
 			if (foldset_splitset != splitset):
-				raise ValueError(f"\nYikes - The Foldset <id:{foldset_id}> and Splitset <id:{splitset_id}> you provided are not related.\n")
+				raise Exception(f"\nYikes - The Foldset <id:{foldset_id}> and Splitset <id:{splitset_id}> you provided are not related.\n")
 			folds = list(foldset.folds)
 		else:
 			# Just so we have an item to loop over as a null condition when creating Jobs.
@@ -3704,14 +3704,14 @@ class Queue(BaseModel):
 		queue_predictions = list(queue_predictions)
 
 		if (not queue_predictions):
-			raise ValueError("\nSorry - None of the Jobs in this Queue have completed yet.\n")
+			raise Exception("\nSorry - None of the Jobs in this Queue have completed yet.\n")
 
 		split_metrics = list(queue_predictions[0].metrics.values())
 		metric_names = list(split_metrics[0].keys())
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if (m not in metric_names):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Predictor.metrics`.
 					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
@@ -3751,7 +3751,7 @@ class Queue(BaseModel):
 		if (sort_by is not None):
 			for name in sort_by:
 				if (name not in column_names):
-					raise ValueError(f"\nYikes - Column '{name}' not found in metrics dataframe.\n")
+					raise Exception(f"\nYikes - Column '{name}' not found in metrics dataframe.\n")
 			df = pd.DataFrame.from_records(split_metrics).sort_values(
 				by=sort_by, ascending=ascending
 			)
@@ -3789,7 +3789,7 @@ class Queue(BaseModel):
 		if (selected_metrics is not None):
 			for m in selected_metrics:
 				if (m not in metric_names):
-					raise ValueError(dedent(f"""
+					raise Exception(dedent(f"""
 					Yikes - The metric '{m}' does not exist in `Predictor.metrics_aggregate`.
 					Note: the metrics available depend on the `Queue.analysis_type`.
 					"""))
@@ -3799,7 +3799,7 @@ class Queue(BaseModel):
 		if (selected_stats is not None):
 			for s in selected_stats:
 				if (s not in stat_names):
-					raise ValueError(f"\nYikes - The statistic '{s}' does not exist in `Predictor.metrics_aggregate`.\n")
+					raise Exception(f"\nYikes - The statistic '{s}' does not exist in `Predictor.metrics_aggregate`.\n")
 		elif (selected_stats is None):
 			selected_stats = stat_names
 
@@ -3835,7 +3835,7 @@ class Queue(BaseModel):
 		if (sort_by is not None):
 			for name in sort_by:
 				if (name not in column_names):
-					raise ValueError(f"\nYikes - Column '{name}' not found in aggregate metrics dataframe.\n")
+					raise Exception(f"\nYikes - Column '{name}' not found in aggregate metrics dataframe.\n")
 			df = pd.DataFrame.from_records(predictions_stats).sort_values(
 				by=sort_by, ascending=ascending
 			)
@@ -3860,13 +3860,13 @@ class Queue(BaseModel):
 				score_type = "accuracy"
 			else:
 				if (score_type not in utils.metrics_classify_cols):
-					raise ValueError(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.metrics_classify}\n")
+					raise Exception(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.metrics_classify}\n")
 		elif (analysis_type == 'regression'):
 			if (score_type is None):
 				score_type = "r2"
 			else:
 				if (score_type not in utils.metrics_regress_cols):
-					raise ValueError(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
+					raise Exception(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
 		score_display = utils.metrics_all[score_type]
 
 		if (min_score is None):
@@ -3876,12 +3876,12 @@ class Queue(BaseModel):
 				min_score = 0
 		elif (min_score is not None):
 			if (min_score > 1.0):
-				raise ValueError("\nYikes - `min_score` must be <= 1\n")
+				raise Exception("\nYikes - `min_score` must be <= 1\n")
 
 		if (max_loss is None):
 			max_loss = float('inf')
 		elif (max_loss < 0):
-			raise ValueError("\nYikes - `max_loss` must be >= 0\n")
+			raise Exception("\nYikes - `max_loss` must be >= 0\n")
 
 		df = queue.metrics_to_pandas()#handles empty
 		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, score_type, min_score)
@@ -3897,7 +3897,7 @@ class Queue(BaseModel):
 			if (call_display==True):
 				print(msg)
 			elif (call_display==False):
-				raise ValueError(msg)
+				raise Exception(msg)
 		else:
 			if (height is None):
 				height=560
@@ -3925,7 +3925,7 @@ class Queue(BaseModel):
 		)
 		status_code = response.status_code
 		if (status_code!=200):
-			raise ValueError(f"\n=> Yikes - failed to obtain upload url for AWS S3.\nHTTP Error Code = {status_code}.\n")
+			raise Exception(f"\n=> Yikes - failed to obtain upload url for AWS S3.\nHTTP Error Code = {status_code}.\n")
 
 		# The uid can be used later for polling.
 		uid = response.json()['uid']
@@ -3944,7 +3944,7 @@ class Queue(BaseModel):
 		queue = Queue.get_by_id(id)
 		uid = queue.uid
 		if (queue.aws_uid is None):
-			raise ValueError("\nYikes - This Queue has not been assigned an UID for AWS yet. Run `Queue._aws_get_upload_url()`.\n")
+			raise Exception("\nYikes - This Queue has not been assigned an UID for AWS yet. Run `Queue._aws_get_upload_url()`.\n")
 
 		# Regular utf-8 encoding of sqlite file does not parse. S3 picks up on "type=sqlite3"
 		db_path = aiqc.get_path_db()
@@ -3954,7 +3954,7 @@ class Queue(BaseModel):
 		if (status_code==200):
 			print("\n=> Success - project database was successfully uploaded to AWS S3.\n")
 		else:
-			raise ValueError(f"\n=> Yikes - failed upload project databse to AWS S3.\nHTTP Error Code = {status_code}.\n")
+			raise Exception(f"\n=> Yikes - failed upload project databse to AWS S3.\nHTTP Error Code = {status_code}.\n")
 
 
 class Jobset(BaseModel):
@@ -4031,7 +4031,7 @@ class Job(BaseModel):
 			fn_lose = utils.dill_deserialize(algorithm.fn_lose)
 			loser = fn_lose(**hp)
 			if (loser is None):
-				raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+				raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
 
 			metrics = {}
 			plot_data = {}
@@ -4428,7 +4428,7 @@ class Job(BaseModel):
 				input_shapes['features_shape'], input_shapes['label_shape'], **hp
 			)
 		if (model is None):
-			raise ValueError("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
+			raise Exception("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
 		# The model and optimizer get combined during training.
 		fn_lose = utils.dill_deserialize(algorithm.fn_lose)
 		fn_optimize = utils.dill_deserialize(algorithm.fn_optimize)
@@ -4436,14 +4436,14 @@ class Job(BaseModel):
 
 		loser = fn_lose(**hp)
 		if (loser is None):
-			raise ValueError("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+			raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
 
 		if (library == 'keras'):
 			optimizer = fn_optimize(**hp)
 		elif (library == 'pytorch'):
 			optimizer = fn_optimize(model, **hp)
 		if (optimizer is None):
-			raise ValueError("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
+			raise Exception("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
 
 		if (library == "keras"):
 			model = fn_train(
@@ -4455,7 +4455,7 @@ class Job(BaseModel):
 				, **hp
 			)
 			if (model is None):
-				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
 
 			# Save the artifacts of the trained model.
 			# If blank this value is `{}` not None.
@@ -4489,9 +4489,9 @@ class Job(BaseModel):
 				, **hp
 			)
 			if (model is None):
-				raise ValueError("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
 			if (history is None):
-				raise ValueError("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+				raise Exception("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
 			# Save the artifacts of the trained model.
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
 			model_blob = io.BytesIO()
@@ -4512,7 +4512,7 @@ class Job(BaseModel):
 		matching_predictor = Predictor.select().join(Job).join(Queue).where(
 			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
 		if (matching_predictor.count() > 0):
-			raise ValueError(f"""
+			raise Exception(f"""
 				Yikes - Duplicate run detected for Job<{job.id}> repeat_index<{repeat_index}>.
 				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
 			""")
@@ -4674,7 +4674,7 @@ class Predictor(BaseModel):
 	def plot_learning_curve(id:int, skip_head:bool=False, call_display:bool=True):
 		predictor = Predictor.get_by_id(id)
 		history = predictor.history
-		if (history=={}): raise ValueError("\nYikes - Predictor.history is empty.\n")
+		if (history=={}): raise Exception("\nYikes - Predictor.history is empty.\n")
 		dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
 		
 		# Get the`{train_*:validation_*}` matching pairs for plotting.
@@ -4693,11 +4693,11 @@ class Predictor(BaseModel):
 					trainz.append(k)
 				dataframe = dataframe.rename(columns={original_k:k})
 			else:
-				raise ValueError("\nYikes - Predictor.history keys must be strings.\n")
+				raise Exception("\nYikes - Predictor.history keys must be strings.\n")
 		if (len(valz)!=len(trainz)):
-			raise ValueError("\nYikes - Number of history keys starting with 'val_' must match number of keys that don't start with 'val_'.\n")
+			raise Exception("\nYikes - Number of history keys starting with 'val_' must match number of keys that don't start with 'val_'.\n")
 		if (len(keys)!=len(valz)+len(trainz)):
-			raise ValueError("\nYikes - User defined history contains keys that are not string type.\n")
+			raise Exception("\nYikes - User defined history contains keys that are not string type.\n")
 		history_pairs = {}
 		for t in trainz:
 			for v in valz:
@@ -4872,7 +4872,7 @@ class Prediction(BaseModel):
 		labels = predictor.get_label_names()
 		
 		if (analysis_type == "regression"):
-			raise ValueError("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
+			raise Exception("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
 		cm_by_split = {}
 
 		for split, data in prediction_plot_data.items():
@@ -4889,7 +4889,7 @@ class Prediction(BaseModel):
 		predictor_plot_data = prediction.plot_data
 		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
 		if (analysis_type == "regression"):
-			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+			raise Exception("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
 
 		pr_by_split = {}
 		for split, data in predictor_plot_data.items():
@@ -4913,7 +4913,7 @@ class Prediction(BaseModel):
 		predictor_plot_data = prediction.plot_data
 		analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
 		if (analysis_type == "regression"):
-			raise ValueError("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+			raise Exception("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
 
 		roc_by_split = {}
 		for split, data in predictor_plot_data.items():
@@ -4941,7 +4941,7 @@ class Prediction(BaseModel):
 		prediction = Prediction.get_by_id(id)
 		feature_importance = prediction.feature_importance
 		if (feature_importance is None):
-			raise ValueError("\nYikes - Feature importance was not originally calculated for this analysis.\n")
+			raise Exception("\nYikes - Feature importance was not originally calculated for this analysis.\n")
 		else:
 			permute_count = prediction.predictor.job.queue.permute_count
 			# Remember the Featureset may contain multiple Features.
@@ -4957,7 +4957,7 @@ class Prediction(BaseModel):
 				
 				if (top_n is not None):
 					if (top_n <= 0):
-						raise ValueError("\nYikes - `top_n` must be greater than or equal to 0.\n")
+						raise Exception("\nYikes - `top_n` must be greater than or equal to 0.\n")
 					# Silently returns all rows if `top_n` > rows.
 					feature_cols, loss_impacts = feature_cols[:top_n], loss_impacts[:top_n]
 				if (height is None):
