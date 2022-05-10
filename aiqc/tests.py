@@ -1,6 +1,7 @@
 # Internal modules
 from . import datum
-from .utils import torch_batcher, torch_shuffler, div255, mult255, TrainingCallback
+from .utils import div255, mult255, TrainingCallback
+from .utils.pytorch import fit
 from .orm import *
 # External modules
 import tensorflow as tf
@@ -12,144 +13,6 @@ from sklearn.preprocessing import *
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import pandas as pd
-
-
-def flatten_2D(tzr:object):
-	dimensions = tzr.dim()
-	if (dimensions==2):
-		last_dimShape = tzr.shape[-1]
-		if (last_dimShape==1):
-			tzr = tzr.flatten()
-		elif (last_dimShape>1):
-			pass# OHE probabilities go through as is
-	elif (dimensions==1):
-		pass
-	elif (dimensions>2):
-		raise Exception(f"\nYikes - Scoring failed.\nDid not attempt to flatten because {dimensions} dimensions not supported yet.\n")
-	return tzr
-
-
-def flip_type(tzr:object):
-	tzr_typ = tzr.type()
-	dimensions = tzr.dim()
-	if (dimensions==1):
-		if (tzr_typ=='torch.FloatTensor'):
-			# Check if floats should be categorical ints by sampling 3 values.
-			are_ints = [float(i).is_integer() for i in tzr[:3]]
-			if all(are_ints):
-				tzr = tzr.to(torch.int64)
-			else:
-				raise Exception(f"\nYikes - Scoring failed on {tzr_typ}.\nDid not attempt as int64 because tensor contained non-zero decimals.\n")
-		elif (tzr_typ=='torch.LongTensor'):
-			tzr = tzr.to(torch.FloatTensor)
-		else:
-			raise Exception(f"\nYikes - Scoring failed because {tzr_typ} type not supported.\n")
-	elif (dimensions>1):
-		raise Exception(f"\nYikes - Scoring failed on {tzr_typ} type.\nDid not attempt to flip type because {dimensions} dimensions not supported yet.\n")
-	return tzr
-
-
-def torch_fitter(
-	model:object, loser:object, optimizer:object,  
-	samples_train:dict, samples_evaluate:dict,
-	epochs:int=30, batch_size:int=5, enforce_sameSize=True, allow_singleSample=False,  
-	metrics:list=None
-):
-	"""
-	- This is designed to handle all supervised scenarios.
-	- Have not tested this with self-supervised where 2D+ compared to 2D+
-	"""
-	# Mirrors `tf.keras.model.History.history` object.
-	history = dict(loss=list(), val_loss=list())
-	metrics_keys = []
-	if (metrics is not None):
-		for m in metrics:
-			# An initialized metric actually contains `None` so `utils.listify` doesn't work here.
-			if ('torchmetrics' not in str(type(m))):
-				raise Exception("\nYikes - Did you forget to initialize your metric?\ne.g. do `torchmetrics.Accuracy()`, not `torchmetrics.Accuracy`\n")
-			name = m.__class__.__name__
-			history[name] = list()
-			val_name = f"val_{name}"
-			history[val_name] = list()
-			metrics_keys.append((name, val_name))
-	
-	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
-		samples_train['features'], samples_train['labels'],
-		batch_size=batch_size, enforce_sameSize=enforce_sameSize, allow_singleSample=allow_singleSample
-	)
-	
-	## --- Training loop ---
-	for epoch in range(epochs):
-		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
-		## --- Batch training ---
-		for i, batch in enumerate(batched_features):
-			# Make raw (unlabeled) predictions.
-			batch_probability = model(batched_features[i])
-			batch_labels = batched_labels[i]
-			try:
-				batch_loss = loser(batch_probability, batch_labels)
-			except:
-				try:
-					batch_labels = flatten_2D(batch_labels)
-					batch_loss = loser(batch_probability, batch_labels)
-				except:
-					batch_labels = flip_type(batch_labels)
-					batch_loss = loser(batch_probability, batch_labels)
-			# Backpropagation.
-			optimizer.zero_grad()
-			batch_loss.backward()
-			optimizer.step()
-
-		"""
-		- On one hand, I could pass in `analysis_type` to deterministically route 
-		  the dimensions & types. However, I would still have to use if statements.
-		- On the other hand, the `try` approach is more future-proof.
-		"""
-		## --- Epoch metrics ---
-		## -Loss-
-		train_probability = model(samples_train['features'])
-		train_probability = flatten_2D(train_probability)
-		train_labels = flatten_2D(samples_train['labels'])
-		try:
-			train_loss = loser(train_probability, train_labels)
-		except:
-			train_labels = flip_type(train_labels)
-			train_loss = loser(train_probability, train_labels)
-		history['loss'].append(float(train_loss))
-
-		eval_probability = model(samples_evaluate['features'])
-		eval_probability = flatten_2D(eval_probability)
-		eval_labels = flatten_2D(samples_evaluate['labels'])
-		try:
-			eval_loss = loser(eval_probability, eval_labels)
-		except:
-			eval_labels = flip_type(eval_labels)
-			eval_loss = loser(eval_probability, eval_labels)
-		history['val_loss'].append(float(eval_loss))
-
-		## -Metrics-
-		# Conditional flattening has already taken place
-		for e, m in enumerate(metrics):
-			try:
-				train_m = m(train_probability, train_labels)
-			except:
-				train_labels = flip_type(train_labels)
-				train_m = m(train_probability, train_labels)
-			metrics_key = metrics_keys[e][0]
-			history[metrics_key].append(float(train_m))
-
-			try:
-				eval_m = m(eval_probability, eval_labels)
-			except:
-				eval_labels = flip_type(eval_labels)
-				eval_m = m(eval_probability, eval_labels)
-			metrics_key = metrics_keys[e][0]
-			history[metrics_key].append(float(eval_m))
-	return model, history
-
-
-
 
 
 def list_test_queues(format:str=None):
@@ -1059,7 +922,7 @@ def pytorch_binary_fn_optimize(model, **hp):
 
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	return torch_fitter(
+	return fit(
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=hp['epoch_count'], batch_size=10,
@@ -1158,7 +1021,7 @@ def pytorch_multiclass_lose(**hp):
 
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	return torch_fitter(
+	return fit(
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=10, batch_size=hp['batch_size'],  
@@ -1262,7 +1125,7 @@ def pytorch_regression_fn_build(features_shape, label_shape, **hp):
 
 
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	return torch_fitter(
+	return fit(
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=10, batch_size=5,
@@ -1392,7 +1255,7 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
-	return torch_fitter(
+	return fit(
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=10, batch_size=5,

@@ -17,6 +17,7 @@ https://github.com/coleifer/peewee/issues/856
 from .config import app_dir
 from .plots import Plot
 from . import utils
+from .utils import dill
 # External
 # math will not let you import specific modules (ceil, floor, prod)
 import os, sys, io, random, itertools, h5py, gzip, statistics, requests, \
@@ -3193,11 +3194,11 @@ class Algorithm(BaseModel):
 			if (not is_func):
 				raise Exception(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
 
-		fn_build = utils.dill_serialize(fn_build)
-		fn_optimize = utils.dill_serialize(fn_optimize)
-		fn_train = utils.dill_serialize(fn_train)
-		fn_predict = utils.dill_serialize(fn_predict)
-		fn_lose = utils.dill_serialize(fn_lose)
+		fn_build = utils.dill.serialize(fn_build)
+		fn_optimize = utils.dill.serialize(fn_optimize)
+		fn_train = utils.dill.serialize(fn_train)
+		fn_predict = utils.dill.serialize(fn_predict)
+		fn_lose = utils.dill.serialize(fn_lose)
 
 		algorithm = Algorithm.create(
 			library = library
@@ -4015,7 +4016,7 @@ class Job(BaseModel):
 		if (algorithm.library == 'pytorch'):
 			# Returns tuple(model,optimizer)
 			model = model[0].eval()
-		fn_predict = utils.dill_deserialize(algorithm.fn_predict)
+		fn_predict = utils.dill.deserialize(algorithm.fn_predict)
 		
 		if (hyperparamcombo is not None):
 			hp = hyperparamcombo.hyperparameters
@@ -4028,7 +4029,7 @@ class Job(BaseModel):
 			"""
 			In the future, if you want to do per-class feature importance call start by calling `predictor.get_label_names()` here.
 			"""
-			fn_lose = utils.dill_deserialize(algorithm.fn_lose)
+			fn_lose = utils.dill.deserialize(algorithm.fn_lose)
 			loser = fn_lose(**hp)
 			if (loser is None):
 				raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
@@ -4418,7 +4419,7 @@ class Job(BaseModel):
 		elif (hyperparamcombo is None):
 			hp = {} #`**` cannot be None.
 
-		fn_build = utils.dill_deserialize(algorithm.fn_build)
+		fn_build = utils.dill.deserialize(algorithm.fn_build)
 		# pytorch multiclass has a single ordinal label.
 		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
 			num_classes = len(splitset.label.unique_classes)
@@ -4430,9 +4431,9 @@ class Job(BaseModel):
 		if (model is None):
 			raise Exception("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
 		# The model and optimizer get combined during training.
-		fn_lose = utils.dill_deserialize(algorithm.fn_lose)
-		fn_optimize = utils.dill_deserialize(algorithm.fn_optimize)
-		fn_train = utils.dill_deserialize(algorithm.fn_train)
+		fn_lose = utils.dill.deserialize(algorithm.fn_lose)
+		fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
+		fn_train = utils.dill.deserialize(algorithm.fn_train)
 
 		loser = fn_lose(**hp)
 		if (loser is None):
@@ -4609,8 +4610,8 @@ class Predictor(BaseModel):
 			features_shape = predictor.input_shapes['features_shape']
 			label_shape = predictor.input_shapes['label_shape']
 
-			fn_build = utils.dill_deserialize(algorithm.fn_build)
-			fn_optimize = utils.dill_deserialize(algorithm.fn_optimize)
+			fn_build = utils.dill.deserialize(algorithm.fn_build)
+			fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
 
 			if (algorithm.analysis_type == 'classification_multi'):
 				num_classes = len(predictor.job.queue.splitset.label.unique_classes)

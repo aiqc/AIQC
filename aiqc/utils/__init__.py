@@ -2,16 +2,13 @@
 Refactored these generic, non-relational functions out of the ORM.
 Many of them are used by multiple ORM classes.
 """
-import os, io, inspect, warnings, fsspec, operator, scipy, pprint
-from random import shuffle
+import os, inspect, warnings, fsspec, operator, scipy, pprint
 from textwrap import dedent
 from natsort import natsorted #file sorting.
-import dill as dill #complex serialization.
 from math import ceil
 import numpy as np
 import pandas as pd
 import torch
-from torch import split
 import tensorflow as tf
 import sklearn
 
@@ -38,8 +35,8 @@ metrics_regress = dict(
 metrics_regress_cols = list(metrics_regress.keys())
 metrics_all = {**metrics_classify, **metrics_regress}
 
+
 def display_name(score_type:str):
-	"""Used in """
 	#`score_type` accesses df column, whereas `score_display` displays in plot
 	score_display = sub("_", " ", score_type)
 	if (score_display == "r2"):
@@ -64,83 +61,6 @@ def listify(supposed_lst:object=None):
 				raise Exception(f"\nYikes - The list you provided contained `None` as an element.\n{supposed_lst}\n")
 	# Allow entire list `is None` to pass through because we need it to trigger null conditions.
 	return supposed_lst
-
-
-def dill_serialize(objekt:object):
-	blob = io.BytesIO()
-	dill.dump(objekt, blob)
-	blob = blob.getvalue()
-	return blob
-
-
-def dill_deserialize(blob:bytes):
-	objekt = io.BytesIO(blob)
-	objekt = dill.load(objekt)
-	return objekt
-
-
-def dill_reveal_code(serialized_objekt:object, print_it:bool=True):
-	code_str = (
-		dill.source.getsource(
-			dill_deserialize(serialized_objekt).__code__
-		)
-	)
-	if (print_it == True):
-		print(dedent(code_str))
-	return code_str
-
-
-def torch_dropInvalidBatch(
-	batched_data:object
-	, batch_size:int
-	, enforce_sameSize:bool=False
-	, allow_singleSample:bool=False
-):
-	# Similar to a % remainder, this will only apply to the last element in the batch.
-	last_batch_size = batched_data[-1].shape[0]
-	# If there is a problem, then just trim the last split.
-	if (last_batch_size==1):
-		if (allow_singleSample==True):
-			print("\nWarning - The size of the last batch is 1,\n which commonly leads to PyTorch errors.\nTry using `torch_batcher(allow_singleSample=False)\n")
-		elif (allow_singleSample==False): 
-			batched_data = batched_data[:-1]
-	elif ((enforce_sameSize==True) and (batch_size!=last_batch_size)):
-		batched_data = batched_data[:-1]
-	return batched_data
-
-
-def torch_batcher(
-	features:object
-	, labels:object
-	, batch_size = 5
-	, enforce_sameSize:bool=True
-	, allow_singleSample:bool=False
-):
-	"""
-	`enforce_sameSize=True` because tensors must have uniform shape
-	"""
-	if (batch_size==1):
-		if (allow_singleSample==False):
-			raise Exception("\nYikes - `batch_size==1` but `allow_singleSample==False`.\n")
-		elif (allow_singleSample==True):
-			print("\nWarning - PyTorch errors are common when `batch_size==1`.")
-	
-	# split() normally returns a tuple.
-	features = list(split(features, batch_size))
-	labels = list(split(labels, batch_size))
-
-	features = torch_dropInvalidBatch(features, batch_size, enforce_sameSize, allow_singleSample)
-	labels = torch_dropInvalidBatch(labels, batch_size, enforce_sameSize, allow_singleSample)
-	return features, labels
-
-
-def torch_shuffler(features:list, labels:list):
-	"""Assumes that the first index represents the batch."""
-	rand_idx = list(range(len(labels)))
-	shuffle(rand_idx)
-	features = [features[i] for i in rand_idx]
-	labels = [labels[i] for i in rand_idx]
-	return features, labels
 
 
 def tf_batcher(features:object, labels:object, batch_size:int=5):

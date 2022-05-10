@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/torch_multi_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Categorizing Plant Species with Multi-Label Classification of Phenotypes. farming[ ]: import aiqc from aiqc import datum Example Data: This dataset is comprised of: Label= the species of the plant...." />
+  <meta property="og:description" content="Categorizing Plant Species with Multi-Label Classification of Phenotypes. farming[2]: import aiqc from aiqc import datum Example Data: This dataset is comprised of: Label= the species of the plant...." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />
@@ -595,7 +595,7 @@ div.rendered_html tbody tr:hover {
 <p><em>Categorizing Plant Species with Multi-Label Classification of Phenotypes.</em></p>
 <img alt="farming" src="../_images/vertical_farming.png" />
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -712,7 +712,7 @@ div.rendered_html tbody tr:hover {
 <h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information including how to work with non-tabular data.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -761,7 +761,7 @@ div.rendered_html tbody tr:hover {
 <div class="highlight"><pre>
 
 =&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-   This saves memory when concatenating the output of many encoders.
+        This saves memory when concatenating the output of many encoders.
 
 
 ___/ featurecoder_index: 0 \_________
@@ -771,7 +771,7 @@ ___/ featurecoder_index: 0 \_________
 [&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;, &#39;petal_width&#39;]
 
 =&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
+No more FeatureCoders can be added to this Encoderset.
 
 </pre></div></div>
 </div>
@@ -780,7 +780,7 @@ No more Featurecoders can be added to this Encoderset.
 <section id="Modeling">
 <h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -788,13 +788,13 @@ No more Featurecoders can be added to this Encoderset.
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">import</span> <span class="nn">torchmetrics</span>
-<span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">torch_batcher</span><span class="p">,</span> <span class="n">torch_shuffler</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils.pytorch</span> <span class="kn">import</span> <span class="n">fit</span>
 </pre></div>
 </div>
 </div>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">num_classes</span></code> is unique to PyTorch multi-classification.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -813,62 +813,23 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="c1">## --- Prepare mini batches for analysis ---</span>
-    <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">torch_batcher</span><span class="p">(</span>
-        <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span>
-        <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span> <span class="n">enforce_sameSize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_singleSample</span><span class="o">=</span><span class="kc">False</span>
+    <span class="k">return</span> <span class="n">fit</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
+        <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">torchmetrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">torchmetrics</span><span class="o">.</span><span class="n">F1Score</span><span class="p">()]</span>
     <span class="p">)</span>
-
-    <span class="c1">## --- Metrics ---</span>
-    <span class="n">acc</span> <span class="o">=</span> <span class="n">torchmetrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
-    <span class="c1"># Modeled after `keras.model.History.history` object.</span>
-    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;loss&#39;</span><span class="p">:</span><span class="nb">list</span><span class="p">(),</span> <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(),</span>
-        <span class="s1">&#39;val_loss&#39;</span><span class="p">:</span><span class="nb">list</span><span class="p">(),</span> <span class="s1">&#39;val_accuracy&#39;</span><span class="p">:</span><span class="nb">list</span><span class="p">()</span>
-    <span class="p">}</span>
-
-    <span class="c1">## --- Training loop ---</span>
-    <span class="n">epochs</span> <span class="o">=</span> <span class="mi">100</span>
-    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
-        <span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span> <span class="o">=</span> <span class="n">torch_shuffler</span><span class="p">(</span><span class="n">batched_features</span><span class="p">,</span> <span class="n">batched_labels</span><span class="p">)</span>
-        <span class="c1"># --- Batch training ---</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batched_features</span><span class="p">):</span>
-            <span class="c1"># Make raw (unlabeled) predictions.</span>
-            <span class="n">batch_probability</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batched_features</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">batch_flat_labels</span> <span class="o">=</span> <span class="n">batched_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
-            <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">loser</span><span class="p">(</span><span class="n">batch_probability</span><span class="p">,</span> <span class="n">batch_flat_labels</span><span class="p">)</span>
-            <span class="c1"># Backpropagation.</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-            <span class="n">batch_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
-        <span class="c1">## --- Epoch metrics ---</span>
-        <span class="c1"># Overall performance on training data.</span>
-        <span class="n">train_probability</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-        <span class="n">train_flat_labels</span> <span class="o">=</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
-        <span class="n">train_loss</span> <span class="o">=</span> <span class="n">loser</span><span class="p">(</span><span class="n">train_probability</span><span class="p">,</span> <span class="n">train_flat_labels</span><span class="p">)</span>
-        <span class="n">train_acc</span> <span class="o">=</span> <span class="n">acc</span><span class="p">(</span><span class="n">train_probability</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">short</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">train_loss</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">train_acc</span><span class="p">))</span>
-        <span class="c1"># Performance on evaluation data.</span>
-        <span class="n">eval_probability</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-        <span class="n">eval_flat_labels</span> <span class="o">=</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
-        <span class="n">eval_loss</span> <span class="o">=</span> <span class="n">loser</span><span class="p">(</span><span class="n">eval_probability</span><span class="p">,</span> <span class="n">eval_flat_labels</span><span class="p">)</span>
-        <span class="n">eval_acc</span> <span class="o">=</span> <span class="n">acc</span><span class="p">(</span><span class="n">eval_probability</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">short</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">eval_loss</span><span class="p">))</span>
-        <span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">eval_acc</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span>
 </pre></div>
 </div>
 </div>
 <p>Optional, will be automatically selected based on <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> if left as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -879,7 +840,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -890,7 +851,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -920,7 +881,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -933,7 +894,7 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:14&lt;00:00,  3.66s/it]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [00:53&lt;00:00, 13.28s/it]
 </pre></div></div>
 </div>
 <hr class="docutils" />
