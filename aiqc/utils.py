@@ -61,11 +61,8 @@ def listify(supposed_lst:object=None):
 			if (not supposed_lst):
 				raise Exception("Yikes - The list you provided is empty.")
 			if (None in supposed_lst):
-				raise Exception(dedent(
-					f"Yikes - The list you provided contained `None` as an element." \
-					f"{supposed_lst}"
-				))
-	# Allow `is None` to pass through because we need it to trigger null conditions.
+				raise Exception(f"\nYikes - The list you provided contained `None` as an element.\n{supposed_lst}\n")
+	# Allow entire list `is None` to pass through because we need it to trigger null conditions.
 	return supposed_lst
 
 

@@ -14,6 +14,144 @@ import numpy as np
 import pandas as pd
 
 
+def flatten_2D(tzr:object):
+	dimensions = tzr.dim()
+	if (dimensions==2):
+		last_dimShape = tzr.shape[-1]
+		if (last_dimShape==1):
+			tzr = tzr.flatten()
+		elif (last_dimShape>1):
+			pass# OHE probabilities go through as is
+	elif (dimensions==1):
+		pass
+	elif (dimensions>2):
+		raise Exception(f"\nYikes - Scoring failed.\nDid not attempt to flatten because {dimensions} dimensions not supported yet.\n")
+	return tzr
+
+
+def flip_type(tzr:object):
+	tzr_typ = tzr.type()
+	dimensions = tzr.dim()
+	if (dimensions==1):
+		if (tzr_typ=='torch.FloatTensor'):
+			# Check if floats should be categorical ints by sampling 3 values.
+			are_ints = [float(i).is_integer() for i in tzr[:3]]
+			if all(are_ints):
+				tzr = tzr.to(torch.int64)
+			else:
+				raise Exception(f"\nYikes - Scoring failed on {tzr_typ}.\nDid not attempt as int64 because tensor contained non-zero decimals.\n")
+		elif (tzr_typ=='torch.LongTensor'):
+			tzr = tzr.to(torch.FloatTensor)
+		else:
+			raise Exception(f"\nYikes - Scoring failed because {tzr_typ} type not supported.\n")
+	elif (dimensions>1):
+		raise Exception(f"\nYikes - Scoring failed on {tzr_typ} type.\nDid not attempt to flip type because {dimensions} dimensions not supported yet.\n")
+	return tzr
+
+
+def torch_fitter(
+	model:object, loser:object, optimizer:object,  
+	samples_train:dict, samples_evaluate:dict,
+	epochs:int=30, batch_size:int=5, enforce_sameSize=True, allow_singleSample=False,  
+	metrics:list=None
+):
+	"""
+	- This is designed to handle all supervised scenarios.
+	- Have not tested this with self-supervised where 2D+ compared to 2D+
+	"""
+	# Mirrors `tf.keras.model.History.history` object.
+	history = dict(loss=list(), val_loss=list())
+	metrics_keys = []
+	if (metrics is not None):
+		for m in metrics:
+			# An initialized metric actually contains `None` so `utils.listify` doesn't work here.
+			if ('torchmetrics' not in str(type(m))):
+				raise Exception("\nYikes - Did you forget to initialize your metric?\ne.g. do `torchmetrics.Accuracy()`, not `torchmetrics.Accuracy`\n")
+			name = m.__class__.__name__
+			history[name] = list()
+			val_name = f"val_{name}"
+			history[val_name] = list()
+			metrics_keys.append((name, val_name))
+	
+	## --- Prepare mini batches for analysis ---
+	batched_features, batched_labels = torch_batcher(
+		samples_train['features'], samples_train['labels'],
+		batch_size=batch_size, enforce_sameSize=enforce_sameSize, allow_singleSample=allow_singleSample
+	)
+	
+	## --- Training loop ---
+	for epoch in range(epochs):
+		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
+		## --- Batch training ---
+		for i, batch in enumerate(batched_features):
+			# Make raw (unlabeled) predictions.
+			batch_probability = model(batched_features[i])
+			batch_labels = batched_labels[i]
+			try:
+				batch_loss = loser(batch_probability, batch_labels)
+			except:
+				try:
+					batch_labels = flatten_2D(batch_labels)
+					batch_loss = loser(batch_probability, batch_labels)
+				except:
+					batch_labels = flip_type(batch_labels)
+					batch_loss = loser(batch_probability, batch_labels)
+			# Backpropagation.
+			optimizer.zero_grad()
+			batch_loss.backward()
+			optimizer.step()
+
+		"""
+		- On one hand, I could pass in `analysis_type` to deterministically route 
+		  the dimensions & types. However, I would still have to use if statements.
+		- On the other hand, the `try` approach is more future-proof.
+		"""
+		## --- Epoch metrics ---
+		## -Loss-
+		train_probability = model(samples_train['features'])
+		train_probability = flatten_2D(train_probability)
+		train_labels = flatten_2D(samples_train['labels'])
+		try:
+			train_loss = loser(train_probability, train_labels)
+		except:
+			train_labels = flip_type(train_labels)
+			train_loss = loser(train_probability, train_labels)
+		history['loss'].append(float(train_loss))
+
+		eval_probability = model(samples_evaluate['features'])
+		eval_probability = flatten_2D(eval_probability)
+		eval_labels = flatten_2D(samples_evaluate['labels'])
+		try:
+			eval_loss = loser(eval_probability, eval_labels)
+		except:
+			eval_labels = flip_type(eval_labels)
+			eval_loss = loser(eval_probability, eval_labels)
+		history['val_loss'].append(float(eval_loss))
+
+		## -Metrics-
+		# Conditional flattening has already taken place
+		for e, m in enumerate(metrics):
+			try:
+				train_m = m(train_probability, train_labels)
+			except:
+				train_labels = flip_type(train_labels)
+				train_m = m(train_probability, train_labels)
+			metrics_key = metrics_keys[e][0]
+			history[metrics_key].append(float(train_m))
+
+			try:
+				eval_m = m(eval_probability, eval_labels)
+			except:
+				eval_labels = flip_type(eval_labels)
+				eval_m = m(eval_probability, eval_labels)
+			metrics_key = metrics_keys[e][0]
+			history[metrics_key].append(float(eval_m))
+	return model, history
+
+
+
+
+
 def list_test_queues(format:str=None):
 	queues = [
 		{
@@ -921,50 +1059,12 @@ def pytorch_binary_fn_optimize(model, **hp):
 
 
 def pytorch_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	## --- Prepare mini batches for analysis ---
-	# features has 140 samples so batch_size=6 means last batch has 2 samples.
-	# with batch_size 139 it will fail if allow_singleSample=True
-	batched_features, batched_labels = torch_batcher(
-		samples_train['features'], samples_train['labels'],
-		batch_size=6, enforce_sameSize=True, allow_singleSample=False
+	return torch_fitter(
+		model, loser, optimizer, 
+		samples_train, samples_evaluate,
+		epochs=hp['epoch_count'], batch_size=10,
+		metrics=[torchmetrics.Accuracy(),torchmetrics.F1Score()]
 	)
-
-	## --- Metrics ---
-	acc = torchmetrics.Accuracy()
-	# Mirrors `tf.keras.model.History.history` object.
-	history = {
-		'loss':list(), 'accuracy': list(), 
-		'val_loss':list(), 'val_accuracy':list()
-	}
-
-	## --- Training loop ---
-	epochs = hp['epoch_count']
-	for epoch in range(epochs):
-		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
-		## --- Batch training ---
-		for i, batch in enumerate(batched_features):
-			# Make raw (unlabeled) predictions.
-			batch_probability = model(batched_features[i])
-			batch_loss = loser(batch_probability, batched_labels[i])
-			# Backpropagation.
-			optimizer.zero_grad()
-			batch_loss.backward()
-			optimizer.step()
-
-		## --- Epoch metrics ---
-		# Overall performance on training data.
-		train_probability = model(samples_train['features'])
-		train_loss = loser(train_probability, samples_train['labels'])
-		train_acc = acc(train_probability, samples_train['labels'].to(torch.short))
-		history['loss'].append(float(train_loss))
-		history['accuracy'].append(float(train_acc))
-		# Performance on evaluation data.
-		eval_probability = model(samples_evaluate['features'])
-		eval_loss = loser(eval_probability, samples_evaluate['labels'])
-		eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    
-		history['val_loss'].append(float(eval_loss))
-		history['val_accuracy'].append(float(eval_acc))
-	return model, history
 
 
 def make_test_queue_pytorch_binary(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
@@ -1058,52 +1158,12 @@ def pytorch_multiclass_lose(**hp):
 
 
 def pytorch_multiclass_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
-		samples_train['features'], samples_train['labels'],
-		batch_size=hp['batch_size'], enforce_sameSize=False, allow_singleSample=False
+	return torch_fitter(
+		model, loser, optimizer, 
+		samples_train, samples_evaluate,
+		epochs=10, batch_size=hp['batch_size'],  
+		metrics=[torchmetrics.Accuracy(),torchmetrics.F1Score()]
 	)
-
-	## --- Metrics ---
-	acc = torchmetrics.Accuracy()
-	# Modeled after `tf.keras.model.History.history` object.
-	history = {
-		'loss':list(), 'accuracy': list(), 
-		'val_loss':list(), 'val_accuracy':list()
-	}
-
-	## --- Training loop ---
-	epochs = 10
-	for epoch in range(epochs):
-		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
-		# --- Batch training ---
-		for i, batch in enumerate(batched_features):      
-			# Make raw (unlabeled) predictions.
-			batch_probability = model(batched_features[i])
-			batch_flat_labels = batched_labels[i].flatten().to(torch.long)
-			batch_loss = loser(batch_probability, batch_flat_labels)
-			# Backpropagation.
-			optimizer.zero_grad()
-			batch_loss.backward()
-			optimizer.step()
-
-		## --- Epoch metrics ---
-		# Overall performance on training data.
-		train_probability = model(samples_train['features'])
-		train_flat_labels = samples_train['labels'].flatten().to(torch.long)
-		train_loss = loser(train_probability, train_flat_labels)
-		train_acc = acc(train_probability, samples_train['labels'].to(torch.short))
-		history['loss'].append(float(train_loss))
-		history['accuracy'].append(float(train_acc))
-		# Performance on evaluation data.
-		eval_probability = model(samples_evaluate['features'])
-		eval_flat_labels = samples_evaluate['labels'].flatten().to(torch.long)
-		eval_loss = loser(eval_probability, eval_flat_labels)
-		eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    
-		history['val_loss'].append(float(eval_loss))
-		history['val_accuracy'].append(float(eval_acc))
-	return model, history
-
 
 def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	if (fold_count is not None):
@@ -1157,8 +1217,7 @@ def make_test_queue_pytorch_multiclass(repeat_count:int=1, fold_count:int=None, 
 	).id
 
 	hyperparameters = {
-		"reduction": ['mean']
-		, "batch_size": [5]
+		"reduction":['mean'], "batch_size":[5]
 	}
 	h_id = Hyperparamset.from_algorithm(
 		algorithm_id=a_id, hyperparameters=hyperparameters
@@ -1203,53 +1262,12 @@ def pytorch_regression_fn_build(features_shape, label_shape, **hp):
 
 
 def pytorch_regression_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	from torchmetrics.functional import explained_variance as expVar
-	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
-		samples_train['features'], samples_train['labels'],
-		batch_size=5, enforce_sameSize=False, allow_singleSample=False
+	return torch_fitter(
+		model, loser, optimizer, 
+		samples_train, samples_evaluate,
+		epochs=10, batch_size=5,
+		metrics=[torchmetrics.MeanSquaredError(),torchmetrics.R2Score()]
 	)
-
-	# Modeled after `tf.keras.model.History.history` object.
-	history = {
-		'loss':list(), 'expVar': list(), 
-		'val_loss':list(), 'val_expVar':list()
-	}
-
-	## --- Training loop ---
-	epochs = 10
-	for epoch in range(epochs):
-		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
-		# --- Batch training ---
-		for i, batch in enumerate(batched_features):      
-			# Make raw (unlabeled) predictions.
-			batch_probability = model(batched_features[i])
-			batch_flat_labels = batched_labels[i].flatten()
-			#batch_loss = loser(batch_probability, batch_flat_labels)
-			batch_loss = loser(batch_probability.flatten(), batch_flat_labels)
-			# Backpropagation.
-			optimizer.zero_grad()
-			batch_loss.backward()
-			optimizer.step()
-
-		## --- Epoch metrics ---
-		# Overall performance on training data.
-		train_probability = model(samples_train['features'])
-		train_flat_labels = samples_train['labels'].flatten()
-		train_loss = loser(train_probability.flatten(), train_flat_labels)
-		train_expVar = expVar(train_probability, samples_train['labels'])
-		history['loss'].append(float(train_loss))
-		history['expVar'].append(float(train_expVar))
-
-		# Performance on evaluation data.
-		eval_probability = model(samples_evaluate['features'])
-		eval_flat_labels = samples_evaluate['labels'].flatten()
-		eval_loss = loser(eval_probability.flatten(), eval_flat_labels)
-
-		eval_expVar = expVar(eval_probability, samples_evaluate['labels'])    
-		history['val_loss'].append(float(eval_loss))
-		history['val_expVar'].append(float(eval_expVar))
-	return model, history
 
 
 def make_test_queue_pytorch_regression(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
@@ -1374,51 +1392,12 @@ def pytorch_image_binary_fn_build(features_shape, label_shape, **hp):
 
 
 def pytorch_image_binary_fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
-	# incoming features_shape = channels * rows * columns
-	#https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html#torch.nn.Conv1d
-	#https://pytorch.org/docs/stable/generated/torch.reshape.html
-	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = torch_batcher(
-		samples_train['features'], samples_train['labels'],
-		batch_size=5, enforce_sameSize=False, allow_singleSample=False
+	return torch_fitter(
+		model, loser, optimizer, 
+		samples_train, samples_evaluate,
+		epochs=10, batch_size=5,
+		metrics=[torchmetrics.Accuracy(),torchmetrics.F1Score()]
 	)
-
-	## --- Metrics ---
-	acc = torchmetrics.Accuracy()
-	# Modeled after `tf.keras.model.History.history` object.
-	history = {
-		'loss':list(), 'accuracy': list(), 
-		'val_loss':list(), 'val_accuracy':list()
-	}
-
-	## --- Training loop ---
-	epochs = 10
-	for epoch in range(epochs):
-		batched_features, batched_labels = torch_shuffler(batched_features, batched_labels)
-		# --- Batch training ---
-		for i, batch in enumerate(batched_features):
-			# Make raw (unlabeled) predictions.
-			batch_probability = model(batched_features[i])
-			batch_loss = loser(batch_probability, batched_labels[i])
-			# Backpropagation.
-			optimizer.zero_grad()
-			batch_loss.backward()
-			optimizer.step()
-
-		## --- Epoch metrics ---
-		# Overall performance on training data.
-		train_probability = model(samples_train['features'])
-		train_loss = loser(train_probability, samples_train['labels'])
-		train_acc = acc(train_probability, samples_train['labels'].to(torch.short))
-		history['loss'].append(float(train_loss))
-		history['accuracy'].append(float(train_acc))
-		# Performance on evaluation data.
-		eval_probability = model(samples_evaluate['features'])
-		eval_loss = loser(eval_probability, samples_evaluate['labels'])
-		eval_acc = acc(eval_probability, samples_evaluate['labels'].to(torch.short))    
-		history['val_loss'].append(float(eval_loss))
-		history['val_accuracy'].append(float(eval_acc))
-	return model, history
 
 
 def pytorch_image_binary_fn_predict(model, samples_predict):
@@ -1532,10 +1511,6 @@ def keras_image_forecast_fn_train(model, loser, optimizer, samples_train, sample
 	)
 	return model
 
-
-# def keras_image_forecast_fn_lose(**hp):
-# 	loser = tf.keras.losses.BCEWithLogitsLoss()
-# 	return loser
 
 
 def make_test_queue_keras_image_forecast(repeat_count:int=1, fold_count:int=None):
