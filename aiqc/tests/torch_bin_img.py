@@ -67,8 +67,10 @@ def make_queue(repeat_count:int=1, fold_count:int=None):
 	l_id = Label.from_dataset(dataset_id=dt_id, columns=['status']).id
 
 	# Dataset.Image
-	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	di_id = Dataset.Image.from_urls_pillow(urls=image_urls).id
+	folder_path = 'remote_datum/image/brain_tumor/images'
+	di_id = Dataset.Image.from_folder_pillow(
+		folder_path=folder_path, ingest=False, dtype='float64'
+	).id
 	f_id = Feature.from_dataset(dataset_id=di_id).id
 	FeatureShaper.from_feature(feature_id=f_id, reshape_indices=(0,2,3))
 	

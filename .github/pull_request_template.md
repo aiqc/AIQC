@@ -1,20 +1,39 @@
 # Pull Request (PR) Template
 
+## How to submit a PR?
+
+[Video](https://www.youtube.com/watch?v=rgbCcBNZcdQ): fork the repo, clone the repo to your desktop, make a git branch, commit your new code, push it, submit a PR.
+
+If you are forking it, then you'll also want to [set an `upstream` repo](https://www.atlassian.com/git/tutorials/git-forks-and-upstreams ) to keep your fork up to date.
+
+<br>
+
 ---
 
-> *Not sure how to make a PR? Watch this [video](https://www.youtube.com/watch?v=rgbCcBNZcdQ) (fork it, clone it, branch it, code it, push it, PR it). If you are forking it, then you'll also want to [set an `upstream` repo](https://www.atlassian.com/git/tutorials/git-forks-and-upstreams ) to keep your fork up to date.*
-
----
+<br>
 
 ## Does this solve an existing [Issue](https://github.com/aiqc/aiqc/issues)? 
 - If so, please link to the issue.
 - If not, please describe *what* your change does and *why*.
 
+<br>
+
 ---
+
+<br>
+
+## How to run the tests.
+Reference `https://github.com/aiqc/AIQC/blob/main/aiqc/tests/tests.ipynb` for a notebook that can be used to run the tests. Please make a copy of this file and don't push it to the repo.
+
+<br>
+
+---
+
+<br>
 
 > *Put an `x` inside the applicable checkboxes `[ ]`.*
 
-## Primary type of change:
+## Type of change:
 - [ ] New feature.
 - [ ] Bug fix.
 - [ ] Refactor.
@@ -36,10 +55,3 @@
 ## Contains breaking changes:
 - [ ] Yes (explain what functionality it breaks).
 - [ ] No
-
----
-
-## How to run the tests.
-Reference `https://github.com/aiqc/AIQC/blob/main/aiqc/tests/tests.ipynb` for a notebook that can be used to run the tests. Please make a copy of this file and don't push it to the repo.
-
-The source code for tests is located in `aiqc/aiqc/tests/__init__.py`. The `run_jobs()` is called manually because we often need to inspect the `Queue` object.
