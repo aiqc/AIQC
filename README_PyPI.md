@@ -16,7 +16,8 @@ cd ~/Desktop/AIQC
 # Make sure the build files aren't hanging around from previous attempt.
 rm -r build dist aiqc.egg-info
 
-# Make sure to update version number in `setup.py`.
+# Make sure to update version number in `setup.py` first.
+# Otherwise you need to run the `rm` line again.
 python3 setup.py sdist bdist_wheel
 
 python3 -m twine upload --repository pypi dist/*

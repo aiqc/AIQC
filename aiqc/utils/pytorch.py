@@ -1,7 +1,52 @@
 import torch
 from random import shuffle
+import numpy as np
+
+## --- Default Architectures ---
+# `**hp` must be included
+
+# `select_fn_lose()`
+def lose_binary(**hp):
+	loser = torch.nn.BCELoss()
+	return loser
+
+def lose_multiclass(**hp):
+	# ptrckblck says `nn.NLLLoss()` will work too.
+	loser = torch.nn.CrossEntropyLoss()
+	return loser
+
+def lose_regression(**hp):
+	loser = torch.nn.L1Loss()#mean absolute error.
+	return loser
+
+# `select_fn_optimize()`
+def optimize(model, **hp):
+	optimizer = torch.optim.Adamax(model.parameters(),lr=0.01)
+	return optimizer
+
+# `select_fn_predict()`
+def predict_binary(model, samples_predict):
+	probability = model(samples_predict['features'])
+	# Convert tensor back to numpy for AIQC metrics.
+	probability = probability.detach().numpy()
+	prediction = (probability > 0.5).astype("int32")
+	# Both objects are numpy.
+	return prediction, probability
+
+def predict_multiclass(model, samples_predict):
+	probabilities = model(samples_predict['features'])
+	# Convert tensor back to numpy for AIQC metrics.
+	probabilities = probabilities.detach().numpy()
+	prediction = np.argmax(probabilities, axis=-1)
+	# Both objects are numpy.
+	return prediction, probabilities
+
+def predict_regression(model, samples_predict):
+	prediction = model(samples_predict['features']).detach().numpy()
+	return prediction
 
 
+## --- Batching and Training Loop ---
 def drop_invalidBatch(
 	batched_data:object
 	, batch_size:int

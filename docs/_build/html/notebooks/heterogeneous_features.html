@@ -1072,7 +1072,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
 </pre></div>
 </div>
 </div>
@@ -1093,7 +1093,7 @@ No more FeatureCoders can be added to this Encoderset.
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.80</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span> <span class="c1">#5 samples in validation set.</span>
     <span class="p">]</span>
-    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
+    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
     <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
 
 

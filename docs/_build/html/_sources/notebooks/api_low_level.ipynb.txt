@@ -3081,7 +3081,7 @@
     ">\n",
     "> Remember, regression does not have accuracy metrics.\n",
     ">\n",
-    "> `TrainingCallback.Keras.MetricCutoff` is a custom class we wrote to make multi-metric cutoffs easier, so you won't find information about it in the official Keras documentation."
+    "> `TrainingCallback.MetricCutoff` is a custom class we wrote to make *early stopping* easier, so you won't find information about it in the official Keras documentation."
    ]
   },
   {
@@ -3090,7 +3090,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "from aiqc.utils import TrainingCallback"
+    "from aiqc.utils.tensorflow import TrainingCallback"
    ]
   },
   {
@@ -3111,7 +3111,7 @@
     "        {\"metric\":\"val_accuracy\", \"cutoff\":0.96, \"above_or_below\":\"above\"},\n",
     "        {\"metric\":\"val_loss\", \"cutoff\":0.1, \"above_or_below\":\"below\"}\n",
     "    ]\n",
-    "    cutoffs = TrainingCallback.Keras.MetricCutoff(metrics_cuttoffs)\n",
+    "    cutoffs = TrainingCallback.MetricCutoff(metrics_cuttoffs)\n",
     "    # Remember to append `cutoffs` to the list of callbacks.\n",
     "    callbacks=[tf.keras.callbacks.History(), cutoffs]\n",
     "    \n",

@@ -1,16 +1,17 @@
 """
-Refactored these generic, non-relational functions out of the ORM.
-Many of them are used by multiple ORM classes.
+Utils
+- Refactored these generic, non-relational functions out of the ORM.
+- Many of them are used by multiple ORM classes.
 """
-import os, inspect, warnings, fsspec, operator, scipy, pprint
+from . import tensorflow, pytorch
+import os, inspect, warnings, fsspec, scipy
 from textwrap import dedent
 from natsort import natsorted #file sorting.
-from math import ceil
 import numpy as np
 import pandas as pd
-import torch
-import tensorflow as tf
 import sklearn
+
+name = "utils"
 
 # Used during encoding validation.
 categorical_encoders = [
@@ -61,23 +62,6 @@ def listify(supposed_lst:object=None):
 				raise Exception(f"\nYikes - The list you provided contained `None` as an element.\n{supposed_lst}\n")
 	# Allow entire list `is None` to pass through because we need it to trigger null conditions.
 	return supposed_lst
-
-
-def tf_batcher(features:object, labels:object, batch_size:int=5):
-	"""
-	- `np.array_split` allows for subarrays to be of different sizes, which is rare.
-	  https://numpy.org/doc/stable/reference/generated/numpy.array_split.html 
-	- If there is a remainder, it will evenly distribute samples into the other arrays.
-	- Have not tested this with >= 3D data yet.
-	"""
-	rows_per_batch = ceil(features.shape[0]/batch_size)
-
-	batched_features = np.array_split(features, rows_per_batch)
-	batched_features = np.array(batched_features, dtype=object)
-
-	batched_labels = np.array_split(labels, rows_per_batch)
-	batched_labels = np.array(batched_labels, dtype=object)
-	return batched_features, batched_labels
 
 
 # Used by `sklearn.preprocessing.FunctionTransformer` to normalize images.
@@ -685,89 +669,7 @@ def transform_dynamicDimensions(
 	return encoded_samples
 
 
-# --- used by `select_fn_lose()` ---
-def keras_regression_lose(**hp):
-	loser = tf.keras.losses.MeanAbsoluteError()
-	return loser
 
-def keras_binary_lose(**hp):
-	loser = tf.keras.losses.BinaryCrossentropy()
-	return loser
-
-def keras_multiclass_lose(**hp):
-	loser = tf.keras.losses.CategoricalCrossentropy()
-	return loser
-
-def pytorch_binary_lose(**hp):
-	loser = torch.nn.BCELoss()
-	return loser
-
-def pytorch_multiclass_lose(**hp):
-	# ptrckblck says `nn.NLLLoss()` will work too.
-	loser = torch.nn.CrossEntropyLoss()
-	return loser
-
-def pytorch_regression_lose(**hp):
-	loser = torch.nn.L1Loss()#mean absolute error.
-	return loser
-
-# --- used by `select_fn_optimize()` ---
-"""
-- Eventually could help the user select an optimizer based on topology (e.g. depth),
-	but Adamax works great for me everywhere.
-	- `**hp` needs to be included because that's how it is called in training loop.
-"""
-def keras_optimize(**hp):
-	optimizer = tf.keras.optimizers.Adamax(learning_rate=0.01)
-	return optimizer
-
-def pytorch_optimize(model, **hp):
-	optimizer = torch.optim.Adamax(model.parameters(),lr=0.01)
-	return optimizer
-
-# --- used by `select_fn_predict()` ---
-def keras_multiclass_predict(model, samples_predict):
-	# Shows the probabilities of each class coming out of softmax neurons:
-	# array([[9.9990356e-01, 9.6374511e-05, 3.3754202e-10],...])
-	probabilities = model.predict(samples_predict['features'])
-	# This is the official keras replacement for multiclass `.predict_classes()`
-	# Returns one ordinal array per sample: `[[0][1][2][3]]` 
-	prediction = np.argmax(probabilities, axis=-1)
-	return prediction, probabilities
-
-def keras_binary_predict(model, samples_predict):
-	# Sigmoid output is between 0 and 1.
-	# It's not technically a probability, but it is still easy to interpret.
-	probability = model.predict(samples_predict['features'])
-	# This is the official keras replacement for binary classes `.predict_classes()`.
-	# Returns one array per sample: `[[0][1][0][1]]`.
-	prediction = (probability > 0.5).astype("int32")
-	return prediction, probability
-
-def keras_regression_predict(model, samples_predict):
-	prediction = model.predict(samples_predict['features'])
-	# ^ Output is a single value, not `probability, prediction`
-	return prediction
-
-def pytorch_binary_predict(model, samples_predict):
-	probability = model(samples_predict['features'])
-	# Convert tensor back to numpy for AIQC metrics.
-	probability = probability.detach().numpy()
-	prediction = (probability > 0.5).astype("int32")
-	# Both objects are numpy.
-	return prediction, probability
-
-def pytorch_multiclass_predict(model, samples_predict):
-	probabilities = model(samples_predict['features'])
-	# Convert tensor back to numpy for AIQC metrics.
-	probabilities = probabilities.detach().numpy()
-	prediction = np.argmax(probabilities, axis=-1)
-	# Both objects are numpy.
-	return prediction, probabilities
-
-def pytorch_regression_predict(model, samples_predict):
-	prediction = model(samples_predict['features']).detach().numpy()
-	return prediction
 
 
 def select_fn_lose(
@@ -777,18 +679,18 @@ def select_fn_lose(
 	fn_lose = None
 	if (library == 'keras'):
 		if (analysis_type == 'regression'):
-			fn_lose = keras_regression_lose
+			fn_lose = tensorflow.lose_regression
 		elif (analysis_type == 'classification_binary'):
-			fn_lose = keras_binary_lose
+			fn_lose = tensorflow.lose_binary
 		elif (analysis_type == 'classification_multi'):
-			fn_lose = keras_multiclass_lose
+			fn_lose = tensorflow.lose_multiclass
 	elif (library == 'pytorch'):
 		if (analysis_type == 'regression'):
-			fn_lose = pytorch_regression_lose
+			fn_lose = pytorch.lose_regression
 		elif (analysis_type == 'classification_binary'):
-			fn_lose = pytorch_binary_lose
+			fn_lose = pytorch.lose_binary
 		elif (analysis_type == 'classification_multi'):
-			fn_lose = pytorch_multiclass_lose
+			fn_lose = pytorch.lose_multiclass
 	# After each of the predefined approaches above, check if it is still undefined.
 	if fn_lose is None:
 		raise Exception(dedent("""
@@ -801,9 +703,9 @@ def select_fn_lose(
 def select_fn_optimize(library:str):
 	fn_optimize = None
 	if (library == 'keras'):
-		fn_optimize = keras_optimize
+		fn_optimize = tensorflow.optimize
 	elif (library == 'pytorch'):
-		fn_optimize = pytorch_optimize
+		fn_optimize = pytorch.optimize
 	# After each of the predefined approaches above, check if it is still undefined.
 	if (fn_optimize is None):
 		raise Exception(dedent("""
@@ -820,18 +722,18 @@ def select_fn_predict(
 	fn_predict = None
 	if (library == 'keras'):
 		if (analysis_type == 'classification_multi'):
-			fn_predict = keras_multiclass_predict
+			fn_predict = tensorflow.predict_multiclass
 		elif (analysis_type == 'classification_binary'):
-			fn_predict = keras_binary_predict
+			fn_predict = tensorflow.predict_binary
 		elif (analysis_type == 'regression'):
-			fn_predict = keras_regression_predict
+			fn_predict = tensorflow.predict_regression
 	elif (library == 'pytorch'):
 		if (analysis_type == 'classification_multi'):
-			fn_predict = pytorch_multiclass_predict
+			fn_predict = pytorch.predict_multiclass
 		elif (analysis_type == 'classification_binary'):
-			fn_predict = pytorch_binary_predict
+			fn_predict = pytorch.predict_binary
 		elif (analysis_type == 'regression'):
-			fn_predict = pytorch_regression_predict
+			fn_predict = pytorch.predict_regression
 
 	# After each of the predefined approaches above, check if it is still undefined.
 	if fn_predict is None:
@@ -1247,63 +1149,3 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 		if (label_new_typ == 'tabular'):
 			tabular_schemas_match(label_old, label_new)
 
-
-class TrainingCallback():
-	class Keras():
-		class MetricCutoff(tf.keras.callbacks.Callback):
-			"""
-			- Worried that these inner functions are not pickling during multi-processing.
-			https://stackoverflow.com/a/8805244/5739514
-			"""
-			def __init__(self, thresholds:list):
-				"""
-				# Tested with keras:2.4.3, tensorflow:2.3.1
-				# `thresholds` is list of dictionaries with 1 dict per metric.
-				metrics_cuttoffs = [
-					{"metric":"val_acc", "cutoff":0.94, "above_or_below":"above"},
-					{"metric":"acc", "cutoff":0.90, "above_or_below":"above"},
-					{"metric":"val_loss", "cutoff":0.26, "above_or_below":"below"},
-					{"metric":"loss", "cutoff":0.30, "above_or_below":"below"},
-				]
-				# Only stops training early if all user-specified metrics are satisfied.
-				# `above_or_below`: where 'above' means `>=` and 'below' means `<=`.
-				"""
-				self.thresholds = thresholds
-				
-
-			def on_epoch_end(self, epoch, logs=None):
-				logs = logs or {}
-				# Check each user-defined threshold to see if it is satisfied.
-				for threshold in self.thresholds:
-					metric = logs.get(threshold['metric'])
-					if (metric is None):
-						raise Exception(dedent(f"""
-						Yikes - The metric named '{threshold['metric']}' not found when running `logs.get('{threshold['metric']}')`
-						during `TrainingCallback.Keras.MetricCutoff.on_epoch_end`.
-						"""))
-					cutoff = threshold['cutoff']
-
-					above_or_below = threshold['above_or_below']
-					if (above_or_below == 'above'):
-						statement = operator.ge(metric, cutoff)
-					elif (above_or_below == 'below'):
-						statement = operator.le(metric, cutoff)
-					else:
-						raise Exception(dedent(f"""
-						Yikes - Value for key 'above_or_below' must be either string 'above' or 'below'.
-						You provided:{above_or_below}
-						"""))
-
-					if (statement == False):
-						break # Out of for loop.
-						
-				if (statement == False):
-					pass # Thresholds not satisfied, so move on to the next epoch.
-				elif (statement == True):
-					# However, if the for loop actually finishes, then all metrics are satisfied.
-					print(
-						f":: Epoch #{epoch} ::\n" \
-						f"Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:\n"\
-						f"{pprint.pformat(self.thresholds)}\n"
-					)
-					self.model.stop_training = True

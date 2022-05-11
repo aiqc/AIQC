@@ -2,6 +2,9 @@
 Gallery
 #######
 
+..
+  Putting a comment here so parser doesn't complain about 'page starting with a transition'
+
 ----
 
 .. raw:: html

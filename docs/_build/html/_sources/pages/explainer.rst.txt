@@ -760,7 +760,7 @@ Deep Learning 101
   </p>
 
 
-.. image:: images/visualization/classify_learn.png
+.. image:: images/explainer/classify_learn.png
   :width: 90%
   :align: center
   :alt: learning_curve

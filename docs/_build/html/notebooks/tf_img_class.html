@@ -823,7 +823,7 @@ No more FeatureCoders can be added to this Encoderset.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
-<span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
 </pre></div>
 </div>
 </div>
@@ -893,7 +893,7 @@ No more FeatureCoders can be added to this Encoderset.
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">1.00</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;below&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">1.00</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;below&quot;</span><span class="p">}]</span>
-    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">Keras</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metric_cuttoffs</span><span class="p">)</span>
+    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metric_cuttoffs</span><span class="p">)</span>
 
     <span class="c1"># Training runs.</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>

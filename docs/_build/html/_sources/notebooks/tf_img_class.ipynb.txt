@@ -301,7 +301,7 @@
    "source": [
     "import tensorflow as tf\n",
     "from tensorflow.keras import layers as l\n",
-    "from aiqc.utils import TrainingCallback"
+    "from aiqc.utils.tensorflow import TrainingCallback"
    ]
   },
   {
@@ -371,7 +371,7 @@
     "        {\"metric\":\"accuracy\", \"cutoff\":0.90, \"above_or_below\":\"above\"},\n",
     "        {\"metric\":\"val_loss\", \"cutoff\":1.00, \"above_or_below\":\"below\"},\n",
     "        {\"metric\":\"loss\", \"cutoff\":1.00, \"above_or_below\":\"below\"}]\n",
-    "    cutoffs = TrainingCallback.Keras.MetricCutoff(metric_cuttoffs)\n",
+    "    cutoffs = TrainingCallback.MetricCutoff(metric_cuttoffs)\n",
     "    \n",
     "    # Training runs.\n",
     "    model.fit(\n",

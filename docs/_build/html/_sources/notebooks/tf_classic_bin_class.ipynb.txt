@@ -398,7 +398,7 @@
    "source": [
     "import tensorflow as tf\n",
     "from tensorflow.keras import layers\n",
-    "from aiqc.utils import tf_batcher"
+    "from aiqc.utils.tensorflow import batcher"
    ]
   },
   {

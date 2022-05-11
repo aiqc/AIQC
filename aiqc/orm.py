@@ -4630,6 +4630,7 @@ class Predictor(BaseModel):
 			# ^ but you don't need to pass any data into eval()
 			return model, optimizer
 
+
 	def export_model(id:int, file_path:str=None):
 		predictor = Predictor.get_by_id(id)
 		algorithm = predictor.job.queue.algorithm

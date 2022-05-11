@@ -1,7 +1,7 @@
 """TensorFlow Binary Classification with Image data"""
 # Internal modules
 from .. import datum
-from ..utils import TrainingCallback
+from ..utils.tensorflow import TrainingCallback
 from ..orm import *
 # External modules
 import tensorflow as tf
@@ -50,7 +50,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 		{"metric":"val_loss", "cutoff":0.50, "above_or_below":"below"},
 		{"metric":"loss", "cutoff":0.50, "above_or_below":"below"}
 	]
-	cutoffs = TrainingCallback.Keras.MetricCutoff(metrics_cuttoffs)
+	cutoffs = TrainingCallback.MetricCutoff(metrics_cuttoffs)
 	
 	model.fit(
 		samples_train["features"]
