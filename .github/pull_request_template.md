@@ -40,6 +40,6 @@
 ---
 
 ## How to run the tests.
-Reference `https://github.com/aiqc/AIQC/blob/main/run_tests.ipynb` for a notebook that can be used to run the tests. Please make a copy of this file and don't push it to the repo.
+Reference `https://github.com/aiqc/AIQC/blob/main/aiqc/tests/tests.ipynb` for a notebook that can be used to run the tests. Please make a copy of this file and don't push it to the repo.
 
 The source code for tests is located in `aiqc/aiqc/tests/__init__.py`. The `run_jobs()` is called manually because we often need to inspect the `Queue` object.

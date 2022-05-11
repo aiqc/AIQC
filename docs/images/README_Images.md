@@ -1,0 +1,1 @@
+Some of the images are in `/docs/pages/images` too
