@@ -29,7 +29,7 @@ These are the important files:
 - `docs/index.rst`: table of contents and homepage.
 - `docs/.readthedocs.yml`: environment for ReadTheDocs.
 - `docs/requirements.txt`: uses by the yml file.
-- Everything else was boilerplate from when sphinx created the project.
+- Everything else in the root directory (e.g. 'make.bat' or 'Makefile') was boilerplate from when sphinx created the project. Don't delete them.
 
 
 #### Build process.
@@ -43,6 +43,19 @@ make html
 You can preview the changes locally by opening the files in `aiqc/docs/_build/html` with a browser.
 
 Alternatively, you can use `pip install sphinx-autobuild` to watch the files for changes and automatically build, but I've never done this.
+
+When adding/removing/renaming files to the toctrees, I have to run `make html` twice: once with with and without the `html_sidebars` line of `conf.py` uncommented and then again with it commented.
+
+When changing file names/ paths, things duplicated and orphaned in `/_build/html`.
+
+```bash
+cd docs
+make clean
+```
+
+If the build fails remotely, then check for dependency issues here <https://github.com/spatialaudio/nbsphinx/issues> e.g. maintainer fixed a bug where it was not working with Jinja2(v3).
+
+There were too many standalone notebook pages so I put them in 'gallery.rst' and now the "WARNING: document isn't included in any toctree" is to be expected.
 
 
 #### Automated publishing.
@@ -60,19 +73,14 @@ Only run when a page 404s
 
 - https://docs.readthedocs.io/en/stable/user-defined-redirects.html
 
----
 
-## Quirks.
+#### Images
 
-- There were too many notebooks so I put them in 'tutorials.rst' and now the "WARNING: document isn't included in any toctree" is to be expected.
-- If the build fails remotely, then check for dependency issues here <https://github.com/spatialaudio/nbsphinx/issues>
-- Don't forget to run `make html` if you want your changes to show up in the final documentation.
-- When adding/ removing/ renaming files to the toctrees, I have to run `make html` twice: once with with and without the `html_sidebars` line of `conf.py` uncommented and then again with it commented.
-- Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
-- When building, files get replicated. So if you change the name of files in `/docs`, `docs/notebooks`, `docs/images` then the old files will need to be deleted from `/_build/html`.
-- When I ran into problems with broken image references on ReadTheDocs, I ran `make clean` to delete the `/_build` folder and then `make html`.
-- The `nbsphinx==0.8.6` maintainer fixed a bug where it was not working with Jinja2(v3). 
-- Don't delete 'make.bat' or 'Makefile'.
-- When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.
-- When adding fonts to `/_static/fonts` you need to register it in css with `@font-face`.
 - Used this site for favicons <https://icoconvert.com/> `.ico` format.
+- If you use the sphinx directive `.. image:: some_pic.png` then it needs a local path.
+- When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.
+- Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
+
+#### Fonts
+
+- When adding fonts to `/_static/fonts` you need to register it in css with `@font-face`.

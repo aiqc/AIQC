@@ -7,7 +7,7 @@ Open Source
 
 ----
 
-.. image:: images/community/celebrate_circle.png
+.. image:: images/celebrate_circle.png
   :width: 100%
   :align: center
   :alt: community banner
@@ -215,7 +215,7 @@ Open source.
 Choosing a license
 ==================
 
-.. image:: images/community/license_badge.png
+.. image:: images/license_badge.png
   :width: 30%
   :alt: OSI-BSD Badge
   :class: no-scaled-link
