@@ -98,7 +98,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/banner/waves.png'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/waves.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">⚡ Detect Seizure</div>
@@ -201,7 +201,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/banner/houses.png'">
+        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/houses.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🏡 Real Estate Prices</div>
