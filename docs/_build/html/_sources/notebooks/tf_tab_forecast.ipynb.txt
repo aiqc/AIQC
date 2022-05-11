@@ -5,7 +5,7 @@
    "id": "global-sherman",
    "metadata": {},
    "source": [
-    "# Keras: Tabular Forecasting"
+    "# TensorFlow: Tabular Forecasting"
    ]
   },
   {
@@ -21,7 +21,7 @@
    "id": "adequate-personal",
    "metadata": {},
    "source": [
-    "![delhi](../images/india_weather.png)"
+    "![delhi](../images/banner/temps.png)"
    ]
   },
   {

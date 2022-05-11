@@ -61,8 +61,8 @@ html_static_path = ['_static']
 # Create a CSS file at path: `.../docs/_static/css/custom.css`.
 html_css_files = ['css/custom.css']
 # See my css solution for svg: https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
-html_logo = 'images/aiqc_logo_square_blues_transparent.svg'
-html_favicon = 'images/favicon.ico'
+html_logo = 'images/web/aiqc_logo_square_blues_transparent.svg'
+html_favicon = 'images/web/favicon.ico'
 html_show_sphinx = False
 html_show_copyright = False
 html_title = 'AIQC'
@@ -89,9 +89,9 @@ hight_language = 'python3'
 # https://www.linkedin.com/post-inspector/
 ogp_site_url = "https://aiqc.readthedocs.io/"
 ogp_site_name = "AIQC"
-ogp_image = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png"
+ogp_image = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png"
 ogp_image_alt = "Artificial Intelligence Quality Control"
 ogp_type = "website"
 ogp_custom_meta_tags = [
-    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/meta_image_tall_rect.png" />',
+    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />',
 ]

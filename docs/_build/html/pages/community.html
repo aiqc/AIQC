@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta property="og:title" content="Open Source" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://aiqc.readthedocs.io/pages/community.html" />
+  <meta property="og:site_name" content="AIQC" />
+  <meta property="og:description" content="community banner, Purpose.: The AIQC framework brings rapid & reproducible deep learning to open science. We strive to empower researchers with a free tool that is easy to integrate into their expe..." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
+  <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
+  <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Source &mdash; AIQC</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Our Mission" href="mission.html" />
+    <link rel="prev" title="Deep Learning 101" href="explainer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/aiqc_logo_square_blues_transparent.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Alternative-Sources">Alternative Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/installation.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#TLDR">TLDR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#Environment">Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Python-Version">Python Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/installation.html#Pickle-Disclaimer">Pickle Disclaimer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Operating-System">Operating System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Plotting">Plotting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/installation.html#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#AIQC-Package">AIQC Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#Config-File">Config File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Location-Based-on-OS">Location Based on OS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#a)-One-Liner">a) One-Liner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/installation.html#Troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/installation.html#Reloading-the-Package">Reloading the Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/dashboard.html">Dashboards</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#Runtime">Runtime</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/dashboard.html#Troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/visualization.html">Visualization &amp; Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/visualization.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/visualization.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/visualization.html#Classification">Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#Queue-Visualization">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#Job-Visualization">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#Job-Metrics">Job Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/visualization.html#Regression">Regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#id1">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#id2">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#id3">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/visualization.html#id4">Job Metrics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/api_high_level.html">High-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#1.-Pipeline">1. Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#a)-Tabular-Dataset">a) Tabular Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#b)-Sequence-Dataset">b) Sequence Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#c)-Image-Dataset">c) Image Dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#2.-Experiment">2. Experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#Model-Functions">Model Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_high_level.html#fn_build"><code class="docutils literal notranslate"><span class="pre">fn_build</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_high_level.html#fn_train"><code class="docutils literal notranslate"><span class="pre">fn_train</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#Hyperparameters">Hyperparameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#Experiment()"><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/api_low_level.html">Low-Level API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#Object-Relational-Model-(ORM)">Object Relational Model (ORM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Registering-Datasets">a) Registering Datasets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Dataset.Tabular"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Dataset.Sequence"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Dataset.Image"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Reading-Datasets-into-Memory">b) Reading Datasets into Memory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#id3"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#id4"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#id7"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#2.-Selecting-Features-and-Labels.">2. Selecting <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Select-the-Label-column(s).">a) Select the <code class="docutils literal notranslate"><span class="pre">Label</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#ORM">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Deriving-Labels">Deriving Labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Reading-Labels">Reading Labels</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#id10">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Specifying-Features">Specifying Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Reading-Features">Reading Features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#3.-Slicing-samples.">3. Slicing samples.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#id11">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Reading-Windows">Reading Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Slice-samples-with-a-Splitset.">b) Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Stratification">Stratification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Splitting-Strategies">Splitting Strategies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#id12">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#id13">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#5.-Preprocessing---Encoding.">5. Preprocessing - Encoding.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#Encoding">Encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#6.-Preprocessing---Reshaping.">6. Preprocessing - Reshaping.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#id14">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#Reshaping-by-Index">Reshaping by Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#Reshaping-Explicitly">Reshaping Explicitly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#7.-Defining-Architectures-&amp;-Hyperparameters.">7. Defining Architectures &amp; Hyperparameters.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Model-Definition">Model Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#8.-Queue-of-training-Jobs.">8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../notebooks/api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#9.-Metrics-&amp;-Visualization">9. Metrics &amp; Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/inference.html">Inference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/inference.html#Predictor">Predictor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/inference.html#New-Splitset">New Splitset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/inference.html#Run-Inference">Run Inference</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="explainer.html">Deep Learning 101</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Open Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-can-i-get-involved">How can I get involved?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-can-i-contribute">What can I contribute?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-dev-environment">Setting up dev environment.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#programming-style">Programming style.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of conduct.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#guild-bylaws-aka-governance">Guild bylaws (aka Governance).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aiqc-inc-open-core">AIQC, Inc. (open core).</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Open source.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-a-license">Choosing a license</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mission.html">Our Mission</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mission.html#accelerate-science-by-making-deep-learning-accessible">1. Accelerate science by making deep learning accessible.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mission.html#bring-the-scientific-method-to-data-science">2. Bring the scientific method to data science.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mission.html#break-down-walled-gardens-to-keep-science-open">3. Break down walled gardens to keep science open.</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compare.html">Competition</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AIQC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Open Source</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/community.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="open-source">
+<h1>Open Source<a class="headerlink" href="#open-source" title="Permalink to this headline"></a></h1>
+<hr class="docutils" />
+<img alt="community banner" class="no-scaled-link align-center" src="pages/images/community/celebrate_circle.png" style="width: 100%;" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="purpose">
+<h2>Purpose.<a class="headerlink" href="#purpose" title="Permalink to this headline"></a></h2>
+<p>The AIQC framework brings rapid &amp; reproducible deep learning to open science. We strive to empower researchers with a free tool that is easy to integrate into their experiments. You can <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/mission.html">learn more about our mission here</a>.</p>
+<p>Our initial goal is to build a guided framework for each major type of data (tabular, image, sequence, text, graph) and analysis (classify, quantify, generate).</p>
+<p>Ultimately, we’d like to create specific preprocessing pipelines, pre-trained models, and visualizations for each major scientific domain in order to accelerate discovery.</p>
+</section>
+<hr class="docutils" />
+<section id="how-can-i-get-involved">
+<h2>How can I get involved?<a class="headerlink" href="#how-can-i-get-involved" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Create a post on the <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">discussion board</a> and introduce yourself so that we can help get you up to speed!</p>
+<ul>
+<li><p>If you tell us what topics you are interested in, then we can help you get in sync with the project in a way that is enjoyable for everyone.</p></li>
+<li><p>If you want to join the community calls, then be sure to include your timezone and email in your introduction.</p></li>
+</ul>
+</li>
+<li><p>Jump into the conversation in the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/links.html">Slack group</a>.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="what-can-i-contribute">
+<h2>What can I contribute?<a class="headerlink" href="#what-can-i-contribute" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Have a look at the <a class="reference external" href="https://github.com/aiqc/aiqc/issues">GitHub Issues</a> for something that interests you.</p>
+<ul>
+<li><p>Keep an eye out for issues are tagged with &lt;kbd&gt;good first issue&lt;/kbd&gt;.</p></li>
+<li><p>Every issue has a <cite>Difficulty: ★★★☆☆</cite> score based on how much effort and how complex it has the potential to be.</p></li>
+<li><p>Also check out the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/mission.html">Compatibility Matrix</a>, to help you find a focus area.</p></li>
+<li><p>We can design a <em>sprint</em> for you that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design, blog-writing, or grant-writing. As described in the <em>Governance</em> section, completing a <em>sprint</em> is how you join the Core Team.</p></li>
+</ul>
+</li>
+<li><p>Take a look at the <a class="reference external" href="https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md">Pull Request Template</a>.</p>
+<ul>
+<li><p>This document provides a PR checklist and shows how to run the tests.</p></li>
+<li><p>We’ll review your PR and provide comments on how to get it ready for production. You can also converse with us in the Slack channel mentioned below.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="setting-up-dev-environment">
+<h2>Setting up dev environment.<a class="headerlink" href="#setting-up-dev-environment" title="Permalink to this headline"></a></h2>
+<p>Have a read through the <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/notebooks/installation.html">Installation section of the documentation</a> for information about OS, Python versions, and optional Jupyter extensions.</p>
+<p>Here is how you can clone the source code, install dependencies, and environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:aiqc/AIQC.git
+
+<span class="nb">cd</span> AIQC
+
+pip install --upgrade -r requirements_dev.txt
+pip install --upgrade -r requirements.txt
+pip uninstall aiqc -y
+
+git checkout -b my_feature
+
+python
+&gt;&gt;&gt; import aiqc
+</pre></div>
+</div>
+<p>Before you begin developing, make sure that you do NOT have the <cite>aiqc</cite> package installed. This may be counterintuitive at first, but remember, you are building the package yourself. So if you imported the pip package, then you are running scripts against the pip package, not your source code.</p>
+<p>Also, have a look at the <a class="reference external" href="https://github.com/aiqc/AIQC/blob/main/docs/README.md">Documentation’s README</a> for documentation building dependencies as well as some do’s and don’ts.</p>
+</section>
+<hr class="docutils" />
+<section id="programming-style">
+<h2>Programming style.<a class="headerlink" href="#programming-style" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Prioritize human readability, maintainability, and simplicity over conciseness, efficiency, and performance.</p>
+<ul>
+<li><p>Do not over-optimize. Schemas change. Over-optimization can make it hard for others to understand, integrate, and adapt your code. It’s better to move on to the next problem than making the current functionality “x%” better.</p></li>
+<li><p>Can you do it without lambda, function composition, or some complex 1-liner that takes someone else an hour to reverse engineer? Remember, most data scientists inherently aren’t world class software engineers, and vice versa!</p></li>
+<li><p>If the code is not used in multiple places, then do not make it a function just for the sake of it. It’s better to read code top to bottom rather than reverse engineering a DAG of someone else’s functions.</p></li>
+<li><p>When in doubt, use many lines to express yourself, lots of whitespace, and shallow depth of modularity.</p></li>
+</ul>
+</li>
+<li><p>When handling edge cases, apply the Pareto principle (80-20); try to handle obvious pitfalls, but don’t make the program more complex than it has to be.</p>
+<ul>
+<li><p><em>Do -</em> verify that the file/directory exists when users provide a path argument, provide helpful error messages, and validate dtypes &amp; shapes of input, but;</p></li>
+<li><p><em>Don’t -</em> spend a month writing your own custom checksum handler or solution for Python multiprocessing on Windows. Again, move on to something else rather than chasing an asymptote. The deep edge case code you wrote may be so specific that it is hard to maintain.</p></li>
+</ul>
+</li>
+<li><p>If in doubt, ask what other people think in a <a class="reference external" href="https://github.com/aiqc/aiqc/discussions">Discussion</a>.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="code-of-conduct">
+<h2>Code of conduct.<a class="headerlink" href="#code-of-conduct" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://www.youtube.com/watch?v=-F-3E8pyjFo">Inspired by NumFOCUS leaders and ‘Google I/O 2008 - Open Source Projects and Poisonous People’</a></p>
+<ul class="simple">
+<li><p><em>Be cordial and welcoming</em>; Communities are living, breathing social organisms where we can all learn to better ourselves while coming together to enact meaningful change.</p></li>
+<li><p><em>Agree to disagree</em>; on one hand, acknowledge the merits of the ideas of others and be willing to adapt your opinion based on new information, but, on the other hand, <strong>do not</strong> sacrifice what you truly believe in for the sake of consensus.</p></li>
+<li><p><em>Help educate &amp; mentor</em>; point people in the right direction to get started, but don’t continue to help those who won’t help themselves. Open source projects are a way for people to break out of their 9-5, so a lot of people are learning new things. In generally, be significantly less rigid than the StackOverflow community, but do ask people to state what they have tried, share their code, share their env, etc. Remember, AIQC is at the confluence of multiple disciplines, so err on the side of educating. English is also a 2nd language for many, so be patient.</p></li>
+<li><p><em>Speaking about other technologies</em>; When you mention other tools, give them as much praise as you can for what they have done well. Don’t shy away from our benefits, but do take care to phrase your comparison politely. You never know who you will get connected with. For example, “We wanted our tool to be persistent and easy-to-use because that’s what it was going to take to get it into the hands of researchers. When we tried out other tools for ourselves as practicioners, we didn’t feel like they fully satisfied our criteria.”</p></li>
+<li><p><em>Violations</em>; If you feel that certain behavior does not jive with the code of conduct, please report the instance to the community manager, Layne Sadler. In particular, any instance of either hate, harassment, or heinous prejudice will result in an immediate and permanent ban without the explicit need for a vote.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="guild-bylaws-aka-governance">
+<h2>Guild bylaws (aka Governance).<a class="headerlink" href="#guild-bylaws-aka-governance" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://www.djangoproject.com/weblog/2020/mar/12/governance/">Based on advice from our friends at Django and Jupyter:</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“Governance in the early days was largely about reviewing PRs and asking ourselves, <em>‘Should we do this?’</em>”</p></li>
+<li><p>“This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise.”</p></li>
+<li><p>“In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”</p></li>
+</ul>
+</div></blockquote>
+<p>The vernacular is modeled after a D&amp;D-like guild in order to make governance less dry.</p>
+<p><em>Band of Squires [aka Public Participants]</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a <em>sprint</em>.</p></li>
+<li><p>All are welcome. Get in touch and we will help design a <em>sprint</em> for you.</p></li>
+<li><p>PRs must be reviewed by a council member before a merger.</p></li>
+<li><p>All participants are subject to the <em>Code of Conduct</em>.</p></li>
+</ul>
+</div></blockquote>
+<p><em>Fellowship of Archmages [aka Core Team]</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Anyone who has completed 1-4 <em>sprints</em> (level I, II, III, IV).</p></li>
+<li><p>Participates in the biweekly team meetings.</p></li>
+<li><p>Helps administer the Slack community and discussion board.</p></li>
+<li><p>PRs must still be reviewed by a council member before a merger.</p></li>
+<li><p>If it becomes absolutely necessary, the team can submit a proposal to remove/demote a team member for either repeated breach of <em>Code of Conduct</em> (2 strike depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.</p></li>
+<li><p>The team can force any proposal submitted to the discussion board up to the council with a 2/3 vote (assuming there are at least 3 people on the team). However, rational discourse is preferred to forced votes.</p></li>
+</ul>
+</div></blockquote>
+<p><em>Council of Warlocks [aka Steering Committee]</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Anyone who has completed 5+ <em>sprints</em> (level V+). With at least 2 sprints being related to core deep learning functionality.</p></li>
+<li><p>Ability to approve PRs.</p></li>
+<li><p>Ability to release software (e.g. PyPI).</p></li>
+<li><p>Design sprints for new members.</p></li>
+<li><p>Inclusion in the license copyright.</p></li>
+<li><p>The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.</p></li>
+<li><p>The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.</p></li>
+<li><p>If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of <em>Code of Conduct</em> (2 strikes depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.</p></li>
+<li><p>Changes to either the <em>Governance</em>, <em>Code of Conduct</em>, or <em>License</em> require a proposal to the discussion board.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="aiqc-inc-open-core">
+<h2>AIQC, Inc. (open core).<a class="headerlink" href="#aiqc-inc-open-core" title="Permalink to this headline"></a></h2>
+<p>All AIQC functionality developed to date is open source. However, for the following reasons, AIQC is incorporated and will adhere to an <em>open core</em> business model in the long run:</p>
+<ul class="simple">
+<li><p>In order to apply for certain government grant programs like the National Science Foundation (NSF) and DARPA (creators of the internet), it is <em>required</em> to form a business entity. Both JuliaLang and Dask have seen great success with this path. It has enabled them to tackle the most pressing, R&amp;D-intensive tasks (e.g. <a class="reference external" href="https://github.com/JuliaParallel/Dagger.jl#acknowledgements">Dagger.jl</a>).</p>
+<ul>
+<li><p>Unfortunately, many grant application processes are explicitly reserved for individuals that are affiliated with esteemed institutions, which makes them off limits for everyday citizens.</p></li>
+</ul>
+</li>
+<li><p>In reality, the continued success of many open source projects, even those that are not directly associated with a company, depends upon both funding and paid contributors coming from corporate sponsors with which they collaborate.</p>
+<ul>
+<li><p>This assistance naturally comes with a degree influence, sometimes formally in the shape of project governance positions. Forming your own company to help financially back the project helps the project creators have an equal seat at the table of sponsors.</p></li>
+</ul>
+</li>
+<li><p>Many successful open source projects have championed the open core model while managing to remain free:</p>
+<ul>
+<li><p>Notable examples include: NumFOCUS JuliaLang - JuliaComputing, Apache Spark - Databricks, NumFOCUS Dask - Coiled &amp; SaturnCloud, Apache Zeppelin - Zepl, Apache Kafka - Confluent, GridAI - PyTorch Lightning, Dash &amp; Plotly - Plotly, MongoDB, RStudio.</p></li>
+</ul>
+</li>
+<li><p>In practice, when collaborating with large research institutes or R&amp;D teams, they typically need: technical support to get up and running, consulting to help it fit their use cases, or they want to evaluate the technology on their data through a trial consulting engagement.</p></li>
+<li><p>The most prominent AI labs, like OpenAI and DeepMind, have been able to champion open research in a corporate setting. That’s also where the best deep learning talent is going.</p></li>
+<li><p>The <a class="reference external" href="https://www.ga4gh.org/">Global Alliance for Genomics &amp; Health (GA4GH)]</a> eventually had to organize for legal protection.</p></li>
+<li><p>Many biotech businesses offer either free or reduced pricing for students and academics as a healthy compromise.</p></li>
+<li><p>It’s analogous to the <em>freemium</em> days of web 2.0 and apps. 95% of people get access to the free service while 5% of users pay for the premium options that solve their specific problems.</p></li>
+<li><p>To paraphrase Isaacson’s, <a class="reference external" href="https://www.amazon.com/Innovators-Hackers-Geniuses-Created-Revolution/dp/1476708703">The Innovators</a>,: <em>“The first computer that was invented is sitting in a university basement in Iowa gathering dust. However, the 2nd computer was manufactured by IBM, and it sat on every professional desktop and point-of-sale counter in the world. It led the digital revolution.”</em></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id1">
+<h2>Open source.<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<section id="choosing-a-license">
+<h3>Choosing a license<a class="headerlink" href="#choosing-a-license" title="Permalink to this headline"></a></h3>
+<img alt="OSI-BSD Badge" class="no-scaled-link" src="pages/images/community/license_badge.png" style="width: 30%;" />
+<p>AIQC is made open source under the <a class="reference external" href="https://github.com/aiqc/aiqc/blob/main/LICENSE">Berkeley Software Distribution (BSD) 3-Clause</a> license. This license is approved by the <a class="reference external" href="https://choosealicense.com/appendix/">Open Source Initiative (OSI)</a>, which is preferred by <a class="reference external" href="https://numfocus.org/projects-overview">NumFOCUS</a>. 3-Clause BSD is used by notable projects including: NumPy, Scikit-learn, Dask, Matplotlib, IPython, and Jupyter.</p>
+<p>BSD is seen as a <em>permissive</em> license, as opposed to <em>restrictive</em>. The major implications are that people that incorporate AIQC into their work are <em>neither</em> obligated to release their source code as open source, nor restricted to publishing their work under the same license.</p>
+<blockquote>
+<div><p>The simplest argument for AIQC adopting the BSD license is that AIQC uses upstream BSD projects. Therefore, it should pay it forward by using the same license and allowing others the same freedom it enjoys.</p>
+<p>On one hand, the permissive nature of this license means that the cloud providers can fork this project and release it as their own closed source cloud service, which has been a recurring theme [<a class="reference external" href="https://news.ycombinator.com/item?id=24799660">a</a>, <a class="reference external" href="https://aws.amazon.com/blogs/opensource/introducing-opensearch/">b</a>, etc.]. On the other hand, feedback from our friends in the Python community was that people would avoid using libraries with restrictive licenses, like AGPL, in their work. They explained that they aren’t allowed to open source their work and they “don’t want to get their legal team involved.” This begs the question, what good is being open source under a restrictive license if no one can <em>actually</em> use your software? Hopefully the cloud providers will put programs in place to contribute either code or profit (similar to App Store) back to the communities whose projects they fork.</p>
+<p>Consideration of 4-Clause BSD; The <em>original</em> BSD license included an additional <em>advertising clause</em> that states: “All advertising materials mentioning features or use of this software must display the following acknowledgement: This product includes software developed by […].” Which helps, in part, to address the widespread complaint of, “If you are going to fork our project, at least give us a nod.” We’ve actually seen this play out at <a class="reference external" href="https://www.datto.com/">Datto</a>. The company used software written by StorageCraft and Oracle for years, and eventually they ended up adding a StorageCraft badge to their marketing collateral. It felt fair. However, the <em>advertising clause</em> of 4-Clause BSD made it officially incompatible with GPL-licensed projects and, in practice, 3-Clause BSD projects! The latter is the deciding factor. If we want to be a part of a BSD-based community, then we cannot hinder it.</p>
+</div></blockquote>
+<p>The copyright section is modeled after the <a class="reference external" href="https://github.com/ipython/ipython/blob/master/LICENSE">IPython</a> project.</p>
+<p><em>Disclaimer; We still need to investigate BSD 3-Clause Clear and Apache 2.0 regarding patent &amp; trademark rights.</em></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

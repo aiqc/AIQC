@@ -21,7 +21,7 @@
    "id": "deadly-providence",
    "metadata": {},
    "source": [
-    "![bannerGalaxy](../images/banner_galaxy.png)"
+    "![bannerGalaxy](../images/banner/spirals.png)"
    ]
   },
   {

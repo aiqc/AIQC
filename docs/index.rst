@@ -3,7 +3,7 @@
   :caption: Getting Started
   :hidden:
 
-  gallery
+  pages/gallery
   notebooks/datasets
   notebooks/installation
 
@@ -25,10 +25,10 @@
   :caption: About
   :hidden:
 
-  explainer
-  community
-  mission
-  compare
+  pages/explainer
+  pages/community
+  pages/mission
+  pages/compare
 
 
 ..
@@ -104,7 +104,7 @@
   </br></br>
 
 
-.. image:: images/framework_may4.png
+.. image:: images/web/framework_may4.png
   :width: 93%
   :align: center
   :alt: framework
@@ -117,7 +117,7 @@
     <div class="flex-item shadowBox">
       <div class="flex-top">
         <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
-          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/psf_logo.png'">
+          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/psf_logo.png'">
         </a>
       </div>
       <div class="flex-bottom">
@@ -129,7 +129,7 @@
     <div class="flex-item shadowBox">
        <div class="flex-top">
         <a href="https://aiqc.medium.com/" target="_blank">
-          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/tds_logo_bw.png' />
+          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/tds_logo_bw.png' />
         </a>
       </div>
       <div class="flex-bottom">
@@ -141,7 +141,7 @@
     <div class="flex-item shadowBox">
       <div class="flex-top">
         <a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" target="_blank">
-         <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/pydata_logo.png' />
+         <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/pydata_logo.png' />
         </a>
       </div>
       <div class="flex-bottom">
@@ -155,13 +155,13 @@
   </br></br></br>
 
   <center>
-    <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
+    <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
   </center>
   </br>
 
   
   <center style="margin-bottom:50px;">
-    <a class="linx" href="compare.html" target="_blank">
+    <a class="linx" href="pages/compare.html" target="_blank">
       <span class="textz" style="color:#626262; font-size:17.5px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
     </a>
   </center>
@@ -179,14 +179,14 @@
     <center>
       <div class="headerz headerz-dark">Refine raw data into actionable <span class="goldz-dark">insight</span>.</div>
       </br></br></br>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/train_abstract_lines.png" alt="abstraction" width="93%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/train_abstract_lines.png" alt="abstraction" width="93%" style="display:block;">
     </center>
     </br></br></br></br></br>
   </div>
 
   </br></br></br></br></br></br>
   <center>
-    <div class="headerz-light">Write <span class="goldz-light">90% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='tutorials.html' style="text-decoration: underline;">workflows</a>.</div>
+    <div class="headerz-light">Write <span class="goldz-light">90% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a>.</div>
   </center>
   </br></br>
 
@@ -200,17 +200,17 @@
     <tr>
       <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
       <td class="done">
-        <a href='notebooks/keras_binary_tcga.html'>
+        <a href='notebooks/tf_multi_tcga.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
       <td class="done">
-        <a href='notebooks/sequence_classification.html'>
+        <a href='notebooks/tf_seq_class.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
       <td class="done">
-        <a href='notebooks/image_classification.html'>
+        <a href='notebooks/tf_img_class.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -219,7 +219,7 @@
     <tr>
       <td class="tbl-head">Quantification</br><small>(regression)</small></td>
       <td class="done">
-        <a href='notebooks/keras_regression.html'>
+        <a href='notebooks/tf_reg.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -234,7 +234,7 @@
     <tr>
       <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate)</small></td>
       <td class="done">
-        <a href='notebooks/keras_tabular_forecasting.html'>
+        <a href='notebooks/tf_tab_forecast.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -242,23 +242,10 @@
         <span class="checkmark">✓</span>
       </td>
       <td class="done bottom-right">
-        <a href='notebooks/keras_image_forecasting.html'>
+        <a href='notebooks/tf_img_forecast.html'>
           <span class="checkmark">✓</span>
         </a>
     </tr>
-    
-    <!--
-    <tr>
-      <td class="tbl-head tbl-head-Generation">Forecast</br></td>
-      <td class="done">
-        <a href='notebooks/keras_tabular_forecasting.html'>Keras</a>
-        <br/><span class="checkmark">✓</span><br/>
-        PyTorch
-      </td>
-      <td>Coming soon.</td>
-      <td class="coming-soon">Coming soon.</td>
-    </tr>
-    -->
   </table>
 
   </br></br>
@@ -369,7 +356,7 @@ AIQC
   <div style="background-image: linear-gradient(#fcfcfc, #122536);">
     </br></br></br></br></br></br>
     <center>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
+      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
       </br></br>
       <div class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating each split & fold of every model.</div>
     </center>
@@ -386,7 +373,7 @@ AIQC
   <center>
     <p style="font-size:18px; font-family:Exo;"><i>Let's get started!</i></p>
     </br>
-    <a href="tutorials.html">
+    <a href="gallery.html">
       <div class="bttn"><b>→</b> <span class="textz">Use Cases & Tutorials</span></div>
     </a>
   </center>

@@ -5,7 +5,7 @@
    "id": "global-sherman",
    "metadata": {},
    "source": [
-    "# Keras: Image Forecasting"
+    "# TensorFlow: Image Forecasting"
    ]
   },
   {
@@ -21,7 +21,7 @@
    "id": "adequate-personal",
    "metadata": {},
    "source": [
-    "![liberty](../images/liberty_moon_banner.png)"
+    "![liberty](../images/banner/moons.png)"
    ]
   },
   {
