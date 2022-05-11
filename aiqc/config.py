@@ -17,7 +17,7 @@ app_dir = os.path.join(app_dir_no_trailing_slash, '')
 default_config_path = app_dir + "config.json"
 default_db_path = app_dir + "aiqc.sqlite3"
 # API URL format 'https://{api_id}.execute-api.{region}.amazonaws.com/{stage}/'.
-aws_api_root = "https://qzdvq719pa.execute-api.us-east-1.amazonaws.com/Stage_AIQC/"
+# aws_api_root = "https://qzdvq719pa.execute-api.us-east-1.amazonaws.com/Stage_AIQC/"
 
 
 #==================================================
@@ -190,7 +190,7 @@ def create_config():
 				, "platform.win32_ver()": platform.win32_ver()
 				, "platform.libc_ver()": platform.libc_ver()
 				, "platform.mac_ver()": platform.mac_ver()
-				, "aws_api_key": None
+				# , "aws_api_key": None
 			}
 			
 			try:
@@ -253,26 +253,26 @@ def update_config(kv:dict):
 		importlib.reload(sys.modules[__name__])
 
 
-def config_add_aws_api_key(api_key:str):
-	config_test_aws_api_key(api_key)
-	update_config(kv=dict(aws_api_key=api_key))
+# def config_add_aws_api_key(api_key:str):
+# 	config_test_aws_api_key(api_key)
+# 	update_config(kv=dict(aws_api_key=api_key))
 
 
-def config_test_aws_api_key(api_key:str):
-	print(f"\n=> Info - testing API key via connection to AIQC AWS API Gateway:\n{aws_api_root}\n")
-	response = requests.get(
-		url=aws_api_root, headers={"x-api-key":api_key}
-	)
-	status_code = response.status_code
-	if (status_code==200):
-		print("\n=> Success - was able to connect to root of AIQC AWS API Gateway.\n")
-	else:
-		raise Exception(f"\n=> Yikes - failed to connect to root of AIQC AWS API Gateway.\nHTTP Error Code = {status_code}.\n")
+# def config_test_aws_api_key(api_key:str):
+# 	print(f"\n=> Info - testing API key via connection to AIQC AWS API Gateway:\n{aws_api_root}\n")
+# 	response = requests.get(
+# 		url=aws_api_root, headers={"x-api-key":api_key}
+# 	)
+# 	status_code = response.status_code
+# 	if (status_code==200):
+# 		print("\n=> Success - was able to connect to root of AIQC AWS API Gateway.\n")
+# 	else:
+# 		raise Exception(f"\n=> Yikes - failed to connect to root of AIQC AWS API Gateway.\nHTTP Error Code = {status_code}.\n")
 
 
-def _aws_get_api_key():
-	api_key = get_config()['aws_api_key']
-	if (api_key is None):
-		raise Exception("\nYikes - `config['aws_api_key']` has not been set.\nRun `config_add_aws_api_key(api_key)` to define it.\n")
-	elif (api_key is not None):
-		return api_key
+# def _aws_get_api_key():
+# 	api_key = get_config()['aws_api_key']
+# 	if (api_key is None):
+# 		raise Exception("\nYikes - `config['aws_api_key']` has not been set.\nRun `config_add_aws_api_key(api_key)` to define it.\n")
+# 	elif (api_key is not None):
+# 		return api_key

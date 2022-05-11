@@ -3,6 +3,13 @@ import pandas as pd
 
 name = "datum"
 
+"""
+Datum
+└── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/datasets.html
+
+- Example datasets that are used for both tutorials and tests.
+- Either included in the aiqc package `aiqc/data` or stored remotely `/remote_datum`
+"""
 def list_datums(format:str=None):
 	"""
 	- Of course, these could be classes, but record format let's us display all of the info in a dataframe.
