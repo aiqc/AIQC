@@ -1,156 +1,157 @@
 import pkg_resources #importlib.resources was not working on Google Collab.
 import pandas as pd
 
-
 name = "datum"
 
-
 def list_datums(format:str=None):
-	# 'name' value cannot include 'https' because that's how remote datasets are detected.
-	datums = [
-		{
-			'name': 'exoplanets.parquet'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'SurfaceTempK'
-			, 'label_classes': 'N/A'
-			, 'features': 8
-			, 'samples': 433
-			, 'description': 'Predict temperature of exoplanet.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'heart_failure.parquet'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'died'
-			, 'label_classes': '2'
-			, 'features': 12
-			, 'samples': 299
-			, 'description': "Biometrics to predict loss of life."
-			, 'location': 'local'
-		},
-		{
-			'name': 'iris.tsv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification_multi'
-			, 'label': 'species'
-			, 'label_classes': 3
-			, 'features': 4
-			, 'samples': 150
-			, 'description': '3 species of flowers. Only 150 rows, so cross-folds not represent population.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'sonar.csv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'object'
-			, 'label_classes': 2
-			, 'features': 60
-			, 'samples': 208
-			, 'description': 'Detecting either a rock "R" or mine "M". Each feature is a sensor reading.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'houses.csv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'regression'
-			, 'label': 'price'
-			, 'label_classes': 'N/A'
-			, 'features': 12
-			, 'samples': 506
-			, 'description': 'Predict the price of the house.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'iris_noHeaders.csv' 
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi'
-			, 'label': 'species'
-			, 'label_classes': 3
-			, 'features': 4
-			, 'samples': 150
-			, 'description': 'For testing; no column names.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'iris_10x.tsv'
-			, 'dataset_type': 'tabular'
-			, 'analysis_type': 'classification multi'
-			, 'label': 'species'
-			, 'label_classes': 3
-			, 'features': 4
-			, 'samples': 1500
-			, 'description': 'For testing; duplicated 10x so cross-folds represent population.'
-			, 'location': 'local'
-		},
-		{
-			'name': 'brain_tumor.csv'
-			, 'dataset_type': 'image'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'status'
-			, 'label_classes': 2
-			, 'features': '1 color x 160 tall x 120 wide'
-			, 'samples': 80
-			, 'description': 'csv acts as label and manifest of image urls.'
-			, 'location': 'remote'
-		},
-		{
-			'name': 'galaxy_morphology.tsv'
-			, 'dataset_type': 'image'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'morphology'
-			, 'label_classes': 2
-			, 'features': '3 colors x 240 tall x 300 wide'
-			, 'samples': 40
-			, 'description': 'tsv acts as label and manifest of image urls.'
-			, 'location': 'remote'
-		},
-		{
-			'name': 'spam.csv'
-			, 'dataset_type': 'text'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'v1'
-			, 'label_classes': 2
-			, 'features': 'text data'
-			, 'samples': 5572
-			, 'description': 'collection of spam/ ham (not spam) messages'
-			, 'location': 'local'
-		},
-		{
-			'name': 'epilepsy.parquet'
-			, 'dataset_type': 'sequence'
-			, 'analysis_type': 'classification_binary'
-			, 'label': 'seizure'
-			, 'label_classes': 2
-			, 'features': '1 x 178 readings'
-			, 'samples': 1000
-			, 'description': "<https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition> Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`"
-			, 'location': 'local'
-		},
-		{
-			'name': 'delhi_climate.parquet'
-			, 'dataset_type': 'sequence'
-			, 'analysis_type': 'forecasting'
-			, 'label': 'N/A'
-			, 'label_classes': 'N/A'
-			, 'features': '3'
-			, 'samples': 1575
-			, 'description': "<https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data>. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'"
-			, 'location': 'local'
-		},
-		{
-			'name': 'liberty_moon.csv'
-			, 'dataset_type': 'image'
-			, 'analysis_type': 'forecasting'
-			, 'label': 'N/A'
-			, 'label_classes': 'N/A'
-			, 'features': '1 color x 50 tall x 60 wide'
-			, 'samples': 15
-			, 'description': 'moon glides from top left to bottom right'
-			, 'location': 'remote'
-		},
+	"""
+	- Of course, these could be classes, but record format let's us display all of the info in a dataframe.
+	- 'name' value cannot include 'https' because that's how remote datasets are detected.
+	"""
+	records = [
+		dict(
+			name = 'exoplanets.parquet'
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'regression'
+			, label 		= 'SurfaceTempK'
+			, label_classes = 'N/A'
+			, features 		= 8
+			, samples 		= 433
+			, description 	= 'Predict temperature of exoplanet.'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'heart_failure.parquet'
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'regression'
+			, label 		= 'died'
+			, label_classes = '2'
+			, features 		= 12
+			, samples 		= 299
+			, description 	= "Biometrics to predict loss of life."
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'iris.tsv'
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'classification_multi'
+			, label 		= 'species'
+			, label_classes = 3
+			, features 		= 4
+			, samples 		= 150
+			, description 	= '3 species of flowers. Only 150 rows, so cross-folds not represent population.'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'sonar.csv'
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'classification_binary'
+			, label 		= 'object'
+			, label_classes = 2
+			, features 		= 60
+			, samples 		= 208
+			, description 	= 'Detecting either a rock "R" or mine "M". Each feature is a sensor reading.'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'houses.csv'
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'regression'
+			, label 		= 'price'
+			, label_classes = 'N/A'
+			, features 		= 12
+			, samples 		= 506
+			, description 	= 'Predict the price of the house.'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'iris_noHeaders.csv' 
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'classification multi'
+			, label 		= 'species'
+			, label_classes = 3
+			, features 		= 4
+			, samples 		= 150
+			, description 	= 'For testing; no column names.'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'iris_10x.tsv'
+			, dataset_type 	= 'tabular'
+			, analysis_type = 'classification multi'
+			, label 		= 'species'
+			, label_classes = 3
+			, features 		= 4
+			, samples 		= 1500
+			, description 	= 'For testing; duplicated 10x so cross-folds represent population.'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'brain_tumor.csv'
+			, dataset_type 	= 'image'
+			, analysis_type = 'classification_binary'
+			, label 		= 'status'
+			, label_classes = 2
+			, features 		= '1 color x 160 tall x 120 wide'
+			, samples 		= 80
+			, description 	= 'csv acts as label and manifest of image urls.'
+			, location 		= 'remote'
+		),
+		dict(
+			name 			= 'galaxy_morphology.tsv'
+			, dataset_type 	= 'image'
+			, analysis_type = 'classification_binary'
+			, label 		= 'morphology'
+			, label_classes = 2
+			, features 		= '3 colors x 240 tall x 300 wide'
+			, samples 		= 40
+			, description	= 'tsv acts as label and manifest of image urls.'
+			, location 		= 'remote'
+		),
+		dict(
+			name 			= 'spam.csv'
+			, dataset_type 	= 'text'
+			, analysis_type = 'classification_binary'
+			, label 		= 'v1'
+			, label_classes = 2
+			, features 		= 'text data'
+			, samples 		= 5572
+			, description 	= 'collection of spam/ ham (not spam) messages'
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'epilepsy.parquet'
+			, dataset_type 	= 'sequence'
+			, analysis_type = 'classification_binary'
+			, label 		= 'seizure'
+			, label_classes = 2
+			, features 		= '1 x 178 readings'
+			, samples 		= 1000
+			, description 	= "<https://archive.ics.uci.edu/ml/datasets/Epileptic+Seizure+Recognition> Storing the data tall so that it compresses better.`label_df = df[['seizure']]; sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)`"
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'delhi_climate.parquet'
+			, dataset_type 	= 'sequence'
+			, analysis_type = 'forecasting'
+			, label 		= 'N/A'
+			, label_classes = 'N/A'
+			, features 		= '3'
+			, samples 		= 1575
+			, description 	= "<https://www.kaggle.com/sumanthvrao/daily-climate-time-series-data>. Both train and test (pruned last day from train). 'pressure' and 'wind' columns seem to have outliers. Converted 'date' column to 'day_of_year.'"
+			, location 		= 'local'
+		),
+		dict(
+			name 			= 'liberty_moon.csv'
+			, dataset_type 	= 'image'
+			, analysis_type = 'forecasting'
+			, label 		= 'N/A'
+			, label_classes = 'N/A'
+			, features 		= '1 color x 50 tall x 60 wide'
+			, samples 		= 15
+			, description 	= 'moon glides from top left to bottom right'
+			, location 		= 'remote'
+		),
 	]
 
 	formats_df = [None, 'pandas', 'df' ,'dataframe', 'd', 'pd']
@@ -158,10 +159,10 @@ def list_datums(format:str=None):
 	if (format in formats_df):
 		pd.set_option('display.max_column',100)
 		pd.set_option('display.max_colwidth', 500)
-		df = pd.DataFrame.from_records(datums)
+		df = pd.DataFrame.from_records(records)
 		return df
 	elif (format in formats_lst):
-		return datums
+		return records
 	else:
 		raise Exception(f"\nYikes - The format you provided <{format}> is not one of the following:{formats_df} or {formats_lst}\n")
 

@@ -9,6 +9,7 @@ name = "aiqc"
 def setup():
 	create_folder()
 	create_config()
+	# comes from orm
 	create_db()
 
 
