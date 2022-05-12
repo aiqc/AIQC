@@ -101,44 +101,22 @@ def shuffler(features:list, labels:list):
 	return features, labels
 
 
-def conditional_flatten(tzr:object):
-	"""This only gets run on labels/probabilities, not features"""
-	dims = tzr.dim()
-	if (dims==2):
-		last_dimShape = tzr.shape[-1]
-		if (last_dimShape==1):
-			tzr = tzr.flatten()
-		elif (last_dimShape>1):
-			pass# OHE probabilities go through as is
-	elif (dims==1):
-		pass
-	elif (dims>2):
-		raise Exception(f"\nYikes - Scoring failed.\nDid not attempt to flatten because {dims} dims aka self-supervised not supported yet.\n")
+def flatten_uniColumn(tzr:object):
+	if (tzr.shape[-1]==1):
+		return tzr.flatten()
 	return tzr
 
 
-def flip_typ(tzr:object):
-	"""
-	- Handles incosistencies between format for torch loss and torchmetrics scoring.
-	- Assumes that the tensor argument is already flattened.
-	"""
-	tzr_typ = tzr.type()
-	dims = tzr.dim()
-	if (dims==1):
-		if (tzr_typ=='torch.FloatTensor'):
-			# Check if floats should be categorical ints by sampling 3 values.
-			are_ints = [float(i).is_integer() for i in tzr[:3]]
-			if all(are_ints):
-				tzr = tzr.to(torch.int64)
-			else:
-				raise Exception(f"\nYikes - Scoring failed on {tzr_typ}.\nDid not attempt as int64 because tensor contained non-zero decimals.\n")
-		elif (tzr_typ=='torch.LongTensor'):
-			tzr = tzr.to(torch.FloatTensor)
+def float_to_int(tzr:object):
+	"""Handles float/int incosistencies of torch's loss and torchmetrics' scoring."""
+	if (tzr.type()=='torch.FloatTensor'):
+		if all([float(i).is_integer() for i in tzr[:3]]):
+			return tzr.to(torch.int64)
+			# ^ Sample to see if floats are actually categorical ints `float(0).is_integer()==True`
 		else:
-			raise Exception(f"\nYikes - Scoring failed because {tzr_typ} type not supported.\n")
-	elif (dims>1):
-		raise Exception(f"\nYikes - Scoring failed on {tzr_typ} type.\nDid not attempt to flip type because {dims} dimensions not supported yet.\n")
-	return tzr
+			raise Exception(f"\nYikes - Scoring failed on {tzr.type()}.\nDid not attempt as int64 because tensor contained non-zero decimals.\n")
+	else:
+		raise Exception(f"\nYikes - Scoring failed because {tzr.type()} type not supported.\n")
 
 
 def fit(
@@ -171,7 +149,18 @@ def fit(
 		samples_train['features'], samples_train['labels'],
 		batch_size=batch_size, enforce_sameSize=enforce_sameSize, allow_singleSample=allow_singleSample
 	)
-
+	"""
+	- On one hand, I could pass in `analysis_type` to deterministically handle the proper
+	  dimensionality and type of the data for loss and metrics.
+	- However, performance-wise, that would still require a lot of if statements. 
+	- The `try` approach is more future-proof.
+	- `flatten()` works on any dimension, even 1D.
+	- Remember, multi-label  PyTorch uses ordinal labels, but OHE output probabilities.
+	  It wants to compare 2D probabilities to 1D ordinal labels.
+	- Unsupervised analysis either succeeds as 2D+ or fails. MSE works on 3D data, but r2 fails. 
+	  We could stack 3D+ into 2D, but then we'd have to stack features as well, and that's kind 
+	  of insane because this is just for epoch-level metrics.
+	"""
 	## --- Training loop ---
 	for epoch in range(epochs):
 		batched_features, batched_labels = shuffler(batched_features, batched_labels)
@@ -183,51 +172,44 @@ def fit(
 			try:
 				batch_loss = loser(batch_probability, batch_labels)
 			except:
-				# Only multi classification fails, and it needs both transforms
-				batch_labels = conditional_flatten(batch_labels)
-				batch_labels = flip_typ(batch_labels)
+				# Known exception: multi classify fails on 2D and floats
+				batch_labels = flatten_uniColumn(batch_labels)
+				batch_labels = float_to_int(batch_labels)
 				batch_loss = loser(batch_probability, batch_labels)
 			# Backpropagation.
 			optimizer.zero_grad()
 			batch_loss.backward()
 			optimizer.step()
 
-		"""
-		- On one hand, I could pass in `analysis_type` to deterministically route 
-		  the dims & types. However, I would still have to use if statements.
-		- On the other hand, the `try` approach is more future-proof.
-		"""
-		## --- Epoch metrics ---
-		## -Loss-
+		## --- Epoch loss ---
+		# Known exception: multi classify fails on floats
 		train_probability = model(samples_train['features'])
-		train_probability = conditional_flatten(train_probability)
-		train_labels = conditional_flatten(samples_train['labels'])
+		train_probability = flatten_uniColumn(train_probability)
+		train_labels = flatten_uniColumn(samples_train['labels'])
 		try:
 			train_loss = loser(train_probability, train_labels)
 		except:
-			# Only multi classification fails.
-			train_labels = flip_typ(train_labels)
+			train_labels = float_to_int(train_labels)
 			train_loss = loser(train_probability, train_labels)
 		history['loss'].append(float(train_loss))
 
 		eval_probability = model(samples_evaluate['features'])
-		eval_probability = conditional_flatten(eval_probability)
-		eval_labels = conditional_flatten(samples_evaluate['labels'])
+		eval_probability = flatten_uniColumn(eval_probability)
+		eval_labels = flatten_uniColumn(samples_evaluate['labels'])
 		try:
 			eval_loss = loser(eval_probability, eval_labels)
 		except:
-			# Multi classification accuracy fails.
-			eval_labels = flip_typ(eval_labels)
+			eval_labels = float_to_int(eval_labels)
 			eval_loss = loser(eval_probability, eval_labels)
 		history['val_loss'].append(float(eval_loss))
 
 		## -Metrics-
-		# Conditional flattening has already taken place
+		# Known exception: binary classify accuracy fails on floats.
 		for i, m in enumerate(metrics):
 			try:
 				train_m = m(train_probability, train_labels)
 			except:
-				train_labels = flip_typ(train_labels)
+				train_labels = float_to_int(train_labels)
 				train_m = m(train_probability, train_labels)
 			metrics_key = metrics_keys[i][0]
 			history[metrics_key].append(float(train_m))
@@ -235,8 +217,7 @@ def fit(
 			try:
 				eval_m = m(eval_probability, eval_labels)
 			except:
-				# Multi classification accuracy fails.
-				eval_labels = flip_typ(eval_labels)
+				eval_labels = float_to_int(eval_labels)
 				eval_m = m(eval_probability, eval_labels)
 			metrics_key = metrics_keys[i][1]
 			history[metrics_key].append(float(eval_m))
