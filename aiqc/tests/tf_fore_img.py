@@ -1,7 +1,7 @@
 """TensorFlow Forecasting with Image data"""
 # Internal modules
 from ..orm import *
-from ..utils import div255, mult255
+from ..utils.encoding import div255, mult255
 # External modules
 import tensorflow as tf
 import tensorflow.keras.layers as l

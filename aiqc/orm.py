@@ -10,14 +10,13 @@ a new file that to handle db.create_tables(Models). However, when creating/ dele
 I couldn't dynamically reload the Models without restarting the kernel and rerunning setup().
 I tried all kinds of importlib.reload(), but decided to move on.
 
-If it is ever undertaken to refactor the methods used to create the model classes, read this:
+When it is undertaken to refactor the methods used to create the model classes, read this:
 https://github.com/coleifer/peewee/issues/856
 """
 # Local modules
 from .config import app_dir
 from .plots import Plot
 from . import utils
-from .utils import dill
 # External
 # math will not let you import specific modules (ceil, floor, prod)
 import os, sys, io, random, itertools, h5py, gzip, statistics, requests, \
@@ -172,8 +171,8 @@ class Dataset(BaseModel):
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		columns = utils.listify(columns)
-		samples = utils.listify(samples)
+		columns = utils.wrangle.listify(columns)
+		samples = utils.wrangle.listify(samples)
 
 		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
@@ -188,8 +187,8 @@ class Dataset(BaseModel):
 
 	def to_numpy(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		columns = utils.listify(columns)
-		samples = utils.listify(samples)
+		columns = utils.wrangle.listify(columns)
+		samples = utils.wrangle.listify(samples)
 
 		if (dataset.dataset_type == 'tabular'):
 			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
@@ -203,7 +202,7 @@ class Dataset(BaseModel):
 
 
 	def to_pillow(id:int, samples:list=None):
-		samples = utils.listify(samples)
+		samples = utils.wrangle.listify(samples)
 		dataset = Dataset.get_by_id(id)
 		if ((dataset.dataset_type == 'tabular') or (dataset.dataset_type == 'text')):
 			raise Exception("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
@@ -218,7 +217,7 @@ class Dataset(BaseModel):
 
 	def to_strings(id:int, samples:list=None):	
 		dataset = Dataset.get_by_id(id)
-		samples = utils.listify(samples)
+		samples = utils.wrangle.listify(samples)
 
 		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'image'):
 			raise Exception("\nYikes - This Dataset class does not have a `to_strings()` method.\n")
@@ -257,7 +256,7 @@ class Dataset(BaseModel):
 			, skip_header_rows:object = 'infer'
 			, ingest:bool = True
 		):
-			column_names = utils.listify(column_names)
+			column_names = utils.wrangle.listify(column_names)
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
 			if (source_file_format not in accepted_formats):
@@ -310,7 +309,7 @@ class Dataset(BaseModel):
 			, dtype:object = None
 			, column_names:list = None
 		):
-			column_names = utils.listify(column_names)
+			column_names = utils.wrangle.listify(column_names)
 
 			if (type(dataframe).__name__ != 'DataFrame'):
 				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
@@ -343,8 +342,8 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, _dataset_index:int = None
 		):
-			column_names = utils.listify(column_names)
-			utils.arr_validate(ndarray)
+			column_names = utils.wrangle.listify(column_names)
+			utils.wrangle.arr_validate(ndarray)
 
 			dimensions = len(ndarray.shape)
 			if (dimensions > 2) or (dimensions < 1):
@@ -375,16 +374,16 @@ class Dataset(BaseModel):
 
 		def to_pandas(id:int, columns:list=None, samples:list=None):
 			file = Dataset.get_main_file(id)#`id` belongs to dataset, not file
-			columns = utils.listify(columns)
-			samples = utils.listify(samples)
+			columns = utils.wrangle.listify(columns)
+			samples = utils.wrangle.listify(samples)
 			df = File.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
 
 		def to_numpy(id:int, columns:list=None, samples:list=None):
 			dataset = Dataset.get_by_id(id)
-			columns = utils.listify(columns)
-			samples = utils.listify(samples)
+			columns = utils.wrangle.listify(columns)
+			samples = utils.wrangle.listify(samples)
 			# This calls the method above. It does not need `.Tabular`
 			df = dataset.to_pandas(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
@@ -439,8 +438,8 @@ class Dataset(BaseModel):
 				elif (_source_path is None):
 					source_path = None
 
-			column_names = utils.listify(column_names)
-			utils.arr_validate(ndarray_3D)
+			column_names = utils.wrangle.listify(column_names)
+			utils.wrangle.arr_validate(ndarray_3D)
 
 			if (ndarray_3D.ndim != 3):
 				raise Exception(dedent(f"""
@@ -485,7 +484,7 @@ class Dataset(BaseModel):
 
 
 		def to_numpy(id:int, columns:list=None, samples:list=None):
-			columns, samples = utils.listify(columns), utils.listify(samples)
+			columns, samples = utils.wrangle.listify(columns), utils.wrangle.listify(samples)
 			dataset = Dataset.get_by_id(id)
 			if (samples is None):
 				files = dataset.files
@@ -504,7 +503,7 @@ class Dataset(BaseModel):
 
 
 		def to_pandas(id:int, columns:list=None, samples:list=None):
-			columns, samples = utils.listify(columns), utils.listify(samples)
+			columns, samples = utils.wrangle.listify(columns), utils.wrangle.listify(samples)
 			dataset = Dataset.get_by_id(id)
 			if (samples is None):
 				files = dataset.files
@@ -550,7 +549,7 @@ class Dataset(BaseModel):
 		):
 			if (name is None): name = folder_path
 			source_path = os.path.abspath(folder_path)
-			file_paths = utils.sorted_file_list(source_path)
+			file_paths = utils.wrangle.sorted_file_list(source_path)
 			file_count = len(file_paths)
 
 			# Validated during `sequences_from_4D`.
@@ -594,7 +593,7 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
-			urls = utils.listify(urls)
+			urls = utils.wrangle.listify(urls)
 			file_count = len(urls)
 
 			# Validated during `sequences_from_4D`.
@@ -702,13 +701,13 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, source_path:str = None
 		):
-			column_names = utils.listify(column_names)
+			column_names = utils.wrangle.listify(column_names)
 			if ((ingest==False) and (isinstance(dtype, dict))):
 				raise Exception("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
 			# Checking that the shape is 4D validates that each internal array is uniformly shaped.
 			if (ndarray_4D.ndim!=4):
 				raise Exception("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`. Tip: shapes of each image array must be the same.\n")
-			utils.arr_validate(ndarray_4D)
+			utils.wrangle.arr_validate(ndarray_4D)
 			
 			if (paths is not None):
 				for i, arr in enumerate(tqdm(
@@ -748,7 +747,7 @@ class Dataset(BaseModel):
 
 
 		def to_numpy(id:int, samples:list=None, columns:list=None):
-			samples, columns = utils.listify(samples), utils.listify(columns)
+			samples, columns = utils.wrangle.listify(samples), utils.wrangle.listify(columns)
 			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
 			if (samples is not None):
 				# ORM was queries were being weird about the self foreign key.
@@ -760,7 +759,7 @@ class Dataset(BaseModel):
 
 
 		def to_pandas(id:int, samples:list=None, columns:list=None):
-			samples, columns = utils.listify(samples), utils.listify(columns)
+			samples, columns = utils.wrangle.listify(samples), utils.wrangle.listify(columns)
 			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
 			if (samples is not None):
 				# ORM was queries were being weird about the self foreign key.
@@ -775,7 +774,7 @@ class Dataset(BaseModel):
 			dataset = Dataset.get_by_id(id)
 			datasets = dataset.datasets
 			if (samples is not None):
-				samples = utils.listify(samples)
+				samples = utils.wrangle.listify(samples)
 				datasets = [d for d in datasets if d.dataset_index in samples]
 			images = [d.to_pillow() for d in datasets]
 			return images
@@ -835,7 +834,7 @@ class Dataset(BaseModel):
 				name = folder_path
 			source_path = os.path.abspath(folder_path)
 			
-			input_files = utils.sorted_file_list(source_path)
+			input_files = utils.wrangle.sorted_file_list(source_path)
 
 			files_data = []
 			for input_file in input_files:
@@ -908,15 +907,15 @@ class File(BaseModel):
 		, skip_header_rows:int = 'infer'
 		, _file_index:int = 0 # Dataset.Sequence overwrites this.
 	):
-		column_names = utils.listify(column_names)
-		utils.df_validate(dataframe, column_names)
+		column_names = utils.wrangle.listify(column_names)
+		utils.wrangle.df_validate(dataframe, column_names)
 
 		# We need this metadata whether ingested or not.
-		dataframe, columns, shape, dtype = utils.df_set_metadata(
+		dataframe, columns, shape, dtype = utils.wrangle.df_set_metadata(
 			dataframe=dataframe, column_names=column_names, dtype=dtype
 		)
 		if (ingest==True):
-			blob = utils.df_to_compressed_parquet_bytes(dataframe)
+			blob = utils.wrangle.df_to_compressed_parquet_bytes(dataframe)
 		elif (ingest==False):
 			blob = None
 
@@ -945,7 +944,7 @@ class File(BaseModel):
 		, _file_index:int = 0
 		, ingest:bool = True
 	):
-		column_names = utils.listify(column_names)
+		column_names = utils.wrangle.listify(column_names)
 		"""
 		Only supporting homogenous arrays because structured arrays are a pain
 		when it comes time to convert them to dataframes. It complained about
@@ -955,7 +954,7 @@ class File(BaseModel):
 		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
 		Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
 		"""
-		utils.arr_validate(ndarray)
+		utils.wrangle.arr_validate(ndarray)
 		"""
 		column_names and dict-based dtype will be handled by our `from_pandas()` method.
 		`pd.DataFrame` method only accepts a single dtype str, or infers if None.
@@ -982,9 +981,9 @@ class File(BaseModel):
 		, skip_header_rows:object = 'infer'
 		, ingest:bool = True
 	):
-		column_names = utils.listify(column_names)
-		df = utils.path_to_df(
-			path = path
+		column_names = utils.wrangle.listify(column_names)
+		df = utils.wrangle.path_to_df(
+			file_path = path
 			, source_file_format = source_file_format
 			, column_names = column_names
 			, skip_header_rows = skip_header_rows
@@ -1010,16 +1009,16 @@ class File(BaseModel):
 		https://stackoverflow.com/questions/64050609/pyarrow-read-parquet-via-column-index-or-order
 		"""
 		file = File.get_by_id(id)
-		columns = utils.listify(columns)
-		samples = utils.listify(samples)
+		columns = utils.wrangle.listify(columns)
+		samples = utils.wrangle.listify(samples)
 		
 		f_dtypes = file.dtypes
 		f_cols = file.columns
 
 		if (file.is_ingested==False):
 			# future: check if `query_fetcher` defined.
-			df = utils.path_to_df(
-				path = file.source_path
+			df = utils.wrangle.path_to_df(
+				file_path = file.source_path
 				, source_file_format = file.file_format
 				, column_names = columns
 				, skip_header_rows = file.skip_header_rows
@@ -1057,8 +1056,8 @@ class File(BaseModel):
 		This is the only place where to_numpy() relies on to_pandas(). 
 		It does so because pandas is good with the parquet and dtypes.
 		"""
-		columns = utils.listify(columns)
-		samples = utils.listify(samples)
+		columns = utils.wrangle.listify(columns)
+		samples = utils.wrangle.listify(samples)
 		file = File.get_by_id(id)
 		f_dataset = file.dataset
 		# Handles when Dataset.Sequence is stored as a single .npy file
@@ -1066,7 +1065,7 @@ class File(BaseModel):
 			# Subsetting a File via `samples` is irrelevant here because the entire File is 1 sample.
 			# Subset the columns:
 			if (columns is not None):
-				col_indices = utils.colIndices_from_colNames(
+				col_indices = utils.wrangle.colIndices_from_colNames(
 					column_names = file.columns
 					, desired_cols = columns
 				)
@@ -1124,7 +1123,7 @@ class Label(BaseModel):
 	
 	def from_dataset(dataset_id:int, columns:list):
 		d = Dataset.get_by_id(dataset_id)
-		columns = utils.listify(columns)
+		columns = utils.wrangle.listify(columns)
 
 		if (d.dataset_type != 'tabular' and d.dataset_type != 'text'):
 			raise Exception(dedent(f"""
@@ -1248,7 +1247,7 @@ class Label(BaseModel):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		samples = utils.listify(samples)
+		samples = utils.wrangle.listify(samples)
 		df = Dataset.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		return df
 
@@ -1257,7 +1256,7 @@ class Label(BaseModel):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		samples = utils.listify(samples)
+		samples = utils.wrangle.listify(samples)
 		arr = Dataset.to_numpy(id=dataset.id, columns=columns, samples=samples)
 		return arr
 
@@ -1317,7 +1316,7 @@ class Label(BaseModel):
 						job=_job, label=_fitted_label
 					)
 
-					label_array = utils.encoder_transform_labels(
+					label_array = utils.encoding.encoder_transform_labels(
 						arr_labels=label_array,
 						fitted_encoders=fitted_encoders, labelcoder=labelcoder
 					)
@@ -1333,7 +1332,7 @@ class Label(BaseModel):
 				if ((_job is None) or (_samples_train is None)):
 					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `labelcoder`")
 
-				fitted_encoders = utils.encoder_fit_labels(
+				fitted_encoders = utils.encoding.encoder_fit_labels(
 					arr_labels=label_array, samples_train=_samples_train,
 					labelcoder=labelcoder
 				)
@@ -1351,7 +1350,7 @@ class Label(BaseModel):
 						if (j.fittedlabelcoders.count()==0):
 							FittedLabelCoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
 
-				label_array = utils.encoder_transform_labels(
+				label_array = utils.encoding.encoder_transform_labels(
 					arr_labels=label_array,
 					fitted_encoders=fitted_encoders, labelcoder=labelcoder
 				)
@@ -1383,8 +1382,8 @@ class Feature(BaseModel):
 	):
 		#As we get further away from the `Dataset.<Types>` they need less isolation.
 		dataset = Dataset.get_by_id(dataset_id)
-		include_columns = utils.listify(include_columns)
-		exclude_columns = utils.listify(exclude_columns)
+		include_columns = utils.wrangle.listify(include_columns)
+		exclude_columns = utils.wrangle.listify(exclude_columns)
 		d_cols = Dataset.get_main_file(dataset_id).columns
 		
 		if ((include_columns is not None) and (exclude_columns is not None)):
@@ -1451,8 +1450,8 @@ class Feature(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None, columns:list=None):
-		samples = utils.listify(samples)
-		columns = utils.listify(columns)
+		samples = utils.wrangle.listify(samples)
+		columns = utils.wrangle.listify(columns)
 		df = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'pandas'
@@ -1463,8 +1462,8 @@ class Feature(BaseModel):
 
 
 	def to_numpy(id:int, samples:list=None, columns:list=None):
-		samples = utils.listify(samples)
-		columns = utils.listify(columns)
+		samples = utils.wrangle.listify(samples)
+		columns = utils.wrangle.listify(columns)
 		arr = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'numpy'
@@ -1481,8 +1480,8 @@ class Feature(BaseModel):
 		, columns:list = None
 	):
 		feature = Feature.get_by_id(id)
-		samples = utils.listify(samples)
-		columns = utils.listify(columns)
+		samples = utils.wrangle.listify(samples)
+		columns = utils.wrangle.listify(columns)
 		f_cols = feature.columns
 
 		if (columns is not None):
@@ -1587,7 +1586,7 @@ class Feature(BaseModel):
 					encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
 						job=_job, feature=_fitted_feature
 					)
-					feature_array = utils.encoderset_transform_features(
+					feature_array = utils.encoding.encoderset_transform_features(
 						arr_features=feature_array,
 						fitted_encoders=fitted_encoders, encoderset=encoderset
 					)
@@ -1604,12 +1603,12 @@ class Feature(BaseModel):
 					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
 
 				# This takes the entire array because it handles all features and splits.
-				fitted_encoders = utils.encoderset_fit_features(
+				fitted_encoders = utils.encoding.encoderset_fit_features(
 					arr_features=feature_array, samples_train=_samples_train,
 					encoderset=encoderset
 				)
 
-				feature_array = utils.encoderset_transform_features(
+				feature_array = utils.encoding.encoderset_transform_features(
 					arr_features=feature_array,
 					fitted_encoders=fitted_encoders, encoderset=encoderset
 				)
@@ -1742,8 +1741,8 @@ class Feature(BaseModel):
 		feature_cols = feature.columns
 		feature_dtypes = feature.get_dtypes()
 
-		dtypes = utils.listify(dtypes)
-		columns = utils.listify(columns)
+		dtypes = utils.wrangle.listify(dtypes)
+		columns = utils.wrangle.listify(columns)
 
 		class_name = existing_preprocs.model.__name__.lower()
 
@@ -2035,7 +2034,7 @@ class Splitset(BaseModel):
 			has_validation = False
 
 		# --- Verify features ---
-		feature_ids = utils.listify(feature_ids)
+		feature_ids = utils.wrangle.listify(feature_ids)
 		feature_lengths = []
 		for f_id in feature_ids:
 			f = Feature.get_by_id(f_id)
@@ -2121,7 +2120,7 @@ class Splitset(BaseModel):
 				if (unsupervised_stratify_col is not None):
 					# Get the column for stratification.
 					column_names = f_dataset.get_main_file().columns
-					col_index = utils.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
+					col_index = utils.wrangle.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
 
 					dimensions = feature_array.ndim
 					if (dimensions==2):
@@ -2162,7 +2161,6 @@ class Splitset(BaseModel):
 			 			raise Exception("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
 					stratify_arr = None#Used in if statements below.
 
-
 			# ------ Stratified vs Unstratified ------		
 			if (stratify_arr is not None):
 				"""
@@ -2171,7 +2169,7 @@ class Splitset(BaseModel):
 				- Don't include the Dataset.Image.feature pixel arrays in stratification.
 				"""
 				# `bin_count` is only returned so that we can persist it.
-				stratifier1, bin_count = utils.stratifier_by_dtype_binCount(
+				stratifier1, bin_count = utils.wrangle.stratifier_by_dtype_binCount(
 					stratify_dtype = stratify_dtype,
 					stratify_arr = stratify_arr,
 					bin_count = bin_count
@@ -2185,7 +2183,7 @@ class Splitset(BaseModel):
 				)
 
 				if (size_validation is not None):
-					stratifier2, bin_count = utils.stratifier_by_dtype_binCount(
+					stratifier2, bin_count = utils.wrangle.stratifier_by_dtype_binCount(
 						stratify_dtype = stratify_dtype,
 						stratify_arr = stratify_train, #This split is different from stratifier1.
 						bin_count = bin_count
@@ -2365,7 +2363,7 @@ class Foldset(BaseModel):
 
 				stratify_col = splitset.unsupervised_stratify_col
 				column_names = feature.dataset.get_main_file().columns
-				col_index = utils.colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
+				col_index = utils.wrangle.colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
 				
 				dimensions = stratify_arr.ndim
 				if (dimensions==2):
@@ -2412,7 +2410,7 @@ class Foldset(BaseModel):
 			if (np.issubdtype(stratify_dtype, np.floating)):
 				if (bin_count is None):
 					bin_count = splitset.bin_count #Inherit. 
-				stratify_arr = utils.values_to_bins(
+				stratify_arr = utils.wrangle.values_to_bins(
 					array_to_bin = stratify_arr
 					, bin_count = bin_count
 				)
@@ -2431,7 +2429,7 @@ class Foldset(BaseModel):
 							This can result in incosistent stratification processes being 
 							used for training samples versus validation and test samples.
 						\n"""))
-					stratify_arr = utils.values_to_bins(
+					stratify_arr = utils.wrangle.values_to_bins(
 						array_to_bin = stratify_arr
 						, bin_count = bin_count
 					)
@@ -2543,7 +2541,7 @@ class LabelInterpolater(BaseModel):
 		, interpolate_kwargs:dict = None
 	):
 		label = Label.get_by_id(label_id)
-		utils.floats_only(label)
+		utils.wrangle.floats_only(label)
 
 		if (interpolate_kwargs is None):
 			interpolate_kwargs = dict(
@@ -2554,12 +2552,12 @@ class LabelInterpolater(BaseModel):
 				, order = 1
 			)
 		elif (interpolate_kwargs is not None):
-			utils.verify_attributes(interpolate_kwargs)
+			utils.wrangle.verify_attributes(interpolate_kwargs)
 
 		# Check that the arguments actually work.
 		try:
 			df = label.to_pandas()
-			utils.run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
+			utils.wrangle.run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
 			raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
 		else:
@@ -2581,14 +2579,14 @@ class LabelInterpolater(BaseModel):
 
 		if ((lp.process_separately==False) or (samples is None)):
 			df_labels = pd.DataFrame(array, columns=label.columns)
-			df_labels = utils.run_interpolate(df_labels, interpolate_kwargs)	
+			df_labels = utils.wrangle.run_interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
 			# Augment our evaluation splits/folds with training data.
 			for split, indices in samples.items():
 				if ('train' in split):
 					array_train = array[indices]
 					df_train = pd.DataFrame(array_train).set_index([indices], drop=True)
-					df_train = utils.run_interpolate(df_train, interpolate_kwargs)
+					df_train = utils.wrangle.run_interpolate(df_train, interpolate_kwargs)
 					df_labels = df_train
 
 			# We need `df_train` from above.
@@ -2597,7 +2595,7 @@ class LabelInterpolater(BaseModel):
 					arr = array[indices]
 					df = pd.DataFrame(arr).set_index([indices], drop=True)					# Does not need to be sorted for interpolate.
 					df = pd.concat([df_train, df])
-					df = utils.run_interpolate(df, interpolate_kwargs)
+					df = utils.wrangle.run_interpolate(df, interpolate_kwargs)
 					# Only keep the indices from the split of interest.
 					df = df.loc[indices]
 					df_labels = pd.concat([df_labels, df])
@@ -2785,10 +2783,10 @@ class FeatureInterpolater(BaseModel):
 				, order = 1
 			)
 		elif (interpolate_kwargs is not None):
-			utils.verify_attributes(interpolate_kwargs)
+			utils.wrangle.verify_attributes(interpolate_kwargs)
 
-		dtypes = utils.listify(dtypes)
-		columns = utils.listify(columns)
+		dtypes = utils.wrangle.listify(dtypes)
+		columns = utils.wrangle.listify(columns)
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (not np.issubdtype(typ, np.floating)):
@@ -2840,7 +2838,7 @@ class FeatureInterpolater(BaseModel):
 			# Single dataframe.
 			if ((fp.process_separately==False) or (samples is None)):
 
-				df_interp = utils.run_interpolate(dataframe, interpolate_kwargs)
+				df_interp = utils.wrangle.run_interpolate(dataframe, interpolate_kwargs)
 			
 			elif ((fp.process_separately==True) and (samples is not None)):
 				df_interp = None
@@ -2848,7 +2846,7 @@ class FeatureInterpolater(BaseModel):
 					# Fetch those samples.
 					df = dataframe.loc[indices]
 
-					df = utils.run_interpolate(df, interpolate_kwargs)
+					df = utils.wrangle.run_interpolate(df, interpolate_kwargs)
 					# Stack them up.
 					if (df_interp is None):
 						df_interp = df
@@ -2858,7 +2856,7 @@ class FeatureInterpolater(BaseModel):
 			else:
 				raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
 		elif ((dataset_type=='sequence') or (dataset_type=='image')):
-			df_interp = utils.run_interpolate(dataframe, interpolate_kwargs)
+			df_interp = utils.wrangle.run_interpolate(dataframe, interpolate_kwargs)
 		else:
 			raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with dataset_type provided.\n")
 		# Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
@@ -2917,14 +2915,14 @@ class LabelCoder(BaseModel):
 	def from_label(label_id:int, sklearn_preprocess:object):
 		label = Label.get_by_id(label_id)
 
-		sklearn_preprocess, only_fit_train, is_categorical = utils.check_sklearn_attributes(
+		sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
 			sklearn_preprocess, is_label=True
 		)
 
 		samples_to_encode = label.to_numpy()
 		# 2. Test Fit.
 		try:
-			fitted_encoders, encoding_dimension = utils.fit_dynamicDimensions(
+			fitted_encoders, encoding_dimension = utils.encoding.fit_dynamicDimensions(
 				sklearn_preprocess = sklearn_preprocess
 				, samples_to_fit = samples_to_encode
 			)
@@ -2938,7 +2936,7 @@ class LabelCoder(BaseModel):
 			- During `Job.run`, it will touch every split/fold regardless of what it was fit on
 			  so just validate it on whole dataset.
 			"""
-			utils.transform_dynamicDimensions(
+			utils.encoding.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
@@ -3003,7 +3001,7 @@ class FeatureCoder(BaseModel):
 			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
 				raise Exception("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
 		else:
-			sklearn_preprocess, only_fit_train, is_categorical = utils.check_sklearn_attributes(
+			sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
 				sklearn_preprocess, is_label=False
 			)
 
@@ -3048,14 +3046,14 @@ class FeatureCoder(BaseModel):
 			rows_2D = f_shape[0] * f_shape[1] * f_shape[2]
 			samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[3])
 
-		fitted_encoders, encoding_dimension = utils.fit_dynamicDimensions(
+		fitted_encoders, encoding_dimension = utils.encoding.fit_dynamicDimensions(
 			sklearn_preprocess = sklearn_preprocess
 			, samples_to_fit = samples_to_encode
 		)
 
 		# Test transforming the whole dataset using fitted encoder on matching columns.
 		try:
-			utils.transform_dynamicDimensions(
+			utils.encoding.transform_dynamicDimensions(
 				fitted_encoders = fitted_encoders
 				, encoding_dimension = encoding_dimension
 				, samples_to_transform = samples_to_encode
@@ -3178,13 +3176,13 @@ class Algorithm(BaseModel):
 			raise Exception(f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n")
 
 		if (fn_predict is None):
-			fn_predict = utils.select_fn_predict(
+			fn_predict = utils.modeling.select_fn_predict(
 				library=library, analysis_type=analysis_type
 			)
 		if (fn_optimize is None):
-			fn_optimize = utils.select_fn_optimize(library=library)
+			fn_optimize = utils.modeling.select_fn_optimize(library=library)
 		if (fn_lose is None):
-			fn_lose = utils.select_fn_lose(
+			fn_lose = utils.modeling.select_fn_lose(
 				library=library, analysis_type=analysis_type
 			)
 
@@ -3250,7 +3248,7 @@ class Hyperparamset(BaseModel):
 
 		# Make sure they are actually lists.
 		for i, pl in enumerate(params_lists):
-			params_lists[i] = utils.listify(pl)
+			params_lists[i] = utils.wrangle.listify(pl)
 
 		# From multiple lists, come up with every unique combination.
 		params_combos = list(itertools.product(*params_lists))
@@ -3580,7 +3578,7 @@ class Queue(BaseModel):
 			samples = {k: samples[k] for k in ordered_names}
 			# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
 			job = list(queue.jobs)[0]
-			samples, input_shapes = utils.stage_data(
+			samples, input_shapes = utils.wrangle.stage_data(
 				splitset=splitset, job=job
 				, samples=samples, library=library
 				, key_train=key_train
@@ -3651,7 +3649,7 @@ class Queue(BaseModel):
 
 				# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
 				job = list(queue.jobs)[0]
-				samples, input_shapes = utils.stage_data(
+				samples, input_shapes = utils.wrangle.stage_data(
 					splitset=splitset, job=job
 					, samples=samples, library=library
 					, key_train=key_train
@@ -3696,8 +3694,8 @@ class Queue(BaseModel):
 		, ascending:bool=False
 	):
 		queue = Queue.get_by_id(id)
-		selected_metrics = utils.listify(selected_metrics)
-		sort_by = utils.listify(sort_by)
+		selected_metrics = utils.wrangle.listify(selected_metrics)
+		sort_by = utils.wrangle.listify(sort_by)
 		
 		queue_predictions = Prediction.select().join(
 			Predictor).join(Job).where(Job.queue==id
@@ -3770,9 +3768,9 @@ class Queue(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		selected_metrics = utils.listify(selected_metrics)
-		selected_stats = utils.listify(selected_stats)
-		sort_by = utils.listify(sort_by)
+		selected_metrics = utils.wrangle.listify(selected_metrics)
+		selected_stats = utils.wrangle.listify(selected_stats)
+		sort_by = utils.wrangle.listify(sort_by)
 
 		queue_predictions = Prediction.select().join(
 			Predictor).join(Job).where(Job.queue==id
@@ -3860,15 +3858,15 @@ class Queue(BaseModel):
 			if (score_type is None):
 				score_type = "accuracy"
 			else:
-				if (score_type not in utils.metrics_classify_cols):
-					raise Exception(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.metrics_classify}\n")
+				if (score_type not in utils.meter.metrics_classify_cols):
+					raise Exception(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.meter.metrics_classify}\n")
 		elif (analysis_type == 'regression'):
 			if (score_type is None):
 				score_type = "r2"
 			else:
-				if (score_type not in utils.metrics_regress_cols):
-					raise Exception(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metrics_regress}\n")
-		score_display = utils.metrics_all[score_type]
+				if (score_type not in utils.metermetrics_regress_cols):
+					raise Exception(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metermetrics_regress}\n")
+		score_display = utils.meter.metrics_all[score_type]
 
 		if (min_score is None):
 			if (score_type=="r2"):
@@ -4067,12 +4065,12 @@ class Job(BaseModel):
 							OHE = OneHotEncoder(sparse=False)
 							data_labels = OHE.fit_transform(data_labels)
 
-					metrics[split] = utils.split_classification_metrics(
+					metrics[split] = utils.meter.split_classification_metrics(
 						data_labels, preds, probs, analysis_type
 					)
 					metrics[split]['loss'] = float(loss)
 
-					plot_data[split] = utils.split_classification_plots(
+					plot_data[split] = utils.meter.split_classification_plots(
 						data_labels, preds, probs, analysis_type
 					)
 				
@@ -4110,7 +4108,7 @@ class Job(BaseModel):
 						# `preds` object is still numpy.
 
 					# These take numpy inputs.
-					metrics[split] = utils.split_regression_metrics(data_labels, preds)
+					metrics[split] = utils.meter.split_regression_metrics(data_labels, preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
 		
@@ -4229,7 +4227,7 @@ class Job(BaseModel):
 			if ((fitted_encoders is not None) and (hasattr(fitted_encoders, 'inverse_transform'))):
 				for split, data in predictions.items():
 					# OHE is arriving here as ordinal, not OHE.
-					data = utils.if_1d_make_2d(data)
+					data = utils.wrangle.if_1d_make_2d(data)
 					predictions[split] = fitted_encoders.inverse_transform(data)
 			elif((fitted_encoders is not None) and (not hasattr(fitted_encoders, 'inverse_transform'))):
 				print(dedent("""
@@ -4281,7 +4279,7 @@ class Job(BaseModel):
 						data_subset = data[:,:num_matching_columns]
 						
 						# Decode that slice.
-						data_subset = utils.if_1d_make_2d(data_subset)
+						data_subset = utils.wrangle.if_1d_make_2d(data_subset)
 						data_subset = fitted_encoder.inverse_transform(data_subset)
 						# Then concatenate w previously decoded columns.
 						if (i==0):
@@ -4755,7 +4753,7 @@ class Predictor(BaseModel):
 		predictor = Predictor.get_by_id(id)
 		splitset_old = predictor.job.queue.splitset
 
-		utils.schemaNew_matches_schemaOld(splitset_new, splitset_old)
+		utils.wrangle.schemaNew_matches_schemaOld(splitset_new, splitset_old)
 		library = predictor.job.queue.algorithm.library
 
 		featureset_new = splitset_new.get_features()
