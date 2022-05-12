@@ -3864,8 +3864,8 @@ class Queue(BaseModel):
 			if (score_type is None):
 				score_type = "r2"
 			else:
-				if (score_type not in utils.metermetrics_regress_cols):
-					raise Exception(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.metermetrics_regress}\n")
+				if (score_type not in utils.meter.metrics_regress_cols):
+					raise Exception(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.meter.metrics_regress}\n")
 		score_display = utils.meter.metrics_all[score_type]
 
 		if (min_score is None):

@@ -1,6 +1,6 @@
 # Local modules.
 from .. import orm
-from ..utils import metrics_classify, metrics_regress
+from ..utils.meter import metrics_classify, metrics_regress
 # Python modules.
 import io
 from logging import getLogger, ERROR
