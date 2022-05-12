@@ -99,6 +99,9 @@ class Plot(object):
 		for train,val in history_pairs.items():
 			metric_name = sub("_"," ",train[6:])
 			df = dataframe[[train,val]]
+			# The y axis is so variable that we need a range for it
+			vals_all = list(df[train]) + list(df[val])
+			tick_size = abs((max(vals_all) - min(vals_all))/7)
 			fig = px.line(
 				df, title=f"Training History: {metric_name}", line_shape=line_shape
 			)
@@ -112,8 +115,9 @@ class Plot(object):
 				, yaxis = dict(
 					side = "right"
 					, tickmode = 'linear'
-					, tick0 = 0.0
-					, dtick = 0.05
+					#when high loss, can't small fixed dtick. it freezes browser.
+					# `nticks` neither working here nor in `update_yaxes` below
+					, dtick = tick_size
 				)
 				, legend = dict(
 					orientation="h"
