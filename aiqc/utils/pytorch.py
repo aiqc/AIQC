@@ -62,7 +62,7 @@ def drop_invalidBatch(
 	# If there is a problem, then just trim the last split.
 	if (last_batch_size==1):
 		if (allow_singleSample==True):
-			print("\nWarning - The size of the last batch is 1,\n which commonly leads to PyTorch errors.\nTry using `torch_batcher(allow_singleSample=False)\n")
+			print("\nWarning - The size of the last batch is 1,\n which commonly leads to PyTorch errors.\nTry using `torch_batch_samples(allow_singleSample=False)\n")
 		elif (allow_singleSample==False): 
 			batched_data = batched_data[:-1]
 	elif ((enforce_sameSize==True) and (batch_size!=last_batch_size)):
@@ -70,12 +70,19 @@ def drop_invalidBatch(
 	return batched_data
 
 
-def batcher(
-	features:object
-	, labels:object
-	, batch_size = 5
-	, enforce_sameSize:bool=False
-	, allow_singleSample:bool=False
+def shuffle_samples(features:list, labels:list):
+	"""Assumes that the first index represents the batch."""
+	rand_idx = list(range(len(labels)))
+	shuffle(rand_idx)
+
+	features = torch.stack([features[i] for i in rand_idx]).to(torch.float)
+	labels = torch.stack([labels[i] for i in rand_idx]).to(torch.float)
+	return features, labels
+
+
+def batch_samples(
+	features:object, labels:object
+	, batch_size = 5, enforce_sameSize:bool=False, allow_singleSample:bool=False
 ):
 	if (batch_size==1):
 		if (allow_singleSample==False):
@@ -92,8 +99,11 @@ def batcher(
 	return features, labels
 
 
-def shuffler(features:list, labels:list):
-	"""Assumes that the first index represents the batch."""
+def shuffle_batches(features:list, labels:list):
+	"""
+	- Assumes that the first index represents the batch.
+	- Makes sure batches aren't seen in same order every epoch.
+	"""
 	rand_idx = list(range(len(labels)))
 	shuffle(rand_idx)
 	features = [features[i] for i in rand_idx]
@@ -130,7 +140,7 @@ def fit(
 	- It is designed to handle all supervised scenarios.
 	- Have not tested this with self-supervised where 2D+ compared to 2D+
 	"""
-	# Mirrors `tf.keras.model.History.history` object.
+	# Mirrors `tf.keras.model.History.history` schema for use with `Predictor.plot_learning_curve()`
 	history = dict(loss=list(), val_loss=list())
 	metrics_keys = []
 	if (metrics is not None):
@@ -144,9 +154,10 @@ def fit(
 			history[val_name] = list()
 			metrics_keys.append((name, val_name))
 	
+	shuffled_features, shuffled_labels = shuffle_samples(samples_train['features'], samples_train['labels'])
 	## --- Prepare mini batches for analysis ---
-	batched_features, batched_labels = batcher(
-		samples_train['features'], samples_train['labels'],
+	batched_features, batched_labels = batch_samples(
+		shuffled_features, shuffled_labels,
 		batch_size=batch_size, enforce_sameSize=enforce_sameSize, allow_singleSample=allow_singleSample
 	)
 	"""
@@ -161,10 +172,10 @@ def fit(
 	  We could stack 3D+ into 2D, but then we'd have to stack features as well, and that's kind 
 	  of insane because this is just for epoch-level metrics.
 	"""
-	## --- Training loop ---
+	## --- Training Loop ---
 	for epoch in range(epochs):
-		batched_features, batched_labels = shuffler(batched_features, batched_labels)
-		## --- Batch training ---
+		batched_features, batched_labels = shuffle_batches(batched_features, batched_labels)
+		## --- Batch Training ---
 		for i, batch in enumerate(batched_features):
 			# Make raw (unlabeled) predictions.
 			batch_probability = model(batched_features[i])
@@ -181,7 +192,7 @@ def fit(
 			batch_loss.backward()
 			optimizer.step()
 
-		## --- Epoch loss ---
+		## --- Epoch Loss ---
 		# Known exception: multi classify fails on floats
 		train_probability = model(samples_train['features'])
 		train_probability = flatten_uniColumn(train_probability)
@@ -203,7 +214,7 @@ def fit(
 			eval_loss = loser(eval_probability, eval_labels)
 		history['val_loss'].append(float(eval_loss))
 
-		## -Metrics-
+		## --- Epoch Metrics ---
 		# Known exception: binary classify accuracy fails on floats.
 		for i, m in enumerate(metrics):
 			try:
