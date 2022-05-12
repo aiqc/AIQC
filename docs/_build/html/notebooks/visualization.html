@@ -607,8 +607,11 @@ div.rendered_html tbody tr:hover {
 <li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, they go about producing these artifacts differently. For example, ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots. Note that unsupervised/ self-supervised models are also considered a regression.</p></li>
 </ul>
-<p>In order to accomodate the <a class="reference external" href="dashboard.html">dashboards</a>, each of the plots below was given a <code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> argument. When <code class="docutils literal notranslate"><span class="pre">True</span></code>, it performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of plots.</p>
-<p>In order to accomodate the <a class="reference external" href="dashboard.html">dashboards</a>, the following arguments were added: - <code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> - When <code class="docutils literal notranslate"><span class="pre">True</span></code>, it performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of plots. - <code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p>
+<p>In order to accomodate the <a class="reference external" href="dashboard.html">dashboards</a>, the following arguments were added:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> - When <code class="docutils literal notranslate"><span class="pre">True</span></code>, it performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of plots.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p></li>
+</ul>
 <hr class="docutils" />
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly generate a couple examples.</p>
 <div class="nbinput nblast docutils container">
@@ -632,7 +635,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="o">%%capture</span>
-<span class="n">queue_multiclass</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_multiclass&#39;</span><span class="p">)</span>
+<span class="n">queue_multiclass</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">tf_multi_tab</span><span class="o">.</span><span class="n">make_queue</span><span class="p">()</span>
 <span class="n">queue_multiclass</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1031,7 +1034,7 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="o">%%capture</span>
-<span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">make_test_queue</span><span class="p">(</span><span class="s1">&#39;keras_regression&#39;</span><span class="p">)</span>
+<span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">tf_reg_tab</span><span class="o">.</span><span class="n">make_queue</span><span class="p">()</span>
 <span class="n">queue_regression</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>

@@ -238,6 +238,6 @@ def fit(
 				# Multi classification accuracy fails.
 				eval_labels = flip_typ(eval_labels)
 				eval_m = m(eval_probability, eval_labels)
-			metrics_key = metrics_keys[i][0]
+			metrics_key = metrics_keys[i][1]
 			history[metrics_key].append(float(eval_m))
 	return model, history
