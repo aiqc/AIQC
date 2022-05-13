@@ -1,5 +1,6 @@
 from .wrangle import if_1d_make_2d, cols_by_indices, colIndices_from_colNames
-import inspect, warnings
+from inspect import isclass
+from warnings import catch_warnings
 from scipy import sparse
 from textwrap import dedent
 import numpy as np
@@ -11,7 +12,6 @@ categorical_encoders = [
 	'Binarizer', 'LabelBinarizer', 'MultiLabelBinarizer'
 ]
 
-
 # Used by `sklearn.preprocessing.FunctionTransformer` to normalize images.
 def div255(x): return x/255
 def mult255(x): return x*255
@@ -19,7 +19,7 @@ def mult255(x): return x*255
 
 def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 	#This function is used by Featurecoder too, so don't put label-specific things in here.
-	if (inspect.isclass(sklearn_preprocess)):
+	if (isclass(sklearn_preprocess)):
 		raise Exception(dedent("""
 			Yikes - The encoder you provided is a class name, but it should be a class instance.\n
 			Class (incorrect): `OrdinalEncoder`
@@ -195,7 +195,7 @@ def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 		, "numeric array without dimensions both odd and square (e.g. 3x3, 5x5)": ["KernelCenterer"]
 	}
 
-	with warnings.catch_warnings(record=True) as w:
+	with catch_warnings(record=True) as w:
 		try:
 			#`samples_to_fit` is coming in as 2D.
 			# Remember, we are assembling `fitted_encoders` dict, not accesing it.

@@ -2,10 +2,9 @@
 from os import path, listdir
 from fsspec import filesystem
 from natsort import natsorted
-import pandas as pd
 from textwrap import dedent
 import numpy as np
-
+import pandas as pd
 
 
 def listify(supposed_lst:object=None):

@@ -8,22 +8,36 @@ There is a circular depedency between: Model(BaseModel), db.create_tables(Models
 In an attempt to fix this, I was able to refactor the Models into separate files by introducing 
 a new file that to handle db.create_tables(Models). However, when creating/ deleting the db file 
 I couldn't dynamically reload the Models without restarting the kernel and rerunning setup().
-I tried all kinds of importlib.reload(), but decided to move on.
+I tried all kinds of importlib_reload(), but decided to move on.
 
 When it is undertaken to refactor the methods used to create the model classes, read this:
 https://github.com/coleifer/peewee/issues/856
 """
-# Local modules
+# --- Local modules ---
 from .utils.config import app_dir
 from .plots import Plot
 from . import utils
-# External
-# math will not let you import specific modules (ceil, floor, prod)
-import os, sys, io, random, itertools, h5py, gzip, statistics, requests, \
-	validators, math, pprint, datetime, scipy, pickle, importlib
+# --- Python modules ---
+from os import path, remove, makedirs
+from sys import modules
+from io import BytesIO
+from random import randint, sample
+from itertools import product
+from gzip import open as gzopen
+from requests import get as requests_get
+from validators import url as val_url
+from pprint import pformat
+from scipy.stats import mode
+from h5py import File as h5_File
+from pickle import dump, load
+from importlib import reload as importlib_reload
 from textwrap import dedent
 from re import sub
-# External utils.
+# math and statistics will not let you import specific modules (ceil, floor, prod)
+import math
+import statistics
+import datetime as dt
+# --- External utils ---
 from tqdm import tqdm #progress bar.
 from natsort import natsorted #file sorting.
 # ORM.
@@ -39,8 +53,10 @@ from PIL import Image as Imaje
 import sklearn #mandatory to import modules separately.
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 # Deep learning.
-import tensorflow as tf
-import torch
+from tensorflow.keras.models import load_model
+from torch import load as torch_load
+from torch import save as torch_save
+from torch import long, FloatTensor
 
 
 def get_path_db():
@@ -74,7 +90,7 @@ def get_db():
 def create_db():
 	# Future: Could let the user specify their own db name, for import tutorials. Could check if passed as an argument to create_config?
 	db_path = get_path_db()
-	db_exists = os.path.exists(db_path)
+	db_exists = path.exists(db_path)
 	if db_exists:
 		print(f"\n=> Skipping database file creation as a database file already exists at path:\n{db_path}\n")
 		db = get_db()
@@ -83,7 +99,7 @@ def create_db():
 		try:
 			db = get_db()
 			# This `reload` is needed after I refactored Models into orm.py
-			importlib.reload(sys.modules[__name__])
+			importlib_reload(modules[__name__])
 		except:
 			print(
 				f"=> Yikes - failed to create database file at path:\n{db_path}\n\n" \
@@ -123,10 +139,10 @@ def create_db():
 def destroy_db(confirm:bool=False, rebuild:bool=False):
 	if (confirm==True):
 		db_path = get_path_db()
-		db_exists = os.path.exists(db_path)
+		db_exists = path.exists(db_path)
 		if db_exists:
 			try:
-				os.remove(db_path)
+				remove(db_path)
 			except:
 				print(
 					f"=> Yikes - failed to delete database file at path:\n{db_path}\n\n" \
@@ -136,7 +152,7 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
 		else:
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
-		importlib.reload(sys.modules[__name__])
+		importlib_reload(modules[__name__])
 
 		if (rebuild==True):
 			create_db()
@@ -262,12 +278,12 @@ class Dataset(BaseModel):
 			if (source_file_format not in accepted_formats):
 				raise Exception(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
 
-			if (not os.path.exists(file_path)):
-				raise Exception(f"\nYikes - The path you provided does not exist according to `os.path.exists(file_path)`:\n{file_path}\n")
+			if (not path.exists(file_path)):
+				raise Exception(f"\nYikes - The path you provided does not exist according to `path.exists(file_path)`:\n{file_path}\n")
 
-			if (not os.path.isfile(file_path)):
+			if (not path.isfile(file_path)):
 				raise Exception(dedent(
-					f"Yikes - The path you provided is a directory according to `os.path.isfile(file_path)`:" \
+					f"Yikes - The path you provided is a directory according to `path.isfile(file_path)`:" \
 					f"{file_path}" \
 					f"But `dataset_type=='tabular'` only supports a single file, not an entire directory.`"
 				))
@@ -276,7 +292,7 @@ class Dataset(BaseModel):
 			if (name is None):
 				name = file_path
 
-			source_path = os.path.abspath(file_path)
+			source_path = path.abspath(file_path)
 
 			dataset = Dataset.create(
 				dataset_type = Dataset.Tabular.dataset_type
@@ -412,10 +428,10 @@ class Dataset(BaseModel):
 			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
 				if (not isinstance(ndarray3D_or_npyPath, str)):
 					raise Exception("\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n")
-				if (not os.path.exists(ndarray3D_or_npyPath)):
-					raise Exception("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
-				if (not os.path.isfile(ndarray3D_or_npyPath)):
-					raise Exception("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+				if (not path.exists(ndarray3D_or_npyPath)):
+					raise Exception("\nYikes - The path you provided does not exist according to `path.exists(ndarray3D_or_npyPath)`\n")
+				if (not path.isfile(ndarray3D_or_npyPath)):
+					raise Exception("\nYikes - The path you provided is not a file according to `path.isfile(ndarray3D_or_npyPath)`\n")
 				if (_source_path is not None):
 					# Path or url to 3D image.
 					source_path = _source_path
@@ -548,14 +564,14 @@ class Dataset(BaseModel):
 			, column_names:list = None
 		):
 			if (name is None): name = folder_path
-			source_path = os.path.abspath(folder_path)
+			source_path = path.abspath(folder_path)
 			file_paths = utils.wrangle.sorted_file_list(source_path)
 			file_count = len(file_paths)
 
 			# Validated during `sequences_from_4D`.
 			arr_4d = []
-			for path in file_paths:
-				img = Imaje.open(path)
+			for p in file_paths:
+				img = Imaje.open(p)
 				arr = np.array(img)
 				if (arr.ndim==2):
 					arr=np.array([arr])
@@ -599,12 +615,12 @@ class Dataset(BaseModel):
 			# Validated during `sequences_from_4D`.
 			arr_4d = []
 			for url in urls:
-				validation = validators.url(url)
+				validation = val_url(url)
 				if (validation != True): #`== False` doesn't work.
 					raise Exception(f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n")
 
 				img = Imaje.open(
-					requests.get(url, stream=True).raw
+					requests_get(url, stream=True).raw
 				)
 				arr = np.array(img)
 				if (arr.ndim==2):
@@ -647,10 +663,10 @@ class Dataset(BaseModel):
 			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
 				if (not isinstance(ndarray4D_or_npyPath, str)):
 					raise Exception("\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n")
-				if (not os.path.exists(ndarray4D_or_npyPath)):
-					raise Exception("\nYikes - The path you provided does not exist according to `os.path.exists(ndarray3D_or_npyPath)`\n")
-				if (not os.path.isfile(ndarray4D_or_npyPath)):
-					raise Exception("\nYikes - The path you provided is not a file according to `os.path.isfile(ndarray3D_or_npyPath)`\n")
+				if (not path.exists(ndarray4D_or_npyPath)):
+					raise Exception("\nYikes - The path you provided does not exist according to `path.exists(ndarray3D_or_npyPath)`\n")
+				if (not path.isfile(ndarray4D_or_npyPath)):
+					raise Exception("\nYikes - The path you provided is not a file according to `path.isfile(ndarray3D_or_npyPath)`\n")
 				if (not ndarray4D_or_npyPath.lower().endswith('.npy')):
 					raise Exception("\nYikes - Path must end with '.npy' or '.NPY'\n")
 				source_path = ndarray4D_or_npyPath
@@ -832,7 +848,7 @@ class Dataset(BaseModel):
 		def from_folder(folder_path:str, name:str=None):
 			if name is None:
 				name = folder_path
-			source_path = os.path.abspath(folder_path)
+			source_path = path.abspath(folder_path)
 			
 			input_files = utils.wrangle.sorted_file_list(source_path)
 
@@ -1025,7 +1041,7 @@ class File(BaseModel):
 			)
 		elif (file.is_ingested==True):
 			df = pd.read_parquet(
-				io.BytesIO(file.blob)
+				BytesIO(file.blob)
 				, columns=columns
 			)
 
@@ -1077,10 +1093,10 @@ class File(BaseModel):
 				arr = np.load(source_path)
 			else:
 				# Handled by PIL. Check if it is a url or not. 
-				if (validators.url(source_path)):
+				if (val_url(source_path)):
 					arr = np.array(
 						Imaje.open(
-							requests.get(source_path, stream=True).raw
+							requests_get(source_path, stream=True).raw
 					))
 				else:
 					arr = np.array(Imaje.open(source_path))
@@ -1358,7 +1374,7 @@ class Label(BaseModel):
 				pass
 
 		if (_library == 'pytorch'):
-			label_array = torch.FloatTensor(label_array)
+			label_array = FloatTensor(label_array)
 		return label_array
 
 
@@ -1716,13 +1732,13 @@ class Feature(BaseModel):
 
 
 		if (_library == 'pytorch'):
-			feature_array = torch.FloatTensor(feature_array)
+			feature_array = FloatTensor(feature_array)
 
 		if (supervision=='supervised'):
 			return feature_array
 		elif (supervision=='unsupervised'):
 			if (_library == 'pytorch'):
-				label_array = torch.FloatTensor(label_array)
+				label_array = FloatTensor(label_array)
 			return feature_array, label_array
 
 
@@ -1866,7 +1882,7 @@ class Feature(BaseModel):
 			elif (len(leftover_columns) > 0):
 				print(
 					f"=> The remaining column(s) and dtype(s) are available for downstream {class_name}(s):\n" \
-					f"{pprint.pformat(initial_dtypes)}\n"
+					f"{pformat(initial_dtypes)}\n"
 				)
 		return index, matching_columns, leftover_columns, original_filter, initial_dtypes
 
@@ -2151,7 +2167,7 @@ class Splitset(BaseModel):
 						if (np.issubdtype(stratify_dtype, np.number) == True):
 							stratify_arr = np.median(stratify_arr, axis=1)
 						elif (np.issubdtype(stratify_dtype, np.number) == False):
-							stratify_arr = np.array([scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr])
+							stratify_arr = np.array([mode(arr1D)[0][0] for arr1D in stratify_arr])
 						
 						# Now its 1D so reshape to 2D for the rest of the process.
 						stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
@@ -2394,7 +2410,7 @@ class Foldset(BaseModel):
 					if (np.issubdtype(stratify_dtype, np.number) == True):
 						stratify_arr = np.median(stratify_arr, axis=1)
 					elif (np.issubdtype(stratify_dtype, np.number) == False):
-						stratify_arr = np.array([scipy.stats.mode(arr1D)[0][0] for arr1D in stratify_arr])
+						stratify_arr = np.array([mode(arr1D)[0][0] for arr1D in stratify_arr])
 					
 					# Now its 1D so reshape to 2D for the rest of the process.
 					stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
@@ -2453,7 +2469,7 @@ class Foldset(BaseModel):
 
 		new_random = False
 		while new_random == False:
-			random_state = random.randint(0, 4294967295) #2**32 - 1 inclusive
+			random_state = randint(0, 4294967295) #2**32 - 1 inclusive
 			matching_randoms = splitset.foldsets.select().where(Foldset.random_state==random_state)
 			if (matching_randoms.count()==0):
 				new_random = True
@@ -3251,7 +3267,7 @@ class Hyperparamset(BaseModel):
 			params_lists[i] = utils.wrangle.listify(pl)
 
 		# From multiple lists, come up with every unique combination.
-		params_combos = list(itertools.product(*params_lists))
+		params_combos = list(product(*params_lists))
 		hyperparamcombo_count = len(params_combos)
 
 		params_combos_dicts = []
@@ -3268,14 +3284,14 @@ class Hyperparamset(BaseModel):
 				print(f"\nInfo - search_count:<{search_count}> greater than the number of hyperparameter combinations:<{hyperparamcombo_count}>.\nProceeding with all combinations.\n")
 			else:
 				# `sample` handles replacement.
-				params_combos_dicts = random.sample(params_combos_dicts, search_count)
+				params_combos_dicts = sample(params_combos_dicts, search_count)
 				hyperparamcombo_count = len(params_combos_dicts)
 		elif (search_percent is not None):
 			if ((search_percent > 1.0) or (search_percent <= 0.0)):
 				raise Exception(f"\nYikes - search_percent:<{search_percent}> must be between 0.0 and 1.0.\n")
 			else:
 				select_count = math.ceil(hyperparamcombo_count * search_percent)
-				params_combos_dicts = random.sample(params_combos_dicts, select_count)
+				params_combos_dicts = sample(params_combos_dicts, select_count)
 				hyperparamcombo_count = len(params_combos_dicts)
 
 		# Now that we have the metadata about combinations
@@ -3326,7 +3342,6 @@ class Queue(BaseModel):
 	hide_test = BooleanField()
 	permute_count = IntegerField()
 	runs_completed = IntegerField()
-	# aws_uid = CharField(null=True)
 
 	algorithm = ForeignKeyField(Algorithm, backref='queues') 
 	splitset = ForeignKeyField(Splitset, backref='queues')
@@ -3583,8 +3598,8 @@ class Queue(BaseModel):
 				, samples=samples, library=library
 				, key_train=key_train
 			)
-			with gzip.open(cache_path,'wb') as f:
-				pickle.dump(samples,f)
+			with gzopen(cache_path,'wb') as f:
+				dump(samples,f)
 
 			try:
 				for i, rj in enumerate(tqdm(
@@ -3598,21 +3613,21 @@ class Queue(BaseModel):
 					)
 					if (matching_predictor.count()==0):
 						if (i>0):
-							with gzip.open(cache_path,'rb') as f:
-								samples = pickle.load(f)
+							with gzopen(cache_path,'rb') as f:
+								samples = load(f)
 						Job.run(
 							id=rj[1].id, repeat_index=rj[0]
 							, samples=samples, input_shapes=input_shapes
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
-				os.remove(cache_path)
+				remove(cache_path)
 			except (KeyboardInterrupt):
 				# Attempts to prevent irrelevant errors, but sometimes they still slip through.
-				os.remove(cache_path)
+				remove(cache_path)
 				print("\nQueue was gracefully interrupted.\n")
 			except:
 				# Other training related errors.
-				os.remove(cache_path)
+				remove(cache_path)
 				raise
 
 		elif (foldset is not None):
@@ -3655,8 +3670,8 @@ class Queue(BaseModel):
 					, key_train=key_train
 				)
 
-				with gzip.open(cache_path,'wb') as f:
-					pickle.dump(samples,f)
+				with gzopen(cache_path,'wb') as f:
+					dump(samples,f)
 				try:
 					for i, rj in enumerate(tqdm(
 						repeated_jobs
@@ -3670,20 +3685,20 @@ class Queue(BaseModel):
 
 						if (matching_predictor.count()==0):
 							if (i>0):
-								with gzip.open(cache_path,'rb') as f:
-									samples = pickle.load(f)
+								with gzopen(cache_path,'rb') as f:
+									samples = load(f)
 							Job.run(
 								id=rj[1].id, repeat_index=rj[0]
 								, samples=samples, input_shapes=input_shapes
 								, key_train=key_train, key_evaluation=key_evaluation
 							)
-					os.remove(cache_path)
+					remove(cache_path)
 				except (KeyboardInterrupt):
 					# So that we don't get nasty error messages when interrupting a long running loop.
-					os.remove(cache_path)
+					remove(cache_path)
 					print("\nQueue was gracefully interrupted.\n")
 				except:
-					os.remove(cache_path)
+					remove(cache_path)
 					raise
 
 
@@ -3910,53 +3925,6 @@ class Queue(BaseModel):
 				return fig
 
 
-	# def _aws_get_upload_url(id:int):
-	# 	"""
-	# 	- Fetch a temporary, presigned URL that can be used to upload db to S3.
-	# 	"""
-	# 	queue = Queue.get_by_id(id)
-	# 	api_key = _aws_get_api_key()
-		
-	# 	upload_url_endpoint = f"{aws_api_root}queues/upload-url"
-
-	# 	response = requests.get(
-	# 		url = upload_url_endpoint
-	# 		, headers = {"x-api-key":api_key}
-	# 	)
-	# 	status_code = response.status_code
-	# 	if (status_code!=200):
-	# 		raise Exception(f"\n=> Yikes - failed to obtain upload url for AWS S3.\nHTTP Error Code = {status_code}.\n")
-
-	# 	# The uid can be used later for polling.
-	# 	uid = response.json()['uid']
-	# 	queue.aws_uid = uid
-	# 	queue.save()
-	# 	# The upload url is temporary so it doesn't make sense to save it.
-	# 	upload_url = response.json()['upload_url']
-	# 	s3_url = response.json()['s3_url']
-	# 	return upload_url, s3_url
-	
-
-	# def _aws_upload(id:int, presigned_url:str):
-	# 	"""
-	# 	- Fetch a temporary, presigned URL that can be used to upload db to S3.
-	# 	"""
-	# 	queue = Queue.get_by_id(id)
-	# 	uid = queue.uid
-	# 	if (queue.aws_uid is None):
-	# 		raise Exception("\nYikes - This Queue has not been assigned an UID for AWS yet. Run `Queue._aws_get_upload_url()`.\n")
-
-	# 	# Regular utf-8 encoding of sqlite file does not parse. S3 picks up on "type=sqlite3"
-	# 	db_path = aiqc.get_path_db()
-	# 	data = open(db_path, encoding='latin-1').read()
-	# 	response = requests.put(presigned_url, data=data)
-	# 	status_code = response.status_code
-	# 	if (status_code==200):
-	# 		print("\n=> Success - project database was successfully uploaded to AWS S3.\n")
-	# 	else:
-	# 		raise Exception(f"\n=> Yikes - failed upload project databse to AWS S3.\nHTTP Error Code = {status_code}.\n")
-
-
 class Jobset(BaseModel):
 	"""
 	- Used to group cross-fold Jobs.
@@ -4051,13 +4019,13 @@ class Job(BaseModel):
 					if (library == 'keras'):
 						loss = loser(data_labels, probs)
 					elif (library == 'pytorch'):
-						tz_probs = torch.FloatTensor(probs)
+						tz_probs = FloatTensor(probs)
 						if (analysis_type == 'classification_binary'):
 							loss = loser(tz_probs, data_labels)
 							# convert back to numpy for metrics and plots.
 							data_labels = data_labels.detach().numpy()
 						elif (analysis_type == 'classification_multi'):				
-							flat_labels = data_labels.flatten().to(torch.long)
+							flat_labels = data_labels.flatten().to(long)
 							loss = loser(tz_probs, flat_labels)
 							# Convert back to *OHE* numpy for metrics and plots. 
 							# Reassigning so that permutes can use original data.
@@ -4102,7 +4070,7 @@ class Job(BaseModel):
 					if (library == 'keras'):
 						loss = loser(data_labels, preds)
 					elif (library == 'pytorch'):
-						tz_preds = torch.FloatTensor(preds)
+						tz_preds = FloatTensor(preds)
 						loss = loser(tz_preds, data_labels)
 						# After obtaining loss, make labels numpy again for metrics.
 						data_labels = data_labels.detach().numpy()
@@ -4125,7 +4093,7 @@ class Job(BaseModel):
 			feature_importance = {}#['feature_id']['feature_column']
 			if (library == 'pytorch'):
 				if (analysis_type=='classification_multi'):
-					flat_labels = samples[key_train]['labels'].flatten().to(torch.long)
+					flat_labels = samples[key_train]['labels'].flatten().to(long)
 
 			for fi, feature in enumerate(features):
 				if (feature.dataset.dataset_type=='image'):
@@ -4168,7 +4136,7 @@ class Job(BaseModel):
 						subset_shuffled = subset_shuffled.reshape(subset_shape)
 						# Overwrite source feature column with shuffled data. Torch can be accessed via slicing.
 						if (library == 'pytorch'): 
-							subset_shuffled = torch.FloatTensor(subset_shuffled)
+							subset_shuffled = FloatTensor(subset_shuffled)
 						if (len(features)==1):
 							samples[key_train]['features'][col_index] = subset_shuffled
 						else:
@@ -4182,24 +4150,24 @@ class Job(BaseModel):
 								preds_shuffled = fn_predict(model, samples[key_train])
 								loss = loser(samples[key_train]['labels'], preds_shuffled)
 						elif (library == 'pytorch'):
-							feature_data = torch.FloatTensor(feature_data)
+							feature_data = FloatTensor(feature_data)
 							if ("classification" in analysis_type):
 								preds_shuffled, probs_shuffled = fn_predict(model, samples[key_train])						
-								probs_shuffled = torch.FloatTensor(probs_shuffled)
+								probs_shuffled = FloatTensor(probs_shuffled)
 								if (analysis_type == 'classification_binary'):
 									loss = loser(probs_shuffled, samples[key_train]['labels'])
 								elif (analysis_type == 'classification_multi'):
 									loss = loser(probs_shuffled, flat_labels)#defined above
 							elif (analysis_type == 'regression'):
 								preds_shuffled = fn_predict(model, samples[key_train])
-								preds_shuffled = torch.FloatTensor(preds_shuffled)
+								preds_shuffled = FloatTensor(preds_shuffled)
 								loss = loser(preds_shuffled, samples[key_train]['labels'])
 							# Convert tensors back to numpy for permuting again.
 							feature_data = feature_data.detach().numpy()
 						loss = float(loss)
 						permutations_feature.append(loss)
 					if (library == 'pytorch'): 
-						feature_subset = torch.FloatTensor(feature_subset)
+						feature_subset = FloatTensor(feature_subset)
 					# Restore the unshuffled feature column back to source.				
 					if (len(features)==1):
 						samples[key_train]['features'][col_index] = feature_subset
@@ -4406,7 +4374,7 @@ class Job(BaseModel):
 		analysis_type = algorithm.analysis_type
 		library = algorithm.library
 		hyperparamcombo = job.hyperparamcombo
-		time_started = datetime.datetime.now()
+		time_started = dt.datetime.now(dt.timezone.utc)
 
 		if (key_evaluation is not None):
 			samples_eval = samples[key_evaluation]
@@ -4477,7 +4445,7 @@ class Job(BaseModel):
 			# Fetch the bytes ('rb': read binary)
 			with open(temp_file_name, 'rb') as file:
 				model_blob = file.read()
-			os.remove(temp_file_name)
+			remove(temp_file_name)
 
 		elif (library == "pytorch"):
 			model, history = fn_train(
@@ -4494,8 +4462,8 @@ class Job(BaseModel):
 				raise Exception("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
 			# Save the artifacts of the trained model.
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
-			model_blob = io.BytesIO()
-			torch.save(
+			model_blob = BytesIO()
+			torch_save(
 				{
 					'model_state_dict': model.state_dict(),
 					'optimizer_state_dict': optimizer.state_dict()
@@ -4505,7 +4473,7 @@ class Job(BaseModel):
 			model_blob = model_blob.getvalue()
 		
 		# Save everything to Predictor object.
-		time_succeeded = datetime.datetime.now()
+		time_succeeded = dt.datetime.now(dt.timezone.utc)
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job was running elsewhere and finished first.
@@ -4593,9 +4561,9 @@ class Predictor(BaseModel):
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
 			with open(temp_file_name, 'wb') as f:
 				f.write(model_blob)
-			h5 = h5py.File(temp_file_name, 'r')
-			model = tf.keras.models.load_model(h5, compile=True)
-			os.remove(temp_file_name)
+			h5 = h5_File(temp_file_name, 'r')
+			model = load_model(h5, compile=True)
+			remove(temp_file_name)
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
 
@@ -4620,8 +4588,8 @@ class Predictor(BaseModel):
 			
 			optimizer = fn_optimize(model, **hp)
 
-			model_bytes = io.BytesIO(model_blob)
-			checkpoint = torch.load(model_bytes)
+			model_bytes = BytesIO(model_blob)
+			checkpoint = torch_load(model_bytes)
 			# Don't assign them: `model = model.load_state_dict ...`
 			model.load_state_dict(checkpoint['model_state_dict'])
 			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -4635,16 +4603,16 @@ class Predictor(BaseModel):
 		algorithm = predictor.job.queue.algorithm
 		
 		if (file_path is None):
-			dtime = datetime.datetime.now().strftime('%Y%b%d_%H:%M')
+			dtime = dt.datetime.now(dt.timezone.utc).strftime('%Y%b%d_%H:%M')
 			if (algorithm.library == "keras"):
 				ext = '.h5'
 			elif (algorithm.library == 'pytorch'):
 				ext = '.pt'
 			file_path = f"{app_dir}/models/predictor{predictor.id}_model({dtime}){ext}"
 		
-		file_path = os.path.abspath(file_path)
+		file_path = path.abspath(file_path)
 		folder = f"{app_dir}/models"
-		os.makedirs(folder, exist_ok=True)
+		makedirs(folder, exist_ok=True)
 
 		# We already have the bytes of the file we need to write.
 		model_blob = predictor.model_file
@@ -4653,7 +4621,7 @@ class Predictor(BaseModel):
 			f.write(model_blob)
 			f.close()
 
-		os.path.exists(file_path)
+		path.exists(file_path)
 		print(dedent(
 			f"\nModel exported to the following absolute path:" \
 			f"\n{file_path}\n"

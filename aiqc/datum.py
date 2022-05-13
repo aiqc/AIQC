@@ -1,8 +1,3 @@
-import pkg_resources #importlib.resources was not working on Google Collab.
-import pandas as pd
-
-name = "datum"
-
 """
 Datum
 └── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/datasets.html
@@ -10,6 +5,11 @@ Datum
 - Example datasets that are used for both tutorials and tests.
 - Either included in the aiqc package `aiqc/data` or stored remotely `/remote_datum`
 """
+#`importlib.resources` was not working on Google Collab.
+from pkg_resources import resource_filename 
+import pandas as pd
+
+
 def list_datums(format:str=None):
 	"""
 	- Of course, these could be classes, but record format let's us display all of the info in a dataframe.
@@ -189,7 +189,7 @@ def get_path(name:str):
 		full_path = "https://raw.githubusercontent.com/aiqc/aiqc/main/remote_datum/image/liberty_moon/liberty_moon.csv"
 	else:
 		short_path = f"data/{name}"
-		full_path = pkg_resources.resource_filename('aiqc', short_path)
+		full_path = resource_filename('aiqc', short_path)
 	return full_path
 
 

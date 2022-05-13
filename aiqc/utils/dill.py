@@ -7,25 +7,25 @@ Dill-serialized objects are pickleable.
 """
 from io import BytesIO
 from textwrap import dedent
-import dill as dill
+from dill import dump, load, source
 
 
 def serialize(objekt:object):
 	blob = BytesIO()
-	dill.dump(objekt, blob)
+	dump(objekt, blob)
 	blob = blob.getvalue()
 	return blob
 
 
 def deserialize(blob:bytes):
 	objekt = BytesIO(blob)
-	objekt = dill.load(objekt)
+	objekt = load(objekt)
 	return objekt
 
 
 def reveal_code(blob:object, print_it:bool=True):
 	code_str = (
-		dill.source.getsource(
+		source.getsource(
 			deserialize(blob).__code__
 		)
 	)

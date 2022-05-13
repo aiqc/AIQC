@@ -1,5 +1,3 @@
-from .orm import *
-from .utils.wrangle import listify
 """
 High-Level API
 ├── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/api_high_level.html
@@ -9,6 +7,10 @@ These classes really just bundle a bunch of low-level API commands they don't in
 real `Pipeline` objects but rather `splitsets`. They use `__new__` because `__init__` 
 cannot return anything.
 """
+from .orm import *
+from .utils.wrangle import listify
+
+
 class Pipeline:
 	def parse_tabular_input(dataFrame_or_filePath:object, dtype:object=None):
 		"""Create the dataset from either df or file."""
