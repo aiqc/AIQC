@@ -16,38 +16,46 @@
 
 <h1>Technical Overview</h1>
 <p>
-	AIQC is an open source Python package that provides <i>high-level APIs for end-to-end MLOps</i> (dataset registration, preprocessing, experiment tracking, model evaluation, inference, post-processing, etc).
+	<b>What is it?</b> -- AIQC is an open source Python package that provides <i>high-level APIs for end-to-end MLOps</i> (dataset registration, preprocessing, experiment tracking, model evaluation, inference, post-processing, etc) in order to make deep learning more accessible to researchers.
 	<br><br>
-	The backend is a <i>SQLite object-relational model (ORM)</i> for machine learning objects (Dataset, Feature, Label, Splits, Algorithm, Job, etc). The high-level API stacks these building blocks into <i>standardized workflows</i> for various: analyses (classify, regress, generate), data types (Tabular, Sequence, Image), and libraries (TensorFlow, PyTorch). The benefits of this approach are:
+	<b>How does it work?</b> -- The backend is a <i>SQLite object-relational model (ORM)</i> for machine learning objects (Dataset, Feature, Label, Splits, Algorithm, Job, etc). The high-level API stacks these building blocks into <i>standardized workflows</i> for various: analyses (classify, regress, generate), data types (Tabular, Sequence, Image), and libraries (TensorFlow, PyTorch). The benefits of this approach are:
 </p>
 </br>
 <ol>
 	<li>
-		<i>90% reduction in data wrangling</i> via automation of highly conditional and repetitive tasks: e.g. model evaluation, metrics, and charts for every split of every model.
+		⏱️&nbsp;&nbsp;<i>90% reduction in data wrangling</i> via automation of highly conditional and repetitive tasks that vary for each type of dataset and analysis (e.g. model evaluation, metrics, and charts for every split of every model).
 	</li>
+	</br>
 	<li>
-		<i>Reproducibility</i>, not only because the workflow is persisted (e.g. encoder metadata) but also because it provides standardized classes as opposed to open ended scripting (e.g. 'X_train, y_test').
+		💾&nbsp;&nbsp;<i>Reproducibility</i>, not only because the workflow is persisted (e.g. encoder metadata) but also because it provides standardized classes as opposed to open ended scripting (e.g. 'X_train, y_test').
 	</li>
+	</br>
 	<li>
-		<i>No need to install and maintain</i> a database server for experiment tracking. SQLite is just a highly-performant and portable file.
+		🎛️&nbsp;&nbsp;<i>No need to install and maintain</i> application and database servers for experiment tracking. SQLite is just a highly-performant and portable file that is automatically configured by `aiqc.setup()`. AIQC is just a pip-installable Python package that works great in Jupyter, and provides a Dash-Plotly user interface (UI) for a <i>real-time experiment tracking</i>.
 	</li>
 </ol>
 </br>
-<p>
-	Looking Forward -- recently, a <i>Dash-Plotly user interface (UI)</i> was added for a real-time experiment tracking and head-to-head model comparison. In the future, this UI will be expanded to cover the rest of the workflow (e.g. dataset registry, model definition). Right now, AIQC runs on any OS. In the future, it will be able to schedule parallel training of models in the cloud.
-</p>
+<p><b>What's on the roadmap?</b></p>
+<ol>
+	<li>
+		🖥️ &nbsp;&nbsp;Expand the UI (e.g. dataset registration and model design) to make it even more approachable for less technical users.
+	</li>
+	<li>
+	 	☁️&nbsp;&nbsp;Schedule parallel training of models in the cloud.
+	</li>
+</ol>
 
-</br>
-<hr>
+</br></br>
+<h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
 </br></br>
 
-<h2>Features</h2>
+<h2>Key Features</h2>
 <a href="https://aiqc.readthedocs.io/">
 	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/framework_may4.png" width="95%" alt="framework"/>
 </a>
 </br></br></br>
 
-<h3>Experiment Tracker</h3>
+<h2>Experiment Tracker</h2>
 <a href="https://aiqc.readthedocs.io/">
 	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
 </a>
@@ -57,7 +65,7 @@
 <a href="https://aiqc.readthedocs.io/">
 	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/compare_models.gif" width="95%" alt="compare_models"/>
 </a>
-</br></br></br>
+</br></br></br></br>
 
 
 # Install
