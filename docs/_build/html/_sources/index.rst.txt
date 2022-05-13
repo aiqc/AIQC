@@ -4,8 +4,8 @@
   :hidden:
 
   pages/gallery
-  notebooks/datasets
   notebooks/installation
+  notebooks/dashboard
 
 
 .. toctree::
@@ -13,11 +13,11 @@
   :caption: Documentation
   :hidden:
 
-  notebooks/dashboard
   notebooks/visualization
   notebooks/api_high_level
   notebooks/api_low_level
   notebooks/inference
+  notebooks/datasets
 
 
 .. toctree::
