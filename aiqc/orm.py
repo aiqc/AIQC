@@ -2,16 +2,19 @@
 Low-Level API
 └── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/api_low_level.html
 
-This is an Object-Relational Model (ORM) for the database that keeps track of the workflow.
+This is an Object-Relational Model (ORM) for the SQLite database that keeps track of the workflow.
+It acts like an persistent, object-oriented API for machine learning.
 
-There is a circular depedency between: Model(BaseModel), db.create_tables(Models), BaseModel(db).
-In an attempt to fix this, I was able to refactor the Models into separate files by introducing 
-a new file that to handle db.create_tables(Models). However, when creating/ deleting the db file 
-I couldn't dynamically reload the Models without restarting the kernel and rerunning setup().
-I tried all kinds of importlib_reload(), but decided to move on.
+There is a circular depedency between: 
+1: Model(BaseModel)
+2: db.create_tables(Models)
+3: BaseModel(db).
 
-When it is undertaken to refactor the methods used to create the model classes, read this:
-https://github.com/coleifer/peewee/issues/856
+	In an attempt to fix this, I split db.create_tables(Models) into a separate file, which allowed me 
+	to put the Models in separate files. However, this introduced a problem where the Models couldn't 
+	be reloaded without restarting the kernel and rerunning setup(), which isn't very user-friendly.
+	I tried all kinds of importlib.reload() to fix this new problem, but decided to move on.
+	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
 from .utils.config import app_dir
