@@ -1,10 +1,10 @@
-from .config import create_folder, create_config
+from .utils.config import create_folder, create_config
 from .orm import create_db
 
 name = "aiqc"
 
 def setup():
+	"""Creates the app/db files in appdirs"""
 	create_folder()
 	create_config()
-	# comes from orm
 	create_db()

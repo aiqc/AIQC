@@ -14,7 +14,7 @@ When it is undertaken to refactor the methods used to create the model classes, 
 https://github.com/coleifer/peewee/issues/856
 """
 # Local modules
-from .config import app_dir
+from .utils.config import app_dir
 from .plots import Plot
 from . import utils
 # External
@@ -44,7 +44,7 @@ import torch
 
 
 def get_path_db():
-	from .config import get_config
+	from .utils.config import get_config
 	aiqc_config = get_config()
 	if (aiqc_config is None):
 		pass# get_config() will print a null condition.
