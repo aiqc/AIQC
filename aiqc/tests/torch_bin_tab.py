@@ -6,7 +6,7 @@ from ..orm import *
 # External modules
 import torch
 import torch.nn as nn
-import torchmetrics
+import torchmetrics as tm
 from sklearn.preprocessing import PowerTransformer, LabelBinarizer
 
 
@@ -35,7 +35,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=hp['epoch_count'], batch_size=10,
-		metrics=[torchmetrics.Accuracy(),torchmetrics.F1Score()]
+		metrics=[tm.Accuracy(),tm.F1Score()]
 	)
 
 

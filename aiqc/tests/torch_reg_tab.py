@@ -6,7 +6,7 @@ from ..orm import *
 # External modules
 import torch
 import torch.nn as nn
-import torchmetrics
+import torchmetrics as tm
 from sklearn.preprocessing import PowerTransformer, MinMaxScaler, OrdinalEncoder
 
 
@@ -41,7 +41,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=10, batch_size=5,
-		metrics=[torchmetrics.MeanSquaredError(),torchmetrics.R2Score()]
+		metrics=[tm.MeanSquaredError(),tm.R2Score(), tm.ExplainedVariance()]
 	)
 
 
