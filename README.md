@@ -18,7 +18,7 @@
 <p>
 	<b>What is it?</b> -- AIQC is an open source Python package that provides <i>high-level APIs for end-to-end MLOps</i> (dataset registration, preprocessing, experiment tracking, model evaluation, inference, post-processing, etc) in order to make deep learning more accessible to researchers.
 	<br><br>
-	<b>How does it work?</b> -- The backend is a <i>SQLite object-relational model (ORM)</i> for machine learning objects (Dataset, Feature, Label, Splits, Algorithm, Job, etc). The high-level API stacks these building blocks into <i>standardized workflows</i> for various: analyses (classify, regress, generate), data types (Tabular, Sequence, Image), and libraries (TensorFlow, PyTorch). The benefits of this approach are:
+	<b>How does it work?</b> -- The backend is a <i>SQLite object-relational model (ORM)</i> for machine learning objects (Dataset, Feature, Label, Splits, Algorithm, Job, etc). The high-level API stacks these building blocks into <i>standardized workflows</i> for various: analyses (classify, regress, generate), data types (tabular, sequence, image), and libraries (TensorFlow, PyTorch). The benefits of this approach are:
 </p>
 </br>
 <ol>
@@ -27,11 +27,11 @@
 	</li>
 	</br>
 	<li>
-		💾&nbsp;&nbsp;<i>Reproducibility</i>, not only because the workflow is persisted (e.g. encoder metadata) but also because it provides standardized classes as opposed to open ended scripting (e.g. 'X_train, y_test').
+		💾&nbsp;&nbsp;<i>Reproducibility</i>, not only because the workflow is persisted (e.g. encoder metadata) but also because it provides standardized classes as opposed to open-ended scripting (e.g. 'X_train, y_test').
 	</li>
 	</br>
 	<li>
-		🎛️&nbsp;&nbsp;<i>No need to install and maintain</i> application and database servers for experiment tracking. SQLite is just a highly-performant and portable file that is automatically configured by `aiqc.setup()`. AIQC is just a pip-installable Python package that works great in Jupyter, and provides a Dash-Plotly user interface (UI) for a <i>real-time experiment tracking</i>.
+		🎛️&nbsp;&nbsp;<i>No need to install and maintain</i> application and database servers for experiment tracking. SQLite is just a highly-performant and portable file that is automatically configured by `aiqc.setup()`. AIQC is just a pip-installable Python package that works great in Jupyter (or any IDE/shell), and provides a Dash-Plotly user interface (UI) for a <i>real-time experiment tracking</i>.
 	</li>
 </ol>
 </br>
