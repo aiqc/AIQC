@@ -4,13 +4,12 @@ from .. import datum
 from ..utils.pytorch import fit
 from ..orm import *
 # External modules
-import torch
 import torch.nn as nn
-import torchmetrics
+import torchmetrics as tm
 
 
 def fn_build(features_shape, label_shape, **hp):
-	model = torch.nn.Sequential(
+	model = nn.Sequential(
 		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
 		nn.Conv1d(
 			in_channels=features_shape[0]#160 #running with `in_channels` as the width of the image. which is index[1], but only when batched?
@@ -47,7 +46,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=10, batch_size=5,
-		metrics=[torchmetrics.Accuracy(),torchmetrics.F1Score()]
+		metrics=[tm.Accuracy(),tm.F1Score()]
 	)
 
 

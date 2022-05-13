@@ -4,14 +4,13 @@ from .. import datum
 from ..utils.pytorch import fit
 from ..orm import *
 # External modules
-import torch
 import torch.nn as nn
 import torchmetrics as tm
 from sklearn.preprocessing import PowerTransformer, LabelBinarizer
 
 
 def fn_build(features_shape, label_shape, **hp):
-	model = torch.nn.Sequential(
+	model = nn.Sequential(
 		nn.Linear(features_shape[0], 12),
 		nn.BatchNorm1d(12,12),
 		nn.ReLU(),

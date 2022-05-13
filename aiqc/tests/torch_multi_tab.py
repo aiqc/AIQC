@@ -4,14 +4,13 @@ from .. import datum
 from ..utils.pytorch import fit
 from ..orm import *
 # External modules
-import torch
 import torch.nn as nn
 import torchmetrics as tm
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 
 
 def fn_build(features_shape, num_classes, **hp):
-	model = torch.nn.Sequential(
+	model = nn.Sequential(
 		nn.Linear(features_shape[0], 12),
 		nn.BatchNorm1d(12,12),
 		nn.ReLU(),
@@ -33,7 +32,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 		model, loser, optimizer, 
 		samples_train, samples_evaluate,
 		epochs=10, batch_size=hp['batch_size'],  
-		metrics=[tm.Accuracy(), tm.F1Score())]
+		metrics=[tm.Accuracy(), tm.F1Score()]
 	)
 
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
