@@ -39,7 +39,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "import aiqc"
+    "from aiqc import orm"
    ]
   },
   {
@@ -82,7 +82,7 @@
    ],
    "source": [
     "folder_path = 'remote_datum/image/liberty_moon/images'\n",
-    "image_dataset = aiqc.Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')"
+    "image_dataset = orm.Dataset.Image.from_folder_pillow(folder_path=folder_path, ingest=False, dtype='float64')"
    ]
   },
   {
@@ -196,7 +196,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "splitset = aiqc.Splitset.make(\n",
+    "splitset = orm.Splitset.make(\n",
     "    feature_ids = feature.id\n",
     "    , size_test = 0.1\n",
     "    , size_validation = 0.20\n",
@@ -300,7 +300,7 @@
    },
    "outputs": [],
    "source": [
-    "algorithm = aiqc.Algorithm.make(\n",
+    "algorithm = orm.Algorithm.make(\n",
     "    library = \"keras\"\n",
     "    , analysis_type = \"regression\"\n",
     "    , fn_build = fn_build\n",

@@ -601,8 +601,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span>
 </pre></div>
 </div>
 </div>
@@ -841,7 +840,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span>
     <span class="c1"># --- Label preprocessing ---</span>
     <span class="n">label_df_or_path</span> <span class="o">=</span> <span class="n">label_df</span>
     <span class="p">,</span> <span class="n">label_dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -907,9 +906,8 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">import</span> <span class="nn">torchmetrics</span>
+<span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torchmetrics</span> <span class="k">as</span> <span class="nn">tm</span>
 <span class="kn">from</span> <span class="nn">aiqc.utils.pytorch</span> <span class="kn">import</span> <span class="n">fit</span>
 </pre></div>
 </div>
@@ -952,7 +950,7 @@ No more FeatureCoders can be added to this Encoderset.
         <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
         <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span>
         <span class="n">epochs</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span>
-        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">torchmetrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">torchmetrics</span><span class="o">.</span><span class="n">F1Score</span><span class="p">()]</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tm</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">tm</span><span class="o">.</span><span class="n">F1Score</span><span class="p">()]</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -975,7 +973,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>

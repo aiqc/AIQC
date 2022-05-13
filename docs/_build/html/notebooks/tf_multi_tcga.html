@@ -610,7 +610,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span>
 </pre></div>
 </div>
 </div>
@@ -636,7 +636,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
     <span class="n">df_or_path</span> <span class="o">=</span> <span class="s2">&quot;/Users/layne/desktop/TCGA/TCGA_expression.parquet&quot;</span>
 
@@ -745,7 +745,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span>             <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span>     <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
@@ -796,8 +796,17 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Predictor</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="nb">id</span> <span class="o">=</span> <span class="mi">671</span>
-<span class="n">predictor</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">orm</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 <span class="n">prediction</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>

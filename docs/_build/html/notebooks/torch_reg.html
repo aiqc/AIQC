@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/torch_reg.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Predicting House Prices Using Municipal Data. houses[2]: import aiqc from aiqc import datum Example Data: This dataset is comprised of: Features= municipal (crime, tax rate, pollution, education) d..." />
+  <meta property="og:description" content="Predicting House Prices Using Municipal Data. houses[2]: from aiqc import mlops, datum Example Data: This dataset is comprised of: Features= municipal (crime, tax rate, pollution, education) data a..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
@@ -599,8 +599,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">aiqc</span>
-<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span>
 </pre></div>
 </div>
 </div>
@@ -773,7 +772,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
+<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
     <span class="c1"># --- Data source ---</span>
     <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
     <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -837,10 +836,9 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
-<span class="kn">import</span> <span class="nn">torchmetrics</span>
+<span class="kn">import</span> <span class="nn">torchmetrics</span> <span class="k">as</span> <span class="nn">tm</span>
 <span class="kn">from</span> <span class="nn">aiqc.utils.pytorch</span> <span class="kn">import</span> <span class="n">fit</span>
 </pre></div>
 </div>
@@ -881,7 +879,7 @@ No more FeatureCoders can be added to this Encoderset.
         <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
         <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span>
         <span class="n">epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">torchmetrics</span><span class="o">.</span><span class="n">MeanSquaredError</span><span class="p">(),</span> <span class="n">torchmetrics</span><span class="o">.</span><span class="n">R2Score</span><span class="p">()]</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tm</span><span class="o">.</span><span class="n">MeanSquaredError</span><span class="p">(),</span> <span class="n">tm</span><span class="o">.</span><span class="n">R2Score</span><span class="p">()]</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -917,7 +915,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
     <span class="c1"># --- Analysis type ---</span>
     <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
     <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>

@@ -27,8 +27,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "import aiqc\n",
-    "from aiqc import datum"
+    "from aiqc import mlops, datum"
    ]
   },
   {
@@ -95,7 +94,7 @@
     }
    ],
    "source": [
-    "img_splitset = aiqc.Pipeline.Image(\n",
+    "img_splitset = mlops.Pipeline.Image(\n",
     "    # --- Label preprocessing ---\n",
     "    label_df_or_path = datum.to_pandas('brain_tumor.csv')\n",
     "    , label_dtype = None\n",
@@ -414,7 +413,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "queue = aiqc.Experiment(\n",
+    "queue = mlops.Experiment(\n",
     "    # --- Analysis type ---\n",
     "    library = \"keras\"\n",
     "    , analysis_type = \"classification_binary\"\n",
