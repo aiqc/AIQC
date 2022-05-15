@@ -2428,6 +2428,27 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 </section>
+<section id="Level-of-training-loop-involvement">
+<h5>Level of training loop involvement<a class="headerlink" href="#Level-of-training-loop-involvement" title="Permalink to this headline"></a></h5>
+<ul class="simple">
+<li><p>TensorFlow: either write a custom loop or use Keras.</p></li>
+<li><p>PyTorch: either write a custom loop or use AIQC’s <code class="docutils literal notranslate"><span class="pre">utils.pytorch.fit</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span><span class="nb">object</span><span class="p">,</span> <span class="n">loser</span><span class="p">:</span><span class="nb">object</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span><span class="nb">object</span><span class="p">,</span>
+    <span class="n">samples_train</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">enforce_sameSize</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_singleSample</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enforce_sameSize:bool</span></code> removes the last batch if it is a different size</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">allow_singleSample:bool</span></code> errors if a batch only contains 1 sample, which often leads to layer errors during training</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics:list</span></code> instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes</p></li>
+</ul>
+</section>
 <section id="Customizable-history">
 <h5>Customizable history<a class="headerlink" href="#Customizable-history" title="Permalink to this headline"></a></h5>
 <p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="visualization.html">visualization</a> section.</p>

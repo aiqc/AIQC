@@ -3031,6 +3031,45 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "##### Level of training loop involvement"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* TensorFlow: either write a custom loop or use Keras.\n",
+    "* PyTorch: either write a custom loop or use AIQC's `utils.pytorch.fit`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```python\n",
+    "model, history = fit(\n",
+    "    model:object, loser:object, optimizer:object,  \n",
+    "    samples_train:dict, samples_evaluate:dict,\n",
+    "    epochs:int=30, batch_size:int=5, \n",
+    "    enforce_sameSize:bool=True, allow_singleSample:bool=False,  \n",
+    "    metrics:list=None\n",
+    ")\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- `enforce_sameSize:bool` removes the last batch if it is a different size\n",
+    "- `allow_singleSample:bool` errors if a batch only contains 1 sample, which often leads to layer errors during training\n",
+    "- `metrics:list` instantiated `torchmetrics` classes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "##### Customizable history"
    ]
   },
