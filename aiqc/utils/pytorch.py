@@ -1,3 +1,4 @@
+from xmlrpc.client import boolean
 import torch
 from random import shuffle
 import numpy as np
@@ -132,7 +133,8 @@ def float_to_int(tzr:object):
 def fit(
 	model:object, loser:object, optimizer:object,  
 	samples_train:dict, samples_evaluate:dict,
-	epochs:int=30, batch_size:int=5, enforce_sameSize=True, allow_singleSample=False,  
+	epochs:int=30, batch_size:int=5, 
+	enforce_sameSize:bool=True, allow_singleSample:bool=False,  
 	metrics:list=None
 ):
 	"""

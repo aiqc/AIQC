@@ -14,6 +14,7 @@
   :hidden:
 
   notebooks/visualization
+  notebooks/query_meta
   notebooks/api_high_level
   notebooks/api_low_level
   notebooks/inference

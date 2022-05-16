@@ -28,7 +28,7 @@ def reveal_code(blob:object, print_it:bool=True):
 		source.getsource(
 			deserialize(blob).__code__
 		)
-	)
+	)[0]
 	if (print_it == True):
 		print(dedent(code_str))
 	return code_str
