@@ -23,12 +23,8 @@ def deserialize(blob:bytes):
 	return objekt
 
 
-def reveal_code(blob:object, print_it:bool=True):
-	code_str = (
-		source.getsource(
-			deserialize(blob).__code__
-		)
-	)[0]
-	if (print_it == True):
-		print(dedent(code_str))
+def reveal_code(blob:object):
+	code_str = source.getsource(
+		deserialize(blob).__code__
+	)
 	return code_str

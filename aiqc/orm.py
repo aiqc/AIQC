@@ -3230,6 +3230,20 @@ class Algorithm(BaseModel):
 		return algorithm
 
 
+	def get_code(id:int):
+		alg = Algorithm.get_by_id(id)
+		funcs = dict(
+			fn_build 	  = utils.dill.reveal_code(alg.fn_build)
+			, fn_lose 	  = utils.dill.reveal_code(alg.fn_lose)
+			, fn_optimize = utils.dill.reveal_code(alg.fn_optimize)
+			, fn_train 	  = utils.dill.reveal_code(alg.fn_train)
+			, fn_predict  = utils.dill.reveal_code(alg.fn_predict)
+		)
+		return funcs
+
+
+
+
 class Hyperparamset(BaseModel):
 	"""
 	- Not glomming this together with Algorithm and Preprocess because you can keep the Algorithm the same,
