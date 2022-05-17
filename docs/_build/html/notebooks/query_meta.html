@@ -123,16 +123,16 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Query the Metastore</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Inspecting-the-Modeling-Process">Inspecting the Modeling Process</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#How-well-did-the-models-in-the-Queue-perform?">How well did the models in the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> perform?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#🧪-Inspecting-the-Modeling-Process">🧪 Inspecting the Modeling Process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#How-well-did-the-models-perform?">How well did the models perform?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Running-a-Job-produces-a-model,-which-is-saved-in-a-Predictor-object">Running a <code class="docutils literal notranslate"><span class="pre">Job</span></code> produces a model, which is saved in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#How-well-did-this-model-learn?">How well did this model learn?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#How-well-did-this-model-perform?">How well did this model perform?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#How-well-did-this-particular-model-learn?">How well did this particular model learn?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#How-well-did-this-particular-model-perform?">How well did this particular model perform?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-Algorithm-was-trained?">What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was trained?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#What-hyperparameter-space-was-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameter</span></code> space was tested?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#What-hyperparameters-were-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> were tested?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Inspecting-the-Data">Inspecting the Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#💾-Inspecting-the-Data">💾 Inspecting the Data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#What-samples-were-fed-to-the-algorithm?">What samples were fed to the algorithm?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-Features-were-used-to-train-the-model?">What <code class="docutils literal notranslate"><span class="pre">Features</span></code> were used to train the model?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-were-the-Labels?">What were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code>?</a></li>
@@ -615,7 +615,7 @@ div.rendered_html tbody tr:hover {
 <section id="Query-the-Metastore">
 <h1>Query the Metastore<a class="headerlink" href="#Query-the-Metastore" title="Permalink to this headline"></a></h1>
 <img alt="query" src="../_images/query.jpg" />
-<p>AIQC uses SQLite under the hood as a machine learning metastore. It persists critical information at every step of the workflow in order to help practitioners:</p>
+<p>AIQC uses SQLite under the hood as a machine learning <em>metastore</em>. It persists critical information at every step of the workflow in order to help practitioners:</p>
 <ul class="simple">
 <li><p>Interpret the performance of models</p></li>
 <li><p>Reproduce experiments</p></li>
@@ -626,7 +626,7 @@ div.rendered_html tbody tr:hover {
 <div><p>Each object in the <a class="reference external" href="api_low_level.html">Low-Level API</a> (e.g. <code class="docutils literal notranslate"><span class="pre">Job</span></code>, <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>, and many more) is a relational table in a local SQLite file. The Low-Level API serves as an object-relational model (ORM) to easily traverse and inspect that metastore as Python objects. We’ll only scratch the surface of the Low-Level API here.</p>
 </div></blockquote>
 <hr class="docutils" />
-<p>Let’s rapidly create a trained queue of models so that we have some information to work with. We’ll use one of AIQC’s tests for the sake of brevity.</p>
+<p>Let’s rapidly create a pre-trained queue of models so that we have some information to work with. We’ll use one of AIQC’s tests for the sake of brevity.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[210]:
 </pre></div>
@@ -647,10 +647,10 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <hr class="docutils" />
-<section id="Inspecting-the-Modeling-Process">
-<h2>Inspecting the Modeling Process<a class="headerlink" href="#Inspecting-the-Modeling-Process" title="Permalink to this headline"></a></h2>
-<section id="How-well-did-the-models-in-the-Queue-perform?">
-<h3>How well did the models in the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> perform?<a class="headerlink" href="#How-well-did-the-models-in-the-Queue-perform?" title="Permalink to this headline"></a></h3>
+<section id="🧪-Inspecting-the-Modeling-Process">
+<h2>🧪 Inspecting the Modeling Process<a class="headerlink" href="#🧪-Inspecting-the-Modeling-Process" title="Permalink to this headline"></a></h2>
+<section id="How-well-did-the-models-perform?">
+<h3>How well did the models perform?<a class="headerlink" href="#How-well-did-the-models-perform?" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -1107,7 +1107,6 @@ div.rendered_html tbody tr:hover {
 &lt;keras.engine.sequential.Sequential at 0x191368e90&gt;
 </pre></div></div>
 </div>
-<p>The user-defined training metrics</p>
 <p>The hyperparameters that were fed to this specific job</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[57]:
@@ -1171,8 +1170,9 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 </section>
-<section id="How-well-did-this-model-learn?">
-<h3>How well did this model learn?<a class="headerlink" href="#How-well-did-this-model-learn?" title="Permalink to this headline"></a></h3>
+<section id="How-well-did-this-particular-model-learn?">
+<h3>How well did this particular model learn?<a class="headerlink" href="#How-well-did-this-particular-model-learn?" title="Permalink to this headline"></a></h3>
+<p>The user-defined, per-epoch training metrics</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -1183,7 +1183,6 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <img alt="Classify Learn" src="../_images/classify_learn.png" />
-<p>User-defined history metrics</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
 </pre></div>
@@ -1241,8 +1240,8 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
 </div>
 <img alt="Classify Features" src="../_images/classify_features.png" />
 </section>
-<section id="How-well-did-this-model-perform?">
-<h3>How well did this model perform?<a class="headerlink" href="#How-well-did-this-model-perform?" title="Permalink to this headline"></a></h3>
+<section id="How-well-did-this-particular-model-perform?">
+<h3>How well did this particular model perform?<a class="headerlink" href="#How-well-did-this-particular-model-perform?" title="Permalink to this headline"></a></h3>
 <p>View the decoded predictions</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
@@ -1438,8 +1437,8 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 </div>
 </div>
 </section>
-<section id="What-hyperparameter-space-was-tested?">
-<h3>What <code class="docutils literal notranslate"><span class="pre">hyperparameter</span></code> space was tested?<a class="headerlink" href="#What-hyperparameter-space-was-tested?" title="Permalink to this headline"></a></h3>
+<section id="What-hyperparameters-were-tested?">
+<h3>What <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> were tested?<a class="headerlink" href="#What-hyperparameters-were-tested?" title="Permalink to this headline"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[87]:
 </pre></div>
@@ -1464,8 +1463,8 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 <hr class="docutils" />
 </section>
 </section>
-<section id="Inspecting-the-Data">
-<h2>Inspecting the Data<a class="headerlink" href="#Inspecting-the-Data" title="Permalink to this headline"></a></h2>
+<section id="💾-Inspecting-the-Data">
+<h2>💾 Inspecting the Data<a class="headerlink" href="#💾-Inspecting-the-Data" title="Permalink to this headline"></a></h2>
 <section id="What-samples-were-fed-to-the-algorithm?">
 <h3>What samples were fed to the algorithm?<a class="headerlink" href="#What-samples-were-fed-to-the-algorithm?" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
