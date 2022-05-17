@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/query_meta.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="query AIQC uses SQLite under the hood as a machine learning metastore. It persists critical information at every step of the workflow that helps practitioners: Interpret the performance of models, ..." />
+  <meta property="og:description" content="query AIQC uses SQLite under the hood as a machine learning metastore. It persists critical information at every step of the workflow in order to help practitioners: Interpret the performance of mo..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
@@ -125,15 +125,15 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Query the Metastore</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Inspecting-the-Modeling-Process">Inspecting the Modeling Process</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#How-well-did-the-models-in-the-Queue-perform?">How well did the models in the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#What-training-Jobs-belong-to-the-Queue?">What training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> belong to the <code class="docutils literal notranslate"><span class="pre">Queue</span></code>?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#A-Job-stores-information-about-its-trained-model-in-a-Predictor">A <code class="docutils literal notranslate"><span class="pre">Job</span></code> stores information about its trained model in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#How-did-this-model-perform?">How did this model perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#What-Algorithm-was-the-Queue-training?">What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> training?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Running-a-Job-produces-a-model,-which-is-saved-in-a-Predictor-object">Running a <code class="docutils literal notranslate"><span class="pre">Job</span></code> produces a model, which is saved in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#How-well-did-this-model-learn?">How well did this model learn?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#How-well-did-this-model-perform?">How well did this model perform?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#What-Algorithm-was-trained?">What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was trained?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-hyperparameter-space-was-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameter</span></code> space was tested?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Inspecting-the-Data">Inspecting the Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#What-samples-were-fed-to-the-algorithm?">What <code class="docutils literal notranslate"><span class="pre">samples</span></code> were fed to the algorithm?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#What-samples-were-fed-to-the-algorithm?">What samples were fed to the algorithm?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-Features-were-used-to-train-the-model?">What <code class="docutils literal notranslate"><span class="pre">Features</span></code> were used to train the model?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-were-the-Labels?">What were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#What-Dataset-did-these-Features-and-Labels-come-from?">What <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> did these <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code> come from?</a></li>
@@ -615,22 +615,33 @@ div.rendered_html tbody tr:hover {
 <section id="Query-the-Metastore">
 <h1>Query the Metastore<a class="headerlink" href="#Query-the-Metastore" title="Permalink to this headline"></a></h1>
 <img alt="query" src="../_images/query.jpg" />
-<p>AIQC uses SQLite under the hood as a machine learning metastore. It persists critical information at every step of the workflow that helps practitioners:</p>
+<p>AIQC uses SQLite under the hood as a machine learning metastore. It persists critical information at every step of the workflow in order to help practitioners:</p>
 <ul class="simple">
 <li><p>Interpret the performance of models</p></li>
 <li><p>Reproduce experiments</p></li>
 <li><p>Encode new samples during inference</p></li>
 </ul>
-<p>Each object in the <a class="reference external" href="api_low_level.html">Low-Level API</a> (e.g. <code class="docutils literal notranslate"><span class="pre">Job</span></code>, <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>, and many more) is a relational table in local SQLite file. The Low-Level API serves as an object-relational model (ORM) to easily traverse and inspect that metastore as Python objects. Please know that these examples just scratch the surface of the Low-Level API.</p>
+<p>For most use cases, the High-Level API and visualizations provide sufficient information. However, its good to know how to dig into the metastore when you need specific details.</p>
+<blockquote>
+<div><p>Each object in the <a class="reference external" href="api_low_level.html">Low-Level API</a> (e.g. <code class="docutils literal notranslate"><span class="pre">Job</span></code>, <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>, and many more) is a relational table in a local SQLite file. The Low-Level API serves as an object-relational model (ORM) to easily traverse and inspect that metastore as Python objects. We’ll only scratch the surface of the Low-Level API here.</p>
+</div></blockquote>
 <hr class="docutils" />
 <p>Let’s rapidly create a trained queue of models so that we have some information to work with. We’ll use one of AIQC’s tests for the sake of brevity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[210]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">orm</span>
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">tests</span>
-<span class="n">queue</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">tf_multi_tab</span><span class="o">.</span><span class="n">make_queue</span><span class="p">()</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">tf_multi_tab</span><span class="o">.</span><span class="n">make_queue</span><span class="p">()</span>
 <span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1012,8 +1023,8 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 </section>
-<section id="What-training-Jobs-belong-to-the-Queue?">
-<h3>What training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> belong to the <code class="docutils literal notranslate"><span class="pre">Queue</span></code>?<a class="headerlink" href="#What-training-Jobs-belong-to-the-Queue?" title="Permalink to this headline"></a></h3>
+<section id="Running-a-Job-produces-a-model,-which-is-saved-in-a-Predictor-object">
+<h3>Running a <code class="docutils literal notranslate"><span class="pre">Job</span></code> produces a model, which is saved in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> object<a class="headerlink" href="#Running-a-Job-produces-a-model,-which-is-saved-in-a-Predictor-object" title="Permalink to this headline"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
@@ -1039,15 +1050,41 @@ div.rendered_html tbody tr:hover {
  &lt;Job: 9&gt;]
 </pre></div></div>
 </div>
-</section>
-<section id="A-Job-stores-information-about-its-trained-model-in-a-Predictor">
-<h3>A <code class="docutils literal notranslate"><span class="pre">Job</span></code> stores information about its trained model in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code><a class="headerlink" href="#A-Job-stores-information-about-its-trained-model-in-a-Predictor" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[52]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[213]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span></span><span class="n">job</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Jobs</span></code> may be repeated for non-deterministic analysis, so they can produce many <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> aka trained models.</p>
+<p>You can fetch objects either by ID or by traversing relationships</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[215]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">list</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">predictors</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[215]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;Predictor: 2&gt;]
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[216]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">orm</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1134,8 +1171,19 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 </section>
-<section id="How-did-this-model-perform?">
-<h3>How did this model perform?<a class="headerlink" href="#How-did-this-model-perform?" title="Permalink to this headline"></a></h3>
+<section id="How-well-did-this-model-learn?">
+<h3>How well did this model learn?<a class="headerlink" href="#How-well-did-this-model-learn?" title="Permalink to this headline"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="Classify Learn" src="../_images/classify_learn.png" />
+<p>User-defined history metrics</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
 </pre></div>
@@ -1181,16 +1229,20 @@ dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accu
  0.2245447188615799]
 </pre></div></div>
 </div>
+<p>What features were driving the model?</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">()</span>
+<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">top_n</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<img alt="Classify Learn" src="../_images/classify_learn.png" />
+<img alt="Classify Features" src="../_images/classify_features.png" />
+</section>
+<section id="How-well-did-this-model-perform?">
+<h3>How well did this model perform?<a class="headerlink" href="#How-well-did-this-model-perform?" title="Permalink to this headline"></a></h3>
 <p>View the decoded predictions</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
@@ -1269,20 +1321,9 @@ array([&#39;setosa&#39;, &#39;setosa&#39;, &#39;setosa&#39;, &#39;setosa&#39;, &
 &lt;bound method Prediction.plot_precision_recall of &lt;Prediction: 2&gt;&gt;
 </pre></div></div>
 </div>
-<p>What features were driving the model?</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">top_n</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<img alt="Classify Features" src="../_images/classify_features.png" />
 </section>
-<section id="What-Algorithm-was-the-Queue-training?">
-<h3>What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> training?<a class="headerlink" href="#What-Algorithm-was-the-Queue-training?" title="Permalink to this headline"></a></h3>
+<section id="What-Algorithm-was-trained?">
+<h3>What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was trained?<a class="headerlink" href="#What-Algorithm-was-trained?" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[67]:
 </pre></div>
@@ -1335,7 +1376,6 @@ array([&#39;setosa&#39;, &#39;setosa&#39;, &#39;setosa&#39;, &#39;setosa&#39;, &
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">aiqc.utils.dill</span> <span class="kn">import</span> <span class="n">reveal_code</span>
-<span class="c1"># Looks like I can make these calls more elegant/ concise =)</span>
 </pre></div>
 </div>
 </div>
@@ -1344,7 +1384,7 @@ array([&#39;setosa&#39;, &#39;setosa&#39;, &#39;setosa&#39;, &#39;setosa&#39;, &
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span></span><span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1390,10 +1430,10 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># etc</span>
-<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_lose</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_optimize</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_predict</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)</span>
+<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_lose</span><span class="p">)</span>
+<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_optimize</span><span class="p">)</span>
+<span class="n">reveal_code</span><span class="p">(</span><span class="n">algorithm</span><span class="o">.</span><span class="n">fn_predict</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1427,7 +1467,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 <section id="Inspecting-the-Data">
 <h2>Inspecting the Data<a class="headerlink" href="#Inspecting-the-Data" title="Permalink to this headline"></a></h2>
 <section id="What-samples-were-fed-to-the-algorithm?">
-<h3>What <code class="docutils literal notranslate"><span class="pre">samples</span></code> were fed to the algorithm?<a class="headerlink" href="#What-samples-were-fed-to-the-algorithm?" title="Permalink to this headline"></a></h3>
+<h3>What samples were fed to the algorithm?<a class="headerlink" href="#What-samples-were-fed-to-the-algorithm?" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[88]:
 </pre></div>
@@ -1855,29 +1895,10 @@ OneHotEncoder(sparse=False)
 [array([&#39;setosa&#39;, &#39;versicolor&#39;, &#39;virginica&#39;], dtype=object)]
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[202]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">fitted_encoder</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[202]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[array([&#39;setosa&#39;, &#39;versicolor&#39;, &#39;virginica&#39;], dtype=object)]
-</pre></div></div>
-</div>
-<p>This information is <em>CRITICAL</em> for:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fit</span></code> information is <em>CRITICAL</em> for:</p>
 <ul class="simple">
 <li><p>Decoding raw predictions into human-readable insight.</p></li>
 <li><p>Encoding new samples during inference.</p></li>
-<li><p>Recreating the experiment.</p></li>
 </ul>
 </section>
 </section>
