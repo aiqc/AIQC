@@ -17,7 +17,8 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
-from .utils.config import app_dir
+from xmlrpc.client import DateTime
+from .utils.config import app_dir, timezone_now
 from .plots import Plot
 from . import utils
 # --- Python modules ---
@@ -45,7 +46,8 @@ from tqdm import tqdm #progress bar.
 from natsort import natsorted #file sorting.
 # ORM.
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
-from peewee import Model, CharField, IntegerField, BlobField, BooleanField, \
+from playhouse.signals import Model, pre_save
+from peewee import CharField, IntegerField, BlobField, BooleanField, \
 	DateTimeField, ForeignKeyField
 from playhouse.fields import PickleField
 # ETL.
@@ -53,7 +55,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image as Imaje
 # Preprocessing & metrics.
-import sklearn #mandatory to import modules separately.
+import sklearn #mandatory to import submodules separately.
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 # Deep learning.
 from tensorflow.keras.models import load_model
@@ -163,14 +165,33 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 		print("\n=> Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
 
 
-
+#==================================================
+# MODEL CLASSES
+#==================================================
 class BaseModel(Model):
 	"""
 	- Runs when the package is imported. http://docs.peewee-orm.com/en/latest/peewee/models.html
 	- ORM: by inheritting the BaseModel class, each Model class does not have to set Meta.
 	"""
+	time_created = DateTimeField()
+	time_updated = DateTimeField()
+
 	class Meta:
 		database = get_db()
+	
+	def created_at(self):
+		return self.time_created.strftime('%Y%b%d_%H:%M:%S')
+	
+	def updated_at(self):
+		return self.time_updated.strftime('%Y%b%d_%H:%M:%S')
+	
+
+@pre_save(sender=BaseModel)
+def add_timestamps(model_class, instance, created):
+	if (created==True):
+		instance.time_created = timezone_now()
+	instance.time_updated = timezone_now()
+	# intentionally no `return`
 
 
 
@@ -4391,7 +4412,7 @@ class Job(BaseModel):
 		analysis_type = algorithm.analysis_type
 		library = algorithm.library
 		hyperparamcombo = job.hyperparamcombo
-		time_started = dt.datetime.now(dt.timezone.utc)
+		time_started = timezone_now()
 
 		if (key_evaluation is not None):
 			samples_eval = samples[key_evaluation]
@@ -4490,7 +4511,7 @@ class Job(BaseModel):
 			model_blob = model_blob.getvalue()
 		
 		# Save everything to Predictor object.
-		time_succeeded = dt.datetime.now(dt.timezone.utc)
+		time_succeeded = timezone_now()
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job was running elsewhere and finished first.
@@ -4620,7 +4641,7 @@ class Predictor(BaseModel):
 		algorithm = predictor.job.queue.algorithm
 		
 		if (file_path is None):
-			dtime = dt.datetime.now(dt.timezone.utc).strftime('%Y%b%d_%H:%M')
+			dtime = timezone_now(as_str=True)
 			if (algorithm.library == "keras"):
 				ext = '.h5'
 			elif (algorithm.library == 'pytorch'):

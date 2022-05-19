@@ -23,6 +23,18 @@ default_config_path = app_dir + "config.json"
 default_db_path = app_dir + "aiqc.sqlite3"
 
 
+def timezone_name():
+	return dt.datetime.now(dt.timezone.utc).astimezone().tzname()
+
+
+def timezone_now(as_str:bool=False):
+	"""Infers timezone from user's OS. It knows EDT vs EST."""
+	now = dt.datetime.now(dt.timezone.utc).astimezone()
+	if (as_str==True):
+		now = str(now.strftime('%Y%b%d_%H:%M:%S'))
+	return now
+
+
 #==================================================
 # FOLDER
 #==================================================
@@ -181,7 +193,8 @@ def create_config():
 		config_exists = path.exists(default_config_path)
 		if not config_exists:
 			aiqc_config = {
-				"created_at": str(dt.datetime.now(dt.timezone.utc))
+				"timezone_name": timezone_name()
+				, "created_at": timezone_now()
 				, "config_path": default_config_path
 				, "db_path": default_db_path
 				, "sys.version": version
