@@ -171,10 +171,14 @@ class BaseModel(Model):
 	"""
 	- Runs when the package is imported. http://docs.peewee-orm.com/en/latest/peewee/models.html
 	- ORM: by inheritting the BaseModel class, each Model class does not have to set Meta.
+	- nullable attributes are enabled by inclusion in each Model's method args.
 	"""
 	time_created = DateTimeField()
 	time_updated = DateTimeField()
-
+	name = CharField(null=True)
+	version = IntegerField(null=True)
+	description = CharField(null=True)
+	
 	class Meta:
 		database = get_db()
 	
@@ -187,9 +191,35 @@ class BaseModel(Model):
 
 @pre_save(sender=BaseModel)
 def add_timestamps(model_class, instance, created):
+	"""Arguments are `signals` defaults"""
 	if (created==True):
 		instance.time_created = timezone_now()
 	instance.time_updated = timezone_now()
+
+
+@pre_save(sender=BaseModel)
+def increment_version(model_class, instance, created):
+	"""Rules about new versions"""
+	# Minimize performance impact of this signal when creating a one thousand file dataset
+	klass = instance.__class__.__name__
+	if (klass!="File"):
+		instance, latest_match = utils.wrangle.match_name(instance, created)
+		if (latest_match is not None):
+			if (klass=="Dataset"):
+				if (latest_match.dataset_type!=instance.dataset_type):
+					msg = f"Yikes - New Dataset type <{instance.dataset_type}> must match the type of the most recent version <{latest_match.dataset_type}>."
+					raise Exception(msg)
+			elif(klass=="Splitset"):
+				new_label = instance.label.id
+				if (new_label is not None):
+					old_label = latest_match.label.id
+					if (new_label!=old_label):
+						msg = f"Yikes - New Splitset label <{new_label}> must match old Splitset label <{old_label}> in order to use the same name"
+						raise Exception(msg)
+				new_features = instance.get_features()
+				old_features = latest_match.get_features()
+				new_features != old_features
+				msg = f"Yikes - New Splitset features <{new_features}> must match old Splitset features <{old_features}> exactly in order to use the same name"
 
 
 
@@ -203,9 +233,6 @@ class Dataset(BaseModel):
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # used in Dataset.Sequence, but for Dataset.Image this really represents the number of seq datasets.
 	source_path = CharField(null=True)
-	name = CharField(null=True)
-	description = CharField(null=True)
-	version = IntegerField(null=True)
 	#http://docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
 	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
 
@@ -292,6 +319,7 @@ class Dataset(BaseModel):
 			file_path:str
 			, source_file_format:str
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 			, skip_header_rows:object = 'infer'
@@ -325,6 +353,7 @@ class Dataset(BaseModel):
 				, file_count = Dataset.Tabular.file_count
 				, source_path = source_path
 				, name = name
+				, description = description
 			)
 
 			try:
@@ -347,6 +376,7 @@ class Dataset(BaseModel):
 		def from_pandas(
 			dataframe:object
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 		):
@@ -360,6 +390,7 @@ class Dataset(BaseModel):
 				, dataset_index = Dataset.Tabular.dataset_index
 				, file_count = Dataset.Tabular.file_count
 				, name = name
+				, description = description
 				, source_path = None
 			)
 
@@ -379,6 +410,7 @@ class Dataset(BaseModel):
 		def from_numpy(
 			ndarray:object
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 			, _dataset_index:int = None
@@ -398,6 +430,7 @@ class Dataset(BaseModel):
 				, dataset_index = Dataset.Tabular.dataset_index
 				, file_count = Dataset.Tabular.file_count
 				, name = name
+				, description = description
 				, source_path = None
 			)
 			try:
@@ -410,6 +443,44 @@ class Dataset(BaseModel):
 			except:
 				dataset.delete_instance() # Orphaned.
 				raise 
+			return dataset
+		
+
+		def parse_data(
+			df_arr_path:object, dtype:object=None, name:str=None, description:str=None, column_names:list=None
+		):
+			"""Determine how `df_arr_path` should be handled by the low-level API"""
+			d = df_arr_path
+			data_type = str(type(d))
+			if (data_type == "<class 'pandas.core.frame.DataFrame'>"):
+				dataset = Dataset.Tabular.from_pandas(
+					dataframe=d, dtype=dtype, name=name, description=description
+				)
+			elif (data_type == "<class 'numpy.ndarray'>"):
+				dataset = Dataset.Tabular.from_numpy(
+					ndarray=d, dtype=dtype, name=name, description=description, column_names=column_names
+				)
+			elif (data_type == "<class 'str'>"):
+				if ('.csv' in d):
+					source_file_format='csv'
+				elif ('.tsv' in d):
+					source_file_format='tsv'
+				elif ('.parquet' in d):
+					source_file_format='parquet'
+				else:
+					raise Exception(dedent("""
+					Yikes - None of the following file extensions were found in the path you provided:
+					'.csv', '.tsv', '.parquet'
+					"""))
+				dataset = Dataset.Tabular.from_path(
+					file_path = d
+					, source_file_format = source_file_format
+					, dtype = dtype
+					, name=name
+					, description=description
+				)
+			else:
+				raise Exception("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
 			return dataset
 
 
@@ -438,6 +509,7 @@ class Dataset(BaseModel):
 		def from_numpy(
 			ndarray3D_or_npyPath:object
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 			, ingest:bool = True
@@ -499,6 +571,7 @@ class Dataset(BaseModel):
 				, dataset_index = dataset_index
 				, file_count = file_count
 				, name = name
+				, description = description
 				, source_path = source_path
 				, dataset = _dataset
 			)
@@ -585,6 +658,7 @@ class Dataset(BaseModel):
 			folder_path:str
 			, ingest:bool = True
 			, name:str = None
+			, description:str = None
 			, dtype:dict = None
 			, column_names:list = None
 		):
@@ -608,6 +682,7 @@ class Dataset(BaseModel):
 				, dataset_index = Dataset.Image.dataset_index
 				, file_count = file_count
 				, name = name
+				, description = description
 				, source_path = source_path
 			)
 			try:			
@@ -631,6 +706,7 @@ class Dataset(BaseModel):
 			, source_path:str = None # not used anywhere, but doesn't hurt to record.
 			, ingest:bool = True
 			, name:str = None
+			, description:str = None
 			, dtype:dict = None
 			, column_names:list = None
 		):
@@ -658,6 +734,7 @@ class Dataset(BaseModel):
 				, dataset_index = Dataset.Image.dataset_index
 				, file_count = file_count
 				, name = name
+				, description = description
 				, source_path = source_path
 			)
 
@@ -680,6 +757,7 @@ class Dataset(BaseModel):
 		def from_numpy(
 			ndarray4D_or_npyPath:object
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 			, ingest:bool = True
@@ -714,6 +792,7 @@ class Dataset(BaseModel):
 				, dataset_index = Dataset.Image.dataset_index
 				, file_count = file_count
 				, name = name
+				, description = description
 				, source_path = source_path
 			)
 			try:
@@ -738,6 +817,7 @@ class Dataset(BaseModel):
 			, ingest:bool = True
 			, paths:list = None
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 			, source_path:str = None
@@ -827,8 +907,9 @@ class Dataset(BaseModel):
 		column_name = 'TextData'
 
 		def from_strings(
-			strings: list,
-			name: str = None
+			strings: list
+			, name: str = None
+			, description:str = None
 		):
 			for expectedString in strings:
 				if type(expectedString) !=  str:
@@ -839,10 +920,11 @@ class Dataset(BaseModel):
 
 
 		def from_pandas(
-			dataframe:object,
-			name:str = None, 
-			dtype:object = None, 
-			column_names:list = None
+			dataframe:object
+			, name:str = None
+			, description:str = None
+			, dtype:object = None
+			, column_names:list = None
 		):
 			if Dataset.Text.column_name not in list(dataframe.columns):
 				raise Exception("\nYikes - The `dataframe` you provided doesn't contain 'TextData' column. Please rename the column containing text data to 'TextData'`\n")
@@ -860,6 +942,7 @@ class Dataset(BaseModel):
 			file_path:str
 			, source_file_format:str
 			, name:str = None
+			, description:str = None
 			, dtype:object = None
 			, column_names:list = None
 			, skip_header_rows:object = 'infer'
@@ -912,28 +995,6 @@ class Dataset(BaseModel):
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
 	# the only unique thing is an edge_data for each Graph file.
 	# attach multiple file types to a file File(id=1).tabular, File(id=1).graph?
-
-
-@pre_save(sender=BaseModel)
-def increment_version(model_class, instance, created):
-	# Since methods also interact with File we have to specify class
-	if (instance.__class__.__name__=="Dataset"):
-		if (created==True):
-			name = instance.name
-			if (name is not None):
-				name_match = Dataset.select().where(Dataset.name==name)
-				num_matches = name_match.count()
-				if (num_matches==0):
-					latest_version = 1
-				elif (num_matches>0):
-					latest_match = name_match.order_by(Dataset.version)[-1]
-					if (latest_match.dataset_type!=instance.dataset_type):
-						msg = f"Yikes - New Dataset type <{instance.dataset_type}> must match the type of the most recent version <{latest_match.dataset_type}>."
-						raise Exception(msg)
-					latest_version = latest_match.version
-					latest_version += 1
-				instance.version = latest_version
-		
 
 
 
@@ -2070,6 +2131,8 @@ class Splitset(BaseModel):
 		, size_validation:float = None
 		, bin_count:float = None
 		, unsupervised_stratify_col:str = None
+		, name:str = None
+		, description:str = None
 	):
 		# The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
 		# --- Verify splits ---
@@ -2350,6 +2413,8 @@ class Splitset(BaseModel):
 			, has_validation = has_validation
 			, bin_count = bin_count
 			, unsupervised_stratify_col = unsupervised_stratify_col
+			, name = name
+			, description = description
 		)
 
 		try:
@@ -2673,21 +2738,16 @@ class LabelInterpolater(BaseModel):
 
 class Interpolaterset(BaseModel):
 	interpolater_count = IntegerField()
-	description = CharField(null=True)
 
 	feature = ForeignKeyField(Feature, backref='interpolatersets')
 
 
 	def from_feature(
-		feature_id:int
-		, interpolater_count:int = 0
-		, description:str = None
+		feature_id:int, interpolater_count:int=0
 	):
 		feature = Feature.get_by_id(feature_id)
 		interpolaterset = Interpolaterset.create(
-			interpolater_count = interpolater_count
-			, description = description
-			, feature = feature
+			interpolater_count=interpolater_count, feature=feature
 		)
 		return interpolaterset
 
@@ -2939,21 +2999,12 @@ class Encoderset(BaseModel):
 	- In future, maybe LabelCoder gets split out from Encoderset and it becomes FeatureCoderset.
 	"""
 	encoder_count = IntegerField()
-	description = CharField(null=True)
 
 	feature = ForeignKeyField(Feature, backref='encodersets')
 
-	def from_feature(
-		feature_id:int
-		, encoder_count:int = 0
-		, description:str = None
-	):
+	def from_feature(feature_id:int, encoder_count:int=0):
 		feature = Feature.get_by_id(feature_id)
-		encoderset = Encoderset.create(
-			encoder_count = encoder_count
-			, description = description
-			, feature = feature
-		)
+		encoderset = Encoderset.create(encoder_count=encoder_count, feature=feature)
 		return encoderset
 
 
@@ -3230,6 +3281,7 @@ class Algorithm(BaseModel):
 		, fn_lose:object = None
 		, fn_optimize:object = None
 		, description:str = None
+		, name:str = None
 	):
 		library = library.lower()
 		if ((library != 'keras') and (library != 'pytorch')):
@@ -3272,6 +3324,7 @@ class Algorithm(BaseModel):
 			, fn_predict = fn_predict
 			, fn_lose = fn_lose
 			, description = description
+			, name = name
 		)
 		return algorithm
 
@@ -3301,7 +3354,6 @@ class Hyperparamset(BaseModel):
 
 	- On setting kwargs with `**` and a dict: https://stackoverflow.com/a/29028601/5739514
 	"""
-	description = CharField(null=True)
 	hyperparamcombo_count = IntegerField()
 	#strategy = CharField() # set to all by default #all/ random. this would generate a different dict with less params to try that should be persisted for transparency.
 	hyperparameters = JSONField()

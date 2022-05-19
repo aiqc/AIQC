@@ -20,7 +20,23 @@ def listify(supposed_lst:object=None):
 				raise Exception(f"\nYikes - The list you provided contained `None` as an element.\n{supposed_lst}\n")
 	# Allow entire list `is None` to pass through because we need it to trigger null conditions.
 	return supposed_lst
-    
+
+
+def match_name(instance:object, created:bool):
+	latest_match = None
+	name = instance.name
+	if ((name is not None) and (created==True)):
+		klass = instance.__class__
+		name_matches = klass.select().where(klass.name==name)
+		num_matches = name_matches.count()
+		if (num_matches==0):
+			latest_version = 1
+		elif (num_matches>0):
+			latest_match = name_matches.order_by(klass.version)[-1]
+			latest_version = latest_match.version + 1
+		instance.version = latest_version
+	return instance, latest_match
+
 
 def if_1d_make_2d(array:object):
 	if (len(array.shape) == 1):

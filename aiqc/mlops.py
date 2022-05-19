@@ -11,297 +11,151 @@ from .orm import *
 from .utils.wrangle import listify
 
 
+class Target:
+	def __init__(
+		self
+		, dataset:object	= None
+		, column:str 		= None
+		, interpolater:dict = None
+		, encoder:dict 		= None
+	):
+		"""`column:str` in order to encourage single-column labels"""
+		self.dataset 		= dataset
+		self.column 		= listify(column)
+		self.interpolater 	= interpolater
+		self.encoder 		= encoder
+
+
+class Input:
+	def __init__(
+		self
+		, dataset:object		= None
+		, cols_excluded:list 	= None
+		, interpolaters:list	= None
+		, window:dict 			= None
+		, encoders:list 		= None
+		, reshape_indices:tuple = None
+	):
+		self.dataset 			= dataset
+		self.cols_excluded 		= listify(cols_excluded)
+		self.interpolaters 		= listify(interpolaters)
+		self.window 			= window
+		self.encoders 			= listify(encoders)
+		self.reshape_indices 	= reshape_indices
+
+
+class Stratifier:
+	def __init__(
+		self
+		, size_test:float 		= None
+		, size_validation:float = None
+		, fold_count:int 		= None
+		, bin_count:int 		= None
+	):
+		self.size_test 		 	= size_test
+		self.size_validation 	= size_validation
+		self.fold_count 	 	= fold_count
+		self.bin_count 		 	= bin_count
+
+
 class Pipeline:
-	def parse_tabular_input(dataFrame_or_filePath:object, dtype:object=None):
-		"""Create the dataset from either df or file."""
-		d = dataFrame_or_filePath
-		data_type = str(type(d))
-		if (data_type == "<class 'pandas.core.frame.DataFrame'>"):
-			dataset = Dataset.Tabular.from_pandas(dataframe=d, dtype=dtype)
-		elif (data_type == "<class 'str'>"):
-			if ('.csv' in d):
-				source_file_format='csv'
-			elif ('.tsv' in d):
-				source_file_format='tsv'
-			elif ('.parquet' in d):
-				source_file_format='parquet'
-			else:
-				raise Exception(dedent("""
-				Yikes - None of the following file extensions were found in the path you provided:
-				'.csv', '.tsv', '.parquet'
-				"""))
-			dataset = Dataset.Tabular.from_path(
-				file_path = d
-				, source_file_format = source_file_format
-				, dtype = dtype
-			)
-		else:
-			raise Exception("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
-		return dataset
+	def __new__(
+		cls
+		, target:object 		= None
+		, inputs:list 			= None
+		, stratifier:object 	= None
+		, name:str 				= None
+		, description:str 		= None
+		, shared_dataset:object = None
+	):					
+		inputs = listify(inputs)
+		# Initialize with empties to make conditionality easier
+		if (inputs is None):
+			inputs = Input()
+		if (target is None):
+			target = Target()
+		if (stratifier is None):
+			stratifier = Stratifier()
+		
+		# Special case for deriving Label and Feature from same dataset
+		if (shared_dataset is not None):
+			typ = shared_dataset.dataset_type
+			if (typ!="tabular"):
+				msg = "Yikes - `shared_dataset` can only be `Dataset.dataset_type=='Tabular'."
+				raise Exception(msg)
 
+			if (target.dataset is not None):
+				msg = "Yikes - `Label.dataset` cannot be used if `shared_dataset` is used."
+				raise Exception(msg)
+			elif (target.dataset is None):
+				target.dataset = shared_dataset
 
-	class Tabular:
-		def __new__(
-			cls
-			, df_or_path:object
-			, dtype:object = None
+			inputs_bearing = []
+			for i in inputs:
+				if (i.dataset==None):
+					i.dataset = shared_dataset
+				else:
+					inputs_bearing.append(i)
+			if (None not in inputs_bearing):
+				msg = "Yikes - `shared_dataset` provided, but all of the Inputs have their own datasets"
+		
+		# Assemble the Target
+		if (target.column is not None):
+			l_id = Label.from_dataset(dataset_id=target.dataset.id, columns=target.column).id
+			if (target.interpolater is not None):
+				LabelInterpolater.from_label(label_id=l_id, **target.interpolater)
+			if (target.encoder is not None): 
+				LabelCoder.from_label(label_id=l_id, **target.encoder)
+		elif (target.column is None):
+			# Need to know if label exists so it can be exlcuded.
+			l_id = None
+
+		# Assemble the Inputs
+		feature_ids = []
+		for i in inputs:
+			d_id = i.dataset.id
 			
-			, feature_cols_excluded:list = None
-			, feature_interpolaters:list = None
-			, feature_window:dict = None
-			, feature_encoders:list = None
-			, feature_reshape_indices:tuple = None
+			if (d_id==target.dataset.id):
+				if (i.cols_excluded==None):
+					i.cols_excluded = target.column
+				else:
+					i.cols_excluded = i.cols_excluded + target.column
+			f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=i.cols_excluded).id
+			feature_ids.append(f_id)
 
-			, label_column:str = None
-			, label_interpolater:dict = None
-			, label_encoder:dict = None
-
-			, size_test:float = None
-			, size_validation:float = None
-			, fold_count:int = None
-			, bin_count:int = None
-		):
-			feature_cols_excluded = listify(feature_cols_excluded)
-			feature_interpolaters = listify(feature_interpolaters)
-			feature_encoders = listify(feature_encoders)
-			label_column = listify(label_column)
-
-			d_id = Pipeline.parse_tabular_input(
-				dataFrame_or_filePath=df_or_path, dtype=dtype
-			).id
-
-			if (label_column is not None):
-				l_id = Label.from_dataset(dataset_id=d_id, columns=label_column).id
-				if (label_interpolater is not None):
-					LabelInterpolater.from_label(label_id=l_id, **label_interpolater)
-				if (label_encoder is not None): 
-					LabelCoder.from_label(label_id=l_id, **label_encoder)
-			elif (label_column is None):
-				# Needs to know if label exists so that it can exlcude it.
-				l_id = None
-
-			if (feature_cols_excluded is None):
-				if (label_column is not None):
-					f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=label_column).id
-				# Unsupervised.
-				elif (label_column is None):
-					f_id = Feature.from_dataset(dataset_id=d_id).id
-			elif (feature_cols_excluded is not None):
-				f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=feature_cols_excluded).id
-
-			if (feature_interpolaters is not None):
+			if (i.interpolaters is not None):
 				i_id = Interpolaterset.from_feature(feature_id=f_id).id
-				for fp in feature_interpolaters:
+				for fp in i.interpolaters:
 					FeatureInterpolater.from_interpolaterset(i_id, **fp)
 
-			if (feature_window is not None):
-				Window.from_feature(feature_id=f_id, **feature_window)
+			if (i.window is not None):
+				Window.from_feature(feature_id=f_id, **i.window)
 
-			if (feature_encoders is not None):					
+			if (i.encoders is not None):					
 				e_id = Encoderset.from_feature(feature_id=f_id).id
-				for fc in feature_encoders:
+				for fc in i.encoders:
 					FeatureCoder.from_encoderset(encoderset_id=e_id, **fc)
 
-			if (feature_reshape_indices is not None):
-				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=feature_reshape_indices)
+			if (i.reshape_indices is not None):
+				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=i.reshape_indices)
 
-			splitset = Splitset.make(
-				feature_ids = [f_id]
-				, label_id = l_id
-				, size_test = size_test
-				, size_validation = size_validation
-				, bin_count = bin_count
+		splitset = Splitset.make(
+			feature_ids 	  = [feature_ids]
+			, label_id 		  = l_id
+			, size_test 	  = stratifier.size_test
+			, size_validation = stratifier.size_validation
+			, bin_count 	  = stratifier.bin_count
+			, name 			  = name
+			, description 	  = description
+		)
+		
+		if (stratifier.fold_count is not None):
+			Foldset.from_splitset(
+				splitset_id=splitset.id, 
+				fold_count=stratifier.fold_count, 
+				bin_count=stratifier.bin_count
 			)
-			
-			if (fold_count is not None):
-				Foldset.from_splitset(
-					splitset_id=splitset.id, fold_count=fold_count, bin_count=bin_count
-				)
-			return splitset
-
-
-	class Sequence:
-		def __new__(
-			cls
-			, feature_ndarray3D_or_npyPath:object
-			, feature_dtype:object = None
-			, feature_cols_excluded:list = None
-			, feature_interpolaters:list = None
-			, feature_window:dict = None
-			, feature_encoders:list = None
-			, feature_reshape_indices:tuple = None
-			
-			, label_df_or_path:object = None
-			, label_dtype:object = None
-			, label_column:str = None
-			, label_interpolater:dict = None
-			, label_encoder:dict = None
-			
-			, size_test:float = None
-			, size_validation:float = None
-			, fold_count:int = None
-			, bin_count:int = None
-		):
-			feature_cols_excluded = listify(feature_cols_excluded)
-			feature_interpolaters = listify(feature_interpolaters)
-			feature_encoders = listify(feature_encoders)
-			label_column = listify(label_column)
-
-			if (
-				((label_df_or_path is None) and (label_column is not None))
-				or
-				((label_df_or_path is not None) and (label_column is None))
-			):
-				raise Exception("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
-
-			# ------ SEQUENCE FEATURE ------
-			ds_id = Dataset.Sequence.from_numpy(
-				ndarray3D_or_npyPath=feature_ndarray3D_or_npyPath,
-				dtype=feature_dtype
-			).id
-
-			if (feature_cols_excluded is not None):
-				f_id = Feature.from_dataset(dataset_id=ds_id, exclude_columns=feature_cols_excluded).id
-			elif (feature_cols_excluded is None):
-				f_id = Feature.from_dataset(dataset_id=ds_id).id
-
-			if (feature_interpolaters is not None):
-				i_id = Interpolaterset.from_feature(feature_id=f_id).id
-				for fp in feature_interpolaters:
-					FeatureInterpolater.from_interpolaterset(i_id, **fp)					
-
-			if (feature_window is not None):
-				Window.from_feature(feature_id=f_id, **feature_window)
-
-			if (feature_encoders is not None):					
-				e_id = Encoderset.from_feature(feature_id=f_id).id
-				for fc in feature_encoders:
-					FeatureCoder.from_encoderset(encoderset_id=e_id, **fc)
-
-			if (feature_reshape_indices is not None):
-				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=feature_reshape_indices)
-
-			# ------ TABULAR LABEL ------
-			if (label_df_or_path is not None):
-				dt_id = Pipeline.parse_tabular_input(
-					dataFrame_or_filePath = label_df_or_path
-					, dtype = label_dtype
-				).id
-				# Tabular-based Label.
-				l_id = Label.from_dataset(dataset_id=dt_id, columns=label_column).id
-				if (label_interpolater is not None):
-					LabelInterpolater.from_label(label_id=l_id, **label_interpolater)					
-				if (label_encoder is not None): 
-					LabelCoder.from_label(label_id=l_id, **label_encoder)
-			elif (label_df_or_path is None):
-				l_id = None
-
-			splitset = Splitset.make(
-				feature_ids = [f_id]
-				, label_id = l_id
-				, size_test = size_test
-				, size_validation = size_validation
-				, bin_count = bin_count
-			)
-
-			if (fold_count is not None):
-				Foldset.from_splitset(
-					splitset_id=splitset.id, fold_count=fold_count, bin_count=bin_count
-				)
-			return splitset
-
-
-	class Image:
-		def __new__(
-			cls
-			, feature_folder_or_urls:str
-			, feature_dtype:str = None
-			, feature_interpolaters:list = None
-			, feature_window:dict = None
-			, feature_encoders:list = None
-			, feature_reshape_indices:tuple = None
-
-			, label_df_or_path:object = None
-			, label_dtype:object = None
-			, label_column:str = None
-			, label_interpolater:dict = None
-			, label_encoder:dict = None
-
-			, size_test:float = None
-			, size_validation:float = None
-			, fold_count:int = None
-			, bin_count:int = None
-		):
-			label_column = listify(label_column)
-			feature_interpolaters = listify(feature_interpolaters)
-			feature_encoders = listify(feature_encoders)
-
-			if (
-				((label_df_or_path is None) and (label_column is not None))
-				or
-				((label_df_or_path is not None) and (label_column is None))
-			):
-				raise Exception("\nYikes - `label_df_or_path` and `label_column` are either used together or not at all.\n")
-
-			if (isinstance(feature_folder_or_urls, str)):
-				di_id = Dataset.Image.from_folder_pillow(
-					folder_path = feature_folder_or_urls
-					, dtype = feature_dtype
-				).id
-			elif (isinstance(feature_folder_or_urls, list)):
-				feature_folder_or_urls = listify(feature_folder_or_urls)
-				di_id = Dataset.Image.from_urls_pillow(
-					urls = feature_folder_or_urls
-					, dtype = feature_dtype
-				).id
-			# Image-based Feature.
-			f_id = Feature.from_dataset(dataset_id=di_id).id
-
-			if (feature_interpolaters is not None):
-				i_id = Interpolaterset.from_feature(feature_id=f_id).id
-				for fp in feature_interpolaters:
-					FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, **fp)					
-
-			if (feature_window is not None):
-				Window.from_feature(feature_id=f_id, **feature_window)
-
-			if (feature_encoders is not None):
-				e_id = Encoderset.from_feature(feature_id=f_id).id
-				for fc in feature_encoders:
-					FeatureCoder.from_encoderset(encoderset_id=e_id, **fc)
-
-			if (feature_reshape_indices is not None):
-				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=feature_reshape_indices)
-
-			# # Tabular-based Label.
-			if (label_df_or_path is not None):
-				dt_id = Pipeline.parse_tabular_input(
-					dataFrame_or_filePath = label_df_or_path
-					, dtype = label_dtype
-				).id
-				
-				l_id = Label.from_dataset(dataset_id=dt_id, columns=label_column).id
-				if (label_interpolater is not None):
-					LabelInterpolater.from_label(label_id=l_id, **label_interpolater)
-				if (label_encoder is not None): 
-					LabelCoder.from_label(label_id=l_id, **label_encoder)
-
-			elif (label_df_or_path is None):
-				l_id = None
-			
-			splitset = Splitset.make(
-				feature_ids = [f_id]
-				, label_id = l_id
-				, size_test = size_test
-				, size_validation = size_validation
-				, bin_count = bin_count
-			)
-
-			if (fold_count is not None):
-				Foldset.from_splitset(
-					splitset_id=splitset.id, fold_count=fold_count, bin_count=bin_count
-				)
-			return splitset
+		return splitset
 
 
 class Experiment:
