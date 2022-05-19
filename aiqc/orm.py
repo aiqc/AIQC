@@ -17,7 +17,6 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
-from xmlrpc.client import DateTime
 from .utils.config import app_dir, timezone_now
 from .plots import Plot
 from . import utils
@@ -179,19 +178,18 @@ class BaseModel(Model):
 	class Meta:
 		database = get_db()
 	
+	# Fetch as human-readable timestamps
 	def created_at(self):
 		return self.time_created.strftime('%Y%b%d_%H:%M:%S')
-	
 	def updated_at(self):
 		return self.time_updated.strftime('%Y%b%d_%H:%M:%S')
-	
+
 
 @pre_save(sender=BaseModel)
 def add_timestamps(model_class, instance, created):
 	if (created==True):
 		instance.time_created = timezone_now()
 	instance.time_updated = timezone_now()
-	# intentionally no `return`
 
 
 
@@ -205,6 +203,9 @@ class Dataset(BaseModel):
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # used in Dataset.Sequence, but for Dataset.Image this really represents the number of seq datasets.
 	source_path = CharField(null=True)
+	name = CharField(null=True)
+	description = CharField(null=True)
+	version = IntegerField(null=True)
 	#http://docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
 	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
 
@@ -911,6 +912,30 @@ class Dataset(BaseModel):
 	# node_data is pretty much tabular sequence (varied length) data right down to the columns.
 	# the only unique thing is an edge_data for each Graph file.
 	# attach multiple file types to a file File(id=1).tabular, File(id=1).graph?
+
+
+@pre_save(sender=BaseModel)
+def increment_version(model_class, instance, created):
+	# Since methods also interact with File we have to specify class
+	if (instance.__class__.__name__=="Dataset"):
+		if (created==True):
+			name = instance.name
+			if (name is not None):
+				name_match = Dataset.select().where(Dataset.name==name)
+				num_matches = name_match.count()
+				if (num_matches==0):
+					latest_version = 1
+				elif (num_matches>0):
+					latest_match = name_match.order_by(Dataset.version)[-1]
+					if (latest_match.dataset_type!=instance.dataset_type):
+						msg = f"Yikes - New Dataset type <{instance.dataset_type}> must match the type of the most recent version <{latest_match.dataset_type}>."
+						raise Exception(msg)
+					latest_version = latest_match.version
+					latest_version += 1
+				instance.version = latest_version
+		
+
+
 
 
 class File(BaseModel):
