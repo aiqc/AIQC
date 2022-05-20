@@ -43,10 +43,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	}
 
 	file_path = datum.get_path('spam.csv')
-	###
-	import pandas as pd
-	print(pd.read_csv(file_path).columns)
-
 	d_id = Dataset.Text.from_path(
 		file_path = file_path
 		, source_file_format = 'csv'
@@ -54,9 +50,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 		, dtype = None
 	).id
 
-	###
-	print(Dataset.get_by_id(d_id).get_main_file().columns)
-	
 	label_column = 'label'
 	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
 	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
