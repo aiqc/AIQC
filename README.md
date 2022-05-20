@@ -14,6 +14,14 @@
 <h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
 </br></br>
 
+<center>
+	<a href="https://aiqc.readthedocs.io/">
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/framework_may4.png" width="95%" alt="framework"/>
+	</a>
+</center>
+</br></br></br>
+
+
 <h1>Technical Overview</h1>
 <p>
 	<b>What is it?</b> -- AIQC is an open source Python package that provides <i>high-level APIs for end-to-end MLOps</i> (dataset registration, preprocessing, experiment tracking, model evaluation, inference, post-processing, etc) in order to make deep learning more accessible to researchers.
@@ -49,11 +57,6 @@
 <h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
 </br></br>
 
-<h2>Key Features</h2>
-<a href="https://aiqc.readthedocs.io/">
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/framework_may4.png" width="95%" alt="framework"/>
-</a>
-</br></br></br>
 
 <h2>Experiment Tracker</h2>
 <a href="https://aiqc.readthedocs.io/">

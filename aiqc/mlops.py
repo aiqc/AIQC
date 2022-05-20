@@ -68,11 +68,6 @@ class Pipeline:
 		, description:str 	= None
 	):					
 		inputs = listify(inputs)
-		# Initialize with empties to make conditionality easier
-		if (target is None):### does this work w unsupervised?
-			target = Target()
-		if (stratifier is None):
-			stratifier = Stratifier()
 
 		# Assemble the Target
 		if (target.column is not None):
@@ -122,6 +117,9 @@ class Pipeline:
 			if (reshape_indices is not None):
 				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=reshape_indices)
 
+		if (stratifier is None):
+			# Initialize with Nones
+			stratifier = Stratifier()
 		splitset = Splitset.make(
 			feature_ids 	  = [feature_ids]
 			, label_id 		  = l_id
