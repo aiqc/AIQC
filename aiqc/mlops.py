@@ -14,7 +14,7 @@ from .utils.wrangle import listify
 class Target:
 	def __init__(
 		self
-		, dataset:object	= None
+		, dataset:object
 		, column:str 		= None
 		, interpolater:dict = None
 		, encoder:dict 		= None
@@ -29,7 +29,7 @@ class Target:
 class Input:
 	def __init__(
 		self
-		, dataset:object		= None
+		, dataset:object
 		, cols_excluded:list 	= None
 		, interpolaters:list	= None
 		, window:dict 			= None
@@ -61,44 +61,19 @@ class Stratifier:
 class Pipeline:
 	def __new__(
 		cls
+		, inputs:list
 		, target:object 		= None
-		, inputs:list 			= None
 		, stratifier:object 	= None
 		, name:str 				= None
 		, description:str 		= None
-		, shared_dataset:object = None
 	):					
 		inputs = listify(inputs)
 		# Initialize with empties to make conditionality easier
-		if (inputs is None):
-			inputs = Input()
-		if (target is None):
+		if (target is None):### does this work w unsupervised?
 			target = Target()
 		if (stratifier is None):
 			stratifier = Stratifier()
-		
-		# Special case for deriving Label and Feature from same dataset
-		if (shared_dataset is not None):
-			typ = shared_dataset.dataset_type
-			if (typ!="tabular"):
-				msg = "Yikes - `shared_dataset` can only be `Dataset.dataset_type=='Tabular'."
-				raise Exception(msg)
 
-			if (target.dataset is not None):
-				msg = "Yikes - `Label.dataset` cannot be used if `shared_dataset` is used."
-				raise Exception(msg)
-			elif (target.dataset is None):
-				target.dataset = shared_dataset
-
-			inputs_bearing = []
-			for i in inputs:
-				if (i.dataset==None):
-					i.dataset = shared_dataset
-				else:
-					inputs_bearing.append(i)
-			if (None not in inputs_bearing):
-				msg = "Yikes - `shared_dataset` provided, but all of the Inputs have their own datasets"
-		
 		# Assemble the Target
 		if (target.column is not None):
 			l_id = Label.from_dataset(dataset_id=target.dataset.id, columns=target.column).id
@@ -114,30 +89,38 @@ class Pipeline:
 		feature_ids = []
 		for i in inputs:
 			d_id = i.dataset.id
-			
-			if (d_id==target.dataset.id):
-				if (i.cols_excluded==None):
-					i.cols_excluded = target.column
-				else:
-					i.cols_excluded = i.cols_excluded + target.column
-			f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=i.cols_excluded).id
+			# For shared datasets, remove any label columns from featureset
+			cols_excluded = i.cols_excluded
+			if (target is not None):
+				if (d_id==target.dataset.id):
+					if (cols_excluded==None):
+						cols_excluded = target.column
+					else:
+						for c in target.column:
+							if (c not in cols_excluded):
+								cols_excluded.append(c)
+			f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=cols_excluded).id
 			feature_ids.append(f_id)
 
-			if (i.interpolaters is not None):
+			interpolaters = i.interpolaters
+			if (interpolaters is not None):
 				i_id = Interpolaterset.from_feature(feature_id=f_id).id
-				for fp in i.interpolaters:
+				for fp in interpolaters:
 					FeatureInterpolater.from_interpolaterset(i_id, **fp)
+			
+			window = i.window
+			if (window is not None):
+				Window.from_feature(feature_id=f_id, **window)
 
-			if (i.window is not None):
-				Window.from_feature(feature_id=f_id, **i.window)
-
-			if (i.encoders is not None):					
+			encoders = i.encoders
+			if (encoders is not None):					
 				e_id = Encoderset.from_feature(feature_id=f_id).id
-				for fc in i.encoders:
+				for fc in encoders:
 					FeatureCoder.from_encoderset(encoderset_id=e_id, **fc)
-
-			if (i.reshape_indices is not None):
-				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=i.reshape_indices)
+			
+			reshape_indices = i.reshape_indices
+			if (reshape_indices is not None):
+				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=reshape_indices)
 
 		splitset = Splitset.make(
 			feature_ids 	  = [feature_ids]
@@ -151,9 +134,9 @@ class Pipeline:
 		
 		if (stratifier.fold_count is not None):
 			Foldset.from_splitset(
-				splitset_id=splitset.id, 
-				fold_count=stratifier.fold_count, 
-				bin_count=stratifier.bin_count
+				splitset_id = splitset.id, 
+				fold_count	= stratifier.fold_count, 
+				bin_count	= stratifier.bin_count
 			)
 		return splitset
 

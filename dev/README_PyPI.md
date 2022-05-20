@@ -3,7 +3,9 @@
 ### Dependencies for build process.
 
 ```bash
-pip3 install --upgrade wheel twine
+pip install --upgrade pip
+pip install --upgrade wheel
+pip install --upgrade aiqc
 ```
 
 ---
