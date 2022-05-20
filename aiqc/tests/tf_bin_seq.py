@@ -39,9 +39,9 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('epilepsy.parquet')
 	# testing Featurepolater 3D.
-	df['sensor_1'][999] = np.NaN
+	df['sensor_1'][10] = np.NaN
 	df['sensor_1'][0] = np.NaN
-	df['sensor_150'][130] = np.NaN
+	df['sensor_150'][80] = np.NaN
 	df['sensor_152'][22] = np.NaN
 	df['sensor_170'][0] = np.NaN
 	

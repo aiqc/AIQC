@@ -204,6 +204,9 @@ def increment_version(model_class, instance, created):
 	klass = instance.__class__.__name__
 	if (klass!="File"):
 		instance, latest_match = utils.wrangle.match_name(instance, created)
+		###
+		print(latest_match)
+		# print(latest_match.name)
 		if (latest_match is not None):
 			if (klass=="Dataset"):
 				if (latest_match.dataset_type!=instance.dataset_type):
@@ -916,7 +919,9 @@ class Dataset(BaseModel):
 					raise Exception(f'\nThe input contains an object of type non-str type: {type(expectedString)}')
 
 			dataframe = pd.DataFrame(strings, columns=[Dataset.Text.column_name], dtype="object")
-			return Dataset.Text.from_pandas(dataframe, name)
+			return Dataset.Text.from_pandas(
+				dataframe=dataframe, name=name, description=description
+			)
 
 
 		def from_pandas(
@@ -931,8 +936,13 @@ class Dataset(BaseModel):
 
 			if dataframe[Dataset.Text.column_name].dtypes != 'O':
 				raise Exception("\nYikes - The `dataframe` you provided contains 'TextData' column with incorrect dtype: column dtype != object\n")
-
-			dataset = Dataset.Tabular.from_pandas(dataframe, name, dtype, column_names)
+			dataset = Dataset.Tabular.from_pandas(
+				dataframe = dataframe
+				, name = name
+				, description = description
+				, dtype = dtype
+				, column_names = column_names
+			)
 			dataset.dataset_type = Dataset.Text.dataset_type
 			dataset.save()
 			return dataset
@@ -946,8 +956,18 @@ class Dataset(BaseModel):
 			, dtype:object = None
 			, column_names:list = None
 			, skip_header_rows:object = 'infer'
+			, ingest:bool = True
 		):
-			dataset = Dataset.Tabular.from_path(file_path, source_file_format, name, dtype, column_names, skip_header_rows)
+			dataset = Dataset.Tabular.from_path(
+				file_path = file_path
+				, source_file_format = source_file_format
+				, name = name
+				, description = description
+				, dtype = dtype
+				, column_names = column_names
+				, skip_header_rows = skip_header_rows
+				, ingest = ingest
+			)
 			dataset.dataset_type = Dataset.Text.dataset_type
 			dataset.save()
 			return dataset
@@ -1918,7 +1938,7 @@ class Feature(BaseModel):
 			matching_columns = []
 			
 			if ((dtypes is None) and (columns is None)):
-				raise Exception("\nYikes - When `include==True`, either `dtypes` or `columns` must be provided.\n")
+				columns = initial_columns
 
 			if (dtypes is not None):
 				for typ in dtypes:
@@ -1941,7 +1961,7 @@ class Feature(BaseModel):
 						"""))
 
 		elif (include==False):
-			# Prune this list via exclusion.
+			# Prune this list via exclusion. `copy`` so we original can be used later.
 			matching_columns = initial_columns.copy()
 
 			if (dtypes is not None):
@@ -1963,6 +1983,7 @@ class Feature(BaseModel):
 						so this column-based filter is not valid.
 						Remove '{c}' from `dtypes` and try again.
 						"""))
+			
 		if (len(matching_columns) == 0):
 			if (include == True):
 				inex_str = "inclusion"
@@ -2945,7 +2966,7 @@ class FeatureInterpolater(BaseModel):
 		)
 		try:
 			test_arr = feature.to_numpy()#Don't pass matching cols.
-			interpolaterset.interpolate(array=test_arr, samples=None)
+			interpolaterset.interpolate(array=test_arr, samples=samples)
 		except:
 			fp.delete_instance() # Orphaned.
 			raise

@@ -70,13 +70,14 @@ class Pipeline:
 		inputs = listify(inputs)
 
 		# Assemble the Target
-		if (target.column is not None):
-			l_id = Label.from_dataset(dataset_id=target.dataset.id, columns=target.column).id
+		if (target is not None):
+			label = Label.from_dataset(dataset_id=target.dataset.id, columns=target.column)
+			l_id = label.id
 			if (target.interpolater is not None):
 				LabelInterpolater.from_label(label_id=l_id, **target.interpolater)
 			if (target.encoder is not None): 
 				LabelCoder.from_label(label_id=l_id, **target.encoder)
-		elif (target.column is None):
+		elif (target is None):
 			# Need to know if label exists so it can be exlcuded.
 			l_id = None
 
@@ -86,14 +87,14 @@ class Pipeline:
 			d_id = i.dataset.id
 			# For shared datasets, remove any label columns from featureset
 			cols_excluded = i.cols_excluded
-			if (target is not None):
-				if (d_id==target.dataset.id):
-					if (cols_excluded==None):
-						cols_excluded = target.column
-					else:
-						for c in target.column:
-							if (c not in cols_excluded):
-								cols_excluded.append(c)
+			if (d_id==l_id):
+				l_cols = label.columns
+				if (cols_excluded==None):
+					cols_excluded = l_cols
+				else:
+					for c in l_cols:
+						if (c not in cols_excluded):
+							cols_excluded.append(c)
 			f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=cols_excluded).id
 			feature_ids.append(f_id)
 

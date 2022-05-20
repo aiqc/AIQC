@@ -1,5 +1,6 @@
-from .. import mlops
+from ..mlops import Pipeline, Input, Target, Stratifier, Experiment
 from .. import datum
+from ..orm import Dataset
 import torch.nn as nn
 import torchmetrics as tm
 from ..utils.pytorch import fit
@@ -47,35 +48,27 @@ hyperparameters = dict(
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('epilepsy.parquet')
 	label_df = df[['seizure']]
+	label_dataset = Dataset.Tabular.from_pandas(label_df)
 	seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
+	feature_dataset = Dataset.Sequence.from_numpy(seq_ndarray3D)
 
-	splitset = mlops.Pipeline.Sequence(
-		# --- Label preprocessing ---
-		label_df_or_path = label_df
-		, label_dtype = None
-		, label_column = 'seizure'
-		, label_interpolater = None
-		, label_encoder = None
-
-		# --- Feature preprocessing ---
-		, feature_ndarray3D_or_npyPath = seq_ndarray3D
-		, feature_dtype = None
-		, feature_cols_excluded = None
-		, feature_interpolaters = None
-		, feature_window = None
-		, feature_encoders = [
-			dict(columns='0', sklearn_preprocess=StandardScaler())
-		]
-		, feature_reshape_indices = None
-
-		# --- Stratification ---
-		, size_test = 0.12
-		, size_validation = 0.22
-		, fold_count = None
-		, bin_count = None
+	splitset = Pipeline(
+		Input(
+			dataset  = feature_dataset,
+			encoders = dict(sklearn_preprocess=StandardScaler())
+		),
+		
+		Target(
+			dataset = label_dataset
+		),
+		
+		Stratifier(
+			size_test       = 0.12, 
+			size_validation = 0.22
+		)    
 	)
 
-	queue = mlops.Experiment(
+	queue = Experiment(
 		# --- Analysis type ---
 		library = "pytorch"
 		, analysis_type = "classification_binary"
