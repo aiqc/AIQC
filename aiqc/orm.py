@@ -247,8 +247,6 @@ class Dataset(BaseModel):
 
 		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
-		elif (dataset.dataset_type == 'text'):
-			df = Dataset.Text.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'sequence'):
 			df = Dataset.Sequence.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
@@ -265,8 +263,6 @@ class Dataset(BaseModel):
 			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'sequence'):
 			arr = Dataset.Sequence.to_numpy(id=id, columns=columns, samples=samples)
-		elif (dataset.dataset_type == 'text'):
-			arr = Dataset.Text.to_numpy(id=id, columns=columns, samples=samples)
 		elif (dataset.dataset_type == 'image'):
 			arr = Dataset.Image.to_numpy(id=id, columns=columns, samples=samples)
 		return arr
@@ -275,7 +271,7 @@ class Dataset(BaseModel):
 	def to_pillow(id:int, samples:list=None):
 		samples = utils.wrangle.listify(samples)
 		dataset = Dataset.get_by_id(id)
-		if ((dataset.dataset_type == 'tabular') or (dataset.dataset_type == 'text')):
+		if (dataset.dataset_type == 'tabular'):
 			raise Exception("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
 		elif (dataset.dataset_type == 'image'):
 			image = Dataset.Image.to_pillow(id=id, samples=samples)
@@ -284,16 +280,6 @@ class Dataset(BaseModel):
 				raise Exception("\nYikes - `Dataset.Sequence.to_pillow()` does not support a `samples` argument.\n")
 			image = Dataset.Sequence.to_pillow(id=id)
 		return image
-
-
-	def to_strings(id:int, samples:list=None):	
-		dataset = Dataset.get_by_id(id)
-		samples = utils.wrangle.listify(samples)
-
-		if (dataset.dataset_type == 'tabular' or dataset.dataset_type == 'image'):
-			raise Exception("\nYikes - This Dataset class does not have a `to_strings()` method.\n")
-		elif (dataset.dataset_type == 'text'):
-			return Dataset.Text.to_strings(id=dataset.id, samples=samples)
 
 
 	def get_main_file(id:int):
@@ -653,6 +639,7 @@ class Dataset(BaseModel):
 
 
 	class Image():
+		"""Each Image sample is a Dataset.Sequence of 1 or more Files."""
 		# PIL supported file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
 		dataset_type = 'image'
 		dataset_index = 0
@@ -688,12 +675,12 @@ class Dataset(BaseModel):
 				, description = description
 				, source_path = source_path
 			)
-			try:			
+			try:		
+				# Intentionally not passing name for versioning
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = arr_4d
 					, paths = file_paths
-					, name = name
 					, dtype = dtype
 					, column_names = column_names
 					, ingest = ingest
@@ -742,11 +729,11 @@ class Dataset(BaseModel):
 			)
 
 			try:
+				# Intentionally not passing name for versioning
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = arr_4d
 					, paths = urls
-					, name = name
 					, dtype = dtype
 					, column_names = column_names
 					, ingest = ingest
@@ -799,10 +786,10 @@ class Dataset(BaseModel):
 				, source_path = source_path
 			)
 			try:
+				# Intentionally not passing name for versioning
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = ndarray_4D
-					, name = name
 					, dtype = dtype
 					, column_names = column_names
 					, ingest = ingest
@@ -1158,9 +1145,9 @@ class Label(BaseModel):
 		d = Dataset.get_by_id(dataset_id)
 		columns = utils.wrangle.listify(columns)
 
-		if (d.dataset_type != 'tabular' and d.dataset_type != 'text'):
+		if (d.dataset_type!='tabular'):
 			raise Exception(dedent(f"""
-			Yikes - Labels can only be created from `dataset_type='tabular' or 'text'`.
+			Yikes - Labels can only be created from `dataset_type='tabular'.
 			But you provided `dataset_type`: <{d.dataset_type}>
 			"""))
 		d_cols = Dataset.get_main_file(dataset_id).columns
@@ -2089,7 +2076,7 @@ class Splitset(BaseModel):
 				window = f.windows[-1]
 				f_length = window.window_count
 			else:
-				if (f_dset_type == 'tabular' or f_dset_type == 'text'):
+				if (f_dset_type == 'tabular'):
 					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
 				elif (f_dset_type == 'sequence'):
 					f_length = f_dataset.file_count
@@ -2235,34 +2222,18 @@ class Splitset(BaseModel):
 					)
 
 			elif (stratify_arr is None):
-				if (f_dset_type!='text'):
-					features_train, features_test, indices_train, indices_test = train_test_split(
-						feature_array, arr_idx
-						, test_size = size_test
+				features_train, features_test, indices_train, indices_test = train_test_split(
+					feature_array, arr_idx
+					, test_size = size_test
+					, shuffle = True
+				)
+
+				if (size_validation is not None):
+					features_train, features_validation, indices_train, indices_validation = train_test_split(
+						features_train, indices_train
+						, test_size = pct_for_2nd_split
 						, shuffle = True
 					)
-
-					if (size_validation is not None):
-						features_train, features_validation, indices_train, indices_validation = train_test_split(
-							features_train, indices_train
-							, test_size = pct_for_2nd_split
-							, shuffle = True
-						)
-
-				elif (f_dset_type=='text'):
-					# Differs in that the Features not fed into `train_test_split()`.
-					indices_train, indices_test = train_test_split(
-						arr_idx
-						, test_size = size_test
-						, shuffle = True
-					)
-
-					if (size_validation is not None):
-						indices_train, indices_validation = train_test_split(
-							indices_train
-							, test_size = pct_for_2nd_split
-							, shuffle = True
-						)
 
 			if (size_validation is not None):
 				indices_lst_validation = indices_validation.tolist()
@@ -3020,16 +2991,10 @@ class FeatureCoder(BaseModel):
 
 		dataset = feature.dataset
 		dataset_type = dataset.dataset_type
-
-		if (dataset_type == "text"):
-			only_fit_train = False
-			is_categorical = False
-			if ('sklearn.feature_extraction.text' not in str(type(sklearn_preprocess))):
-				raise Exception("\n Yikes - Only sklearn.feature_extraction.text encoders are supported for text dataset.\n")
-		else:
-			sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
-				sklearn_preprocess, is_label=False
-			)
+		
+		sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
+			sklearn_preprocess, is_label=False
+		)
 
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_featurecoders

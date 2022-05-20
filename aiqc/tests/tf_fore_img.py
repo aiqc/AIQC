@@ -101,7 +101,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None):
 		, analysis_type = "regression"
 		, fn_build = fn_build
 		, fn_train = fn_train
-		# , fn_lose = keras_image_forecast_fn_lose
 	).id
 
 	hyperparameters = dict(

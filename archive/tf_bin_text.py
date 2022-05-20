@@ -1,7 +1,7 @@
-"""TensorFlow Binary Classification with Text data"""
+"""Test: TensorFlow Binary Classification with Text data"""
 # Internal modules
-from .. import datum
-from ..orm import *
+from ..aiqc import datum
+from ..aiqc.orm import *
 # External modules
 import tensorflow as tf
 import tensorflow.keras.layers as l
@@ -43,7 +43,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	}
 
 	file_path = datum.get_path('spam.csv')
-	d_id = Dataset.Text.from_path(
+	d_id = Dataset.Tabular.from_path(
 		file_path = file_path
 		, source_file_format = 'csv'
 		, name = 'text test dataset'
@@ -80,7 +80,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	e_id = Encoderset.from_feature(feature_id=f_id).id
 	FeatureCoder.from_encoderset(
 		encoderset_id=e_id
-		, sklearn_preprocess = CountVectorizer(max_features = 200)
+		, sklearn_preprocess = CountVectorizer(max_features=200)
 		, columns=['TextData']
 	)
 

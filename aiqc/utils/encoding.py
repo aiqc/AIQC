@@ -294,7 +294,6 @@ def transform_dynamicDimensions(
 		# Since each column is 1D, we care about rows now.
 		length = encoded_samples.shape[0]
 		if (length == 1):
-			#encoded_samples = fitted_encoders[0].transform(encoded_samples)
 			# to get text feature_extraction working.
 			encoded_samples = fitted_encoders[0].transform(encoded_samples[0])
 			# Some of these 1D encoders also output 1D.
