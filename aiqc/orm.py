@@ -1247,7 +1247,7 @@ class Label(BaseModel):
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
 	
-	def from_dataset(dataset_id:int, columns:list):
+	def from_dataset(dataset_id:int, columns:list=None):
 		d = Dataset.get_by_id(dataset_id)
 		columns = utils.wrangle.listify(columns)
 
@@ -1256,13 +1256,16 @@ class Label(BaseModel):
 			Yikes - Labels can only be created from `dataset_type='tabular' or 'text'`.
 			But you provided `dataset_type`: <{d.dataset_type}>
 			"""))
-		
 		d_cols = Dataset.get_main_file(dataset_id).columns
-
-		# Check that the user-provided columns exist.
-		all_cols_found = all(col in d_cols for col in columns)
-		if not all_cols_found:
-			raise Exception("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
+		
+		if (columns is None):
+			# Handy for sequence and image pipelines
+			columns = d_cols
+		elif (columns is not None):
+			# Check that the user-provided columns exist.
+			all_cols_found = all(c in d_cols for c in columns)
+			if (not all_cols_found):
+				raise Exception("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
 
 		# Check for duplicates of this label that already exist.
 		cols_aplha = sorted(columns)
@@ -1276,15 +1279,14 @@ class Label(BaseModel):
 				if (cols_aplha == l_cols_alpha):
 					raise Exception(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
 
-		column_count = len(columns)
-
-		label_df = Dataset.to_pandas(id=dataset_id, columns=columns)
 		"""
 		- When multiple columns are provided, they must be OHE.
 		- Figure out column count because classification_binary and associated 
 		metrics can't be run on > 2 columns.
 		- Negative values do not alter type of numpy int64 and float64 arrays.
 		"""
+		label_df = Dataset.to_pandas(id=dataset_id, columns=columns)
+		column_count = len(columns)
 		if (column_count > 1):
 			unique_values = []
 			for c in columns:
@@ -1313,8 +1315,8 @@ class Label(BaseModel):
 					The columns you provided contained these unique values: {all_uniques}
 					"""))
 			unique_classes = all_uniques
-			
 			del label_df
+
 			# Now check if each row in the labels is truly OHE.
 			label_arr = Dataset.to_numpy(id=dataset_id, columns=columns)
 			for i, arr in enumerate(label_arr):
@@ -1332,8 +1334,8 @@ class Label(BaseModel):
 					but it contains no hot columns where value is 1.
 					"""))
 
-		elif (column_count == 1):
-			# At this point, `label_df` is a single column df that needs to fected as a Series.
+		elif (column_count==1):
+			# At this point, `label_df` is a single column df that needs to fecthed as a Series.
 			col = columns[0]
 			label_series = label_df[col]
 			label_dtype = label_series.dtype

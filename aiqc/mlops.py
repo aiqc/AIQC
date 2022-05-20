@@ -62,10 +62,10 @@ class Pipeline:
 	def __new__(
 		cls
 		, inputs:list
-		, target:object 		= None
-		, stratifier:object 	= None
-		, name:str 				= None
-		, description:str 		= None
+		, target:object 	= None
+		, stratifier:object = None
+		, name:str 			= None
+		, description:str 	= None
 	):					
 		inputs = listify(inputs)
 		# Initialize with empties to make conditionality easier
