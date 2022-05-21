@@ -63,6 +63,9 @@ from torch import save as torch_save
 from torch import long, FloatTensor
 
 
+#==================================================
+# DB CONFIG
+#==================================================
 def get_path_db():
 	from .utils.config import get_config
 	aiqc_config = get_config()
@@ -204,9 +207,6 @@ def increment_version(model_class, instance, created):
 	klass = instance.__class__.__name__
 	if (klass!="File"):
 		instance, latest_match = utils.wrangle.match_name(instance, created)
-		###
-		print(latest_match)
-		# print(latest_match.name)
 		if (latest_match is not None):
 			if (klass=="Dataset"):
 				if (latest_match.dataset_type!=instance.dataset_type):
@@ -676,7 +676,7 @@ class Dataset(BaseModel):
 				, source_path = source_path
 			)
 			try:		
-				# Intentionally not passing name for versioning
+				# Intentionally not passing name to avoid versioning conflicts
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = arr_4d
@@ -729,7 +729,7 @@ class Dataset(BaseModel):
 			)
 
 			try:
-				# Intentionally not passing name for versioning
+				# Intentionally not passing name to avoid versioning conflicts
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = arr_4d
@@ -786,7 +786,7 @@ class Dataset(BaseModel):
 				, source_path = source_path
 			)
 			try:
-				# Intentionally not passing name for versioning
+				# Intentionally not passing name to avoid versioning conflicts
 				Dataset.Image.sequences_from_4D(
 					dataset = dataset
 					, ndarray_4D = ndarray_4D
@@ -1788,7 +1788,7 @@ class Feature(BaseModel):
 					break
 
 		if (verbose == True):
-			print(f"\n___/ {class_name}_index: {index} \\_________\n") # Intentionally no trailing `\n`.
+			print(f"\n___/ {class_name}_index: {index} \\_________")
 
 		if (dtypes is not None):
 			for typ in dtypes:
@@ -1812,7 +1812,7 @@ class Feature(BaseModel):
 			matching_columns = []
 			
 			if ((dtypes is None) and (columns is None)):
-				columns = initial_columns
+				matching_columns = initial_columns.copy()
 
 			if (dtypes is not None):
 				for typ in dtypes:
@@ -2988,9 +2988,6 @@ class FeatureCoder(BaseModel):
 		encoderset = Encoderset.get_by_id(encoderset_id)
 		feature = encoderset.feature
 		existing_featurecoders = encoderset.featurecoders
-
-		dataset = feature.dataset
-		dataset_type = dataset.dataset_type
 		
 		sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
 			sklearn_preprocess, is_label=False

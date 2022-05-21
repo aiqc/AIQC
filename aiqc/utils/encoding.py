@@ -198,7 +198,7 @@ def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 	with catch_warnings(record=True) as w:
 		try:
 			#`samples_to_fit` is coming in as 2D.
-			# Remember, we are assembling `fitted_encoders` dict, not accesing it.
+			# Remember, we are assembling `fitted_encoders` dict, not accessing it.
 			fit_encoder = sklearn_preprocess.fit(samples_to_fit)
 			fitted_encoders.append(fit_encoder)
 		except:

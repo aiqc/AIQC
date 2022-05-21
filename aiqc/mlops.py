@@ -3,27 +3,41 @@ High-Level API
 ├── Documentation = https://aiqc.readthedocs.io/en/latest/notebooks/api_high_level.html
 └── Examples = https://aiqc.readthedocs.io/en/latest/tutorials.html
 
-These classes really just bundle a bunch of low-level API commands they don't instantiate 
-real `Pipeline` objects but rather `splitsets`. They use `__new__` because `__init__` 
-cannot return anything.
+- The High-Level API is a declarative wrapper for the Low-Level API. 
+  These few psuedo classes provide a logical way to group user input, 
+  as opposed to tediously chaining many ORM objects together with relationships.
+- It also allows us to make changes to the Low-Level API without 
+  introducing major changes to the High-Level API.
+- `__new__` is used in some places because `__init__` cannot return anything.
 """
 from .orm import *
 from .utils.wrangle import listify
 
-
+#==================================================
+# PIPELINE
+#==================================================
 class Target:
 	def __init__(
-		self
-		, dataset:object
-		, column:str 		= None
-		, interpolater:dict = None
-		, encoder:dict 		= None
+		self, 
+		dataset:object,
+		column:str 			= None,
+		interpolater:object = None,
+		encoder:object		= None,
 	):
 		"""`column:str` in order to encourage single-column labels"""
-		self.dataset 		= dataset
-		self.column 		= listify(column)
-		self.interpolater 	= interpolater
-		self.encoder 		= encoder
+		self.dataset 	   = dataset
+		self.column  	   = listify(column)
+		self.interpolater  = interpolater
+		self.encoder 	   = encoder
+
+	class Interpolater:
+		def __init__(self, process_separately:bool=True, interpolate_kwargs:dict=None):
+			self.process_separately = process_separately
+			self.interpolate_kwargs = interpolate_kwargs
+	
+	class Encoder:
+		def __init__(self, sklearn_preprocess:object):
+			self.sklearn_preprocess = sklearn_preprocess
 
 
 class Input:
@@ -42,6 +56,26 @@ class Input:
 		self.window 			= window
 		self.encoders 			= listify(encoders)
 		self.reshape_indices 	= reshape_indices
+	
+	class Interpolater:
+		def __init__(self, process_separately:bool=True, interpolate_kwargs:dict=None):
+			self.process_separately = process_separately
+			self.interpolate_kwargs = interpolate_kwargs
+	
+	class Encoder:
+		def __init__(
+			self
+			, sklearn_preprocess:object
+			, include:bool 			= True
+			, dtypes:list  			= None
+			, columns:list 			= None
+			, verbose:bool 			= True
+		):
+			self.sklearn_preprocess = sklearn_preprocess
+			self.include 			= include
+			self.dtypes 			= listify(dtypes)
+			self.columns 			= listify(columns)
+			self.verbose 			= verbose
 
 
 class Stratifier:
@@ -68,15 +102,16 @@ class Pipeline:
 		, description:str 	= None
 	):					
 		inputs = listify(inputs)
-
 		# Assemble the Target
 		if (target is not None):
 			label = Label.from_dataset(dataset_id=target.dataset.id, columns=target.column)
 			l_id = label.id
 			if (target.interpolater is not None):
-				LabelInterpolater.from_label(label_id=l_id, **target.interpolater)
+				kwargz = target.interpolater.__dict__
+				LabelInterpolater.from_label(label_id=l_id, **kwargz)
 			if (target.encoder is not None): 
-				LabelCoder.from_label(label_id=l_id, **target.encoder)
+				kwargz = target.encoder.__dict__
+				LabelCoder.from_label(label_id=l_id, **kwargz)
 		elif (target is None):
 			# Need to know if label exists so it can be exlcuded.
 			l_id = None
@@ -102,7 +137,8 @@ class Pipeline:
 			if (interpolaters is not None):
 				i_id = Interpolaterset.from_feature(feature_id=f_id).id
 				for fp in interpolaters:
-					FeatureInterpolater.from_interpolaterset(i_id, **fp)
+					kwargz = fp.__dict__
+					FeatureInterpolater.from_interpolaterset(i_id, **kwargz)
 			
 			window = i.window
 			if (window is not None):
@@ -112,7 +148,8 @@ class Pipeline:
 			if (encoders is not None):					
 				e_id = Encoderset.from_feature(feature_id=f_id).id
 				for fc in encoders:
-					FeatureCoder.from_encoderset(encoderset_id=e_id, **fc)
+					kwargz = fc.__dict__
+					FeatureCoder.from_encoderset(encoderset_id=e_id, **kwargz)
 			
 			reshape_indices = i.reshape_indices
 			if (reshape_indices is not None):
@@ -139,6 +176,60 @@ class Pipeline:
 			)
 		return splitset
 
+#==================================================
+# EXPERIMENT
+#==================================================
+class Architecture:
+	def __init__(
+		self
+		, library:str
+		, analysis_type:str
+		, fn_build:object
+		, fn_train:object
+		, fn_optimize:object   = None
+		, fn_lose:object       = None
+		, fn_predict:object    = None
+		, hyperparameters:dict = None
+	):
+		"""Putting params here as `fn_*` can change when editing params"""
+		self.hyperparameters   = hyperparameters
+		self.id = Algorithm.make(
+			library 	  	   = library
+			, analysis_type    = analysis_type
+			, fn_build 	  	   = fn_build
+			, fn_train 	  	   = fn_train
+			, fn_optimize      = fn_optimize
+			, fn_lose 	  	   = fn_lose
+			, fn_predict       = fn_predict
+		).id
+		
+
+class Trainer:
+	def __init__(
+		self
+		, pipeline_id:int
+		, repeat_count:int 	= 1
+		, permute_count:int = 3
+		, hide_test:bool 	= False
+		, search_count 		= None
+		, search_percent 	= None
+	):
+		"""Intentionally switch to splitset here so it can be used in **kwargs"""
+		self.splitset_id 	= pipeline_id
+		self.repeat_count 	= repeat_count
+		self.permute_count 	= permute_count
+		self.hide_test 		= hide_test
+		self.search_count 	= search_count
+		self.search_percent = search_percent
+
+		splitset = Splitset.get_by_id(self.splitset_id)
+		foldsets = splitset.foldsets
+		if (foldsets.count()>0):
+			foldset_id = foldsets[-1].id
+		else:
+			foldset_id = None
+		self.foldset_id = foldset_id
+
 
 class Experiment:
 	"""
@@ -150,51 +241,23 @@ class Experiment:
 	`encoder_feature`: List of dictionaries describing each encoder to run along with filters for different feature columns.
 	`encoder_label`: Single instantiation of an sklearn encoder: e.g. `OneHotEncoder()` that gets applied to the full label array.
 	"""
-	def __new__(
-		cls
-		, library:str
-		, analysis_type:str
-		, fn_build:object
-		, fn_train:object
-		, splitset_id:int
-		, repeat_count:int = 1
-		, permute_count:int = 3
-		, hide_test:bool = False
-		, fn_optimize:object = None
-		, fn_predict:object = None
-		, fn_lose:object = None
-		, hyperparameters:dict = None
-		, search_count = None
-		, search_percent = None
-		, foldset_id:int = None
-	):
-		a_id = Algorithm.make(
-			library = library
-			, analysis_type = analysis_type
-			, fn_build = fn_build
-			, fn_train = fn_train
-			, fn_optimize = fn_optimize
-			, fn_predict = fn_predict
-			, fn_lose = fn_lose
-		).id
-
+	def __new__(cls, architecture:object, trainer:object):
+		hyperparameters = architecture.hyperparameters
 		if (hyperparameters is not None):
 			h_id = Hyperparamset.from_algorithm(
-				algorithm_id = a_id
+				algorithm_id = architecture.id
 				, hyperparameters = hyperparameters
-				, search_count = search_count
-				, search_percent = search_percent
+				, search_count = trainer.search_count
+				, search_percent = trainer.search_percent
 			).id
 		elif (hyperparameters is None):
 			h_id = None
 
+		kwargz = trainer.__dict__
+		del kwargz['search_count'], kwargz['search_percent']
 		queue = Queue.from_algorithm(
-			algorithm_id = a_id
-			, splitset_id = splitset_id
-			, repeat_count = repeat_count
-			, permute_count = permute_count
-			, hide_test = hide_test
+			algorithm_id = architecture.id
 			, hyperparamset_id = h_id
-			, foldset_id = foldset_id
+			, **kwargz
 		)
 		return queue
