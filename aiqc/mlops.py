@@ -12,7 +12,6 @@ High-Level API
 """
 from .orm import *
 from .utils.wrangle import listify
-
 #==================================================
 # PIPELINE
 #==================================================
@@ -27,8 +26,15 @@ class Target:
 		"""`column:str` in order to encourage single-column labels"""
 		self.dataset 	   = dataset
 		self.column  	   = listify(column)
-		self.interpolater  = interpolater
-		self.encoder 	   = encoder
+
+		l_id = Label.from_dataset(dataset_id=dataset.id, columns=column).id
+		if (interpolater is not None):
+			kwargz = interpolater.__dict__
+			LabelInterpolater.from_label(label_id=l_id, **kwargz)
+		if (encoder is not None): 
+			kwargz = encoder.__dict__
+			LabelCoder.from_label(label_id=l_id, **kwargz)
+		self.id = l_id
 
 	class Interpolater:
 		def __init__(self, process_separately:bool=True, interpolate_kwargs:dict=None):
@@ -98,32 +104,25 @@ class Pipeline:
 		, inputs:list
 		, target:object 	= None
 		, stratifier:object = None
-		, name:str 			= None
-		, description:str 	= None
+		, name:str			= None
+		, description:str	= None
 	):					
 		inputs = listify(inputs)
-		# Assemble the Target
+		
 		if (target is not None):
-			label = Label.from_dataset(dataset_id=target.dataset.id, columns=target.column)
-			l_id = label.id
-			if (target.interpolater is not None):
-				kwargz = target.interpolater.__dict__
-				LabelInterpolater.from_label(label_id=l_id, **kwargz)
-			if (target.encoder is not None): 
-				kwargz = target.encoder.__dict__
-				LabelCoder.from_label(label_id=l_id, **kwargz)
+			l_id = target.id
 		elif (target is None):
 			# Need to know if label exists so it can be exlcuded.
 			l_id = None
-
-		# Assemble the Inputs
+		
+		
 		feature_ids = []
 		for i in inputs:
 			d_id = i.dataset.id
 			# For shared datasets, remove any label columns from featureset
 			cols_excluded = i.cols_excluded
 			if (d_id==l_id):
-				l_cols = label.columns
+				l_cols = target.column
 				if (cols_excluded==None):
 					cols_excluded = l_cols
 				else:
@@ -158,6 +157,7 @@ class Pipeline:
 		if (stratifier is None):
 			# Initialize with Nones
 			stratifier = Stratifier()
+		# Easier to be explicit w kwargz rather than working around fold_count
 		splitset = Splitset.make(
 			feature_ids 	  = [feature_ids]
 			, label_id 		  = l_id
@@ -170,8 +170,8 @@ class Pipeline:
 		
 		if (stratifier.fold_count is not None):
 			Foldset.from_splitset(
-				splitset_id = splitset.id, 
-				fold_count	= stratifier.fold_count, 
+				splitset_id = splitset.id,
+				fold_count	= stratifier.fold_count,
 				bin_count	= stratifier.bin_count
 			)
 		return splitset
