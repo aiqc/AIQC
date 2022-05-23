@@ -1,4 +1,4 @@
-from ..mlops import Pipeline, Input, Target, Stratifier, Experiment
+from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..orm import Dataset
 import torch.nn as nn
@@ -52,10 +52,10 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
 	feature_dataset = Dataset.Sequence.from_numpy(seq_ndarray3D)
 
-	splitset = Pipeline(
+	pipeline = Pipeline(
 		Input(
 			dataset  = feature_dataset,
-			encoders = dict(sklearn_preprocess=StandardScaler())
+			encoders = Input.Encoder(sklearn_preprocess=StandardScaler())
 		),
 		
 		Target(
@@ -64,30 +64,25 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 		
 		Stratifier(
 			size_test       = 0.12, 
-			size_validation = 0.22
+			size_validation = 0.22,
+			fold_count      = fold_count
 		)    
 	)
-
-	queue = Experiment(
-		# --- Analysis type ---
-		library = "pytorch"
-		, analysis_type = "classification_binary"
-
-		# --- Model functions ---
-		, fn_build = fn_build
-		, fn_train = fn_train
-		, fn_lose = None #auto
-		, fn_optimize = None #auto
-		, fn_predict = None #auto
-
-		# --- Training options ---
-		, repeat_count = 1
-		, hyperparameters = hyperparameters
-		, search_percent = None
-
-		# --- Data source ---
-		, splitset_id = splitset.id
-		, foldset_id = None
-		, hide_test = False
+	experiment = Experiment(
+		Architecture(
+			library           = "pytorch"
+			, analysis_type   = "classification_binary"
+			, fn_build        = fn_build
+			, fn_train        = fn_train
+			, hyperparameters = hyperparameters
+		),
+		
+		Trainer(
+			pipeline_id       = pipeline.id
+			, repeat_count    = repeat_count
+			, permute_count   = permute_count
+			, search_percent  = None
+			, hide_test       = False
+		)
 	)
-	return queue
+	return experiment

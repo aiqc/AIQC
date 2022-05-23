@@ -85,12 +85,13 @@ def get_db():
 		print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
 	else:
 		"""
-		Write Ahead Lock (WAL) mode supports concurrent writes, but not NFS (AWS EFS)
-		└── <sqlite.org/wal.html>
-		Default is Journal mode and it is set in `pragmas`
-		└── <docs.peewee-orm.com/en/latest/peewee/database.html>
+		SQLite Pragmas/Settings:
+		- Default is Journal mode <docs.peewee-orm.com/en/latest/peewee/database.html>
+		- Write Ahead Lock (WAL) mode supports concurrent writes, but not NFS (AWS EFS) <sqlite.org/wal.html>
+
+		- Tried `'foreign_keys':1` to get `on_delete='CASCADE'` working, but it failed.
 		"""
-		db = SqliteExtDatabase(path)
+		db = SqliteExtDatabase(path, pragmas={})
 		return db
 
 
@@ -291,6 +292,23 @@ class Dataset(BaseModel):
 		elif (dataset.dataset_type == 'image'):
 			file = dataset.datasets[0].get_main_file()#Recursion.
 		return file
+	
+
+	def drop(id:int):
+		"""Tried to get `on_delete='CASCADE'` working, but it seems bugged"""
+		dataset = Dataset.get_by_id(id)
+		typ = dataset.dataset_type
+
+		if (typ=='tabular' or typ=='sequence'):
+			for f in dataset.files:
+				f.delete_instance()
+		if (dataset.dataset_type=='image'):
+			# Many sequence datasets
+			for d in dataset.datasets:
+				for f in d.files:
+					f.delete_instance()
+				d.delete_instance()
+		dataset.delete_instance()
 
 
 	class Tabular():

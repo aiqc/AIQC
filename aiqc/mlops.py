@@ -144,9 +144,15 @@ class Pipeline:
 				Window.from_feature(feature_id=f_id, **window)
 
 			encoders = i.encoders
+			###
+			print(type(encoders))
+			print(encoders)
 			if (encoders is not None):					
 				e_id = Encoderset.from_feature(feature_id=f_id).id
 				for fc in encoders:
+					###
+					print(type(fc))
+					print(fc)
 					kwargz = fc.__dict__
 					FeatureCoder.from_encoderset(encoderset_id=e_id, **kwargz)
 			
