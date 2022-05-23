@@ -46,7 +46,7 @@ from natsort import natsorted #file sorting.
 # ORM.
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.signals import Model, pre_save
-from peewee import CharField, IntegerField, BlobField, BooleanField, \
+from peewee import CharField, IntegerField, BlobField, BooleanField, FloatField, \
 	DateTimeField, ForeignKeyField
 from playhouse.fields import PickleField
 # ETL.
@@ -204,8 +204,8 @@ def add_timestamps(model_class, instance, created):
 @pre_save(sender=BaseModel)
 def increment_version(model_class, instance, created):
 	"""Rules about new versions"""
-	# Minimize performance impact of this signal when creating a one thousand file dataset
 	klass = instance.__class__.__name__
+	# Minimize performance impact of this signal when creating a one thousand file dataset
 	if (klass!="File"):
 		instance, latest_match = utils.wrangle.match_name(instance, created)
 		if (latest_match is not None):
@@ -213,17 +213,21 @@ def increment_version(model_class, instance, created):
 				if (latest_match.dataset_type!=instance.dataset_type):
 					msg = f"Yikes - New Dataset type <{instance.dataset_type}> must match the type of the most recent version <{latest_match.dataset_type}>."
 					raise Exception(msg)
-			elif(klass=="Splitset"):
-				new_label = instance.label.id
-				if (new_label is not None):
-					old_label = latest_match.label.id
-					if (new_label!=old_label):
-						msg = f"Yikes - New Splitset label <{new_label}> must match old Splitset label <{old_label}> in order to use the same name"
-						raise Exception(msg)
-				new_features = instance.get_features()
-				old_features = latest_match.get_features()
-				new_features != old_features
-				msg = f"Yikes - New Splitset features <{new_features}> must match old Splitset features <{old_features}> exactly in order to use the same name"
+			### do i even need this?
+			# elif(klass=="Splitset"):
+			# 	new_label = instance.label.id
+			# 	if (latest_match.random_state==new_label.random_state):
+			# 		msg = f"Yikes - New Splitset.random_state cannot be the same as old Splitset.random_state."
+			# 		raise Exception(msg)
+			# 	if (new_label is not None):
+			# 		old_label = latest_match.label.id
+			# 		if (new_label!=old_label):
+			# 			msg = f"Yikes - New Splitset label <{new_label}> must match old Splitset label <{old_label}> in order to use the same name"
+			# 			raise Exception(msg)
+			# 	new_features = instance.get_features()
+			# 	old_features = latest_match.get_features()
+			# 	new_features != old_features
+			# 	msg = f"Yikes - New Splitset features <{new_features}> must match old Splitset features <{old_features}> exactly in order to use the same name"
 
 
 
@@ -3218,6 +3222,8 @@ class Hyperparamset(BaseModel):
 	hyperparamcombo_count = IntegerField()
 	#strategy = CharField() # set to all by default #all/ random. this would generate a different dict with less params to try that should be persisted for transparency.
 	hyperparameters = JSONField()
+	search_count = IntegerField(null=True)
+	search_percent = FloatField(null=True)
 
 	algorithm = ForeignKeyField(Algorithm, backref='hyperparamsets')
 
@@ -3276,15 +3282,21 @@ class Hyperparamset(BaseModel):
 			, description = description
 			, hyperparameters = hyperparameters
 			, hyperparamcombo_count = hyperparamcombo_count
+			, search_count = search_count
+			, search_percent = search_percent
 		)
 
-		for i, c in enumerate(params_combos_dicts):
-			Hyperparamcombo.create(
-				combination_index = i
-				, favorite = False
-				, hyperparameters = c
-				, hyperparamset = hyperparamset
-			)
+		try:
+			for i, c in enumerate(params_combos_dicts):
+				Hyperparamcombo.create(
+					combination_index = i
+					, favorite = False
+					, hyperparameters = c
+					, hyperparamset = hyperparamset
+				)
+		except:
+			hyperparamset.delete_instance()
+			raise
 		return hyperparamset
 
 
@@ -4470,6 +4482,7 @@ class Job(BaseModel):
 			, history = history
 			, job = job
 			, repeat_index = repeat_index
+			, is_starred = False
 		)
 
 		# Use the Predictor object to make Prediction and its metrics.
@@ -4522,6 +4535,7 @@ class Predictor(BaseModel):
 	model_file = BlobField()
 	input_shapes = JSONField() # used by get_model()
 	history = JSONField()
+	is_starred = BooleanField()
 
 	job = ForeignKeyField(Job, backref='predictors')
 
@@ -4780,6 +4794,16 @@ class Predictor(BaseModel):
 		else:
 			labels = None
 		return labels
+
+
+	def flip_star(id:int):
+		predictor = Predictor.get_by_id(id)
+		if (predictor.is_starred==False):
+			predictor.is_starred = True
+		elif (predictor.is_starred==True):
+			predictor.is_starred = False
+		predictor.save()
+
 
 
 
