@@ -1,5 +1,6 @@
 """Functions that help with data ingestion, preprocessing, and inference."""
 from os import path, listdir
+from random import randint
 from fsspec import filesystem
 from natsort import natsorted
 from textwrap import dedent
@@ -289,7 +290,7 @@ def values_to_bins(array_to_bin:object, bin_count:int):
 
 
 def stratifier_by_dtype_binCount(stratify_dtype:object, stratify_arr:object, bin_count:int=None):
-	# Based on the dtype and bin_count determine how to stratify.
+	"""Based on the dtype and bin_count determine how to stratify."""
 	# Automatically bin floats.
 	if np.issubdtype(stratify_dtype, np.floating):
 		if (bin_count is None):
@@ -317,6 +318,12 @@ def stratifier_by_dtype_binCount(stratify_dtype:object, stratify_arr:object, bin
 			stratifier = stratify_arr
 	return stratifier, bin_count
 	
+
+def random_number(random_state:int):
+	if (random_state is None):
+		random_state = randint(0, 4294967295)
+	return random_state
+
 
 def floats_only(label:object):
 	# Prevent integer dtypes. It will ignore.

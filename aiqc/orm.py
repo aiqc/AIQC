@@ -24,7 +24,7 @@ from . import utils
 from os import path, remove, makedirs
 from sys import modules
 from io import BytesIO
-from random import randint, sample
+from random import sample
 from itertools import product
 from gzip import open as gzopen
 from requests import get as requests_get
@@ -2057,6 +2057,8 @@ class Splitset(BaseModel):
 			has_validation = True
 		else:
 			has_validation = False
+		# It's okay to use the same random state for repeated stratification.
+		random_state = utils.wrangle.random_number(random_state)
 
 		# --- Verify features ---
 		feature_ids = utils.wrangle.listify(feature_ids)
@@ -2190,7 +2192,7 @@ class Splitset(BaseModel):
 			if (stratify_arr is not None):
 				"""
 				- `sklearn.model_selection.train_test_split` = https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-				- `shuffle` happens before the split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
+				- shuffling happens prior to split. Although preserves a df's original index, we don't need to worry about that because we are providing our own indices.
 				- Don't include the Dataset.Image.feature pixel arrays in stratification.
 				"""
 				# `bin_count` is only returned so that we can persist it.
@@ -2200,11 +2202,12 @@ class Splitset(BaseModel):
 					bin_count = bin_count
 				)
 
+				
 				features_train, features_test, stratify_train, stratify_test, indices_train, indices_test = train_test_split(
 					feature_array, stratify_arr, arr_idx
 					, test_size = size_test
 					, stratify = stratifier1
-					, shuffle = True
+					, random_state = random_state
 				)
 
 				if (size_validation is not None):
@@ -2218,21 +2221,21 @@ class Splitset(BaseModel):
 						features_train, stratify_train, indices_train
 						, test_size = pct_for_2nd_split
 						, stratify = stratifier2
-						, shuffle = True
+						, random_state = random_state
 					)
 
 			elif (stratify_arr is None):
 				features_train, features_test, indices_train, indices_test = train_test_split(
 					feature_array, arr_idx
 					, test_size = size_test
-					, shuffle = True
+					, random_state = random_state
 				)
 
 				if (size_validation is not None):
 					features_train, features_validation, indices_train, indices_validation = train_test_split(
 						features_train, indices_train
 						, test_size = pct_for_2nd_split
-						, shuffle = True
+						, random_state = random_state
 					)
 
 			if (size_validation is not None):
@@ -2292,6 +2295,7 @@ class Splitset(BaseModel):
 			, supervision = supervision
 			, has_test = has_test
 			, has_validation = has_validation
+			, random_state = random_state
 			, bin_count = bin_count
 			, unsupervised_stratify_col = unsupervised_stratify_col
 			, name = name
@@ -2462,13 +2466,8 @@ class Foldset(BaseModel):
 				f"This can result in misleading performance metrics for the last Fold.\n"
 			)
 
-		new_random = False
-		while new_random == False:
-			random_state = randint(0, 4294967295) #2**32 - 1 inclusive
-			matching_randoms = splitset.foldsets.select().where(Foldset.random_state==random_state)
-			if (matching_randoms.count()==0):
-				new_random = True
 
+		random_state = utils.wrangle.random_number(random_state)
 		# Create first because need to attach the Folds.
 		foldset = Foldset.create(
 			fold_count = fold_count
@@ -2479,6 +2478,7 @@ class Foldset(BaseModel):
 
 		try:
 			# Stratified vs Unstratified.
+			# In both scenarios `random_state` requires presence of `shuffle`.
 			if (stratify_arr is None):
 				# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
 				kf = KFold(
@@ -3149,11 +3149,9 @@ class Algorithm(BaseModel):
 		, analysis_type:str
 		, fn_build:object
 		, fn_train:object
-		, fn_predict:object = None
-		, fn_lose:object = None
+		, fn_predict:object  = None
+		, fn_lose:object 	 = None
 		, fn_optimize:object = None
-		, description:str = None
-		, name:str = None
 	):
 		library = library.lower()
 		if ((library != 'keras') and (library != 'pytorch')):
@@ -3195,8 +3193,6 @@ class Algorithm(BaseModel):
 			, fn_train = fn_train
 			, fn_predict = fn_predict
 			, fn_lose = fn_lose
-			, description = description
-			, name = name
 		)
 		return algorithm
 
