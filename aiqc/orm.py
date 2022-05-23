@@ -1132,8 +1132,8 @@ class File(BaseModel):
 
 class Label(BaseModel):
 	"""
-	- Label accepts multiple columns in case it is already OneHotEncoded (e.g. tensors).
-	- At this point, we assume that the Label is always a tabular dataset.
+	- Label accepts multiple columns in case it is already OneHotEncoded.
+	- Label must be derrived from a tabular Dataset.
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
@@ -1161,18 +1161,12 @@ class Label(BaseModel):
 			if (not all_cols_found):
 				raise Exception("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
 
-		# Check for duplicates of this label that already exist.
-		cols_aplha = sorted(columns)
-		d_labels = d.labels
-		count = d_labels.count()
-		if (count > 0):
-			for l in d_labels:
-				l_id = str(l.id)
-				l_cols = l.columns
-				l_cols_alpha = sorted(l_cols)
-				if (cols_aplha == l_cols_alpha):
-					raise Exception(f"\nYikes - This Dataset already has Label <id:{l_id}> with the same columns.\nCannot create duplicate.\n")
-
+		# Reuse duplicates.
+		matching_label = Label.select().where(Label.columns==columns)
+		if (matching_label.count()>0):
+			label = matching_label[0]
+			print(f"Info - Identical Label.id<{label.id}> found. Reusing it rather than duplicating it.")
+			return label
 		"""
 		- When multiple columns are provided, they must be OHE.
 		- Figure out column count because classification_binary and associated 
@@ -1387,9 +1381,7 @@ class Label(BaseModel):
 class Feature(BaseModel):
 	"""
 	- Remember, a Feature is just a record of the columns being used.
-	- Decided not to go w subclasses of Unsupervised and Supervised because that would complicate the SDK for the user,
-	  and it essentially forked every downstream model into two subclasses.
-	- PCA components vary across features. When different columns are used those columns have different component values.
+	- Order of `columns` matters for positional analysis, but order of `columns_excluded` does not.
 	"""
 	columns = JSONField(null=True)
 	columns_excluded = JSONField(null=True)
@@ -1400,8 +1392,8 @@ class Feature(BaseModel):
 		dataset_id:int
 		, include_columns:list=None
 		, exclude_columns:list=None
-		#Future: runPCA #,run_pca:boolean=False # triggers PCA analysis of all columns
 	):
+		#runPCA:bool=True # triggers PCA analysis of all columns
 		#As we get further away from the `Dataset.<Types>` they need less isolation.
 		dataset = Dataset.get_by_id(dataset_id)
 		include_columns = utils.wrangle.listify(include_columns)
@@ -1439,29 +1431,15 @@ class Feature(BaseModel):
 			columns = d_cols
 			columns_excluded = None
 
-		"""
-		- Check that this Dataset does not already have a Feature that is exactly the same.
-		- There are less entries in `excluded_columns` so maybe it's faster to compare that.
-		"""
-		if columns_excluded is not None:
-			cols_aplha = sorted(columns_excluded)
-		else:
-			cols_aplha = None
-		d_features = dataset.features
-		count = d_features.count()
-		if (count > 0):
-			for f in d_features:
-				f_id = str(f.id)
-				f_cols = f.columns_excluded
-				if (f_cols is not None):
-					f_cols_alpha = sorted(f_cols)
-				else:
-					f_cols_alpha = None
-				if (cols_aplha == f_cols_alpha):
-					raise Exception(dedent(f"""
-					Yikes - This Dataset already has Feature <id:{f_id}> with the same columns.
-					Cannot create duplicate.
-					"""))
+		# Reuse duplicates. `columns` order matters. Matching `cols_excluded` is redundant.
+		matching_feature = Feature.select().where(Feature.columns==columns)
+		if (matching_feature.count()>0):
+			feature = matching_feature[0]
+			print(f"Info - Identical Feature.id<{feature.id}> found, reusing it rather than duplicating it.")
+			return feature
+
+		if (columns_excluded is not None):
+			columns_excluded = sorted(columns_excluded)
 
 		feature = Feature.create(
 			dataset = dataset
@@ -2333,8 +2311,6 @@ class Foldset(BaseModel):
 	fold_count = IntegerField()
 	random_state = IntegerField()
 	bin_count = IntegerField(null=True) # For stratifying continuous features.
-	#ToDo: max_samples_per_bin = IntegerField()
-	#ToDo: min_samples_per_bin = IntegerField()
 
 	splitset = ForeignKeyField(Splitset, backref='foldsets')
 
