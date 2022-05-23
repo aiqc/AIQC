@@ -1,6 +1,5 @@
 """Functions that help with data ingestion, preprocessing, and inference."""
 from os import path, listdir
-from random import randint
 from fsspec import filesystem
 from natsort import natsorted
 from textwrap import dedent
@@ -317,12 +316,6 @@ def stratifier_by_dtype_binCount(stratify_dtype:object, stratify_arr:object, bin
 		elif (bin_count is None):
 			stratifier = stratify_arr
 	return stratifier, bin_count
-	
-
-def random_number(random_state:int):
-	if (random_state is None):
-		random_state = randint(0, 4294967295)
-	return random_state
 
 
 def floats_only(label:object):

@@ -24,7 +24,7 @@ from . import utils
 from os import path, remove, makedirs
 from sys import modules
 from io import BytesIO
-from random import sample
+from random import randint, sample
 from itertools import product
 from gzip import open as gzopen
 from requests import get as requests_get
@@ -2036,7 +2036,7 @@ class Splitset(BaseModel):
 		else:
 			has_validation = False
 		# It's okay to use the same random state for repeated stratification.
-		random_state = utils.wrangle.random_number(random_state)
+		random_state = randint(0, 4294967295)
 
 		# --- Verify features ---
 		feature_ids = utils.wrangle.listify(feature_ids)
@@ -2442,8 +2442,7 @@ class Foldset(BaseModel):
 				f"This can result in misleading performance metrics for the last Fold.\n"
 			)
 
-
-		random_state = utils.wrangle.random_number(random_state)
+		random_state = randint(0, 4294967295)
 		# Create first because need to attach the Folds.
 		foldset = Foldset.create(
 			fold_count = fold_count
