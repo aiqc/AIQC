@@ -2006,6 +2006,8 @@ class Splitset(BaseModel):
 		, description:str = None
 	):
 		# The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
+		if (fold_count is None):
+			fold_count = 0
 		# --- Verify splits ---
 		if (size_test is not None):
 			if ((size_test <= 0.0) or (size_test >= 1.0)):
@@ -2262,10 +2264,6 @@ class Splitset(BaseModel):
 			ordered_names = ["train", "test"]
 			samples = {k: samples[k] for k in ordered_names}
 
-		###
-		if (fold_count is None):
-			fold_count = 0
-
 		splitset = Splitset.create(
 			label = label
 			, samples = samples
@@ -2286,12 +2284,17 @@ class Splitset(BaseModel):
 				feature = Feature.get_by_id(f_id)
 				Featureset.create(splitset=splitset, feature=feature)
 		except:
-			splitset.delete_instance() # Orphaned.
+			splitset.delete_instance()
 			raise
 		
-		###
-		if (fold_count > 0):
-			splitset.make_folds(fold_count=fold_count, bin_count=bin_count)
+		try:
+			if (fold_count > 0):
+				# Updates splitset.fold_count
+				splitset.make_folds(fold_count=fold_count, bin_count=bin_count)
+		except:
+			splitset.featureset.delete_instance()
+			splitset.delete_instance()
+			raise
 		return splitset
 
 

@@ -94,7 +94,7 @@
     "\n",
     "Persisting the file ensures reproducibility by: (a) keeping the data packaged alongside the experiment, and (b) helping entry-level users move away from relying on mutable dataframes they have had in-memory for extended periods of time or floating around on shared file systems.\n",
     "\n",
-    "> *However, we realize that a different approach will be required at scale, so the `source_path` of the file is recorded whenever possible. In the future we could just read the data from that path (e.g. NFS, RDBMS, HDFS, S3) if the BlobField is none. Or just switch our data fetching/ filtering to Dask because it uses the Pandas API and Parquet.*"
+    "> However, we realize that a different approach will be required at scale, so the `source_path` of the file is recorded whenever possible. In the future we could just read the data from that path (e.g. NFS, RDBMS, HDFS, S3) if the BlobField is none. Or just switch our data fetching/ filtering to Dask because it uses the Pandas API and Parquet."
    ]
   },
   {
@@ -190,7 +190,7 @@
    "source": [
     "file_path = datum.get_path('iris_10x.tsv')\n",
     "\n",
-    "# We'll keep this larger dataset handy for `Foldset` creation later.\n",
+    "# We'll keep this larger dataset handy for cross-validation later.\n",
     "big_dataset = Dataset.Tabular.from_path(\n",
     "    file_path = file_path\n",
     "    , source_file_format = 'tsv'\n",
@@ -357,13 +357,6 @@
     "    , size_test = 0.24\n",
     "    , size_validation = 0.12\n",
     ")"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "> It is also possible to create a `Foldset` from this splitset."
    ]
   },
   {
@@ -595,13 +588,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> It is also possible to create a `Foldset` from this splitset."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "##### `from_folder_pillow()`"
    ]
   },
@@ -710,13 +696,6 @@
     "* In some cases you can specify a `split`/ `fold` name.\n",
     "\n",
     "For structured data, since the `Dataset` itself is fairly removed from the `File.Tabular` it creates, you can get that tabular file with `Dataset.Tabular.get_main_tabular(dataset_id)` to inspect attributes like `dtypes` and `columns`."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Later, we'll see how these arguments allow downstream objects like `Splitset` and `Foldset` to slice up the data."
    ]
   },
   {
@@ -1749,7 +1728,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "A `Splitset` divides the samples of the Dataset into the following *splits* in the table below. It is the central object of the data preparation side of the ORM in that it touches `Label`, `Feature`, `Foldset`, and `Encoderset`. It is the only mandatory data preparation object required by the training `Queue`."
+    "A `Splitset` divides the samples of the Dataset into the following *splits* in the table below. It is the central object of the data preparation side of the ORM in that it touches `Label`, `Feature`, and `Folds`. It is the only mandatory data preparation object required by the training `Queue`."
    ]
   },
   {
@@ -2026,7 +2005,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### c) Create a `Foldset` for cross-validation."
+    "### c) `fold_count` triggers cross-validation."
    ]
   },
   {
@@ -2056,13 +2035,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> *In the future, we may introduce more folding `strategies` aside from leave-one-out.*"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "#### `Fold` objects"
    ]
   },
@@ -2077,7 +2049,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> Tip - DO NOT use a `Foldset` unless your *(total sample count / fold_count)* still gives you an accurate representation of your sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that *(total sample count / fold_count)* is evenly divisible. Both of these tips help avoid poorly stratified/ undersized folds that perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on a normally good model).\n",
+    "> Tip - DO NOT use cross-validation unless your *(total sample count / fold_count)* still gives you an accurate representation of your sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that *(total sample count / fold_count)* is evenly divisible. Both of these tips help avoid poorly stratified/ undersized folds that perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on a normally good model).\n",
     ">\n",
     "> Tip - The sample indices of the validation fold are not discarded. In fact, `fold_validation` can actually be used alongside a split `validation` for double validation 🤘. However, it's more sensible to skip the validation split when cross-validating because you'll want each `fold_validation` to be as large (representative of the population) as possible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics.\n",
     "> \n",
@@ -2104,14 +2076,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Specifying Foldsets"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "We'll catch out big dataset up to the point where we can make a Foldset with it."
+    "#### Specifying Folds"
    ]
   },
   {
@@ -2123,27 +2088,12 @@
     "big_label = Label.from_dataset(dataset_id=big_dataset.id, columns=[label_column])\n",
     "big_fset = Feature.from_dataset(dataset_id=big_dataset.id, exclude_columns=[label_column])\n",
     "big_splits = Splitset.make(\n",
-    "\tfeature_ids = [big_fset.id]\n",
+    "    feature_ids = [big_fset.id]\n",
     "    , label_id = big_label.id\n",
-    "\t, size_test = 0.30\n",
-    "    , bin_count=3\n",
+    "    , size_test = 0.30\n",
+    "    , bin_count = 3\n",
+    "    , fold_count = 5\n",
     ")"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Now we are ready to generate 5 `Fold` objects that belong to the `Foldset`."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 47,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "foldset = Foldset.from_splitset(splitset_id=big_splits.id, fold_count=5, bin_count=3)"
    ]
   },
   {
@@ -2163,14 +2113,14 @@
     }
    ],
    "source": [
-    "list(foldset.folds)"
+    "list(splitset.folds)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Reading Foldsets"
+    "#### Reading Folds"
    ]
   },
   {
@@ -2197,7 +2147,7 @@
     }
    ],
    "source": [
-    "foldset.folds[0].samples['folds_train_combined'][:10]"
+    "splitset.folds[0].samples['folds_train_combined'][:10]"
    ]
   },
   {
@@ -2217,7 +2167,7 @@
     }
    ],
    "source": [
-    "foldset.folds[0].samples['fold_validation'][:10]"
+    "splitset.folds[0].samples['fold_validation'][:10]"
    ]
   },
   {
@@ -2238,7 +2188,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "If you have columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. If you don't have time series data then you don't need interpolation."
+    "If you have columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. If you don't have time series data then you do not need interpolation."
    ]
   },
   {
@@ -2256,7 +2206,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The `interpolate_kwargs:dict=None` object is what gets passed to Pandas interpolation. In my experience, `method=spline` produces the best results. However, sometimes either spline cannot fit your data or you know that your pattern is linear. For those scenarios there's `method=linear`. \n",
+    "The `interpolate_kwargs:dict=None` object is what gets passed to Pandas interpolation. In my experience, `method=spline` produces the best results. However, if either spline cannot fit your data or you know that your pattern is linear, then try `method=linear`. \n",
     "\n",
     "Here the default argument that will ultimately be used in `df.interpolate(**interpolate_kwargs)` if `interpolate_kwargs=None`."
    ]
@@ -2294,7 +2244,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "In scenarios where evaluation splits may not have enough data to be interpretted separately, there is the `process_separately:bool=False` argument."
+    "In scenarios where evaluation splits may not have enough data to be interpretted individually, there is the `process_separately:bool=False` argument to fit across all splits."
    ]
   },
   {
@@ -2336,15 +2286,15 @@
    "source": [
     "The fact that time series data is windowed presents challenges to preprocessing the training and evaluation splits/ folds separately in order to avoid leakage:\n",
     "\n",
-    "- For 3D `Dataset.Sequence` interpolation is simply ran separately on each 2D array. \n",
-    "- However, in 2D `Dataset.Tabular` different windows belong to different splits/ folds so their underlying groups of rows must be interpolated separately. "
+    "- For the 3D `Dataset.Sequence`, interpolation is simply ran separately on each 2D array. \n",
+    "- However, for the 2D `Dataset.Tabular`, different windows belong to different splits/ folds so their underlying groups of rows must be interpolated separately. "
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Additionally, there can be several columns/ dtypes in the data that have completely different patterns/ curves to fit. Thus we need a chain of `FeatureInterpolaters` that is represented by `Interpolaterset`."
+    "Additionally, for *multivariate datasets* there are several columns/ dtypes in the data that have completely different patterns/ curves to fit. Thus we need a chain of `FeatureInterpolaters` that is represented by `Interpolaterset`."
    ]
   },
   {
@@ -2417,7 +2367,7 @@
     "\n",
     "* Certain encoders output extraneous objects that don't work with deep learning libraries.\n",
     "\n",
-    "> *Only `sklearn.preprocessing` methods are officially supported, but we have experimented with `sklearn.feature_extraction.text.CountVectorizer`*"
+    "> Only `sklearn.preprocessing` methods are officially supported, but we have experimented with `sklearn.feature_extraction.text.CountVectorizer`"
    ]
   },
   {
@@ -2431,7 +2381,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "*Unfortunately, the name \"LabelEncoder\" is occupied by `sklearn.preprocessing.LabelEncoder`*"
+    "Unfortunately, the name \"LabelEncoder\" is occupied by `sklearn.preprocessing.LabelEncoder`"
    ]
   },
   {
@@ -2995,9 +2945,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "* `samples_train` - the appropriate data will be fed into the training cycle. For example, `Foldset.samples[fold_index]['folds_train_combined']` or `Splitset.samples['train']`.\n",
+    "* `samples_train` - the appropriate data will be fed into the training cycle. For example, `Fold.samples[fold_index]['folds_train_combined']` or `Splitset.samples['train']`.\n",
     "\n",
-    "* `samples_evaluate` - the appropriate data is made available for evaluation. For example, `Foldset.samples[fold_index]['fold_validation']`, `Splitset.samples['validation']`, or `Splitset.samples['test']`."
+    "* `samples_evaluate` - the appropriate data is made available for evaluation. For example, `Fold.samples[fold_index]['fold_validation']`, `Splitset.samples['validation']`, or `Splitset.samples['test']`."
    ]
   },
   {
@@ -3499,7 +3449,6 @@
     "    algorithm_id = algorithm.id\n",
     "    , splitset_id = splitset.id\n",
     "    , hyperparamset_id = hyperparamset.id # Optional.\n",
-    "    , foldset_id = None # Optional.\n",
     "    , repeat_count = 3\n",
     "    , permute_count = 3\n",
     ")"
@@ -3543,10 +3492,10 @@
    "source": [
     "Each `Job` in the Queue represents a `Hyperparamcombo` that needs to be trained.\n",
     "\n",
-    "If a `Foldset` is used during `Queue` creation, then: \n",
+    "If a `Splitset.fold_count` was specified, then: \n",
     "\n",
     "- The number of jobs = `hyperparamcombo_count` * `fold_count`.\n",
-    "- Each Job will have a `Fold`. Additionally, a superficial `Jobset` will be used to keep track of all Jobs related to that Foldset."
+    "- Each Job will have a `Fold`."
    ]
   },
   {
@@ -3588,8 +3537,6 @@
     "  \n",
     "  * `queue.poll_progress(raw:bool=False, loop:bool=False, loop_delay:int=3)` where `raw=True` is just a float, `loop=True` won't stop checking jobs until they are all complete, and `loop_delay=3` checks the progress every 3 seconds. \n",
     "  \n",
-    "* It is a known bug that the `TrainingCallbacks.Keras.MetricCutoff` class does not work with `` as of Python 3.8.\n",
-    "\n",
     "* Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted."
    ]
   },

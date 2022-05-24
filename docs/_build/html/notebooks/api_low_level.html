@@ -123,17 +123,17 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="query_meta.html">Query the Metastore</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="query_meta.html#Inspecting-the-Modeling-Process">Inspecting the Modeling Process</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-the-models-in-the-Queue-perform?">How well did the models in the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-training-Jobs-belong-to-the-Queue?">What training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> belong to the <code class="docutils literal notranslate"><span class="pre">Queue</span></code>?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#A-Job-stores-information-about-its-trained-model-in-a-Predictor">A <code class="docutils literal notranslate"><span class="pre">Job</span></code> stores information about its trained model in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-did-this-model-perform?">How did this model perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Algorithm-was-the-Queue-training?">What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> training?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-hyperparameter-space-was-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameter</span></code> space was tested?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query_meta.html#🧪-Inspecting-the-Modeling-Process">🧪 Inspecting the Modeling Process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-the-models-perform?">How well did the models perform?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#Running-a-Job-produces-a-model,-which-is-saved-in-a-Predictor-object">Running a <code class="docutils literal notranslate"><span class="pre">Job</span></code> produces a model, which is saved in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-this-particular-model-learn?">How well did this particular model learn?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-this-particular-model-perform?">How well did this particular model perform?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-kind-of-Algorithm-was-trained?">What kind of <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was trained?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-hyperparameters-were-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> were tested?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="query_meta.html#Inspecting-the-Data">Inspecting the Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-samples-were-fed-to-the-algorithm?">What <code class="docutils literal notranslate"><span class="pre">samples</span></code> were fed to the algorithm?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query_meta.html#💾-Inspecting-the-Data">💾 Inspecting the Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-samples-were-fed-to-the-algorithm?">What samples were fed to the algorithm?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Features-were-used-to-train-the-model?">What <code class="docutils literal notranslate"><span class="pre">Features</span></code> were used to train the model?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-were-the-Labels?">What were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Dataset-did-these-Features-and-Labels-come-from?">What <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> did these <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code> come from?</a></li>
@@ -209,11 +209,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#Reading-Splitsets">Reading Splitsets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#c)-fold_count-triggers-cross-validation.">c) <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> triggers cross-validation.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id12">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Specifying-Foldsets">Specifying Foldsets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Reading-Foldsets">Reading Foldsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Specifying-Folds">Specifying Folds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Reading-Folds">Reading Folds</a></li>
 </ul>
 </li>
 </ul>
@@ -650,7 +650,7 @@ recorded. The reason for this is that when making predictions during inference, 
 integrated nicely into both Spark and Dask; frameworks for distributed, in-memory computation.</p>
 <p>Persisting the file ensures reproducibility by: (a) keeping the data packaged alongside the experiment, and (b) helping entry-level users move away from relying on mutable dataframes they have had in-memory for extended periods of time or floating around on shared file systems.</p>
 <blockquote>
-<div><p><em>However, we realize that a different approach will be required at scale, so the ``source_path`` of the file is recorded whenever possible. In the future we could just read the data from that path (e.g. NFS, RDBMS, HDFS, S3) if the BlobField is none. Or just switch our data fetching/ filtering to Dask because it uses the Pandas API and Parquet.</em></p>
+<div><p>However, we realize that a different approach will be required at scale, so the <code class="docutils literal notranslate"><span class="pre">source_path</span></code> of the file is recorded whenever possible. In the future we could just read the data from that path (e.g. NFS, RDBMS, HDFS, S3) if the BlobField is none. Or just switch our data fetching/ filtering to Dask because it uses the Pandas API and Parquet.</p>
 </div></blockquote>
 <section id="Dataset.Tabular">
 <h4><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#Dataset.Tabular" title="Permalink to this headline"></a></h4>
@@ -709,7 +709,7 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">file_path</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;iris_10x.tsv&#39;</span><span class="p">)</span>
 
-<span class="c1"># We&#39;ll keep this larger dataset handy for `Foldset` creation later.</span>
+<span class="c1"># We&#39;ll keep this larger dataset handy for cross-validation later.</span>
 <span class="n">big_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span>
     <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span>
     <span class="p">,</span> <span class="n">source_file_format</span> <span class="o">=</span> <span class="s1">&#39;tsv&#39;</span>
@@ -830,9 +830,6 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </pre></div>
 </div>
 </div>
-<blockquote>
-<div><p>It is also possible to create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> from this splitset.</p>
-</div></blockquote>
 </section>
 </section>
 <section id="Dataset.Image">
@@ -1001,9 +998,6 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 </pre></div>
 </div>
 </div>
-<blockquote>
-<div><p>It is also possible to create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> from this splitset.</p>
-</div></blockquote>
 </section>
 <section id="from_folder_pillow()">
 <h5><code class="docutils literal notranslate"><span class="pre">from_folder_pillow()</span></code><a class="headerlink" href="#from_folder_pillow()" title="Permalink to this headline"></a></h5>
@@ -1075,7 +1069,6 @@ integrated nicely into both Spark and Dask; frameworks for distributed, in-memor
 <li><p>In some cases you can specify a <code class="docutils literal notranslate"><span class="pre">split</span></code>/ <code class="docutils literal notranslate"><span class="pre">fold</span></code> name.</p></li>
 </ul>
 <p>For structured data, since the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> itself is fairly removed from the <code class="docutils literal notranslate"><span class="pre">File.Tabular</span></code> it creates, you can get that tabular file with <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.get_main_tabular(dataset_id)</span></code> to inspect attributes like <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code>.</p>
-<p>Later, we’ll see how these arguments allow downstream objects like <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> and <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> to slice up the data.</p>
 <section id="id3">
 <h4><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#id3" title="Permalink to this headline"></a></h4>
 <section id="to_pandas()">
@@ -1340,7 +1333,7 @@ array([5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;], dtype=object)
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_api_low_level_85_0.png" src="../_images/notebooks_api_low_level_85_0.png" />
+<img alt="../_images/notebooks_api_low_level_82_0.png" src="../_images/notebooks_api_low_level_82_0.png" />
 </div>
 </div>
 </section>
@@ -1746,7 +1739,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </section>
 <section id="b)-Slice-samples-with-a-Splitset.">
 <h3>b) Slice samples with a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.<a class="headerlink" href="#b)-Slice-samples-with-a-Splitset." title="Permalink to this headline"></a></h3>
-<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>, and <code class="docutils literal notranslate"><span class="pre">Encoderset</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> divides the samples of the Dataset into the following <em>splits</em> in the table below. It is the central object of the data preparation side of the ORM in that it touches <code class="docutils literal notranslate"><span class="pre">Label</span></code>, <code class="docutils literal notranslate"><span class="pre">Feature</span></code>, and <code class="docutils literal notranslate"><span class="pre">Folds</span></code>. It is the only mandatory data preparation object required by the training <code class="docutils literal notranslate"><span class="pre">Queue</span></code>.</p>
 <p>Both continuous and categorical <code class="docutils literal notranslate"><span class="pre">Labels</span></code> are automatically stratified.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1916,22 +1909,19 @@ dict_keys([&#39;train&#39;, &#39;validation&#39;, &#39;test&#39;])
 <p>The main attribute of the splitset is the <code class="docutils literal notranslate"><span class="pre">samples</span></code> dictionary. Again, on-disk this only contains sample indices. The dictionary is structured like so:</p>
 </section>
 </section>
-<section id="c)-Create-a-Foldset-for-cross-validation.">
-<h3>c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.<a class="headerlink" href="#c)-Create-a-Foldset-for-cross-validation." title="Permalink to this headline"></a></h3>
+<section id="c)-fold_count-triggers-cross-validation.">
+<h3>c) <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> triggers cross-validation.<a class="headerlink" href="#c)-fold_count-triggers-cross-validation." title="Permalink to this headline"></a></h3>
 <section id="id12">
 <h4>ORM<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h4>
 <p>Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about folding.</p>
 <img alt="Cross Folds" src="../_images/cross_fold.png" />
 <p>We refer to the left out fold (blue) as the <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> and the remaining training data as the <code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code> (green).</p>
-<blockquote>
-<div><p><em>In the future, we may introduce more folding ``strategies`` aside from leave-one-out.</em></p>
-</div></blockquote>
 </section>
 <section id="Fold-objects">
 <h4><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects<a class="headerlink" href="#Fold-objects" title="Permalink to this headline"></a></h4>
 <p>For the sake of determining which samples get trained upon, the only thing that matters is the slice of data that gets left out.</p>
 <blockquote>
-<div><p>Tip - DO NOT use a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> unless your <em>(total sample count / fold_count)</em> still gives you an accurate representation of your sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that <em>(total sample count / fold_count)</em> is evenly divisible. Both of these tips help avoid poorly stratified/ undersized folds that perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate
+<div><p>Tip - DO NOT use cross-validation unless your <em>(total sample count / fold_count)</em> still gives you an accurate representation of your sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that <em>(total sample count / fold_count)</em> is evenly divisible. Both of these tips help avoid poorly stratified/ undersized folds that perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate
 prediction on a normally good model).</p>
 <p>Tip - The sample indices of the validation fold are not discarded. In fact, <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> can actually be used alongside a split <code class="docutils literal notranslate"><span class="pre">validation</span></code> for double validation 🤘. However, it’s more sensible to skip the validation split when cross-validating because you’ll want each <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> to be as large (representative of the population) as possible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics.</p>
 <p>Candidly, if you’ve ever performed cross-validation manually, let alone systematically, you’ll know that, barring stratification of continuous labels, it’s easy enough to construct the folds, but then it’s a pain to generate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try
@@ -1940,9 +1930,8 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">Splitset.samples</span></code>, there is a <code class="docutils literal notranslate"><span class="pre">Fold.samples</span></code> dictionary of sample indices with the following <code class="docutils literal notranslate"><span class="pre">.keys()</span></code>: * <code class="docutils literal notranslate"><span class="pre">samples['folds_train_combined']</span></code> - all the included folds. * <code class="docutils literal notranslate"><span class="pre">samples['fold_validation']</span></code> - the fold that got left out.</p>
 <img alt="cross fold objects" src="../_images/cross_fold_objects.png" />
 </section>
-<section id="Specifying-Foldsets">
-<h4>Specifying Foldsets<a class="headerlink" href="#Specifying-Foldsets" title="Permalink to this headline"></a></h4>
-<p>We’ll catch out big dataset up to the point where we can make a Foldset with it.</p>
+<section id="Specifying-Folds">
+<h4>Specifying Folds<a class="headerlink" href="#Specifying-Folds" title="Permalink to this headline"></a></h4>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
@@ -1954,18 +1943,9 @@ to do something undersized like “150 samples in their dataset and a <code clas
     <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">big_fset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">label_id</span> <span class="o">=</span> <span class="n">big_label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.30</span>
-    <span class="p">,</span> <span class="n">bin_count</span><span class="o">=</span><span class="mi">3</span>
+    <span class="p">,</span> <span class="n">bin_count</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Now we are ready to generate 5 <code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects that belong to the <code class="docutils literal notranslate"><span class="pre">Foldset</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">foldset</span> <span class="o">=</span> <span class="n">Foldset</span><span class="o">.</span><span class="n">from_splitset</span><span class="p">(</span><span class="n">splitset_id</span><span class="o">=</span><span class="n">big_splits</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">fold_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">bin_count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1974,7 +1954,7 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="nb">list</span><span class="p">(</span><span class="n">foldset</span><span class="o">.</span><span class="n">folds</span><span class="p">)</span>
+<span></span><span class="nb">list</span><span class="p">(</span><span class="n">splitset</span><span class="o">.</span><span class="n">folds</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1988,15 +1968,15 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </pre></div></div>
 </div>
 </section>
-<section id="Reading-Foldsets">
-<h4>Reading Foldsets<a class="headerlink" href="#Reading-Foldsets" title="Permalink to this headline"></a></h4>
+<section id="Reading-Folds">
+<h4>Reading Folds<a class="headerlink" href="#Reading-Folds" title="Permalink to this headline"></a></h4>
 <p>Sample indices of each Fold</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">folds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;folds_train_combined&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>
+<span></span><span class="n">splitset</span><span class="o">.</span><span class="n">folds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;folds_train_combined&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -2014,7 +1994,7 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">foldset</span><span class="o">.</span><span class="n">folds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>
+<span></span><span class="n">splitset</span><span class="o">.</span><span class="n">folds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;fold_validation&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -2034,13 +2014,13 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <h2>4. Preprocessing - Interpolation.<a class="headerlink" href="#4.-Preprocessing---Interpolation." title="Permalink to this headline"></a></h2>
 <section id="id13">
 <h3>ORM<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h3>
-<p>If you have columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. If you don’t have time series data then you don’t need interpolation.</p>
+<p>If you have columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. If you don’t have time series data then you do not need interpolation.</p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">pandas.DataFrame.interpolate</span></code></p>
 <p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.interpolate.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.interpolate.html</a></p>
 <p>Is utilized due to its ease of use, variety of methods, and <strong>support of sparse indices</strong>. However, it does not follow the <code class="docutils literal notranslate"><span class="pre">fit/transform</span></code> pattern like many of the class-based sklearn preprocessors, so the interpolated training data is concatenated with the evalaution split during the interpolation of evaluation splits.</p>
 </div></blockquote>
-<p>The <code class="docutils literal notranslate"><span class="pre">interpolate_kwargs:dict=None</span></code> object is what gets passed to Pandas interpolation. In my experience, <code class="docutils literal notranslate"><span class="pre">method=spline</span></code> produces the best results. However, sometimes either spline cannot fit your data or you know that your pattern is linear. For those scenarios there’s <code class="docutils literal notranslate"><span class="pre">method=linear</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">interpolate_kwargs:dict=None</span></code> object is what gets passed to Pandas interpolation. In my experience, <code class="docutils literal notranslate"><span class="pre">method=spline</span></code> produces the best results. However, if either spline cannot fit your data or you know that your pattern is linear, then try <code class="docutils literal notranslate"><span class="pre">method=linear</span></code>.</p>
 <p>Here the default argument that will ultimately be used in <code class="docutils literal notranslate"><span class="pre">df.interpolate(**interpolate_kwargs)</span></code> if <code class="docutils literal notranslate"><span class="pre">interpolate_kwargs=None</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interpolate_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;spline&#39;</span>
@@ -2055,7 +2035,7 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <section id="a)-Interpolate-Labels-with-LabelInterpolater.">
 <h3>a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.<a class="headerlink" href="#a)-Interpolate-Labels-with-LabelInterpolater." title="Permalink to this headline"></a></h3>
 <p>Due to the fact that Labels cannot be windowed, LabelInterpolater simply fills in the gaps in a sequential progression.</p>
-<p>In scenarios where evaluation splits may not have enough data to be interpretted separately, there is the <code class="docutils literal notranslate"><span class="pre">process_separately:bool=False</span></code> argument.</p>
+<p>In scenarios where evaluation splits may not have enough data to be interpretted individually, there is the <code class="docutils literal notranslate"><span class="pre">process_separately:bool=False</span></code> argument to fit across all splits.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelInterpolater</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
     <span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">process_separately</span><span class="o">=</span><span class="kc">True</span>
@@ -2075,10 +2055,10 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <img alt="interpolate" src="../_images/interpolate_windows.png" />
 <p>The fact that time series data is windowed presents challenges to preprocessing the training and evaluation splits/ folds separately in order to avoid leakage:</p>
 <ul class="simple">
-<li><p>For 3D <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> interpolation is simply ran separately on each 2D array.</p></li>
-<li><p>However, in 2D <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> different windows belong to different splits/ folds so their underlying groups of rows must be interpolated separately.</p></li>
+<li><p>For the 3D <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code>, interpolation is simply ran separately on each 2D array.</p></li>
+<li><p>However, for the 2D <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code>, different windows belong to different splits/ folds so their underlying groups of rows must be interpolated separately.</p></li>
 </ul>
-<p>Additionally, there can be several columns/ dtypes in the data that have completely different patterns/ curves to fit. Thus we need a chain of <code class="docutils literal notranslate"><span class="pre">FeatureInterpolaters</span></code> that is represented by <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</p>
+<p>Additionally, for <em>multivariate datasets</em> there are several columns/ dtypes in the data that have completely different patterns/ curves to fit. Thus we need a chain of <code class="docutils literal notranslate"><span class="pre">FeatureInterpolaters</span></code> that is represented by <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interpolaterset</span> <span class="o">=</span> <span class="n">Interpolaterset</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
 <span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_interpolaterset</span><span class="p">(</span>
@@ -2127,12 +2107,12 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 <li><p>Certain encoders output extraneous objects that don’t work with deep learning libraries.</p></li>
 </ul>
 <blockquote>
-<div><p><em>Only ``sklearn.preprocessing`` methods are officially supported, but we have experimented with ``sklearn.feature_extraction.text.CountVectorizer``</em></p>
+<div><p>Only <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> methods are officially supported, but we have experimented with <code class="docutils literal notranslate"><span class="pre">sklearn.feature_extraction.text.CountVectorizer</span></code></p>
 </div></blockquote>
 </section>
 <section id="a)-Encode-labels-with-LabelCoder.">
 <h3>a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.<a class="headerlink" href="#a)-Encode-labels-with-LabelCoder." title="Permalink to this headline"></a></h3>
-<p><em>Unfortunately, the name “LabelEncoder” is occupied by ``sklearn.preprocessing.LabelEncoder``</em></p>
+<p>Unfortunately, the name “LabelEncoder” is occupied by <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing.LabelEncoder</span></code></p>
 <p>Of course, you cannot encode Labels if your <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> does not have labels in the first place.</p>
 <p>The process is straightforward. You provide an instantiated encoder [e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> not <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code>], and then AIQC will:</p>
 <ul class="simple">
@@ -2417,8 +2397,8 @@ No more FeatureCoders can be added to this Encoderset.
 <section id="Function-to-train-model">
 <h5>Function to train model<a class="headerlink" href="#Function-to-train-model" title="Permalink to this headline"></a></h5>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">samples_train</span></code> - the appropriate data will be fed into the training cycle. For example, <code class="docutils literal notranslate"><span class="pre">Foldset.samples[fold_index]['folds_train_combined']</span></code> or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['train']</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">samples_evaluate</span></code> - the appropriate data is made available for evaluation. For example, <code class="docutils literal notranslate"><span class="pre">Foldset.samples[fold_index]['fold_validation']</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset.samples['validation']</span></code>, or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['test']</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samples_train</span></code> - the appropriate data will be fed into the training cycle. For example, <code class="docutils literal notranslate"><span class="pre">Fold.samples[fold_index]['folds_train_combined']</span></code> or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['train']</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">samples_evaluate</span></code> - the appropriate data is made available for evaluation. For example, <code class="docutils literal notranslate"><span class="pre">Fold.samples[fold_index]['fold_validation']</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset.samples['validation']</span></code>, or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['test']</span></code>.</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -2775,7 +2755,6 @@ essentially testing high/ medium/ low or default/ edge case scenarios for each p
     <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span> <span class="c1"># Optional.</span>
-    <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Optional.</span>
     <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="p">,</span> <span class="n">permute_count</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="p">)</span>
@@ -2801,10 +2780,10 @@ parallelize.</p></li>
 <section id="a)-Job-objects.">
 <h3>a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#a)-Job-objects." title="Permalink to this headline"></a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Queue represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
-<p>If a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> is used during <code class="docutils literal notranslate"><span class="pre">Queue</span></code> creation, then:</p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">Splitset.fold_count</span></code> was specified, then:</p>
 <ul class="simple">
 <li><p>The number of jobs = <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> * <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>.</p></li>
-<li><p>Each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>. Additionally, a superficial <code class="docutils literal notranslate"><span class="pre">Jobset</span></code> will be used to keep track of all Jobs related to that Foldset.</p></li>
+<li><p>Each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>.</p></li>
 </ul>
 </section>
 <section id="b)-Executing-Jobs.">
@@ -2834,7 +2813,6 @@ parallelize.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">queue.poll_progress(raw:bool=False,</span> <span class="pre">loop:bool=False,</span> <span class="pre">loop_delay:int=3)</span></code> where <code class="docutils literal notranslate"><span class="pre">raw=True</span></code> is just a float, <code class="docutils literal notranslate"><span class="pre">loop=True</span></code> won’t stop checking jobs until they are all complete, and <code class="docutils literal notranslate"><span class="pre">loop_delay=3</span></code> checks the progress every 3 seconds.</p></li>
 </ul>
 </li>
-<li><p>It is a known bug that the <code class="docutils literal notranslate"><span class="pre">TrainingCallbacks.Keras.MetricCutoff</span></code> class does not work with `` as of Python 3.8.</p></li>
 <li><p>Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.</p></li>
 </ul>
 <div class="nbinput docutils container">
