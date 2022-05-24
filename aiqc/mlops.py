@@ -64,24 +64,35 @@ class Input:
 		self.reshape_indices 	= reshape_indices
 	
 	class Interpolater:
-		def __init__(self, process_separately:bool=True, interpolate_kwargs:dict=None):
-			self.process_separately = process_separately
-			self.interpolate_kwargs = interpolate_kwargs
+		def __init__(
+			self
+			, process_separately:bool = True
+			, verbose:bool            = False
+			, interpolate_kwargs:dict = None
+			, dtypes:list             = None
+			, columns:list            = None
+		):
+			"""Not exposing `samples` argument."""
+			self.process_separately   = process_separately
+			self.verbose       		  = verbose
+			self.interpolate_kwargs   = interpolate_kwargs
+			self.dtypes        		  = listify(dtypes)
+			self.columns       		  = listify(columns)
 	
 	class Encoder:
 		def __init__(
 			self
 			, sklearn_preprocess:object
+			, verbose:bool 			= False
 			, include:bool 			= True
 			, dtypes:list  			= None
 			, columns:list 			= None
-			, verbose:bool 			= True
 		):
 			self.sklearn_preprocess = sklearn_preprocess
+			self.verbose 			= verbose
 			self.include 			= include
 			self.dtypes 			= listify(dtypes)
 			self.columns 			= listify(columns)
-			self.verbose 			= verbose
 
 
 class Stratifier:
@@ -112,10 +123,10 @@ class Pipeline:
 		if (target is not None):
 			l_id = target.id
 		elif (target is None):
-			# Need to know if label exists so it can be exlcuded.
+			# Need to know if label exists so it can be excluded.
 			l_id = None
 		
-		
+		features = []
 		feature_ids = []
 		for i in inputs:
 			d_id = i.dataset.id
@@ -129,15 +140,32 @@ class Pipeline:
 					for c in l_cols:
 						if (c not in cols_excluded):
 							cols_excluded.append(c)
-			f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=cols_excluded).id
-			feature_ids.append(f_id)
+			f = Feature.from_dataset(dataset_id=d_id, exclude_columns=cols_excluded)
+			features.append(f)
+			feature_ids.append(f.id)
 
+		# Many feature methods need a `Splitset.samples` first.
+		if (stratifier is None):
+			# Initialize with Nones
+			stratifier = Stratifier()
+		# Easier to be explicit w kwargz rather than working around fold_count
+		splitset = Splitset.make(
+			feature_ids 	  = feature_ids
+			, label_id 		  = l_id
+			, size_test 	  = stratifier.size_test
+			, size_validation = stratifier.size_validation
+			, bin_count 	  = stratifier.bin_count
+			, fold_count 	  = stratifier.fold_count
+			, name 			  = name
+			, description 	  = description
+		)
+
+		for e, i in enumerate(inputs):
+			f_id = features[e].id
 			interpolaters = i.interpolaters
-			if (interpolaters is not None):
-				i_id = Interpolaterset.from_feature(feature_id=f_id).id
-				for fp in interpolaters:
-					kwargz = fp.__dict__
-					FeatureInterpolater.from_interpolaterset(i_id, **kwargz)
+			for fp in interpolaters:
+				kwargz = fp.__dict__
+				FeatureInterpolater.from_feature(f_id, **kwargz)
 			
 			window = i.window
 			if (window is not None):
@@ -153,21 +181,6 @@ class Pipeline:
 			reshape_indices = i.reshape_indices
 			if (reshape_indices is not None):
 				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=reshape_indices)
-
-		if (stratifier is None):
-			# Initialize with Nones
-			stratifier = Stratifier()
-		# Easier to be explicit w kwargz rather than working around fold_count
-		splitset = Splitset.make(
-			feature_ids 	  = [feature_ids]
-			, label_id 		  = l_id
-			, size_test 	  = stratifier.size_test
-			, size_validation = stratifier.size_validation
-			, bin_count 	  = stratifier.bin_count
-			, fold_count 	  = stratifier.fold_count
-			, name 			  = name
-			, description 	  = description
-		)
 		return splitset
 
 #==================================================

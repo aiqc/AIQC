@@ -1,7 +1,8 @@
 """TensorFlow Binary Classification with Sequence data"""
 # Internal modules
+from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
-from ..orm import *
+from ..orm import Dataset
 # External modules
 import tensorflow as tf
 import tensorflow.keras.layers as l
@@ -38,7 +39,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_pandas('epilepsy.parquet')
-	# testing Featurepolater 3D.
+	# testing FeatureInterpolater 3D.
 	df['sensor_1'][10] = np.NaN
 	df['sensor_1'][0] = np.NaN
 	df['sensor_150'][80] = np.NaN
@@ -46,67 +47,43 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df['sensor_170'][0] = np.NaN
 	
 	label_df = df[['seizure']]
-	dt_id = Dataset.Tabular.from_pandas(label_df).id
-	l_id = Label.from_dataset(dataset_id=dt_id, columns='seizure').id
+	label_dataset = Dataset.Tabular.from_pandas(label_df)
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')	
-	ds_id = Dataset.Sequence.from_numpy(sensor_arr3D).id
-	f_id = Feature.from_dataset(dataset_id=ds_id).id
-	
-	i_id = Interpolaterset.from_feature(feature_id=f_id).id
-	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes="float64")
-	
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, sklearn_preprocess = StandardScaler()
-		, columns = ['0']
+	feature_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)
+
+	hyperparameters = dict(neuron_count= [18], batch_size=[8], epochs=[5])
+
+	pipeline = Pipeline(
+		Input(
+			dataset       = feature_dataset,
+			interpolaters = Input.Interpolater(dtypes="float64"),
+			encoders      = Input.Encoder(sklearn_preprocess=StandardScaler())
+		),
+		
+		Target(
+			dataset = label_dataset
+		),
+		
+		Stratifier(
+			size_test       = 0.12, 
+			size_validation = 0.22,
+			fold_count      = fold_count
+		)    
 	)
-	
-	if (fold_count is not None):
-		size_test = 0.25
-		size_validation = None
-	elif (fold_count is None):
-		size_test = 0.22
-		size_validation = 0.12
-
-	s_id = Splitset.make(
-		feature_ids = [f_id]
-		, label_id = l_id
-		, size_test = size_test
-		, size_validation = size_validation
-	).id
-
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id=s_id, fold_count=fold_count
-		).id
-	else:
-		fs_id = None
-	
-	a_id = Algorithm.make(
-		library = "keras"
-		, analysis_type = "classification_binary"
-		, fn_build = fn_build
-		, fn_train = fn_train
-	).id
-	
-	hyperparameters = {
-		"neuron_count": [25]
-		, "batch_size": [8]
-		, "epochs": [5]
-	}
-	
-	h_id = Hyperparamset.from_algorithm(
-		algorithm_id=a_id, hyperparameters=hyperparameters
-	).id
-
-	queue = Queue.from_algorithm(
-		algorithm_id = a_id
-		, splitset_id = s_id
-		, hyperparamset_id = h_id
-		, foldset_id = fs_id
-		, repeat_count = repeat_count
-		, permute_count = permute_count
+	experiment = Experiment(
+		Architecture(
+			library           = "keras"
+			, analysis_type   = "classification_binary"
+			, fn_build        = fn_build
+			, fn_train        = fn_train
+			, hyperparameters = hyperparameters
+		),
+		
+		Trainer(
+			pipeline_id       = pipeline.id
+			, repeat_count    = repeat_count
+			, permute_count   = permute_count
+		)
 	)
-	return queue
+	return experiment
