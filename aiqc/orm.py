@@ -125,7 +125,7 @@ def create_db():
 		db.create_tables([
 			File, Dataset,
 			Label, Feature, 
-			Splitset, Featureset, Foldset, Fold, 
+			Splitset, Featureset, Fold, 
 			Interpolaterset, LabelInterpolater, FeatureInterpolater,
 			Encoderset, LabelCoder, FeatureCoder, 
 			Window, FeatureShaper,
@@ -213,21 +213,6 @@ def increment_version(model_class, instance, created):
 				if (latest_match.dataset_type!=instance.dataset_type):
 					msg = f"Yikes - New Dataset type <{instance.dataset_type}> must match the type of the most recent version <{latest_match.dataset_type}>."
 					raise Exception(msg)
-			### do i even need this?
-			# elif(klass=="Splitset"):
-			# 	new_label = instance.label.id
-			# 	if (latest_match.random_state==new_label.random_state):
-			# 		msg = f"Yikes - New Splitset.random_state cannot be the same as old Splitset.random_state."
-			# 		raise Exception(msg)
-			# 	if (new_label is not None):
-			# 		old_label = latest_match.label.id
-			# 		if (new_label!=old_label):
-			# 			msg = f"Yikes - New Splitset label <{new_label}> must match old Splitset label <{old_label}> in order to use the same name"
-			# 			raise Exception(msg)
-			# 	new_features = instance.get_features()
-			# 	old_features = latest_match.get_features()
-			# 	new_features != old_features
-			# 	msg = f"Yikes - New Splitset features <{new_features}> must match old Splitset features <{old_features}> exactly in order to use the same name"
 
 
 
@@ -1155,7 +1140,8 @@ class File(BaseModel):
 class Label(BaseModel):
 	"""
 	- Label accepts multiple columns in case it is already OneHotEncoded.
-	- Label must be derrived from a tabular Dataset.
+	- Label must be derived from a tabular Dataset.
+	- It's ok for Label to be a duplicate because we care about Pipeline uniqueness.
 	"""
 	columns = JSONField()
 	column_count = IntegerField()
@@ -1183,12 +1169,6 @@ class Label(BaseModel):
 			if (not all_cols_found):
 				raise Exception("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
 
-		# Reuse duplicates.
-		matching_label = Label.select().where(Label.columns==columns)
-		if (matching_label.count()>0):
-			label = matching_label[0]
-			print(f"Info - Identical Label.id<{label.id}> found. Reusing it rather than duplicating it.")
-			return label
 		"""
 		- When multiple columns are provided, they must be OHE.
 		- Figure out column count because classification_binary and associated 
@@ -1415,7 +1395,6 @@ class Feature(BaseModel):
 		, include_columns:list=None
 		, exclude_columns:list=None
 	):
-		#runPCA:bool=True # triggers PCA analysis of all columns
 		#As we get further away from the `Dataset.<Types>` they need less isolation.
 		dataset = Dataset.get_by_id(dataset_id)
 		include_columns = utils.wrangle.listify(include_columns)
@@ -1452,13 +1431,6 @@ class Feature(BaseModel):
 		else:
 			columns = d_cols
 			columns_excluded = None
-
-		# Reuse duplicates. `columns` order matters. Matching `cols_excluded` is redundant.
-		matching_feature = Feature.select().where(Feature.columns==columns)
-		if (matching_feature.count()>0):
-			feature = matching_feature[0]
-			print(f"Info - Identical Feature.id<{feature.id}> found, reusing it rather than duplicating it.")
-			return feature
 
 		if (columns_excluded is not None):
 			columns_excluded = sorted(columns_excluded)
@@ -2015,6 +1987,7 @@ class Splitset(BaseModel):
 	supervision = CharField()
 	has_test = BooleanField()
 	has_validation = BooleanField()
+	fold_count = IntegerField()
 	bin_count = IntegerField(null=True)
 	unsupervised_stratify_col = CharField(null=True)
 
@@ -2027,6 +2000,7 @@ class Splitset(BaseModel):
 		, size_test:float = None
 		, size_validation:float = None
 		, bin_count:float = None
+		, fold_count:int = None
 		, unsupervised_stratify_col:str = None
 		, name:str = None
 		, description:str = None
@@ -2288,6 +2262,10 @@ class Splitset(BaseModel):
 			ordered_names = ["train", "test"]
 			samples = {k: samples[k] for k in ordered_names}
 
+		###
+		if (fold_count is None):
+			fold_count = 0
+
 		splitset = Splitset.create(
 			label = label
 			, samples = samples
@@ -2300,6 +2278,7 @@ class Splitset(BaseModel):
 			, unsupervised_stratify_col = unsupervised_stratify_col
 			, name = name
 			, description = description
+			, fold_count = 0
 		)
 
 		try:
@@ -2309,7 +2288,10 @@ class Splitset(BaseModel):
 		except:
 			splitset.delete_instance() # Orphaned.
 			raise
-
+		
+		###
+		if (fold_count > 0):
+			splitset.make_folds(fold_count=fold_count, bin_count=bin_count)
 		return splitset
 
 
@@ -2319,40 +2301,16 @@ class Splitset(BaseModel):
 		return features
 
 
-class Featureset(BaseModel):
-	"""Featureset is a many-to-many relationship between Splitset and Feature."""
-	splitset = ForeignKeyField(Splitset, backref='featuresets')
-	feature = ForeignKeyField(Feature, backref='featuresets')
-
-
-class Foldset(BaseModel):
-	"""
-	- Contains aggregate summary statistics and evaluate metrics for all Folds.
-	- Works the same for all dataset types because only the labels are used for stratification.
-	"""
-	fold_count = IntegerField()
-	random_state = IntegerField()
-	bin_count = IntegerField(null=True) # For stratifying continuous features.
-
-	splitset = ForeignKeyField(Splitset, backref='foldsets')
-
-	def from_splitset(
-		splitset_id:int
-		, fold_count:int = None
-		, bin_count:int = None
-	):
-		splitset = Splitset.get_by_id(splitset_id)
+	def make_folds(id:int, fold_count:int, bin_count:int=None):
+		splitset = Splitset.get_by_id(id)
 		
-		if (fold_count is None):
-			fold_count = 5 # More likely than 4 to be evenly divisible.
-		else:
-			if (fold_count < 2):
-				raise Exception(dedent(f"""
-				Yikes - Cross validation requires multiple folds.
-				But you provided `fold_count`: <{fold_count}>.
-				"""))
-			elif (fold_count == 2):
-				print("\nWarning - Instead of two folds, why not just use a validation split?\n")
+		if (fold_count < 2):
+			raise Exception(dedent(f"""
+			Yikes - Cross validation requires multiple folds.
+			But you provided `fold_count`: <{fold_count}>.
+			"""))
+		elif (fold_count == 2):
+			print("\nWarning - Instead of two folds, why not just use a validation split?\n")
 
 		# From the training indices, we'll derive indices for 'folds_train_combined' and 'fold_validation'.
 		arr_train_indices = splitset.samples["train"]
@@ -2434,14 +2392,6 @@ class Foldset(BaseModel):
 				(np.issubdtype(stratify_dtype, np.unsignedinteger))
 			):
 				if (bin_count is not None):
-					if (splitset.bin_count is None):
-						print(dedent("""
-							Warning - Previously you set `Splitset.bin_count is None`
-							but now you are trying to set `Foldset.bin_count is not None`.
-							
-							This can result in incosistent stratification processes being 
-							used for training samples versus validation and test samples.
-						\n"""))
 					stratify_arr = utils.wrangle.values_to_bins(
 						array_to_bin = stratify_arr
 						, bin_count = bin_count
@@ -2465,69 +2415,67 @@ class Foldset(BaseModel):
 			)
 
 		random_state = randint(0, 4294967295)
-		# Create first because need to attach the Folds.
-		foldset = Foldset.create(
-			fold_count = fold_count
-			, random_state = random_state
-			, bin_count = bin_count
-			, splitset = splitset
-		)
+		# Stratified vs Unstratified.
+		# In both scenarios `random_state` requires presence of `shuffle`.
+		if (stratify_arr is None):
+			# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
+			kf = KFold(
+				n_splits = fold_count
+				, shuffle = True
+				, random_state = random_state
+			)
+			splitz_gen = kf.split(arr_train_indices)
+		elif (stratify_arr is not None):
+			# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
+			skf = StratifiedKFold(
+				n_splits = fold_count
+				, shuffle = True
+				, random_state = random_state
+			)
+			splitz_gen = skf.split(arr_train_indices, stratify_arr)
 
-		try:
-			# Stratified vs Unstratified.
-			# In both scenarios `random_state` requires presence of `shuffle`.
-			if (stratify_arr is None):
-				# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
-				kf = KFold(
-					n_splits = fold_count
-					, shuffle = True
-					, random_state = random_state
-				)
-				splitz_gen = kf.split(arr_train_indices)
-			elif (stratify_arr is not None):
-				# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedKFold.html
-				skf = StratifiedKFold(
-					n_splits = fold_count
-					, shuffle = True
-					, random_state = random_state
-				)
-				splitz_gen = skf.split(arr_train_indices, stratify_arr)
+		i = -1
+		for index_folds_train, index_fold_validation in splitz_gen:
+			# ^ These are new zero-based indices that must be used to access the real data.
+			i+=1
+			fold_samples = {}
 
-			i = -1
-			for index_folds_train, index_fold_validation in splitz_gen:
-				# ^ These are new zero-based indices that must be used to access the real data.
-				i+=1
-				fold_samples = {}
+			index_folds_train = sorted(index_folds_train)
+			index_fold_validation = sorted(index_fold_validation)
 
-				index_folds_train = sorted(index_folds_train)
-				index_fold_validation = sorted(index_fold_validation)
+			# Python 3.7+ insertion order of dict keys assured.
+			fold_samples["folds_train_combined"] = [arr_train_indices[idx] for idx in index_folds_train]
+			fold_samples["fold_validation"] = [arr_train_indices[idx] for idx in index_fold_validation]
 
-				# Python 3.7+ insertion order of dict keys assured.
-				fold_samples["folds_train_combined"] = [arr_train_indices[idx] for idx in index_folds_train]
-				fold_samples["fold_validation"] = [arr_train_indices[idx] for idx in index_fold_validation]
+			Fold.create(
+				fold_index = i
+				, samples = fold_samples 
+				, splitset = splitset
+			)
+		
+		splitset.fold_count = fold_count
+		splitset.save()
+		return splitset
 
-				Fold.create(
-					fold_index = i
-					, samples = fold_samples 
-					, foldset = foldset
-				)
-		except:
-			foldset.delete_instance() # Orphaned.
-			raise
-		return foldset
+
+
+class Featureset(BaseModel):
+	"""Featureset is a many-to-many relationship between Splitset and Feature."""
+	splitset = ForeignKeyField(Splitset, backref='featuresets')
+	feature = ForeignKeyField(Feature, backref='featuresets')
 
 
 class Fold(BaseModel):
 	"""
-	- A Fold is 1 of many cross-validation sets generated as part of a Foldset.
+	- A Fold is 1 of many cross-validation sample sets.
 	- The `samples` attribute contains the indices of `folds_train_combined` and `fold_validation`, 
 	  where `fold_validation` is the rotating fold that gets left out.
 	"""
-	fold_index = IntegerField() # order within the Foldset.
+	fold_index = IntegerField()
 	samples = JSONField()
 	# contains_all_classes = BooleanField()
 	
-	foldset = ForeignKeyField(Foldset, backref='folds')
+	splitset = ForeignKeyField(Splitset, backref='folds')
 
 
 class LabelInterpolater(BaseModel):
@@ -3334,7 +3282,6 @@ class Queue(BaseModel):
 	algorithm = ForeignKeyField(Algorithm, backref='queues') 
 	splitset = ForeignKeyField(Splitset, backref='queues')
 	hyperparamset = ForeignKeyField(Hyperparamset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
-	foldset = ForeignKeyField(Foldset, deferrable='INITIALLY DEFERRED', null=True, backref='queues')
 
 
 	def from_algorithm(
@@ -3344,14 +3291,11 @@ class Queue(BaseModel):
 		, permute_count:int = 3
 		, hide_test:bool = False
 		, hyperparamset_id:int = None
-		, foldset_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
 		library = algorithm.library
 		splitset = Splitset.get_by_id(splitset_id)
 
-		if (foldset_id is not None):
-			foldset = Foldset.get_by_id(foldset_id)
 		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
@@ -3430,13 +3374,6 @@ class Queue(BaseModel):
 							Warning - `'classification' in Algorithm.analysis_type`, but `Splitset.bin_count is not None`.
 							`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
 						"""))               
-					if (foldset_id is not None):
-						# Not doing an `and` because foldset can't be accessed if it doesn't exist.
-						if (foldset.bin_count is not None):
-							print(dedent("""
-								Warning - `'classification' in Algorithm.analysis_type`, but `Foldset.bin_count is not None`.
-								`bin_count` is meant for `Algorithm.analysis_type=='regression'`.
-							"""))
 				elif (analysis_type == 'regression'):
 					if (labelcoder is not None):
 						if (labelcoder.is_categorical == True):
@@ -3457,15 +3394,7 @@ class Queue(BaseModel):
 					
 					if (splitset.bin_count is None):
 						print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Splitset.")                   
-					if (foldset_id is not None):
-						if (foldset.bin_count is None):
-							print("Warning - `Algorithm.analysis_type == 'regression'`, but `bin_count` was not set when creating Foldset.")
-							if (splitset.bin_count is not None):
-								print("Warning - `bin_count` was set for Splitset, but not for Foldset. This leads to inconsistent stratification across samples.")
-						elif (foldset.bin_count is not None):
-							if (splitset.bin_count is None):
-								print("Warning - `bin_count` was set for Foldset, but not for Splitset. This leads to inconsistent stratification across samples.")
-				
+
 			# We already know these are OHE based on Label creation, so skip dtype, bin, and encoder checks.
 			elif (label_col_count > 1):
 				if (analysis_type != 'classification_multi'):
@@ -3475,16 +3404,11 @@ class Queue(BaseModel):
 			raise Exception("\nYikes - AIQC only supports unsupervised analysis with `analysis_type=='regression'`.\n")
 
 
-		if (foldset_id is not None):
-			foldset =  Foldset.get_by_id(foldset_id)
-			foldset_splitset = foldset.splitset
-			if (foldset_splitset != splitset):
-				raise Exception(f"\nYikes - The Foldset <id:{foldset_id}> and Splitset <id:{splitset_id}> you provided are not related.\n")
-			folds = list(foldset.folds)
+		if (splitset.fold_count > 0):
+			folds = list(splitset.folds)
 		else:
-			# Just so we have an item to loop over as a null condition when creating Jobs.
+			# [None] is required by Job creation loop.
 			folds = [None]
-			foldset = None
 
 		if (hyperparamset_id is not None):
 			hyperparamset = Hyperparamset.get_by_id(hyperparamset_id)
@@ -3503,7 +3427,6 @@ class Queue(BaseModel):
 			, algorithm = algorithm
 			, splitset = splitset
 			, permute_count = permute_count
-			, foldset = foldset
 			, hyperparamset = hyperparamset
 			, hide_test = hide_test
 			, runs_completed = 0
@@ -3534,10 +3457,9 @@ class Queue(BaseModel):
 		queue = Queue.get_by_id(id)
 		hide_test = queue.hide_test
 		splitset = queue.splitset
-		foldset = queue.foldset
 		library = queue.algorithm.library
 
-		if (foldset is None):
+		if (splitset.fold_count > 0):
 			cache_path = f"{app_dir}queue-{id}_cached_samples.gzip"
 			jobs = list(queue.jobs)
 			# Repeat count means that a single Job can have multiple Predictors.
@@ -3604,11 +3526,11 @@ class Queue(BaseModel):
 				remove(cache_path)
 				raise
 
-		elif (foldset is not None):
-			folds = list(foldset.folds)
+		elif (splitset.fold_count == 0):
+			folds = list(splitset.folds)
 			# Each fold will contain unique, reusable data.
 			for e, fold in enumerate(folds):
-				print(f"\nRunning Jobs for Fold {e+1} out of {foldset.fold_count}:\n", flush=True)
+				print(f"\nRunning Jobs for Fold {e+1} out of {splitset.fold_count}:\n", flush=True)
 				cache_path = f"{app_dir}queue-{id}_fold-{e}_cached_samples.gzip"
 				jobs = [j for j in queue.jobs if j.fold==fold]
 				repeated_jobs = [] #tuple:(repeat_index, job, fold)
@@ -3708,6 +3630,7 @@ class Queue(BaseModel):
 
 		# Unpack the split data from each Predictor and tag it with relevant Queue metadata.
 		split_metrics = []
+		fold_count = queue.splitset.fold_count
 		for prediction in queue_predictions:
 			predictor = prediction.predictor
 			for split_name,metrics in prediction.metrics.items():
@@ -3718,7 +3641,7 @@ class Queue(BaseModel):
 				elif (predictor.job.hyperparamcombo is None):
 					split_metric['hyperparamcombo_id'] = None
 
-				if (queue.foldset is not None):
+				if (fold_count > 0):
 					split_metric['fold_index'] = predictor.job.fold.fold_index
 				split_metric['job_id'] = predictor.job.id
 				if (predictor.job.repeat_count > 1):

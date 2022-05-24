@@ -170,16 +170,10 @@ class Pipeline:
 			, size_test 	  = stratifier.size_test
 			, size_validation = stratifier.size_validation
 			, bin_count 	  = stratifier.bin_count
+			, fold_count 	  = stratifier.fold_count
 			, name 			  = name
 			, description 	  = description
 		)
-		
-		if (stratifier.fold_count is not None):
-			Foldset.from_splitset(
-				splitset_id = splitset.id,
-				fold_count	= stratifier.fold_count,
-				bin_count	= stratifier.bin_count
-			)
 		return splitset
 
 #==================================================

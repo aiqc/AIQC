@@ -79,14 +79,8 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 		, label_id = l_id
 		, size_test = size_test
 		, size_validation = size_validation
+		, fold_count = fold_count
 	).id
-
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id=s_id, fold_count=fold_count
-		).id
-	else:
-		fs_id = None
 
 	e_id = Encoderset.from_feature(feature_id=f_id).id
 	FeatureCoder.from_encoderset(
@@ -117,7 +111,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	queue = Queue.from_algorithm(
 		algorithm_id = a_id
 		, splitset_id = s_id
-		, foldset_id = fs_id
 		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 	)
