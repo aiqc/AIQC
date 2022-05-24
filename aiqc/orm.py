@@ -130,7 +130,7 @@ def create_db():
 			Encoderset, LabelCoder, FeatureCoder, 
 			Window, FeatureShaper,
 			Algorithm, Hyperparamset, Hyperparamcombo,
-			Queue, Jobset, Job, Predictor, Prediction,
+			Queue, Job, Predictor, Prediction,
 			FittedEncoderset, FittedLabelCoder,
 		])
 		tables = db.get_tables()
@@ -3510,32 +3510,18 @@ class Queue(BaseModel):
 		)
 		try:
 			for c in combos:
-				if (foldset is not None):
-					# Jobset can probably be replaced w a query after the fact using the objects below.
-					jobset = Jobset.create(
-						repeat_count = repeat_count
-						, queue = queue
+				for f in folds:
+					Job.create(
+						queue = queue
 						, hyperparamcombo = c
-						, foldset = foldset
+						, fold = f
+						, repeat_count = repeat_count
 					)
-				elif (foldset is None):
-					jobset = None
-
-				try:
-					for f in folds:
-						Job.create(
-							queue = queue
-							, hyperparamcombo = c
-							, fold = f
-							, repeat_count = repeat_count
-							, jobset = jobset
-						)
-				except:
-					if (foldset is not None):
-						jobset.delete_instance() # Orphaned.
-						raise
 		except:
-			queue.delete_instance() # Orphaned.
+			# Cleanup imperfect Queue
+			for j in queue.jobs:
+				j.delete_instance()
+			queue.delete_instance()
 			raise
 		return queue
 
@@ -3733,7 +3719,6 @@ class Queue(BaseModel):
 					split_metric['hyperparamcombo_id'] = None
 
 				if (queue.foldset is not None):
-					split_metric['jobset_id'] = predictor.job.jobset.id
 					split_metric['fold_index'] = predictor.job.fold.fold_index
 				split_metric['job_id'] = predictor.job.id
 				if (predictor.job.repeat_count > 1):
@@ -3816,7 +3801,6 @@ class Queue(BaseModel):
 					if (predictor.job.repeat_count > 1):
 						stats['repeat_index'] = predictor.repeat_index
 					if (predictor.job.fold is not None):
-						stats['jobset_id'] = predictor.job.jobset.id
 						stats['fold_index'] = predictor.job.fold.fold_index
 					else:
 						stats['job_id'] = predictor.job.id
@@ -3913,16 +3897,6 @@ class Queue(BaseModel):
 				return fig
 
 
-class Jobset(BaseModel):
-	"""
-	- Used to group cross-fold Jobs.
-	- Union of Hyperparamcombo, Foldset, and Queue.
-	"""
-	repeat_count = IntegerField()
-
-	foldset = ForeignKeyField(Foldset, backref='jobsets')
-	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobsets')
-	queue = ForeignKeyField(Queue, backref='jobsets')
 
 
 class Job(BaseModel):
@@ -3936,7 +3910,6 @@ class Job(BaseModel):
 	queue = ForeignKeyField(Queue, backref='jobs')
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	fold = ForeignKeyField(Fold, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
-	jobset = ForeignKeyField(Jobset, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 
 
 	def predict(samples:dict, predictor_id:int, splitset_id:int=None, key_train:str=None):
