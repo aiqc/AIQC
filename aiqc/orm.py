@@ -2680,7 +2680,7 @@ class FeatureInterpolater(BaseModel):
 		, dtypes:list = None
 		, columns:list = None
 		, verbose:bool = True
-		, samples:dict = None #used for processing 2D separately.
+		, _samples:dict = None #used for processing 2D separately.
 	):
 		"""
 		- By default it takes all of the float columns, but you can include columns manually too.
@@ -2739,9 +2739,9 @@ class FeatureInterpolater(BaseModel):
 		feature.save()
 		try:
 			test_arr = feature.to_numpy()#Don't pass matching cols.
-			feature.interpolate(array=test_arr, samples=samples)
+			feature.interpolate(array=test_arr, samples=_samples)
 		except:
-			feature.count_interpolaters -= 1
+			feature.count_interpolaters += 1
 			feature.save()
 			fp.delete_instance() # Orphaned.
 			raise

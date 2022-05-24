@@ -72,7 +72,6 @@ class Input:
 			, dtypes:list             = None
 			, columns:list            = None
 		):
-			"""Not exposing `samples` argument."""
 			self.process_separately   = process_separately
 			self.verbose       		  = verbose
 			self.interpolate_kwargs   = interpolate_kwargs
@@ -119,7 +118,7 @@ class Pipeline:
 		, description:str	= None
 	):					
 		inputs = listify(inputs)
-		
+
 		if (target is not None):
 			l_id = target.id
 		elif (target is None):
