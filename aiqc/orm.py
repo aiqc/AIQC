@@ -3462,7 +3462,7 @@ class Queue(BaseModel):
 		splitset = queue.splitset
 		library = queue.algorithm.library
 
-		if (splitset.fold_count > 0):
+		if (splitset.fold_count == 0):
 			cache_path = f"{app_dir}queue-{id}_cached_samples.gzip"
 			jobs = list(queue.jobs)
 			# Repeat count means that a single Job can have multiple Predictors.
@@ -3529,7 +3529,7 @@ class Queue(BaseModel):
 				remove(cache_path)
 				raise
 
-		elif (splitset.fold_count == 0):
+		elif (splitset.fold_count > 0):
 			folds = list(splitset.folds)
 			# Each fold will contain unique, reusable data.
 			for e, fold in enumerate(folds):
