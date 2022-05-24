@@ -144,15 +144,9 @@ class Pipeline:
 				Window.from_feature(feature_id=f_id, **window)
 
 			encoders = i.encoders
-			###
-			print(type(encoders))
-			print(encoders)
 			if (encoders is not None):					
 				e_id = Encoderset.from_feature(feature_id=f_id).id
 				for fc in encoders:
-					###
-					print(type(fc))
-					print(fc)
 					kwargz = fc.__dict__
 					FeatureCoder.from_encoderset(encoderset_id=e_id, **kwargz)
 			
@@ -222,21 +216,13 @@ class Trainer:
 		self.search_count 	= search_count
 		self.search_percent = search_percent
 
-		splitset = Splitset.get_by_id(self.splitset_id)
-		foldsets = splitset.foldsets
-		if (foldsets.count()>0):
-			foldset_id = foldsets[-1].id
-		else:
-			foldset_id = None
-		self.foldset_id = foldset_id
-
 
 class Experiment:
 	"""
 	- Create Algorithm, Hyperparamset, preprocess, and Queue.
 	- Includes `preprocess` because it's weird to encode labels before you know what your final training layer looks like.
 	  Also, it's optional, so you'd have to access it from splitset before passing it in.
-	- The only pre-existing things that need to be passed in are `splitset_id` and the optional `foldset_id`.
+	- The only pre-existing things that need to be passed in are `splitset_id`.
 
 	`encoder_feature`: List of dictionaries describing each encoder to run along with filters for different feature columns.
 	`encoder_label`: Single instantiation of an sklearn encoder: e.g. `OneHotEncoder()` that gets applied to the full label array.

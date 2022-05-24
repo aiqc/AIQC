@@ -366,7 +366,7 @@ def stage_data(
 		)
 
 	# Features - fetch and encode.
-	featureset = splitset.get_features()
+	featureset = splitset.features
 	feature_count = len(featureset)
 	features = []# expecting diff array shapes inside so it has to be list, not array.
 	
@@ -441,8 +441,8 @@ def tabular_schemas_match(set_original, set_new):
 
 def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 	# Get the new and old featuresets. Loop over them by index.
-	features_new = splitset_new.get_features()
-	features_old = splitset_old.get_features()
+	features_new = splitset_new.features
+	features_old = splitset_old.features
 
 	if (len(features_new) != len(features_old)):
 		raise Exception("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")

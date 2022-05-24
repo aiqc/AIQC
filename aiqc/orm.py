@@ -47,7 +47,7 @@ from natsort import natsorted #file sorting.
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.signals import Model, pre_save
 from peewee import CharField, IntegerField, BlobField, BooleanField, FloatField, \
-	DateTimeField, ForeignKeyField
+	DateTimeField, ForeignKeyField, DeferredForeignKey
 from playhouse.fields import PickleField
 # ETL.
 import pandas as pd
@@ -123,9 +123,7 @@ def create_db():
 		print(f"\n=> Info - skipping table creation as the following tables already exist.{tables}\n")
 	else:
 		db.create_tables([
-			File, Dataset,
-			Label, Feature, 
-			Splitset, Featureset, Fold, 
+			File, Dataset, Label, Feature, Splitset, Fold, 
 			Interpolaterset, LabelInterpolater, FeatureInterpolater,
 			Encoderset, LabelCoder, FeatureCoder, 
 			Window, FeatureShaper,
@@ -226,7 +224,7 @@ class Dataset(BaseModel):
 	dataset_type = CharField() #tabular, image, sequence, graph, audio.
 	file_count = IntegerField() # used in Dataset.Sequence, but for Dataset.Image this really represents the number of seq datasets.
 	source_path = CharField(null=True)
-	#http://docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
+	#docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
 	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
 
 
@@ -1387,7 +1385,11 @@ class Feature(BaseModel):
 	"""
 	columns = JSONField(null=True)
 	columns_excluded = JSONField(null=True)
+	
 	dataset = ForeignKeyField(Dataset, backref='features')
+	# docs.peewee-orm.com/en/latest/peewee/api.html#DeferredForeignKey
+	# Schema was getting too complex with many-to-manys so I got rid of them.
+	splitset = DeferredForeignKey('Splitset', deferrable='INITIALLY DEFERRED', null=True, backref='features')
 
 
 	def from_dataset(
@@ -1992,7 +1994,7 @@ class Splitset(BaseModel):
 	unsupervised_stratify_col = CharField(null=True)
 
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
-	# Featureset is a many-to-many relationship between Splitset and Feature.
+
 
 	def make(
 		feature_ids:list
@@ -2279,29 +2281,19 @@ class Splitset(BaseModel):
 			, fold_count = 0
 		)
 
-		try:
-			for f_id in feature_ids:
-				feature = Feature.get_by_id(f_id)
-				Featureset.create(splitset=splitset, feature=feature)
-		except:
-			splitset.delete_instance()
-			raise
-		
+		for f_id in feature_ids:
+			feature = Feature.get_by_id(f_id)
+			feature.splitset = splitset
+			feature.save()
+
 		try:
 			if (fold_count > 0):
 				# Updates splitset.fold_count
 				splitset.make_folds(fold_count=fold_count, bin_count=bin_count)
 		except:
-			splitset.featureset.delete_instance()
 			splitset.delete_instance()
 			raise
 		return splitset
-
-
-	def get_features(id:int):
-		splitset = Splitset.get_by_id(id)
-		features = list(Feature.select().join(Featureset).where(Featureset.splitset==splitset))
-		return features
 
 
 	def make_folds(id:int, fold_count:int, bin_count:int=None):
@@ -2327,7 +2319,7 @@ class Splitset(BaseModel):
 
 		elif (splitset.supervision=="unsupervised"):
 			if (splitset.unsupervised_stratify_col is not None):
-				feature = splitset.get_features()[0]
+				feature = splitset.features[0]
 				_, stratify_arr = feature.preprocess(
 					supervision = 'unsupervised'
 					, encoderset_id = 'skip'
@@ -2461,11 +2453,6 @@ class Splitset(BaseModel):
 		return splitset
 
 
-
-class Featureset(BaseModel):
-	"""Featureset is a many-to-many relationship between Splitset and Feature."""
-	splitset = ForeignKeyField(Splitset, backref='featuresets')
-	feature = ForeignKeyField(Feature, backref='featuresets')
 
 
 class Fold(BaseModel):
@@ -3855,7 +3842,7 @@ class Job(BaseModel):
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
 		splitset = queue.splitset
-		features = splitset.get_features()
+		features = splitset.features
 		supervision = splitset.supervision
 		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		# During inference it is optional to provide labels.
@@ -4614,8 +4601,8 @@ class Predictor(BaseModel):
 		utils.wrangle.schemaNew_matches_schemaOld(splitset_new, splitset_old)
 		library = predictor.job.queue.algorithm.library
 
-		featureset_new = splitset_new.get_features()
-		featureset_old = splitset_old.get_features()
+		featureset_new = splitset_new.features
+		featureset_old = splitset_old.features
 		feature_count = len(featureset_new)
 		features = []# expecting different array shapes so it has to be list, not array.
 		
@@ -4812,7 +4799,7 @@ class Prediction(BaseModel):
 			raise Exception("\nYikes - Feature importance was not originally calculated for this analysis.\n")
 		else:
 			permute_count = prediction.predictor.job.queue.permute_count
-			# Remember the Featureset may contain multiple Features.
+			# Remember the featureset may contain multiple Features.
 			figs = []
 			for feature_id, feature_cols in feature_importance.items():
 				medians = [v['median'] for k,v in feature_cols.items()]
