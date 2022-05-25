@@ -1384,7 +1384,6 @@ class Feature(BaseModel):
 	- Order of `columns` matters for positional analysis, but order of `columns_excluded` does not.
 	"""
 	columns = JSONField()
-	count_interpolaters = IntegerField()
 	columns_excluded = JSONField(null=True)
 	
 	dataset = ForeignKeyField(Dataset, backref='features')
@@ -1443,7 +1442,6 @@ class Feature(BaseModel):
 			dataset = dataset
 			, columns = columns
 			, columns_excluded = columns_excluded
-			, count_interpolaters = 0
 		)
 		return feature
 
@@ -1675,7 +1673,7 @@ class Feature(BaseModel):
 			window = None
 
 		# --- Interpolate ---
-		if ((is_interpolated==True) and (feature.count_interpolaters>0)):
+		if ((is_interpolated==True) and (feature.featureinterpolaters.count()>0)):
 			feature_array = feature.interpolate(array=feature_array, samples=samples, window=window)
 
 		# --- Impute ---
@@ -2735,14 +2733,10 @@ class FeatureInterpolater(BaseModel):
 			, original_filter = original_filter
 			, feature = feature
 		)
-		feature.count_interpolaters += 1
-		feature.save()
 		try:
 			test_arr = feature.to_numpy()#Don't pass matching cols.
 			feature.interpolate(array=test_arr, samples=_samples)
 		except:
-			feature.count_interpolaters += 1
-			feature.save()
 			fp.delete_instance() # Orphaned.
 			raise
 		return fp
