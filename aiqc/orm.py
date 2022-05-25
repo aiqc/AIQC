@@ -25,6 +25,7 @@ from os import path, remove, makedirs
 from sys import modules
 from io import BytesIO
 from random import randint, sample
+from uuid import uuid1
 from itertools import product
 from gzip import open as gzopen
 from requests import get as requests_get
@@ -47,7 +48,7 @@ from natsort import natsorted #file sorting.
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.signals import Model, pre_save
 from peewee import CharField, IntegerField, BlobField, BooleanField, FloatField, \
-	DateTimeField, ForeignKeyField, DeferredForeignKey
+	DateTimeField, UUIDField, ForeignKeyField, DeferredForeignKey
 from playhouse.fields import PickleField
 # ETL.
 import pandas as pd
@@ -1317,8 +1318,8 @@ class Label(BaseModel):
 			label_array = labelinterpolater.interpolate(array=label_array, samples=samples)
 		
 		#Encode
-		# During inference the old labelcoder may be used so we have to nest the count.
 		if (is_encoded==True):
+			# During inference the old labelcoder may be used so we have to nest the count.
 			if (_fitted_label is not None):
 				if (_fitted_label.labelcoders.count()>0):
 					labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
@@ -2057,6 +2058,7 @@ class Splitset(BaseModel):
 	-ToDo: store and visualize distributions of each column in training split, including label.
 	-Future: is it useful to specify the size of only test for unsupervised learning?
 	"""
+	uuid = UUIDField()
 	samples = JSONField()
 	sizes = JSONField()
 	supervision = CharField()
@@ -2339,8 +2341,10 @@ class Splitset(BaseModel):
 			ordered_names = ["train", "test"]
 			samples = {k: samples[k] for k in ordered_names}
 
+		uid = str(uuid1())
 		splitset = Splitset.create(
-			label = label
+			uuid = uid
+			, label = label
 			, samples = samples
 			, sizes = sizes
 			, supervision = supervision
@@ -3216,7 +3220,7 @@ class Queue(BaseModel):
 		library = algorithm.library
 		splitset = Splitset.get_by_id(splitset_id)
 
-		# Future: since unsupervised won't have a Label for flagging the analysis type, I am going to keep the `Algorithm.analysis_type` attribute for now.
+		"""Validate Label structure for the analysis type"""
 		if (splitset.supervision == 'supervised'):
 			# Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
 			analysis_type = algorithm.analysis_type
@@ -3480,6 +3484,7 @@ class Queue(BaseModel):
 
 				# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
 				job = list(queue.jobs)[0]
+				print(samples)###
 				samples, input_shapes = utils.wrangle.stage_data(
 					splitset=splitset, job=job
 					, samples=samples, library=library

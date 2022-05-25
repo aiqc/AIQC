@@ -348,12 +348,12 @@ def stage_data(
 	, key_train:str
 ):
 	"""
-	- Remember, you `.fit()` on either training data or all data (categoricals).
+	- Remember, you `.fit()` on either training data or the entire dataset (categoricals).
 	- Then you transform the entire dataset because downstream processes may need the entire dataset:
-		e.g. fit imputer to training data, then impute entire dataset so that categorical encoders can fit on entire dataset.
+	  e.g. fit imputer to training data, then impute entire dataset so that categorical encoders can fit on entire dataset.
 	- So we transform the entire dataset, then divide it into splits/ folds.
 	- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
-		work the same in both numpy and torch.
+	  work the same in both numpy and torch.
 	"""
 	# Labels - fetch and encode.
 	if (splitset.supervision == "supervised"):
@@ -378,7 +378,7 @@ def stage_data(
 				, _job = job
 				, _samples_train = samples[key_train]
 				, _library = library
-			)	
+			)
 		elif (splitset.supervision == 'unsupervised'):
 			arr_features, arr_labels = feature.preprocess(
 				supervision = 'unsupervised'
