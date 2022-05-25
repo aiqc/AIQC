@@ -82,14 +82,13 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 		, fold_count = fold_count
 	).id
 
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
+	FeatureCoder.from_feature(
+		feature_id=f_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, columns = ['petal_width']
 	)
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
+	FeatureCoder.from_feature(
+		feature_id=f_id
 		, sklearn_preprocess = StandardScaler(copy=False)
 		, dtypes = ['float64']
 	)

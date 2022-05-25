@@ -1296,10 +1296,10 @@ class Label(BaseModel):
 
 	def preprocess(
 		id:int
-		, labelinterpolater_id:str = 'latest'
-		#, imputerset_id:str='latest'
-		#, outlierset_id:str='latest'
-		, labelcoder_id:str = 'latest'
+		, is_interpolated:bool = True
+		#, is_imputed:bool=True
+		#, is_outlied:bool=True
+		, is_encoded:bool = True
 		, samples:dict = None#Used by interpolation to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
 		, _samples_train:list = None#Used during job.run()
 		, _library:str = None#Used during job.run() and during infer()
@@ -1312,20 +1312,13 @@ class Label(BaseModel):
 			fold = _job.fold
 
 		# Interpolate
-		if ((labelinterpolater_id!='skip') and (label.labelinterpolaters.count()>0)):
-			if (labelinterpolater_id=='latest'):
-				labelinterpolater = label.labelinterpolaters[-1]
-			elif isinstance(labelinterpolater_id, int):
-				labelinterpolater = LabelInterpolater.get_by_id(labelinterpolater_id)
-			else:
-				raise Exception(f"\nYikes - Unexpected value <{labelinterpolater_id}> for `labelinterpolater_id` argument.\n")
-
+		if ((is_interpolated==True) and (label.labelinterpolaters.count()>0)):
 			labelinterpolater = label.labelinterpolaters[-1]
 			label_array = labelinterpolater.interpolate(array=label_array, samples=samples)
 		
 		#Encode
 		# During inference the old labelcoder may be used so we have to nest the count.
-		if (labelcoder_id!='skip'):
+		if (is_encoded==True):
 			if (_fitted_label is not None):
 				if (_fitted_label.labelcoders.count()>0):
 					labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
@@ -1338,13 +1331,7 @@ class Label(BaseModel):
 					)
 
 			elif (label.labelcoders.count()>0):
-				if (labelcoder_id=='latest'):
-					labelcoder = label.labelcoders[-1]
-				elif (isinstance(labelinterpolater_id, int)):
-					labelcoder = LabelCoder.get_by_id(labelcoder_id)
-				else:
-					raise Exception(f"\nYikes - Unexpected value <{labelcoder_id}> for `labelcoder_id` argument.\n")
-
+				labelcoder = label.labelcoders[-1]
 				if ((_job is None) or (_samples_train is None)):
 					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `labelcoder`")
 
@@ -1636,11 +1623,11 @@ class Feature(BaseModel):
 		id:int
 		, supervision:str = 'supervised'
 		, is_interpolated:bool = True
-		#, imputerset_id:str='latest'
-		#, outlierset_id:str='latest'
+		#, is_imputed:bool=True
+		#, is_outlied:bool=True
 		, is_encoded:bool = True
-		, window_id:str = 'latest'
-		, featureshaper_id:str = 'latest'
+		, is_windowed:bool = True
+		, is_shaped:bool = True
 		, samples:dict = None#Used by interpolate to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
 		, _samples_train:list = None#Used during job.run()
 		, _library:str = None#Used during job.run() and during infer()
@@ -1654,14 +1641,8 @@ class Feature(BaseModel):
 			fold = _job.fold
 
 		# Although this is not the first preprocess, other preprocesses need to know the window ranges.
-		if ((window_id!='skip') and (feature.windows.count()>0)):
-			if (window_id=='latest'):
-				window = feature.windows[-1]
-			elif isinstance(window_id, int):
-				window = Window.get_by_id(window_id)
-			else:
-				raise Exception(f"\nYikes - Unexpected value <{window_id}> for `window_id` argument.\n")
-
+		if ((is_windowed==True) and (feature.windows.count()>0)):
+			window = feature.windows[-1]
 			# During encoding we'll need the raw rows, not window indices.
 			if ((_samples_train is not None) and (_job is not None) and (_fitted_feature is None)):
 				samples_unshifted = window.samples_unshifted
@@ -1722,7 +1703,7 @@ class Feature(BaseModel):
 				pass
 
 		# --- Window ---
-		if ((window_id!='skip') and (feature.windows.count()>0)):
+		if ((is_windowed==True) and (feature.windows.count()>0)):
 			# Window object is fetched above because the other features need it. 
 			features_ndim = feature_array.ndim
 
@@ -1771,17 +1752,12 @@ class Feature(BaseModel):
 				feature_array = np.array(feature_holder)
 
 
-		if ((featureshaper_id!='skip') and (feature.featureshapers.count()>0)):
-			if (featureshaper_id=='latest'):
-				featureshaper = feature.featureshapers[-1]
-			elif isinstance(featureshaper_id, int):
-				featureshaper = FeatureShaper.get_by_id(featureshaper_id)
-			else:
-				raise Exception(f"\nYikes - Unexpected value <{featureshaper_id}> for `featureshaper_id` argument.\n")
-
+		if ((is_shaped==True) and (feature.featureshapers.count()>0)):
+			featureshaper = feature.featureshapers[-1]
+			reshape_indices = featureshaper.reshape_indices
 			old_shape = feature_array.shape
 			new_shape = []
-			for i in featureshaper.reshape_indices:
+			for i in reshape_indices:
 				if (type(i) == int):
 					new_shape.append(old_shape[i])
 				elif (type(i) == str):
@@ -1801,12 +1777,11 @@ class Feature(BaseModel):
 				raise Exception(f"\nYikes - Reshape succeeded, but expected the last dimension of the old shape:<{old_shape[-1]}> to match the dimension found <{old_shape[column_position]}> in the new shape's `featureshaper.column_position:<{column_position}>.\n")
 
 			# Unsupervised labels.
-			if ((window_id!='skip') and (feature.windows.count()>0) and (window.samples_shifted is not None)):
+			if ((is_windowed==True) and (feature.windows.count()>0) and (window.samples_shifted is not None)):
 				try:
 					label_array = label_array.reshape(new_shape)
 				except:
 					raise Exception(f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
-
 
 		if (_library == 'pytorch'):
 			feature_array = FloatTensor(feature_array)
@@ -2191,7 +2166,7 @@ class Splitset(BaseModel):
 
 				# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
 				label = Label.get_by_id(label_id)
-				stratify_arr = label.preprocess(labelcoder_id='skip')
+				stratify_arr = label.preprocess(is_encoded=False)
 
 				# Check number of samples in Label vs Feature, because they can come from different Datasets.
 				l_length = label.dataset.get_main_file().shape['rows']				
@@ -2408,7 +2383,7 @@ class Splitset(BaseModel):
 		if (splitset.supervision=="supervised"):
 			# The actual values of the features don't matter, only label values needed for stratification.
 			label = splitset.label
-			stratify_arr = label.preprocess(labelcoder_id='skip')
+			stratify_arr = label.preprocess(is_encoded=False)
 			stratify_arr = stratify_arr[arr_train_indices]
 			stratify_dtype = stratify_arr.dtype
 
