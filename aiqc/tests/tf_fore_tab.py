@@ -54,23 +54,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	d_id = Dataset.Tabular.from_pandas(dataframe=df).id
 
 	f_id = Feature.from_dataset(dataset_id=d_id).id
-	
-	i_id = Interpolaterset.from_feature(feature_id=f_id).id
-	FeatureInterpolater.from_interpolaterset(interpolaterset_id=i_id, dtypes=['float64'])
-
-	Window.from_feature(feature_id=f_id, size_window=28, size_shift=14)
-
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, sklearn_preprocess = RobustScaler(copy=False)
-		, columns = ['wind', 'pressure']
-	)
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, sklearn_preprocess = StandardScaler()
-		, dtypes = ['float64', 'int64']
-	)
 
 	if (fold_count is not None):
 		size_test = 0.25
@@ -78,6 +61,8 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	elif (fold_count is None):
 		size_test = 0.17
 		size_validation = 0.16
+
+	Window.from_feature(feature_id=f_id, size_window=28, size_shift=14)
 
 	s_id = Splitset.make(
 		feature_ids = [f_id]
@@ -88,12 +73,25 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 		, unsupervised_stratify_col = 'day_of_year'
 	).id
 
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id=s_id, fold_count=fold_count
-		).id
-	else:
-		fs_id = None
+	FeatureInterpolater.from_feature(feature_id=f_id, dtypes=['float64'])
+
+	FeatureCoder.from_feature(
+		feature_id = f_id
+		, sklearn_preprocess = RobustScaler(copy=False)
+		, columns = ['wind', 'pressure']
+	)
+	FeatureCoder.from_feature(
+		feature_id = f_id
+		, sklearn_preprocess = StandardScaler()
+		, dtypes = ['float64', 'int64']
+	)
+
+	# if (fold_count is not None):
+	# 	fs_id = Foldset.from_splitset(
+	# 		splitset_id=s_id, fold_count=fold_count
+	# 	).id
+	# else:
+	# 	fs_id = None
 
 	a_id = Algorithm.make(
 		library = "keras"
@@ -116,7 +114,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	queue = Queue.from_algorithm(
 		algorithm_id = a_id
 		, splitset_id = s_id
-		, foldset_id = fs_id
 		, hyperparamset_id = h_id
 		, repeat_count = repeat_count
 		, permute_count = permute_count

@@ -73,9 +73,8 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
 	)
 
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
+	FeatureCoder.from_feature(
+		feature_id = f_id
 		, sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
 		, dtypes = ['float64']
 	)

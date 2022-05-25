@@ -353,14 +353,14 @@ def encoder_transform_labels(
 	return arr_labels
 
 
-def encoderset_fit_features(
+def fit_features(
 	arr_features:object, samples_train:list,
-	encoderset:object,
+	feature:object,
 ):
-	featurecoders = list(encoderset.featurecoders)
+	featurecoders = list(feature.featurecoders)
 	fitted_encoders = []
 	if (len(featurecoders) > 0):
-		f_cols = encoderset.feature.columns
+		f_cols = feature.columns
 		
 		# For each featurecoder: fetch, transform, & concatenate matching features.
 		# One nested list per Featurecoder. List of lists.
@@ -399,15 +399,15 @@ def encoderset_fit_features(
 	return fitted_encoders
 
 
-def encoderset_transform_features(
+def transform_features(
 	arr_features:object,
-	fitted_encoders:list, encoderset:object 
+	fitted_encoders:list, feature:object 
 ):
 	"""
 	- Can't overwrite columns with data of different type (e.g. encoding object to int), 
 		so they have to be pieced together.
 	"""
-	featurecoders = list(encoderset.featurecoders)
+	featurecoders = list(feature.featurecoders)
 	if (len(featurecoders) > 0):
 		# Handle Sequence (part 1): reshape 3D to tall 2D for transformation.
 		og_shape = arr_features.shape
@@ -418,7 +418,7 @@ def encoderset_transform_features(
 			rows_2D = og_shape[0] * og_shape[1] * og_shape[2]
 			arr_features = arr_features.reshape(rows_2D, og_shape[3])
 
-		f_cols = encoderset.feature.columns
+		f_cols = feature.columns
 		transformed_features = None #Used as a placeholder for `np.concatenate`.
 		for featurecoder in featurecoders:
 			idx = featurecoder.index

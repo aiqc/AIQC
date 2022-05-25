@@ -143,7 +143,27 @@ class Pipeline:
 			features.append(f)
 			feature_ids.append(f.id)
 
-		# Many feature methods need a `Splitset.samples` first.
+			interpolaters = i.interpolaters
+			if (interpolaters is not None):
+				for fp in interpolaters:
+					kwargz = fp.__dict__
+					FeatureInterpolater.from_feature(f_id, **kwargz)
+
+			# Window needs to be created prior to Splitset because it influences `samples`
+			window = i.window
+			if (window is not None):
+				Window.from_feature(feature_id=f.id, **window)
+			
+			encoders = i.encoders
+			if (encoders is not None):					
+				for fc in encoders:
+					kwargz = fc.__dict__
+					FeatureCoder.from_encoderset(encoderset_id=e_id, **kwargz)
+			
+			reshape_indices = i.reshape_indices
+			if (reshape_indices is not None):
+				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=reshape_indices)
+
 		if (stratifier is None):
 			# Initialize with Nones
 			stratifier = Stratifier()
@@ -158,28 +178,6 @@ class Pipeline:
 			, name 			  = name
 			, description 	  = description
 		)
-
-		for e, i in enumerate(inputs):
-			f_id = features[e].id
-			interpolaters = i.interpolaters
-			for fp in interpolaters:
-				kwargz = fp.__dict__
-				FeatureInterpolater.from_feature(f_id, **kwargz)
-			
-			window = i.window
-			if (window is not None):
-				Window.from_feature(feature_id=f_id, **window)
-
-			encoders = i.encoders
-			if (encoders is not None):					
-				e_id = Encoderset.from_feature(feature_id=f_id).id
-				for fc in encoders:
-					kwargz = fc.__dict__
-					FeatureCoder.from_encoderset(encoderset_id=e_id, **kwargz)
-			
-			reshape_indices = i.reshape_indices
-			if (reshape_indices is not None):
-				FeatureShaper.from_feature(feature_id=f_id, reshape_indices=reshape_indices)
 		return splitset
 
 #==================================================

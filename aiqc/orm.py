@@ -125,7 +125,7 @@ def create_db():
 		db.create_tables([
 			File, Dataset, Label, Feature, Splitset, Fold, 
 			LabelInterpolater, FeatureInterpolater,
-			Encoderset, LabelCoder, FeatureCoder, 
+			LabelCoder, FeatureCoder, 
 			Window, FeatureShaper,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Job, Predictor, Prediction,
@@ -1638,7 +1638,7 @@ class Feature(BaseModel):
 		, is_interpolated:bool = True
 		#, imputerset_id:str='latest'
 		#, outlierset_id:str='latest'
-		, encoderset_id:str = 'latest'
+		, is_encoded:bool = True
 		, window_id:str = 'latest'
 		, featureshaper_id:str = 'latest'
 		, samples:dict = None#Used by interpolate to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
@@ -1681,37 +1681,29 @@ class Feature(BaseModel):
 
 		# --- Encode ---
 		# During inference the old encoderset may be used so we have to nest the count.
-		if (encoderset_id!='skip'):
+		if (is_encoded==True):
 			if (_fitted_feature is not None):
-				if (_fitted_feature.encodersets.count()>0):
-					encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+				if (_fitted_feature.featurecoders.count()>0):
+					fitted_encoders = Predictor.get_fitted_encoders(
 						job=_job, feature=_fitted_feature
 					)
-					feature_array = utils.encoding.encoderset_transform_features(
+					feature_array = utils.encoding.transform_features(
 						arr_features=feature_array,
-						fitted_encoders=fitted_encoders, encoderset=encoderset
+						fitted_encoders=fitted_encoders, feature=_fitted_feature
 					)
-
-			elif (feature.encodersets.count()>0):
-				if (encoderset_id=='latest'):
-					encoderset = feature.encodersets[-1]
-				elif (isinstance(encoderset_id, int)):
-					encoderset = Encoderset.get_by_id(encoderset_id)
-				else:
-					raise Exception(f"\nYikes - Unexpected value <{encoderset_id}> for `encoderset_id` argument.\n")
-
+			elif (feature.featurecoders.count()>0):
 				if ((_job is None) or (_samples_train is None)):
 					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
 
 				# This takes the entire array because it handles all features and splits.
-				fitted_encoders = utils.encoding.encoderset_fit_features(
+				fitted_encoders = utils.encoding.fit_features(
 					arr_features=feature_array, samples_train=_samples_train,
-					encoderset=encoderset
+					feature=feature
 				)
 
-				feature_array = utils.encoding.encoderset_transform_features(
+				feature_array = utils.encoding.transform_features(
 					arr_features=feature_array,
-					fitted_encoders=fitted_encoders, encoderset=encoderset
+					fitted_encoders=fitted_encoders, feature=feature
 				)
 				# Record the `fit` for decoding predictions via `inverse_transform`.
 				if (fold is not None):
@@ -1719,14 +1711,14 @@ class Feature(BaseModel):
 					jobs = [j for j in queue.jobs if j.fold==fold]
 					for j in jobs:
 						if (j.fittedencodersets.count()==0):
-							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
+							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, feature=feature)
 				# Unfolded jobs will all have the same fits.
 				elif (fold is None):
 					jobs = list(_job.queue.jobs)
 					for j in jobs:
 						if (j.fittedencodersets.count()==0):
-							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, encoderset=encoderset)
-			elif (feature.encodersets.count()==0):
+							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, feature=feature)
+			elif (feature.featurecoders.count()==0):
 				pass
 
 		# --- Window ---
@@ -1963,7 +1955,7 @@ class Feature(BaseModel):
 			if (len(leftover_columns) == 0):
 				print(
 					f"=> Done. All feature column(s) have {class_name}(s) associated with them.\n" \
-					f"No more FeatureCoders can be added to this Encoderset.\n"
+					f"No more FeatureCoders can be added to this Feature.\n"
 				)
 			elif (len(leftover_columns) > 0):
 				print(
@@ -1980,22 +1972,16 @@ class Feature(BaseModel):
 		- `encoded_column_names` proactively lists names from `fit.categories_`
 		"""
 		feature = Feature.get_by_id(id)
-		encodersets = feature.encodersets
-
-		if (encodersets.count()==0):
+		featurecoders = feature.featurecoders
+		num_featurecoders = featurecoders.count()
+		if (num_featurecoders==0):
 			all_encoded_column_names = feature.columns
 		else:
-			encoderset = encodersets[-1]
-			featurecoders = encoderset.featurecoders
-			num_featurecoders = featurecoders.count()
-			if (num_featurecoders==0):
-				all_encoded_column_names = feature.columns
-			else:
-				all_encoded_column_names = []
-				for i, fc in enumerate(featurecoders):
-					all_encoded_column_names += fc.encoded_column_names
-					if ((i+1==num_featurecoders) and (len(fc.leftover_columns)>0)):
-						all_encoded_column_names += fc.leftover_columns
+			all_encoded_column_names = []
+			for i, fc in enumerate(featurecoders):
+				all_encoded_column_names += fc.encoded_column_names
+				if ((i+1==num_featurecoders) and (len(fc.leftover_columns)>0)):
+					all_encoded_column_names += fc.leftover_columns
 		return all_encoded_column_names
 
 
@@ -2021,6 +2007,10 @@ class Window(BaseModel):
 		, record_shifted:bool=True
 	):
 		feature = Feature.get_by_id(feature_id)
+		if (feature.splitset is not None):
+			msg = "\nYikes - Window must be created prior to Splitset because it influences `Splitset.samples`.\n"
+			raise Exception(msg)
+
 		dataset_type = feature.dataset.dataset_type
 		
 		if (dataset_type=='tabular' or dataset_type=='sequence'):
@@ -2184,7 +2174,7 @@ class Splitset(BaseModel):
 		- If it's windowed, the samples become the windows instead of the rows.
 		- Images just use the index for stratification.
 		"""
-		feature_array = feature.preprocess(encoderset_id='skip')
+		feature_array = feature.preprocess(is_encoded=False)
 		samples = {}
 		sizes = {}
 
@@ -2426,8 +2416,7 @@ class Splitset(BaseModel):
 			if (splitset.unsupervised_stratify_col is not None):
 				feature = splitset.features[0]
 				_, stratify_arr = feature.preprocess(
-					supervision = 'unsupervised'
-					, encoderset_id = 'skip'
+					supervision='unsupervised', is_encoded=False
 				)
 				# Only take the training samples.
 				stratify_arr = stratify_arr[arr_train_indices]
@@ -2685,10 +2674,6 @@ class FeatureInterpolater(BaseModel):
 		- Only `include=True` is allowed so that the dtype can be included.
 		"""
 		feature = Feature.get_by_id(feature_id)
-		if (feature.splitset is None):
-			msg = "\nYikes - FeatureInterpolater cannot be created until Feature has a Splitset.\n"
-			raise Exception(msg)
-
 		existing_preprocs = feature.featureinterpolaters
 
 		if (interpolate_kwargs is None):
@@ -2782,24 +2767,6 @@ class FeatureInterpolater(BaseModel):
 
 
 
-class Encoderset(BaseModel):
-	"""
-	- Preprocessing should not happen prior to Dataset ingestion because you need to do it after the split to avoid bias.
-	  For example, encoder.fit() only on training split - then .transform() train, validation, and test. 
-	- Don't restrict a preprocess to a specific Algorithm. Many algorithms are created as different hyperparameters are tried.
-	  Also, Preprocess is somewhat predetermined by the dtypes present in the Label and Feature.
-	- Although Encoderset seems uneccessary, you need something to sequentially group the FeatureCoders onto.
-	- In future, maybe LabelCoder gets split out from Encoderset and it becomes FeatureCoderset.
-	"""
-	encoder_count = IntegerField()
-
-	feature = ForeignKeyField(Feature, backref='encodersets')
-
-	def from_feature(feature_id:int, encoder_count:int=0):
-		feature = Feature.get_by_id(feature_id)
-		encoderset = Encoderset.create(encoder_count=encoder_count, feature=feature)
-		return encoderset
-
 
 class LabelCoder(BaseModel):
 	"""
@@ -2870,7 +2837,7 @@ class LabelCoder(BaseModel):
 
 class FeatureCoder(BaseModel):
 	"""
-	- An Encoderset can have a chain of FeatureCoders.
+	- A Feature can have a chain of FeatureCoders.
 	- Encoders are applied sequentially, meaning the columns encoded by `index=0` 
 	  are not available to `index=1`.
 	- Lots of validation here because real-life encoding errors are cryptic and deep for beginners.
@@ -2886,20 +2853,19 @@ class FeatureCoder(BaseModel):
 	only_fit_train = BooleanField()
 	is_categorical = BooleanField()
 
-	encoderset = ForeignKeyField(Encoderset, backref='featurecoders')
+	feature = ForeignKeyField(Feature, backref='featurecoders')
 
 
-	def from_encoderset(
-		encoderset_id:int
+	def from_feature(
+		feature_id:int
 		, sklearn_preprocess:object
 		, include:bool = True
 		, dtypes:list = None
 		, columns:list = None
 		, verbose:bool = True
 	):
-		encoderset = Encoderset.get_by_id(encoderset_id)
-		feature = encoderset.feature
-		existing_featurecoders = encoderset.featurecoders
+		feature = Feature.get_by_id(feature_id)
+		existing_featurecoders = feature.featurecoders
 		
 		sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
 			sklearn_preprocess, is_label=False
@@ -2991,7 +2957,7 @@ class FeatureCoder(BaseModel):
 			, leftover_columns = leftover_columns
 			, leftover_dtypes = initial_dtypes#pruned
 			, original_filter = original_filter
-			, encoderset = encoderset
+			, feature = feature
 			, encoding_dimension = encoding_dimension
 		)
 		return featurecoder
@@ -4062,12 +4028,13 @@ class Job(BaseModel):
 			- Unsupervised prevents multiple features.
 			"""
 			# Remember `fitted_encoders` is a list of lists.
-			encoderset, fitted_encoders = Predictor.get_fitted_encoderset(
+			fitted_encoders = Predictor.get_fitted_encoders(
 				job = job
 				, feature = features[0]
 			)
 
-			if (encoderset is not None):
+			featurecoders = feature.featurecoders
+			if (featurecoders.count()>0):
 				for split, data in predictions.items():
 					# Make sure it is 2D.
 					data_shape = data.shape
@@ -4081,7 +4048,7 @@ class Job(BaseModel):
 						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
 
 					encoded_column_names = []
-					for i, fc in enumerate(encoderset.featurecoders):
+					for i, fc in enumerate(featurecoders):
 						# Figure out the order in which columns were encoded.
 						# This `[0]` assumes that there is only 1 fitted encoder in the list; that 2D fit succeeded.
 						fitted_encoder = fitted_encoders[i][0]
@@ -4110,7 +4077,7 @@ class Job(BaseModel):
 						# So we can continue to access the next cols via `num_matching_columns`.
 						data = np.delete(data, np.s_[0:num_matching_columns], axis=1)
 					# Check for and merge any leftover columns.
-					leftover_columns = encoderset.featurecoders[-1].leftover_columns
+					leftover_columns = featurecoders[-1].leftover_columns
 					if (len(leftover_columns)>0):
 						[encoded_column_names.append(c) for c in leftover_columns]
 						decoded_data = np.concatenate((decoded_data, data), axis=1)
@@ -4369,12 +4336,12 @@ class FittedEncoderset(BaseModel):
 	- Useful for accessing featurecoders for matching_columns, dimensions.
 	- When I added support for multiple Features, updating `Job.fitted_encoders` during
 	  `Job.run()` started to get unmanageable. Especially when you consider that not every
-	  Feature type is guaranteed to have an Encoderset.
+	  Feature type is guaranteed to have encoders.
 	"""
 	fitted_encoders = PickleField()
 
 	job = ForeignKeyField(Job, backref='fittedencodersets')
-	encoderset = ForeignKeyField(Encoderset, backref='fittedencodersets')
+	feature = ForeignKeyField(Feature, backref='fittedencodersets')
 
 
 class FittedLabelCoder(BaseModel):
@@ -4533,21 +4500,20 @@ class Predictor(BaseModel):
 		if (call_display==False): return figs
 
 
-	def get_fitted_encoderset(job:object, feature:object):
+	def get_fitted_encoders(job:object, feature:object):
 		"""
 		Given a Feature, you want to know if it needs to be transformed,
 		and, if so, how to transform it.
 		"""
-		fittedencodersets = FittedEncoderset.select().join(Encoderset).where(
-			FittedEncoderset.job==job, FittedEncoderset.encoderset.feature==feature
+		fittedencodersets = FittedEncoderset.select().where(
+			FittedEncoderset.job==job, FittedEncoderset.feature==feature
 		)
 
 		if (not fittedencodersets):
-			return None, None
+			return None
 		else:
-			encoderset = fittedencodersets[0].encoderset
 			fitted_encoders = fittedencodersets[0].fitted_encoders
-			return encoderset, fitted_encoders
+			return fitted_encoders
 
 
 	def get_fitted_labelcoder(job:object, label:object):
