@@ -1982,6 +1982,9 @@ class Window(BaseModel):
 		, record_shifted:bool=True
 	):
 		feature = Feature.get_by_id(feature_id)
+		if (feature.windows.count()>0):
+			msg = "\nYikes - Feature can only have 1 Window.\n"
+			raise Exception(msg)
 		if (feature.splitset is not None):
 			msg = "\nYikes - Window must be created prior to Splitset because it influences `Splitset.samples`.\n"
 			raise Exception(msg)
@@ -2556,6 +2559,9 @@ class LabelInterpolater(BaseModel):
 		, interpolate_kwargs:dict = None
 	):
 		label = Label.get_by_id(label_id)
+		if (label.labelinterpolaters.count()>0):
+			msg = "\nYikes - Label can only have 1 LabelInterpolater.\n"
+			raise Exception(msg)
 		utils.wrangle.floats_only(label)
 
 		if (interpolate_kwargs is None):
@@ -2765,6 +2771,9 @@ class LabelCoder(BaseModel):
 
 	def from_label(label_id:int, sklearn_preprocess:object):
 		label = Label.get_by_id(label_id)
+		if (label.labelcoders.count()>0):
+			msg = "\nYikes - Label can only have 1 LabelCoder.\n"
+			raise Exception(msg)
 
 		sklearn_preprocess, only_fit_train, is_categorical = utils.encoding.check_sklearn_attributes(
 			sklearn_preprocess, is_label=True
@@ -2945,6 +2954,9 @@ class FeatureShaper(BaseModel):
 
 	def from_feature(feature_id:int, reshape_indices:tuple):
 		feature = Feature.get_by_id(feature_id)
+		if (feature.featureshapes.count()>0):
+			msg = "\nYikes - Feature can only have 1 FeatureShaper.\n"
+			raise Exception(msg)
 		# Determines the `column_position`, which gets confirmed during preprocess().
 		# Flatten the `reshape_indices` tuple.
 		reshape_flat = []
