@@ -52,55 +52,28 @@ def timezone_now(as_str:bool=False):
 #==================================================
 # FOLDER
 #==================================================
-def check_exists_folder(directory:str=None):
-	if (directory is None):
-		directory = app_dir_no_trailing_slash
-	# If Windows does not have permission to read the folder, it will fail when trailing backslashes \\ provided.
-	app_dir_exists = path.exists(directory)
-	if app_dir_exists:
-		print(f"\n=> Success - the following file path already exists on your system:\n{directory}\n")
-		return True
-	else:
-		print(
-			f"=> Info - it appears the following folder does not exist on your system:\n{directory}\n\n" \
-			f"=> Fix - you can attempt to fix this by running `aiqc.config.create_folder(directory)`.\n"
-		)
-		return False
-
-
 def create_folder(directory:str=None):	
-	dir_exists = check_exists_folder(directory)
-	if (directory is None):
-		directory = app_dir
-	if (dir_exists):
-		print(f"\n=> Info - skipping folder creation as folder already exists at file path:\n{directory}\n")
-	else:
-		try:
-			"""
-			- `makedirs` will create any missing intermediary dir(s) in addition to the target dir.
-			- Whereas `mkdir` only creates the target dir and fails if intermediary dir(s) are missing.
-			- If this break for whatever reason, could also try out `path.mkdir(parents=True)`.
-			"""
-			makedirs(directory)
-			# if name == 'nt':
-			#   # Windows: backslashes \ and double backslashes \\
-			#   command = 'mkdir ' + app_dir
-			#   system(command)
-			# else:
-			#   # posix (mac and linux)
-			#   command = 'mkdir -p "' + app_dir + '"'
-			#   system(command)
-		except:
-			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}')\n")
-		print(
-			f"=> Success - created folder at file path:\n{directory}\n\n" \
-			f"=> Next run `aiqc.config.create_config()`.\n"
-		)
+	try:
+		"""
+		- `makedirs` will create any missing intermediary dir(s) in addition to the target dir.
+		- Whereas `mkdir` only creates the target dir and fails if intermediary dir(s) are missing.
+		- If this break for whatever reason, could also try out `path.mkdir(parents=True)`.
+		"""
+		makedirs(directory, exist_ok=True)
+		# if name == 'nt':
+		#   # Windows: backslashes \ and double backslashes \\
+		#   command = 'mkdir ' + app_dir
+		#   system(command)
+		# else:
+		#   # posix (mac and linux)
+		#   command = 'mkdir -p "' + app_dir + '"'
+		#   system(command)
+	except:
+		raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}')\n")
 
 
 def check_permissions_folder():
-	app_dir_exists = check_exists_folder()
-	if (app_dir_exists):
+	if (path.exists(app_dir)):
 		# Windows `access()` always returning True even when I have verify permissions are in fact denied.
 		if (name == 'nt'):
 			# Test write.
@@ -147,7 +120,6 @@ def check_permissions_folder():
 			writeable = access(app_dir, W_OK)
 
 			if (readable and writeable):
-				print(f"\n=> Success - your operating system user can read from and write to file path:\n{app_dir}\n")
 				return True
 			else:
 				if not readable:
@@ -163,9 +135,7 @@ def check_permissions_folder():
 
 def grant_permissions_folder():
 	permissions = check_permissions_folder()
-	if (permissions):
-		print(f"\n=> Info - skipping as you already have permissions to read from and write to file path:\n{app_dir}\n")
-	else:
+	if (permissions==False):
 		try:
 			if (name == 'nt'):
 				# Windows ICACLS permissions: https://www.educative.io/edpresso/what-is-chmod-in-windows
@@ -206,19 +176,22 @@ def clear_cache_samples(confirm=False):
 #==================================================
 
 def get_config():
-	aiqc_config_exists = path.exists(default_config_path)
-	if aiqc_config_exists:
+	config_exists = path.exists(default_config_path)
+	if (config_exists==True):
 		with open(default_config_path, 'r') as aiqc_config_file:
 			aiqc_config = load(aiqc_config_file)
 			return aiqc_config
 	else: 
-		print("\n=> Welcome to AIQC.\nTo get started, run `aiqc.setup()`.\n")
+		"""
+		The first step is import orm, which calls get_db(), which calls get_config()
+		This welcome message feels more natural than "config doesn't exist yet"
+		"""
+		print("\n=> 🚀 Welcome to AIQC. To get started, run `orm.setup()`.\n")
 
 
 def create_config():
 	#check if folder exists
-	folder_exists = check_exists_folder()
-	if folder_exists:
+	if (path.exists(app_dir)):
 		config_exists = path.exists(default_config_path)
 		if not config_exists:
 			aiqc_config = {
@@ -247,11 +220,7 @@ def create_config():
 					f"==================================="
 				)
 				raise
-			print(f"\n=> Success - created config file for settings at path:\n{default_config_path}\n")
 			importlib_reload(modules[__name__])
-		else:
-			print(f"\n=> Info - skipping as config file already exists at path:\n{default_config_path}\n")
-	print("\n=> Next run `aiqc.orm.create_db()`.\n")
 
 
 def delete_config(confirm:bool=False):

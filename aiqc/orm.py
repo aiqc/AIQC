@@ -17,11 +17,12 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
-from .utils.config import app_folders, timezone_now, create_folder, create_config
+from .utils.config import app_folders, timezone_now, create_folder, \
+	create_config, clear_cache_samples
 from .plots import Plot
 from . import utils
 # --- Python modules ---
-from os import path, remove, makedirs
+from os import path, remove
 from sys import modules
 from io import BytesIO
 from random import randint, sample
@@ -48,7 +49,7 @@ from natsort import natsorted #file sorting.
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
 from playhouse.signals import Model, pre_save
 from peewee import CharField, IntegerField, BlobField, BooleanField, FloatField, \
-	DateTimeField, UUIDField, ForeignKeyField, DeferredForeignKey
+	DateTimeField, ForeignKeyField, DeferredForeignKey
 from playhouse.fields import PickleField
 # ETL.
 import pandas as pd
@@ -78,19 +79,15 @@ def get_path_db():
 
 
 def get_db():
-	"""
-	The `BaseModel` of the ORM calls this function. 
-	"""
+	"""The `BaseModel` of the ORM calls this function when this module is imported"""
 	path = get_path_db()
-	if (path is None):
-		print("\n=> Info - Cannot fetch database yet because it has not been configured.\n")
-	else:
+	if (path is not None):
 		"""
 		SQLite Pragmas/Settings:
 		- Default is Journal mode <docs.peewee-orm.com/en/latest/peewee/database.html>
 		- Write Ahead Lock (WAL) mode supports concurrent writes, but not NFS (AWS EFS) <sqlite.org/wal.html>
 
-		- Tried `'foreign_keys':1` to get `on_delete='CASCADE'` working, but it failed.
+		- Tried `'foreign_keys':1` to get `on_delete='CASCADE'` working, but it didn't work.
 		"""
 		db = SqliteExtDatabase(path, pragmas={})
 		return db
@@ -101,7 +98,6 @@ def create_db():
 	db_path = get_path_db()
 	db_exists = path.exists(db_path)
 	if db_exists:
-		print(f"\n=> Skipping database file creation as a database file already exists at path:\n{db_path}\n")
 		db = get_db()
 	else:
 		# Create sqlite file for db.
@@ -120,9 +116,7 @@ def create_db():
 	# Create tables inside db.
 	tables = db.get_tables()
 	table_count = len(tables)
-	if (table_count > 0):
-		print(f"\n=> Info - skipping table creation as the following tables already exist.{tables}\n")
-	else:
+	if (table_count==0):
 		db.create_tables([
 			File, Dataset, Label, Feature, Splitset, Fold, 
 			LabelInterpolater, FeatureInterpolater,
@@ -135,7 +129,7 @@ def create_db():
 		tables = db.get_tables()
 		table_count = len(tables)
 		if table_count > 0:
-			print("\n💾  Success - created all database tables.  💾\n")
+			print("\n💾 Success - created database tables\n")
 		else:
 			print(
 				f"=> Yikes - failed to create tables.\n" \
