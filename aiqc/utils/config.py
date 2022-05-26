@@ -7,7 +7,6 @@ Create `aiqc.sqlite3` database.
 """
 # Python modules
 from os import path, makedirs, name, system, access, remove, listdir
-from posixpath import abspath
 from sys import version, modules, prefix
 from json import load, dump
 from appdirs import user_data_dir
