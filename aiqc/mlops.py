@@ -214,7 +214,6 @@ class Trainer:
 		, pipeline_id:int
 		, repeat_count:int 	= 1
 		, permute_count:int = 3
-		, hide_test:bool 	= False
 		, search_count 		= None
 		, search_percent 	= None
 	):
@@ -222,7 +221,6 @@ class Trainer:
 		self.splitset_id 	= pipeline_id
 		self.repeat_count 	= repeat_count
 		self.permute_count 	= permute_count
-		self.hide_test 		= hide_test
 		self.search_count 	= search_count
 		self.search_percent = search_percent
 

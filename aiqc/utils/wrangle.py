@@ -340,29 +340,27 @@ def run_interpolate(dataframe:object, interpolate_kwargs:dict):
 	return dataframe
 
 
-def stage_data(
-	splitset:object
-	, job:object
-	, samples:dict
-	, library:str
-	, key_train:str
-):
+def stage_data(splitset:object, fold:object):
+	if (fold is not None):
+		samples = fold.samples
+	else:
+		samples = splitset.samples
+	key_train = splitset.key_train
 	"""
 	- Remember, you `.fit()` on either training data or the entire dataset (categoricals).
 	- Then you transform the entire dataset because downstream processes may need the entire dataset:
-	  e.g. fit imputer to training data, then impute entire dataset so that categorical encoders can fit on entire dataset.
+	e.g. fit imputer to training data, then impute entire dataset so that categorical encoders can fit on entire dataset.
 	- So we transform the entire dataset, then divide it into splits/ folds.
 	- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
-	  work the same in both numpy and torch.
+	work the same in both numpy and torch.
 	"""
 	# Labels - fetch and encode.
 	if (splitset.supervision == "supervised"):
 		label = splitset.label
 		arr_labels = label.preprocess(
 			samples = samples
-			, _samples_train = samples[key_train]
-			, _library = library
-			, _job = job
+			, fold = fold
+			, key_train = key_train
 		)
 
 	# Features - fetch and encode.
@@ -374,22 +372,19 @@ def stage_data(
 		if (splitset.supervision == 'supervised'):
 			arr_features = feature.preprocess(
 				supervision = 'supervised'
+				, fold = fold
 				, samples = samples
-				, _job = job
-				, _samples_train = samples[key_train]
-				, _library = library
+				, key_train = key_train
 			)
 		elif (splitset.supervision == 'unsupervised'):
 			arr_features, arr_labels = feature.preprocess(
 				supervision = 'unsupervised'
+				, fold = fold
 				, samples = samples
-				, _job = job
-				, _samples_train = samples[key_train]
-				, _library = library
+				, key_train = key_train
 			)
 		features.append(arr_features)
 		# `arr_labels` is not appended because unsupervised analysis only supports 1 unsupervised feature.
-	
 	"""
 	- Stage preprocessed data to be passed into the remaining Job steps.
 	- Example samples dict entry: samples['train']['labels']

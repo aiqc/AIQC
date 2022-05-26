@@ -254,6 +254,9 @@ def transform_dynamicDimensions(
 	"""
 	if (encoding_dimension == '2D_multiColumn'):
 		# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
+		###
+		print(type(fitted_encoders))
+		print(fitted_encoders)
 		encoded_samples = fitted_encoders[0].transform(samples_to_transform)
 		encoded_samples = if_1d_make_2d(array=encoded_samples)
 	elif (encoding_dimension == '2D_singleColumn'):
@@ -322,20 +325,17 @@ def encoder_fit_labels(
 	- All Label columns are always used during encoding.
 	- Rows determine what fit happens.
 	"""
-	if (labelcoder is not None):
-		preproc = labelcoder.sklearn_preprocess
+	preproc = labelcoder.sklearn_preprocess
 
-		if (labelcoder.only_fit_train == True):
-			labels_to_fit = arr_labels[samples_train]
-		elif (labelcoder.only_fit_train == False):
-			labels_to_fit = arr_labels
-			
-		fitted_coders, encoding_dimension = fit_dynamicDimensions(
-			sklearn_preprocess = preproc
-			, samples_to_fit = labels_to_fit
-		)
-		# Save the fit.
-		fitted_encoders = fitted_coders[0]#take out of list before adding to dict.
+	if (labelcoder.only_fit_train == True):
+		labels_to_fit = arr_labels[samples_train]
+	elif (labelcoder.only_fit_train == False):
+		labels_to_fit = arr_labels
+		
+	fitted_encoders, encoding_dimension = fit_dynamicDimensions(
+		sklearn_preprocess = preproc
+		, samples_to_fit = labels_to_fit
+	)
 	return fitted_encoders
 
 
@@ -346,7 +346,7 @@ def encoder_transform_labels(
 	encoding_dimension = labelcoder.encoding_dimension
 	
 	arr_labels = transform_dynamicDimensions(
-		fitted_encoders = [fitted_encoders] # `list(fitted_encoders)`, fails.
+		fitted_encoders = fitted_encoders
 		, encoding_dimension = encoding_dimension
 		, samples_to_transform = arr_labels
 	)
@@ -395,7 +395,10 @@ def fit_features(
 				sklearn_preprocess = preproc
 				, samples_to_fit = features_to_fit
 			)
+
 			fitted_encoders.append(fitted_coders)
+		featurecoder.fitted_encoders = fitted_coders
+		featurecoder.save()
 	return fitted_encoders
 
 

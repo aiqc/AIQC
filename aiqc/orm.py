@@ -1145,6 +1145,7 @@ class Label(BaseModel):
 	columns = JSONField()
 	column_count = IntegerField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
+	fitted_encoders = PickleField(null=True)
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
 	
@@ -1302,67 +1303,45 @@ class Label(BaseModel):
 		#, is_outlied:bool=True
 		, is_encoded:bool = True
 		, samples:dict = None#Used by interpolation to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
-		, _samples_train:list = None#Used during job.run()
-		, _library:str = None#Used during job.run() and during infer()
-		, _job:object = None#Used during job.run() and during infer()
-		, _fitted_label:object = None#Used during infer()
+		, fold:object = None
+		, key_train:list = None#Used during job.run()
 	):
 		label = Label.get_by_id(id)
 		label_array = label.to_numpy()
-		if (_job is not None):
-			fold = _job.fold
 
-		# Interpolate
+		# --- Interpolate ---
 		if ((is_interpolated==True) and (label.labelinterpolaters.count()>0)):
 			labelinterpolater = label.labelinterpolaters[-1]
 			label_array = labelinterpolater.interpolate(array=label_array, samples=samples)
 		
-		#Encode
-		if (is_encoded==True):
+		# --- Encode ---
+		labelcoders = label.labelcoders
+		if ((is_encoded==True) and (labelcoders.count()>0)):
 			# During inference the old labelcoder may be used so we have to nest the count.
-			if (_fitted_label is not None):
-				if (_fitted_label.labelcoders.count()>0):
-					labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(
-						job=_job, label=_fitted_label
-					)
-
-					label_array = utils.encoding.encoder_transform_labels(
-						arr_labels=label_array,
-						fitted_encoders=fitted_encoders, labelcoder=labelcoder
-					)
-
-			elif (label.labelcoders.count()>0):
-				labelcoder = label.labelcoders[-1]
-				if ((_job is None) or (_samples_train is None)):
-					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `labelcoder`")
+			if (fold is not None):
+				fitted_encoders = fold.fitted_encoders
+				item = fold
+			else:
+				fitted_encoders = label.fitted_encoders
+				item = label
+			
+			labelcoder = labelcoders[-1]
+			# Hasn't been fit yet.
+			if (fitted_encoders is None):
+				samples_train = samples[key_train]
 
 				fitted_encoders = utils.encoding.encoder_fit_labels(
-					arr_labels=label_array, samples_train=_samples_train,
-					labelcoder=labelcoder
+					arr_labels=label_array, samples_train=samples_train, labelcoder=labelcoder
 				)
+				# Save the fit for decoding and inference.
+				item.fitted_encoders = fitted_encoders
+				item.save()
 
-				if (fold is not None):
-					queue = _job.queue
-					jobs = [j for j in queue.jobs if j.fold==fold]
-					for j in jobs:
-						if (j.fittedlabelcoders.count()==0):
-							FittedLabelCoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
-				# Unfolded jobs will all have the same fits.
-				elif (fold is None):
-					jobs = list(_job.queue.jobs)
-					for j in jobs:
-						if (j.fittedlabelcoders.count()==0):
-							FittedLabelCoder.create(fitted_encoders=fitted_encoders, job=j, labelcoder=labelcoder)
-
-				label_array = utils.encoding.encoder_transform_labels(
-					arr_labels=label_array,
-					fitted_encoders=fitted_encoders, labelcoder=labelcoder
-				)
-			elif (label.labelcoders.count()==0):
-				pass
-
-		if (_library == 'pytorch'):
-			label_array = FloatTensor(label_array)
+			# Now execute the transform using the fit
+			label_array = utils.encoding.encoder_transform_labels(
+				arr_labels=label_array,
+				fitted_encoders=fitted_encoders, labelcoder=labelcoder
+			)
 		return label_array
 
 
@@ -1373,6 +1352,7 @@ class Feature(BaseModel):
 	"""
 	columns = JSONField()
 	columns_excluded = JSONField(null=True)
+	fitted_encoders = PickleField(null=True)
 	
 	dataset = ForeignKeyField(Dataset, backref='features')
 	# docs.peewee-orm.com/en/latest/peewee/api.html#DeferredForeignKey
@@ -1630,27 +1610,27 @@ class Feature(BaseModel):
 		, is_windowed:bool = True
 		, is_shaped:bool = True
 		, samples:dict = None#Used by interpolate to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
-		, _samples_train:list = None#Used during job.run()
-		, _library:str = None#Used during job.run() and during infer()
-		, _job:object = None#Used during job.run() and during infer()
+		, key_train:list = None
+		, fold:object = None
 		, _fitted_feature:object = None#Used during infer()
 	):
 		#As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
 		feature = Feature.get_by_id(id)
 		feature_array = feature.to_numpy()
-		if (_job is not None):
-			fold = _job.fold
+
+		if (key_train is not None):
+			samples_train = samples[key_train]
 
 		# Although this is not the first preprocess, other preprocesses need to know the window ranges.
 		if ((is_windowed==True) and (feature.windows.count()>0)):
 			window = feature.windows[-1]
 			# During encoding we'll need the raw rows, not window indices.
-			if ((_samples_train is not None) and (_job is not None) and (_fitted_feature is None)):
+			if ((key_train is not None) and (_fitted_feature is None)):
 				samples_unshifted = window.samples_unshifted
-				train_windows = [samples_unshifted[idx] for idx in _samples_train]
+				train_windows = [samples_unshifted[idx] for idx in samples_train]
 				# We need all of the rows from all of the windows. But only the unique ones. 
 				windows_flat = [item for sublist in train_windows for item in sublist]
-				_samples_train = list(set(windows_flat))
+				samples_train = list(set(windows_flat))
 		else:
 			window = None
 
@@ -1662,46 +1642,29 @@ class Feature(BaseModel):
 		# --- Outliers ---
 
 		# --- Encode ---
-		# During inference the old encoderset may be used so we have to nest the count.
-		if (is_encoded==True):
-			if (_fitted_feature is not None):
-				if (_fitted_feature.featurecoders.count()>0):
-					fitted_encoders = Predictor.get_fitted_encoders(
-						job=_job, feature=_fitted_feature
-					)
-					feature_array = utils.encoding.transform_features(
-						arr_features=feature_array,
-						fitted_encoders=fitted_encoders, feature=_fitted_feature
-					)
-			elif (feature.featurecoders.count()>0):
-				if ((_job is None) or (_samples_train is None)):
-					raise Exception("Yikes - both `job_id` and `key_train` must be defined in order to use `encoderset`")
-
-				# This takes the entire array because it handles all features and splits.
+		featurecoders = feature.featurecoders
+		if ((is_encoded==True) and (featurecoders.count()>0)):
+			# During inference the old labelcoder may be used so we have to nest the count.
+			if (fold is not None):
+				fitted_encoders = fold.fitted_encoders
+				item = fold
+			else:
+				fitted_encoders = feature.fitted_encoders
+				item = feature
+			
+			# Hasn't been fit yet.
+			if (fitted_encoders is None):
 				fitted_encoders = utils.encoding.fit_features(
-					arr_features=feature_array, samples_train=_samples_train,
-					feature=feature
+					arr_features=feature_array, samples_train=samples_train, feature=feature
 				)
+				# Save the fit for decoding and inference.
+				item.fitted_encoders = fitted_encoders
+				item.save()
 
-				feature_array = utils.encoding.transform_features(
-					arr_features=feature_array,
-					fitted_encoders=fitted_encoders, feature=feature
-				)
-				# Record the `fit` for decoding predictions via `inverse_transform`.
-				if (fold is not None):
-					queue = _job.queue
-					jobs = [j for j in queue.jobs if j.fold==fold]
-					for j in jobs:
-						if (j.fittedencodersets.count()==0):
-							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, feature=feature)
-				# Unfolded jobs will all have the same fits.
-				elif (fold is None):
-					jobs = list(_job.queue.jobs)
-					for j in jobs:
-						if (j.fittedencodersets.count()==0):
-							FittedEncoderset.create(fitted_encoders=fitted_encoders, job=j, feature=feature)
-			elif (feature.featurecoders.count()==0):
-				pass
+			# Now execute the transform using the fit
+			feature_array = utils.encoding.transform_features(
+				arr_features=feature_array, fitted_encoders=fitted_encoders, feature=feature
+			)
 
 		# --- Window ---
 		if ((is_windowed==True) and (feature.windows.count()>0)):
@@ -1752,7 +1715,7 @@ class Feature(BaseModel):
 					feature_holder.append(window_arr)
 				feature_array = np.array(feature_holder)
 
-
+		# --- Shaping ---
 		if ((is_shaped==True) and (feature.featureshapers.count()>0)):
 			featureshaper = feature.featureshapers[-1]
 			reshape_indices = featureshaper.reshape_indices
@@ -1783,15 +1746,9 @@ class Feature(BaseModel):
 					label_array = label_array.reshape(new_shape)
 				except:
 					raise Exception(f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
-
-		if (_library == 'pytorch'):
-			feature_array = FloatTensor(feature_array)
-
 		if (supervision=='supervised'):
 			return feature_array
 		elif (supervision=='unsupervised'):
-			if (_library == 'pytorch'):
-				label_array = FloatTensor(label_array)
 			return feature_array, label_array
 
 
@@ -2058,15 +2015,17 @@ class Splitset(BaseModel):
 	-ToDo: store and visualize distributions of each column in training split, including label.
 	-Future: is it useful to specify the size of only test for unsupervised learning?
 	"""
-	uuid = UUIDField()
+	uuid = CharField()
 	samples = JSONField()
 	sizes = JSONField()
 	supervision = CharField()
-	has_test = BooleanField()
 	has_validation = BooleanField()
+	key_train = CharField()
 	fold_count = IntegerField()
 	bin_count = IntegerField(null=True)
 	unsupervised_stratify_col = CharField(null=True)
+	key_evaluation = CharField(null=True)
+	key_test = CharField(null=True)
 
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
 
@@ -2089,7 +2048,6 @@ class Splitset(BaseModel):
 		if (size_test is not None):
 			if ((size_test <= 0.0) or (size_test >= 1.0)):
 				raise Exception("\nYikes - `size_test` must be between 0.0 and 1.0\n")
-			# Don't handle `has_test` here. Need to check label first.
 		
 		if ((size_validation is not None) and (size_test is None)):
 			raise Exception("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
@@ -2166,7 +2124,6 @@ class Splitset(BaseModel):
 				if (len(feature.windows)>0):
 					raise Exception("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
 
-				has_test = True
 				supervision = "supervised"
 
 				# We don't need to prevent duplicate Label/Feature combos because Splits generate different samples each time.
@@ -2191,7 +2148,6 @@ class Splitset(BaseModel):
 					# Mainly because it would require multiple labels.
 					raise Exception("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
 
-				has_test = False
 				supervision = "unsupervised"
 				label = None
 
@@ -2315,7 +2271,6 @@ class Splitset(BaseModel):
 			if (unsupervised_stratify_col is not None):
 				raise Exception("\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n")
 
-			has_test = False
 			samples["train"] = arr_idx.tolist()
 			sizes["train"] = {"percent": 1.0, "count":sample_count}
 			# Remaining attributes are already `None`.
@@ -2334,12 +2289,18 @@ class Splitset(BaseModel):
 			samples[split] = sorted(indices)
 		# Sort splits by logical order. We'll rely on this during 2D interpolation.
 		keys = list(samples.keys())
+		key_test = "test"
 		if (("validation" in keys) and ("test" in keys)):
 			ordered_names = ["train", "validation", "test"]
 			samples = {k: samples[k] for k in ordered_names}
+			key_evaluation = "validation"
 		elif ("test" in keys):
 			ordered_names = ["train", "test"]
 			samples = {k: samples[k] for k in ordered_names}
+			key_evaluation = "test"
+		else:
+			key_evaluation = None
+			key_test = None
 
 		uid = str(uuid1())
 		splitset = Splitset.create(
@@ -2348,14 +2309,16 @@ class Splitset(BaseModel):
 			, samples = samples
 			, sizes = sizes
 			, supervision = supervision
-			, has_test = has_test
 			, has_validation = has_validation
+			, key_train = "train"
+			, key_evaluation = key_evaluation
+			, key_test = key_test
 			, random_state = random_state
 			, bin_count = bin_count
 			, unsupervised_stratify_col = unsupervised_stratify_col
 			, name = name
 			, description = description
-			, fold_count = 0
+			, fold_count = fold_count
 		)
 
 		for f_id in feature_ids:
@@ -2365,17 +2328,23 @@ class Splitset(BaseModel):
 
 		try:
 			if (fold_count > 0):
-				# Updates splitset.fold_count
-				splitset.make_folds(fold_count=fold_count, bin_count=bin_count)
+				splitset.make_folds()
+				splitset.key_train = "folds_train_combined"
+				splitset.key_evaluation = "fold_validation"
+				splitset.save()
 		except:
+			for fold in splitset.folds:
+				fold.delete_instance()
 			splitset.delete_instance()
 			raise
 		return splitset
 
 
-	def make_folds(id:int, fold_count:int, bin_count:int=None):
+	def make_folds(id:int):
 		splitset = Splitset.get_by_id(id)
-		
+		fold_count = splitset.fold_count
+		bin_count = splitset.bin_count
+
 		if (fold_count < 2):
 			raise Exception(dedent(f"""
 			Yikes - Cross validation requires multiple folds.
@@ -2518,6 +2487,10 @@ class Splitset(BaseModel):
 			fold_samples["folds_train_combined"] = [arr_train_indices[idx] for idx in index_folds_train]
 			fold_samples["fold_validation"] = [arr_train_indices[idx] for idx in index_fold_validation]
 
+			if (splitset.has_validation==True):
+				fold_samples["validation"] = splitset.samples["validation"]
+			fold_samples["test"] = splitset.samples["test"]
+
 			Fold.create(
 				fold_index = i
 				, samples = fold_samples 
@@ -2527,7 +2500,35 @@ class Splitset(BaseModel):
 		splitset.fold_count = fold_count
 		splitset.save()
 		return splitset
+	
 
+	def cache_data(id:object):
+		splitset = Splitset.get_by_id(id)
+		uid = splitset.uuid
+
+		if (splitset.fold_count==0):			
+			cache_path = f"{app_dir}/cached_samples/{uid}.gzip"
+
+			samples, input_shapes = utils.wrangle.stage_data(splitset, fold=None)
+
+			with gzopen(cache_path,'wb') as f:
+				dump(samples,f)
+		
+		elif (splitset.fold_count > 0):
+			folds = list(splitset.folds)
+			fold_count = splitset.fold_count
+			# Each fold will contain unique, reusable data.
+			for fold in folds:
+				idx = fold.fold_index
+				print(f"\nPreparing samples for Fold {idx+1} out of {fold_count}:\n", flush=True)
+				### config and windows paths `\`
+				cache_path = f"{app_dir}/cached_samples/{uid}_fold-{idx}.gzip"
+
+				samples, input_shapes = utils.wrangle.stage_data(splitset, fold=fold)
+
+				with gzopen(cache_path,'wb') as f:
+					dump(samples,f)
+	
 
 
 
@@ -2539,9 +2540,12 @@ class Fold(BaseModel):
 	"""
 	fold_index = IntegerField()
 	samples = JSONField()
+	fitted_encoders = PickleField(null=True)
 	# contains_all_classes = BooleanField()
 	
 	splitset = ForeignKeyField(Splitset, backref='folds')
+
+
 
 
 class LabelInterpolater(BaseModel):
@@ -2769,6 +2773,7 @@ class LabelCoder(BaseModel):
 	sklearn_preprocess = PickleField()
 	matching_columns = JSONField() # kinda unecessary, but maybe multi-label future.
 	encoding_dimension = CharField()
+	fits = JSONField()
 
 	label = ForeignKeyField(Label, backref='labelcoders')
 
@@ -2819,6 +2824,7 @@ class LabelCoder(BaseModel):
 			, matching_columns = label.columns
 			, is_categorical = is_categorical
 			, label = label
+			, fits = []
 		)
 		return lc
 
@@ -2840,6 +2846,7 @@ class FeatureCoder(BaseModel):
 	encoding_dimension = CharField()
 	only_fit_train = BooleanField()
 	is_categorical = BooleanField()
+	fits = JSONField()
 
 	feature = ForeignKeyField(Feature, backref='featurecoders')
 
@@ -2947,6 +2954,7 @@ class FeatureCoder(BaseModel):
 			, original_filter = original_filter
 			, feature = feature
 			, encoding_dimension = encoding_dimension
+			, fits = []
 		)
 		return featurecoder
 
@@ -3199,7 +3207,6 @@ class Hyperparamcombo(BaseModel):
 class Queue(BaseModel):
 	repeat_count = IntegerField()
 	run_count = IntegerField()
-	hide_test = BooleanField()
 	permute_count = IntegerField()
 	runs_completed = IntegerField()
 
@@ -3213,7 +3220,6 @@ class Queue(BaseModel):
 		, splitset_id:int
 		, repeat_count:int = 1
 		, permute_count:int = 3
-		, hide_test:bool = False
 		, hyperparamset_id:int = None
 	):
 		algorithm = Algorithm.get_by_id(algorithm_id)
@@ -3352,7 +3358,6 @@ class Queue(BaseModel):
 			, splitset = splitset
 			, permute_count = permute_count
 			, hyperparamset = hyperparamset
-			, hide_test = hide_test
 			, runs_completed = 0
 		)
 		try:
@@ -3376,51 +3381,20 @@ class Queue(BaseModel):
 	def run_jobs(id:int):
 		"""
 		- Preprocessed data is cached across jobs.
-		- It must be read from disk each time because post-processing alters the data.
+		- It must be read from disk each time because post-processing alters the data in-memory.
 		"""
 		queue = Queue.get_by_id(id)
-		hide_test = queue.hide_test
+		###
 		splitset = queue.splitset
 		library = queue.algorithm.library
 
-		if (splitset.fold_count == 0):
-			cache_path = f"{app_dir}queue-{id}_cached_samples.gzip"
+		if (splitset.fold_count==0):
 			jobs = list(queue.jobs)
 			# Repeat count means that a single Job can have multiple Predictors.
 			repeated_jobs = [] #tuple:(repeat_index, job)
 			for r in range(queue.repeat_count):
 				for j in jobs:
 					repeated_jobs.append((r,j))
-
-			samples = {}
-			ordered_names = [] 
-			
-			if (hide_test == False):
-				samples['test'] = splitset.samples['test']
-				key_evaluation = 'test'
-				ordered_names.append('test')
-			elif (hide_test == True):
-				key_evaluation = None
-
-			if (splitset.has_validation):
-				samples['validation'] = splitset.samples['validation']
-				key_evaluation = 'validation'
-				ordered_names.insert(0, 'validation')
-
-			samples['train'] = splitset.samples['train']
-			key_train = "train"
-			ordered_names.insert(0, 'train')
-			samples = {k: samples[k] for k in ordered_names}
-			# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
-			job = list(queue.jobs)[0]
-			samples, input_shapes = utils.wrangle.stage_data(
-				splitset=splitset, job=job
-				, samples=samples, library=library
-				, key_train=key_train
-			)
-			with gzopen(cache_path,'wb') as f:
-				dump(samples,f)
-
 			try:
 				for i, rj in enumerate(tqdm(
 					repeated_jobs
@@ -3449,78 +3423,41 @@ class Queue(BaseModel):
 				# Other training related errors.
 				remove(cache_path)
 				raise
-
+		
 		elif (splitset.fold_count > 0):
-			folds = list(splitset.folds)
-			# Each fold will contain unique, reusable data.
-			for e, fold in enumerate(folds):
-				print(f"\nRunning Jobs for Fold {e+1} out of {splitset.fold_count}:\n", flush=True)
-				cache_path = f"{app_dir}queue-{id}_fold-{e}_cached_samples.gzip"
-				jobs = [j for j in queue.jobs if j.fold==fold]
-				repeated_jobs = [] #tuple:(repeat_index, job, fold)
-				for r in range(queue.repeat_count):
-					for j in jobs:
-						repeated_jobs.append((r,j))
+			jobs = [j for j in queue.jobs if j.fold==fold]
+			repeated_jobs = [] #tuple:(repeat_index, job, fold)
+			for r in range(queue.repeat_count):
+				for j in jobs:
+					repeated_jobs.append((r,j))
+			try:
+				for i, rj in enumerate(tqdm(
+					repeated_jobs
+					, desc = "🔮 Training Models 🔮"
+					, ncols = 100
+				)):
+					# See if this job has already completed. Keeps the tqdm intact.
+					matching_predictor = Predictor.select().join(Job).where(
+						Predictor.repeat_index==rj[0], Job.id==rj[1].id
+					)
 
-				samples = {}
-				ordered_names = []
-
-				if (hide_test == False):
-					ordered_names.append('test')
-					samples['test'] = splitset.samples['test']
-				if (splitset.has_validation):
-					ordered_names.insert(0, 'validation')
-					samples['validation'] = splitset.samples['validation']
-
-				key_train = "folds_train_combined"
-				key_evaluation = "fold_validation"
-				ordered_names.insert(0, 'fold_validation')
-				ordered_names.insert(0, 'folds_train_combined')
-
-				# Still need to fetch the underlying samples for a folded job.
-				samples['folds_train_combined'] = fold.samples['folds_train_combined']
-				samples['fold_validation'] = fold.samples['fold_validation']
-				samples = {k: samples[k] for k in ordered_names}
-
-				# Fetch the data once for all jobs. Encoder fits still need to be tied to job.
-				job = list(queue.jobs)[0]
-				print(samples)###
-				samples, input_shapes = utils.wrangle.stage_data(
-					splitset=splitset, job=job
-					, samples=samples, library=library
-					, key_train=key_train
-				)
-
-				with gzopen(cache_path,'wb') as f:
-					dump(samples,f)
-				try:
-					for i, rj in enumerate(tqdm(
-						repeated_jobs
-						, desc = "🔮 Training Models 🔮"
-						, ncols = 100
-					)):
-						# See if this job has already completed. Keeps the tqdm intact.
-						matching_predictor = Predictor.select().join(Job).where(
-							Predictor.repeat_index==rj[0], Job.id==rj[1].id
+					if (matching_predictor.count()==0):
+						if (i>0):
+							with gzopen(cache_path,'rb') as f:
+								samples = load(f)
+						Job.run(
+							id=rj[1].id, repeat_index=rj[0]
+							, samples=samples, input_shapes=input_shapes
+							, key_train=key_train, key_evaluation=key_evaluation
 						)
-
-						if (matching_predictor.count()==0):
-							if (i>0):
-								with gzopen(cache_path,'rb') as f:
-									samples = load(f)
-							Job.run(
-								id=rj[1].id, repeat_index=rj[0]
-								, samples=samples, input_shapes=input_shapes
-								, key_train=key_train, key_evaluation=key_evaluation
-							)
-					remove(cache_path)
-				except (KeyboardInterrupt):
-					# So that we don't get nasty error messages when interrupting a long running loop.
-					remove(cache_path)
-					print("\nQueue was gracefully interrupted.\n")
-				except:
-					remove(cache_path)
-					raise
+				remove(cache_path)
+			except (KeyboardInterrupt):
+				# So that we don't get nasty error messages when interrupting a long running loop.
+				remove(cache_path)
+				print("\nQueue was gracefully interrupted.\n")
+			except:
+				remove(cache_path)
+				raise
 
 
 	def metrics_to_pandas(
