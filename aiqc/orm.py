@@ -17,7 +17,7 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
-from .utils.config import app_dir, timezone_now
+from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
 from . import utils
 # --- Python modules ---
@@ -165,6 +165,14 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 			create_db()
 	else:
 		print("\n=> Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
+
+
+def setup():
+	"""Creates the app/db files in appdirs"""
+	for v in app_folders.values():
+		create_folder(v)
+	create_config()
+	create_db()
 
 
 #==================================================
@@ -2505,14 +2513,18 @@ class Splitset(BaseModel):
 	def cache_data(id:object):
 		splitset = Splitset.get_by_id(id)
 		uid = splitset.uuid
-
+		path_cache_samples = app_folders['cache_samples']
+		
 		if (splitset.fold_count==0):			
-			cache_path = f"{app_dir}/cached_samples/{uid}.gzip"
+			path_file = f"{uid}.gzip"
+			path_full = path.join(path_cache_samples, path_file)
 
-			samples, input_shapes = utils.wrangle.stage_data(splitset, fold=None)
+			# If the data already exists, don't rerun it.
+			if (not path.exists(path_full)):
+				samples, input_shapes = utils.wrangle.stage_data(splitset, fold=None)
 
-			with gzopen(cache_path,'wb') as f:
-				dump(samples,f)
+				with gzopen(path_full,'wb') as f:
+					dump(samples,f)
 		
 		elif (splitset.fold_count > 0):
 			folds = list(splitset.folds)
@@ -2521,13 +2533,15 @@ class Splitset(BaseModel):
 			for fold in folds:
 				idx = fold.fold_index
 				print(f"\nPreparing samples for Fold {idx+1} out of {fold_count}:\n", flush=True)
-				### config and windows paths `\`
-				cache_path = f"{app_dir}/cached_samples/{uid}_fold-{idx}.gzip"
+				path_file = f"{uid}_fold-{idx}.gzip"
+				path_full = path.join(path_cache_samples, path_file)
 
-				samples, input_shapes = utils.wrangle.stage_data(splitset, fold=fold)
+				# If the data already exists, don't rerun it.
+				if (not path.exists(path_full)):
+					samples, input_shapes = utils.wrangle.stage_data(splitset, fold=fold)
 
-				with gzopen(cache_path,'wb') as f:
-					dump(samples,f)
+					with gzopen(path_full,'wb') as f:
+						dump(samples,f)
 	
 
 
@@ -4183,16 +4197,18 @@ class Job(BaseModel):
 			- Assuming `model.save()` will trigger OS-specific h5 drivers.
 			"""
 			# Write it.
-			temp_file_name = f"{app_dir}temp_keras_model.h5"# flag - make unique for concurrency.
+			path_models_cache = app_folders['cache_models']
+			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
+			path_full = path.join(path_models_cache,path_file)
 			model.save(
-				temp_file_name
+				path_full
 				, include_optimizer = True
 				, save_format = 'h5'
 			)
 			# Fetch the bytes ('rb': read binary)
-			with open(temp_file_name, 'rb') as file:
+			with open(path_full, 'rb') as file:
 				model_blob = file.read()
-			remove(temp_file_name)
+			remove(path_full)
 
 		elif (library == "pytorch"):
 			model, history = fn_train(
@@ -4306,13 +4322,15 @@ class Predictor(BaseModel):
 
 		if (algorithm.library == "keras"):
 			#https://www.tensorflow.org/guide/keras/save_and_serialize
-			temp_file_name = f"{app_dir}temp_keras_model.h5"
+			path_models_cache = app_folders['cache_models']
+			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
+			path_full = path.join(path_models_cache,path_file)
 			# Workaround: write bytes to file so keras can read from path instead of buffer.
-			with open(temp_file_name, 'wb') as f:
+			with open(path_full, 'wb') as f:
 				f.write(model_blob)
-			h5 = h5_File(temp_file_name, 'r')
+			h5 = h5_File(path_full, 'r')
 			model = load_model(h5, compile=True)
-			remove(temp_file_name)
+			remove(path_full)
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
 
@@ -4357,25 +4375,24 @@ class Predictor(BaseModel):
 				ext = '.h5'
 			elif (algorithm.library == 'pytorch'):
 				ext = '.pt'
-			file_path = f"{app_dir}/models/predictor{predictor.id}_model({dtime}){ext}"
-		
-		file_path = path.abspath(file_path)
-		folder = f"{app_dir}/models"
-		makedirs(folder, exist_ok=True)
+
+			path_models = app_folders['models']
+			path_file = "temp_keras_model.h5"
+			path_full = path.join(path_models,path_file)
 
 		# We already have the bytes of the file we need to write.
 		model_blob = predictor.model_file
 		# trying `+` because directory may not exist yet.
-		with open(file_path, 'wb+') as f:
+		with open(path_full, 'wb+') as f:
 			f.write(model_blob)
 			f.close()
 
-		path.exists(file_path)
+		path.exists(path_full)
 		print(dedent(
 			f"\nModel exported to the following absolute path:" \
-			f"\n{file_path}\n"
+			f"\n{path_full}\n"
 		))
-		return file_path
+		return path_full
 
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):

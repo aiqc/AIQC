@@ -250,13 +250,11 @@ def transform_dynamicDimensions(
 ):
 	"""
 	- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
-		everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
+	  every encoder seems to be fitting as "2D_multiColumn", but let's keep the logic for other sklearn 
+	  methods such as feature extraction.
 	"""
 	if (encoding_dimension == '2D_multiColumn'):
 		# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
-		###
-		print(type(fitted_encoders))
-		print(fitted_encoders)
 		encoded_samples = fitted_encoders[0].transform(samples_to_transform)
 		encoded_samples = if_1d_make_2d(array=encoded_samples)
 	elif (encoding_dimension == '2D_singleColumn'):

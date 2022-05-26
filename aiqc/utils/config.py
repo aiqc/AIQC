@@ -6,7 +6,8 @@ Create `config.json` for storing settings.
 Create `aiqc.sqlite3` database.
 """
 # Python modules
-from os import path, makedirs, name, system, access, remove
+from os import path, makedirs, name, system, access, remove, listdir
+from posixpath import abspath
 from sys import version, modules, prefix
 from json import load, dump
 from appdirs import user_data_dir
@@ -19,9 +20,23 @@ import platform
 app_dir_no_trailing_slash = user_data_dir("aiqc")
 # Adds either a trailing slash or backslashes depending on OS.
 app_dir = path.join(app_dir_no_trailing_slash, '')
+
+models_dir = path.join(app_dir, 'models')#user-exported
+cache_dir = path.join(app_dir, 'cache')
+cache_samples_dir = path.join(cache_dir, 'samples')
+cache_models_dir = path.join(cache_dir, 'models')
+
+app_folders = dict(
+	# Try not to use root. Make a new folder.
+	root = app_dir
+	, models = models_dir
+	, cache = cache_dir
+	, cache_samples = cache_samples_dir
+	, cache_models = cache_models_dir
+)
+
 default_config_path = app_dir + "config.json"
 default_db_path = app_dir + "aiqc.sqlite3"
-
 
 def timezone_name():
 	return dt.datetime.now(dt.timezone.utc).astimezone().tzname()
@@ -38,24 +53,28 @@ def timezone_now(as_str:bool=False):
 #==================================================
 # FOLDER
 #==================================================
-def check_exists_folder():
+def check_exists_folder(directory:str=None):
+	if (directory is None):
+		directory = app_dir_no_trailing_slash
 	# If Windows does not have permission to read the folder, it will fail when trailing backslashes \\ provided.
-	app_dir_exists = path.exists(app_dir_no_trailing_slash)
+	app_dir_exists = path.exists(directory)
 	if app_dir_exists:
-		print(f"\n=> Success - the following file path already exists on your system:\n{app_dir}\n")
+		print(f"\n=> Success - the following file path already exists on your system:\n{directory}\n")
 		return True
 	else:
 		print(
-			f"=> Info - it appears the following folder does not exist on your system:\n{app_dir}\n\n" \
-			f"=> Fix - you can attempt to fix this by running `aiqc.config.create_folder()`.\n"
+			f"=> Info - it appears the following folder does not exist on your system:\n{directory}\n\n" \
+			f"=> Fix - you can attempt to fix this by running `aiqc.config.create_folder(directory)`.\n"
 		)
 		return False
 
 
-def create_folder():
-	app_dir_exists = check_exists_folder()
-	if (app_dir_exists):
-		print(f"\n=> Info - skipping folder creation as folder already exists at file path:\n{app_dir}\n")
+def create_folder(directory:str=None):	
+	dir_exists = check_exists_folder(directory)
+	if (directory is None):
+		directory = app_dir
+	if (dir_exists):
+		print(f"\n=> Info - skipping folder creation as folder already exists at file path:\n{directory}\n")
 	else:
 		try:
 			"""
@@ -63,7 +82,7 @@ def create_folder():
 			- Whereas `mkdir` only creates the target dir and fails if intermediary dir(s) are missing.
 			- If this break for whatever reason, could also try out `path.mkdir(parents=True)`.
 			"""
-			makedirs(app_dir)
+			makedirs(directory)
 			# if name == 'nt':
 			#   # Windows: backslashes \ and double backslashes \\
 			#   command = 'mkdir ' + app_dir
@@ -73,9 +92,9 @@ def create_folder():
 			#   command = 'mkdir -p "' + app_dir + '"'
 			#   system(command)
 		except:
-			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{app_dir}')\n")
+			raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}')\n")
 		print(
-			f"=> Success - created folder at file path:\n{app_dir}\n\n" \
+			f"=> Success - created folder at file path:\n{directory}\n\n" \
 			f"=> Next run `aiqc.config.create_config()`.\n"
 		)
 
@@ -172,6 +191,17 @@ def grant_permissions_folder():
 		else:
 			print(f"\n=> Yikes - failed to grant system permissions to read and write from file path:\n{app_dir}\n")
 
+
+def clear_cache_samples(confirm=False):
+	if (confirm==False):
+		print("\nInfo - Skipped clearing sample cache because `confirm==False`.\n")
+	elif (confirm==True):
+		for f in listdir(cache_samples_dir):
+			path_full = path.join(cache_samples_dir,f)
+			path_abs = path.abspath(path_full)
+			remove(path_abs)
+
+
 #==================================================
 # CONFIG
 #==================================================
@@ -194,7 +224,7 @@ def create_config():
 		if not config_exists:
 			aiqc_config = {
 				"timezone_name": timezone_name()
-				, "created_at": timezone_now()
+				, "created_at": timezone_now(as_str=True)
 				, "config_path": default_config_path
 				, "db_path": default_db_path
 				, "sys.version": version

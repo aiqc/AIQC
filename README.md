@@ -79,16 +79,16 @@ pip install --upgrade pip
 pip install --upgrade wheel
 pip install --upgrade aiqc
 
-from aiqc import setup, lab, mlops
+from aiqc import orm, lab, mlops
 
 # Create & connect to SQLite db
-setup()
+orm.setup()
 
 # Launch dashboard to monitor training
 lab.Tracker().start()
 
 # Declare preprocessing steps
-mlops.Pipeline.Tabular(...)
+mlops.Pipeline(...)
 
 # Define, train, & evaluate models
 mlops.Experiment(...).run_jobs()
