@@ -60,14 +60,6 @@ def create_folder(directory:str=None):
 		- If this break for whatever reason, could also try out `path.mkdir(parents=True)`.
 		"""
 		makedirs(directory, exist_ok=True)
-		# if name == 'nt':
-		#   # Windows: backslashes \ and double backslashes \\
-		#   command = 'mkdir ' + app_dir
-		#   system(command)
-		# else:
-		#   # posix (mac and linux)
-		#   command = 'mkdir -p "' + app_dir + '"'
-		#   system(command)
 	except:
 		raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}')\n")
 

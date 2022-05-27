@@ -1147,7 +1147,7 @@ class Label(BaseModel):
 	columns = JSONField()
 	column_count = IntegerField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
-	fitted_encoders = PickleField(null=True)
+	fitted_labelcoders = PickleField(null=True)
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
 	
@@ -1321,10 +1321,10 @@ class Label(BaseModel):
 		if ((is_encoded==True) and (labelcoders.count()>0)):
 			# During inference the old labelcoder may be used so we have to nest the count.
 			if (fold is not None):
-				fitted_encoders = fold.fitted_encoders
+				fitted_encoders = fold.fitted_labelcoders
 				item = fold
 			else:
-				fitted_encoders = label.fitted_encoders
+				fitted_encoders = label.fitted_labelcoders
 				item = label
 			
 			labelcoder = labelcoders[-1]
@@ -1332,17 +1332,24 @@ class Label(BaseModel):
 			if (fitted_encoders is None):
 				samples_train = samples[key_train]
 
-				fitted_encoders = utils.encoding.encoder_fit_labels(
+				fitted_encoders, _ = utils.encoding.fit_labels(
 					arr_labels=label_array, samples_train=samples_train, labelcoder=labelcoder
 				)
 				# Save the fit for decoding and inference.
-				item.fitted_encoders = fitted_encoders
+				item.fitted_labelcoders = fitted_encoders
 				item.save()
 
-			# Now execute the transform using the fit
-			label_array = utils.encoding.encoder_transform_labels(
-				arr_labels=label_array,
-				fitted_encoders=fitted_encoders, labelcoder=labelcoder
+			# Use the encoding_dimension that was defined earlier during labelcoder creation.
+			encoding_dimension = labelcoder.encoding_dimension
+			"""
+			At this point, `fitted_encoders:list` e.g. `[OneHotEncoder()]`
+			However, `transform_dynamicDimensions` was designed for multiple features
+			aka a list-of-lists, so we wrap it in another list as a workaround.
+			"""
+			label_array = utils.encoding.transform_dynamicDimensions(
+				fitted_encoders        = fitted_encoders
+				, encoding_dimension   = encoding_dimension
+				, samples_to_transform = label_array
 			)
 		return label_array
 
@@ -1354,7 +1361,7 @@ class Feature(BaseModel):
 	"""
 	columns = JSONField()
 	columns_excluded = JSONField(null=True)
-	fitted_encoders = PickleField(null=True)
+	fitted_featurecoders = PickleField(null=True)
 	
 	dataset = ForeignKeyField(Dataset, backref='features')
 	# docs.peewee-orm.com/en/latest/peewee/api.html#DeferredForeignKey
@@ -1646,24 +1653,26 @@ class Feature(BaseModel):
 		# --- Encode ---
 		featurecoders = feature.featurecoders
 		if ((is_encoded==True) and (featurecoders.count()>0)):
-			# During inference the old labelcoder may be used so we have to nest the count.
+			### During inference the old labelcoder may be used so we have to nest the count.
 			if (fold is not None):
-				fitted_encoders = fold.fitted_encoders
+				fitted_encoders = fold.fitted_featurecoders
 				item = fold
 			else:
-				fitted_encoders = feature.fitted_encoders
+				fitted_encoders = feature.fitted_featurecoders
 				item = feature
 			
 			# Hasn't been fit yet.
 			if (fitted_encoders is None):
-				fitted_encoders = utils.encoding.fit_features(
+				# Feature is used because we need Feature.columns
+				fitted_encoders, _ = utils.encoding.fit_features(
 					arr_features=feature_array, samples_train=samples_train, feature=feature
 				)
 				# Save the fit for decoding and inference.
-				item.fitted_encoders = fitted_encoders
+				item.fitted_featurecoders = fitted_encoders
 				item.save()
 
 			# Now execute the transform using the fit
+			# encoding_dimension is inferred from featurecoder.
 			feature_array = utils.encoding.transform_features(
 				arr_features=feature_array, fitted_encoders=fitted_encoders, feature=feature
 			)
@@ -2507,14 +2516,15 @@ class Splitset(BaseModel):
 	def cache_data(id:object):
 		splitset = Splitset.get_by_id(id)
 		uid = splitset.uuid
-		path_cache_samples = app_folders['cache_samples']
-		
+		path_cache = app_folders['cache_samples']
+
 		if (splitset.fold_count==0):			
 			path_file = f"{uid}.gzip"
-			path_full = path.join(path_cache_samples, path_file)
+			path_full = path.join(path_cache, path_file)
 
 			# If the data already exists, don't rerun it.
-			if (not path.exists(path_full)):
+			cache_exists = path.exists(path_full)
+			if (cache_exists==False):
 				samples, input_shapes = utils.wrangle.stage_data(splitset, fold=None)
 
 				with gzopen(path_full,'wb') as f:
@@ -2524,14 +2534,14 @@ class Splitset(BaseModel):
 			folds = list(splitset.folds)
 			fold_count = splitset.fold_count
 			# Each fold will contain unique, reusable data.
-			for fold in folds:
+			for fold in tqdm(folds, desc="🧺 Preparing Folds 🧺", ncols=100):
 				idx = fold.fold_index
-				print(f"\nPreparing samples for Fold {idx+1} out of {fold_count}:\n", flush=True)
 				path_file = f"{uid}_fold-{idx}.gzip"
-				path_full = path.join(path_cache_samples, path_file)
+				path_full = path.join(path_cache, path_file)
 
 				# If the data already exists, don't rerun it.
-				if (not path.exists(path_full)):
+				cache_exists = path.exists(path_full)
+				if (cache_exists==False):
 					samples, input_shapes = utils.wrangle.stage_data(splitset, fold=fold)
 
 					with gzopen(path_full,'wb') as f:
@@ -2548,7 +2558,8 @@ class Fold(BaseModel):
 	"""
 	fold_index = IntegerField()
 	samples = JSONField()
-	fitted_encoders = PickleField(null=True)
+	fitted_labelcoders = PickleField(null=True)
+	fitted_featurecoders = PickleField(null=True)
 	# contains_all_classes = BooleanField()
 	
 	splitset = ForeignKeyField(Splitset, backref='folds')

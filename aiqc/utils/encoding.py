@@ -249,9 +249,9 @@ def transform_dynamicDimensions(
 	, samples_to_transform:object
 ):
 	"""
-	- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
-	  every encoder seems to be fitting as "2D_multiColumn", but let's keep the logic for other sklearn 
-	  methods such as feature extraction.
+	After disabling LabelBinarizer and LabelEncoder from running on multiple 
+	columns, every encoder seems to be fitting as "2D_multiColumn", but let's keep 
+	the logic for other sklearn classes like feature extraction.
 	"""
 	if (encoding_dimension == '2D_multiColumn'):
 		# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
@@ -274,19 +274,6 @@ def transform_dynamicDimensions(
 				encoded_arr = if_1d_make_2d(array=encoded_arr)  
 				encoded_arrs.append(encoded_arr)
 			encoded_samples = np.array(encoded_arrs).T
-
-			# From "3D of 2Ds" to "2D wide"
-			# When `encoded_samples` was accidentally a 3D shape, this fixed it:
-			"""
-			if (len(encoded_samples.shape) == 3):
-				encoded_samples = encoded_samples.transpose(
-					1,0,2
-				).reshape(
-					# where index represents dimension.
-					encoded_samples.shape[1],
-					encoded_samples.shape[0]*encoded_samples.shape[2]
-				)
-			"""
 			del encoded_arrs
 	elif (encoding_dimension == '1D'):
 		# From "2D_multiColumn" to "2D with 1D for each column"
@@ -315,11 +302,9 @@ def transform_dynamicDimensions(
 	return encoded_samples
 
 
-def encoder_fit_labels(
-	arr_labels:object, samples_train:list,
-	labelcoder:object
-):
+def fit_labels(arr_labels:object, samples_train:list, labelcoder:object):
 	"""
+	- `samples_train` are indices, not arrays.
 	- All Label columns are always used during encoding.
 	- Rows determine what fit happens.
 	"""
@@ -331,24 +316,9 @@ def encoder_fit_labels(
 		labels_to_fit = arr_labels
 		
 	fitted_encoders, encoding_dimension = fit_dynamicDimensions(
-		sklearn_preprocess = preproc
-		, samples_to_fit = labels_to_fit
+		sklearn_preprocess=preproc, samples_to_fit=labels_to_fit
 	)
-	return fitted_encoders
-
-
-def encoder_transform_labels(
-	arr_labels:object,
-	fitted_encoders:object, labelcoder:object 
-):
-	encoding_dimension = labelcoder.encoding_dimension
-	
-	arr_labels = transform_dynamicDimensions(
-		fitted_encoders = fitted_encoders
-		, encoding_dimension = encoding_dimension
-		, samples_to_transform = arr_labels
-	)
-	return arr_labels
+	return fitted_encoders, encoding_dimension
 
 
 def fit_features(
@@ -359,7 +329,6 @@ def fit_features(
 	fitted_encoders = []
 	if (len(featurecoders) > 0):
 		f_cols = feature.columns
-		
 		# For each featurecoder: fetch, transform, & concatenate matching features.
 		# One nested list per Featurecoder. List of lists.
 		for featurecoder in featurecoders:
@@ -393,11 +362,8 @@ def fit_features(
 				sklearn_preprocess = preproc
 				, samples_to_fit = features_to_fit
 			)
-
 			fitted_encoders.append(fitted_coders)
-		featurecoder.fitted_encoders = fitted_coders
-		featurecoder.save()
-	return fitted_encoders
+	return fitted_encoders, encoding_dimension
 
 
 def transform_features(
@@ -405,8 +371,8 @@ def transform_features(
 	fitted_encoders:list, feature:object 
 ):
 	"""
-	- Can't overwrite columns with data of different type (e.g. encoding object to int), 
-		so they have to be pieced together.
+	Challenge: can't overwrite columns with data of different type (e.g. encoding object to int), 
+	so they have to be pieced together.
 	"""
 	featurecoders = list(feature.featurecoders)
 	if (len(featurecoders) > 0):

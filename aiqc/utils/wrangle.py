@@ -345,7 +345,7 @@ def stage_data(splitset:object, fold:object):
 		samples = fold.samples
 	else:
 		samples = splitset.samples
-	key_train = splitset.key_train
+	key_train = splitset.key_train#fold-aware.
 	"""
 	- Remember, you `.fit()` on either training data or the entire dataset (categoricals).
 	- Then you transform the entire dataset because downstream processes may need the entire dataset:
