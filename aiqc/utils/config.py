@@ -61,7 +61,7 @@ def create_folder(directory:str=None):
 		"""
 		makedirs(directory, exist_ok=True)
 	except:
-		raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}')\n")
+		raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}', exist_ok=True)\n")
 
 
 def check_permissions_folder():

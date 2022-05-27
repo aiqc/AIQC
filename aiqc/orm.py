@@ -188,6 +188,7 @@ class BaseModel(Model):
 		database = get_db()
 	
 	# Fetch as human-readable timestamps
+	# Can't remove the microseconds. Perhaps DateTimeField is inserting them.
 	def created_at(self):
 		return self.time_created.strftime('%Y%b%d_%H:%M:%S')
 	def updated_at(self):
@@ -1147,7 +1148,7 @@ class Label(BaseModel):
 	columns = JSONField()
 	column_count = IntegerField()
 	unique_classes = JSONField(null=True) # For categoricals and binaries. None for continuous.
-	fitted_labelcoders = PickleField(null=True)
+	fitted_labelcoder = PickleField(null=True)
 	
 	dataset = ForeignKeyField(Dataset, backref='labels')
 	
@@ -1319,12 +1320,12 @@ class Label(BaseModel):
 		# --- Encode ---
 		labelcoders = label.labelcoders
 		if ((is_encoded==True) and (labelcoders.count()>0)):
-			# During inference the old labelcoder may be used so we have to nest the count.
+			### During inference, the old labelcoder may be used so we have to nest the count.
 			if (fold is not None):
-				fitted_encoders = fold.fitted_labelcoders
+				fitted_encoders = fold.fitted_labelcoder
 				item = fold
 			else:
-				fitted_encoders = label.fitted_labelcoders
+				fitted_encoders = label.fitted_labelcoder
 				item = label
 			
 			labelcoder = labelcoders[-1]
@@ -1336,7 +1337,7 @@ class Label(BaseModel):
 					arr_labels=label_array, samples_train=samples_train, labelcoder=labelcoder
 				)
 				# Save the fit for decoding and inference.
-				item.fitted_labelcoders = fitted_encoders
+				item.fitted_labelcoder = fitted_encoders
 				item.save()
 
 			# Use the encoding_dimension that was defined earlier during labelcoder creation.
@@ -2026,7 +2027,7 @@ class Splitset(BaseModel):
 	-ToDo: store and visualize distributions of each column in training split, including label.
 	-Future: is it useful to specify the size of only test for unsupervised learning?
 	"""
-	uuid = CharField()
+	cache_path = CharField()
 	samples = JSONField()
 	sizes = JSONField()
 	supervision = CharField()
@@ -2313,9 +2314,13 @@ class Splitset(BaseModel):
 			key_evaluation = None
 			key_test = None
 
+		path_cache = app_folders['cache_samples']		
 		uid = str(uuid1())
+		uid = f"splitset_{uid}"
+		path_splitset = path.join(path_cache, uid)
+
 		splitset = Splitset.create(
-			uuid = uid
+			cache_path = path_splitset
 			, label = label
 			, samples = samples
 			, sizes = sizes
@@ -2332,17 +2337,75 @@ class Splitset(BaseModel):
 			, fold_count = fold_count
 		)
 
-		for f_id in feature_ids:
-			feature = Feature.get_by_id(f_id)
-			feature.splitset = splitset
-			feature.save()
+		# --- Attach the features ---
+		try:
+			for f_id in feature_ids:
+				feature = Feature.get_by_id(f_id)
+				feature.splitset = splitset
+				feature.save()
+		except:
+			splitset.delete_instance()
+			raise
 
+		# --- Attach the folds ---
 		try:
 			if (fold_count > 0):
 				splitset.make_folds()
 				splitset.key_train = "folds_train_combined"
 				splitset.key_evaluation = "fold_validation"
 				splitset.save()
+		except:
+			for fold in splitset.folds:
+				fold.delete_instance()
+			splitset.delete_instance()
+			raise
+
+		# --- Create cache folders ---
+		try:
+			"""
+			aiqc/cache/samples/splitset_uid
+			└── fold_index | no_fold
+				└── split
+					└── label/array.npy
+					└── features
+						└── feature_index/array.npy
+			"""
+			create_folder(path_splitset)
+
+			folds = splitset.folds
+			fold_paths = []
+			if (folds.count()>0):
+				for fold in folds:
+					fold_idx = f"fold_{fold.fold_index}"
+					path_fold = path.join(path_splitset, fold_idx)
+					create_folder(path_fold)
+					fold_paths.append(path_fold)
+			else:
+				path_fold = path.join(path_splitset, "no_fold")
+				create_folder(path_fold)
+				fold_paths.append(path_fold)
+
+			for e, fold in enumerate(fold_paths):
+				# Fold has different splits
+				if (folds.count()>0):
+					samples = folds[e].samples
+
+				for split, indices in samples.items():
+					path_split = path.join(fold, split)
+					create_folder(path_split)
+
+					if (splitset.label is not None):
+						path_label = path.join(path_split, "label")
+						create_folder(path_label)
+
+					path_features = path.join(path_split, "features")
+					create_folder(path_features)
+
+					for f, _ in enumerate(feature_ids):
+						f = f"feature_{e}"
+						path_label = path.join(path_features, f)
+						create_folder(path_label)
+
 		except:
 			for fold in splitset.folds:
 				fold.delete_instance()
@@ -2513,7 +2576,7 @@ class Splitset(BaseModel):
 		return splitset
 	
 
-	def cache_data(id:object):
+	def cache_samples(id:object):
 		splitset = Splitset.get_by_id(id)
 		uid = splitset.uuid
 		path_cache = app_folders['cache_samples']
@@ -2546,7 +2609,6 @@ class Splitset(BaseModel):
 
 					with gzopen(path_full,'wb') as f:
 						dump(samples,f)
-	
 
 
 
@@ -2558,7 +2620,7 @@ class Fold(BaseModel):
 	"""
 	fold_index = IntegerField()
 	samples = JSONField()
-	fitted_labelcoders = PickleField(null=True)
+	fitted_labelcoder = PickleField(null=True)
 	fitted_featurecoders = PickleField(null=True)
 	# contains_all_classes = BooleanField()
 	
