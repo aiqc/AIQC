@@ -1,4 +1,5 @@
 """Functions that help with data ingestion, preprocessing, and inference."""
+from .config import create_folder
 from os import path, listdir
 from fsspec import filesystem
 from natsort import natsorted
@@ -364,11 +365,9 @@ def stage_data(splitset:object, fold:object):
 		)
 
 	# Features - fetch and encode.
-	featureset = splitset.features
-	feature_count = len(featureset)
 	features = []# expecting diff array shapes inside so it has to be list, not array.
 	
-	for feature in featureset:
+	for feature in splitset.features:
 		if (splitset.supervision == 'supervised'):
 			arr_features = feature.preprocess(
 				supervision = 'supervised'
@@ -386,36 +385,58 @@ def stage_data(splitset:object, fold:object):
 		features.append(arr_features)
 		# `arr_labels` is not appended because unsupervised analysis only supports 1 unsupervised feature.
 	"""
-	- Stage preprocessed data to be passed into the remaining Job steps.
-	- Example samples dict entry: samples['train']['labels']
-	- For each entry in the dict, fetch the rows from the encoded data.
+	- The samples object contains indices that we use to slice up the feature and label 
+	arrays that are coming out of the preprocess() functions above
 	- Keras multi-input models accept input as a list. Not using nested dict for multiple
-		features because it would be hard to figure out feature.id-based keys on the fly.
-	""" 
+	features because it would be hard to figure out feature.id-based keys on the fly.
+
+	aiqc/cache/samples/splitset_uid
+	└── fold_index | no_fold
+		└── split
+			└── label
+				└── array.npy
+			└── features
+				└── feature_index
+					└── array.npy
+
+	'no_fold' just keeps the folder depth uniform for regular splitsets
+	"""
+	path_splitset = splitset.cache_path
+	create_folder(path_splitset)
+
+
+
+	if (fold is None):
+		path_fold = path.join(path_splitset, "no_fold")
+		create_folder(path_fold)
+	else:
+		fold_idx = f"fold_{fold.fold_index}"
+		path_fold = path.join(path_splitset, fold_idx)
+		create_folder(path_fold)
+
+
+	### do it for just a single fold...
 	for split, indices in samples.items():
-		if (feature_count == 1):
-			samples[split] = {"features": arr_features[indices]}
-		elif (feature_count > 1):
-			# List of arrays is the preferred format for `tf.model.fit(x)` with multiple features.
-			samples[split] = {"features": [arr_features[indices] for arr_features in features]}
-		samples[split]['labels'] = arr_labels[indices]
-	"""
-	- Input shapes can only be determined after encoding has taken place.
-	- `[0]` accessess the first sample in each array.
-	- This shape does not influence the training loop's `batch_size`.
-	- Shapes are used later by `get_model()` to initialize it.
-	- Here the count refers to multimodal Features, not the number of columns.
-	"""
-	if (feature_count == 1):
-		features_shape = samples[key_train]['features'][0].shape
-	elif (feature_count > 1):
-		features_shape = [arr_features[0].shape for arr_features in samples[key_train]['features']]
-	input_shapes = {"features_shape": features_shape}
+		path_split = path.join(path_fold, split)
+		create_folder(path_split)
 
-	label_shape = samples[key_train]['labels'][0].shape
-	input_shapes["label_shape"] = label_shape
+		if (splitset.label is not None):
+			path_label = path.join(path_split, "label")
+			create_folder(path_label)
 
-	return samples, input_shapes
+			path_label_arr = path.join(path_label, "ndarray.npy")
+			np.save(path_label_arr, arr_labels[indices], allow_pickle=False)
+
+		path_features = path.join(path_split, "features")
+		create_folder(path_features)
+
+		for f, _ in enumerate(splitset.features):
+			f_idx = f"feature_{f}"
+			path_feature = path.join(path_features, f_idx)
+			create_folder(path_feature)
+
+			path_feature_arr = path.join(path_feature, "ndarray.npy")
+			np.save(path_feature_arr, features[f][indices], allow_pickle=False)
 
 
 def tabular_schemas_match(set_original, set_new):

@@ -2359,58 +2359,6 @@ class Splitset(BaseModel):
 				fold.delete_instance()
 			splitset.delete_instance()
 			raise
-
-		# --- Create cache folders ---
-		try:
-			"""
-			aiqc/cache/samples/splitset_uid
-			└── fold_index | no_fold
-				└── split
-					└── label/array.npy
-					└── features
-						└── feature_index/array.npy
-			"""
-			create_folder(path_splitset)
-
-			folds = splitset.folds
-			fold_paths = []
-			if (folds.count()>0):
-				for fold in folds:
-					fold_idx = f"fold_{fold.fold_index}"
-					path_fold = path.join(path_splitset, fold_idx)
-					create_folder(path_fold)
-					fold_paths.append(path_fold)
-			else:
-				path_fold = path.join(path_splitset, "no_fold")
-				create_folder(path_fold)
-				fold_paths.append(path_fold)
-
-			for e, fold in enumerate(fold_paths):
-				# Fold has different splits
-				if (folds.count()>0):
-					samples = folds[e].samples
-
-				for split, indices in samples.items():
-					path_split = path.join(fold, split)
-					create_folder(path_split)
-
-					if (splitset.label is not None):
-						path_label = path.join(path_split, "label")
-						create_folder(path_label)
-
-					path_features = path.join(path_split, "features")
-					create_folder(path_features)
-
-					for f, _ in enumerate(feature_ids):
-						f = f"feature_{e}"
-						path_label = path.join(path_features, f)
-						create_folder(path_label)
-
-		except:
-			for fold in splitset.folds:
-				fold.delete_instance()
-			splitset.delete_instance()
-			raise
 		return splitset
 
 
@@ -2577,38 +2525,18 @@ class Splitset(BaseModel):
 	
 
 	def cache_samples(id:object):
+		"""See the folder structure described in """
 		splitset = Splitset.get_by_id(id)
-		uid = splitset.uuid
-		path_cache = app_folders['cache_samples']
 
 		if (splitset.fold_count==0):			
-			path_file = f"{uid}.gzip"
-			path_full = path.join(path_cache, path_file)
-
-			# If the data already exists, don't rerun it.
-			cache_exists = path.exists(path_full)
-			if (cache_exists==False):
-				samples, input_shapes = utils.wrangle.stage_data(splitset, fold=None)
-
-				with gzopen(path_full,'wb') as f:
-					dump(samples,f)
+				utils.wrangle.stage_data(splitset, fold=None)
 		
 		elif (splitset.fold_count > 0):
 			folds = list(splitset.folds)
-			fold_count = splitset.fold_count
 			# Each fold will contain unique, reusable data.
 			for fold in tqdm(folds, desc="🧺 Preparing Folds 🧺", ncols=100):
-				idx = fold.fold_index
-				path_file = f"{uid}_fold-{idx}.gzip"
-				path_full = path.join(path_cache, path_file)
+				utils.wrangle.stage_data(splitset, fold=fold)
 
-				# If the data already exists, don't rerun it.
-				cache_exists = path.exists(path_full)
-				if (cache_exists==False):
-					samples, input_shapes = utils.wrangle.stage_data(splitset, fold=fold)
-
-					with gzopen(path_full,'wb') as f:
-						dump(samples,f)
 
 
 
