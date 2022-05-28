@@ -2537,7 +2537,7 @@ class Splitset(BaseModel):
 	
 
 	def cache_samples(id:object):
-		"""See the folder structure described in """
+		"""See the folder structure described in utils.wrangle.stage_data()"""
 		splitset = Splitset.get_by_id(id)
 		if (splitset.cache_hot==False):
 			if (splitset.fold_count==0):		
@@ -3412,13 +3412,15 @@ class Queue(BaseModel):
 
 	def run_jobs(id:int):
 		"""
-		- Preprocessed data is cached across jobs.
-		- It must be read from disk each time because post-processing alters the data in-memory.
+		- Because post-processing alters the data, each job must read from the splitset cache
+		- Don't clear cache because it may be used by the next Queue
 		"""
 		queue = Queue.get_by_id(id)
-		###
 		splitset = queue.splitset
 		library = queue.algorithm.library
+		
+		# If the cache is not hot yet, populate it.
+		splitset.cache_samples()
 
 		if (splitset.fold_count==0):
 			jobs = list(queue.jobs)
@@ -3438,22 +3440,17 @@ class Queue(BaseModel):
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
 					)
 					if (matching_predictor.count()==0):
-						if (i>0):
-							with gzopen(cache_path,'rb') as f:
-								samples = load(f)
+						### this is where cache was being read previously.
 						Job.run(
 							id=rj[1].id, repeat_index=rj[0]
 							, samples=samples, input_shapes=input_shapes
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
-				remove(cache_path)
 			except (KeyboardInterrupt):
 				# Attempts to prevent irrelevant errors, but sometimes they still slip through.
-				remove(cache_path)
 				print("\nQueue was gracefully interrupted.\n")
 			except:
 				# Other training related errors.
-				remove(cache_path)
 				raise
 		
 		elif (splitset.fold_count > 0):
@@ -3474,21 +3471,16 @@ class Queue(BaseModel):
 					)
 
 					if (matching_predictor.count()==0):
-						if (i>0):
-							with gzopen(cache_path,'rb') as f:
-								samples = load(f)
+						### this is where cache was being read previously.
 						Job.run(
 							id=rj[1].id, repeat_index=rj[0]
 							, samples=samples, input_shapes=input_shapes
 							, key_train=key_train, key_evaluation=key_evaluation
 						)
-				remove(cache_path)
 			except (KeyboardInterrupt):
 				# So that we don't get nasty error messages when interrupting a long running loop.
-				remove(cache_path)
 				print("\nQueue was gracefully interrupted.\n")
 			except:
-				remove(cache_path)
 				raise
 
 
