@@ -8,6 +8,7 @@ Create `aiqc.sqlite3` database.
 # Python modules
 from os import path, makedirs, name, system, access, remove, listdir
 from sys import version, modules, prefix
+from shutil import rmtree
 from json import load, dump
 from appdirs import user_data_dir
 from importlib import reload as importlib_reload
@@ -157,10 +158,7 @@ def clear_cache_samples_all(confirm=False):
 	if (confirm==False):
 		print("\nInfo - Skipped clearing sample cache because `confirm==False`.\n")
 	elif (confirm==True):
-		for f in listdir(cache_samples_dir):
-			path_full = path.join(cache_samples_dir,f)
-			path_abs = path.abspath(path_full)
-			remove(path_abs)
+		rmtree(cache_samples_dir)
 
 
 #==================================================

@@ -169,6 +169,16 @@ def setup():
 	create_db()
 
 
+def clear_cache_all(confirm=False):
+	if (confirm==False):
+		print("\nInfo - Skipped clearing cache because `confirm==False`\nThis will delete all cached models and samples.\n")
+	elif (confirm==True):
+		cache_dir = app_folders['cache']
+		rmtree(cache_dir)
+		query = (Splitset.update({Splitset.cache_hot:False}).where(Splitset.cache_hot==True))
+		query.execute()
+
+
 #==================================================
 # MODEL CLASSES
 #==================================================
