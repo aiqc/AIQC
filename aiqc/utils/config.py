@@ -153,7 +153,7 @@ def grant_permissions_folder():
 			print(f"\n=> Yikes - failed to grant system permissions to read and write from file path:\n{app_dir}\n")
 
 
-def clear_cache_samples(confirm=False):
+def clear_cache_samples_all(confirm=False):
 	if (confirm==False):
 		print("\nInfo - Skipped clearing sample cache because `confirm==False`.\n")
 	elif (confirm==True):

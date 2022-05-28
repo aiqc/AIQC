@@ -342,10 +342,16 @@ def run_interpolate(dataframe:object, interpolate_kwargs:dict):
 
 
 def stage_data(splitset:object, fold:object):
+	path_splitset = splitset.cache_path
 	if (fold is not None):
 		samples = fold.samples
+		fold_idx = f"fold_{fold.fold_index}"
+		path_fold = path.join(path_splitset, fold_idx)
+		create_folder(path_fold)
 	else:
 		samples = splitset.samples
+		path_fold = path.join(path_splitset, "no_fold")
+		create_folder(path_fold)
 	key_train = splitset.key_train#fold-aware.
 	"""
 	- Remember, you `.fit()` on either training data or the entire dataset (categoricals).
@@ -401,21 +407,8 @@ def stage_data(splitset:object, fold:object):
 
 	'no_fold' just keeps the folder depth uniform for regular splitsets
 	"""
-	path_splitset = splitset.cache_path
 	create_folder(path_splitset)
 
-
-
-	if (fold is None):
-		path_fold = path.join(path_splitset, "no_fold")
-		create_folder(path_fold)
-	else:
-		fold_idx = f"fold_{fold.fold_index}"
-		path_fold = path.join(path_splitset, fold_idx)
-		create_folder(path_fold)
-
-
-	### do it for just a single fold...
 	for split, indices in samples.items():
 		path_split = path.join(path_fold, split)
 		create_folder(path_split)
@@ -437,6 +430,9 @@ def stage_data(splitset:object, fold:object):
 
 			path_feature_arr = path.join(path_feature, "ndarray.npy")
 			np.save(path_feature_arr, features[f][indices], allow_pickle=False)
+	
+	splitset.cache_hot = True
+	splitset.save()
 
 
 def tabular_schemas_match(set_original, set_new):

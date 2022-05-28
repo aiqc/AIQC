@@ -17,14 +17,14 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
-from .utils.config import app_folders, timezone_now, create_folder, \
-	create_config, clear_cache_samples
+from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
 from . import utils
 # --- Python modules ---
 from os import path, remove
 from sys import modules
 from io import BytesIO
+from shutil import rmtree
 from random import randint, sample
 from uuid import uuid1
 from itertools import product
@@ -2028,6 +2028,7 @@ class Splitset(BaseModel):
 	-Future: is it useful to specify the size of only test for unsupervised learning?
 	"""
 	cache_path = CharField()
+	cache_hot = BooleanField()
 	samples = JSONField()
 	sizes = JSONField()
 	supervision = CharField()
@@ -2321,6 +2322,7 @@ class Splitset(BaseModel):
 
 		splitset = Splitset.create(
 			cache_path = path_splitset
+			, cache_hot = False
 			, label = label
 			, samples = samples
 			, sizes = sizes
@@ -2527,15 +2529,26 @@ class Splitset(BaseModel):
 	def cache_samples(id:object):
 		"""See the folder structure described in """
 		splitset = Splitset.get_by_id(id)
-
-		if (splitset.fold_count==0):			
+		if (splitset.cache_hot==False):
+			if (splitset.fold_count==0):		
 				utils.wrangle.stage_data(splitset, fold=None)
-		
-		elif (splitset.fold_count > 0):
-			folds = list(splitset.folds)
-			# Each fold will contain unique, reusable data.
-			for fold in tqdm(folds, desc="🧺 Preparing Folds 🧺", ncols=100):
-				utils.wrangle.stage_data(splitset, fold=fold)
+			
+			elif (splitset.fold_count > 0):
+				folds = list(splitset.folds)
+				# Each fold will contain unique, reusable data.
+				for fold in tqdm(folds, desc="🧺 Preparing Folds 🧺", ncols=100):
+					utils.wrangle.stage_data(splitset, fold=fold)
+	
+
+	def clear_cache(id:int):
+		"""Includes this splitset as well as any folds"""
+		splitset = Splitset.get_by_id(id)
+
+		if (splitset.cache_hot==True):
+			cache_path = splitset.cache_path
+			rmtree(cache_path)
+			splitset.cache_hot=False
+			splitset.save()
 
 
 
