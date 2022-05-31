@@ -469,7 +469,7 @@ def fetchLabel_ifAbsent(
 			data = eval_label
 	else:
 		data, _ = splitset.fetch_cache(
-			fold_id=fold_id, split=split, label_features='features', library=library
+			fold_id=fold_id, split=split, label_features='label', library=library
 		)
 	return data
 

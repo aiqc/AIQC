@@ -3817,6 +3817,7 @@ class Job(BaseModel):
 
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
+			### the data is changing shape each loop... as the split changes?
 			for split, _ in samples.items():
 				features = fetchFeatures_ifAbsent(
 					splitset=splitset, split=split, fold_id=fold_id, library=library,
@@ -3833,6 +3834,12 @@ class Job(BaseModel):
 						splitset=splitset, split=split, fold_id=fold_id, library=library,
 						train_label=train_label, eval_label=eval_label,
 					)
+					###
+					print(split)
+					print("---Data---")
+					print(label.shape)
+					print(label[0])
+
 					# https://keras.io/api/losses/probabilistic_losses/
 					if (library == 'keras'):
 						loss = loser(label, probs)
@@ -3851,6 +3858,13 @@ class Job(BaseModel):
 							from sklearn.preprocessing import OneHotEncoder
 							OHE = OneHotEncoder(sparse=False)
 							label = OHE.fit_transform(label)
+
+					###
+					# print("---Preds---")
+					# print(preds.shape)
+
+					# print("---Probs---")
+					# print(probs.shape)
 
 					metrics[split] = utils.meter.split_classification_metrics(
 						label, preds, probs, analysis_type
@@ -4060,7 +4074,7 @@ class Job(BaseModel):
 		prediction = Prediction.create(
 			predictions = predictions
 			, probabilities = probabilities
-			, feature_importance = feature_importance
+			, feature_importance = None
 			, metrics = metrics
 			, metrics_aggregate = metrics_aggregate
 			, plot_data = plot_data
@@ -4069,7 +4083,7 @@ class Job(BaseModel):
 		)
 		# --- Feature importance ---
 		try:
-			permute_count = queue.permute_count
+			permute_count = queue.permute_count### is this validated? that it can even permute?
 			key_train = splitset.key_train
 			features = splitset.features
 			nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
@@ -4078,8 +4092,6 @@ class Job(BaseModel):
 				(key_train is not None) and (len(nonImage_features)>0)
 			):
 				prediction.calc_featureImportance(permute_count=permute_count)
-			else:
-				feature_importance = None
 		except:
 			prediction.delete_instance()
 			raise
@@ -4658,10 +4670,10 @@ class Prediction(BaseModel):
 		prediction = Prediction.get_by_id(id)
 		metrics = prediction.metrics
 		predictor = prediction.predictor
-		job = prediction.job
+		job = predictor.job
 		fold = job.fold
+		hp = job.hyperparamcombo.hyperparameters
 		queue = job.queue
-		hp = queue.hyperparameters
 		algorithm = queue.algorithm
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
