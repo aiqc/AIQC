@@ -140,6 +140,7 @@ class Pipeline:
 						if (c not in cols_excluded):
 							cols_excluded.append(c)
 			f = Feature.from_dataset(dataset_id=d_id, exclude_columns=cols_excluded)
+			f_id = f.id
 			features.append(f)
 			feature_ids.append(f.id)
 
@@ -152,13 +153,13 @@ class Pipeline:
 			# Window needs to be created prior to Splitset because it influences `samples`
 			window = i.window
 			if (window is not None):
-				Window.from_feature(feature_id=f.id, **window)
+				Window.from_feature(feature_id=f_id, **window)
 			
 			encoders = i.encoders
 			if (encoders is not None):					
 				for fc in encoders:
 					kwargz = fc.__dict__
-					FeatureCoder.from_encoderset(encoderset_id=e_id, **kwargz)
+					FeatureCoder.from_feature(feature_id=f_id, **kwargz)
 			
 			reshape_indices = i.reshape_indices
 			if (reshape_indices is not None):

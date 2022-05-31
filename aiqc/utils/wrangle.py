@@ -432,33 +432,35 @@ def stage_data(splitset:object, fold:object):
 	splitset.save()
 
 
-def fetch_absent_features(
+def fetchFeatures_ifAbsent(
 	splitset:object, split:str, 
 	train_features:object, eval_features:object,
-	fold:object=None, library:object=None
+	fold_id:int=None, library:object=None
 ):
 	"""Check if data is already in-memory. If not, fetch it."""
 	key_trn = splitset.key_train
-	key_eval = splitset.key_eval
-	if (split==key_trn)
+	key_eval = splitset.key_evaluation
+	if (split==key_trn):
 		if (train_features is not None):
 			data = train_features
 	elif ((split==key_eval) and (key_eval is not None)):
 		if (eval_features is not None):
 			data = eval_features
 	else:
-		data, _ = splitset.fetch_cache(fold, split, 'features', library)
+		data, _ = splitset.fetch_cache(
+			fold_id=fold_id, split=split, label_features='features', library=library
+		)
 	return data
 
 
-def fetch_absent_label(
+def fetchLabel_ifAbsent(
 	splitset:object, split:str, 
 	train_label:object, eval_label:object,
-	fold:object=None, library:object=None
+	fold_id:int=None, library:object=None
 ):
 	"""Check if data is already in-memory. If not, fetch it."""
 	key_trn = splitset.key_train
-	key_eval = splitset.key_eval
+	key_eval = splitset.key_evaluation
 	if (split==key_trn):
 		if (train_label is not None):
 			data = train_label
@@ -466,7 +468,9 @@ def fetch_absent_label(
 		if (eval_label is not None):
 			data = eval_label
 	else:
-		data, _ = splitset.fetch_cache(fold, split, 'label', library)
+		data, _ = splitset.fetch_cache(
+			fold_id=fold_id, split=split, label_features='features', library=library
+		)
 	return data
 
 
