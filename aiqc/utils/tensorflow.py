@@ -26,26 +26,26 @@ def optimize(**hp):
 	return optimizer
 
 # `select_fn_predict()`
-def predict_multiclass(model, samples_predict):
+def predict_multiclass(model, features):
 	# Shows the probabilities of each class coming out of softmax neurons:
 	# array([[9.9990356e-01, 9.6374511e-05, 3.3754202e-10],...])
-	probabilities = model.predict(samples_predict['features'])
+	probabilities = model.predict(features)
 	# This is the official keras replacement for multiclass `.predict_classes()`
 	# Returns one ordinal array per sample: `[[0][1][2][3]]` 
 	prediction = np.argmax(probabilities, axis=-1)
 	return prediction, probabilities
 
-def predict_binary(model, samples_predict):
+def predict_binary(model, features):
 	# Sigmoid output is between 0 and 1.
 	# It's not technically a probability, but it is still easy to interpret.
-	probability = model.predict(samples_predict['features'])
+	probability = model.predict(features)
 	# This is the official keras replacement for binary classes `.predict_classes()`.
 	# Returns one array per sample: `[[0][1][0][1]]`.
 	prediction = (probability > 0.5).astype("int32")
 	return prediction, probability
 
-def predict_regression(model, samples_predict):
-	prediction = model.predict(samples_predict['features'])
+def predict_regression(model, features):
+	prediction = model.predict(features)
 	# ^ Output is a single value, not `probability, prediction`
 	return prediction
 

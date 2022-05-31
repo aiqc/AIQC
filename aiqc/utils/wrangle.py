@@ -6,6 +6,7 @@ from natsort import natsorted
 from textwrap import dedent
 import numpy as np
 import pandas as pd
+from torch import FloatTensor
 
 
 def listify(supposed_lst:object=None):
@@ -204,11 +205,11 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 def df_to_compressed_parquet_bytes(dataframe:object):
 	"""
 	- The Parquet file format naturally preserves pandas/numpy dtypes.
-		Originally, we were using the `pyarrow` engine, but it has poor timedelta dtype support.
-		https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+	  Originally, we were using the `pyarrow` engine, but it has poor timedelta dtype support.
+	  https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
 	
 	- Although `fastparquet` engine preserves timedelta dtype, but it does not work with BytesIO.
-		https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
+	  https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
 	"""
 	fs = filesystem("memory")
 	temp_path = "memory://temp.parq"
@@ -341,6 +342,12 @@ def run_interpolate(dataframe:object, interpolate_kwargs:dict):
 	return dataframe
 
 
+def conditional_torch(arr:object, library:str=None):
+	if (library=='pytorch'): 
+		arr = FloatTensor(arr)
+	return arr
+
+
 def stage_data(splitset:object, fold:object):
 	path_splitset = splitset.cache_path
 	if (fold is not None):
@@ -361,7 +368,6 @@ def stage_data(splitset:object, fold:object):
 	- Then we convert the arrays to pytorch tensors if necessary. Subsetting with a list of indeces and `shape`
 	work the same in both numpy and torch.
 	"""
-	# Labels - fetch and encode.
 	if (splitset.supervision == "supervised"):
 		label = splitset.label
 		arr_labels = label.preprocess(
@@ -370,8 +376,8 @@ def stage_data(splitset:object, fold:object):
 			, key_train = key_train
 		)
 
-	# Features - fetch and encode.
-	features = []# expecting diff array shapes inside so it has to be list, not array.
+	# Expect different array shapes so use list, not array.
+	features = []
 	
 	for feature in splitset.features:
 		if (splitset.supervision == 'supervised'):
@@ -382,6 +388,7 @@ def stage_data(splitset:object, fold:object):
 				, key_train = key_train
 			)
 		elif (splitset.supervision == 'unsupervised'):
+			# Remember, the unsupervised arr_labels may be different/shifted for forecasting.
 			arr_features, arr_labels = feature.preprocess(
 				supervision = 'unsupervised'
 				, fold = fold
@@ -399,13 +406,13 @@ def stage_data(splitset:object, fold:object):
 	aiqc/cache/samples/splitset_uid
 	└── fold_index | no_fold
 		└── split
-			└── label
-				└── array.npy
-			└── features
-				└── feature_index
-					└── array.npy
+			└── label.npy
+			└── feature_0.npy
+			└── feature_1.npy
+			└── feature_2.npy
 
-	'no_fold' just keeps the folder depth uniform for regular splitsets
+	- 'no_fold' just keeps the folder depth uniform for regular splitsets
+	- Tried label & feature folders, but it was too complex to fetch.
 	"""
 	create_folder(path_splitset)
 
@@ -413,26 +420,54 @@ def stage_data(splitset:object, fold:object):
 		path_split = path.join(path_fold, split)
 		create_folder(path_split)
 
-		if (splitset.label is not None):
-			path_label = path.join(path_split, "label")
-			create_folder(path_label)
-
-			path_label_arr = path.join(path_label, "ndarray.npy")
-			np.save(path_label_arr, arr_labels[indices], allow_pickle=False)
-
-		path_features = path.join(path_split, "features")
-		create_folder(path_features)
+		path_label = path.join(path_split, "label.npy")
+		np.save(path_label, arr_labels[indices], allow_pickle=False)
 
 		for f, _ in enumerate(splitset.features):
-			f_idx = f"feature_{f}"
-			path_feature = path.join(path_features, f_idx)
-			create_folder(path_feature)
-
-			path_feature_arr = path.join(path_feature, "ndarray.npy")
-			np.save(path_feature_arr, features[f][indices], allow_pickle=False)
+			f_idx = f"feature_{f}.npy"
+			path_feature = path.join(path_split, f_idx)
+			np.save(path_feature, features[f][indices], allow_pickle=False)
 	
 	splitset.cache_hot = True
 	splitset.save()
+
+
+def fetch_absent_features(
+	splitset:object, split:str, 
+	train_features:object, eval_features:object,
+	fold:object=None, library:object=None
+):
+	"""Check if data is already in-memory. If not, fetch it."""
+	key_trn = splitset.key_train
+	key_eval = splitset.key_eval
+	if (split==key_trn)
+		if (train_features is not None):
+			data = train_features
+	elif ((split==key_eval) and (key_eval is not None)):
+		if (eval_features is not None):
+			data = eval_features
+	else:
+		data, _ = splitset.fetch_cache(fold, split, 'features', library)
+	return data
+
+
+def fetch_absent_label(
+	splitset:object, split:str, 
+	train_label:object, eval_label:object,
+	fold:object=None, library:object=None
+):
+	"""Check if data is already in-memory. If not, fetch it."""
+	key_trn = splitset.key_train
+	key_eval = splitset.key_eval
+	if (split==key_trn):
+		if (train_label is not None):
+			data = train_label
+	elif ((split==key_eval) and (key_eval is not None)):
+		if (eval_label is not None):
+			data = eval_label
+	else:
+		data, _ = splitset.fetch_cache(fold, split, 'label', library)
+	return data
 
 
 def tabular_schemas_match(set_original, set_new):

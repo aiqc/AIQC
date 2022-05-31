@@ -17,6 +17,7 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
+from .utils.wrangle import *
 from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
 from . import utils
@@ -28,14 +29,12 @@ from shutil import rmtree
 from random import randint, sample
 from uuid import uuid1
 from itertools import product
-from gzip import open as gzopen
 from requests import get as requests_get
 from validators import url as val_url
 from pprint import pformat
 from scipy.stats import mode
 from h5py import File as h5_File
-from pickle import dump, load
-from importlib import reload as importlib_reload
+from importlib import reload as imp_reload
 from textwrap import dedent
 from re import sub
 # math and statistics will not let you import specific modules (ceil, floor, prod)
@@ -104,7 +103,7 @@ def create_db():
 		try:
 			db = get_db()
 			# This `reload` is needed after I refactored Models into orm.py
-			importlib_reload(modules[__name__])
+			imp_reload(modules[__name__])
 		except:
 			print(
 				f"=> Yikes - failed to create database file at path:\n{db_path}\n\n" \
@@ -124,7 +123,6 @@ def create_db():
 			Window, FeatureShaper,
 			Algorithm, Hyperparamset, Hyperparamcombo,
 			Queue, Job, Predictor, Prediction,
-			FittedEncoderset, FittedLabelCoder,
 		])
 		tables = db.get_tables()
 		table_count = len(tables)
@@ -153,7 +151,7 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
 		else:
 			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
-		importlib_reload(modules[__name__])
+		imp_reload(modules[__name__])
 
 		if (rebuild==True):
 			create_db()
@@ -219,7 +217,7 @@ def increment_version(model_class, instance, created):
 	klass = instance.__class__.__name__
 	# Minimize performance impact of this signal when creating a one thousand file dataset
 	if (klass!="File"):
-		instance, latest_match = utils.wrangle.match_name(instance, created)
+		instance, latest_match = match_name(instance, created)
 		if (latest_match is not None):
 			if (klass=="Dataset"):
 				if (latest_match.dataset_type!=instance.dataset_type):
@@ -244,8 +242,8 @@ class Dataset(BaseModel):
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		columns = utils.wrangle.listify(columns)
-		samples = utils.wrangle.listify(samples)
+		columns = listify(columns)
+		samples = listify(samples)
 
 		if (dataset.dataset_type == 'tabular'):
 			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
@@ -258,8 +256,8 @@ class Dataset(BaseModel):
 
 	def to_numpy(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		columns = utils.wrangle.listify(columns)
-		samples = utils.wrangle.listify(samples)
+		columns = listify(columns)
+		samples = listify(samples)
 
 		if (dataset.dataset_type == 'tabular'):
 			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
@@ -271,7 +269,7 @@ class Dataset(BaseModel):
 
 
 	def to_pillow(id:int, samples:list=None):
-		samples = utils.wrangle.listify(samples)
+		samples = listify(samples)
 		dataset = Dataset.get_by_id(id)
 		if (dataset.dataset_type == 'tabular'):
 			raise Exception("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
@@ -333,7 +331,7 @@ class Dataset(BaseModel):
 			, skip_header_rows:object = 'infer'
 			, ingest:bool = True
 		):
-			column_names = utils.wrangle.listify(column_names)
+			column_names = listify(column_names)
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
 			if (source_file_format not in accepted_formats):
@@ -388,7 +386,7 @@ class Dataset(BaseModel):
 			, dtype:object = None
 			, column_names:list = None
 		):
-			column_names = utils.wrangle.listify(column_names)
+			column_names = listify(column_names)
 
 			if (type(dataframe).__name__ != 'DataFrame'):
 				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
@@ -423,8 +421,8 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, _dataset_index:int = None
 		):
-			column_names = utils.wrangle.listify(column_names)
-			utils.wrangle.arr_validate(ndarray)
+			column_names = listify(column_names)
+			arr_validate(ndarray)
 
 			dimensions = len(ndarray.shape)
 			if (dimensions > 2) or (dimensions < 1):
@@ -494,16 +492,16 @@ class Dataset(BaseModel):
 
 		def to_pandas(id:int, columns:list=None, samples:list=None):
 			file = Dataset.get_main_file(id)#`id` belongs to dataset, not file
-			columns = utils.wrangle.listify(columns)
-			samples = utils.wrangle.listify(samples)
+			columns = listify(columns)
+			samples = listify(samples)
 			df = File.to_pandas(id=file.id, samples=samples, columns=columns)
 			return df
 
 
 		def to_numpy(id:int, columns:list=None, samples:list=None):
 			dataset = Dataset.get_by_id(id)
-			columns = utils.wrangle.listify(columns)
-			samples = utils.wrangle.listify(samples)
+			columns = listify(columns)
+			samples = listify(samples)
 			# This calls the method above. It does not need `.Tabular`
 			df = dataset.to_pandas(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
@@ -559,8 +557,8 @@ class Dataset(BaseModel):
 				elif (_source_path is None):
 					source_path = None
 
-			column_names = utils.wrangle.listify(column_names)
-			utils.wrangle.arr_validate(ndarray_3D)
+			column_names = listify(column_names)
+			arr_validate(ndarray_3D)
 
 			if (ndarray_3D.ndim != 3):
 				raise Exception(dedent(f"""
@@ -606,7 +604,7 @@ class Dataset(BaseModel):
 
 
 		def to_numpy(id:int, columns:list=None, samples:list=None):
-			columns, samples = utils.wrangle.listify(columns), utils.wrangle.listify(samples)
+			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
 			if (samples is None):
 				files = dataset.files
@@ -625,7 +623,7 @@ class Dataset(BaseModel):
 
 
 		def to_pandas(id:int, columns:list=None, samples:list=None):
-			columns, samples = utils.wrangle.listify(columns), utils.wrangle.listify(samples)
+			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
 			if (samples is None):
 				files = dataset.files
@@ -673,7 +671,7 @@ class Dataset(BaseModel):
 		):
 			if (name is None): name = folder_path
 			source_path = path.abspath(folder_path)
-			file_paths = utils.wrangle.sorted_file_list(source_path)
+			file_paths = sorted_file_list(source_path)
 			file_count = len(file_paths)
 
 			# Validated during `sequences_from_4D`.
@@ -719,7 +717,7 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
-			urls = utils.wrangle.listify(urls)
+			urls = listify(urls)
 			file_count = len(urls)
 
 			# Validated during `sequences_from_4D`.
@@ -831,13 +829,13 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, source_path:str = None
 		):
-			column_names = utils.wrangle.listify(column_names)
+			column_names = listify(column_names)
 			if ((ingest==False) and (isinstance(dtype, dict))):
 				raise Exception("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
 			# Checking that the shape is 4D validates that each internal array is uniformly shaped.
 			if (ndarray_4D.ndim!=4):
 				raise Exception("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`. Tip: shapes of each image array must be the same.\n")
-			utils.wrangle.arr_validate(ndarray_4D)
+			arr_validate(ndarray_4D)
 			
 			if (paths is not None):
 				for i, arr in enumerate(tqdm(
@@ -877,7 +875,7 @@ class Dataset(BaseModel):
 
 
 		def to_numpy(id:int, samples:list=None, columns:list=None):
-			samples, columns = utils.wrangle.listify(samples), utils.wrangle.listify(columns)
+			samples, columns = listify(samples), listify(columns)
 			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
 			if (samples is not None):
 				# ORM was queries were being weird about the self foreign key.
@@ -889,7 +887,7 @@ class Dataset(BaseModel):
 
 
 		def to_pandas(id:int, samples:list=None, columns:list=None):
-			samples, columns = utils.wrangle.listify(samples), utils.wrangle.listify(columns)
+			samples, columns = listify(samples), listify(columns)
 			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
 			if (samples is not None):
 				# ORM was queries were being weird about the self foreign key.
@@ -904,7 +902,7 @@ class Dataset(BaseModel):
 			dataset = Dataset.get_by_id(id)
 			datasets = dataset.datasets
 			if (samples is not None):
-				samples = utils.wrangle.listify(samples)
+				samples = listify(samples)
 				datasets = [d for d in datasets if d.dataset_index in samples]
 			images = [d.to_pillow() for d in datasets]
 			return images
@@ -946,15 +944,15 @@ class File(BaseModel):
 		, skip_header_rows:int = 'infer'
 		, _file_index:int = 0 # Dataset.Sequence overwrites this.
 	):
-		column_names = utils.wrangle.listify(column_names)
-		utils.wrangle.df_validate(dataframe, column_names)
+		column_names = listify(column_names)
+		df_validate(dataframe, column_names)
 
 		# We need this metadata whether ingested or not.
-		dataframe, columns, shape, dtype = utils.wrangle.df_set_metadata(
+		dataframe, columns, shape, dtype = df_set_metadata(
 			dataframe=dataframe, column_names=column_names, dtype=dtype
 		)
 		if (ingest==True):
-			blob = utils.wrangle.df_to_compressed_parquet_bytes(dataframe)
+			blob = df_to_compressed_parquet_bytes(dataframe)
 		elif (ingest==False):
 			blob = None
 
@@ -983,7 +981,7 @@ class File(BaseModel):
 		, _file_index:int = 0
 		, ingest:bool = True
 	):
-		column_names = utils.wrangle.listify(column_names)
+		column_names = listify(column_names)
 		"""
 		Only supporting homogenous arrays because structured arrays are a pain
 		when it comes time to convert them to dataframes. It complained about
@@ -993,7 +991,7 @@ class File(BaseModel):
 		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
 		Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
 		"""
-		utils.wrangle.arr_validate(ndarray)
+		arr_validate(ndarray)
 		"""
 		column_names and dict-based dtype will be handled by our `from_pandas()` method.
 		`pd.DataFrame` method only accepts a single dtype str, or infers if None.
@@ -1020,8 +1018,8 @@ class File(BaseModel):
 		, skip_header_rows:object = 'infer'
 		, ingest:bool = True
 	):
-		column_names = utils.wrangle.listify(column_names)
-		df = utils.wrangle.path_to_df(
+		column_names = listify(column_names)
+		df = path_to_df(
 			file_path = path
 			, source_file_format = source_file_format
 			, column_names = column_names
@@ -1048,15 +1046,15 @@ class File(BaseModel):
 		https://stackoverflow.com/questions/64050609/pyarrow-read-parquet-via-column-index-or-order
 		"""
 		file = File.get_by_id(id)
-		columns = utils.wrangle.listify(columns)
-		samples = utils.wrangle.listify(samples)
+		columns = listify(columns)
+		samples = listify(samples)
 		
 		f_dtypes = file.dtypes
 		f_cols = file.columns
 
 		if (file.is_ingested==False):
 			# future: check if `query_fetcher` defined.
-			df = utils.wrangle.path_to_df(
+			df = path_to_df(
 				file_path = file.source_path
 				, source_file_format = file.file_format
 				, column_names = columns
@@ -1095,8 +1093,8 @@ class File(BaseModel):
 		This is the only place where to_numpy() relies on to_pandas(). 
 		It does so because pandas is good with the parquet and dtypes.
 		"""
-		columns = utils.wrangle.listify(columns)
-		samples = utils.wrangle.listify(samples)
+		columns = listify(columns)
+		samples = listify(samples)
 		file = File.get_by_id(id)
 		f_dataset = file.dataset
 		# Handles when Dataset.Sequence is stored as a single .npy file
@@ -1104,7 +1102,7 @@ class File(BaseModel):
 			# Subsetting a File via `samples` is irrelevant here because the entire File is 1 sample.
 			# Subset the columns:
 			if (columns is not None):
-				col_indices = utils.wrangle.colIndices_from_colNames(
+				col_indices = colIndices_from_colNames(
 					column_names = file.columns
 					, desired_cols = columns
 				)
@@ -1164,7 +1162,7 @@ class Label(BaseModel):
 	
 	def from_dataset(dataset_id:int, columns:list=None):
 		d = Dataset.get_by_id(dataset_id)
-		columns = utils.wrangle.listify(columns)
+		columns = listify(columns)
 
 		if (d.dataset_type!='tabular'):
 			raise Exception(dedent(f"""
@@ -1278,7 +1276,7 @@ class Label(BaseModel):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		samples = utils.wrangle.listify(samples)
+		samples = listify(samples)
 		df = Dataset.to_pandas(id=dataset.id, columns=columns, samples=samples)
 		return df
 
@@ -1287,7 +1285,7 @@ class Label(BaseModel):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		samples = utils.wrangle.listify(samples)
+		samples = listify(samples)
 		arr = Dataset.to_numpy(id=dataset.id, columns=columns, samples=samples)
 		return arr
 
@@ -1387,8 +1385,8 @@ class Feature(BaseModel):
 	):
 		#As we get further away from the `Dataset.<Types>` they need less isolation.
 		dataset = Dataset.get_by_id(dataset_id)
-		include_columns = utils.wrangle.listify(include_columns)
-		exclude_columns = utils.wrangle.listify(exclude_columns)
+		include_columns = listify(include_columns)
+		exclude_columns = listify(exclude_columns)
 		d_cols = Dataset.get_main_file(dataset_id).columns
 		
 		if ((include_columns is not None) and (exclude_columns is not None)):
@@ -1435,8 +1433,8 @@ class Feature(BaseModel):
 
 
 	def to_pandas(id:int, samples:list=None, columns:list=None):
-		samples = utils.wrangle.listify(samples)
-		columns = utils.wrangle.listify(columns)
+		samples = listify(samples)
+		columns = listify(columns)
 		df = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'pandas'
@@ -1447,8 +1445,8 @@ class Feature(BaseModel):
 
 
 	def to_numpy(id:int, samples:list=None, columns:list=None):
-		samples = utils.wrangle.listify(samples)
-		columns = utils.wrangle.listify(columns)
+		samples = listify(samples)
+		columns = listify(columns)
 		arr = Feature.get_feature(
 			id = id
 			, numpy_or_pandas = 'numpy'
@@ -1465,8 +1463,8 @@ class Feature(BaseModel):
 		, columns:list = None
 	):
 		feature = Feature.get_by_id(id)
-		samples = utils.wrangle.listify(samples)
-		columns = utils.wrangle.listify(columns)
+		samples = listify(samples)
+		columns = listify(columns)
 		f_cols = feature.columns
 
 		if (columns is not None):
@@ -1789,8 +1787,8 @@ class Feature(BaseModel):
 		feature_cols = feature.columns
 		feature_dtypes = feature.get_dtypes()
 
-		dtypes = utils.wrangle.listify(dtypes)
-		columns = utils.wrangle.listify(columns)
+		dtypes = listify(dtypes)
+		columns = listify(columns)
 
 		class_name = existing_preprocs.model.__name__.lower()
 
@@ -2095,7 +2093,7 @@ class Splitset(BaseModel):
 		random_state = randint(0, 4294967295)
 
 		# --- Verify features ---
-		feature_ids = utils.wrangle.listify(feature_ids)
+		feature_ids = listify(feature_ids)
 		feature_lengths = []
 		for f_id in feature_ids:
 			f = Feature.get_by_id(f_id)
@@ -2179,7 +2177,7 @@ class Splitset(BaseModel):
 				if (unsupervised_stratify_col is not None):
 					# Get the column for stratification.
 					column_names = f_dataset.get_main_file().columns
-					col_index = utils.wrangle.colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
+					col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
 
 					dimensions = feature_array.ndim
 					if (dimensions==2):
@@ -2228,7 +2226,7 @@ class Splitset(BaseModel):
 				- Don't include the Dataset.Image.feature pixel arrays in stratification.
 				"""
 				# `bin_count` is only returned so that we can persist it.
-				stratifier1, bin_count = utils.wrangle.stratifier_by_dtype_binCount(
+				stratifier1, bin_count = stratifier_by_dtype_binCount(
 					stratify_dtype = stratify_dtype,
 					stratify_arr = stratify_arr,
 					bin_count = bin_count
@@ -2243,7 +2241,7 @@ class Splitset(BaseModel):
 				)
 
 				if (size_validation is not None):
-					stratifier2, bin_count = utils.wrangle.stratifier_by_dtype_binCount(
+					stratifier2, bin_count = stratifier_by_dtype_binCount(
 						stratify_dtype = stratify_dtype,
 						stratify_arr = stratify_train, #This split is different from stratifier1.
 						bin_count = bin_count
@@ -2408,7 +2406,7 @@ class Splitset(BaseModel):
 
 				stratify_col = splitset.unsupervised_stratify_col
 				column_names = feature.dataset.get_main_file().columns
-				col_index = utils.wrangle.colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
+				col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
 				
 				dimensions = stratify_arr.ndim
 				if (dimensions==2):
@@ -2455,7 +2453,7 @@ class Splitset(BaseModel):
 			if (np.issubdtype(stratify_dtype, np.floating)):
 				if (bin_count is None):
 					bin_count = splitset.bin_count #Inherit. 
-				stratify_arr = utils.wrangle.values_to_bins(
+				stratify_arr = values_to_bins(
 					array_to_bin = stratify_arr
 					, bin_count = bin_count
 				)
@@ -2466,7 +2464,7 @@ class Splitset(BaseModel):
 				(np.issubdtype(stratify_dtype, np.unsignedinteger))
 			):
 				if (bin_count is not None):
-					stratify_arr = utils.wrangle.values_to_bins(
+					stratify_arr = values_to_bins(
 						array_to_bin = stratify_arr
 						, bin_count = bin_count
 					)
@@ -2537,17 +2535,17 @@ class Splitset(BaseModel):
 	
 
 	def cache_samples(id:object):
-		"""See the folder structure described in utils.wrangle.stage_data()"""
+		"""See the folder structure described in stage_data()"""
 		splitset = Splitset.get_by_id(id)
 		if (splitset.cache_hot==False):
 			if (splitset.fold_count==0):		
-				utils.wrangle.stage_data(splitset, fold=None)
+				stage_data(splitset, fold=None)
 			
 			elif (splitset.fold_count > 0):
 				folds = list(splitset.folds)
 				# Each fold will contain unique, reusable data.
 				for fold in tqdm(folds, desc="🧺 Preparing Folds 🧺", ncols=100):
-					utils.wrangle.stage_data(splitset, fold=fold)
+					stage_data(splitset, fold=fold)
 	
 
 	def clear_cache(id:int):
@@ -2559,7 +2557,50 @@ class Splitset(BaseModel):
 			rmtree(cache_path)
 			splitset.cache_hot=False
 			splitset.save()
+	
 
+	def fetch_cache(
+		id:int
+		, fold_id:int
+		, split:str
+		, label_features:str
+		, library:str=None
+	):
+		"""
+		Wanted to do this w/o queries, but getting features requires splitset,
+		and I was if'ing for fold_index in multiple places.
+		"""
+		splitset = Splitset.get_by_id(id)
+		fold = Fold.get_by_id(fold_id)
+		
+		if (fold is not None):
+			idx = f"fold_{fold.fold_index}"
+		else:
+			idx = "no_fold"
+
+		path_split = path.join(splitset.cache_path, idx, split)
+
+		if (label_features=='label'):
+			data = path.join(path_split, "label.npy")
+			data = np.load(data)
+			data = conditional_torch(data, library)
+			shape = data.shape
+		
+		elif (label_features=='features'):
+			data = []
+			shape = []
+			for feature in splitset.features:
+				f = f"feature_{feature.feature_index}.npy"
+				f = path.join(path_split, f)
+				f = np.load(f)
+				shape.append(f.shape)
+				f = conditional_torch(f, library)
+				data.append(f)
+				
+			if len(data==1):
+				data=data[0]
+				shape = shape[0]
+		return data, shape
 
 
 
@@ -2602,7 +2643,7 @@ class LabelInterpolater(BaseModel):
 		if (label.labelinterpolaters.count()>0):
 			msg = "\nYikes - Label can only have 1 LabelInterpolater.\n"
 			raise Exception(msg)
-		utils.wrangle.floats_only(label)
+		floats_only(label)
 
 		if (interpolate_kwargs is None):
 			interpolate_kwargs = dict(
@@ -2613,12 +2654,12 @@ class LabelInterpolater(BaseModel):
 				, order = 1
 			)
 		elif (interpolate_kwargs is not None):
-			utils.wrangle.verify_attributes(interpolate_kwargs)
+			verify_attributes(interpolate_kwargs)
 
 		# Check that the arguments actually work.
 		try:
 			df = label.to_pandas()
-			utils.wrangle.run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
+			run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
 			raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
 		else:
@@ -2640,14 +2681,14 @@ class LabelInterpolater(BaseModel):
 
 		if ((lp.process_separately==False) or (samples is None)):
 			df_labels = pd.DataFrame(array, columns=label.columns)
-			df_labels = utils.wrangle.run_interpolate(df_labels, interpolate_kwargs)	
+			df_labels = run_interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
 			# Augment our evaluation splits/folds with training data.
 			for split, indices in samples.items():
 				if ('train' in split):
 					array_train = array[indices]
 					df_train = pd.DataFrame(array_train).set_index([indices], drop=True)
-					df_train = utils.wrangle.run_interpolate(df_train, interpolate_kwargs)
+					df_train = run_interpolate(df_train, interpolate_kwargs)
 					df_labels = df_train
 
 			# We need `df_train` from above.
@@ -2656,7 +2697,7 @@ class LabelInterpolater(BaseModel):
 					arr = array[indices]
 					df = pd.DataFrame(arr).set_index([indices], drop=True)					# Does not need to be sorted for interpolate.
 					df = pd.concat([df_train, df])
-					df = utils.wrangle.run_interpolate(df, interpolate_kwargs)
+					df = run_interpolate(df, interpolate_kwargs)
 					# Only keep the indices from the split of interest.
 					df = df.loc[indices]
 					df_labels = pd.concat([df_labels, df])
@@ -2706,10 +2747,10 @@ class FeatureInterpolater(BaseModel):
 				, order = 1
 			)
 		elif (interpolate_kwargs is not None):
-			utils.wrangle.verify_attributes(interpolate_kwargs)
+			verify_attributes(interpolate_kwargs)
 
-		dtypes = utils.wrangle.listify(dtypes)
-		columns = utils.wrangle.listify(columns)
+		dtypes = listify(dtypes)
+		columns = listify(columns)
 		if (dtypes is not None):
 			for typ in dtypes:
 				if (not np.issubdtype(typ, np.floating)):
@@ -2762,7 +2803,7 @@ class FeatureInterpolater(BaseModel):
 			# Single dataframe.
 			if ((fp.process_separately==False) or (samples is None)):
 
-				df_interp = utils.wrangle.run_interpolate(dataframe, interpolate_kwargs)
+				df_interp = run_interpolate(dataframe, interpolate_kwargs)
 			
 			elif ((fp.process_separately==True) and (samples is not None)):
 				df_interp = None
@@ -2770,7 +2811,7 @@ class FeatureInterpolater(BaseModel):
 					# Fetch those samples.
 					df = dataframe.loc[indices]
 
-					df = utils.wrangle.run_interpolate(df, interpolate_kwargs)
+					df = run_interpolate(df, interpolate_kwargs)
 					# Stack them up.
 					if (df_interp is None):
 						df_interp = df
@@ -2780,7 +2821,7 @@ class FeatureInterpolater(BaseModel):
 			else:
 				raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
 		elif ((dataset_type=='sequence') or (dataset_type=='image')):
-			df_interp = utils.wrangle.run_interpolate(dataframe, interpolate_kwargs)
+			df_interp = run_interpolate(dataframe, interpolate_kwargs)
 		else:
 			raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with dataset_type provided.\n")
 		# Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
@@ -3158,7 +3199,7 @@ class Hyperparamset(BaseModel):
 
 		# Make sure they are actually lists.
 		for i, pl in enumerate(params_lists):
-			params_lists[i] = utils.wrangle.listify(pl)
+			params_lists[i] = listify(pl)
 
 		# From multiple lists, come up with every unique combination.
 		params_combos = list(product(*params_lists))
@@ -3416,9 +3457,7 @@ class Queue(BaseModel):
 		- Don't clear cache because it may be used by the next Queue
 		"""
 		queue = Queue.get_by_id(id)
-		splitset = queue.splitset
-		library = queue.algorithm.library
-		
+		splitset = queue.splitset		
 		# If the cache is not hot yet, populate it.
 		splitset.cache_samples()
 
@@ -3440,12 +3479,7 @@ class Queue(BaseModel):
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
 					)
 					if (matching_predictor.count()==0):
-						### this is where cache was being read previously.
-						Job.run(
-							id=rj[1].id, repeat_index=rj[0]
-							, samples=samples, input_shapes=input_shapes
-							, key_train=key_train, key_evaluation=key_evaluation
-						)
+						Job.run(id=rj[1].id, repeat_index=rj[0])
 			except (KeyboardInterrupt):
 				# Attempts to prevent irrelevant errors, but sometimes they still slip through.
 				print("\nQueue was gracefully interrupted.\n")
@@ -3471,12 +3505,7 @@ class Queue(BaseModel):
 					)
 
 					if (matching_predictor.count()==0):
-						### this is where cache was being read previously.
-						Job.run(
-							id=rj[1].id, repeat_index=rj[0]
-							, samples=samples, input_shapes=input_shapes
-							, key_train=key_train, key_evaluation=key_evaluation
-						)
+						Job.run(id=rj[1].id, repeat_index=rj[0])
 			except (KeyboardInterrupt):
 				# So that we don't get nasty error messages when interrupting a long running loop.
 				print("\nQueue was gracefully interrupted.\n")
@@ -3491,8 +3520,8 @@ class Queue(BaseModel):
 		, ascending:bool=False
 	):
 		queue = Queue.get_by_id(id)
-		selected_metrics = utils.wrangle.listify(selected_metrics)
-		sort_by = utils.wrangle.listify(sort_by)
+		selected_metrics = listify(selected_metrics)
+		sort_by = listify(sort_by)
 		
 		queue_predictions = Prediction.select().join(
 			Predictor).join(Job).where(Job.queue==id
@@ -3565,9 +3594,9 @@ class Queue(BaseModel):
 		, selected_stats:list=None
 		, sort_by:list=None
 	):
-		selected_metrics = utils.wrangle.listify(selected_metrics)
-		selected_stats = utils.wrangle.listify(selected_stats)
-		sort_by = utils.wrangle.listify(sort_by)
+		selected_metrics = listify(selected_metrics)
+		selected_stats = listify(selected_stats)
+		sort_by = listify(sort_by)
 
 		queue_predictions = Prediction.select().join(
 			Predictor).join(Job).where(Job.queue==id
@@ -3721,16 +3750,23 @@ class Job(BaseModel):
 	fold = ForeignKeyField(Fold, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 
 
-	def predict(samples:dict, predictor_id:int, splitset_id:int=None, key_train:str=None):
+	def predict(
+		predictor_id:int
+		, splitset_id:int = None # used for inference, not training.
+		, train_features:object = None
+		, train_label:object = None
+		, eval_features:object = None # can be used by training or inference
+		, eval_label:object = None # can be used by training or inference
+	):
 		"""
 		Evaluation: predictions, metrics, charts for each split/fold.
 		- Metrics are run against encoded data because they won't accept string data.
-		- `splitset_id` refers to a splitset provided for inference, not training.
 		- `has_labels=False` is used during pure inference. Unsupervised also uses it for self-supervision.
 		- `key_train` is used during permutation, but not during inference.
 		"""
 		predictor = Predictor.get_by_id(predictor_id)
 		job = predictor.job
+		fold = job.fold
 		hyperparamcombo = job.hyperparamcombo
 		queue = job.queue
 		permute_count = queue.permute_count
@@ -3738,10 +3774,11 @@ class Job(BaseModel):
 		library = algorithm.library
 		analysis_type = algorithm.analysis_type
 		splitset = queue.splitset
-		features = splitset.features
+		samples = splitset.samples
 		supervision = splitset.supervision
-		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
+				
 		# During inference it is optional to provide labels.
+		# Access the 2nd level of the `samples:dict` to determine if it actually has Labels in it.
 		first_key = list(samples.keys())[0]
 		if ('labels' in samples[first_key].keys()):
 			has_labels = True
@@ -3774,43 +3811,53 @@ class Job(BaseModel):
 			metrics = {}
 			plot_data = {}
 
+
+
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
-			for split, data in samples.items():
-				preds, probs = fn_predict(model, data)
+			for split, _ in samples.items():
+				features = fetch_absent_features(
+					splitset=splitset, split=split, fold=fold, library=library,
+					train_features=train_features, eval_features=eval_features
+				)
+
+				preds, probs = fn_predict(model, features)
 				predictions[split] = preds
 				probabilities[split] = probs
 				# Outputs numpy.
 
 				if (has_labels == True):
-					# Reassigning so that permutation can use original data.
-					data_labels = data['labels']
+					### Reassigning so that permutation can use original data.
+					labels = fetch_absent_label(
+						splitset=splitset, split=split, fold=fold, library=library
+						train_label=train_label, eval_label=eval_label,
+					)
 					# https://keras.io/api/losses/probabilistic_losses/
 					if (library == 'keras'):
-						loss = loser(data_labels, probs)
+						loss = loser(labels, probs)
 					elif (library == 'pytorch'):
 						tz_probs = FloatTensor(probs)
 						if (analysis_type == 'classification_binary'):
-							loss = loser(tz_probs, data_labels)
+							loss = loser(tz_probs, labels)
 							# convert back to numpy for metrics and plots.
-							data_labels = data_labels.detach().numpy()
+							labels = labels.detach().numpy()
 						elif (analysis_type == 'classification_multi'):				
-							flat_labels = data_labels.flatten().to(long)
+							flat_labels = labels.flatten().to(long)
 							loss = loser(tz_probs, flat_labels)
 							# Convert back to *OHE* numpy for metrics and plots. 
 							# Reassigning so that permutes can use original data.
-							data_labels = data_labels.detach().numpy()
+							labels = labels.detach().numpy()
 							from sklearn.preprocessing import OneHotEncoder
 							OHE = OneHotEncoder(sparse=False)
-							data_labels = OHE.fit_transform(data_labels)
+							labels = OHE.fit_transform(labels)
 
 					metrics[split] = utils.meter.split_classification_metrics(
-						data_labels, preds, probs, analysis_type
+						labels, preds, probs, analysis_type
 					)
 					metrics[split]['loss'] = float(loss)
 
 					plot_data[split] = utils.meter.split_classification_plots(
-						data_labels, preds, probs, analysis_type
+						labels, preds, probs, analysis_type
 					)
 				
 				# During prediction Keras OHE output gets made ordinal for metrics.
@@ -3829,34 +3876,43 @@ class Job(BaseModel):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
-				preds = fn_predict(model, data)
+				features = fetch_absent_features(
+					splitset=splitset, split=split, fold=fold, library=library,
+					train_features=train_features, eval_features=eval_features
+				)
+				preds, probs = fn_predict(model, features)
 				predictions[split] = preds
 				# Outputs numpy.
 
 				#https://keras.io/api/losses/regression_losses/
 				if (has_labels==True):
 					# Reassigning so that permutation can use original data.
-					data_labels = data['labels']
+					labels = fetch_absent_label(
+						splitset=splitset, split=split, fold=fold, library=library
+						train_label=train_label, eval_label=eval_label,
+					)
 					if (library == 'keras'):
-						loss = loser(data_labels, preds)
+						loss = loser(labels, preds)
 					elif (library == 'pytorch'):
 						tz_preds = FloatTensor(preds)
-						loss = loser(tz_preds, data_labels)
+						loss = loser(tz_preds, labels)
 						# After obtaining loss, make labels numpy again for metrics.
-						data_labels = data_labels.detach().numpy()
+						labels = labels.detach().numpy()
 						# `preds` object is still numpy.
 
 					# These take numpy inputs.
-					metrics[split] = utils.meter.split_regression_metrics(data_labels, preds)
+					metrics[split] = utils.meter.split_regression_metrics(labels, preds)
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
 		
+		###
 		# Feature Importance - code is similar to loss above, but different enough not to refactor.
 		# Warning - tf cant be imported on multiple Py processes. Making parallel permutation challening.
+		features = splitset.features
 		nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
 		if (
 			(permute_count>0) and (has_labels==True) and 
-			(key_train is not None) and (len(nonImage_features)>0)
+			(splitset.key_train is not None) and (len(nonImage_features)>0) ### can key_train even be None?... look at inference
 		):
 			# Only 'train' because permutation is expensive and the learned patterns.
 			loss_baseline = metrics[key_train]['loss']
@@ -3966,7 +4022,7 @@ class Job(BaseModel):
 			if ((fitted_encoders is not None) and (hasattr(fitted_encoders, 'inverse_transform'))):
 				for split, data in predictions.items():
 					# OHE is arriving here as ordinal, not OHE.
-					data = utils.wrangle.if_1d_make_2d(data)
+					data = if_1d_make_2d(data)
 					predictions[split] = fitted_encoders.inverse_transform(data)
 			elif((fitted_encoders is not None) and (not hasattr(fitted_encoders, 'inverse_transform'))):
 				print(dedent("""
@@ -4019,7 +4075,7 @@ class Job(BaseModel):
 						data_subset = data[:,:num_matching_columns]
 						
 						# Decode that slice.
-						data_subset = utils.wrangle.if_1d_make_2d(data_subset)
+						data_subset = if_1d_make_2d(data_subset)
 						data_subset = fitted_encoder.inverse_transform(data_subset)
 						# Then concatenate w previously decoded columns.
 						if (i==0):
@@ -4130,15 +4186,9 @@ class Job(BaseModel):
 		return prediction
 
 
-	def run(
-		id:int
-		, repeat_index:int
-		, samples:dict
-		, input_shapes:dict
-		, key_train:str
-		, key_evaluation:str=None
-	):
+	def run(id:int, repeat_index:int):
 		job = Job.get_by_id(id)
+		fold = job.fold
 		queue = job.queue
 		splitset = queue.splitset
 		algorithm = queue.algorithm
@@ -4147,27 +4197,34 @@ class Job(BaseModel):
 		hyperparamcombo = job.hyperparamcombo
 		time_started = timezone_now()
 
-		if (key_evaluation is not None):
-			samples_eval = samples[key_evaluation]
-		elif (key_evaluation is None):
-			samples_eval = None
-
 		if (hyperparamcombo is not None):
 			hp = hyperparamcombo.hyperparameters
 		elif (hyperparamcombo is None):
 			hp = {} #`**` cannot be None.
 
 		fn_build = utils.dill.deserialize(algorithm.fn_build)
-		# pytorch multiclass has a single ordinal label.
-		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
-			num_classes = len(splitset.label.unique_classes)
-			model = fn_build(input_shapes['features_shape'], num_classes, **hp)
+
+		# Fetch the training and evaluation data from the cache.
+		key_trn = splitset.key_train
+		train_label, label_shape = Splitset.fetch_cache(id, fold, key_trn, 'label', library)
+		train_features, features_shapes = Splitset.fetch_cache(id, fold, key_trn, 'features', library)
+		# --- Evaluate ---
+		key_eval = splitset.key_evaluate
+		if (key_eval is not None):
+			eval_label, _ = Splitset.fetch_cache(id, fold, key_eval, 'label', library)
+			eval_features, _ = Splitset.fetch_cache(id, fold, key_eval, 'features', library)
 		else:
-			model = fn_build(
-				input_shapes['features_shape'], input_shapes['label_shape'], **hp
-			)
+			eval_label = None
+			eval_features = None
+
+
+		# PyTorch softmax needs ordinal format, not OHE.
+		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
+			label_shape = len(splitset.label.unique_classes)
+		model = fn_build(features_shapes, label_shape, **hp)
 		if (model is None):
 			raise Exception("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
+
 		# The model and optimizer get combined during training.
 		fn_lose = utils.dill.deserialize(algorithm.fn_lose)
 		fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
@@ -4186,12 +4243,10 @@ class Job(BaseModel):
 
 		if (library == "keras"):
 			model = fn_train(
-				model = model
-				, loser = loser
-				, optimizer = optimizer
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples_eval
-				, **hp
+				model, loser, optimizer,
+				train_features, train_label,
+				eval_features, eval_label,
+				**hp
 			)
 			if (model is None):
 				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
@@ -4210,24 +4265,19 @@ class Job(BaseModel):
 			path_models_cache = app_folders['cache_models']
 			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
 			path_full = path.join(path_models_cache,path_file)
-			model.save(
-				path_full
-				, include_optimizer = True
-				, save_format = 'h5'
-			)
+			model.save(path_full, include_optimizer=True, save_format='h5')
 			# Fetch the bytes ('rb': read binary)
 			with open(path_full, 'rb') as file:
 				model_blob = file.read()
 			remove(path_full)
 
 		elif (library == "pytorch"):
+			# The difference is that it returns a tupl with history
 			model, history = fn_train(
-				model = model
-				, loser = loser
-				, optimizer = optimizer
-				, samples_train = samples[key_train]
-				, samples_evaluate = samples_eval
-				, **hp
+				model, loser, optimizer,
+				train_features, train_label,
+				eval_features, eval_label,
+				**hp
 			)
 			if (model is None):
 				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
@@ -4250,6 +4300,7 @@ class Job(BaseModel):
 		time_duration = (time_succeeded - time_started).seconds
 
 		# There's a chance that a duplicate job was running elsewhere and finished first.
+		# Job already accounts for the fold.
 		matching_predictor = Predictor.select().join(Job).join(Queue).where(
 			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
 		if (matching_predictor.count() > 0):
@@ -4263,7 +4314,8 @@ class Job(BaseModel):
 			, time_succeeded = time_succeeded
 			, time_duration = time_duration
 			, model_file = model_blob
-			, input_shapes = input_shapes
+			, features_shapes = features_shapes
+			, label_shape = label_shape
 			, history = history
 			, job = job
 			, repeat_index = repeat_index
@@ -4272,7 +4324,13 @@ class Job(BaseModel):
 
 		# Use the Predictor object to make Prediction and its metrics.
 		try:
-			Job.predict(samples=samples, predictor_id=predictor.id, key_train=key_train)
+			Job.predict(
+				predictor_id = predictor.id
+				, train_features = train_features
+				, train_label = train_label
+				, eval_features = eval_features
+				, eval_label = eval_label
+			)
 		except:
 			predictor.delete_instance()
 			raise
@@ -4285,40 +4343,15 @@ class Job(BaseModel):
 		return job
 
 
-class FittedEncoderset(BaseModel):
-	"""
-	- Job uses this to save the fitted_encoders, which are later used for inference.
-	- Useful for accessing featurecoders for matching_columns, dimensions.
-	- When I added support for multiple Features, updating `Job.fitted_encoders` during
-	  `Job.run()` started to get unmanageable. Especially when you consider that not every
-	  Feature type is guaranteed to have encoders.
-	"""
-	fitted_encoders = PickleField()
-
-	job = ForeignKeyField(Job, backref='fittedencodersets')
-	feature = ForeignKeyField(Feature, backref='fittedencodersets')
-
-
-class FittedLabelCoder(BaseModel):
-	"""
-	- See notes about FittedEncoderset.
-	"""
-	fitted_encoders = PickleField()
-
-	job = ForeignKeyField(Job, backref='fittedlabelcoders')
-	labelcoder = ForeignKeyField(LabelCoder, backref='fittedlabelcoders')
-
-
 class Predictor(BaseModel):
-	"""
-	- Regarding metrics, the label encoder was fit on training split labels.
-	"""
+	"""Regarding metrics, the label encoder was fit on training split labels."""
 	repeat_index = IntegerField()
 	time_started = DateTimeField()
 	time_succeeded = DateTimeField()
 	time_duration = IntegerField()
 	model_file = BlobField()
-	input_shapes = JSONField() # used by get_model()
+	features_shapes = PickleField()#tuple or list of tuples
+	label_shape = PickleField()#tuple
 	history = JSONField()
 	is_starred = BooleanField()
 
@@ -4344,30 +4377,30 @@ class Predictor(BaseModel):
 			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
 			return model
 
-		elif (algorithm.library == 'pytorch'):
+		elif (algorithm.library == "pytorch"):
 			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
 			# Need to initialize the classes first, which requires reconstructing them.
 			if (predictor.job.hyperparamcombo is not None):
 				hp = predictor.job.hyperparamcombo.hyperparameters
 			elif (predictor.job.hyperparamcombo is None):
 				hp = {}
-			features_shape = predictor.input_shapes['features_shape']
-			label_shape = predictor.input_shapes['label_shape']
+			features_shapes = predictor.features_shapes
+			label_shape = predictor.label_shape
 
 			fn_build = utils.dill.deserialize(algorithm.fn_build)
 			fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
 
 			if (algorithm.analysis_type == 'classification_multi'):
 				num_classes = len(predictor.job.queue.splitset.label.unique_classes)
-				model = fn_build(features_shape, num_classes, **hp)
+				model = fn_build(features_shapes, num_classes, **hp)
 			else:
-				model = fn_build(features_shape, label_shape, **hp)
+				model = fn_build(features_shapes, label_shape, **hp)
 			
 			optimizer = fn_optimize(model, **hp)
 
 			model_bytes = BytesIO(model_blob)
 			checkpoint = torch_load(model_bytes)
-			# Don't assign them: `model = model.load_state_dict ...`
+			# Don't assign them: `model = model.load_state_dict()`
 			model.load_state_dict(checkpoint['model_state_dict'])
 			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
@@ -4497,7 +4530,7 @@ class Predictor(BaseModel):
 		predictor = Predictor.get_by_id(id)
 		splitset_old = predictor.job.queue.splitset
 
-		utils.wrangle.schemaNew_matches_schemaOld(splitset_new, splitset_old)
+		schemaNew_matches_schemaOld(splitset_new, splitset_old)
 		library = predictor.job.queue.algorithm.library
 
 		featureset_new = splitset_new.features

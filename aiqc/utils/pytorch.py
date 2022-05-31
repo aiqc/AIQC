@@ -26,24 +26,24 @@ def optimize(model, **hp):
 	return optimizer
 
 # `select_fn_predict()`
-def predict_binary(model, samples_predict):
-	probability = model(samples_predict['features'])
+def predict_binary(model, features):
+	probability = model(features)
 	# Convert tensor back to numpy for AIQC metrics.
 	probability = probability.detach().numpy()
 	prediction = (probability > 0.5).astype("int32")
 	# Both objects are numpy.
 	return prediction, probability
 
-def predict_multiclass(model, samples_predict):
-	probabilities = model(samples_predict['features'])
+def predict_multiclass(model, features):
+	probabilities = model(features)
 	# Convert tensor back to numpy for AIQC metrics.
 	probabilities = probabilities.detach().numpy()
 	prediction = np.argmax(probabilities, axis=-1)
 	# Both objects are numpy.
 	return prediction, probabilities
 
-def predict_regression(model, samples_predict):
-	prediction = model(samples_predict['features']).detach().numpy()
+def predict_regression(model, features):
+	prediction = model(features).detach().numpy()###
 	return prediction
 
 
