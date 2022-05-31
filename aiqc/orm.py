@@ -1345,7 +1345,7 @@ class Label(BaseModel):
 					arr_labels=label_array, samples_train=samples_train, labelcoder=labelcoder
 				)
 				# Save the fit for decoding and inference.
-				item.fitted_labelcoder = fitted_encoders
+				item.fitted_labelcoder = fitted_encoders[0]
 				item.save()
 
 			# Use the encoding_dimension that was defined earlier during labelcoder creation.
@@ -3817,7 +3817,6 @@ class Job(BaseModel):
 
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
-			### the data is changing shape each loop... as the split changes?
 			for split, _ in samples.items():
 				features = fetchFeatures_ifAbsent(
 					splitset=splitset, split=split, fold_id=fold_id, library=library,
@@ -3834,11 +3833,6 @@ class Job(BaseModel):
 						splitset=splitset, split=split, fold_id=fold_id, library=library,
 						train_label=train_label, eval_label=eval_label,
 					)
-					###
-					print(split)
-					print("---Data---")
-					print(label.shape)
-					print(label[0])
 
 					# https://keras.io/api/losses/probabilistic_losses/
 					if (library == 'keras'):
@@ -3858,13 +3852,6 @@ class Job(BaseModel):
 							from sklearn.preprocessing import OneHotEncoder
 							OHE = OneHotEncoder(sparse=False)
 							label = OHE.fit_transform(label)
-
-					###
-					# print("---Preds---")
-					# print(preds.shape)
-
-					# print("---Probs---")
-					# print(probs.shape)
 
 					metrics[split] = utils.meter.split_classification_metrics(
 						label, preds, probs, analysis_type
