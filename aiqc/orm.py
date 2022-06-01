@@ -2544,8 +2544,7 @@ class Splitset(BaseModel):
 			elif (splitset.fold_count > 0):
 				folds = list(splitset.folds)
 				# Each fold will contain unique, reusable data.
-				for fold in tqdm(folds, desc="🧺 Preparing Folds 🧺", ncols=100):
-					stage_data(splitset, fold=fold)
+				[stage_data(splitset, fold=fold) for fold in folds]
 	
 
 	def clear_cache(id:int):
@@ -3491,7 +3490,7 @@ class Queue(BaseModel):
 		elif (fold_count > 0):
 			for fold in splitset.folds:
 				idx = fold.fold_index
-				repeated_jobs = [] #tuple:(repeat_index, job, fold)
+				repeated_jobs = [] #tuple for each fold:(repeat_index, job)
 				jobs = [j for j in queue.jobs if j.fold==fold]
 				
 				for r in range(queue.repeat_count):
@@ -3500,7 +3499,7 @@ class Queue(BaseModel):
 				try:
 					for rj in tqdm(
 						repeated_jobs
-						, desc = f"🔮 Training: Fold {idx+1} of {fold_count} 🔮"
+						, desc = f"🔮 Training Models - Fold #{idx+1} 🔮"
 						, ncols = 100
 					):
 						# See if this job has already completed. Keeps the tqdm intact.

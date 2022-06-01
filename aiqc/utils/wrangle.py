@@ -7,6 +7,7 @@ from textwrap import dedent
 import numpy as np
 import pandas as pd
 from torch import FloatTensor
+from tqdm import tqdm #progress bar.
 
 
 def listify(supposed_lst:object=None):
@@ -352,13 +353,16 @@ def stage_data(splitset:object, fold:object):
 	path_splitset = splitset.cache_path
 	if (fold is not None):
 		samples = fold.samples
-		fold_idx = f"fold_{fold.fold_index}"
+		idx = fold.fold_index
+		fold_idx = f"fold_{idx}"
 		path_fold = path.join(path_splitset, fold_idx)
 		create_folder(path_fold)
+		fold_progress = f"📦 Caching Splits - Fold #{idx+1} 📦"
 	else:
 		samples = splitset.samples
 		path_fold = path.join(path_splitset, "no_fold")
 		create_folder(path_fold)
+		fold_progress = "📦 Caching Splits 📦"
 	key_train = splitset.key_train#fold-aware.
 	"""
 	- Remember, you `.fit()` on either training data or the entire dataset (categoricals).
@@ -416,7 +420,9 @@ def stage_data(splitset:object, fold:object):
 	"""
 	create_folder(path_splitset)
 
-	for split, indices in samples.items():
+	for split, indices  in tqdm(
+		samples.items(), desc=fold_progress, ncols=100
+	):	
 		path_split = path.join(path_fold, split)
 		create_folder(path_split)
 
