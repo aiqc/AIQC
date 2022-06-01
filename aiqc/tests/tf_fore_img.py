@@ -1,6 +1,7 @@
 """TensorFlow Forecasting with Image data"""
 # Internal modules
-from ..orm import *
+from ..mlops import Pipeline, Input, Stratifier, Experiment, Architecture, Trainer
+from ..orm import Dataset
 from ..utils.encoding import div255, mult255
 # External modules
 import tensorflow as tf
@@ -37,7 +38,12 @@ def fn_build(features_shape, label_shape, **hp):
 	return m
 
 
-def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+def fn_train(
+	model, loser, optimizer,
+	train_features, train_label,
+	eval_features, eval_label,
+	**hp
+):
 	model.compile(
 		optimizer=optimizer
 		, loss=loser
@@ -45,12 +51,8 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	)
 	
 	model.fit(
-		samples_train["features"]
-		, samples_train["labels"]
-		, validation_data = (
-			samples_evaluate["features"]
-			, samples_evaluate["labels"]
-		)
+		train_features, train_label
+		, validation_data = (eval_features, eval_label)
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, callbacks=[tf.keras.callbacks.History()]
@@ -60,65 +62,53 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 
 
 
-def make_queue(repeat_count:int=1, fold_count:int=None):
-	folder_path = 'remote_datum/image/liberty_moon/images'
-	di_id = Dataset.Image.from_folder_pillow(
-		folder_path=folder_path, ingest=False, dtype='float64'
-	).id
-
-	f_id = Feature.from_dataset(dataset_id=di_id).id
-	Window.from_feature(feature_id=f_id, size_window=1, size_shift=2)
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, sklearn_preprocess = FunctionTransformer(div255, inverse_func=mult255)
-		, dtypes = 'float64'
-	)
-	FeatureShaper.from_feature(feature_id=f_id, reshape_indices=(0,3,4))
-
-	if (fold_count is not None):
-		size_test = 0.15
-		size_validation = None
-	elif (fold_count is None):
-		size_test = 0.15
-		size_validation = None#small dataset
-
-	s_id = Splitset.make(
-		feature_ids = [f_id]
-		, size_test = size_test
-		, size_validation = size_validation
-	).id
-
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id=s_id, fold_count=fold_count
-		).id
-	else:
-		fs_id = None
-
-	a_id = Algorithm.make(
-		library = "keras"
-		, analysis_type = "regression"
-		, fn_build = fn_build
-		, fn_train = fn_train
-	).id
-
+def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=None):
 	hyperparameters = dict(
-		epoch_count = [12]
+		epoch_count  = [12]
 		, batch_size = [3]
-		, cnn_init = ['he_normal']
+		, cnn_init   = ['he_normal']
 		, activation = ['relu']
 		, multiplier = [3]
 	)
-	h_id = Hyperparamset.from_algorithm(
-		algorithm_id=a_id, hyperparameters=hyperparameters
-	).id
-
-	queue = Queue.from_algorithm(
-		algorithm_id = a_id
-		, splitset_id = s_id
-		, foldset_id = fs_id
-		, hyperparamset_id = h_id
-		, repeat_count = repeat_count
+	
+	
+	folder_path = 'remote_datum/image/liberty_moon/images'
+	dataset = Dataset.Image.from_folder_pillow(
+		folder_path=folder_path, ingest=False, dtype='float64'
 	)
-	return queue
+
+	pipeline = Pipeline(
+		inputs = Input(
+			dataset  = dataset,
+			window = Input.Window(size_window=1, size_shift=2),
+			encoders = Input.Encoder(
+				FunctionTransformer(div255, inverse_func=mult255),
+				dtypes = 'float64'
+			),
+			reshape_indices = (0,3,4)
+		),
+		
+		stratifier = Stratifier(
+			size_test       = 0.11, 
+			size_validation = 0.21,
+			fold_count      = fold_count
+		)
+	)
+
+	experiment = Experiment(
+		Architecture(
+			library           = "keras"
+			, analysis_type   = "regression"
+			, fn_build        = fn_build
+			, fn_train        = fn_train
+			, hyperparameters = hyperparameters
+		),
+		
+		Trainer(
+			pipeline_id       = pipeline.id
+			, repeat_count    = repeat_count
+			, permute_count   = permute_count
+			, search_percent  = None
+		)
+	)
+	return experiment

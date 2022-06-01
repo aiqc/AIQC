@@ -3040,7 +3040,7 @@ class FeatureShaper(BaseModel):
 
 	def from_feature(feature_id:int, reshape_indices:tuple):
 		feature = Feature.get_by_id(feature_id)
-		if (feature.featureshapes.count()>0):
+		if (feature.featureshapers.count()>0):
 			msg = "\nYikes - Feature can only have 1 FeatureShaper.\n"
 			raise Exception(msg)
 		# Determines the `column_position`, which gets confirmed during preprocess().

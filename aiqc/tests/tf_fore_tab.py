@@ -1,6 +1,6 @@
 """TensorFlow Forecasting with Tabular data"""
 # Internal modules
-from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
+from ..mlops import Pipeline, Input, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..orm import Dataset
 # External modules
@@ -13,6 +13,7 @@ import numpy as np
 def fn_build(features_shape, label_shape, **hp):
 	m = tf.keras.models.Sequential()
 	# `l.Input(shape=features_shape)` not working as expected.
+	# Warns about multi-tensor layers.
 	m(l.GRU(hp['neuron_count'], input_shape=features_shape, return_sequences=False, activation='tanh'))
 	# Automatically flattens.
 	m(l.Dense(label_shape[0]*label_shape[1]*hp['dense_multiplier'], activation='tanh'))
@@ -60,11 +61,11 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	df['temperature'][0] = np.NaN
 	df['temperature'][13] = np.NaN
 	
-	shared_dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
 	pipeline = Pipeline(
 		inputs = Input(
-			dataset  = shared_dataset,
+			dataset  = dataset,
 			interpolaters = Input.Interpolater(dtypes=['float64']),
 			window = Input.Window(size_window=28, size_shift=14),
 			encoders = [
