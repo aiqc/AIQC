@@ -3885,7 +3885,8 @@ class Job(BaseModel):
 					splitset=splitset, split=split, fold_id=fold_id, library=library,
 					train_features=train_features, eval_features=eval_features
 				)
-				preds, probs = fn_predict(model, features)
+				# Does not return `preds, probs`
+				preds = fn_predict(model, features)
 				predictions[split] = preds
 				# Outputs numpy.
 
