@@ -2,7 +2,7 @@
 # Internal modules
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
-from ..orm import *
+from ..orm import Dataset
 # External modules
 import tensorflow as tf
 import tensorflow.keras.layers as l
@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler, RobustScaler, OneHotEncoder
 
 def fn_build(features_shape, label_shape, **hp):
 	m = tf.keras.models.Sequential()
-	m.add(l.Input(shape=features_shape[-1]))
+	m.add(l.Input(shape=features_shape))
 	m.add(l.Dense(units=hp['neuron_count'], activation='relu', kernel_initializer='he_uniform'))
 	m.add(l.Dropout(0.2))
 	m.add(l.Dense(units=label_shape[-1], activation='softmax'))

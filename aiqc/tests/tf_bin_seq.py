@@ -11,24 +11,29 @@ import numpy as np
 
 
 def fn_build(features_shape, label_shape, **hp):    
+	# features_shape = samples, rows, columns
+	# label_shape = samples, columns
 	m = tf.keras.models.Sequential()
-	m.add(l.LSTM(
-		hp['neuron_count']
-		, input_shape=(features_shape[0], features_shape[1])
-	))
-	m.add(l.Dense(units=label_shape[0], activation='sigmoid'))
+	m.add(l.Input(shape=features_shape))
+	m.add(l.LSTM(hp['neuron_count']))
+	m.add(l.Dense(units=label_shape[-1], activation='sigmoid'))
 	return m
 
 
-def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+def fn_train(
+	model, loser, optimizer,
+	train_features, train_label,
+	eval_features, eval_label,
+	**hp
+):
 	model.compile(
 		loss=loser
 		, optimizer=optimizer
 		, metrics=['accuracy']
 	)
 	model.fit(
-		samples_train['features'], samples_train['labels']
-		, validation_data = (samples_evaluate['features'], samples_evaluate['labels'])
+		train_features, train_label
+		, validation_data = (eval_features, eval_label)
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, epochs = hp['epochs']

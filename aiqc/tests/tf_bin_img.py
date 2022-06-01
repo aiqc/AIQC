@@ -1,8 +1,9 @@
 """TensorFlow Binary Classification with Image data"""
 # Internal modules
+from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..utils.tensorflow import TrainingCallback
-from ..orm import *
+from ..orm import Dataset
 # External modules
 import tensorflow as tf
 import tensorflow.keras.layers as l
@@ -14,11 +15,11 @@ def fn_build(features_shape, label_shape, **hp):
 	# https://keras.io/api/layers/reshaping_layers/reshape/
 	# https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv1D
 	# Conv1D shape = `batch_shape + (steps, input_dim)`
+	m.add(l.Input(shape=features_shape))
+	# drop channels
 	m.add(l.Reshape(
-		(features_shape[1],features_shape[2])#,features_shape[0])#dropping
-		, input_shape=features_shape)
-	)
-
+		(features_shape[1],features_shape[2])
+	))
 	m.add(l.Conv1D(128*hp['neuron_multiply'], kernel_size=hp['kernel_size'], input_shape=features_shape, padding='same', activation='relu', kernel_initializer=hp['cnn_init']))
 	m.add(l.MaxPooling1D(pool_size=hp['pool_size']))
 	m.add(l.Dropout(hp['dropout']))
@@ -33,11 +34,16 @@ def fn_build(features_shape, label_shape, **hp):
 	if hp['include_2nd_dense'] == True:
 		m.add(l.Dense(hp['2nd_dense_neurons'], activation='relu'))
 
-	m.add(l.Dense(units=label_shape[0], activation='sigmoid'))
+	m.add(l.Dense(units=label_shape[-1], activation='sigmoid'))
 	return m
 
 
-def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):   
+def fn_train(
+	model, loser, optimizer,
+	train_features, train_label,
+	eval_features, eval_label,
+	**hp
+):
 	model.compile(
 		optimizer=optimizer
 		, loss=loser
@@ -53,12 +59,8 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	cutoffs = TrainingCallback.MetricCutoff(metrics_cuttoffs)
 	
 	model.fit(
-		samples_train["features"]
-		, samples_train["labels"]
-		, validation_data = (
-			samples_evaluate["features"]
-			, samples_evaluate["labels"]
-		)
+		train_features, train_label
+		, validation_data = (eval_features, eval_label)
 		, verbose = 0
 		, batch_size = hp['batch_size']
 		, callbacks=[tf.keras.callbacks.History(), cutoffs]
@@ -67,7 +69,7 @@ def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
 	return model
 
 
-def make_queue(repeat_count:int=1, fold_count:int=None):
+def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=None):
 	hyperparameters = {
 		"include_2nd_dense": [True]
 		, "neuron_multiply": [1.0]
@@ -77,59 +79,49 @@ def make_queue(repeat_count:int=1, fold_count:int=None):
 		, "dropout": [0.4]
 		, "batch_size": [8]
 		, "kernel_size": [3]
-		, "dense_neurons": [32]
-		, "2nd_dense_neurons": [16]
+		, "dense_neurons": [24]
+		, "2nd_dense_neurons": [9]
 		, "cnn_init": ['he_normal']
 	}
 
 	df = datum.to_pandas(name='brain_tumor.csv')
-	# Dataset.Tabular
-	dt_id = Dataset.Tabular.from_pandas(dataframe=df).id
-	l_id = Label.from_dataset(dataset_id=dt_id, columns=['status']).id
+	label_dataset = Dataset.Tabular.from_pandas(dataframe=df)
 
-	# Dataset.Image
 	# Takes a while to run, but it tests both `from_urls` and `datum` functionality
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	di_id = Dataset.Image.from_urls_pillow(urls=image_urls).id
-	f_id = Feature.from_dataset(dataset_id=di_id).id
+	feature_dataset = Dataset.Image.from_urls_pillow(urls=image_urls)
 	
-	if (fold_count is not None):
-		size_test = 0.25
-		size_validation = None
-	elif (fold_count is None):
-		size_test = 0.18
-		size_validation = 0.14
-
-	s_id = Splitset.make(
-		feature_ids = [f_id]
-		, label_id = l_id
-		, size_test = size_test
-		, size_validation = size_validation
-	).id
-
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id=s_id, fold_count=fold_count
-		).id
-	else:
-		fs_id = None
-
-	a_id = Algorithm.make(
-		library = "keras"
-		, analysis_type = "classification_binary"
-		, fn_build = fn_build
-		, fn_train = fn_train
-	).id
-
-	h_id = Hyperparamset.from_algorithm(
-		algorithm_id=a_id, hyperparameters=hyperparameters
-	).id
-
-	queue = Queue.from_algorithm(
-		algorithm_id = a_id
-		, splitset_id = s_id
-		, foldset_id = fs_id
-		, hyperparamset_id = h_id
-		, repeat_count = repeat_count
+	pipeline = Pipeline(
+		Input(
+			dataset  = feature_dataset
+		),
+		
+		Target(
+			dataset = label_dataset,
+			column = "status"
+		),
+		
+		Stratifier(
+			size_test       = 0.11, 
+			size_validation = 0.21,
+			fold_count      = fold_count
+		)    
 	)
-	return queue
+
+	experiment = Experiment(
+		Architecture(
+			library           = "keras"
+			, analysis_type   = "classification_binary"
+			, fn_build        = fn_build
+			, fn_train        = fn_train
+			, hyperparameters = hyperparameters
+		),
+		
+		Trainer(
+			pipeline_id       = pipeline.id
+			, repeat_count    = repeat_count
+			, permute_count   = permute_count
+			, search_percent  = None
+		)
+	)
+	return experiment

@@ -13,7 +13,7 @@ import numpy as np
 
 def fn_build(features_shape, label_shape, **hp):
 	m = tf.keras.models.Sequential()
-	m.add(l.Input(features_shape[-1]))
+	m.add(l.Input(features_shape))
 	m.add(l.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))
 	m.add(l.Dropout(0.15))
 	m.add(l.Dense(units=hp['neuron_count'], kernel_initializer='normal', activation='relu'))

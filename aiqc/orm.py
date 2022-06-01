@@ -2566,8 +2566,10 @@ class Splitset(BaseModel):
 		, library:str=None
 	):
 		"""
-		Wanted to do this w/o queries, but getting features requires splitset,
-		and I was if'ing for fold_index in multiple places.
+		- Wanted to do this w/o queries, but getting features requires splitset,
+		  and I was if'ing for fold_index in multiple places.
+		- Shape is only for a single sample. Including all samples is useless, 
+		  especially since batch is injected.
 		"""
 		splitset = Splitset.get_by_id(id)
 		
@@ -2583,7 +2585,7 @@ class Splitset(BaseModel):
 			data = path.join(path_split, "label.npy")
 			data = np.load(data)
 			data = conditional_torch(data, library)
-			shape = data.shape
+			shape = data[0].shape
 		
 		elif (label_features=='features'):
 			data = []
@@ -2592,7 +2594,7 @@ class Splitset(BaseModel):
 				f = f"feature_{e}.npy"
 				f = path.join(path_split, f)
 				f = np.load(f)
-				shape.append(f.shape)
+				shape.append(f[0].shape)
 				f = conditional_torch(f, library)
 				data.append(f)
 				
@@ -3422,6 +3424,10 @@ class Queue(BaseModel):
 
 		# The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
 		run_count = len(combos) * len(folds) * repeat_count
+
+		# Handles when overrides default to be None
+		if (permute_count is None):
+			permute_count = 0
 
 		queue = Queue.create(
 			run_count = run_count
