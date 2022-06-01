@@ -3935,15 +3935,16 @@ class Job(BaseModel):
 						they cannot be decoded because the `sklearn.preprocessing`
 						encoder used does not have `inverse_transform`.
 					"""))
-		
 		elif (supervision=='unsupervised'):
 			"""
 			- Decode the unsupervised predictions back into original (reshaped) Features.
-			- Unsupervised prevents multiple features.
+			- Can't have multiple features with unsupervised.
 			"""
 			# Remember `fitted_encoders` is a list of lists.
 			feature = splitset.features[0]
+			featurecoders = feature.featurecoders
 			fitted_featurecoders = feature.fitted_featurecoders
+
 			if (fitted_featurecoders is not None):
 				for split, data in predictions.items():
 					# Make sure it is 2D.
@@ -3958,7 +3959,7 @@ class Job(BaseModel):
 						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
 
 					encoded_column_names = []
-					for i, fc in enumerate(fitted_featurecoders):
+					for i, fc in enumerate(featurecoders):
 						# Figure out the order in which columns were encoded.
 						# This `[0]` assumes that there is only 1 fitted encoder in the list; that 2D fit succeeded.
 						fitted_encoder = fitted_featurecoders[i][0]
@@ -3987,7 +3988,7 @@ class Job(BaseModel):
 						# So we can continue to access the next cols via `num_matching_columns`.
 						data = np.delete(data, np.s_[0:num_matching_columns], axis=1)
 					# Check for and merge any leftover columns.
-					leftover_columns = fitted_featurecoders[-1].leftover_columns
+					leftover_columns = featurecoders[-1].leftover_columns
 					if (len(leftover_columns)>0):
 						[encoded_column_names.append(c) for c in leftover_columns]
 						decoded_data = np.concatenate((decoded_data, data), axis=1)

@@ -78,6 +78,11 @@ class Input:
 			self.dtypes        		  = listify(dtypes)
 			self.columns       		  = listify(columns)
 	
+	class Window:
+		def __init__(self, size_window:int, size_shift:int):
+			self.size_window = size_window
+			self.size_shift = size_shift
+	
 	class Encoder:
 		def __init__(
 			self
@@ -153,7 +158,8 @@ class Pipeline:
 			# Window needs to be created prior to Splitset because it influences `samples`
 			window = i.window
 			if (window is not None):
-				Window.from_feature(feature_id=f_id, **window)
+				kwargz = window.__dict__
+				Window.from_feature(feature_id=f_id, **kwargz)
 			
 			encoders = i.encoders
 			if (encoders is not None):					
