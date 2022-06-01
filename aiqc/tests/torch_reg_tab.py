@@ -1,8 +1,9 @@
 """PyTorch Regression with Tabular data"""
 # Internal modules
+from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..utils.pytorch import fit
-from ..orm import *
+from ..orm import Dataset
 # External modules
 import torch
 import torch.nn as nn
@@ -12,7 +13,8 @@ from sklearn.preprocessing import PowerTransformer, MinMaxScaler, OrdinalEncoder
 
 def fn_lose(**hp):
 	if (hp['loss_type'] == 'mae'):
-		loser = nn.L1Loss()#mean absolute error.
+		# Same thng as mean absolute error.
+		loser = nn.L1Loss()
 	elif (hp['loss_type'] == 'mse'):
 		loser = nn.MSELoss()
 	return loser	
@@ -36,97 +38,84 @@ def fn_build(features_shape, label_shape, **hp):
 	return model
 
 
-def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+def fn_train(
+	model, loser, optimizer,
+	train_features, train_label,
+	eval_features, eval_label,
+	**hp
+):
 	return fit(
 		model, loser, optimizer, 
-		samples_train, samples_evaluate,
+		train_features, train_label,
+		eval_features, eval_label,
 		epochs=10, batch_size=5,
 		metrics=[tm.MeanSquaredError(),tm.R2Score(), tm.ExplainedVariance()]
 	)
 
 
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
-	file_path = datum.get_path('houses.csv')
-
-	d_id = Dataset.Tabular.from_path(
-		file_path = file_path
-		, source_file_format = 'csv'
-		, name = 'real estate stats'
-		, dtype = None
-	).id
-	
-	label_column = 'price'
-	l_id = Label.from_dataset(dataset_id=d_id, columns=[label_column]).id
-	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
-
-	if (fold_count is not None):
-		size_test = 0.25
-		size_validation = None
-	elif (fold_count is None):
-		size_test = 0.18
-		size_validation = 0.14
-
-	s_id = Splitset.make(
-		feature_ids = [f_id]
-		, label_id = l_id
-		, size_test = size_test
-		, size_validation = size_validation
-		, bin_count = None #test.
-	).id
-
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id = s_id
-			, fold_count = fold_count
-			, bin_count = 3
-		).id
-	else:
-		fs_id = None
-
-	LabelCoder.from_label(
-		label_id = l_id
-		, sklearn_preprocess = PowerTransformer(method='box-cox', copy=False)
-	).id
-
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, include = False
-		, dtypes = ['int64']
-		, sklearn_preprocess = MinMaxScaler(copy=False)
-	)
-	# Expect double None to use all columns because nothing is excluded.
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, include = False
-		, dtypes = None
-		, columns = None
-		, sklearn_preprocess = OrdinalEncoder()
-	)		
-
-	a_id = Algorithm.make(
-		library = "pytorch"
-		, analysis_type = "regression"
-		, fn_build = fn_build
-		, fn_train = fn_train
-		, fn_lose = fn_lose
-	).id
-
 	hyperparameters = {
 		"neuron_count": [22]
 		, "loss_type": ["mae","mse"]
 	}
-	h_id = Hyperparamset.from_algorithm(
-		algorithm_id=a_id, hyperparameters=hyperparameters
-	).id
+	
+	file_path = datum.get_path('houses.csv')
 
-	queue = Queue.from_algorithm(
-		algorithm_id = a_id
-		, splitset_id = s_id
-		, foldset_id = fs_id
-		, hyperparamset_id = h_id
-		, repeat_count = repeat_count
-		, permute_count = permute_count
+	shared_dataset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
+		, name = 'real estate stats'
+		, dtype = None
 	)
-	return queue
+
+	pipeline = Pipeline(
+		Input(
+			dataset  = shared_dataset,
+			encoders = [
+				Input.Encoder(
+					MinMaxScaler(copy=False)
+					, include = False
+					, dtypes = ['int64']
+				),
+				Input.Encoder(
+					OrdinalEncoder()
+					, include = False
+					, dtypes = None
+					, columns = None
+				),
+			]
+		),
+
+		Target(
+			dataset = shared_dataset,
+			column  = 'price',
+			encoder = Target.Encoder(
+				PowerTransformer(method='box-cox', copy=False)
+			)
+		),
+
+		Stratifier(
+			size_test       = 0.11, 
+			size_validation = 0.21,
+			fold_count      = fold_count
+		)
+	)
+
+	experiment = Experiment(
+		Architecture(
+			library           = "pytorch"
+			, analysis_type   = "regression"
+			, fn_build        = fn_build
+			, fn_train        = fn_train
+			, hyperparameters = hyperparameters
+		),
+		
+		Trainer(
+			pipeline_id       = pipeline.id
+			, repeat_count    = repeat_count
+			, permute_count   = permute_count
+			, search_percent  = None
+		)
+	)
+	return experiment
+	

@@ -3,7 +3,7 @@
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..utils.pytorch import fit
-from ..orm import *
+from ..orm import Dataset
 # External modules
 import torch.nn as nn
 import torchmetrics as tm
