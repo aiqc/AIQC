@@ -23,7 +23,7 @@ def fn_lose(**hp):
 def fn_build(features_shape, label_shape, **hp):
 	nc = hp['neuron_count']
 	model = torch.nn.Sequential(
-		nn.Linear(features_shape[0], nc),
+		nn.Linear(features_shape[-1], nc),
 		nn.BatchNorm1d(nc,nc),
 		nn.ReLU(),
 		nn.Dropout(p=0.4),
@@ -33,7 +33,7 @@ def fn_build(features_shape, label_shape, **hp):
 		nn.ReLU(),
 		nn.Dropout(p=0.4),
 
-		nn.Linear(nc, label_shape[0])
+		nn.Linear(nc, label_shape[-1])
 	)
 	return model
 

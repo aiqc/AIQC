@@ -1,109 +1,102 @@
 """PyTorch Binary Classification with Tabular data"""
 # Internal modules
+from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..utils.pytorch import fit
-from ..orm import *
+from ..orm import Dataset
 # External modules
 import torch.nn as nn
+from torch.optim import Adamax
 import torchmetrics as tm
 from sklearn.preprocessing import PowerTransformer, LabelBinarizer
 
 
 def fn_build(features_shape, label_shape, **hp):
 	model = nn.Sequential(
-		nn.Linear(features_shape[0], 12),
+		nn.Linear(features_shape[-1], 12),
 		nn.BatchNorm1d(12,12),
 		nn.ReLU(),
 		nn.Dropout(p=0.5),
 
-		nn.Linear(12, label_shape[0]),
+		nn.Linear(12, label_shape[-1]),
 		nn.Sigmoid()
 	)
 	return model
 
 
 def fn_optimize(model, **hp):
-	optimizer = torch.optim.Adamax(
+	optimizer = Adamax(
 		model.parameters(), lr=hp['learning_rate']
 	)
 	return optimizer
 
 
-def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
+def fn_train(
+	model, loser, optimizer,
+	train_features, train_label,
+	eval_features, eval_label,
+	**hp
+):
 	return fit(
 		model, loser, optimizer, 
-		samples_train, samples_evaluate,
-		epochs=hp['epoch_count'], batch_size=10,
+		train_features, train_label,
+		eval_features, eval_label,
+		epochs=hp['epoch_count'], batch_size=5,
 		metrics=[tm.Accuracy(),tm.F1Score()]
 	)
 
 
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
-	file_path = datum.get_path('sonar.csv')
-	
-	d_id = Dataset.Tabular.from_path(
-		file_path = file_path
-		, source_file_format = 'csv'
-		, name = 'rocks n radio'
-		, dtype = None
-	).id
-	
-	label_column = 'object'
-	l_id = Label.from_dataset(dataset_id=d_id, columns=label_column).id
-	LabelCoder.from_label(
-		label_id=l_id, sklearn_preprocess=LabelBinarizer(sparse_output=False)
-	)
-
-	f_id = Feature.from_dataset(dataset_id=d_id, exclude_columns=[label_column]).id
-	e_id = Encoderset.from_feature(feature_id=f_id).id
-	FeatureCoder.from_encoderset(
-		encoderset_id = e_id
-		, sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)
-		, dtypes = ['float64']
-	).id
-
-	if (fold_count is not None):
-		size_test = 0.25
-		size_validation = None
-	elif (fold_count is None):
-		size_test = 0.18
-		size_validation = 0.14
-
-	s_id = Splitset.make(
-		feature_ids = [f_id]
-		, label_id = l_id
-		, size_test = size_test
-		, size_validation = size_validation
-	).id
-
-	if (fold_count is not None):
-		fs_id = Foldset.from_splitset(
-			splitset_id=s_id, fold_count=fold_count
-		).id
-	else:
-		fs_id = None
-
-	a_id = Algorithm.make(
-		library = "pytorch"
-		, analysis_type = "classification_binary"
-		, fn_build = fn_build
-		, fn_train = fn_train
-	).id
-
 	hyperparameters = {
 		"learning_rate": [0.01]
 		, "epoch_count": [10]
 	}
-	h_id = Hyperparamset.from_algorithm(
-		algorithm_id=a_id, hyperparameters=hyperparameters
-	).id
-
-	queue = Queue.from_algorithm(
-		algorithm_id = a_id
-		, splitset_id = s_id
-		, foldset_id = fs_id
-		, hyperparamset_id = h_id
-		, repeat_count = repeat_count
-		, permute_count = permute_count
+	
+	file_path = datum.get_path('sonar.csv')
+	
+	shared_dataset = Dataset.Tabular.from_path(
+		file_path = file_path
+		, source_file_format = 'csv'
+		, name = 'rocks n radio'
+		, dtype = None
 	)
-	return queue
+
+	pipeline = Pipeline(
+		Input(
+			dataset  = shared_dataset,
+			encoders = Input.Encoder(
+				PowerTransformer(method='yeo-johnson', copy=False),
+				dtypes = ['float64']
+			)
+		),
+
+		Target(
+			dataset = shared_dataset,
+			column  = 'object',
+			encoder = Target.Encoder(LabelBinarizer(sparse_output=False))
+		),
+
+		Stratifier(
+			size_test       = 0.11, 
+			size_validation = 0.21,
+			fold_count      = fold_count
+		)
+	)
+	
+	experiment = Experiment(
+		Architecture(
+			library           = "pytorch"
+			, analysis_type   = "classification_binary"
+			, fn_build        = fn_build
+			, fn_train        = fn_train
+			, hyperparameters = hyperparameters
+		),
+		
+		Trainer(
+			pipeline_id       = pipeline.id
+			, repeat_count    = repeat_count
+			, permute_count   = permute_count
+			, search_percent  = None
+		)
+	)
+	return experiment

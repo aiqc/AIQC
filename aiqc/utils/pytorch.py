@@ -127,7 +127,7 @@ def shuffle_batches(features:list, label:list):
 	shuffle(rand_idx)
 	
 	label = [label[i] for i in rand_idx]
-	# This one doesn't need anything special for multiple features
+	# This time multiple features don't need special treatment.
 	features = [features[i] for i in rand_idx]
 	return features, label
 
@@ -138,14 +138,21 @@ def flatten_uniColumn(tzr:object):
 	return tzr
 
 
-def float_to_int(tzr:object):
-	"""Handles float/int incosistencies of torch's loss and torchmetrics' scoring."""
+def flip_floatInt(tzr:object):
+	"""
+	Handles float/int incosistencies of torch's loss and torchmetrics' scoring.
+	For example binary classify (model/loser=float) but (torchmetric_accuracy=int)
+	"""
 	if (tzr.type()=='torch.FloatTensor'):
+		# Sample to see if floats are ints decimals e.g. `2.`
+		# `float(0).is_integer()==True`
 		if all([float(i).is_integer() for i in tzr[:3]]):
 			return tzr.to(torch.int64)
-			# ^ Sample to see if floats are actually categorical ints `float(0).is_integer()==True`
 		else:
 			raise Exception(f"\nYikes - Scoring failed on {tzr.type()}.\nDid not attempt as int64 because tensor contained non-zero decimals.\n")
+	elif (tzr.type()=='torch.LongTensor'):
+		return tzr.to(torch.float32)
+
 	else:
 		raise Exception(f"\nYikes - Scoring failed because {tzr.type()} type not supported.\n")
 
@@ -195,7 +202,7 @@ def fit(
 	  dimensionality and type of the data for loss and metrics.
 	- However, performance-wise, that would still require a lot of if statements. 
 	- The `try` approach is more future-proof.
-	- `flatten()` works on any dimension, even 1D.
+	- `flatten()` succeeds on any dimension, even 1D.
 	- Remember, multi-label  PyTorch uses ordinal labels, but OHE output probabilities.
 	  It wants to compare 2D probabilities to 1D ordinal labels.
 	- Unsupervised analysis either succeeds as 2D+ or fails. MSE works on 3D data, but r2 fails. 
@@ -217,22 +224,23 @@ def fit(
 			except:
 				# Known exception: multi classify fails on 2D and floats
 				batch_label = flatten_uniColumn(batch_label)
-				batch_label = float_to_int(batch_label)
+				batch_label = flip_floatInt(batch_label)
 				batch_loss = loser(batch_probability, batch_label)
 			# Backpropagation.
 			optimizer.zero_grad()
 			batch_loss.backward()
 			optimizer.step()
-
+		
 		## --- Epoch Loss ---
-		# Known exception: multi classify fails on floats
 		train_probability = model(train_features)
 		train_probability = flatten_uniColumn(train_probability)
 		train_label = flatten_uniColumn(train_label)
 		try:
 			train_loss = loser(train_probability, train_label)
 		except:
-			train_label = float_to_int(train_label)
+			# Known exception: multi classify fails on float
+			# Known exception: binary classify fails on int. dangerous with below.
+			train_label = flip_floatInt(train_label)
 			train_loss = loser(train_probability, train_label)
 		history['loss'].append(float(train_loss))
 
@@ -242,17 +250,17 @@ def fit(
 		try:
 			eval_loss = loser(eval_probability, eval_label)
 		except:
-			eval_label = float_to_int(eval_label)
+			eval_label = flip_floatInt(eval_label)
 			eval_loss = loser(eval_probability, eval_label)
 		history['val_loss'].append(float(eval_loss))
 
 		## --- Epoch Metrics ---
-		# Known exception: binary classify accuracy fails on floats.
+		# Known exception: binary classify accuracy fails on float. dangerous with above.
 		for i, m in enumerate(metrics):
 			try:
 				train_m = m(train_probability, train_label)
 			except:
-				train_label = float_to_int(train_label)
+				train_label = flip_floatInt(train_label)
 				train_m = m(train_probability, train_label)
 			metrics_key = metrics_keys[i][0]
 			history[metrics_key].append(float(train_m))
@@ -260,7 +268,7 @@ def fit(
 			try:
 				eval_m = m(eval_probability, eval_label)
 			except:
-				eval_label = float_to_int(eval_label)
+				eval_label = flip_floatInt(eval_label)
 				eval_m = m(eval_probability, eval_label)
 			metrics_key = metrics_keys[i][1]
 			history[metrics_key].append(float(eval_m))

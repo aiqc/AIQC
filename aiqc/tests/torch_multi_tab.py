@@ -12,7 +12,7 @@ from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 
 def fn_build(features_shape, num_classes, **hp):
 	model = nn.Sequential(
-		nn.Linear(features_shape[0], 12),
+		nn.Linear(features_shape[-1], 12),
 		nn.BatchNorm1d(12,12),
 		nn.ReLU(),
 		nn.Dropout(p=0.5),
@@ -78,7 +78,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 			size_test       = 0.11, 
 			size_validation = 0.21,
 			fold_count      = fold_count
-		)    
+		)
 	)
 
 	experiment = Experiment(
