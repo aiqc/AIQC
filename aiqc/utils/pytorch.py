@@ -142,6 +142,7 @@ def flip_floatInt(tzr:object):
 	"""
 	Handles float/int incosistencies of torch's loss and torchmetrics' scoring.
 	For example binary classify (model/loser=float) but (torchmetric_accuracy=int)
+	github.com/PyTorchLightning/metrics/discussions/1059
 	"""
 	if (tzr.type()=='torch.FloatTensor'):
 		# Sample to see if floats are ints decimals e.g. `2.`
@@ -239,7 +240,7 @@ def fit(
 			train_loss = loser(train_probability, train_label)
 		except:
 			# Known exception: multi classify fails on float
-			# Known exception: binary classify fails on int. dangerous with below.
+			# Known exception: binary classify fails on int. inconsistent w torchmetrics accuracy.
 			train_label = flip_floatInt(train_label)
 			train_loss = loser(train_probability, train_label)
 		history['loss'].append(float(train_loss))
@@ -255,7 +256,7 @@ def fit(
 		history['val_loss'].append(float(eval_loss))
 
 		## --- Epoch Metrics ---
-		# Known exception: binary classify accuracy fails on float. dangerous with above.
+		# Known exception: binary classify accuracy fails on float. inconsistent w model/loser.
 		for i, m in enumerate(metrics):
 			try:
 				train_m = m(train_probability, train_label)

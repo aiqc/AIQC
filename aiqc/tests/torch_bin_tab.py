@@ -46,7 +46,7 @@ def fn_train(
 	)
 
 
-def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
+def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	hyperparameters = {
 		"learning_rate": [0.01]
 		, "epoch_count": [10]

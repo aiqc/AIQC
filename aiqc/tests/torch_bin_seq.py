@@ -18,37 +18,42 @@ def fn_build(features_shape, label_shape, **hp):
 
 	model = nn.Sequential(
 		nn.LSTM(
-			input_size = features_shape[1],
+			input_size = features_shape[-1],
 			hidden_size = hp['hidden'],
 			batch_first = True
 		),
 		extract_tensor(),
-		nn.Linear(hp['hidden'],1),
+		nn.Linear(hp['hidden'], label_shape[-1]),
 		nn.Sigmoid(),
 	)
 	return model
 
 
-def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):
-	return fit(
+def fn_train(
+	model, loser, optimizer,
+	train_features, train_label,
+	eval_features, eval_label,
+	**hp
+):	return fit(
 		model, loser, optimizer,
-		samples_train, samples_evaluate,
+		train_features, train_label,
+		eval_features, eval_label,
 		epochs=hp['epochs'], batch_size=hp['batch_size'],
 		metrics=[tm.Accuracy(), tm.F1Score()]
 	)
 
 
-hyperparameters = dict(
-	hidden       = [10]
-	, batch_size = [8]
-	, epochs     = [5]
-)
-
-
-def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
+def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
+	hyperparameters = dict(
+		hidden       = [10]
+		, batch_size = [8]
+		, epochs     = [5]
+	)
+	
 	df = datum.to_pandas('epilepsy.parquet')
 	label_df = df[['seizure']]
 	label_dataset = Dataset.Tabular.from_pandas(label_df)
+	
 	seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
 	feature_dataset = Dataset.Sequence.from_numpy(seq_ndarray3D)
 
