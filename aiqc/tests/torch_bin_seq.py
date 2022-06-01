@@ -82,7 +82,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 			, repeat_count    = repeat_count
 			, permute_count   = permute_count
 			, search_percent  = None
-			, hide_test       = False
 		)
 	)
 	return experiment

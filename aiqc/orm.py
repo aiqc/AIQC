@@ -3460,6 +3460,7 @@ class Queue(BaseModel):
 		splitset = queue.splitset		
 		# If the cache is not hot yet, populate it.
 		splitset.cache_samples()
+		fold_count = splitset.fold_count
 
 		if (splitset.fold_count==0):
 			jobs = list(queue.jobs)
@@ -3469,11 +3470,11 @@ class Queue(BaseModel):
 				for j in jobs:
 					repeated_jobs.append((r,j))
 			try:
-				for i, rj in enumerate(tqdm(
+				for rj in tqdm(
 					repeated_jobs
 					, desc = "🔮 Training Models 🔮"
 					, ncols = 100
-				)):
+				):
 					# See if this job has already completed. Keeps the tqdm intact.
 					matching_predictor = Predictor.select().join(Job).where(
 						Predictor.repeat_index==rj[0], Job.id==rj[1].id
@@ -3487,30 +3488,33 @@ class Queue(BaseModel):
 				# Other training related errors.
 				raise
 		
-		elif (splitset.fold_count > 0):
-			jobs = [j for j in queue.jobs if j.fold==fold]
-			repeated_jobs = [] #tuple:(repeat_index, job, fold)
-			for r in range(queue.repeat_count):
-				for j in jobs:
-					repeated_jobs.append((r,j))
-			try:
-				for i, rj in enumerate(tqdm(
-					repeated_jobs
-					, desc = "🔮 Training Models 🔮"
-					, ncols = 100
-				)):
-					# See if this job has already completed. Keeps the tqdm intact.
-					matching_predictor = Predictor.select().join(Job).where(
-						Predictor.repeat_index==rj[0], Job.id==rj[1].id
-					)
+		elif (fold_count > 0):
+			for fold in splitset.folds:
+				idx = fold.fold_index
+				repeated_jobs = [] #tuple:(repeat_index, job, fold)
+				jobs = [j for j in queue.jobs if j.fold==fold]
+				
+				for r in range(queue.repeat_count):
+					for j in jobs:
+						repeated_jobs.append((r,j))
+				try:
+					for rj in tqdm(
+						repeated_jobs
+						, desc = f"🔮 Training: Fold {idx+1} of {fold_count} 🔮"
+						, ncols = 100
+					):
+						# See if this job has already completed. Keeps the tqdm intact.
+						matching_predictor = Predictor.select().join(Job).where(
+							Predictor.repeat_index==rj[0], Job.id==rj[1].id
+						)
 
-					if (matching_predictor.count()==0):
-						Job.run(id=rj[1].id, repeat_index=rj[0])
-			except (KeyboardInterrupt):
-				# So that we don't get nasty error messages when interrupting a long running loop.
-				print("\nQueue was gracefully interrupted.\n")
-			except:
-				raise
+						if (matching_predictor.count()==0):
+							Job.run(id=rj[1].id, repeat_index=rj[0])
+				except (KeyboardInterrupt):
+					# So that we don't get nasty error messages when interrupting a long running loop.
+					print("\nQueue was gracefully interrupted.\n")
+				except:
+					raise
 
 
 	def metrics_to_pandas(
