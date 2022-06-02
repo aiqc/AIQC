@@ -1313,12 +1313,17 @@ class Label(BaseModel):
 		#, is_imputed:bool=True
 		#, is_outlied:bool=True
 		, is_encoded:bool = True
-		, samples:dict = None#Used by interpolation to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
-		, fold:object = None
-		, key_train:list = None#Used during job.run()
-	):
+		, samples:dict = None # Only used to process training samples separately
+		, fold:object = None # Sometimes used during training, never used during inference
+		, key_train:list = None # Used during stage_data caching, but not during inference
+		, inference_labelID:int = None
+	):	
+		"""During inference, we want to use the original label's relationships"""
 		label = Label.get_by_id(id)
-		label_array = label.to_numpy()
+		if (inference_labelID is not None):
+			label_array = Label.get_by_id(inference_labelID).to_numpy()
+		else:
+			label_array = label.to_numpy()
 
 		# --- Interpolate ---
 		if ((is_interpolated==True) and (label.labelinterpolaters.count()>0)):
@@ -1328,7 +1333,6 @@ class Label(BaseModel):
 		# --- Encode ---
 		labelcoders = label.labelcoders
 		if ((is_encoded==True) and (labelcoders.count()>0)):
-			### During inference, the old labelcoder may be used so we have to nest the count.
 			if (fold is not None):
 				fitted_encoders = fold.fitted_labelcoder
 				item = fold
@@ -1516,7 +1520,7 @@ class Feature(BaseModel):
 		"""
 		- `array` is assumed to be the output of `feature.to_numpy()`.
 		- I was originally calling `feature.to_pandas` but all preprocesses take in and return arrays.
-		- `samples` is used for indices only. It does not get repacked into a dict.
+		- `samples` is used for indices only. It does not get repacked into a new dict.
 		- Extremely tricky to interpolate windowed splits separately.
 		"""
 		feature = Feature.get_by_id(id)
@@ -1578,7 +1582,7 @@ class Feature(BaseModel):
 						dataframe[c] = df_fp[c]
 
 			elif ((window is None) or (samples is None)):
-				# The underlying window data only needs to be processed separately is when there are split involved.
+				# The underlying window data doesn't need to be processed separately if training split isn't involved.
 				for fp in fps:
 					# Interpolate that slice. Don't need to process each column separately.
 					df = dataframe[fp.matching_columns]
@@ -1627,42 +1631,63 @@ class Feature(BaseModel):
 		, is_encoded:bool = True
 		, is_windowed:bool = True
 		, is_shaped:bool = True
-		, samples:dict = None#Used by interpolate to process separately. Not used to selectively filter samples. If you need that, just fetch via index from returned array.
-		, key_train:list = None
-		, fold:object = None
-		, _fitted_feature:object = None#Used during infer()
+		, samples:dict = None # Only used to process training samples separately
+		, key_train:list = None # Used during stage_data caching, but not inference
+		, fold:object = None # Sometimes used during training, never used during inference
+		, inference_featureID = None
 	):
-		#As more optional preprocessers were added, we were calling a lot of code everywhere features were fetched.
+		"""
+		- During inference, we want to encode new features using the original feature's relationships
+		- Except for `window` because that has to do with sample indices.
+		- This function exists because, as more optional preprocessers were added, we were calling 
+		  a lot of conditional code everywhere features were fetched.
+		"""
 		feature = Feature.get_by_id(id)
-		feature_array = feature.to_numpy()
+		if (inference_featureID is None):
+			inference_feature = None
+			feature_array = feature.to_numpy()
+			
+			# Used for `fit` to avoid data leakage
+			if (key_train is not None):
+				samples_train = samples[key_train]
+		else:
+			inference_feature = Feature.get_by_id(inference_featureID)
+			feature_array = inference_feature.to_numpy()
 
-		if (key_train is not None):
-			samples_train = samples[key_train]
-
-		# Although this is not the first preprocess, other preprocesses need to know the window ranges.
+		# Downstream preprocesses need to know the window ranges.
 		if ((is_windowed==True) and (feature.windows.count()>0)):
 			window = feature.windows[-1]
+				
 			# During encoding we'll need the raw rows, not window indices.
-			if ((key_train is not None) and (_fitted_feature is None)):
+			if (key_train is not None):
 				samples_unshifted = window.samples_unshifted
 				train_windows = [samples_unshifted[idx] for idx in samples_train]
 				# We need all of the rows from all of the windows. But only the unique ones. 
 				windows_flat = [item for sublist in train_windows for item in sublist]
 				samples_train = list(set(windows_flat))
+			
+			if (inference_feature is not None):
+				# It needs to be windowed, which is sample/dataset specific.
+				# This intentionally overrides and mirrors the window variable above.
+				window = Window.from_feature(
+					feature_id=inference_feature.id,
+					size_window=window.size_window,
+					size_shift=window.size_shift
+				)
 		else:
 			window = None
 
 		# --- Interpolate ---
 		if ((is_interpolated==True) and (feature.featureinterpolaters.count()>0)):
+			# inference intentionally leaves `samples==None`
 			feature_array = feature.interpolate(array=feature_array, samples=samples, window=window)
-
-		# --- Impute ---
-		# --- Outliers ---
+		
+		# --- Future:Impute ---
+		# --- Future:Outliers ---
 
 		# --- Encode ---
 		featurecoders = feature.featurecoders
 		if ((is_encoded==True) and (featurecoders.count()>0)):
-			### During inference the old labelcoder may be used so we have to nest the count.
 			if (fold is not None):
 				fitted_encoders = fold.fitted_featurecoders
 				item = fold
@@ -1690,7 +1715,6 @@ class Feature(BaseModel):
 		if ((is_windowed==True) and (feature.windows.count()>0)):
 			# Window object is fetched above because the other features need it. 
 			features_ndim = feature_array.ndim
-
 			"""
 			- *Need to do the label first in order to access the unwindowed `arr_features`.*
 			- During pure inference, there may be no shifted samples.
@@ -2032,8 +2056,8 @@ class Window(BaseModel):
 class Splitset(BaseModel):
 	"""
 	- Here the `samples_` attributes contain indices.
-	-ToDo: store and visualize distributions of each column in training split, including label.
-	-Future: is it useful to specify the size of only test for unsupervised learning?
+	- ToDo: store and visualize distributions of each column in training split, including label.
+	- Future: is it useful to specify the size of only test for unsupervised learning?
 	"""
 	cache_path = CharField()
 	cache_hot = BooleanField()
@@ -2049,6 +2073,8 @@ class Splitset(BaseModel):
 	key_test = CharField(null=True)
 
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
+	predictor = DeferredForeignKey('Predictor', deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
+	# ^ used for inference just to name the split `infer_<index>`
 
 
 	def make(
@@ -2061,6 +2087,7 @@ class Splitset(BaseModel):
 		, unsupervised_stratify_col:str = None
 		, name:str = None
 		, description:str = None
+		, predictor_id:int = None
 	):
 		# The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
 		if (fold_count is None):
@@ -2121,7 +2148,6 @@ class Splitset(BaseModel):
 			raise Exception("Yikes - List of Features you provided contain different amounts of samples.")
 		sample_count = feature_lengths[0]		
 		arr_idx = np.arange(sample_count)
-
 
 		# --- Prepare for splitting ---
 		feature = Feature.get_by_id(feature_ids[0])
@@ -2345,6 +2371,7 @@ class Splitset(BaseModel):
 			, name = name
 			, description = description
 			, fold_count = fold_count
+			, predictor = None
 		)
 
 		# --- Attach the features ---
@@ -2369,6 +2396,20 @@ class Splitset(BaseModel):
 				fold.delete_instance()
 			splitset.delete_instance()
 			raise
+		
+		# --- Validate for inference ---
+		if (predictor_id is not None):
+			try:
+				predictor = Predictor.get_by_id(predictor_id)
+				splitset_old = predictor.job.queue.splitset
+				schemaNew_matches_schemaOld(splitset, splitset_old)
+			except:
+				for fold in splitset.folds:
+				fold.delete_instance()
+				splitset.delete_instance()
+				raise
+			splitset.predictor = predictor
+			splitset.save()
 		return splitset
 
 
@@ -2602,6 +2643,76 @@ class Splitset(BaseModel):
 				data=data[0]
 				shape = shape[0]
 		return data, shape
+	
+
+	def infer(id:int):
+		"""
+		- Splitset is used because Labels and Features can come from different types of Datasets.
+		- Verifies both Features and Labels match original schema.
+		- Labels are included because inference could be reassessing model performance/rot.
+		"""
+		splitset_new = Splitset.get_by_id(id)
+		new_id = splitset_new.id
+		new_supervision = splitset_new.supervision
+		
+		predictor = splitset_new.predictor
+		for e, s in enumerate(predictor.splitsets):
+			if (s.id == new_id):
+				infer_idx = f"infer_{e}"
+		
+		splitset_old = predictor.job.queue.splitset
+
+		featureset_new = splitset_new.features
+		featureset_old = splitset_old.features
+
+		# Expecting different shapes so it has to be list, not array.
+		features = []
+		# Use the old feature to process the new feature
+		# Right now only 1 Feature can be windowed.
+		for i, feature_old in enumerate(featureset_old):
+			feature_new = featureset_new[i]
+			if (new_supervision=='supervised'):
+				arr_features = feature_old.preprocess(
+					inference_featureID=feature_new.id, supervision=new_supervision
+				)
+			elif (new_supervision=='unsupervised'):
+				arr_features, arr_labels = feature_old.preprocess(
+					inference_featureID=feature_new.id, supervision=new_supervision
+				)
+			features.append(arr_features)
+		if (len(features)==1):
+			features = features[0]
+		
+		# We just need these to loop over
+		samples = {infer_idx: {'features':None}}
+
+		if (splitset_new.label is not None):
+			label_new = splitset_new.label
+			label_old = splitset_old.label
+		else:
+			label_new = None
+			label_old = None
+
+		if (label_new is not None):
+			arr_labels = label_old.preprocess(inference_labelID=label_new.id)
+			samples[infer_idx]['labels'] = None
+		elif ((splitset_new.supervision=='unsupervised') and (arr_labels is not None)):
+			# An example of `None` would be `window.samples_shifted is None`
+			samples[infer_idx]['labels'] = None
+		else:
+			arr_labels = None
+		
+		# Predict() no longer has a samples argument
+		splitset_new.samples = samples
+		splitset_new.save()
+
+		prediction = predictor.predict(
+			inference_splitsetID = new_id
+			, eval_features = features
+			, eval_label = arr_labels
+		)
+		return prediction
+
 
 
 
@@ -2696,7 +2807,7 @@ class LabelInterpolater(BaseModel):
 			for split, indices in samples.items():
 				if ('train' not in split):
 					arr = array[indices]
-					df = pd.DataFrame(arr).set_index([indices], drop=True)					# Does not need to be sorted for interpolate.
+					df = pd.DataFrame(arr).set_index([indices], drop=True)# Doesn't need to be sorted for interpolate.
 					df = pd.concat([df_train, df])
 					df = run_interpolate(df, interpolate_kwargs)
 					# Only keep the indices from the split of interest.
@@ -3532,6 +3643,7 @@ class Queue(BaseModel):
 		selected_metrics = listify(selected_metrics)
 		sort_by = listify(sort_by)
 		
+		### will this work for inference predictions where metric's don't exist?
 		queue_predictions = Prediction.select().join(
 			Predictor).join(Job).where(Job.queue==id
 		).order_by(Prediction.id)
@@ -3758,50 +3870,289 @@ class Job(BaseModel):
 	hyperparamcombo = ForeignKeyField(Hyperparamcombo, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 	fold = ForeignKeyField(Fold, deferrable='INITIALLY DEFERRED', null=True, backref='jobs')
 
+
+	def run(id:int, repeat_index:int):
+		job = Job.get_by_id(id)
+		fold = job.fold
+		queue = job.queue
+		splitset = queue.splitset
+		algorithm = queue.algorithm
+		analysis_type = algorithm.analysis_type
+		library = algorithm.library
+		hyperparamcombo = job.hyperparamcombo
+		time_started = timezone_now()
+
+		if (fold is not None):
+			f_id = fold.id
+		else:
+			f_id = None
+
+		if (hyperparamcombo is not None):
+			hp = hyperparamcombo.hyperparameters
+		elif (hyperparamcombo is None):
+			hp = {} #`**` cannot be None.
+
+		fn_build = utils.dill.deserialize(algorithm.fn_build)
+
+		# Fetch the training and evaluation data from the cache.
+		key_trn = splitset.key_train
+		train_label, label_shape = splitset.fetch_cache(
+			fold_id=f_id, split=key_trn, label_features='label', library=library
+		)
+		train_features, features_shapes = splitset.fetch_cache(
+			fold_id=f_id, split=key_trn, label_features='features', library=library
+		)
+		# --- Evaluate ---
+		key_eval = splitset.key_evaluation
+		if (key_eval is not None):
+			eval_label, _ = splitset.fetch_cache(
+				fold_id=f_id, split=key_eval, label_features='label', library=library
+			)
+			eval_features, _ = splitset.fetch_cache(
+				fold_id=f_id, split=key_eval, label_features='features', library=library
+			)
+		else:
+			eval_label = None
+			eval_features = None
+
+		# PyTorch softmax needs ordinal format, not OHE.
+		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
+			label_shape = len(splitset.label.unique_classes)
+		model = fn_build(features_shapes, label_shape, **hp)
+		if (model is None):
+			raise Exception("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
+
+		# The model and optimizer get combined during training.
+		fn_lose = utils.dill.deserialize(algorithm.fn_lose)
+		fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
+		fn_train = utils.dill.deserialize(algorithm.fn_train)
+
+		loser = fn_lose(**hp)
+		if (loser is None):
+			raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+
+		if (library == 'keras'):
+			optimizer = fn_optimize(**hp)
+		elif (library == 'pytorch'):
+			optimizer = fn_optimize(model, **hp)
+		if (optimizer is None):
+			raise Exception("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
+
+		if (library == "keras"):
+			model = fn_train(
+				model, loser, optimizer,
+				train_features, train_label,
+				eval_features, eval_label,
+				**hp
+			)
+			if (model is None):
+				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+
+			# Save the artifacts of the trained model.
+			# If blank this value is `{}` not None.
+			history = model.history.history
+			"""
+			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
+			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
+			  https://github.com/keras-team/keras/issues/14411
+			- So let's switch to a real file in appdirs.
+			- Assuming `model.save()` will trigger OS-specific h5 drivers.
+			"""
+			# Write it.
+			path_models_cache = app_folders['cache_models']
+			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
+			path_full = path.join(path_models_cache,path_file)
+			model.save(path_full, include_optimizer=True, save_format='h5')
+			# Fetch the bytes ('rb': read binary)
+			with open(path_full, 'rb') as file:
+				model_blob = file.read()
+			remove(path_full)
+
+		elif (library == "pytorch"):
+			# The difference is that it returns a tupl with history
+			model, history = fn_train(
+				model, loser, optimizer,
+				train_features, train_label,
+				eval_features, eval_label,
+				**hp
+			)
+			if (model is None):
+				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+			if (history is None):
+				raise Exception("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+			# Save the artifacts of the trained model.
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
+			model_blob = BytesIO()
+			torch_save(
+				{
+					'model_state_dict': model.state_dict(),
+					'optimizer_state_dict': optimizer.state_dict()
+				},
+				model_blob
+			)
+			model_blob = model_blob.getvalue()
+		
+		# Save everything to Predictor object.
+		time_succeeded = timezone_now()
+		time_duration = (time_succeeded - time_started).seconds
+
+		# There's a chance that a duplicate job was running elsewhere and finished first.
+		# Job already accounts for the fold.
+		matching_predictor = Predictor.select().join(Job).join(Queue).where(
+			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
+		if (matching_predictor.count() > 0):
+			raise Exception(f"""
+				Yikes - Duplicate run detected for Job<{job.id}> repeat_index<{repeat_index}>.
+				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
+			""")
+
+		predictor = Predictor.create(
+			time_started = time_started
+			, time_succeeded = time_succeeded
+			, time_duration = time_duration
+			, model_file = model_blob
+			, features_shapes = features_shapes
+			, label_shape = label_shape
+			, history = history
+			, job = job
+			, repeat_index = repeat_index
+			, is_starred = False
+		)
+
+		# Use the Predictor object to make Prediction and its metrics.
+		try:
+			predictor.predict(
+				train_features = train_features
+				, train_label = train_label
+				, eval_features = eval_features
+				, eval_label = eval_label
+			)
+		except:
+			predictor.delete_instance()
+			raise
+
+		# Don't force delete samples because we need it for runs with duplicated data.
+		del model
+		# Used by UI progress bar.
+		queue.runs_completed+=1
+		queue.save()
+		return job
+
+
+class Predictor(BaseModel):
+	"""Regarding metrics, the label encoder was fit on training split labels."""
+	repeat_index = IntegerField()
+	time_started = DateTimeField()
+	time_succeeded = DateTimeField()
+	time_duration = IntegerField()
+	model_file = BlobField()
+	features_shapes = PickleField()#tuple or list of tuples
+	label_shape = PickleField()#tuple
+	history = JSONField()
+	is_starred = BooleanField()
+
+	job = ForeignKeyField(Job, backref='predictors')
+
+
+	def get_model(id:int):
+		predictor = Predictor.get_by_id(id)
+		algorithm = predictor.job.queue.algorithm
+		model_blob = predictor.model_file
+
+		if (algorithm.library == "keras"):
+			#https://www.tensorflow.org/guide/keras/save_and_serialize
+			path_models_cache = app_folders['cache_models']
+			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
+			path_full = path.join(path_models_cache,path_file)
+			# Workaround: write bytes to file so keras can read from path instead of buffer.
+			with open(path_full, 'wb') as f:
+				f.write(model_blob)
+			h5 = h5_File(path_full, 'r')
+			model = load_model(h5, compile=True)
+			remove(path_full)
+			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
+			return model
+
+		elif (algorithm.library == "pytorch"):
+			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
+			# Need to initialize the classes first, which requires reconstructing them.
+			if (predictor.job.hyperparamcombo is not None):
+				hp = predictor.job.hyperparamcombo.hyperparameters
+			elif (predictor.job.hyperparamcombo is None):
+				hp = {}
+			features_shapes = predictor.features_shapes
+			label_shape = predictor.label_shape
+
+			fn_build = utils.dill.deserialize(algorithm.fn_build)
+			fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
+
+			if (algorithm.analysis_type == 'classification_multi'):
+				num_classes = len(predictor.job.queue.splitset.label.unique_classes)
+				model = fn_build(features_shapes, num_classes, **hp)
+			else:
+				model = fn_build(features_shapes, label_shape, **hp)
+			
+			optimizer = fn_optimize(model, **hp)
+
+			model_bytes = BytesIO(model_blob)
+			checkpoint = torch_load(model_bytes)
+			# Don't assign them: `model = model.load_state_dict()`
+			model.load_state_dict(checkpoint['model_state_dict'])
+			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
+			# ^ but you don't need to pass any data into eval()
+			return model, optimizer
 	
+
 	def predict(
-		predictor_id:int
-		, inference_splitsetID:int = None # used for inference, not training.
-		, train_features:object = None
-		, train_label:object = None
-		, eval_features:object = None # can be used by training or inference
-		, eval_label:object = None # can be used by training or inference
+		id:int
+		, inference_splitsetID:int = None # not used during training.
+		, train_features:object    = None
+		, train_label:object       = None
+		, eval_features:object     = None # can be used by training or inference
+		, eval_label:object        = None # can be used by training or inference
 	):
 		"""
-		Evaluation: predictions, metrics, charts for each split/fold.
+		Executes all evaluation: predictions, metrics, charts for each split/fold.
 		- `key_train` is used during permutation, but not during inference.###
 		- Metrics are run against encoded data because they won't accept string data.
 		"""
-		predictor = Predictor.get_by_id(predictor_id)
-		job = predictor.job
-		fold = job.fold
+		predictor       = Predictor.get_by_id(id)
+		job             = predictor.job
+		fold            = job.fold
 		hyperparamcombo = job.hyperparamcombo
-		queue = job.queue
-		algorithm = queue.algorithm
-		library = algorithm.library
-		analysis_type = algorithm.analysis_type
+		queue           = job.queue
+		algorithm       = queue.algorithm
+		library         = algorithm.library
+		analysis_type   = algorithm.analysis_type
+		
+		"""
+		Answers: Are we conducting inference? Is it folded? Is it evaluated?
+		- `has_target` is not about supervision. During inference it is optional to provide labels.
+		- in fact, we need the `supervision` value for decoding no matter what.
+		"""
 		splitset = queue.splitset
 		supervision = splitset.supervision
-
-		if (fold is None):
-			samples = splitset.samples
-			fold_id = None
-		else:
-			samples = fold.samples
-			fold_id = fold.id
-
-		"""`has_target` is not supervision. During inference it is optional to provide labels."""		
 		if (inference_splitsetID is not None):
-			inference_splitset = Splitset.get_by_id(inference_splitsetID)
-			if (inference_splitset.label is not None):
+			new_splitset = Splitset.get_by_id(inference_splitsetID)
+			if (new_splitset.label is not None):
 				has_target = True
 			else:
 				has_target = False
+
+			samples = new_splitset.samples
+			fold_id = None
 		else:
-			inference_splitset = None
 			has_target = True
 
-		# Prepare the logic.
+			if (fold is None):
+				samples = splitset.samples
+				fold_id = None
+			else:
+				samples = fold.samples
+				fold_id = fold.id
+
+		# --- Prepare the logic ---
 		model = predictor.get_model()
 		if (algorithm.library == 'pytorch'):
 			# Returns tuple(model,optimizer)
@@ -3827,10 +4178,13 @@ class Job(BaseModel):
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
 			for split, _ in samples.items():
-				features = fetchFeatures_ifAbsent(
-					splitset=splitset, split=split, fold_id=fold_id, library=library,
-					train_features=train_features, eval_features=eval_features
-				)
+				if (inference_splitsetID is None):
+					features = fetchFeatures_ifAbsent(
+						splitset=splitset, split=split, fold_id=fold_id, library=library,
+						train_features=train_features, eval_features=eval_features
+					)
+				else:
+					features = eval_features
 
 				preds, probs = fn_predict(model, features)
 				predictions[split] = preds
@@ -3838,10 +4192,13 @@ class Job(BaseModel):
 				# Outputs numpy.
 
 				if (has_target == True):
-					label = fetchLabel_ifAbsent(
-						splitset=splitset, split=split, fold_id=fold_id, library=library,
-						train_label=train_label, eval_label=eval_label,
-					)
+					if (inference_splitsetID is None):
+						label = fetchLabel_ifAbsent(
+							splitset=splitset, split=split, fold_id=fold_id, library=library,
+							train_label=train_label, eval_label=eval_label,
+						)
+					else:
+						label = eval_label
 
 					# https://keras.io/api/losses/probabilistic_losses/
 					if (library == 'keras'):
@@ -3887,10 +4244,14 @@ class Job(BaseModel):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
-				features = fetchFeatures_ifAbsent(
-					splitset=splitset, split=split, fold_id=fold_id, library=library,
-					train_features=train_features, eval_features=eval_features
-				)
+				if (inference_splitsetID is None):
+					features = fetchFeatures_ifAbsent(
+						splitset=splitset, split=split, fold_id=fold_id, library=library,
+						train_features=train_features, eval_features=eval_features
+					)
+				else:
+					features = eval_features
+
 				# Does not return `preds, probs`
 				preds = fn_predict(model, features)
 				predictions[split] = preds
@@ -3899,10 +4260,14 @@ class Job(BaseModel):
 				#https://keras.io/api/losses/regression_losses/
 				if (has_target==True):
 					# Reassigning so that permutation can use original data.
-					label = fetchLabel_ifAbsent(
-						splitset=splitset, split=split, fold_id=fold_id, library=library,
-						train_label=train_label, eval_label=eval_label,
-					)
+					if (inference_splitsetID is None):
+						label = fetchLabel_ifAbsent(
+							splitset=splitset, split=split, fold_id=fold_id, library=library,
+							train_label=train_label, eval_label=eval_label
+						)
+					else:
+						label = eval_label
+
 					if (library == 'keras'):
 						loss = loser(label, preds)
 					elif (library == 'pytorch'):
@@ -4077,258 +4442,23 @@ class Job(BaseModel):
 			, metrics_aggregate = metrics_aggregate
 			, plot_data = plot_data
 			, predictor = predictor
-			, splitset = inference_splitset
 		)
 		# --- Feature importance ---
-		try:
-			permute_count = queue.permute_count### is this validated? that it can even permute?
-			key_train = splitset.key_train
-			features = splitset.features
-			nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
-			if (
-				(permute_count>0) and (has_target==True) and 
-				(key_train is not None) and (len(nonImage_features)>0)
-			):
-				prediction.calc_featureImportance(permute_count=permute_count)
-		except:
-			prediction.delete_instance()
-			raise
+		if (inference_splitsetID is None):
+			try:
+				permute_count = queue.permute_count### is this validated? that it can even permute?
+				key_train = splitset.key_train
+				features = splitset.features
+				nonImage_features = [f for f in features if (f.dataset.dataset_type!='image')]
+				if (### ^ see question above.
+					(permute_count>0) and (has_target==True) and 
+					(key_train is not None) and (len(nonImage_features)>0)
+				):
+					prediction.calc_featureImportance(permute_count=permute_count)
+			except:
+				prediction.delete_instance()
+				raise
 		return prediction
-
-
-	def run(id:int, repeat_index:int):
-		job = Job.get_by_id(id)
-		fold = job.fold
-		queue = job.queue
-		splitset = queue.splitset
-		algorithm = queue.algorithm
-		analysis_type = algorithm.analysis_type
-		library = algorithm.library
-		hyperparamcombo = job.hyperparamcombo
-		time_started = timezone_now()
-
-		if (fold is not None):
-			f_id = fold.id
-		else:
-			f_id = None
-
-		if (hyperparamcombo is not None):
-			hp = hyperparamcombo.hyperparameters
-		elif (hyperparamcombo is None):
-			hp = {} #`**` cannot be None.
-
-		fn_build = utils.dill.deserialize(algorithm.fn_build)
-
-		# Fetch the training and evaluation data from the cache.
-		key_trn = splitset.key_train
-		train_label, label_shape = splitset.fetch_cache(
-			fold_id=f_id, split=key_trn, label_features='label', library=library
-		)
-		train_features, features_shapes = splitset.fetch_cache(
-			fold_id=f_id, split=key_trn, label_features='features', library=library
-		)
-		# --- Evaluate ---
-		key_eval = splitset.key_evaluation
-		if (key_eval is not None):
-			eval_label, _ = splitset.fetch_cache(
-				fold_id=f_id, split=key_eval, label_features='label', library=library
-			)
-			eval_features, _ = splitset.fetch_cache(
-				fold_id=f_id, split=key_eval, label_features='features', library=library
-			)
-		else:
-			eval_label = None
-			eval_features = None
-
-
-		# PyTorch softmax needs ordinal format, not OHE.
-		if ((analysis_type == 'classification_multi') and (library == 'pytorch')):
-			label_shape = len(splitset.label.unique_classes)
-		model = fn_build(features_shapes, label_shape, **hp)
-		if (model is None):
-			raise Exception("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
-
-		# The model and optimizer get combined during training.
-		fn_lose = utils.dill.deserialize(algorithm.fn_lose)
-		fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
-		fn_train = utils.dill.deserialize(algorithm.fn_train)
-
-		loser = fn_lose(**hp)
-		if (loser is None):
-			raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
-
-		if (library == 'keras'):
-			optimizer = fn_optimize(**hp)
-		elif (library == 'pytorch'):
-			optimizer = fn_optimize(model, **hp)
-		if (optimizer is None):
-			raise Exception("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
-
-		if (library == "keras"):
-			model = fn_train(
-				model, loser, optimizer,
-				train_features, train_label,
-				eval_features, eval_label,
-				**hp
-			)
-			if (model is None):
-				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
-
-			# Save the artifacts of the trained model.
-			# If blank this value is `{}` not None.
-			history = model.history.history
-			"""
-			- As of: Python(3.8.7), h5py(2.10.0), Keras(2.4.3), tensorflow(2.4.1)
-			  model.save(buffer) working for neither `io.BytesIO()` nor `tempfile.TemporaryFile()`
-			  https://github.com/keras-team/keras/issues/14411
-			- So let's switch to a real file in appdirs.
-			- Assuming `model.save()` will trigger OS-specific h5 drivers.
-			"""
-			# Write it.
-			path_models_cache = app_folders['cache_models']
-			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
-			path_full = path.join(path_models_cache,path_file)
-			model.save(path_full, include_optimizer=True, save_format='h5')
-			# Fetch the bytes ('rb': read binary)
-			with open(path_full, 'rb') as file:
-				model_blob = file.read()
-			remove(path_full)
-
-		elif (library == "pytorch"):
-			# The difference is that it returns a tupl with history
-			model, history = fn_train(
-				model, loser, optimizer,
-				train_features, train_label,
-				eval_features, eval_label,
-				**hp
-			)
-			if (model is None):
-				raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
-			if (history is None):
-				raise Exception("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
-			# Save the artifacts of the trained model.
-			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
-			model_blob = BytesIO()
-			torch_save(
-				{
-					'model_state_dict': model.state_dict(),
-					'optimizer_state_dict': optimizer.state_dict()
-				},
-				model_blob
-			)
-			model_blob = model_blob.getvalue()
-		
-		# Save everything to Predictor object.
-		time_succeeded = timezone_now()
-		time_duration = (time_succeeded - time_started).seconds
-
-		# There's a chance that a duplicate job was running elsewhere and finished first.
-		# Job already accounts for the fold.
-		matching_predictor = Predictor.select().join(Job).join(Queue).where(
-			Queue.id==queue.id, Job.id==job.id, Predictor.repeat_index==repeat_index)
-		if (matching_predictor.count() > 0):
-			raise Exception(f"""
-				Yikes - Duplicate run detected for Job<{job.id}> repeat_index<{repeat_index}>.
-				Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
-			""")
-
-		predictor = Predictor.create(
-			time_started = time_started
-			, time_succeeded = time_succeeded
-			, time_duration = time_duration
-			, model_file = model_blob
-			, features_shapes = features_shapes
-			, label_shape = label_shape
-			, history = history
-			, job = job
-			, repeat_index = repeat_index
-			, is_starred = False
-		)
-
-		# Use the Predictor object to make Prediction and its metrics.
-		try:
-			Job.predict(
-				predictor_id = predictor.id
-				, train_features = train_features
-				, train_label = train_label
-				, eval_features = eval_features
-				, eval_label = eval_label
-			)
-		except:
-			predictor.delete_instance()
-			raise
-
-		# Don't force delete samples because we need it for runs with duplicated data.
-		del model
-		# Used by UI progress bar.
-		queue.runs_completed+=1
-		queue.save()
-		return job
-
-
-class Predictor(BaseModel):
-	"""Regarding metrics, the label encoder was fit on training split labels."""
-	repeat_index = IntegerField()
-	time_started = DateTimeField()
-	time_succeeded = DateTimeField()
-	time_duration = IntegerField()
-	model_file = BlobField()
-	features_shapes = PickleField()#tuple or list of tuples
-	label_shape = PickleField()#tuple
-	history = JSONField()
-	is_starred = BooleanField()
-
-	job = ForeignKeyField(Job, backref='predictors')
-
-
-	def get_model(id:int):
-		predictor = Predictor.get_by_id(id)
-		algorithm = predictor.job.queue.algorithm
-		model_blob = predictor.model_file
-
-		if (algorithm.library == "keras"):
-			#https://www.tensorflow.org/guide/keras/save_and_serialize
-			path_models_cache = app_folders['cache_models']
-			path_file = f"temp_keras_model.h5"# flag - make unique for concurrency.
-			path_full = path.join(path_models_cache,path_file)
-			# Workaround: write bytes to file so keras can read from path instead of buffer.
-			with open(path_full, 'wb') as f:
-				f.write(model_blob)
-			h5 = h5_File(path_full, 'r')
-			model = load_model(h5, compile=True)
-			remove(path_full)
-			# Unlike pytorch, it's doesn't look like you need to initialize the optimizer or anything.
-			return model
-
-		elif (algorithm.library == "pytorch"):
-			# https://pytorch.org/tutorials/beginner/saving_loading_models.html#load
-			# Need to initialize the classes first, which requires reconstructing them.
-			if (predictor.job.hyperparamcombo is not None):
-				hp = predictor.job.hyperparamcombo.hyperparameters
-			elif (predictor.job.hyperparamcombo is None):
-				hp = {}
-			features_shapes = predictor.features_shapes
-			label_shape = predictor.label_shape
-
-			fn_build = utils.dill.deserialize(algorithm.fn_build)
-			fn_optimize = utils.dill.deserialize(algorithm.fn_optimize)
-
-			if (algorithm.analysis_type == 'classification_multi'):
-				num_classes = len(predictor.job.queue.splitset.label.unique_classes)
-				model = fn_build(features_shapes, num_classes, **hp)
-			else:
-				model = fn_build(features_shapes, label_shape, **hp)
-			
-			optimizer = fn_optimize(model, **hp)
-
-			model_bytes = BytesIO(model_blob)
-			checkpoint = torch_load(model_bytes)
-			# Don't assign them: `model = model.load_state_dict()`
-			model.load_state_dict(checkpoint['model_state_dict'])
-			optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-			# "must call model.eval() to set dropout & batchNorm layers to evaluation mode before prediction." 
-			# ^ but you don't need to pass any data into eval()
-			return model, optimizer
 
 
 	def export_model(id:int, file_path:str=None):
@@ -4410,78 +4540,6 @@ class Predictor(BaseModel):
 			skip_head=skip_head, call_display=call_display
 		)
 		if (call_display==False): return figs
-
-			
-	def infer(id:int, splitset_id:int):
-		"""
-		- Splitset is used because Labels and Features can come from different types of Datasets.
-		- Verifies both Features and Labels match original schema.
-		"""
-		splitset_new = Splitset.get_by_id(splitset_id)
-		predictor = Predictor.get_by_id(id)
-		splitset_old = predictor.job.queue.splitset
-
-		schemaNew_matches_schemaOld(splitset_new, splitset_old)
-		library = predictor.job.queue.algorithm.library
-
-		featureset_new = splitset_new.features
-		featureset_old = splitset_old.features
-		feature_count = len(featureset_new)
-		features = []# expecting different array shapes so it has to be list, not array.
-		
-		# Right now only 1 Feature can be windowed.
-		for i, feature_new in enumerate(featureset_new):
-			if (splitset_new.supervision=='supervised'):
-				arr_features = feature_new.preprocess(
-					# These arguments are used to get the old encoders.
-					supervision = 'supervised'
-					, _job=predictor.job
-					, _fitted_feature=featureset_old[i]
-					, _library=library
-				)
-			elif (splitset_new.supervision=='unsupervised'):
-				arr_features, arr_labels = feature_new.preprocess(
-					supervision = 'unsupervised'
-					, _job=predictor.job
-					, _fitted_feature=featureset_old[i]
-					, _library=library
-				)
-
-			if (feature_count > 1):
-				features.append(arr_features)
-			else:
-				# We don't need to do any row filtering so it can just be overwritten.
-				features = arr_features
-		"""
-		- Pack into samples for the Algorithm functions.
-		- This is two levels deep to mirror how the training samples were structured 
-		  e.g. `samples[<trn,val,tst>]`
-		"""
-		samples = {'infer': {'features':features}}
-
-		if (splitset_new.label is not None):
-			label_new = splitset_new.label
-			label_old = splitset_old.label
-		else:
-			label_new = None
-			label_old = None
-
-		if (label_new is not None):
-			arr_labels = label_new.preprocess(
-				_job = predictor.job
-				, _fitted_label = label_old 
-				, _library=library
-			)
-			samples['infer']['labels'] = arr_labels
-		
-		elif ((splitset_new.supervision=='unsupervised') and (arr_labels is not None)):
-			# An example of `None` would be `window.samples_shifted is None`
-			samples['infer']['labels'] = arr_labels
-
-		prediction = Job.predict(
-			samples=samples, predictor_id=id, splitset_id=splitset_id
-		)
-		return prediction
 	
 
 	def get_label_names(id:int):
@@ -4533,11 +4591,6 @@ class Prediction(BaseModel):
 	plot_data = PickleField(null=True) # No regression-specific plots yet.
 
 	predictor = ForeignKeyField(Predictor, backref='predictions')
-	splitset = ForeignKeyField(Splitset, deferrable='INITIALLY DEFERRED', null=True, backref='dataset') 
-	"""
-	^ splitset is null for training, but present for inference.
-	^ Remember, 1 Predictor has many Predictions, so we can 1-1 rel splitset-prediction.
-	"""
 
 
 	def plot_confusion_matrix(id:int, call_display:bool=True):

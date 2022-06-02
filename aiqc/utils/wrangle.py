@@ -443,7 +443,7 @@ def fetchFeatures_ifAbsent(
 	train_features:object, eval_features:object,
 	fold_id:int=None, library:object=None
 ):
-	"""Check if data is already in-memory. If not, fetch it."""
+	"""Check if this split is already in-memory. If not, fetch it."""
 	key_trn = splitset.key_train
 	key_eval = splitset.key_evaluation
 	if (split==key_trn):
@@ -511,23 +511,6 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 		if (feature_old_typ != feature_new_typ):
 			raise Exception(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
 		tabular_schemas_match(feature_old, feature_new)
-
-		if (
-			((len(feature_old.windows)>0) and (len(feature_new.windows)==0))
-			or
-			((len(feature_new.windows)>0) and (len(feature_old.windows)==0))
-		):
-			raise Exception("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
-
-		if (((len(feature_old.windows)>0) and (len(feature_new.windows)>0))):
-			window_old = feature_old.windows[-1]
-			window_new = feature_new.windows[-1]
-			if (
-				(window_old.size_window != window_new.size_window)
-				or
-				(window_old.size_shift != window_new.size_shift)
-			):
-				raise Exception("\nYikes - New Window and old Window schemas do not match.\n")
 
 	# Only verify Labels if the inference new Splitset provides Labels.
 	# Otherwise, it may be conducting pure inference.

@@ -10,7 +10,7 @@ import torchmetrics as tm
 
 
 def fn_build(features_shape, label_shape, **hp):
-	#features_shape = (160, 120)
+	#features_shape = (160, 120) after reshaping
 	model = nn.Sequential(
 		#Conv1d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
 		nn.Conv1d(

@@ -233,6 +233,7 @@ def fit(
 			optimizer.step()
 		
 		## --- Epoch Loss ---
+		# These need not be shuffled/ batched during each epoch
 		train_probability = model(train_features)
 		train_probability = flatten_uniColumn(train_probability)
 		train_label = flatten_uniColumn(train_label)
