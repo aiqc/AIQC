@@ -50,14 +50,16 @@ class Input:
     def __init__(
         self
         , dataset:object
-        , cols_excluded:list 	= None
+        , exclude_columns:list 	= None
+        , include_columns:list  = None
         , interpolaters:list	= None
         , window:dict 			= None
         , encoders:list 		= None
         , reshape_indices:tuple = None
     ):
         self.dataset 			= dataset
-        self.cols_excluded 		= listify(cols_excluded)
+        self.exclude_columns    = listify(exclude_columns)
+        self.include_columns 	= listify(include_columns)
         self.interpolaters 		= listify(interpolaters)
         self.window 			= window
         self.encoders 			= listify(encoders)
@@ -137,17 +139,26 @@ class Pipeline:
         feature_ids = []
         for i in inputs:
             d_id = i.dataset.id
+           
+            exclude_columns = i.exclude_columns
+            include_columns = i.include_columns
             # For shared datasets, remove any label columns from featureset
-            cols_excluded = i.cols_excluded
             if (d_id==l_dset_id):
                 l_cols = target.column
-                if (cols_excluded==None):
-                    cols_excluded = l_cols
-                else:
+                
+                if ((exclude_columns==None) and (include_columns==None)):
+                    exclude_columns = l_cols
+                # Both can't be set based on Feature logic
+                elif (exclude_columns is not None):
                     for c in l_cols:
-                        if (c not in cols_excluded):
-                            cols_excluded.append(c)
-            f = Feature.from_dataset(dataset_id=d_id, exclude_columns=cols_excluded)
+                        if (c not in exclude_columns):
+                            exclude_columns.append(c)
+                elif (include_columns is not None):
+                    for c in l_cols:
+                        if (c in include_columns):
+                            include_columns.remove(c)
+            
+            f = Feature.from_dataset(dataset_id=d_id, exclude_columns=exclude_columns, include_columns=include_columns)
             f_id = f.id
             features.append(f)
             feature_ids.append(f.id)
@@ -269,3 +280,44 @@ class Experiment:
             , **kwargz
         )
         return queue
+
+#==================================================
+# INFERENCE
+#==================================================
+class Inference:
+    def __new__(
+        cls
+        , predictor:object
+        , feature_datasets:list
+        , label_dataset:object = None
+    ):
+        feature_datasets = listify(feature_datasets)
+        splitset = predictor.job.queue.splitset
+        
+        if (label_dataset is not None):
+            label = splitset.label 
+            if (label is not None):
+                cols = label.columns
+                label_dataset = label.dataset
+                target = Target(dataset=label_dataset,column=cols)
+            else:
+                raise Exception("\nYikes - Previous Pipeline did not have a Label, but new \n")
+        else:
+            target = None
+
+        inputs = []	
+        for e, f in enumerate(splitset.features):		
+            cols = f.columns
+            dataset = feature_datasets[e]
+            # Use `include_columns` in case users decided to stop gathering the excluded columns.
+            inputtt = Input(dataset=dataset, include_columns=cols)
+            inputs.append(inputtt)
+
+        pipeline = Pipeline(
+            inputs = inputs,
+            target = target,
+            stratifier = Stratifier(),
+            predictor = predictor
+        )
+        prediction = pipeline.infer()
+        return prediction

@@ -1359,6 +1359,9 @@ class Label(BaseModel):
 			However, `transform_dynamicDimensions` was designed for multiple features
 			aka a list-of-lists, so we wrap it in another list as a workaround.
 			"""
+			if not isinstance(fitted_encoders,list):
+				fitted_encoders = [fitted_encoders]
+
 			label_array = utils.encoding.transform_dynamicDimensions(
 				fitted_encoders        = fitted_encoders
 				, encoding_dimension   = encoding_dimension
@@ -1624,7 +1627,7 @@ class Feature(BaseModel):
 
 	def preprocess(
 		id:int
-		, supervision:str = 'supervised'
+		, supervision:str = 'supervised' # This func is called a few times prior to splitset creation.
 		, is_interpolated:bool = True
 		#, is_imputed:bool=True
 		#, is_outlied:bool=True
@@ -2653,15 +2656,15 @@ class Splitset(BaseModel):
 		"""
 		splitset_new = Splitset.get_by_id(id)
 		new_id = splitset_new.id
-		new_supervision = splitset_new.supervision
-		
+
 		predictor = splitset_new.predictor
 		for e, s in enumerate(predictor.splitsets):
 			if (s.id == new_id):
 				infer_idx = f"infer_{e}"
-		
-		splitset_old = predictor.job.queue.splitset
 
+		splitset_old = predictor.job.queue.splitset
+		old_supervision = splitset_old.supervision
+		
 		featureset_new = splitset_new.features
 		featureset_old = splitset_old.features
 
@@ -2671,13 +2674,15 @@ class Splitset(BaseModel):
 		# Right now only 1 Feature can be windowed.
 		for i, feature_old in enumerate(featureset_old):
 			feature_new = featureset_new[i]
-			if (new_supervision=='supervised'):
+			if (old_supervision=='supervised'):
 				arr_features = feature_old.preprocess(
-					inference_featureID=feature_new.id, supervision=new_supervision
+					inference_featureID=feature_new.id, supervision=old_supervision
 				)
-			elif (new_supervision=='unsupervised'):
+				# This is not known/ absolute at this point, it can be overwritten below.
+				arr_labels = None
+			elif (old_supervision=='unsupervised'):
 				arr_features, arr_labels = feature_old.preprocess(
-					inference_featureID=feature_new.id, supervision=new_supervision
+					inference_featureID=feature_new.id, supervision=old_supervision
 				)
 			features.append(arr_features)
 		if (len(features)==1):
@@ -2699,8 +2704,6 @@ class Splitset(BaseModel):
 		elif ((splitset_new.supervision=='unsupervised') and (arr_labels is not None)):
 			# An example of `None` would be `window.samples_shifted is None`
 			samples[infer_idx]['labels'] = None
-		else:
-			arr_labels = None
 		
 		# Predict() no longer has a samples argument
 		splitset_new.samples = samples
@@ -4114,7 +4117,7 @@ class Predictor(BaseModel):
 	):
 		"""
 		Executes all evaluation: predictions, metrics, charts for each split/fold.
-		- `key_train` is used during permutation, but not during inference.###
+		- `key_train` is used during permutation, but not during inference.
 		- Metrics are run against encoded data because they won't accept string data.
 		"""
 		predictor       = Predictor.get_by_id(id)
@@ -4135,7 +4138,7 @@ class Predictor(BaseModel):
 		supervision = splitset.supervision
 		if (inference_splitsetID is not None):
 			new_splitset = Splitset.get_by_id(inference_splitsetID)
-			if (new_splitset.label is not None):
+			if (new_splitset.label is not None):### will this work for unsupervised?
 				has_target = True
 			else:
 				has_target = False
