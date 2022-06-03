@@ -20,11 +20,11 @@ def infer(queue:int, has_target:bool=True):
     prediction = Inference(predictor, feature_datasets, label_dataset)
 
     if (has_target==False):
-        assert isinstance(prediction.metrics, dict), \
+        assert not isinstance(prediction.metrics, dict), \
             "\nYikes - Metrics aren't supposed to exist\n"
     elif (has_target==True):
-        assert not isinstance(prediction.metrics, dict), \
+        assert isinstance(prediction.metrics, dict), \
             "\nYikes - Metrics are supposed to exist\n"
-    assert not isinstance(prediction.predictions, dict), \
+    assert isinstance(prediction.predictions, dict), \
         "\nYikes - Predictions are supposed to exist\n"
     return prediction

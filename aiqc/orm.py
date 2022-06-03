@@ -1314,7 +1314,7 @@ class Label(BaseModel):
 		#, is_outlied:bool=True
 		, is_encoded:bool = True
 		, samples:dict = None # Only used to process training samples separately
-		, fold:object = None # Sometimes used during training, never used during inference
+		, fold:object = None # Used during training and inference
 		, key_train:list = None # Used during stage_data caching, but not during inference
 		, inference_labelID:int = None
 	):	
@@ -1636,7 +1636,7 @@ class Feature(BaseModel):
 		, is_shaped:bool = True
 		, samples:dict = None # Only used to process training samples separately
 		, key_train:list = None # Used during stage_data caching, but not inference
-		, fold:object = None # Sometimes used during training, never used during inference
+		, fold:object = None # Used during training and inference
 		, inference_featureID = None
 	):
 		"""
@@ -1692,7 +1692,9 @@ class Feature(BaseModel):
 		featurecoders = feature.featurecoders
 		if ((is_encoded==True) and (featurecoders.count()>0)):
 			if (fold is not None):
+				print("fold A")###
 				fitted_encoders = fold.fitted_featurecoders
+				print(fitted_encoders)
 				item = fold
 			else:
 				fitted_encoders = feature.fitted_featurecoders
@@ -2661,6 +2663,7 @@ class Splitset(BaseModel):
 		for e, s in enumerate(predictor.splitsets):
 			if (s.id == new_id):
 				infer_idx = f"infer_{e}"
+		fold = predictor.job.fold
 
 		splitset_old = predictor.job.queue.splitset
 		old_supervision = splitset_old.supervision
@@ -2676,13 +2679,13 @@ class Splitset(BaseModel):
 			feature_new = featureset_new[i]
 			if (old_supervision=='supervised'):
 				arr_features = feature_old.preprocess(
-					inference_featureID=feature_new.id, supervision=old_supervision
+					inference_featureID=feature_new.id, supervision=old_supervision, fold=fold
 				)
 				# This is not known/ absolute at this point, it can be overwritten below.
 				arr_labels = None
 			elif (old_supervision=='unsupervised'):
 				arr_features, arr_labels = feature_old.preprocess(
-					inference_featureID=feature_new.id, supervision=old_supervision
+					inference_featureID=feature_new.id, supervision=old_supervision, fold=fold
 				)
 			features.append(arr_features)
 		if (len(features)==1):
@@ -2699,7 +2702,7 @@ class Splitset(BaseModel):
 			label_old = None
 
 		if (label_new is not None):
-			arr_labels = label_old.preprocess(inference_labelID=label_new.id)
+			arr_labels = label_old.preprocess(inference_labelID=label_new.id, fold=fold)
 			samples[infer_idx]['labels'] = None
 		elif ((splitset_new.supervision=='unsupervised') and (arr_labels is not None)):
 			# An example of `None` would be `window.samples_shifted is None`
