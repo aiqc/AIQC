@@ -54,9 +54,9 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		file_path = datum.get_path('iris.tsv')
 
 	shared_dataset = Dataset.Tabular.from_path(
-		file_path = file_path
-		, source_file_format = 'tsv'
-		, dtype = None
+		file_path = file_path,
+		source_file_format = 'tsv',
+		dtype = None
 	)
 
 	pipeline = Pipeline(

@@ -426,6 +426,11 @@ def stage_data(splitset:object, fold:object):
 		path_split = path.join(path_fold, split)
 		create_folder(path_split)
 
+		"""
+		`Object arrays cannot be saved when allow_pickle=False`
+		"An object array is just a normal numpy array where the dtype is object"
+		However, we expect all arrays to be numeric thanks to encoding.
+		"""
 		path_label = path.join(path_split, "label.npy")
 		np.save(path_label, arr_labels[indices], allow_pickle=False)
 

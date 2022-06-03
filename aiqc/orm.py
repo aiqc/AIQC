@@ -1667,7 +1667,7 @@ class Feature(BaseModel):
 				samples_train = list(set(windows_flat))
 			
 			if (inference_feature is not None):
-				# It needs to be windowed, which is sample/dataset specific.
+				# New data needs to be windowed, which is sample/dataset specific.
 				# This intentionally overrides and mirrors the window variable above.
 				window = Window.from_feature(
 					feature_id=inference_feature.id,
@@ -2405,7 +2405,7 @@ class Splitset(BaseModel):
 				schemaNew_matches_schemaOld(splitset, splitset_old)
 			except:
 				for fold in splitset.folds:
-				fold.delete_instance()
+					fold.delete_instance()
 				splitset.delete_instance()
 				raise
 			splitset.predictor = predictor
@@ -4139,12 +4139,10 @@ class Predictor(BaseModel):
 				has_target = True
 			else:
 				has_target = False
-
 			samples = new_splitset.samples
 			fold_id = None
 		else:
 			has_target = True
-
 			if (fold is None):
 				samples = splitset.samples
 				fold_id = None
