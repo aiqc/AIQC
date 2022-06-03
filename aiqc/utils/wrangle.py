@@ -491,14 +491,10 @@ def tabular_schemas_match(set_original, set_new):
 	cols_new = set_new.columns
 	if (cols_new != cols_old):
 		raise Exception("\nYikes - New columns do not match original columns.\n")
-
-	typs_old = set_original.get_dtypes()
-	typs_new = set_new.get_dtypes()
-	if (typs_new != typs_old):
-		raise Exception(dedent("""
-			Yikes - New dtypes do not match original dtypes.
-			The Low-Level API methods for Dataset creation accept a `dtype` argument to fix this.
-		"""))
+	"""
+	Do not validate dtypes. If new columns have different NaN values, it changes their dtype to `object`.
+	Encoders and other preprocessors ultimately record and use `matching_columns`, not dtypes.
+	"""
 
 
 def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
