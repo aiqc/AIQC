@@ -4141,7 +4141,7 @@ class Predictor(BaseModel):
 		supervision = splitset.supervision
 		if (inference_splitsetID is not None):
 			new_splitset = Splitset.get_by_id(inference_splitsetID)
-			if (new_splitset.label is not None):### will this work for unsupervised?
+			if (new_splitset.label is not None):
 				has_target = True
 			else:
 				has_target = False
@@ -4291,7 +4291,10 @@ class Predictor(BaseModel):
 		- Doesn't use any Label data, but does use LabelCoder fit on the original Labels.
 		"""
 		if (supervision=='supervised'):
-			fitted_labelcoder = splitset.label.fitted_labelcoder
+			if (fold is None):
+				fitted_labelcoder = splitset.label.fitted_labelcoder
+			else:
+				fitted_labelcoder = fold.fitted_labelcoder
 			if (fitted_labelcoder is not None):
 				if (hasattr(fitted_labelcoder, 'inverse_transform')):
 					for split, data in predictions.items():
@@ -4312,7 +4315,10 @@ class Predictor(BaseModel):
 			# Remember `fitted_encoders` is a list of lists.
 			feature = splitset.features[0]
 			featurecoders = feature.featurecoders
-			fitted_featurecoders = feature.fitted_featurecoders
+			if (fold is None):
+				fitted_featurecoders = feature.fitted_featurecoders
+			else:
+				fitted_featurecoders = fold.fitted_featurecoders
 
 			if (fitted_featurecoders is not None):
 				for split, data in predictions.items():
