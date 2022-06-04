@@ -2656,6 +2656,7 @@ class Splitset(BaseModel):
 			if (s.id == new_id):
 				infer_idx = f"infer_{e}"
 		fold = predictor.job.fold
+		library = predictor.job.queue.algorithm.library
 
 		splitset_old = predictor.job.queue.splitset
 		old_supervision = splitset_old.supervision
@@ -2680,6 +2681,7 @@ class Splitset(BaseModel):
 					inference_featureID=feature_new.id, supervision=old_supervision, fold=fold
 				)
 			features.append(arr_features)
+		features = [conditional_torch(f, library) for f in features]
 		if (len(features)==1):
 			features = features[0]
 		
@@ -2700,6 +2702,9 @@ class Splitset(BaseModel):
 			# An example of `None` would be `window.samples_shifted is None`
 			samples[infer_idx]['labels'] = None
 		
+		if (arr_labels is not None):
+			arr_labels = conditional_torch(arr_labels, library)
+
 		# Predict() no longer has a samples argument
 		splitset_new.samples = samples
 		splitset_new.save()
@@ -3666,30 +3671,31 @@ class Queue(BaseModel):
 		split_metrics = []
 		fold_count = queue.splitset.fold_count
 		for prediction in queue_predictions:
-			predictor = prediction.predictor
-			for split_name,metrics in prediction.metrics.items():
+			# During inference, metrics may not exist.
+			if (prediction.metrics is not None):
+				predictor = prediction.predictor
+				for split_name, metrics in prediction.metrics.items():
+					split_metric = {}
+					if (predictor.job.hyperparamcombo is not None):
+						split_metric['hyperparamcombo_id'] = predictor.job.hyperparamcombo.id
+					elif (predictor.job.hyperparamcombo is None):
+						split_metric['hyperparamcombo_id'] = None
 
-				split_metric = {}
-				if (predictor.job.hyperparamcombo is not None):
-					split_metric['hyperparamcombo_id'] = predictor.job.hyperparamcombo.id
-				elif (predictor.job.hyperparamcombo is None):
-					split_metric['hyperparamcombo_id'] = None
+					if (fold_count > 0):
+						split_metric['fold_index'] = predictor.job.fold.fold_index
+					split_metric['job_id'] = predictor.job.id
+					if (predictor.job.repeat_count > 1):
+						split_metric['repeat_index'] = predictor.repeat_index
 
-				if (fold_count > 0):
-					split_metric['fold_index'] = predictor.job.fold.fold_index
-				split_metric['job_id'] = predictor.job.id
-				if (predictor.job.repeat_count > 1):
-					split_metric['repeat_index'] = predictor.repeat_index
+					split_metric['predictor_id'] = predictor.id
+					split_metric['split'] = split_name
 
-				split_metric['predictor_id'] = predictor.id
-				split_metric['split'] = split_name
+					for metric_name,metric_value in metrics.items():
+						# Check whitelist.
+						if metric_name in selected_metrics:
+							split_metric[metric_name] = metric_value
 
-				for metric_name,metric_value in metrics.items():
-					# Check whitelist.
-					if metric_name in selected_metrics:
-						split_metric[metric_name] = metric_value
-
-				split_metrics.append(split_metric)
+					split_metrics.append(split_metric)
 
 		column_names = list(split_metrics[0].keys())
 		if (sort_by is not None):

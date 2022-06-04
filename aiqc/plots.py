@@ -48,7 +48,7 @@ class Plot(object):
 	):
 		fig = px.line(
 			dataframe
-			, title = 'Models Metrics by Split'
+			, title = 'Model Metrics by Split'
 			, x = 'loss'
 			, y = score_type
 			, color = 'predictor_id'
