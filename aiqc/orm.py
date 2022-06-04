@@ -22,7 +22,7 @@ from .utils.config import app_folders, timezone_now, create_folder, create_confi
 from .plots import Plot
 from . import utils
 # --- Python modules ---
-from os import path, remove
+from os import path, remove, makedirs
 from sys import modules
 from io import BytesIO
 from shutil import rmtree
@@ -46,7 +46,7 @@ from tqdm import tqdm #progress bar.
 from natsort import natsorted #file sorting.
 # ORM.
 from playhouse.sqlite_ext import SqliteExtDatabase, JSONField
-from playhouse.signals import Model, pre_save
+from playhouse.signals import Model, pre_save, pre_delete
 from peewee import CharField, IntegerField, BlobField, BooleanField, FloatField, \
 	DateTimeField, ForeignKeyField, DeferredForeignKey
 from playhouse.fields import PickleField
@@ -182,6 +182,7 @@ def clear_cache_all(confirm=False):
 		rmtree(cache_dir)
 		query = (Splitset.update({Splitset.cache_hot:False}).where(Splitset.cache_hot==True))
 		query.execute()
+		makedirs(cache_dir)
 
 
 #==================================================
@@ -230,8 +231,6 @@ def increment_version(model_class, instance, created):
 				if (latest_match.dataset_type!=instance.dataset_type):
 					msg = f"Yikes - New Dataset type <{instance.dataset_type}> must match the type of the most recent version <{latest_match.dataset_type}>."
 					raise Exception(msg)
-
-
 
 
 class Dataset(BaseModel):
@@ -2079,7 +2078,7 @@ class Splitset(BaseModel):
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
 	predictor = DeferredForeignKey('Predictor', deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
 	# ^ used for inference just to name the split `infer_<index>`
-
+	
 
 	def make(
 		feature_ids:list
@@ -2593,9 +2592,11 @@ class Splitset(BaseModel):
 	
 
 	def clear_cache(id:int):
-		"""Includes this splitset as well as any folds"""
+		"""
+		- Includes this splitset as well as any folds
+		- `_update` is for when splitset is deleted.
+		"""
 		splitset = Splitset.get_by_id(id)
-
 		if (splitset.cache_hot==True):
 			cache_path = splitset.cache_path
 			rmtree(cache_path)
@@ -2722,6 +2723,12 @@ class Splitset(BaseModel):
 			, eval_label = arr_labels
 		)
 		return prediction
+
+
+@pre_delete(sender=Splitset)
+def del_cache(model_class, instance):
+	print("deleting")
+	instance.clear_cache()
 
 
 

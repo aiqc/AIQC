@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelBinarizer, PowerTransformer
 
 def fn_build(features_shape, label_shape, **hp):
 	model = tf.keras.models.Sequential()
-	model.add(l.Input(shape=features_shape))
+	model.add(l.Input(shape=features_shape[-1]))
 	model.add(l.Dense(15, activation='relu', kernel_initializer='he_uniform'))
 	model.add(l.Dropout(0.30))
 	model.add(l.Dense(units=label_shape[-1], activation='sigmoid', kernel_initializer='glorot_uniform'))
