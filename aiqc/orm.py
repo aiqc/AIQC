@@ -4278,7 +4278,6 @@ class Predictor(BaseModel):
 					metrics[split]['loss'] = float(loss)
 				plot_data = None
 		"""
-		Format predictions for saving:
 		- Decode predictions before saving.
 		- Doesn't use any Label data, but does use LabelCoder fit on the original Labels.
 		"""
