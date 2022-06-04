@@ -62,7 +62,7 @@ def create_folder(directory:str=None):
 		"""
 		makedirs(directory, exist_ok=True)
 	except:
-		raise OSError(f"\n=> Yikes - Local system failed to execute:\n`makedirs('{directory}', exist_ok=True)\n")
+		raise OSError(f"\n└── Yikes - Local system failed to execute:\n`makedirs('{directory}', exist_ok=True)\n")
 
 
 def check_permissions_folder():
@@ -75,8 +75,8 @@ def check_permissions_folder():
 			def permissions_fail_info():
 				# We don't want an error here because it needs to return False.
 				print(
-					f"=> Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n\n" \
-					f"=> Fix - you can attempt to fix this by running `aiqc.config.grant_permissions_folder()`.\n"
+					f"└── Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n\n" \
+					f"└── Fix - you can attempt to fix this by running `aiqc.config.grant_permissions_folder()`.\n"
 				)
 
 			try:
@@ -103,7 +103,7 @@ def check_permissions_folder():
 				else:
 					cmd_file_delete = "erase " + app_dir + file_name
 					system(cmd_file_delete)
-					print(f"\n=> Success - your operating system user can read from and write to file path:\n{app_dir}\n")
+					print(f"\n└── Success - your operating system user can read from and write to file path:\n{app_dir}\n")
 					return True
 
 		else:
@@ -116,11 +116,11 @@ def check_permissions_folder():
 				return True
 			else:
 				if not readable:
-					print(f"\n=> Yikes - your operating system user does not have permission to read from file path:\n{app_dir}\n")
+					print(f"\n└── Yikes - your operating system user does not have permission to read from file path:\n{app_dir}\n")
 				if not writeable:
-					print(f"\n=> Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n")
+					print(f"\n└── Yikes - your operating system user does not have permission to write to file path:\n{app_dir}\n")
 				if not readable or not writeable:
-					print("\n=> Fix - you can attempt to fix this by running `aiqc.config.grant_permissions_folder()`.\n")
+					print("\n└── Fix - you can attempt to fix this by running `aiqc.config.grant_permissions_folder()`.\n")
 					return False
 	else:
 		return False
@@ -142,16 +142,16 @@ def grant_permissions_folder():
 				system(command)
 		except:
 			print(
-				f"=> Yikes - error failed to execute this system command:\n{command}\n\n" \
+				f"└── Yikes - error failed to execute this system command:\n{command}\n\n" \
 				f"===================================\n"
 			)
 			raise
 		
 		permissions = check_permissions_folder()
 		if permissions:
-			print(f"\n=> Success - granted system permissions to read and write from file path:\n{app_dir}\n")
+			print(f"\n└── Success - granted system permissions to read and write from file path:\n{app_dir}\n")
 		else:
-			print(f"\n=> Yikes - failed to grant system permissions to read and write from file path:\n{app_dir}\n")
+			print(f"\n└── Yikes - failed to grant system permissions to read and write from file path:\n{app_dir}\n")
 
 
 #==================================================
@@ -169,7 +169,7 @@ def get_config():
 		The first step is import orm, which calls get_db(), which calls get_config()
 		This welcome message feels more natural than "config doesn't exist yet"
 		"""
-		print("\n=> 🚀 Welcome to AIQC. To get started, run `orm.setup()`.\n")
+		print("\n└── 🚀 Welcome to AIQC. Running `orm.setup()` ...\n")
 
 
 def create_config():
@@ -198,8 +198,8 @@ def create_config():
 					dump(aiqc_config, aiqc_config_file)
 			except:
 				print(
-					f"=> Yikes - failed to create config file at path:\n{default_config_path}\n\n" \
-					f"=> Fix - you can attempt to fix this by running `aiqc.config.check_permissions_folder()`.\n" \
+					f"└── Yikes - failed to create config file at path:\n{default_config_path}\n\n" \
+					f"└── Fix - you can attempt to fix this by running `aiqc.config.check_permissions_folder()`.\n" \
 					f"==================================="
 				)
 				raise
@@ -209,7 +209,7 @@ def create_config():
 def delete_config(confirm:bool=False):
 	aiqc_config = get_config()
 	if aiqc_config is None:
-		print("\n=> Info - skipping as there is no config file to delete.\n")
+		print("\n└── Info - skipping as there is no config file to delete.\n")
 	else:
 		if confirm:
 			config_path = aiqc_config['config_path']
@@ -217,20 +217,20 @@ def delete_config(confirm:bool=False):
 				remove(config_path)
 			except:
 				print(
-					f"=> Yikes - failed to delete config file at path:\n{config_path}\n\n" \
+					f"└── Yikes - failed to delete config file at path:\n{config_path}\n\n" \
 					f"===================================\n" \
 				)
 				raise
-			print(f"\n=> Success - deleted config file at path:\n{config_path}\n")
+			print(f"\n└── Success - deleted config file at path:\n{config_path}\n")
 			importlib_reload(modules[__name__])   
 		else:
-			print("\n=> Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
+			print("\n└── Info - skipping deletion because `confirm` arg not set to boolean `True`.\n")
 
 
 def update_config(kv:dict):
 	aiqc_config = get_config()
 	if aiqc_config is None:
-		print("\n=> Info - there is no config file to update.\n")
+		print("\n└── Info - there is no config file to update.\n")
 	else:
 		for k, v in kv.items():
 			aiqc_config[k] = v      
@@ -241,9 +241,9 @@ def update_config(kv:dict):
 				dump(aiqc_config, aiqc_config_file)
 		except:
 			print(
-				f"=> Yikes - failed to update config file at path:\n{config_path}\n\n" \
+				f"└── Yikes - failed to update config file at path:\n{config_path}\n\n" \
 				f"===================================\n"
 			)
 			raise
-		print(f"\n=> Success - updated configuration settings at path:\n{config_path}\n")
+		print(f"\n└── Success - updated configuration settings at path:\n{config_path}\n")
 		importlib_reload(modules[__name__])

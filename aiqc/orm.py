@@ -78,9 +78,16 @@ def get_path_db():
 
 
 def get_db():
-	"""The `BaseModel` of the ORM calls this function when this module is imported"""
+	"""
+	- The `BaseModel` of the ORM calls this function when this module is imported
+	- New: attempting setup() if db is missing.
+	"""
 	path = get_path_db()
-	if (path is not None):
+	if (path is None):
+		setup()
+		path = get_path_db()
+
+	elif (path is not None):
 		"""
 		SQLite Pragmas/Settings:
 		- Default is Journal mode <docs.peewee-orm.com/en/latest/peewee/database.html>
@@ -106,11 +113,11 @@ def create_db():
 			imp_reload(modules[__name__])
 		except:
 			print(
-				f"=> Yikes - failed to create database file at path:\n{db_path}\n\n" \
+				f"└── Yikes - failed to create database file at path:\n{db_path}\n\n" \
 				f"===================================\n"
 			)
 			raise
-		print(f"\n=> Success - created database file at path:\n{db_path}\n")	
+		print(f"\n└── 📁 Success - created database file at path:\n{db_path}\n")	
 	
 	# Create tables inside db.
 	tables = db.get_tables()
@@ -127,10 +134,10 @@ def create_db():
 		tables = db.get_tables()
 		table_count = len(tables)
 		if table_count > 0:
-			print("\n💾 Success - created database tables\n")
+			print("\n└── 💾 Success - created database tables\n")
 		else:
 			print(
-				f"=> Yikes - failed to create tables.\n" \
+				f"└── Yikes - failed to create tables.\n" \
 				f"Please see README file section titled: 'Deleting & Recreating the Database'\n"
 			)
 
@@ -144,19 +151,19 @@ def destroy_db(confirm:bool=False, rebuild:bool=False):
 				remove(db_path)
 			except:
 				print(
-					f"=> Yikes - failed to delete database file at path:\n{db_path}\n\n" \
+					f"└── Yikes - failed to delete database file at path:\n{db_path}\n\n" \
 					f"===================================\n"
 				)
 				raise
-			print(f"\n=> Success - deleted database file at path:\n{db_path}\n")
+			print(f"\n└── 🗑️ Success - deleted database file at path:\n{db_path}\n")
 		else:
-			print(f"\n=> Info - there is no file to delete at path:\n{db_path}\n")
+			print(f"\n└── Info - there is no file to delete at path:\n{db_path}\n")
 		imp_reload(modules[__name__])
 
 		if (rebuild==True):
 			create_db()
 	else:
-		print("\n=> Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
+		print("\n└── Info - skipping destruction because `confirm` arg not set to boolean `True`.\n")
 
 
 def setup():
@@ -1923,17 +1930,17 @@ class Feature(BaseModel):
 		}
 		if (verbose == True):
 			print(
-				f"=> The column(s) below matched your filter(s) {class_name} filters.\n\n" \
+				f"└── The column(s) below matched your filter(s) {class_name} filters.\n\n" \
 				f"{matching_columns}\n" 
 			)
 			if (len(leftover_columns) == 0):
 				print(
-					f"=> Done. All feature column(s) have {class_name}(s) associated with them.\n" \
+					f"└── Done. All feature column(s) have {class_name}(s) associated with them.\n" \
 					f"No more FeatureCoders can be added to this Feature.\n"
 				)
 			elif (len(leftover_columns) > 0):
 				print(
-					f"=> The remaining column(s) and dtype(s) are available for downstream {class_name}(s):\n" \
+					f"└── The remaining column(s) and dtype(s) are available for downstream {class_name}(s):\n" \
 					f"{pformat(initial_dtypes)}\n"
 				)
 		return index, matching_columns, leftover_columns, original_filter, initial_dtypes
@@ -2778,7 +2785,7 @@ class LabelInterpolater(BaseModel):
 		except:
 			raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
 		else:
-			print("\n=> Tested interpolation of Label successfully.\n")
+			print("\n└── Tested interpolation of Label successfully.\n")
 
 		lp = LabelInterpolater.create(
 			process_separately = process_separately
