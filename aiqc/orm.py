@@ -4112,6 +4112,8 @@ class Predictor(BaseModel):
 	):
 		"""
 		Executes all evaluation: predictions, metrics, charts for each split/fold.
+		- The train_*, eval_* objects should still be in-memory from training, but they can be fetched
+		  from cache anew if evaluation is ever decoupled from training.
 		- `key_train` is used during permutation, but not during inference.
 		- Metrics are run against encoded data because they won't accept string data.
 		"""
@@ -4125,7 +4127,7 @@ class Predictor(BaseModel):
 		analysis_type   = algorithm.analysis_type
 		
 		"""
-		Answers: Are we conducting inference? Is it folded? Is it evaluated?
+		Logic for handling inference, fold, and evaluation.
 		- `has_target` is not about supervision. During inference it is optional to provide labels.
 		- in fact, we need the `supervision` value for decoding no matter what.
 		"""
@@ -4174,13 +4176,10 @@ class Predictor(BaseModel):
 		# Used by supervised, but not unsupervised.
 		if ("classification" in analysis_type):
 			for split, _ in samples.items():
-				if (inference_splitsetID is None):
-					features = fetchFeatures_ifAbsent(
-						splitset=splitset, split=split, fold_id=fold_id, library=library,
-						train_features=train_features, eval_features=eval_features
-					)
-				else:
-					features = eval_features
+				features = fetchFeatures_ifAbsent(
+					splitset=splitset, split=split, fold_id=fold_id, library=library,
+					train_features=train_features, eval_features=eval_features
+				)
 
 				preds, probs = fn_predict(model, features)
 				predictions[split] = preds
@@ -4188,13 +4187,10 @@ class Predictor(BaseModel):
 				# Outputs numpy.
 
 				if (has_target == True):
-					if (inference_splitsetID is None):
-						label = fetchLabel_ifAbsent(
-							splitset=splitset, split=split, fold_id=fold_id, library=library,
-							train_label=train_label, eval_label=eval_label,
-						)
-					else:
-						label = eval_label
+					label = fetchLabel_ifAbsent(
+						splitset=splitset, split=split, fold_id=fold_id, library=library,
+						train_label=train_label, eval_label=eval_label,
+					)
 
 					# https://keras.io/api/losses/probabilistic_losses/
 					if (library == 'keras'):
@@ -4240,13 +4236,10 @@ class Predictor(BaseModel):
 			# The raw output values *is* the continuous prediction itself.
 			probs = None
 			for split, data in samples.items():
-				if (inference_splitsetID is None):
-					features = fetchFeatures_ifAbsent(
-						splitset=splitset, split=split, fold_id=fold_id, library=library,
-						train_features=train_features, eval_features=eval_features
-					)
-				else:
-					features = eval_features
+				features = fetchFeatures_ifAbsent(
+					splitset=splitset, split=split, fold_id=fold_id, library=library,
+					train_features=train_features, eval_features=eval_features
+				)
 
 				# Does not return `preds, probs`
 				preds = fn_predict(model, features)
@@ -4256,13 +4249,10 @@ class Predictor(BaseModel):
 				#https://keras.io/api/losses/regression_losses/
 				if (has_target==True):
 					# Reassigning so that permutation can use original data.
-					if (inference_splitsetID is None):
-						label = fetchLabel_ifAbsent(
-							splitset=splitset, split=split, fold_id=fold_id, library=library,
-							train_label=train_label, eval_label=eval_label
-						)
-					else:
-						label = eval_label
+					label = fetchLabel_ifAbsent(
+						splitset=splitset, split=split, fold_id=fold_id, library=library,
+						train_label=train_label, eval_label=eval_label
+					)
 
 					if (library == 'keras'):
 						loss = loser(label, preds)

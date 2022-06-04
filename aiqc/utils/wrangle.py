@@ -451,13 +451,22 @@ def fetchFeatures_ifAbsent(
 	"""Check if this split is already in-memory. If not, fetch it."""
 	key_trn = splitset.key_train
 	key_eval = splitset.key_evaluation
+	
+	fetch = True
 	if (split==key_trn):
 		if (train_features is not None):
 			data = train_features
-	elif ((split==key_eval) and (key_eval is not None)):
+			fetch = False
+	elif (
+		(split==key_eval) and (key_eval is not None)
+		or
+		('infer' in split)
+	):
 		if (eval_features is not None):
 			data = eval_features
-	else:
+			fetch = False
+	
+	if (fetch==True):
 		data, _ = splitset.fetch_cache(
 			fold_id=fold_id, split=split, label_features='features', library=library
 		)
@@ -472,13 +481,22 @@ def fetchLabel_ifAbsent(
 	"""Check if data is already in-memory. If not, fetch it."""
 	key_trn = splitset.key_train
 	key_eval = splitset.key_evaluation
+	
+	fetch = True
 	if (split==key_trn):
 		if (train_label is not None):
 			data = train_label
-	elif ((split==key_eval) and (key_eval is not None)):
+			fetch = False
+	elif (
+		(split==key_eval) and (key_eval is not None)
+		or
+		('infer' in split)
+	):
 		if (eval_label is not None):
 			data = eval_label
-	else:
+			fetch = False
+	
+	if (fetch==True):
 		data, _ = splitset.fetch_cache(
 			fold_id=fold_id, split=split, label_features='label', library=library
 		)
