@@ -507,11 +507,29 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 
 	for i, feature_new in enumerate(features_new):
 		feature_old = features_old[i]
+		# --- Data type ---
 		feature_old_typ = feature_old.dataset.dataset_type
 		feature_new_typ = feature_new.dataset.dataset_type
 		if (feature_old_typ != feature_new_typ):
 			raise Exception(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
 		tabular_schemas_match(feature_old, feature_new)
+		# --- Window ---
+		if (
+			((feature_old.windows.count()>0) and (feature_new.windows.count()==0))
+			or
+			((feature_new.windows.count()>0) and (feature_old.windows.count()==0))
+		):
+			raise Exception("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
+
+		if ((feature_old.windows.count()>0) and (feature_new.windows.count()>0)):
+			window_old = feature_old.windows[-1]
+			window_new = feature_new.windows[-1]
+			if (
+				(window_old.size_window != window_new.size_window)
+				or
+				(window_old.size_shift != window_new.size_shift)
+			):
+				raise Exception("\nYikes - New Window and old Window schemas do not match.\n")
 
 	# Only verify Labels if the inference new Splitset provides Labels.
 	# Otherwise, it may be conducting pure inference.

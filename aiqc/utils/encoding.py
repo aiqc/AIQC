@@ -314,7 +314,7 @@ def fit_labels(arr_labels:object, samples_train:list, labelcoder:object):
 		labels_to_fit = arr_labels[samples_train]
 	elif (labelcoder.only_fit_train == False):
 		labels_to_fit = arr_labels
-		
+	print(labels_to_fit)###
 	fitted_encoders, encoding_dimension = fit_dynamicDimensions(
 		sklearn_preprocess=preproc, samples_to_fit=labels_to_fit
 	)

@@ -89,34 +89,3 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		)
 	)
 	return experiment
-
-
-# def infer(queue:int, has_target:bool=True):
-# 	"""Just make a copy of some of the data and run it back through"""
-# 	predictor = queue.jobs[0].predictors[0]
-# 	splitset = queue.splitset
-	
-# 	label = splitset.label 
-# 	if ((label is not None) and (has_target==True)):
-# 		cols = label.columns
-# 		label_dataset = label.dataset
-# 		target = Target(dataset=label_dataset,column=cols)
-# 	else:
-# 		target = None
-
-# 	inputs = []	
-# 	for e, f in enumerate(splitset.features):		
-# 		cols = f.columns
-# 		dataset = f.dataset
-# 		# Use `include_columns` in case users decided to stop gathering the excluded columns.
-# 		inputtt = Input(dataset=dataset, include_columns=cols)
-# 		inputs.append(inputtt)
-
-# 	splitset = Pipeline(
-# 		inputs = inputs,
-# 		target = target,
-# 		stratifier = Stratifier(),
-# 		predictor = predictor
-# 	)
-# 	prediction = splitset.infer()
-# 	return prediction

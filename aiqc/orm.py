@@ -1659,7 +1659,10 @@ class Feature(BaseModel):
 
 		# Downstream preprocesses need to know the window ranges.
 		if ((is_windowed==True) and (feature.windows.count()>0)):
-			window = feature.windows[-1]
+			if (inference_feature is None):
+				window = feature.windows[-1]
+			else:
+				window = inference_feature.windows[-1]
 				
 			# During encoding we'll need the raw rows, not window indices.
 			if (key_train is not None):
@@ -1668,15 +1671,6 @@ class Feature(BaseModel):
 				# We need all of the rows from all of the windows. But only the unique ones. 
 				windows_flat = [item for sublist in train_windows for item in sublist]
 				samples_train = list(set(windows_flat))
-			
-			if (inference_feature is not None):
-				# New data needs to be windowed, which is sample/dataset specific.
-				# This intentionally overrides and mirrors the window variable above.
-				window = Window.from_feature(
-					feature_id=inference_feature.id,
-					size_window=window.size_window,
-					size_shift=window.size_shift
-				)
 		else:
 			window = None
 
@@ -1692,9 +1686,7 @@ class Feature(BaseModel):
 		featurecoders = feature.featurecoders
 		if ((is_encoded==True) and (featurecoders.count()>0)):
 			if (fold is not None):
-				print("fold A")###
 				fitted_encoders = fold.fitted_featurecoders
-				print(fitted_encoders)
 				item = fold
 			else:
 				fitted_encoders = feature.fitted_featurecoders
@@ -1976,7 +1968,7 @@ class Window(BaseModel):
 	"""
 	size_window = IntegerField()
 	size_shift = IntegerField()
-	window_count = IntegerField()#number of windows in the dataset.
+	window_count = IntegerField()#number of windows in the dataset. not a relationship count!
 	samples_unshifted = JSONField()#underlying sample indices of each window.
 	samples_shifted = JSONField(null=True)#underlying sample indices of each window.
 	feature = ForeignKeyField(Feature, backref='windows')
@@ -4295,10 +4287,11 @@ class Predictor(BaseModel):
 				fitted_labelcoder = splitset.label.fitted_labelcoder
 			else:
 				fitted_labelcoder = fold.fitted_labelcoder
+
 			if (fitted_labelcoder is not None):
 				if (hasattr(fitted_labelcoder, 'inverse_transform')):
 					for split, data in predictions.items():
-						# OHE is arriving here as ordinal, not OHE.
+						# For when OHE arrives here as ordinal, not OHE.
 						data = if_1d_make_2d(data)
 						predictions[split] = fitted_labelcoder.inverse_transform(data)
 				elif (not hasattr(fitted_labelcoder, 'inverse_transform')):

@@ -54,6 +54,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		, "epoch_count": [10]
 	}
 
+	# Note: iris 10x has ordinal labels, not text.
 	if (fold_count is not None):
 		file_path = datum.get_path('iris_10x.tsv')
 	else:

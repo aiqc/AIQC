@@ -53,7 +53,7 @@ class Input:
         , exclude_columns:list 	= None
         , include_columns:list  = None
         , interpolaters:list	= None
-        , window:dict 			= None
+        , window:object 		= None
         , encoders:list 		= None
         , reshape_indices:tuple = None
     ):
@@ -174,7 +174,7 @@ class Pipeline:
             if (window is not None):
                 kwargz = window.__dict__
                 Window.from_feature(feature_id=f_id, **kwargz)
-            
+
             encoders = i.encoders
             if (encoders is not None):					
                 for fc in encoders:
@@ -291,27 +291,44 @@ class Inference:
         , feature_datasets:list
         , label_dataset:object = None
     ):
+        """Reference `utils.wrangle.schemaNew_matches_schemaOld()` for validation"""
         feature_datasets = listify(feature_datasets)
-        splitset = predictor.job.queue.splitset
+        old_splitset = predictor.job.queue.splitset
         
         if (label_dataset is not None):
-            label = splitset.label 
+            label = old_splitset.label 
             if (label is not None):
                 cols = label.columns
                 label_dataset = label.dataset
                 target = Target(dataset=label_dataset,column=cols)
-            else:
-                raise Exception("\nYikes - Previous Pipeline did not have a Label, but new \n")
         else:
             target = None
 
         inputs = []	
-        for e, f in enumerate(splitset.features):		
+        for e, f in enumerate(old_splitset.features):		
             cols = f.columns
             dataset = feature_datasets[e]
+            new_window = None
+            if (e==0):
+                """
+                - Window has to be created prior to splitset. 
+                  So this can't happen during `Feature.preprocess()`
+                - Reminder, unsupervised can only have 1 featureset right now.
+                  So we only need to access the first Feature.
+                """
+                if (f.windows.count()>0):
+                    old_window = f.windows[-1]
+                    new_window = Input.Window(
+                        size_window = old_window.size_window,
+                        size_shift = old_window.size_shift
+                    )
             # Use `include_columns` in case users decided to stop gathering the excluded columns.
-            inputtt = Input(dataset=dataset, include_columns=cols)
-            inputs.append(inputtt)
+            input_ = Input(
+                dataset=dataset, 
+                include_columns=cols, 
+                window=new_window
+            )
+            inputs.append(input_)
 
         pipeline = Pipeline(
             inputs = inputs,
