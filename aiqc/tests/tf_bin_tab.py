@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelBinarizer, PowerTransformer
 
 def fn_build(features_shape, label_shape, **hp):
 	model = tf.keras.models.Sequential()
-	model.add(l.Input(shape=features_shape[-1]))
+	model.add(l.Input(shape=features_shape))
 	model.add(l.Dense(15, activation='relu', kernel_initializer='he_uniform'))
 	model.add(l.Dropout(0.30))
 	model.add(l.Dense(units=label_shape[-1], activation='sigmoid', kernel_initializer='glorot_uniform'))
@@ -49,7 +49,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 
 	shared_dataset = Dataset.Tabular.from_path(
 		file_path = file_path
-		, source_file_format = 'csv'
+		, file_format = 'csv'
 		, name = 'rocks n radio'
 		, dtype = None
 	)
@@ -82,7 +82,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		),
 		
 		Trainer(
-			pipeline_id       = pipeline.id
+			pipeline       = pipeline
 			, repeat_count    = repeat_count
 			, permute_count   = permute_count
 			, search_percent  = None

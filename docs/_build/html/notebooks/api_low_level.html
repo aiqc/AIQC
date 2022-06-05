@@ -34,7 +34,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Inference" href="inference.html" />
+    <link rel="next" title="Datasets" href="datasets.html" />
     <link rel="prev" title="High-Level API" href="api_high_level.html" /> 
 </head>
 
@@ -122,45 +122,29 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="query_meta.html">Query the Metastore</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="query_meta.html#🧪-Inspecting-the-Modeling-Process">🧪 Inspecting the Modeling Process</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-the-models-perform?">How well did the models perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#Running-a-Job-produces-a-model,-which-is-saved-in-a-Predictor-object">Running a <code class="docutils literal notranslate"><span class="pre">Job</span></code> produces a model, which is saved in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-this-particular-model-learn?">How well did this particular model learn?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-this-particular-model-perform?">How well did this particular model perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-kind-of-Algorithm-was-trained?">What kind of <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was trained?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-hyperparameters-were-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> were tested?</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="query_meta.html#💾-Inspecting-the-Data">💾 Inspecting the Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-samples-were-fed-to-the-algorithm?">What samples were fed to the algorithm?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Features-were-used-to-train-the-model?">What <code class="docutils literal notranslate"><span class="pre">Features</span></code> were used to train the model?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-were-the-Labels?">What were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code>?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Dataset-did-these-Features-and-Labels-come-from?">What <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> did these <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code> come from?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-were-the-Labels-and-Features-encoded-during-training?">How were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code> and <code class="docutils literal notranslate"><span class="pre">Features</span></code> encoded during training?</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#1.-Pipeline">1. Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#a)-Tabular-Dataset">a) Tabular Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#b)-Sequence-Dataset">b) Sequence Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#c)-Image-Dataset">c) Image Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#1a.-Input">1a. Input</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1ai.-Input.Interpolater">1ai. Input.Interpolater</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1aii.-Input.Window">1aii. Input.Window</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1aiii.-Input.Encoder">1aiii. Input.Encoder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#1b.-Target">1b. Target</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1bi.-Target.Interpolater">1bi. Target.Interpolater</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1bii.-Target.Encoder">1bii. Target.Encoder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#1c.-Stratifier">1c. Stratifier</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#2.-Experiment">2. Experiment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Model-Functions">Model Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_build"><code class="docutils literal notranslate"><span class="pre">fn_build</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_train"><code class="docutils literal notranslate"><span class="pre">fn_train</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#2a.-Architecture">2a. Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#2b.-Trainer">2b. Trainer</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Hyperparameters">Hyperparameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment()"><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Inference">Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Low-Level API</a><ul>
@@ -230,7 +214,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#b)-Encode-Features-sequentially-with-FeatureCoders.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">FeatureCoders</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Filtering-feature-columns">Filtering feature columns</a></li>
 </ul>
 </li>
@@ -275,12 +259,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#9.-Metrics-&amp;-Visualization">9. Metrics &amp; Visualization</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="inference.html#Predictor">Predictor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inference.html#New-Splitset">New Splitset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inference.html#Run-Inference">Run Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
@@ -2058,11 +2036,9 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <li><p>For the 3D <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code>, interpolation is simply ran separately on each 2D array.</p></li>
 <li><p>However, for the 2D <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code>, different windows belong to different splits/ folds so their underlying groups of rows must be interpolated separately.</p></li>
 </ul>
-<p>Additionally, for <em>multivariate datasets</em> there are several columns/ dtypes in the data that have completely different patterns/ curves to fit. Thus we need a chain of <code class="docutils literal notranslate"><span class="pre">FeatureInterpolaters</span></code> that is represented by <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interpolaterset</span> <span class="o">=</span> <span class="n">Interpolaterset</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
-<span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_interpolaterset</span><span class="p">(</span>
-    <span class="n">intepolaterset_id</span> <span class="o">=</span> <span class="n">interpolaterset</span><span class="o">.</span><span class="n">id</span>
+<p>For <em>multivariate datasets</em> there are several columns/ dtypes in the data that can have completely different patterns/ curves to fit, so we need to be able to specify multiple interpolaters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
+    <span class="n">feature_id</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nox&#39;</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">interpolate_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span>
@@ -2073,8 +2049,8 @@ to do something undersized like “150 samples in their dataset and a <code clas
     <span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_interpolaterset</span><span class="p">(</span>
-    <span class="n">intepolaterset_id</span> <span class="o">=</span> <span class="n">interpolaterset</span><span class="o">.</span><span class="n">id</span>
+<span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
+    <span class="n">feature_id</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">interpolate_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">method</span><span class="o">=</span><span class="s1">&#39;spline&#39;</span>
@@ -2149,8 +2125,8 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 <p>The following method is used behind the scenes to fetch the most recently create LabelCoder for your Label when it comes time to encode data during training.</p>
 </section>
 </section>
-<section id="b)-Encode-Features-sequentially-with-Ensoderset.">
-<h3>b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.<a class="headerlink" href="#b)-Encode-Features-sequentially-with-Ensoderset." title="Permalink to this headline"></a></h3>
+<section id="b)-Encode-Features-sequentially-with-FeatureCoders.">
+<h3>b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">FeatureCoders</span></code>.<a class="headerlink" href="#b)-Encode-Features-sequentially-with-FeatureCoders." title="Permalink to this headline"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> has the same validation process as the <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>. However, it is not without its own challenges:</p>
 <ul class="simple">
 <li><p>We want to be able to apply different encoders to columns of different dtypes.</p></li>
@@ -2159,18 +2135,6 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 <li><p>And finally, throughout this entire process, we need to avoid data leakage.</p></li>
 </ul>
 <p>For these reasons, <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code>’s are applied sequentially; in an ordered chain, one after the other. After an encoder is applied, its columns are removed from the raw feature and placed into an intermediary cache specific to each split/ fold.</p>
-<blockquote>
-<div><p>Right now, <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> cannot be created for <code class="docutils literal notranslate"><span class="pre">Dataset.Image.Feature</span></code>. I’m not opposed to changing this, but I would just have to account for 3D arrays.</p>
-</div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[53]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">Encoderset</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <section id="Filtering-feature-columns">
 <h4>Filtering feature columns<a class="headerlink" href="#Filtering-feature-columns" title="Permalink to this headline"></a></h4>
 <p>The filtering mode is either:</p>
@@ -2195,8 +2159,8 @@ may fail if it doesn’t know how to handle the previously unseen category.</p><
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">FeatureCoder</span> <span class="o">=</span> <span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_encoderset</span><span class="p">(</span>
-    <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">id</span>
+<span></span><span class="n">FeatureCoder</span> <span class="o">=</span> <span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
+    <span class="n">feature_id</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">id</span>
     <span class="p">,</span> <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">PowerTransformer</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;yeo-johnson&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="p">,</span> <span class="n">include</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
@@ -2838,7 +2802,7 @@ parallelize.</p></li>
 </div></blockquote>
 <section id="Preprocessing-during-Job-is-recorded">
 <h5>Preprocessing during Job is recorded<a class="headerlink" href="#Preprocessing-during-Job-is-recorded" title="Permalink to this headline"></a></h5>
-<p>During the execution of a Job, the latest LabelCoder and Encoderset(s) tied to the Label and Feature(s) of the Splitset used during training will record their <code class="docutils literal notranslate"><span class="pre">fit()</span></code> to the data.</p>
+<p>During the execution of a Job, the LabelCoder and FeatureCoders(s) tied to the Label and Feature(s) of the Splitset used during training will record their <code class="docutils literal notranslate"><span class="pre">fit()</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">FittedLabelCoder</span></code> for the LabelCoder used.</p>
 <ul>
@@ -2858,7 +2822,7 @@ parallelize.</p></li>
 </ul>
 <p>It takes a lot of joins to fetch the fitted encoders after the fact. So these methods are used behind the scenes to make it a bit easier:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_encoderset(job,</span> <span class="pre">label)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_encoders(job,</span> <span class="pre">label)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_LabelCoder(job,</span> <span class="pre">feature)</span></code></p></li>
 </ul>
 </section>

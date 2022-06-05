@@ -34,7 +34,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Query the Metastore" href="query_meta.html" />
+    <link rel="next" title="High-Level API" href="api_high_level.html" />
     <link rel="prev" title="Dashboards" href="dashboard.html" /> 
 </head>
 
@@ -122,45 +122,29 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="query_meta.html">Query the Metastore</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="query_meta.html#Inspecting-the-Modeling-Process">Inspecting the Modeling Process</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-well-did-the-models-in-the-Queue-perform?">How well did the models in the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-training-Jobs-belong-to-the-Queue?">What training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code> belong to the <code class="docutils literal notranslate"><span class="pre">Queue</span></code>?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#A-Job-stores-information-about-its-trained-model-in-a-Predictor">A <code class="docutils literal notranslate"><span class="pre">Job</span></code> stores information about its trained model in a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-did-this-model-perform?">How did this model perform?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Algorithm-was-the-Queue-training?">What <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> was the <code class="docutils literal notranslate"><span class="pre">Queue</span></code> training?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-hyperparameter-space-was-tested?">What <code class="docutils literal notranslate"><span class="pre">hyperparameter</span></code> space was tested?</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="query_meta.html#Inspecting-the-Data">Inspecting the Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-samples-were-fed-to-the-algorithm?">What <code class="docutils literal notranslate"><span class="pre">samples</span></code> were fed to the algorithm?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Features-were-used-to-train-the-model?">What <code class="docutils literal notranslate"><span class="pre">Features</span></code> were used to train the model?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-were-the-Labels?">What were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code>?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#What-Dataset-did-these-Features-and-Labels-come-from?">What <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> did these <code class="docutils literal notranslate"><span class="pre">Features</span></code> and <code class="docutils literal notranslate"><span class="pre">Labels</span></code> come from?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="query_meta.html#How-were-the-Labels-and-Features-encoded-during-training?">How were the <code class="docutils literal notranslate"><span class="pre">Labels</span></code> and <code class="docutils literal notranslate"><span class="pre">Features</span></code> encoded during training?</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#1.-Pipeline">1. Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#a)-Tabular-Dataset">a) Tabular Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#b)-Sequence-Dataset">b) Sequence Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#c)-Image-Dataset">c) Image Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#1a.-Input">1a. Input</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1ai.-Input.Interpolater">1ai. Input.Interpolater</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1aii.-Input.Window">1aii. Input.Window</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1aiii.-Input.Encoder">1aiii. Input.Encoder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#1b.-Target">1b. Target</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1bi.-Target.Interpolater">1bi. Target.Interpolater</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#1bii.-Target.Encoder">1bii. Target.Encoder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#1c.-Stratifier">1c. Stratifier</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#2.-Experiment">2. Experiment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Model-Functions">Model Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_build"><code class="docutils literal notranslate"><span class="pre">fn_build</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_high_level.html#fn_train"><code class="docutils literal notranslate"><span class="pre">fn_train</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#2a.-Architecture">2a. Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#2b.-Trainer">2b. Trainer</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Hyperparameters">Hyperparameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_high_level.html#Experiment()"><code class="docutils literal notranslate"><span class="pre">Experiment()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Inference">Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
@@ -209,11 +193,11 @@
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Splitsets">Reading Splitsets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-Create-a-Foldset-for-cross-validation.">c) Create a <code class="docutils literal notranslate"><span class="pre">Foldset</span></code> for cross-validation.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-fold_count-triggers-cross-validation.">c) <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> triggers cross-validation.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id12">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Foldsets">Specifying Foldsets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Foldsets">Reading Foldsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Folds">Specifying Folds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Folds">Reading Folds</a></li>
 </ul>
 </li>
 </ul>
@@ -230,7 +214,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-Ensoderset.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">Ensoderset</span></code>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Encode-Features-sequentially-with-FeatureCoders.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">FeatureCoders</span></code>.</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
 </ul>
 </li>
@@ -275,12 +259,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Metrics-&amp;-Visualization">9. Metrics &amp; Visualization</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="inference.html#Predictor">Predictor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inference.html#New-Splitset">New Splitset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inference.html#Run-Inference">Run Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>

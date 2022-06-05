@@ -179,10 +179,13 @@ def clear_cache_all(confirm=False):
 		print("\nInfo - Skipped clearing cache because `confirm==False`\nThis will delete all cached models and samples.\n")
 	elif (confirm==True):
 		cache_dir = app_folders['cache']
-		rmtree(cache_dir)
-		query = (Splitset.update({Splitset.cache_hot:False}).where(Splitset.cache_hot==True))
-		query.execute()
-		makedirs(cache_dir)
+		if path.exists(cache_dir):
+			rmtree(cache_dir)
+			query = (Splitset.update({Splitset.cache_hot:False}).where(Splitset.cache_hot==True))
+			query.execute()
+			makedirs(cache_dir)
+		else:
+			print("\nInfo - skipped because cache does not exist.\n")
 
 
 #==================================================
@@ -329,7 +332,7 @@ class Dataset(BaseModel):
 
 		def from_path(
 			file_path:str
-			, source_file_format:str
+			, file_format:str
 			, name:str = None
 			, description:str = None
 			, dtype:object = None
@@ -340,8 +343,8 @@ class Dataset(BaseModel):
 			column_names = listify(column_names)
 
 			accepted_formats = ['csv', 'tsv', 'parquet']
-			if (source_file_format not in accepted_formats):
-				raise Exception(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {source_file_format}\n")
+			if (file_format not in accepted_formats):
+				raise Exception(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
 
 			if (not path.exists(file_path)):
 				raise Exception(f"\nYikes - The path you provided does not exist according to `path.exists(file_path)`:\n{file_path}\n")
@@ -370,8 +373,8 @@ class Dataset(BaseModel):
 
 			try:
 				File.from_path(
-					path = file_path
-					, source_file_format = source_file_format
+					file_path = file_path
+					, file_format = file_format
 					, dtype = dtype
 					, column_names = column_names
 					, skip_header_rows = skip_header_rows
@@ -474,11 +477,11 @@ class Dataset(BaseModel):
 				)
 			elif (data_type == "<class 'str'>"):
 				if ('.csv' in d):
-					source_file_format='csv'
+					file_format='csv'
 				elif ('.tsv' in d):
-					source_file_format='tsv'
+					file_format='tsv'
 				elif ('.parquet' in d):
-					source_file_format='parquet'
+					file_format='parquet'
 				else:
 					raise Exception(dedent("""
 					Yikes - None of the following file extensions were found in the path you provided:
@@ -486,7 +489,7 @@ class Dataset(BaseModel):
 					"""))
 				dataset = Dataset.Tabular.from_path(
 					file_path = d
-					, source_file_format = source_file_format
+					, file_format = file_format
 					, dtype = dtype
 					, name=name
 					, description=description
@@ -1016,8 +1019,8 @@ class File(BaseModel):
 
 
 	def from_path(
-		path:str
-		, source_file_format:str
+		file_path:str
+		, file_format:str
 		, dataset_id:int
 		, dtype:object = None
 		, column_names:list = None
@@ -1026,8 +1029,8 @@ class File(BaseModel):
 	):
 		column_names = listify(column_names)
 		df = path_to_df(
-			file_path = path
-			, source_file_format = source_file_format
+			file_path = file_path
+			, file_format = file_format
 			, column_names = column_names
 			, skip_header_rows = skip_header_rows
 		)
@@ -1037,8 +1040,8 @@ class File(BaseModel):
 			, dataset_id = dataset_id
 			, dtype = dtype
 			, column_names = None # See docstring above.
-			, source_path = path
-			, file_format = source_file_format
+			, source_path = file_path
+			, file_format = file_format
 			, skip_header_rows = skip_header_rows
 			, ingest = ingest
 		)
@@ -1062,7 +1065,7 @@ class File(BaseModel):
 			# future: check if `query_fetcher` defined.
 			df = path_to_df(
 				file_path = file.source_path
-				, source_file_format = file.file_format
+				, file_format = file.file_format
 				, column_names = columns
 				, skip_header_rows = file.skip_header_rows
 			)
@@ -2599,9 +2602,12 @@ class Splitset(BaseModel):
 		splitset = Splitset.get_by_id(id)
 		if (splitset.cache_hot==True):
 			cache_path = splitset.cache_path
-			rmtree(cache_path)
-			splitset.cache_hot=False
-			splitset.save()
+			if path.exists(cache_path):
+				rmtree(cache_path)
+				splitset.cache_hot=False
+				splitset.save()
+			else:
+				print("\nInfo - skipped because cache does not exist.\n")
 	
 
 	def fetch_cache(
@@ -2727,7 +2733,6 @@ class Splitset(BaseModel):
 
 @pre_delete(sender=Splitset)
 def del_cache(model_class, instance):
-	print("deleting")
 	instance.clear_cache()
 
 

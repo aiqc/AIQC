@@ -2294,7 +2294,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Additionally, for *multivariate datasets* there are several columns/ dtypes in the data that have completely different patterns/ curves to fit. Thus we need a chain of `FeatureInterpolaters` that is represented by `Interpolaterset`."
+    "For *multivariate datasets* there are several columns/ dtypes in the data that can have completely different patterns/ curves to fit, so we need to be able to specify multiple interpolaters."
    ]
   },
   {
@@ -2302,10 +2302,8 @@
    "metadata": {},
    "source": [
     "```python\n",
-    "interpolaterset = Interpolaterset.from_feature(feature_id=feature.id)\n",
-    "\n",
-    "FeatureInterpolater.from_interpolaterset(\n",
-    "    intepolaterset_id = interpolaterset.id\n",
+    "FeatureInterpolater.from_feature(\n",
+    "    feature_id = feature.id\n",
     "    , columns = ['nox']\n",
     "    , interpolate_kwargs = dict(\n",
     "        method='linear'\n",
@@ -2316,8 +2314,8 @@
     "    )\n",
     ")\n",
     "\n",
-    "FeatureInterpolater.from_interpolaterset(\n",
-    "    intepolaterset_id = interpolaterset.id\n",
+    "FeatureInterpolater.from_feature(\n",
+    "    feature_id = feature.id\n",
     "    , dtypes = ['float64']\n",
     "    , interpolate_kwargs = dict(\n",
     "        method='spline'\n",
@@ -2451,7 +2449,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### b) Encode Features sequentially with `Ensoderset`."
+    "### b) Encode Features sequentially with `FeatureCoders`."
    ]
   },
   {
@@ -2469,22 +2467,6 @@
     "* And finally, throughout this entire process, we need to avoid data leakage.\n",
     "\n",
     "For these reasons, `FeatureCoder`'s are applied sequentially; in an ordered chain, one after the other. After an encoder is applied, its columns are removed from the raw feature and placed into an intermediary cache specific to each split/ fold. "
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "> Right now, `FeatureCoder` cannot be created for `Dataset.Image.Feature`. I'm not opposed to changing this, but I would just have to account for 3D arrays."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 53,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "encoderset = Encoderset.from_feature(feature_id=feature.id)"
    ]
   },
   {
@@ -2547,8 +2529,8 @@
     }
    ],
    "source": [
-    "FeatureCoder = FeatureCoder.from_encoderset(\n",
-    "    encoderset_id = encoderset.id\n",
+    "FeatureCoder = FeatureCoder.from_feature(\n",
+    "    feature_id = feature.id\n",
     "    , sklearn_preprocess = PowerTransformer(method='yeo-johnson', copy=False)\n",
     "    , include = True\n",
     "    , dtypes = ['float64']\n",
@@ -3577,7 +3559,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "During the execution of a Job, the latest LabelCoder and Encoderset(s) tied to the Label and Feature(s) of the Splitset used during training will record their `fit()` to the data.\n",
+    "During the execution of a Job, the LabelCoder and FeatureCoders(s) tied to the Label and Feature(s) of the Splitset used during training will record their `fit()`.\n",
     "\n",
     "- `FittedLabelCoder` for the LabelCoder used.\n",
     "  - `fitted_encoders:object` to store the `fit`.\n",
@@ -3596,7 +3578,7 @@
    "source": [
     "It takes a lot of joins to fetch the fitted encoders after the fact. So these methods are used behind the scenes to make it a bit easier:\n",
     "\n",
-    "- `Predictor.get_fitted_encoderset(job, label)`\n",
+    "- `Predictor.get_fitted_encoders(job, label)`\n",
     "- `Predictor.get_fitted_LabelCoder(job, feature)`"
    ]
   },

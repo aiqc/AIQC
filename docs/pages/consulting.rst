@@ -58,7 +58,7 @@ Consulting
     </br></br></br>
     <div class="flex-container" style="width:95%">
       <div class="DMAIC-left">
-        <image class="DMAIC-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/DMAIC.png'">
+        <image class="DMAIC-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/pages/images/DMAIC.png'">
       </div>
       <div class="DMAIC-right figCaption">
         </br>

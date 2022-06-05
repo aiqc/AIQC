@@ -47,7 +47,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 				try:
 					sklearn_preprocess.sparse = False
 					print(dedent("""
-						=> Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+						└── Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
 							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
 					"""))
 				except:
@@ -64,7 +64,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 				try:
 					sklearn_preprocess.drop = None
 					print(dedent("""
-						=> Info - System overriding user input to set `sklearn_preprocess.drop`.
+						└── Info - System overriding user input to set `sklearn_preprocess.drop`.
 							System cannot handle `drop` yet when dynamically inverse_transforming predictions.
 					"""))
 				except:
@@ -78,7 +78,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 				try:
 					sklearn_preprocess.copy = False
 					print(dedent("""
-						=> Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+						└── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
 							This saves memory when concatenating the output of many encoders.
 					"""))
 				except:
@@ -95,7 +95,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 				try:
 					sklearn_preprocess.sparse_output = False
 					print(dedent("""
-						=> Info - System overriding user input to set `sklearn_preprocess.sparse_output=False`.
+						└── Info - System overriding user input to set `sklearn_preprocess.sparse_output=False`.
 							This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
 					"""))
 				except:
@@ -112,7 +112,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 				try:
 					sklearn_preprocess.order = 'C'
 					print(dedent("""
-						=> Info - System overriding user input to set `sklearn_preprocess.order='C'`.
+						└── Info - System overriding user input to set `sklearn_preprocess.order='C'`.
 							This changes the output shape of the 
 					"""))
 				except:

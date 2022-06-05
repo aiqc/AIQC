@@ -222,7 +222,7 @@ def df_to_compressed_parquet_bytes(dataframe:object):
 
 def path_to_df(
 	file_path:str
-	, source_file_format:str
+	, file_format:str
 	, column_names:list
 	, skip_header_rows:object
 ):
@@ -238,11 +238,11 @@ def path_to_df(
 	if (not path.isfile(file_path)):
 		raise Exception(f"\nYikes - The path you provided is not a file according to `path.isfile(path)`:\n{file_path}\n")
 
-	if (source_file_format == 'tsv') or (source_file_format == 'csv'):
-		if (source_file_format == 'tsv') or (source_file_format is None):
+	if (file_format == 'tsv') or (file_format == 'csv'):
+		if (file_format == 'tsv') or (file_format is None):
 			sep='\t'
-			source_file_format = 'tsv' # Null condition.
-		elif (source_file_format == 'csv'):
+			file_format = 'tsv' # Null condition.
+		elif (file_format == 'csv'):
 			sep=','
 
 		df = pd.read_csv(
@@ -251,10 +251,10 @@ def path_to_df(
 			, names = column_names
 			, header = skip_header_rows
 		)
-	elif (source_file_format == 'parquet'):
+	elif (file_format == 'parquet'):
 		if (skip_header_rows != 'infer'):
 			raise Exception(dedent("""
-			Yikes - The argument `skip_header_rows` is not supported for `source_file_format='parquet'`
+			Yikes - The argument `skip_header_rows` is not supported for `file_format='parquet'`
 			because Parquet stores column names as metadata.\n
 			"""))
 		df = pd.read_parquet(path=file_path, engine='fastparquet')

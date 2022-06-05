@@ -123,7 +123,7 @@ class Pipeline:
         , stratifier:object = None
         , name:str			= None
         , description:str	= None
-        , predictor:int     = None
+        , _predictor:int    = None
     ):					
         inputs = listify(inputs)
 
@@ -189,8 +189,8 @@ class Pipeline:
             # Initialize with Nones
             stratifier = Stratifier()
         
-        if (predictor is not None):
-            predictor = predictor.id
+        if (_predictor is not None):
+            _predictor = _predictor.id
 
         splitset = Splitset.make(
             feature_ids 	  = feature_ids
@@ -201,7 +201,7 @@ class Pipeline:
             , fold_count 	  = stratifier.fold_count
             , name 			  = name
             , description 	  = description
-            , predictor_id    = predictor
+            , predictor_id    = _predictor
         )
         return splitset
 
@@ -221,7 +221,7 @@ class Architecture:
         , hyperparameters:dict = None
     ):
         """Putting params here as `fn_*` can change when editing params"""
-        self.hyperparameters   = hyperparameters
+        self.hyperparameters = hyperparameters
         self.id = Algorithm.make(
             library 	  	   = library
             , analysis_type    = analysis_type
@@ -236,18 +236,18 @@ class Architecture:
 class Trainer:
     def __init__(
         self
-        , pipeline_id:int
-        , repeat_count:int 	= 1
-        , permute_count:int = 3
-        , search_count 		= None
-        , search_percent 	= None
+        , pipeline:object
+        , repeat_count:int 	   = 1
+        , permute_count:int    = 3
+        , search_count 		   = None
+        , search_percent 	   = None
     ):
         """Intentionally switch to splitset here so it can be used in **kwargs"""
-        self.splitset_id 	= pipeline_id
-        self.repeat_count 	= repeat_count
-        self.permute_count 	= permute_count
-        self.search_count 	= search_count
-        self.search_percent = search_percent
+        self.splitset_id 	 = pipeline.id
+        self.repeat_count 	 = repeat_count
+        self.permute_count 	 = permute_count
+        self.search_count 	 = search_count
+        self.search_percent  = search_percent
 
 
 class Experiment:
@@ -288,26 +288,26 @@ class Inference:
     def __new__(
         cls
         , predictor:object
-        , feature_datasets:list
-        , label_dataset:object = None
+        , input_datasets:list
+        , target_dataset:object = None
     ):
         """Reference `utils.wrangle.schemaNew_matches_schemaOld()` for validation"""
-        feature_datasets = listify(feature_datasets)
+        input_datasets = listify(input_datasets)
         old_splitset = predictor.job.queue.splitset
         
-        if (label_dataset is not None):
+        if (target_dataset is not None):
             label = old_splitset.label 
             if (label is not None):
                 cols = label.columns
-                label_dataset = label.dataset
-                target = Target(dataset=label_dataset,column=cols)
+                target_dataset = label.dataset
+                target = Target(dataset=target_dataset,column=cols)
         else:
             target = None
 
         inputs = []	
         for e, f in enumerate(old_splitset.features):		
             cols = f.columns
-            dataset = feature_datasets[e]
+            dataset = input_datasets[e]
             new_window = None
             if (e==0):
                 """
@@ -334,7 +334,7 @@ class Inference:
             inputs = inputs,
             target = target,
             stratifier = Stratifier(),
-            predictor = predictor
+            _predictor = predictor
         )
         prediction = pipeline.infer()
         return prediction

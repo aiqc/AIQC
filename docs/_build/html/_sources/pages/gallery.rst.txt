@@ -18,12 +18,12 @@ Gallery
         <div class="flex-title">🌱 Plant Species</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_multi_class.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/multi_class.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/torch_multi_class.html">
+            <a href="/en/latest/notebooks/gallery/pytorch/multi_class.html">
               PyTorch
             </a>
           </div>
@@ -41,12 +41,12 @@ Gallery
         <div class="flex-title">🧠 Detect Tumors</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_img_class.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/img_class.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/torch_img_class.html">
+            <a href="/en/latest/notebooks/gallery/pytorch/img_class.html">
               PyTorch
             </a>
           </div>
@@ -68,7 +68,7 @@ Gallery
         <div class="flex-title">💊 Drug Design</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_bin_mapk.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/bin_mapk.html">
               TensorFlow
             </a>
           </div>
@@ -86,7 +86,7 @@ Gallery
         <div class="flex-title">🧬 Cancer Genes</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_multi_tcga.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/multi_tcga.html">
               TensorFlow
             </a>
           </div>
@@ -107,12 +107,12 @@ Gallery
         <div class="flex-title">⚡ Detect Seizure</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_seq_class.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/seq_class.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/torch_seq_class.html">
+            <a href="/en/latest/notebooks/gallery/pytorch/seq_class.html">
               PyTorch
             </a>
           </div>
@@ -133,17 +133,17 @@ Gallery
         <div class="flex-title">💣 Mine Sweeping</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_bin_class.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/bin_class.html">
               TensorFlow
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_classic_bin_class.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/classic_bin_class.html">
               TF Classic
             </a>
           </div>
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/torch_bin_class.html">
+            <a href="/en/latest/notebooks/gallery/pytorch/bin_class.html">
               PyTorch
             </a>
           </div>
@@ -193,7 +193,7 @@ Gallery
         <div class="flex-title">🌡️ Exoplanet Temps.</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_reg.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/reg.html">
               TensorFlow
             </a>
           </div>
@@ -210,7 +210,7 @@ Gallery
         <div class="flex-title">🏡 Real Estate Prices</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/torch_reg.html">
+            <a href="/en/latest/notebooks/gallery/pytorch/reg.html">
               PyTorch
             </a>
           </div>
@@ -230,7 +230,7 @@ Gallery
         <div class="flex-title">🪐 Astronomy Orbits</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_img_forecast.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/img_forecast.html">
               TensorFlow
             </a>
           </div>
@@ -250,7 +250,7 @@ Gallery
         <div class="flex-title">🌤️ Climate of India</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/tf_tab_forecast.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/tab_forecast.html">
               TensorFlow
             </a>
           </div>
@@ -274,7 +274,7 @@ Gallery
         <div class="flex-title">🌀 Galaxy Formations</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/heterogeneous_features.html">
+            <a href="/en/latest/notebooks/gallery/tensorflow/heterogeneous.html">
               TensorFlow
             </a>
           </div>

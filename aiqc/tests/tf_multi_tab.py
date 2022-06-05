@@ -62,7 +62,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	
 	shared_dataset = Dataset.Tabular.from_path(
 		file_path = file_path
-		, source_file_format = 'tsv'
+		, file_format = 'tsv'
 		, dtype = None
 	)
 
@@ -103,7 +103,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		),
 		
 		Trainer(
-			pipeline_id       = pipeline.id
+			pipeline       = pipeline
 			, repeat_count    = repeat_count
 			, permute_count   = permute_count
 			, search_percent  = None

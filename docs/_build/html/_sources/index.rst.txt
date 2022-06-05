@@ -14,10 +14,8 @@
   :hidden:
 
   notebooks/visualization
-  notebooks/query_meta
   notebooks/api_high_level
   notebooks/api_low_level
-  notebooks/inference
   notebooks/datasets
 
 
@@ -201,17 +199,17 @@
     <tr>
       <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
       <td class="done">
-        <a href='notebooks/tf_multi_tcga.html'>
+        <a href='notebooks/tensorflow/multi_tcga.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
       <td class="done">
-        <a href='notebooks/tf_seq_class.html'>
+        <a href='notebooks/tensorflow/seq_class.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
       <td class="done">
-        <a href='notebooks/tf_img_class.html'>
+        <a href='notebooks/tensorflow/img_class.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -220,7 +218,7 @@
     <tr>
       <td class="tbl-head">Quantification</br><small>(regression)</small></td>
       <td class="done">
-        <a href='notebooks/tf_reg.html'>
+        <a href='notebooks/tensorflow/reg.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -235,7 +233,7 @@
     <tr>
       <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate)</small></td>
       <td class="done">
-        <a href='notebooks/tf_tab_forecast.html'>
+        <a href='notebooks/tensorflow/tab_forecast.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -243,7 +241,7 @@
         <span class="checkmark">✓</span>
       </td>
       <td class="done bottom-right">
-        <a href='notebooks/tf_img_forecast.html'>
+        <a href='notebooks/tensorflow/img_forecast.html'>
           <span class="checkmark">✓</span>
         </a>
     </tr>
@@ -388,11 +386,10 @@ AIQC
   <div style="height:50px; background-image: linear-gradient(#122536, #122536); border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
   </div>
 
-
   <script>
     window.addEventListener('load', function() {
       var art = document.querySelector("div[itemprop='articleBody']")
       art.style.borderRadius = "25px";
-      art.style.background = "#fdfdfd"; 
+      art.style.background = "#ffffff"; 
     });
   </script>
