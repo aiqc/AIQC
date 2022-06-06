@@ -87,7 +87,7 @@ def get_db():
 		setup()
 		path = get_path_db()
 
-	elif (path is not None):
+	if (path is not None):
 		"""
 		SQLite Pragmas/Settings:
 		- Default is Journal mode <docs.peewee-orm.com/en/latest/peewee/database.html>
