@@ -3837,14 +3837,8 @@ class Queue(BaseModel):
 		score_display = utils.meter.metrics_all[score_type]
 
 		if (min_score is None):
-			if (score_type=="r2"):
-				# I've observed r2 scores below -1.7 somehow.
-				min_score = float('-inf')
-			else:
-				min_score = 0
-		elif (min_score is not None):
-			if (min_score > 1.0):
-				raise Exception("\nYikes - `min_score` must be <= 1\n")
+			# I have observed r2 and ExpVar -1.7 and -476.0
+			min_score = float('-inf')
 
 		if (max_loss is None):
 			max_loss = float('inf')
