@@ -1,4 +1,5 @@
 # Local modules.
+from xmlrpc.client import boolean
 from .. import orm
 from ..utils.meter import metrics_classify, metrics_regress
 # Python modules.
@@ -224,7 +225,14 @@ class Tracker(object):
             if (hyperparameters is not None):
                 headers = [html.Th("parameter"), html.Th("value")]
                 table_header = [html.Thead(html.Tr(headers), className='thead')]
-                rows = [html.Tr([html.Td(k), html.Td(v)]) for k,v in hyperparameters.items()]
+                # bools are not rendering so need to force them to str
+                rows = []
+                for k,v in hyperparameters.items():
+                    if isinstance(v,bool): 
+                        v = str(v) 
+                    rows.append(
+                        html.Tr([html.Td(k), html.Td(v)])
+                    )
                 table_body = [html.Tbody(rows)]
                 hp_table = dbc.Table(
                     table_header + table_body,
