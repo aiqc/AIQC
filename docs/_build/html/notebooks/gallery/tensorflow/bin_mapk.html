@@ -591,7 +591,9 @@ div.rendered_html tbody tr:hover {
 <section id="Feature-Importance-for-Drug-Discovery">
 <h1>Feature Importance for Drug Discovery<a class="headerlink" href="#Feature-Importance-for-Drug-Discovery" title="Permalink to this headline"></a></h1>
 <p><em>In silico interpretation of compound selection using permuted feature importance of neural networks to rank High Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.</em></p>
-<img alt="docking" src="notebooks/gallery/images/banner/drugs.png" />
+<img alt="docking" src="../../../_images/drugs.png" />
+<section id="Context">
+<h2>Context<a class="headerlink" href="#Context" title="Permalink to this headline"></a></h2>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
 <li><p><em>Features</em> - 155 structural screening criteria for each compound.</p></li>
@@ -602,42 +604,39 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>The purpose of this analysis is to use <em>permuted feature importance</em> to understand which chemical structures are driving the activation of the target.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[163]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
-<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[153]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </pre></div>
 </div>
 </div>
-<p>Since we have so many columns, we will examine their variation en masse in order to determine how we want to encode them.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[158]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;MAPK_bioassay.parquet&quot;</span><span class="p">)</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;Outcome&#39;</span><span class="p">)</span>
+<span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<hr class="docutils" />
+</section>
+<section id="Exploration">
+<h2>Exploration<a class="headerlink" href="#Exploration" title="Permalink to this headline"></a></h2>
+<p>Since we have so many columns, we will examine their variation en masse in order to determine how we want to encode them.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[165]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">features_binary</span> <span class="o">=</span> <span class="p">[]</span>
+<span></span><span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;Outcome&#39;</span><span class="p">)</span>
+
+<span class="n">features_binary</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">features_nonbinary</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
@@ -665,15 +664,17 @@ Non-binary Features = 31
 </pre></div></div>
 </div>
 <hr class="docutils" />
+</section>
 <section id="Pipeline">
 <h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
-<p>Due to the fact that we have a shortage of active compounds and are ultimately interested in the patterns of feature importance, we’ll forgo the generalizable rigor of validation splits/folds.</p>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[163]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
 </div>
@@ -682,24 +683,22 @@ Non-binary Features = 31
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
-    <span class="c1"># --- Data source ---</span>
-    <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
+<span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">Input</span><span class="p">(</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">shared_dataset</span><span class="p">,</span>
+        <span class="n">encoder</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">OrdinalEncoder</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="n">features_binary</span><span class="p">),</span>
+            <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="n">features_nonbinary</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Label preprocessing ---</span>
-    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;Outcome&#39;</span>
-    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">LabelBinarizer</span><span class="p">())</span>
+    <span class="n">Target</span><span class="p">(</span>
+        <span class="n">dataset</span>   <span class="o">=</span> <span class="n">shared_dataset</span>
+        <span class="p">,</span> <span class="n">column</span>  <span class="o">=</span> <span class="s1">&#39;Outcome&#39;</span>
+        <span class="p">,</span> <span class="n">encoder</span> <span class="o">=</span> <span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">LabelBinarizer</span><span class="p">())</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Feature preprocessing ---</span>
-    <span class="p">,</span> <span class="n">feature_cols_excluded</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">feature_encoders</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">OrdinalEncoder</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="n">features_binary</span><span class="p">),</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="n">features_nonbinary</span><span class="p">)</span>
-    <span class="p">]</span>
-
-    <span class="c1"># --- Stratification ---</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.26</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Stratifier</span><span class="p">(</span><span class="n">size_test</span><span class="o">=</span><span class="mf">0.26</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -708,14 +707,16 @@ Non-binary Features = 31
 </section>
 <section id="Modeling">
 <h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
 <span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
 </pre></div>
 </div>
 </div>
@@ -764,11 +765,16 @@ Non-binary Features = 31
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
+    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">hp</span>
+<span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span><span class="o">=</span><span class="n">loser</span>
-        <span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">()]</span>
+        <span class="n">loss</span>        <span class="o">=</span> <span class="n">loser</span>
+        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="p">,</span> <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">()]</span>
     <span class="p">)</span>
 
     <span class="c1"># Early stopping.</span>
@@ -778,12 +784,12 @@ Non-binary Features = 31
     <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metric_cuttoffs</span><span class="p">)</span>
 
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-        <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
-        <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
+        <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span>
+        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">verbose</span>         <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">,</span> <span class="n">batch_size</span>      <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">epochs</span>          <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">callbacks</span>       <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
@@ -820,19 +826,19 @@ Non-binary Features = 31
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">first_neurons</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">],</span>
-    <span class="n">after_neurons</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">],</span>
-    <span class="n">second_layer</span>    <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-    <span class="n">third_layer</span>     <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
-    <span class="n">fourth_layer</span>    <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
-    <span class="n">activation</span>      <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;relu&#39;</span><span class="p">],</span>
-    <span class="n">init</span>            <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">],</span>
-    <span class="n">epochs</span>          <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">],</span>
-    <span class="n">batch_size</span>      <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-    <span class="n">drop_rate</span>       <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">],</span>
-    <span class="n">gamma</span>           <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
-    <span class="n">loss_imbalanced</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-    <span class="n">learning_rate</span>   <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
+    <span class="n">first_neurons</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">after_neurons</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">second_layer</span>    <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">third_layer</span>     <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">fourth_layer</span>    <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">activation</span>      <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;relu&#39;</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">init</span>            <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">epochs</span>          <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">batch_size</span>      <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">drop_rate</span>       <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">gamma</span>           <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">loss_imbalanced</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">learning_rate</span>   <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -842,28 +848,22 @@ Non-binary Features = 31
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
-    <span class="c1"># --- Analysis type ---</span>
-    <span class="n">library</span>             <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span>     <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">Architecture</span><span class="p">(</span>
+        <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+        <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+        <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
+        <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
+        <span class="p">,</span> <span class="n">fn_optimize</span>     <span class="o">=</span> <span class="n">fn_optimize</span>
+        <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Model functions ---</span>
-    <span class="p">,</span> <span class="n">fn_build</span>          <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span>          <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_lose</span>           <span class="o">=</span> <span class="n">fn_lose</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span>       <span class="o">=</span> <span class="n">fn_optimize</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_predict</span>        <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-
-    <span class="c1"># --- Training options ---</span>
-    <span class="p">,</span> <span class="n">repeat_count</span>      <span class="o">=</span> <span class="mi">3</span>
-    <span class="p">,</span> <span class="n">permute_count</span> <span class="o">=</span> <span class="mi">7</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span>   <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">search_percent</span>    <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Data source ---</span>
-    <span class="p">,</span> <span class="n">splitset_id</span>       <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">foldset_id</span>        <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">hide_test</span>         <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Trainer</span><span class="p">(</span>
+        <span class="n">pipeline</span>        <span class="o">=</span> <span class="n">pipeline</span>
+        <span class="p">,</span> <span class="n">repeat_count</span>  <span class="o">=</span> <span class="mi">2</span>
+        <span class="p">,</span> <span class="n">repeat_count</span>  <span class="o">=</span> <span class="mi">3</span>
+        <span class="p">,</span> <span class="n">permute_count</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1197,8 +1197,8 @@ Non-binary Features = 31
 </pre></div>
 </div>
 </div>
-<img alt="matrixTrain" src="notebooks/gallery/images/notebook/docking_matrix_train.png" />
-<img alt="matrixTest" src="notebooks/gallery/images/notebook/docking_matrix_test.png" />
+<img alt="matrixTrain" src="../../../_images/docking_matrix_train.png" />
+<img alt="matrixTest" src="../../../_images/docking_matrix_test.png" />
 <hr class="docutils" />
 </section>
 </section>
@@ -1214,7 +1214,7 @@ Non-binary Features = 31
 </pre></div>
 </div>
 </div>
-<img alt="dockingFeatures" src="notebooks/gallery/images/notebook/docking_features.png" />
+<img alt="dockingFeatures" src="../../../_images/docking_features.png" />
 <p>In comparison to traditional statistics, the heuristics of deep learning help us quantify the impact of subtle variation within the dataset.</p>
 <ul class="simple">
 <li><p><em>Box plots</em> appeared nearly identical.</p></li>
@@ -1238,8 +1238,8 @@ Non-binary Features = 31
 </pre></div>
 </div>
 </div>
-<img alt="boxFalse" src="notebooks/gallery/images/notebook/box_plot_false.png" />
-<img alt="boxTrue" src="notebooks/gallery/images/notebook/box_plot_true.png" />
+<img alt="boxFalse" src="../../../_images/box_plot_false.png" />
+<img alt="boxTrue" src="../../../_images/box_plot_true.png" />
 <p>Finally, our model enables us to determine which compounds most strongly fit these patterns based on the probability of their prediction.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[325]:

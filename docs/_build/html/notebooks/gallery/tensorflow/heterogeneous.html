@@ -591,31 +591,30 @@ div.rendered_html tbody tr:hover {
 <section id="Heterogeneous/-Multi-Modal">
 <h1>Heterogeneous/ Multi-Modal<a class="headerlink" href="#Heterogeneous/-Multi-Modal" title="Permalink to this headline"></a></h1>
 <p><em>Binary Classification of Galaxy Morphologies Using Images Paired with Tabular Metadata.</em></p>
-<img alt="bannerGalaxy" src="notebooks/gallery/images/banner/spirals.png" />
+<img alt="bannerGalaxy" src="../../../_images/spirals.png" />
 <p>Mixed data analysis is one of the areas where deep learning really sets itself apart from traditional forms of statistics and machine learning. Neural networks are an effective way to logically encode and combine any type of data (image, text, time series, audio, tabular spreadsheets, video, etc) within the same analysis while converging toward the minimization a single <em>loss</em> metric. This leads to rich experiments that resemble real-world scenarios that resemble man-machine symbiosis. For
 example, consider combining a doctor’s annotations with electronic medical records and histology imagery.</p>
-<hr class="docutils" />
 <blockquote>
-<div><p><em>This example was put together for a demo that builds upon the documentation of the Low-Level API and the example workflows for binary classification. Due to the fact that these images were captured by different instruments that represent color differently, I removed the noisy 3-channel color information and proceeded with grayscale. Since the shapes of the features are dynamically passed into the model, the only difference between a single versus multi-channel workflow is changing the actual
-layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
+<div><p><em>Due to the fact that these images were captured by different instruments that represent color differently, I removed the noisy 3-channel color information and proceeded with grayscale. Since the shapes of the features are dynamically passed into the model, the only difference between a single versus multi-channel workflow is changing the actual layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </div></blockquote>
+<hr class="docutils" />
+<section id="Example-Data">
+<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="example_datasets.ipynb">Example Datasets</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 </pre></div>
 </div>
 </div>
-<hr class="docutils" />
-<section id="Ingesting-Example-Galaxy-Data">
-<h2>Ingesting Example Galaxy Data<a class="headerlink" href="#Ingesting-Example-Galaxy-Data" title="Permalink to this headline"></a></h2>
 <section id="Tabular-Data">
 <h3>Tabular Data<a class="headerlink" href="#Tabular-Data" title="Permalink to this headline"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -630,7 +629,7 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 <li><p>A manifest detailing where to find our image files: <code class="docutils literal notranslate"><span class="pre">url</span></code>.</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -639,7 +638,7 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -693,160 +692,22 @@ layers (e.g. ``Conv1D`` to ``Conv2D``).</em></p>
 </table>
 </div></div>
 </div>
-<hr class="docutils" />
 <p>From a single <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> we’ll specify a <code class="docutils literal notranslate"><span class="pre">Label</span></code> and <code class="docutils literal notranslate"><span class="pre">Feature</span></code> before encoding them.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dataset_tab</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label</span> <span class="o">=</span> <span class="n">Label</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
-    <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">LabelCoder</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
-    <span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">OrdinalEncoder</span><span class="p">()</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;LabelCoder: 10&gt;
-</pre></div></div>
-</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">feature_tab</span> <span class="o">=</span> <span class="n">Feature</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
-    <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">,</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
-<span class="p">)</span>
+<span></span><span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">encoderset</span> <span class="o">=</span> <span class="n">Encoderset</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span><span class="n">feature_id</span><span class="o">=</span><span class="n">feature_tab</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_encoderset</span><span class="p">(</span>
-    <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
-    <span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;clarity&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-        This saves memory when concatenating the output of many encoders.
-
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;clarity&#39;]
-
-=&gt; The remaining column(s) and dtype(s) are available for downstream featurecoder(s):
-{&#39;angle&#39;: &#39;object&#39;}
-
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;FeatureCoder: 18&gt;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_encoderset</span><span class="p">(</span>
-    <span class="n">encoderset_id</span> <span class="o">=</span> <span class="n">encoderset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">()</span>
-    <span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
-        This would have generated &#39;scipy.sparse.csr.csr_matrix&#39;, causing Keras training to fail.
-
-
-___/ featurecoder_index: 1 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;angle&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more FeatureCoders can be added to this Encoderset.
-
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;FeatureCoder: 19&gt;
-</pre></div></div>
 </div>
 </section>
 <section id="Image-Data">
 <h3>Image Data<a class="headerlink" href="#Image-Data" title="Permalink to this headline"></a></h3>
 <p>Construct a <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> from that manifest and use it as a 2nd <code class="docutils literal notranslate"><span class="pre">Feature</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -855,7 +716,7 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -868,11 +729,11 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 40/40 [00:06&lt;00:00,  6.14it/s]
+🖼️ Ingesting Images 🖼️: 100%|████████████████████████| 40/40 [00:06&lt;00:00,  5.96it/s]
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -882,7 +743,7 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <p><strong>Bar galaxies</strong></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -891,15 +752,15 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_28_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_28_0.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_21_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_21_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -908,17 +769,17 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_29_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_29_0.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_22_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_22_0.png" />
 </div>
 </div>
 <p>Although it is easy enough to distinguish between the two types with the naked eye, you start to realize that a <em>bar</em> galaxy is almost like a degraded <em>spiral</em> galaxy. Like anything else, there is a gray area in whether or not the band of stars/ rectangle of light connecting the two main galactic arms is to be considered a “bar” or more of an oval.</p>
 <p><strong>Spiral galaxies</strong></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -927,15 +788,15 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_32_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_32_0.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_25_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_25_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -944,59 +805,101 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_33_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_33_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">feature_img</span> <span class="o">=</span> <span class="n">Feature</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span><span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset_img</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>We have only 40 samples, so we’ll keep our validation and test <em>splits</em> small, and definitely forgo cross-validation.</p>
-<p>Notice how we pass in both the <em>tabular</em> and <em>image</em> Features. As described in the low-level API documentation, the first feature in the list is used to determine stratification.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature_tab</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">feature_img</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">label_id</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.125</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.175</span>
-<span class="p">)</span>
-</pre></div>
+<img alt="../../../_images/notebooks_gallery_tensorflow_heterogeneous_26_0.png" src="../../../_images/notebooks_gallery_tensorflow_heterogeneous_26_0.png" />
 </div>
 </div>
 <hr class="docutils" />
 </section>
 </section>
-<section id="Defining-a-Model">
-<h2>Defining a Model<a class="headerlink" href="#Defining-a-Model" title="Permalink to this headline"></a></h2>
-<p>AIQC makes it easy to compartmentalize both Keras/TensorFlow and PyTorch models. See <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the Low-Level API documentation.</p>
-<p>Hyperparameters are passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> <em>kwargs</em>, which allows you to tweak both the topology and the params alike.</p>
-<p>Below we see two towers, feedforward for tabular data and convolutional for image data, that are eventually concatenated together.</p>
+<section id="Multi-Modal-Pipeline">
+<h2>Multi-Modal Pipeline<a class="headerlink" href="#Multi-Modal-Pipeline" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">FunctionTransformer</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils.encoding</span> <span class="kn">import</span> <span class="n">div255</span><span class="p">,</span> <span class="n">mult255</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Input</span><span class="p">(</span>
+            <span class="n">dataset</span>         <span class="o">=</span> <span class="n">shared_dataset</span><span class="p">,</span>
+            <span class="n">exclude_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span>
+            <span class="n">encoders</span>        <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;clarity&#39;</span><span class="p">]),</span>
+                <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">OneHotEncoder</span><span class="p">(),</span>  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">])</span>
+            <span class="p">]</span>
+        <span class="p">),</span>
+
+        <span class="n">Input</span><span class="p">(</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset_img</span><span class="p">,</span>
+            <span class="n">encoders</span> <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">FunctionTransformer</span><span class="p">(</span><span class="n">div255</span><span class="p">,</span> <span class="n">inverse_func</span><span class="o">=</span><span class="n">mult255</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="p">],</span>
+
+    <span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">shared_dataset</span><span class="p">,</span>
+        <span class="n">column</span>  <span class="o">=</span> <span class="s1">&#39;morphology&#39;</span><span class="p">,</span>
+        <span class="n">encoder</span> <span class="o">=</span> <span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">OrdinalEncoder</span><span class="p">())</span>
+    <span class="p">),</span>
+
+    <span class="n">stratifier</span> <span class="o">=</span> <span class="n">Stratifier</span><span class="p">(</span>
+        <span class="n">size_test</span>       <span class="o">=</span> <span class="mf">0.125</span><span class="p">,</span>
+        <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.175</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+└── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+        This saves memory when concatenating the output of many encoders.
+
+
+└── Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+        This would have generated &#39;scipy.sparse.csr.csr_matrix&#39;, causing Keras training to fail.
+
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+<section id="Modeling">
+<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
+<p>Below we see two towers, feedforward for tabular data and convolutional for image data, that are eventually concatenated together.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
+<span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1066,121 +969,94 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
+    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">hp</span>
+<span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">loser</span>
+        <span class="n">loss</span>        <span class="o">=</span> <span class="n">loser</span>
         <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
     <span class="p">)</span>
 
     <span class="c1"># Early stopper.</span>
-    <span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.80</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span> <span class="c1">#5 samples in validation set.</span>
+    <span class="n">metrics_cutoffs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span>     <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.90</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
+        <span class="c1">#only 5 samples in validation set.</span>
     <span class="p">]</span>
-    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
+    <span class="n">cutoffs</span>   <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cutoffs</span><span class="p">)</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
 
 
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
-            <span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span>
+        <span class="n">x</span>                 <span class="o">=</span> <span class="n">train_features</span>
+        <span class="p">,</span> <span class="n">y</span>               <span class="o">=</span> <span class="n">train_label</span>
+        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">verbose</span>         <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">,</span> <span class="n">batch_size</span>      <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">epochs</span>          <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">callbacks</span>       <span class="o">=</span> <span class="n">callbacks</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
 </div>
-<p>You can also customize the functions for loss, optimization, and prediction - but we’ll just run with the defaults for binary classification analysis.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
-    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Define the parameters that will be passed in as the <code class="docutils literal notranslate"><span class="pre">hp**</span></code> argument in the functions above.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">epoch_count</span> <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">ff_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">cnn_multiply</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">dropout</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;he_normal&#39;</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">cnn_4th</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+    <span class="n">epoch_count</span>      <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">learning_rate</span>  <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">batch_size</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">ff_neurons</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">cnn_multiply</span>   <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">dropout</span>        <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">init</span>           <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;he_normal&#39;</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">cnn_4th</span>        <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">concat_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
-    <span class="n">algorithm_id</span><span class="o">=</span><span class="n">algorithm</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <hr class="docutils" />
 </section>
-<section id="Train-Models">
-<h2>Train Models<a class="headerlink" href="#Train-Models" title="Permalink to this headline"></a></h2>
+<section id="id1">
+<h2>Modeling<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <p><code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> runs the same model multiple times due to the fact that neural networks are non-deterministic.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
-    <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">5</span>
+<span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">Architecture</span><span class="p">(</span>
+        <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+        <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+        <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
+        <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
+        <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">),</span>
+
+    <span class="n">Trainer</span><span class="p">(</span>
+        <span class="n">pipeline</span>       <span class="o">=</span> <span class="n">pipeline</span>
+        <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1189,11 +1065,11 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1202,7 +1078,8 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮:   0%|                                                 | 0/10 [00:00&lt;?, ?it/s]
+📦 Caching Splits 📦: 100%|██████████████████████████████████████████| 3/3 [00:00&lt;00:00, 267.72it/s]
+🔮 Training Models 🔮:  25%|██████████▌                               | 1/4 [00:25&lt;01:16, 25.54s/it]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1210,7 +1087,7 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-:: Epoch #84 ::
+:: Epoch #247 ::
 Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
 [{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
  {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
@@ -1222,7 +1099,7 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮:  10%|████                                     | 1/10 [00:19&lt;02:53, 19.30s/it]
+🔮 Training Models 🔮:  50%|█████████████████████                     | 2/4 [00:42&lt;00:40, 20.44s/it]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1230,8 +1107,10 @@ Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
-Queue was gracefully interrupted.
+:: Epoch #227 ::
+Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:
+[{&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.9, &#39;metric&#39;: &#39;accuracy&#39;},
+ {&#39;above_or_below&#39;: &#39;above&#39;, &#39;cutoff&#39;: 0.8, &#39;metric&#39;: &#39;val_accuracy&#39;}]
 
 </pre></div></div>
 </div>
@@ -1240,7 +1119,7 @@ Queue was gracefully interrupted.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [01:23&lt;00:00, 20.78s/it]
 </pre></div></div>
 </div>
 <hr class="docutils" />

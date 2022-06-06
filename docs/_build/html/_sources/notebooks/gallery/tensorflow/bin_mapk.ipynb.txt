@@ -21,12 +21,20 @@
    "id": "160a553c-a6ba-4e42-b565-0c35b2fc4ea4",
    "metadata": {},
    "source": [
-    "![docking](../images/banner/drugs.png)"
+    "![docking](../../../images/banner/drugs.png)"
    ]
   },
   {
    "cell_type": "markdown",
    "id": "c32dca02-47bc-402b-9f01-17396f302cb1",
+   "metadata": {},
+   "source": [
+    "## Context"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ae79b4a0-b267-40fc-84ba-b620f6d8f76d",
    "metadata": {},
    "source": [
     "This dataset is comprised of:\n",
@@ -48,12 +56,24 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 163,
-   "id": "66085372-8a9b-4a95-a335-8afeb6a25e16",
+   "execution_count": 153,
+   "id": "ed4694c9-bfdf-4eb3-9702-2bb73494a60b",
    "metadata": {},
    "outputs": [],
    "source": [
-    "from aiqc import mlops"
+    "from aiqc.orm import Dataset\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 158,
+   "id": "99dd9ba2-af05-4455-84f3-01b14edf5940",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = pd.read_parquet(\"MAPK_bioassay.parquet\")\n",
+    "shared_dataset = Dataset.Tabular.from_pandas(dataframe=df)"
    ]
   },
   {
@@ -65,13 +85,11 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": 153,
-   "id": "ed4694c9-bfdf-4eb3-9702-2bb73494a60b",
+   "cell_type": "markdown",
+   "id": "30beb5e6-96d6-490d-aa5b-db298c626e91",
    "metadata": {},
-   "outputs": [],
    "source": [
-    "import pandas as pd"
+    "## Exploration"
    ]
   },
   {
@@ -80,18 +98,6 @@
    "metadata": {},
    "source": [
     "Since we have so many columns, we will examine their variation en masse in order to determine how we want to encode them."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 158,
-   "id": "99dd9ba2-af05-4455-84f3-01b14edf5940",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "df = pd.read_parquet(\"MAPK_bioassay.parquet\")\n",
-    "features = df.columns.tolist()\n",
-    "features.remove('Outcome')"
    ]
   },
   {
@@ -112,6 +118,9 @@
     }
    ],
    "source": [
+    "features = df.columns.tolist()\n",
+    "features.remove('Outcome')\n",
+    "\n",
     "features_binary = []\n",
     "features_nonbinary = []\n",
     "\n",
@@ -152,19 +161,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9f75fc2e-6cae-4fe5-87a7-25197aa11c78",
+   "id": "ad10cada-4658-4f7f-acdd-580f0697a6cb",
    "metadata": {},
    "source": [
-    "Due to the fact that we have a shortage of active compounds and are ultimately interested in the patterns of feature importance, we'll forgo the generalizable rigor of validation splits/folds."
+    "Reference [High-Level API Docs](api_high_level.ipynb) for more information."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 163,
-   "id": "9f6c13fa-6a2b-4826-bb01-dcc8d53c12f8",
-   "metadata": {},
+   "execution_count": 4,
+   "id": "0fa91176-8ec9-49bc-aee1-0ec9f207047a",
+   "metadata": {
+    "tags": []
+   },
    "outputs": [],
    "source": [
+    "from aiqc.mlops import Pipeline, Input, Target, Stratifier\n",
     "from sklearn.preprocessing import LabelBinarizer, OrdinalEncoder, StandardScaler"
    ]
   },
@@ -175,24 +187,22 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "splitset = mlops.Pipeline.Tabular(\n",
-    "    # --- Data source ---\n",
-    "    df_or_path = df\n",
-    "\n",
-    "    # --- Label preprocessing ---\n",
-    "    , label_column = 'Outcome'\n",
-    "    , label_encoder = dict(sklearn_preprocess=LabelBinarizer())\n",
-    "\n",
-    "    # --- Feature preprocessing ---\n",
-    "    , feature_cols_excluded = ['Outcome']\n",
-    "    , feature_encoders = [\n",
-    "        dict(sklearn_preprocess=OrdinalEncoder(), columns=features_binary),\n",
-    "        dict(sklearn_preprocess=StandardScaler(), columns=features_nonbinary)\n",
-    "    ]\n",
-    "\n",
-    "    # --- Stratification ---\n",
-    "    , size_test = 0.26\n",
-    "    , size_validation = None\n",
+    "pipeline = Pipeline(\n",
+    "    Input(\n",
+    "        dataset = shared_dataset,\n",
+    "        encoder = [\n",
+    "            Input.Encoder(OrdinalEncoder(), columns=features_binary),\n",
+    "            Input.Encoder(StandardScaler(), columns=features_nonbinary)\n",
+    "        ]\n",
+    "    ),\n",
+    "    \n",
+    "    Target(\n",
+    "        dataset   = shared_dataset\n",
+    "        , column  = 'Outcome'\n",
+    "        , encoder = Target.Encoder(LabelBinarizer())\n",
+    "    ),\n",
+    "    \n",
+    "    Stratifier(size_test=0.26)\n",
     ")"
    ]
   },
@@ -213,15 +223,24 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "id": "2dc794b6-c8b6-4cc6-aa5c-fecd2ead2ce3",
+   "metadata": {},
+   "source": [
+    "Reference [High-Level API Docs](api_high_level.ipynb) for more information."
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 37,
    "id": "0454f37a-5e9b-4e61-aa3e-5aa62a2f7b7f",
    "metadata": {},
    "outputs": [],
    "source": [
+    "from aiqc.mlops import Experiment, Architecture, Trainer\n",
+    "from aiqc.utils.tensorflow import TrainingCallback\n",
     "import tensorflow as tf\n",
-    "from tensorflow.keras import layers as l\n",
-    "from aiqc.utils.tensorflow import TrainingCallback"
+    "from tensorflow.keras import layers as l"
    ]
   },
   {
@@ -272,11 +291,16 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
+    "def fn_train(\n",
+    "    model, loser, optimizer,\n",
+    "    train_features, train_label,\n",
+    "    eval_features, eval_label,\n",
+    "    **hp\n",
+    "):\n",
     "    model.compile(\n",
-    "        loss=loser\n",
-    "        , optimizer=optimizer\n",
-    "        , metrics=['accuracy', tf.keras.metrics.Precision()]\n",
+    "        loss        = loser\n",
+    "        , optimizer = optimizer\n",
+    "        , metrics   = ['accuracy', tf.keras.metrics.Precision()]\n",
     "    )\n",
     "    \n",
     "    # Early stopping.\n",
@@ -286,12 +310,12 @@
     "    cutoffs = TrainingCallback.MetricCutoff(metric_cuttoffs)\n",
     "    \n",
     "    model.fit(\n",
-    "        samples_train['features'], samples_train['labels']\n",
-    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
-    "        , verbose = 0\n",
-    "        , batch_size = hp['batch_size']\n",
-    "        , epochs = hp['epochs']\n",
-    "        , callbacks = [tf.keras.callbacks.History()]\n",
+    "        train_features, train_label\n",
+    "        , validation_data = (eval_features, eval_label)\n",
+    "        , verbose         = 0\n",
+    "        , batch_size      = hp['batch_size']\n",
+    "        , epochs          = hp['epochs']\n",
+    "        , callbacks       = [tf.keras.callbacks.History()]\n",
     "    )\n",
     "    return model"
    ]
@@ -331,51 +355,45 @@
    "outputs": [],
    "source": [
     "hyperparameters = dict(\n",
-    "    first_neurons   = [120],\n",
-    "    after_neurons   = [12],\n",
-    "    second_layer    = [True, False],\n",
-    "    third_layer     = [False],\n",
-    "    fourth_layer    = [False],\n",
-    "    activation      = ['relu'],\n",
-    "    init            = ['he_uniform'],\n",
-    "    epochs          = [20],\n",
-    "    batch_size      = [5],\n",
-    "    drop_rate       = [0.4],\n",
-    "    gamma           = [1.0],\n",
-    "    loss_imbalanced = [True, False],\n",
-    "    learning_rate   = [0.01]\n",
+    "    first_neurons     = [120]\n",
+    "    , after_neurons   = [12]\n",
+    "    , second_layer    = [True, False]\n",
+    "    , third_layer     = [False]\n",
+    "    , fourth_layer    = [False]\n",
+    "    , activation      = ['relu']\n",
+    "    , init            = ['he_uniform']\n",
+    "    , epochs          = [20]\n",
+    "    , batch_size      = [5]\n",
+    "    , drop_rate       = [0.4]\n",
+    "    , gamma           = [1.0]\n",
+    "    , loss_imbalanced = [True, False]\n",
+    "    , learning_rate   = [0.01]\n",
     ")"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 84,
-   "id": "01916884-2d5c-493d-984f-e1e030492cf7",
+   "id": "bc4783fe-3d97-4f0b-827a-625a94b8958a",
    "metadata": {},
    "outputs": [],
    "source": [
-    "queue = mlops.Experiment(\n",
-    "    # --- Analysis type ---\n",
-    "    library             = \"keras\"\n",
-    "    , analysis_type     = \"classification_binary\"\n",
-    "\n",
-    "    # --- Model functions ---\n",
-    "    , fn_build          = fn_build\n",
-    "    , fn_train          = fn_train\n",
-    "    , fn_lose           = fn_lose #auto\n",
-    "    , fn_optimize       = fn_optimize #auto\n",
-    "    , fn_predict        = None #auto\n",
-    "\n",
-    "    # --- Training options ---\n",
-    "    , repeat_count      = 3\n",
-    "    , permute_count = 7\n",
-    "    , hyperparameters   = hyperparameters\n",
-    "    , search_percent    = None\n",
-    "\n",
-    "    # --- Data source ---\n",
-    "    , splitset_id       = splitset.id\n",
-    "    , foldset_id        = None\n",
-    "    , hide_test         = False\n",
+    "queue = Experiment(\n",
+    "    Architecture(\n",
+    "        library           = \"keras\"\n",
+    "        , analysis_type   = \"classification_binary\"\n",
+    "        , fn_build        = fn_build\n",
+    "        , fn_train        = fn_train\n",
+    "        , fn_optimize     = fn_optimize\n",
+    "        , hyperparameters = hyperparameters\n",
+    "    ),\n",
+    "    \n",
+    "    Trainer(\n",
+    "        pipeline        = pipeline\n",
+    "        , repeat_count  = 2\n",
+    "        , repeat_count  = 3\n",
+    "        , permute_count = 7\n",
+    "    )\n",
     ")"
    ]
   },
@@ -790,7 +808,7 @@
    "id": "2a82c002-f2c1-4c27-b73e-6886d9ec580e",
    "metadata": {},
    "source": [
-    "![matrixTrain](../images/notebook/docking_matrix_train.png)"
+    "![matrixTrain](../../../images/notebook/docking_matrix_train.png)"
    ]
   },
   {
@@ -798,7 +816,7 @@
    "id": "5ed34a57-33ba-4010-9886-e75d47e4a891",
    "metadata": {},
    "source": [
-    "![matrixTest](../images/notebook/docking_matrix_test.png)"
+    "![matrixTest](../../../images/notebook/docking_matrix_test.png)"
    ]
   },
   {
@@ -844,7 +862,7 @@
     "tags": []
    },
    "source": [
-    "![dockingFeatures](../images/notebook/docking_features.png)"
+    "![dockingFeatures](../../../images/notebook/docking_features.png)"
    ]
   },
   {
@@ -890,7 +908,7 @@
     "tags": []
    },
    "source": [
-    "![boxFalse](../images/notebook/box_plot_false.png)"
+    "![boxFalse](../../../images/notebook/box_plot_false.png)"
    ]
   },
   {
@@ -903,7 +921,7 @@
     "tags": []
    },
    "source": [
-    "![boxTrue](../images/notebook/box_plot_true.png)"
+    "![boxTrue](../../../images/notebook/box_plot_true.png)"
    ]
   },
   {

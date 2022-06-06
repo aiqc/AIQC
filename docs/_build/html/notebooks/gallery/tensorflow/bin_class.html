@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/tensorflow/bin_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Detecting Naval Mines with Binary Classification of Sonar Data. mines[2]: from aiqc import mlops, datum Example Data: This dataset is comprised of: Features= sonar readings that have been bounced o..." />
+  <meta property="og:description" content="Detecting Naval Mines with Binary Classification of Sonar Data. mines Example Data: Reference Example Datasets for more information. This dataset is comprised of: Features= sonar readings that have..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
@@ -591,291 +591,90 @@ div.rendered_html tbody tr:hover {
 <section id="TensorFlow:-Tabular-Classify-Binary">
 <h1>TensorFlow: Tabular Classify Binary<a class="headerlink" href="#TensorFlow:-Tabular-Classify-Binary" title="Permalink to this headline"></a></h1>
 <p><em>Detecting Naval Mines with Binary Classification of Sonar Data.</em></p>
-<img alt="mines" src="notebooks/gallery/images/banner/mines.png" />
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
+<img alt="mines" src="../../../_images/mines.png" />
 <section id="Example-Data">
 <h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="example_datasets.ipynb">Example Datasets</a> for more information.</p>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
 <li><p><em>Features</em> = sonar readings that have been bounced off a distant object.</p></li>
 <li><p><em>Label</em> = either a rock or metal structure (potentially a naval mine).</p></li>
 </ul>
-<p>Reference <a class="reference external" href="example_datasets.ipynb">Example Datasets</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="s1">&#39;sonar.csv&#39;</span><span class="p">)</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>a</th>
-      <th>b</th>
-      <th>c</th>
-      <th>d</th>
-      <th>e</th>
-      <th>f</th>
-      <th>g</th>
-      <th>h</th>
-      <th>i</th>
-      <th>j</th>
-      <th>...</th>
-      <th>az</th>
-      <th>ba</th>
-      <th>bb</th>
-      <th>bc</th>
-      <th>bd</th>
-      <th>be</th>
-      <th>bf</th>
-      <th>bg</th>
-      <th>bh</th>
-      <th>object</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.0200</td>
-      <td>0.0371</td>
-      <td>0.0428</td>
-      <td>0.0207</td>
-      <td>0.0954</td>
-      <td>0.0986</td>
-      <td>0.1539</td>
-      <td>0.1601</td>
-      <td>0.3109</td>
-      <td>0.2111</td>
-      <td>...</td>
-      <td>0.0027</td>
-      <td>0.0065</td>
-      <td>0.0159</td>
-      <td>0.0072</td>
-      <td>0.0167</td>
-      <td>0.0180</td>
-      <td>0.0084</td>
-      <td>0.0090</td>
-      <td>0.0032</td>
-      <td>R</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0.0453</td>
-      <td>0.0523</td>
-      <td>0.0843</td>
-      <td>0.0689</td>
-      <td>0.1183</td>
-      <td>0.2583</td>
-      <td>0.2156</td>
-      <td>0.3481</td>
-      <td>0.3337</td>
-      <td>0.2872</td>
-      <td>...</td>
-      <td>0.0084</td>
-      <td>0.0089</td>
-      <td>0.0048</td>
-      <td>0.0094</td>
-      <td>0.0191</td>
-      <td>0.0140</td>
-      <td>0.0049</td>
-      <td>0.0052</td>
-      <td>0.0044</td>
-      <td>R</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0.0262</td>
-      <td>0.0582</td>
-      <td>0.1099</td>
-      <td>0.1083</td>
-      <td>0.0974</td>
-      <td>0.2280</td>
-      <td>0.2431</td>
-      <td>0.3771</td>
-      <td>0.5598</td>
-      <td>0.6194</td>
-      <td>...</td>
-      <td>0.0232</td>
-      <td>0.0166</td>
-      <td>0.0095</td>
-      <td>0.0180</td>
-      <td>0.0244</td>
-      <td>0.0316</td>
-      <td>0.0164</td>
-      <td>0.0095</td>
-      <td>0.0078</td>
-      <td>R</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.0100</td>
-      <td>0.0171</td>
-      <td>0.0623</td>
-      <td>0.0205</td>
-      <td>0.0205</td>
-      <td>0.0368</td>
-      <td>0.1098</td>
-      <td>0.1276</td>
-      <td>0.0598</td>
-      <td>0.1264</td>
-      <td>...</td>
-      <td>0.0121</td>
-      <td>0.0036</td>
-      <td>0.0150</td>
-      <td>0.0085</td>
-      <td>0.0073</td>
-      <td>0.0050</td>
-      <td>0.0044</td>
-      <td>0.0040</td>
-      <td>0.0117</td>
-      <td>R</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0.0762</td>
-      <td>0.0666</td>
-      <td>0.0481</td>
-      <td>0.0394</td>
-      <td>0.0590</td>
-      <td>0.0649</td>
-      <td>0.1209</td>
-      <td>0.2467</td>
-      <td>0.3564</td>
-      <td>0.4459</td>
-      <td>...</td>
-      <td>0.0031</td>
-      <td>0.0054</td>
-      <td>0.0105</td>
-      <td>0.0110</td>
-      <td>0.0015</td>
-      <td>0.0072</td>
-      <td>0.0048</td>
-      <td>0.0107</td>
-      <td>0.0094</td>
-      <td>R</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 61 columns</p>
-</div></div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="Pipeline">
-<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
-<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information including how to work with non-tabular data.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">PowerTransformer</span>
+<span></span><span class="n">file_path</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;sonar.csv&#39;</span><span class="p">)</span>
+<span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
+<hr class="docutils" />
+</section>
+<section id="Pipeline">
+<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">PowerTransformer</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
-    <span class="c1"># --- Data source ---</span>
-    <span class="n">df_or_path</span> <span class="o">=</span> <span class="n">df</span>
-    <span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
+<span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">Input</span><span class="p">(</span>
+        <span class="n">dataset</span>  <span class="o">=</span> <span class="n">shared_dataset</span><span class="p">,</span>
+        <span class="n">encoders</span> <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
+            <span class="n">PowerTransformer</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;yeo-johnson&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Label preprocessing ---</span>
-    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
-    <span class="p">,</span> <span class="n">label_interpolater</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">(</span><span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">Target</span><span class="p">(</span>
+        <span class="n">dataset</span>   <span class="o">=</span> <span class="n">shared_dataset</span>
+        <span class="p">,</span> <span class="n">column</span>  <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
+        <span class="p">,</span> <span class="n">encoder</span> <span class="o">=</span> <span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">LabelBinarizer</span><span class="p">(</span><span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Feature preprocessing ---</span>
-    <span class="p">,</span> <span class="n">feature_cols_excluded</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
-    <span class="p">,</span> <span class="n">feature_interpolaters</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_window</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_encoders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">PowerTransformer</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;yeo-johnson&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
+    <span class="n">Stratifier</span><span class="p">(</span>
+        <span class="n">size_test</span>         <span class="o">=</span> <span class="mf">0.12</span>
+        <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.22</span>
     <span class="p">)</span>
-    <span class="p">,</span> <span class="n">feature_reshape_indices</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Stratification ---</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.12</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.22</span>
-    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">bin_count</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;i&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;m&#39;, &#39;n&#39;, &#39;o&#39;, &#39;p&#39;, &#39;q&#39;, &#39;r&#39;, &#39;s&#39;, &#39;t&#39;, &#39;u&#39;, &#39;v&#39;, &#39;w&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;, &#39;aa&#39;, &#39;ab&#39;, &#39;ac&#39;, &#39;ad&#39;, &#39;ae&#39;, &#39;af&#39;, &#39;ag&#39;, &#39;ah&#39;, &#39;ai&#39;, &#39;aj&#39;, &#39;ak&#39;, &#39;al&#39;, &#39;am&#39;, &#39;an&#39;, &#39;ao&#39;, &#39;ap&#39;, &#39;aq&#39;, &#39;ar&#39;, &#39;as&#39;, &#39;at&#39;, &#39;au&#39;, &#39;av&#39;, &#39;aw&#39;, &#39;ax&#39;, &#39;ay&#39;, &#39;az&#39;, &#39;ba&#39;, &#39;bb&#39;, &#39;bc&#39;, &#39;bd&#39;, &#39;be&#39;, &#39;bf&#39;, &#39;bg&#39;, &#39;bh&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more FeatureCoders can be added to this Encoderset.
-
-</pre></div></div>
 </div>
 <hr class="docutils" />
 </section>
 <section id="Modeling">
 <h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
-<p>Reference this great blog for machine learning cookbooks: <a class="reference external" href="https://machinelearningmastery.com/binary-classification-tutorial-with-the-keras-deep-learning-library/">MachineLearningMastery.com “Binary Classification”</a>.</p>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
 </pre></div>
 </div>
@@ -889,8 +688,9 @@ No more FeatureCoders can be added to this Encoderset.
     <span class="n">m</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.30</span><span class="p">))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.40</span><span class="p">))</span>
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.40</span><span class="p">))</span>
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">m</span>
 </pre></div>
@@ -901,19 +701,24 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
+    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">hp</span>
+<span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span><span class="o">=</span><span class="n">loser</span>
-        <span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+        <span class="n">loss</span>        <span class="o">=</span> <span class="n">loser</span>
+        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="p">,</span> <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-        <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
-        <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">3</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
+        <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span>
+        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">verbose</span>         <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">,</span> <span class="n">batch_size</span>      <span class="o">=</span> <span class="mi">3</span>
+        <span class="p">,</span> <span class="n">epochs</span>          <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">callbacks</span>       <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
@@ -925,7 +730,8 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">neuron_count</span><span class="o">=</span><span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span>
+    <span class="n">neuron_count</span><span class="o">=</span><span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -935,27 +741,19 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
-    <span class="c1"># --- Analysis type ---</span>
-    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+<span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">Architecture</span><span class="p">(</span>
+        <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+        <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+        <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
+        <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
+        <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Model functions ---</span>
-    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-
-    <span class="c1"># --- Training options ---</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">search_percent</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Data source ---</span>
-    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Trainer</span><span class="p">(</span>
+        <span class="n">pipeline</span>       <span class="o">=</span> <span class="n">pipeline</span>
+        <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -965,7 +763,7 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -974,7 +772,8 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [02:26&lt;00:00, 18.27s/it]
+📦 Caching Splits 📦: 100%|██████████████████████████████████████████| 3/3 [00:00&lt;00:00, 360.06it/s]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 8/8 [01:38&lt;00:00, 12.29s/it]
 </pre></div></div>
 </div>
 <hr class="docutils" />

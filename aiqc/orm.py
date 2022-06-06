@@ -3665,7 +3665,6 @@ class Queue(BaseModel):
 		selected_metrics = listify(selected_metrics)
 		sort_by = listify(sort_by)
 		
-		### will this work for inference predictions where metric's don't exist?
 		queue_predictions = Prediction.select().join(
 			Predictor).join(Job).where(Job.queue==id
 		).order_by(Prediction.id)
@@ -4563,18 +4562,21 @@ class Predictor(BaseModel):
 		predictor = Predictor.get_by_id(id)
 		job = predictor.job
 		label = job.queue.splitset.label
+		fold = job.fold
+
 		if (label is not None):
-			labelcoder, fitted_encoders = Predictor.get_fitted_labelcoder(job=job, label=label)
-			if (labelcoder is not None):
+			labels = label.unique_classes
+			if (label.labelcoders.count() > 0):
+				if (fold is not None):
+					fitted_encoders = fold.fitted_labelcoder
+				else:
+					fitted_encoders = label.fitted_labelcoder
+
 				if hasattr(fitted_encoders,'categories_'):
 					labels = list(fitted_encoders.categories_[0])
 				elif hasattr(fitted_encoders,'classes_'):
 					# Used by LabelBinarizer, LabelCoder, MultiLabelBinarizer
 					labels = fitted_encoders.classes_.tolist()
-				else:
-					labels = predictor.job.queue.splitset.label.unique_classes
-			else:
-				labels = predictor.job.queue.splitset.label.unique_classes
 		else:
 			labels = None
 		return labels

@@ -71,7 +71,7 @@
 </br></br></br></br>
 
 
-# Install
+# Usage
 
 ```python
 # Designed for Python 3.7.12 to mirror Google Colab
@@ -79,19 +79,19 @@ pip install --upgrade pip
 pip install --upgrade wheel
 pip install --upgrade aiqc
 
-from aiqc import orm, lab, mlops
+from aiqc import ui, mlops
 
-# Create & connect to SQLite db
-orm.setup()
-
-# Launch dashboard to monitor training
-lab.Tracker().start()
+# Monitor and evaluate models
+ui.Tracker().start()
 
 # Declare preprocessing steps
-mlops.Pipeline(...)
+mlops.Pipeline()
 
 # Define, train, & evaluate models
-mlops.Experiment(...).run_jobs()
+mlops.Experiment().run_jobs()
+
+# Infer using original Pipeline
+mlops.Inference()
 ```
 
 > Official Installation Documentation:

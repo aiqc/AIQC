@@ -591,50 +591,44 @@ div.rendered_html tbody tr:hover {
 <section id="TensorFlow:-Tabular-Forecasting">
 <h1>TensorFlow: Tabular Forecasting<a class="headerlink" href="#TensorFlow:-Tabular-Forecasting" title="Permalink to this headline"></a></h1>
 <p><em>Climate Forecasting Using a 2D Time Series of Multi-Variate Features Over Shifting Windows.</em></p>
-<img alt="delhi" src="notebooks/gallery/images/banner/temps.png" />
+<img alt="delhi" src="../../../_images/temps.png" />
 <p>Highly dimensional forecasting is another holy grail of deep learning. This process encodes information about the state of the future as a function of the states of the past. Here the learnable parameters of a neural network effectively serve as coefficients in an ‘infinitely’ long polynomial equation for predicting the future.</p>
 <p>Most tutorials in this space focus on the stock market. To be fair, the NYSE provides a reliable source of uniformly distributed, time-stamped data. However, in this example we’ll examine the climate of Delhi in order to predict both it’s temperature and humidity in the future.</p>
 <p>To do this, we’ll use a sliding <code class="docutils literal notranslate"><span class="pre">aiqc.Window</span></code> wherein the past 25 days of data is used to predict the next 5 days of data. We’ll study each 25 day interval (e.g. [0…24]) in the dataset and shift it forward by 5 days (e.g. [5…29]) to learn about the transformation it undergoes.</p>
 <blockquote>
 <div><p>It’s easy to perform <em>backcasting</em> instead of forecasting by switching in <code class="docutils literal notranslate"><span class="pre">samples_train</span></code> as the evaluation data and <code class="docutils literal notranslate"><span class="pre">samples_evaluate</span></code> as the training data when building in <code class="docutils literal notranslate"><span class="pre">Algorithm.fn_train</span></code>!</p>
 </div></blockquote>
+<hr class="docutils" />
+<section id="Example-Data">
+<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="example_datasets.ipynb">Example Datasets</a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 </pre></div>
 </div>
 </div>
-<hr class="docutils" />
-<section id="Example-Data">
-<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
 <li><p><em>Features</em> = daily weather statistics (temperature, humidity, wind, pressure).</p></li>
 </ul>
-<p>Reference <a class="reference external" href="example_datasets.ipynb">Example Datasets</a> for more information.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="s1">&#39;delhi_climate.parquet&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -709,7 +703,7 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -718,7 +712,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -730,11 +724,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_tab_forecast_11_1.png" src="../../../_images/notebooks_gallery_tensorflow_tab_forecast_11_1.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_tab_forecast_10_1.png" src="../../../_images/notebooks_gallery_tensorflow_tab_forecast_10_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -743,7 +737,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -755,52 +749,44 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_tab_forecast_12_1.png" src="../../../_images/notebooks_gallery_tensorflow_tab_forecast_12_1.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_tab_forecast_11_1.png" src="../../../_images/notebooks_gallery_tensorflow_tab_forecast_11_1.png" />
 </div>
 </div>
 <hr class="docutils" />
 </section>
 <section id="Pipeline">
 <h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span><span class="p">,</span> <span class="n">StandardScaler</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span><span class="p">,</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Tabular</span><span class="p">(</span>
-    <span class="c1"># --- Data source ---</span>
-    <span class="n">df_or_path</span>                <span class="o">=</span> <span class="n">df</span>
-    <span class="p">,</span> <span class="n">dtype</span>                   <span class="o">=</span> <span class="kc">None</span>
+<span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span>
+        <span class="n">dataset</span>         <span class="o">=</span> <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">exclude_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">,</span><span class="s1">&#39;wind&#39;</span><span class="p">],</span>
+        <span class="n">window</span>          <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">Window</span><span class="p">(</span><span class="n">size_window</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">size_shift</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">encoders</span>        <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
+            <span class="n">StandardScaler</span><span class="p">(),</span>
+            <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Label preprocessing ---</span>
-    <span class="p">,</span> <span class="n">label_column</span>            <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_interpolater</span>      <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_encoder</span>           <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Feature preprocessing ---</span>
-    <span class="p">,</span> <span class="n">feature_cols_excluded</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">,</span><span class="s1">&#39;wind&#39;</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">feature_interpolaters</span>   <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_window</span>          <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size_window</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">size_shift</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">feature_encoders</span>        <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
-        <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">]</span>
+    <span class="n">stratifier</span> <span class="o">=</span> <span class="n">Stratifier</span><span class="p">(</span>
+        <span class="n">size_test</span>       <span class="o">=</span> <span class="mf">0.12</span><span class="p">,</span>
+        <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.18</span>
     <span class="p">)</span>
-    <span class="p">,</span> <span class="n">feature_reshape_indices</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Stratification ---</span>
-    <span class="p">,</span> <span class="n">size_test</span>               <span class="o">=</span> <span class="mf">0.12</span>
-    <span class="p">,</span> <span class="n">size_validation</span>         <span class="o">=</span> <span class="mf">0.18</span>
-    <span class="p">,</span> <span class="n">fold_count</span>              <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">bin_count</span>               <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -811,18 +797,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
-=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-   This saves memory when concatenating the output of many encoders.
-
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;temperature&#39;, &#39;humidity&#39;, &#39;day_of_year&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more Featurecoders can be added to this Encoderset.
+└── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+        This saves memory when concatenating the output of many encoders.
 
 </pre></div></div>
 </div>
@@ -830,18 +806,20 @@ No more Featurecoders can be added to this Encoderset.
 </section>
 <section id="Modeling">
 <h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -873,36 +851,41 @@ No more Featurecoders can be added to this Encoderset.
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
     <span class="c1"># Reshape to be 3D.</span>
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Reshape</span><span class="p">((</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="n">m</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
+    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">hp</span>
+<span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span>        <span class="o">=</span> <span class="n">loser</span>
+        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="p">,</span> <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mean_squared_error&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span>
+        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">verbose</span>         <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">,</span> <span class="n">batch_size</span>      <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">epochs</span>          <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">callbacks</span>       <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span><span class="o">=</span><span class="n">loser</span>
-        <span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean_squared_error&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
-
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-        <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_train</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-        <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">model</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -918,41 +901,30 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
-    <span class="c1"># --- Analysis type ---</span>
-    <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>
+<span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">Architecture</span><span class="p">(</span>
+        <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
+        <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;regression&quot;</span>
+        <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
+        <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
+        <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Model functions ---</span>
-    <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_lose</span>         <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span>     <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_predict</span>      <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-
-    <span class="c1"># --- Training options ---</span>
-    <span class="p">,</span> <span class="n">repeat_count</span>    <span class="o">=</span> <span class="mi">2</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">search_percent</span>    <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Data source ---</span>
-    <span class="p">,</span> <span class="n">splitset_id</span>     <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">foldset_id</span>      <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">hide_test</span>       <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Trainer</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">repeat_count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -961,552 +933,10 @@ No more Featurecoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [01:25&lt;00:00, 42.54s/it]
+📦 Caching Splits 📦: 100%|██████████████████████████████████████████| 3/3 [00:00&lt;00:00, 276.73it/s]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [01:11&lt;00:00, 35.89s/it]
 </pre></div></div>
 </div>
-<hr class="docutils" />
-</section>
-<section id="Inference">
-<h2>Inference<a class="headerlink" href="#Inference" title="Permalink to this headline"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">metrics_to_pandas</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>hyperparamcombo_id</th>
-      <th>job_id</th>
-      <th>repeat_index</th>
-      <th>predictor_id</th>
-      <th>split</th>
-      <th>explained_variance</th>
-      <th>loss</th>
-      <th>mse</th>
-      <th>r2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>3</th>
-      <td>5</td>
-      <td>5</td>
-      <td>1</td>
-      <td>10</td>
-      <td>train</td>
-      <td>0.750181</td>
-      <td>0.379449</td>
-      <td>0.248472</td>
-      <td>0.749772</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>5</td>
-      <td>5</td>
-      <td>1</td>
-      <td>10</td>
-      <td>validation</td>
-      <td>0.743122</td>
-      <td>0.373829</td>
-      <td>0.243725</td>
-      <td>0.742453</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>5</td>
-      <td>5</td>
-      <td>1</td>
-      <td>10</td>
-      <td>test</td>
-      <td>0.731987</td>
-      <td>0.381075</td>
-      <td>0.260122</td>
-      <td>0.729508</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>5</td>
-      <td>5</td>
-      <td>0</td>
-      <td>9</td>
-      <td>train</td>
-      <td>0.751496</td>
-      <td>0.377335</td>
-      <td>0.247874</td>
-      <td>0.750427</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>5</td>
-      <td>5</td>
-      <td>0</td>
-      <td>9</td>
-      <td>validation</td>
-      <td>0.738676</td>
-      <td>0.372586</td>
-      <td>0.248141</td>
-      <td>0.737906</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>5</td>
-      <td>5</td>
-      <td>0</td>
-      <td>9</td>
-      <td>test</td>
-      <td>0.727271</td>
-      <td>0.375565</td>
-      <td>0.264483</td>
-      <td>0.724472</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[72]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span> <span class="c1"># replace with the id of your `Predictor.id`</span>
-</pre></div>
-</div>
-</div>
-<p>Let’s fetch an arbitrary 30 (25+5) days worth of data.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[73]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">430</span><span class="p">:</span><span class="mi">460</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[74]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_df</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[74]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(30, 5)
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[75]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_dataset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">infer_df</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[76]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_feature</span> <span class="o">=</span> <span class="n">infer_dataset</span><span class="o">.</span><span class="n">make_feature</span><span class="p">(</span><span class="n">exclude_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">,</span><span class="s1">&#39;wind&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[77]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_window</span> <span class="o">=</span> <span class="n">infer_feature</span><span class="o">.</span><span class="n">make_window</span><span class="p">(</span><span class="n">size_window</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">size_shift</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[78]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_splitset</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">feature_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">infer_feature</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[79]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[80]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_prediction</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">splitset_id</span><span class="o">=</span><span class="n">infer_splitset</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[81]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_predictions</span> <span class="o">=</span> <span class="n">infer_prediction</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;infer&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<p>Looking at the shape, we have 1 prediction with 25 days and 3 features worth of data.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">infer_predictions</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(1, 25, 3)
-</pre></div></div>
-</div>
-<p>Let’s compare this to the original data. We’ll grab the last 7 days of our real data.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">real_data</span> <span class="o">=</span> <span class="n">infer_df</span><span class="p">[</span><span class="mi">14</span><span class="p">:]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wind&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[84]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">real_data</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[84]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>day_of_year</th>
-      <th>temperature</th>
-      <th>humidity</th>
-      <th>pressure</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>80</td>
-      <td>22.500000</td>
-      <td>64.750000</td>
-      <td>1007.125000</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>81</td>
-      <td>25.000000</td>
-      <td>59.500000</td>
-      <td>1007.000000</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>82</td>
-      <td>22.750000</td>
-      <td>61.875000</td>
-      <td>1010.625000</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>83</td>
-      <td>22.375000</td>
-      <td>73.125000</td>
-      <td>1011.625000</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>84</td>
-      <td>24.625000</td>
-      <td>60.250000</td>
-      <td>1010.500000</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>85</td>
-      <td>25.125000</td>
-      <td>58.875000</td>
-      <td>1010.625000</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>86</td>
-      <td>23.500000</td>
-      <td>63.250000</td>
-      <td>1011.750000</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>87</td>
-      <td>24.428571</td>
-      <td>67.571429</td>
-      <td>1011.142857</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>88</td>
-      <td>25.875000</td>
-      <td>55.625000</td>
-      <td>1011.250000</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>89</td>
-      <td>24.125000</td>
-      <td>46.750000</td>
-      <td>1009.875000</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>90</td>
-      <td>24.125000</td>
-      <td>44.125000</td>
-      <td>1008.250000</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>91</td>
-      <td>24.875000</td>
-      <td>45.750000</td>
-      <td>1006.125000</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>92</td>
-      <td>26.750000</td>
-      <td>43.375000</td>
-      <td>1005.750000</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>93</td>
-      <td>25.000000</td>
-      <td>48.000000</td>
-      <td>1010.375000</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>94</td>
-      <td>25.857143</td>
-      <td>47.857143</td>
-      <td>1009.857143</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>95</td>
-      <td>27.375000</td>
-      <td>44.000000</td>
-      <td>1008.875000</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<p>And the last 7 days of our forecasted data.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[85]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[86]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">forecasted_data</span> <span class="o">=</span> <span class="n">infer_predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[87]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">forecasted_data</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[87]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-array([[ 99.42948 ,  22.078543,  63.977283],
-       [101.40643 ,  21.913084,  63.1746  ],
-       [101.94432 ,  22.29755 ,  63.701454],
-       [102.67831 ,  23.349934,  61.453014],
-       [104.46321 ,  22.811106,  61.87951 ],
-       [103.020065,  22.907621,  61.895325],
-       [106.26212 ,  22.946692,  62.759403],
-       [105.318695,  23.811033,  63.895264],
-       [108.07618 ,  23.758488,  60.546318],
-       [110.013084,  23.540775,  59.889854],
-       [111.73666 ,  23.648731,  58.722256],
-       [110.30759 ,  24.455078,  56.82688 ],
-       [112.899925,  24.169304,  57.025776],
-       [114.74731 ,  24.943705,  56.65586 ],
-       [115.811584,  24.96422 ,  57.221428],
-       [116.80744 ,  24.141085,  54.19216 ],
-       [118.19162 ,  24.950125,  54.132664],
-       [117.22514 ,  25.36454 ,  53.867275]], dtype=float32)
-</pre></div></div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[88]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">forecasted_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">forecasted_data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[89]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">temperature_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">real_data</span><span class="p">[[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]],</span> <span class="n">forecasted_data</span><span class="p">[[</span><span class="mi">1</span><span class="p">]]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[99]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">temperature_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Temperature&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[99]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;AxesSubplot:title={&#39;center&#39;:&#39;Temperature&#39;}&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_tab_forecast_50_1.png" src="../../../_images/notebooks_gallery_tensorflow_tab_forecast_50_1.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[91]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">humidity_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">real_data</span><span class="p">[[</span><span class="s1">&#39;humidity&#39;</span><span class="p">]],</span> <span class="n">forecasted_data</span><span class="p">[[</span><span class="mi">2</span><span class="p">]]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">humidity_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Humidity&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">90</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[103]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;AxesSubplot:title={&#39;center&#39;:&#39;Humidity&#39;}&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_tab_forecast_52_1.png" src="../../../_images/notebooks_gallery_tensorflow_tab_forecast_52_1.png" />
-</div>
-</div>
-<p>We’re not exactly ready to start our own weather channel, but there is definitely evidence of learning.</p>
 <hr class="docutils" />
 </section>
 <section id="Visualization-&amp;-Interpretation">

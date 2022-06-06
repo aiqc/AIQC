@@ -21,7 +21,7 @@
    "id": "immediate-aerospace",
    "metadata": {},
    "source": [
-    "![waves](../images/banner/waves.png)"
+    "![waves](../../../images/banner/waves.png)"
    ]
   },
   {
@@ -35,18 +35,8 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": 2,
-   "id": "6c683eaf-7ca6-44cc-adbe-5e02bd735d1f",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "from aiqc import mlops, datum"
-   ]
-  },
-  {
    "cell_type": "markdown",
-   "id": "administrative-poetry",
+   "id": "435ccb61-81b3-4726-b1d7-f4b987fc8cd0",
    "metadata": {},
    "source": [
     "---"
@@ -62,6 +52,14 @@
   },
   {
    "cell_type": "markdown",
+   "id": "ab90199a-7998-4904-8c39-7f093e068db6",
+   "metadata": {},
+   "source": [
+    "Reference [Example Datasets](example_datasets.ipynb) for more information."
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "id": "cc43c390-d99a-476b-9fc4-a7c8c5fabee9",
    "metadata": {},
    "source": [
@@ -73,17 +71,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
-   "id": "3d7a0de2-5c54-417d-9317-364403ff710c",
+   "execution_count": null,
+   "id": "9f979991-b2c5-4325-8db9-4afac82daed2",
    "metadata": {},
    "outputs": [],
    "source": [
-    "df = datum.to_pandas('epilepsy.parquet')"
+    "from aiqc import datum\n",
+    "from aiqc.orm import Dataset"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 3,
    "id": "genetic-leeds",
    "metadata": {},
    "outputs": [
@@ -289,13 +288,44 @@
        "[5 rows x 179 columns]"
       ]
      },
-     "execution_count": 5,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
+    "df = datum.to_pandas('epilepsy.parquet')\n",
     "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "65929bed-aff7-49a9-b506-0c4c951feaf2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "label_df = df[['seizure']]\n",
+    "label_dataset = Dataset.Tabular.from_pandas(dataframe=label_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "a27c2403-9b07-461c-b241-7bda17da3204",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:05<00:00, 175.43it/s]\n"
+     ]
+    }
+   ],
+   "source": [
+    "seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)\n",
+    "feature_dataset = Dataset.Sequence.from_numpy(ndarray3D_or_npyPath=seq_ndarray3D)"
    ]
   },
   {
@@ -324,95 +354,51 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
-   "id": "excessive-dealing",
+   "execution_count": 9,
+   "id": "87274275-3c5b-4492-82e4-4aae0b817c2f",
    "metadata": {
     "tags": []
    },
    "outputs": [],
    "source": [
-    "label_df = df[['seizure']]"
+    "from aiqc.mlops import Pipeline, Input, Target, Stratifier\n",
+    "from sklearn.preprocessing import StandardScaler, LabelBinarizer"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
-   "id": "tribal-palmer",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 7,
-   "id": "e6bb2180-f623-4c95-a0a2-29110d1e88cf",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "from sklearn.preprocessing import StandardScaler"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 9,
-   "id": "reported-inquiry",
+   "execution_count": 10,
+   "id": "5bd766e4-b14b-4c9c-a4ec-3a9b2e158785",
    "metadata": {},
    "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:05<00:00, 183.79it/s]\n"
-     ]
-    },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
       "\n",
-      "=> Info - System overriding user input to set `sklearn_preprocess.copy=False`.\n",
-      "   This saves memory when concatenating the output of many encoders.\n",
-      "\n",
-      "\n",
-      "___/ featurecoder_index: 0 \\_________\n",
-      "\n",
-      "=> The column(s) below matched your filter(s) featurecoder filters.\n",
-      "\n",
-      "['0']\n",
-      "\n",
-      "=> Done. All feature column(s) have featurecoder(s) associated with them.\n",
-      "No more Featurecoders can be added to this Encoderset.\n",
+      "└── Info - System overriding user input to set `sklearn_preprocess.copy=False`.\n",
+      "\tThis saves memory when concatenating the output of many encoders.\n",
       "\n"
      ]
     }
    ],
    "source": [
-    "splitset = mlops.Pipeline.Sequence(\n",
-    "    # --- Label preprocessing ---\n",
-    "    label_df_or_path = label_df\n",
-    "    , label_dtype = None\n",
-    "    , label_column = 'seizure'\n",
-    "    , label_interpolater = None\n",
-    "    , label_encoder = None\n",
-    "    \n",
-    "    # --- Feature preprocessing ---\n",
-    "    , feature_ndarray3D_or_npyPath = seq_ndarray3D\n",
-    "    , feature_dtype = None\n",
-    "    , feature_cols_excluded = None\n",
-    "    , feature_interpolaters = None\n",
-    "    , feature_window = None\n",
-    "    , feature_encoders = [\n",
-    "        dict(columns='0', sklearn_preprocess=StandardScaler())\n",
-    "    ]\n",
-    "    , feature_reshape_indices = None\n",
+    "pipeline = Pipeline(\n",
+    "    Input(\n",
+    "        dataset  = feature_dataset,\n",
+    "        encoders = Input.Encoder(StandardScaler(), dtypes=['int64'])\n",
+    "    ),\n",
+    "        \n",
+    "    Target(\n",
+    "        dataset = label_dataset,\n",
+    "        column  = 'seizure',\n",
+    "        encoder = Target.Encoder(LabelBinarizer())\n",
+    "    ),\n",
     "\n",
-    "    # --- Stratification ---\n",
-    "    , size_test = 0.12\n",
-    "    , size_validation = 0.22\n",
-    "    , fold_count = None\n",
-    "    , bin_count = None\n",
+    "    Stratifier(\n",
+    "        size_test       = 0.12,\n",
+    "        size_validation = 0.22\n",
+    "    )\n",
     ")"
    ]
   },
@@ -433,102 +419,108 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "id": "24297da8-08e2-43bc-b8c4-311e2e3fbeac",
+   "metadata": {},
+   "source": [
+    "Reference [High-Level API Docs](api_high_level.ipynb) for more information."
+   ]
+  },
+  {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 11,
    "id": "7ba9a1a5-258c-404a-94ed-920fabc14536",
    "metadata": {},
    "outputs": [],
    "source": [
+    "from aiqc.mlops import Experiment, Architecture, Trainer\n",
     "import tensorflow as tf\n",
     "from tensorflow.keras import layers as l"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 13,
    "id": "24b73534-8d82-4dae-af56-ddc3fa2a9c84",
    "metadata": {},
    "outputs": [],
    "source": [
     "def fn_build(features_shape, label_shape, **hp):    \n",
     "    m = tf.keras.models.Sequential()\n",
-    "    m.add(l.LSTM(hp['neuron_count'], input_shape=features_shape)))\n",
+    "    m.add(l.LSTM(hp['neuron_count'], input_shape=features_shape))\n",
     "    m.add(l.Dense(units=label_shape[0], activation='sigmoid'))\n",
     "    return m"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": 14,
    "id": "designed-cardiff",
    "metadata": {},
    "outputs": [],
    "source": [
-    "def fn_train(model, loser, optimizer, samples_train, samples_evaluate, **hp):\n",
+    "def fn_train(\n",
+    "    model, loser, optimizer,\n",
+    "    train_features, train_label,\n",
+    "    eval_features, eval_label,\n",
+    "    **hp\n",
+    "):\n",
     "    model.compile(\n",
-    "        loss=loser\n",
-    "        , optimizer=optimizer\n",
-    "        , metrics=['accuracy']\n",
+    "        loss        = loser\n",
+    "        , optimizer = optimizer\n",
+    "        , metrics   = ['accuracy']\n",
     "    )\n",
     "    model.fit(\n",
-    "        samples_train['features'], samples_train['labels']\n",
-    "        , validation_data = (samples_evaluate['features'], samples_evaluate['labels'])\n",
-    "        , verbose = 0\n",
-    "        , batch_size = hp['batch_size']\n",
-    "        , epochs = hp['epochs']\n",
-    "        , callbacks = [tf.keras.callbacks.History()]\n",
+    "        train_features, train_label\n",
+    "        , validation_data = (eval_features, eval_label)\n",
+    "        , verbose         = 0\n",
+    "        , batch_size      = hp['batch_size']\n",
+    "        , epochs          = hp['epochs']\n",
+    "        , callbacks       = [tf.keras.callbacks.History()]\n",
     "    )\n",
     "    return model"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
+   "execution_count": 15,
    "id": "happy-vocabulary",
    "metadata": {},
    "outputs": [],
    "source": [
     "hyperparameters = dict(\n",
-    "    neuron_count = [25]\n",
-    "    , batch_size = [8]\n",
-    "    , epochs     = [5, 10]\n",
+    "    neuron_count = [25],\n",
+    "    batch_size   = [8],\n",
+    "    epochs       = [5, 10]\n",
     ")"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
-   "id": "twenty-moral",
+   "execution_count": 16,
+   "id": "943f977b-4a4d-44df-9294-16a3a2a4b8d0",
    "metadata": {},
    "outputs": [],
    "source": [
-    "queue = mlops.Experiment(\n",
-    "    # --- Analysis type ---\n",
-    "    library = \"keras\"\n",
-    "    , analysis_type = \"classification_binary\"\n",
+    "experiment = Experiment(\n",
+    "    Architecture(\n",
+    "        library           = \"keras\"\n",
+    "        , analysis_type   = \"classification_binary\"\n",
+    "        , fn_build        = fn_build\n",
+    "        , fn_train        = fn_train\n",
+    "        , hyperparameters = hyperparameters\n",
+    "    ),\n",
     "    \n",
-    "    # --- Model functions ---\n",
-    "    , fn_build = fn_build\n",
-    "    , fn_train = fn_train\n",
-    "    , fn_lose = None #auto\n",
-    "    , fn_optimize = None #auto\n",
-    "    , fn_predict = None #auto\n",
-    "    \n",
-    "    # --- Training options ---\n",
-    "    , repeat_count = 2\n",
-    "    , hyperparameters = hyperparameters\n",
-    "    , search_percent = None\n",
-    "    \n",
-    "    # --- Data source ---\n",
-    "    , splitset_id = splitset.id\n",
-    "    , foldset_id = None\n",
-    "    , hide_test = False\n",
+    "    Trainer(\n",
+    "        pipeline       = pipeline\n",
+    "        , repeat_count = 1\n",
+    "    )\n",
     ")"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 17,
    "id": "present-festival",
    "metadata": {},
    "outputs": [
@@ -536,12 +528,13 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [02:24<00:00, 36.01s/it]\n"
+      "📦 Caching Splits 📦: 100%|██████████████████████████████████████████| 3/3 [00:00<00:00, 238.55it/s]\n",
+      "🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [01:08<00:00, 34.30s/it]\n"
      ]
     }
    ],
    "source": [
-    "queue.run_jobs()"
+    "experiment.run_jobs()"
    ]
   },
   {

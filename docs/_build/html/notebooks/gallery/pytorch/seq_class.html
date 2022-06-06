@@ -591,46 +591,40 @@ div.rendered_html tbody tr:hover {
 <section id="PyTorch:-Times-Series-Classify-Binary">
 <h1>PyTorch: Times Series Classify Binary<a class="headerlink" href="#PyTorch:-Times-Series-Classify-Binary" title="Permalink to this headline"></a></h1>
 <p><em>Binary Detection of Epileptic Seizures Using a Cohort of Sequence of Electroencephalography (EEG) Readings.</em></p>
-<img alt="waves" src="notebooks/gallery/images/banner/waves.png" />
+<img alt="waves" src="../../../_images/waves.png" />
 <p>Sequence data structures contain many observations (rows) for each sample (e.g. site, sensor, or patient). They are often used for grouping time-based observations into what is called a time series. However, sequences can also represent biological sequences like DNA and RNA.</p>
 <p>The cardinality of <em>many observations per sample</em> changes the dimensionality of the data from 2D to 3D. This effectively adds an additional layer of complexity to all aspects of data preparation. In this notebook, you’ll see that, once a <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> has been ingested, the AIQC API allows you to work with multivariate 3D data as easily as if it were 2D. As an example, you can still apply encoders by dtype and column_name.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">mlops</span><span class="p">,</span> <span class="n">datum</span>
-</pre></div>
-</div>
-</div>
 <hr class="docutils" />
 <section id="Example-Data">
 <h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="example_datasets.ipynb">Example Datasets</a> for more information.</p>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
 <li><p><em>Features</em> = a sequence of electroencephalogram (EEG) readings.</p></li>
 <li><p><em>Label</em> = presence of an epileptic seizure.</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="s1">&#39;epilepsy.parquet&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -801,78 +795,73 @@ div.rendered_html tbody tr:hover {
 <p>5 rows × 179 columns</p>
 </div></div>
 </div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">label_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;seizure&#39;</span><span class="p">]]</span>
+<span class="n">label_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">label_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq_ndarray3D</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;seizure&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">178</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">feature_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">ndarray3D_or_npyPath</span><span class="o">=</span><span class="n">seq_ndarray3D</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:05&lt;00:00, 169.21it/s]
+</pre></div></div>
+</div>
 <hr class="docutils" />
 </section>
 <section id="Pipeline">
 <h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;seizure&#39;</span><span class="p">]]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">seq_ndarray3D</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;seizure&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">178</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">LabelBinarizer</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">splitset</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Pipeline</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span>
-    <span class="c1"># --- Label preprocessing ---</span>
-    <span class="n">label_df_or_path</span> <span class="o">=</span> <span class="n">label_df</span>
-    <span class="p">,</span> <span class="n">label_dtype</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_column</span> <span class="o">=</span> <span class="s1">&#39;seizure&#39;</span>
-    <span class="p">,</span> <span class="n">label_interpolater</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">label_encoder</span> <span class="o">=</span> <span class="kc">None</span>
+<span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">Input</span><span class="p">(</span>
+        <span class="n">dataset</span>  <span class="o">=</span> <span class="n">feature_dataset</span><span class="p">,</span>
+        <span class="n">encoders</span> <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int64&#39;</span><span class="p">])</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Feature preprocessing ---</span>
-    <span class="p">,</span> <span class="n">feature_ndarray3D_or_npyPath</span> <span class="o">=</span> <span class="n">seq_ndarray3D</span>
-    <span class="p">,</span> <span class="n">feature_dtype</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_cols_excluded</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_interpolaters</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_window</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">feature_encoders</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">StandardScaler</span><span class="p">())</span>
-    <span class="p">]</span>
-    <span class="p">,</span> <span class="n">feature_reshape_indices</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Target</span><span class="p">(</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">label_dataset</span><span class="p">,</span>
+        <span class="n">column</span>  <span class="o">=</span> <span class="s1">&#39;seizure&#39;</span><span class="p">,</span>
+        <span class="n">encoder</span> <span class="o">=</span> <span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">LabelBinarizer</span><span class="p">())</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Stratification ---</span>
-    <span class="p">,</span> <span class="n">size_test</span> <span class="o">=</span> <span class="mf">0.12</span>
-    <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.22</span>
-    <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">bin_count</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Stratifier</span><span class="p">(</span>
+        <span class="n">size_test</span>       <span class="o">=</span> <span class="mf">0.12</span><span class="p">,</span>
+        <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.22</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-⏱️ Ingesting Sequences 🧬: 100%|████████████████| 1000/1000 [00:05&lt;00:00, 182.34it/s]
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -880,18 +869,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
-=&gt; Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+└── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
         This saves memory when concatenating the output of many encoders.
-
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;0&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more FeatureCoders can be added to this Encoderset.
 
 </pre></div></div>
 </div>
@@ -899,19 +878,21 @@ No more FeatureCoders can be added to this Encoderset.
 </section>
 <section id="Modeling">
 <h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<p>Reference <a class="reference external" href="api_high_level.ipynb">High-Level API Docs</a> for more information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">torchmetrics</span> <span class="k">as</span> <span class="nn">tm</span>
 <span class="kn">from</span> <span class="nn">aiqc.utils.pytorch</span> <span class="kn">import</span> <span class="n">fit</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -939,22 +920,30 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">fit</span><span class="p">(</span>
+<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
+    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">hp</span>
+<span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span>
         <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
-        <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span>
-        <span class="n">epochs</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">],</span>
-        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tm</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">tm</span><span class="o">.</span><span class="n">F1Score</span><span class="p">()]</span>
+        <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
+        <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span>
+        <span class="p">,</span> <span class="n">epochs</span>     <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
+        <span class="p">,</span> <span class="n">metrics</span>    <span class="o">=</span> <span class="p">[</span><span class="n">tm</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">tm</span><span class="o">.</span><span class="n">F1Score</span><span class="p">()]</span>
     <span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -967,41 +956,30 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">mlops</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span>
-    <span class="c1"># --- Analysis type ---</span>
-    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+<span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">Architecture</span><span class="p">(</span>
+        <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;pytorch&quot;</span>
+        <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
+        <span class="p">,</span> <span class="n">fn_build</span>        <span class="o">=</span> <span class="n">fn_build</span>
+        <span class="p">,</span> <span class="n">fn_train</span>        <span class="o">=</span> <span class="n">fn_train</span>
+        <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+    <span class="p">),</span>
 
-    <span class="c1"># --- Model functions ---</span>
-    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#auto</span>
-
-    <span class="c1"># --- Training options ---</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">search_percent</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="c1"># --- Data source ---</span>
-    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">foldset_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">hide_test</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Trainer</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">repeat_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1010,7 +988,8 @@ No more FeatureCoders can be added to this Encoderset.
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 4/4 [01:46&lt;00:00, 26.65s/it]
+📦 Caching Splits 📦: 100%|██████████████████████████████████████████| 3/3 [00:00&lt;00:00, 220.57it/s]
+🔮 Training Models 🔮: 100%|██████████████████████████████████████████| 2/2 [00:57&lt;00:00, 28.78s/it]
 </pre></div></div>
 </div>
 <hr class="docutils" />

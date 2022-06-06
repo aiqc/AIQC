@@ -173,7 +173,7 @@
     </svg>
   </div>
 
-  <div style="background-image: linear-gradient(#122536, #fcfcfc);">
+  <div style="background-image: linear-gradient(#122536, #ffffff);">
     </br></br>
     <center>
       <div class="headerz headerz-dark">Refine raw data into actionable <span class="goldz-dark">insight</span>.</div>
@@ -352,7 +352,7 @@ AIQC
 
 .. raw:: html
 
-  <div style="background-image: linear-gradient(#fcfcfc, #122536);">
+  <div style="background-image: linear-gradient(#ffffff, #122536);">
     </br></br></br></br></br></br>
     <center>
       <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
