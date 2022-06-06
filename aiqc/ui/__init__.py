@@ -26,7 +26,7 @@ getLogger('werkzeug').setLevel(ERROR)
 
 
 class Tracker(object):        
-    def __init__(self, refresh_seconds:int=5, server_runtime:dict=None):
+    def __init__(self, refresh_seconds:int=10, server_runtime:dict=None):
         """
             - `refresh_seconds` determines the polling frequency.
             - `server_runtime` is passed through to `dash.Dash.app.run_server()` as **kwargs.
@@ -228,7 +228,7 @@ class Tracker(object):
                 # bools are not rendering so need to force them to str
                 rows = []
                 for k,v in hyperparameters.items():
-                    if isinstance(v,bool): 
+                    if isinstance(v,bool):
                         v = str(v) 
                     rows.append(
                         html.Tr([html.Td(k), html.Td(v)])
@@ -434,10 +434,11 @@ class Tracker(object):
                 # Need the 'split' to be in the same dict as the metrics.
                 metrics_records = []
                 for split, metrix in metrics.items():
-                    split_dikt = {'split':split}
-                    # We want the split to appear first in the dict
-                    split_dikt.update(metrix)
-                    metrics_records.append(split_dikt)
+                    if (metrix is not None):
+                        split_dikt = {'split':split}
+                        # We want the split to appear first in the dict
+                        split_dikt.update(metrix)
+                        metrics_records.append(split_dikt)
                 cols = list(metrics_records[0].keys())
                 headers = [html.Th(c) for c in cols]
                 table_header = [html.Thead(html.Tr(headers))]

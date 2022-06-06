@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/dashboard.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="AIQC makes comparing and evaluating models effortless with its reactive Dash-Plotly user interface. The following dashboards put precalculated metrics & charts for each split/fold of every model ri..." />
+  <meta property="og:description" content="[1]: cd '~/Desktop/AIQC' AIQC makes comparing and evaluating models effortless with its reactive Dash-Plotly user interface. The following dashboards put precalculated metrics & charts for each spl..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
@@ -592,6 +592,23 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Dashboards">
 <h1>Dashboards<a class="headerlink" href="#Dashboards" title="Permalink to this headline"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">cd</span> <span class="s1">&#39;~/Desktop/AIQC&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/Users/layne/Desktop/AIQC
+</pre></div></div>
+</div>
 <hr class="docutils" />
 <p>AIQC makes comparing and evaluating models effortless with its reactive <a class="reference external" href="https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e">Dash-Plotly</a> user interface. The following dashboards put precalculated metrics &amp; charts for each split/fold of every model right at your fingertips.</p>
 <blockquote>
@@ -624,7 +641,7 @@ div.rendered_html tbody tr:hover {
 <h2>Runtime<a class="headerlink" href="#Runtime" title="Permalink to this headline"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">aiqc.lab.Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app. It has 2 user-facing attributes:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">refresh_seconds:int=5</span></code> determines the polling frequency (between 5 &amp; 30 seconds). This ensures that the UI has access to up-to-date database information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refresh_seconds:int=10</span></code> determines the polling frequency (between 5 &amp; 30 seconds). This ensures that the UI has access to up-to-date database information.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">server_runtime:dict=None</span></code> is passed through to: <code class="docutils literal notranslate"><span class="pre">dash.Dash.app.run_server()</span></code> as **kwargs.</p></li>
 </ul>
 <p>These are the default <code class="docutils literal notranslate"><span class="pre">server_runtime</span></code> items, which are overridable:</p>
@@ -634,13 +651,21 @@ div.rendered_html tbody tr:hover {
 <li><p><code class="docutils literal notranslate"><span class="pre">host='127.0.0.1'</span></code> aka <em>localhost</em></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">port=9991</span></code> the range <em>9991:9995</em> seems fairly <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports">unoccupied</a></p></li>
 </ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.ui</span> <span class="kn">import</span> <span class="n">Tracker</span>
+</pre></div>
+</div>
+</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.lab</span> <span class="kn">import</span> <span class="n">Tracker</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">()</span>
+<span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">()</span>
 <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -650,10 +675,10 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-📊 AIQC Tracker http://127.0.0.1:9991 📊
+📊 AIQC Tracker http://127.0.0.1:9992 📊
 </pre></div></div>
 </div>
-<p>If the web server started successfully, then you can tear it down if you wish:</p>
+<p>If the web server started successfully, then you can tear it down with:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -696,6 +721,8 @@ Try passing a different port to run_server.
 <p>Strangely, you can start an app on the same port repeatedly just fine.</p>
 <p><strong>Known Bug</strong> - <a class="reference external" href="https://github.com/plotly/jupyter-dash/issues/63">JupyterDash Werkzeug Deprecation Warnings</a></p>
 <p>The Plotly team has since removed Werkzeug as a dependency.</p>
+<p><strong>Known Bug</strong> - “I’ve selected models to compare, but they never load and there is no error message”</p>
+<p>Try increasing the <code class="docutils literal notranslate"><span class="pre">Tracker(refresh_seconds)</span></code> argument. It is possible that your multi-model query takes 6 seconds to run, but it never finishes because the page refreshes every 5 seconds.</p>
 </section>
 </section>
 </section>

@@ -606,68 +606,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">setup</span>
-<span class="n">setup</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Welcome to AIQC.
-To get started, run `aiqc.setup()`.
-
-
-=&gt; Info - Cannot fetch database yet because it has not been configured.
-
-=&gt; Info - it appears the following folder does not exist on your system:
-/Users/layne/Library/Application Support/aiqc/
-
-=&gt; Fix - you can attempt to fix this by running `aiqc.config.create_folder()`.
-
-=&gt; Success - created folder at file path:
-/Users/layne/Library/Application Support/aiqc/
-
-=&gt; Next run `aiqc.config.create_config()`.
-
-
-=&gt; Success - the following file path already exists on your system:
-/Users/layne/Library/Application Support/aiqc/
-
-
-=&gt; Success - created config file for settings at path:
-/Users/layne/Library/Application Support/aiqc/config.json
-
-
-=&gt; Next run `aiqc.orm.create_db()`.
-
-
-=&gt; Success - created database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-💾  Success - created all database tables.  💾
-
-</pre></div></div>
-</div>
-<p>This command only needs to be ran once. If you run it again, it skip the creation of any configuration folders and files that already exist.</p>
-<blockquote>
-<div><p>Although the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import the package, the AIQC developers make a concious choice of not running system commands without explicit user consent.</p>
-</div></blockquote>
-<p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
-<blockquote>
-<div><p>So you <strong>do not</strong> have to worry about anything like installing a database server, database client, database users, configuring ports, configuring passwords/ secrets/ environment variables, or starting and restopping the database. Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>. Glad we found this fantastic and simple alternative to SQLAlchemy.</p>
-</div></blockquote>
-<p>Finally, be sure to read the plotting section below.</p>
+<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook. Be sure to read the plotting section below.</p>
 <hr class="docutils" />
 </section>
 <section id="Environment">
@@ -833,6 +772,25 @@ v14.7.0
 </section>
 <section id="Config-File">
 <h2>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">setup</span>
+<span class="n">setup</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><strong>UPDATE:</strong> <code class="docutils literal notranslate"><span class="pre">setup()</span></code> is now automatically ran when import <code class="docutils literal notranslate"><span class="pre">orm</span></code>.</p>
+<p>This command only needs to be ran once. If you run it again, it skip the creation of any configuration folders and files that already exist.</p>
+<blockquote>
+<div><p>Although the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import the package, the AIQC developers make a concious choice of not running system commands without explicit user consent.</p>
+</div></blockquote>
+<p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
+<blockquote>
+<div><p>So you <strong>do not</strong> have to worry about anything like installing a database server, database client, database users, configuring ports, configuring passwords/ secrets/ environment variables, or starting and restopping the database. Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>. Glad we found this fantastic and simple alternative to SQLAlchemy.</p>
+</div></blockquote>
 <p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
