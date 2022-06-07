@@ -6,7 +6,7 @@ project = 'AIQC'
 copyright = '2020, Team AIQC'
 author = 'Team AIQC'
 
-
+# -- Plugins -------------------------------------------------
 # https://nbsphinx.readthedocs.io/en/0.8.0/
 # These are pip packages. See `docs/requirements.txt` 
 # Which is called by `.readthedocs.yml`
@@ -19,35 +19,35 @@ extensions = [
 	, 'sphinxcontrib.youtube'
 ]
 # https://nbsphinx.readthedocs.io/en/0.7.0/usage.html#suppress_warnings
-suppress_warnings = ['nbsphinx']
+suppress_warnings  = ['nbsphinx']
+highlight_language = 'python3'
 
 
 # -- Assets -------------------------------------------------
-# Acts like .gitignore
-# nbsphinx automatically excludes '.ipynb_checkpoints'
+# Acts like .gitignore. nbsphinx automatically excludes '.ipynb_checkpoints'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'Untitled.ipynb']
-templates_path = ['_templates']
-
+templates_path   = ['_templates']
 html_static_path = ['_static']
-html_css_files = ['css/custom.css']
-html_js_files = ['js/jssor.slider.min.js']
+html_css_files   = ['css/custom.css']
+html_js_files    = []
 
-html_theme = "sphinx_rtd_theme" # see extension and `import` above.
-# SVG logo: https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
-html_logo = 'images/web/aiqc_logo_square_blues_transparent.svg'
-html_favicon = 'images/web/favicon.ico'
-html_show_sphinx = False
+
+# -- Options -------------------------------------------------
+# SVG logo: stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
+html_theme          = "sphinx_rtd_theme" # see extension and `import` above.
+html_logo           = 'images/web/aiqc_logo_square_blues_transparent.svg'
+html_favicon        = 'images/web/favicon.ico'
+html_show_sphinx    = False
 html_show_copyright = False
-html_title = 'AIQC'
-html_short_title = 'AIQC'
-html_theme_options = dict(
+html_title          = 'AIQC'
+html_short_title    = 'AIQC'
+html_theme_options  = dict(
 	logo_only                    = True
 	, display_version            = False
 	, sticky_navigation          = False
 	, collapse_navigation        = False
     , prev_next_buttons_location = None
 )
-highlight_language = 'python3'
 
 
 # -- <head><meta> title & links -----------------------------------------
