@@ -678,6 +678,11 @@ p.explain {
     text-align: center;
 }
 
+.consultation {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
 .quickLinks {
     font-family:     Abel;
     color:         rgb(0, 7, 12);
@@ -763,9 +768,9 @@ p.explain {
 
 /* --- Start: Slideshow --- */
 .slider {
-    width: 100%;
+    width: 46%;
     max-width: 800px;
-    height: 320px;
+    height: 350px;
     position: relative;
     overflow: hidden; /* <===  */
     border-radius: 15px;
@@ -782,7 +787,7 @@ p.explain {
 .slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .btn {
@@ -795,7 +800,7 @@ p.explain {
     border-radius: 50%;
     z-index: 10px;
     cursor: pointer;
-    background-color: #fff;
+    background-color: #ffffff65;
     font-size: 16px;
 }
 
@@ -804,7 +809,7 @@ p.explain {
 }
 
 .btn:hover {
-    background-color: #30d0b3;
+    background-color: #30d0b370;
     color: white;
 }
 

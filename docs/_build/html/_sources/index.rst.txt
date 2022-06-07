@@ -34,51 +34,6 @@
   Without this comment, `make html` throws warning about page beginning improperly.
 
 
-.. 
-   nick wrote this when we were talking about how to get his custom google form
-   to show in the documentation to prevent seeing docs without providing your email.
-   he said you could track whether or not they provided it with a cookie.
-   https://github.com/js-cookie/js-cookie
-
-   raw:: html
-
-   <hr width=50 size=10>
-   <script>
-
-     function formValidation(){
-
-        function hideContent(){
-          $('.section').children().hide();
-          $($('.section').children()[0]).show();
-          $($('.section').children()[1]).show();
-          $($('.section').children()[2]).show();
-          $($('.section').children()[3]).show();
-        }
-
-        function showContent(){
-          $('.section').children().show();
-        }
-
-        function showForm(){
-          $('#signup_form').show();
-        }
-
-        function hideForm(){
-          $('#signup_form').hide();
-        }
-
-        if (access = 0){
-          hideContent();
-          showForm();
-        } else {
-          hideForm();
-          showContent();
-        }
-     }
-   formValidation();
-   </script>
-
-
 .. raw:: html
   
   <div style="background-image: linear-gradient(#24435f, #122536); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
@@ -96,8 +51,8 @@
   </div>
   </br></br>
   <center>
-    <div class="headerz-light" style="color:#828282; font-size: 15.5px !important;">
-      An end-to-end framework that makes deep learning accessible to researchers
+    <div class="headerz-light" style="color:#828282; font-size: 16px !important;">
+      A framework that makes end-to-end deep learning accessible for scientific research
     </div> 
   </center>
   </br></br>
@@ -176,9 +131,24 @@
   <div style="background-image: linear-gradient(#122536, #ffffff);">
     </br></br>
     <center>
-      <div class="headerz headerz-dark">Refine raw data into actionable <span class="goldz-dark">insight</span>.</div>
-      </br></br></br>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/train_abstract_lines.png" alt="abstraction" width="93%" style="display:block;">
+      <div class="headerz headerz-dark" style="line-height:170%;">Reduce <span class="goldz-dark">data wrangling</span> with a <span class="goldz-dark">declarative</span> API for machine learning.</div>
+      </br></br>
+
+      <!-- https://codepen.io/davehert/pen/MWrYjZy -->
+      <div class="slider">
+        <div class="slide"><img src="../../images/slideshow/1.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/2.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/3.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/4.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/5.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/6.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/7.svg"/></div>
+        <div class="slide"><img src="../../images/slideshow/8.svg"/></div>
+
+        <!-- Control buttons -->
+        <div class="btn btn-next"> > </div>
+        <div class="btn btn-prev"> < </div>
+      </div>
     </center>
     </br></br></br></br></br>
   </div>
@@ -385,3 +355,63 @@ AIQC
   </div>
   <div style="height:50px; background-image: linear-gradient(#122536, #122536); border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
   </div>
+
+  <script>
+    "use strict";
+    // Select all slides
+    const slides = document.querySelectorAll(".slide");
+
+    // loop through slides and set each slides translateX
+    slides.forEach((slide, indx) => {
+      slide.style.transform = `translateX(${indx * 100}%)`;
+    });
+
+    // select next slide button
+    const nextSlide = document.querySelector(".btn-next");
+
+    // current slide counter
+    let curSlide = 0;
+    // maximum number of slides
+    let maxSlide = slides.length - 1;
+
+    // add event listener and navigation functionality
+    nextSlide.addEventListener("click", function () {
+      // check if current slide is the last and reset current slide
+      if (curSlide === maxSlide) {
+        curSlide = 0;
+      } else {
+        curSlide++;
+      }
+
+      //   move slide by -100%
+      slides.forEach((slide, indx) => {
+        slide.style.transform = `translateX(${100 * (indx - curSlide)}%)`;
+      });
+    });
+
+    // select next slide button
+    const prevSlide = document.querySelector(".btn-prev");
+
+    // add event listener and navigation functionality
+    prevSlide.addEventListener("click", function () {
+      // check if current slide is the first and reset current slide to last
+      if (curSlide === 0) {
+        curSlide = maxSlide;
+      } else {
+        curSlide--;
+      }
+
+      //   move slide by 100%
+      slides.forEach((slide, indx) => {
+        slide.style.transform = `translateX(${100 * (indx - curSlide)}%)`;
+      });
+    });
+  </script>
+
+  <script>
+    window.addEventListener('load', function() {
+      var art = document.querySelector("div[itemprop='articleBody']")
+      art.style.borderRadius = "25px";
+      art.style.background = "#ffffff"; 
+    });
+  </script>
