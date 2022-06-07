@@ -12,7 +12,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/plants.png'">
+        <img class="gallery-img" src='../_static/images/gallery/plants.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🌱 Plant Species</div>
@@ -35,7 +35,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/brains.png'">
+        <img class="gallery-img" src='../_static/images/gallery/brains.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🧠 Detect Tumors</div>
@@ -62,7 +62,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/drugs.png'">
+        <img class="gallery-img" src='../_static/images/gallery/drugs.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">💊 Drug Design</div>
@@ -80,7 +80,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/genes.png'">
+        <img class="gallery-img" src='../_static/images/gallery/genes.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🧬 Cancer Genes</div>
@@ -101,7 +101,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/waves.png'">
+        <img class="gallery-img" src='../_static/images/gallery/waves.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">⚡ Detect Seizure</div>
@@ -127,7 +127,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/mines.png'">
+        <img class="gallery-img" src='../_static/images/gallery/mines.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">💣 Mine Sweeping</div>
@@ -187,7 +187,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/planets.png'">
+        <img class="gallery-img" src='../_static/images/gallery/planets.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🌡️ Exoplanet Temps.</div>
@@ -204,7 +204,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/houses.png'">
+        <img class="gallery-img" src='../_static/images/gallery/houses.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🏡 Real Estate Prices</div>
@@ -224,7 +224,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/moons.png'">
+        <img class="gallery-img" src='../_static/images/gallery/moons.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🪐 Astronomy Orbits</div>
@@ -244,7 +244,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/temps.png'">
+        <img class="gallery-img" src='../_static/images/gallery/temps.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🌤️ Climate of India</div>
@@ -268,7 +268,7 @@ Gallery
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/gallery/spirals.png'">
+        <img class="gallery-img" src='../_static/images/gallery/spirals.png'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🌀 Galaxy Formations</div>
@@ -288,7 +288,7 @@ Gallery
     </div>
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">
-        <image class="gallery-img" src='https://www.news-medical.net/image.axd?picture=2020%2F9%2Fshutterstock_1086033464.jpg'">
+        <img class="gallery-img" src='https://www.news-medical.net/image.axd?picture=2020%2F9%2Fshutterstock_1086033464.jpg'">
       </div>
       <div class="flex-right">
         <div class="flex-title">🐣 [TBD] Generative</div>

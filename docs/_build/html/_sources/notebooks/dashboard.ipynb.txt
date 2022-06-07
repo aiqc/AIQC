@@ -38,7 +38,7 @@
     "tags": []
    },
    "source": [
-    "![tracker](../images/dashboard/experiment_tracker.gif)"
+    "![tracker](../_static/images/dashboard/experiment_tracker.gif)"
    ]
   },
   {
@@ -61,7 +61,7 @@
     "tags": []
    },
    "source": [
-    "![head2head](../images/dashboard/compare_models.gif)"
+    "![head2head](../_static/images/dashboard/compare_models.gif)"
    ]
   },
   {

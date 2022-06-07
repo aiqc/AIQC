@@ -40,6 +40,17 @@ These are the important files:
   but it seem I have to manually overwrite the _build css file at that location.
 
 
+#### Images
+
+- There is no `html_image_files` setting in conf.py, but `/_static` is dependable place when
+  things get built remotely on RTD. So I moved all images there.
+- Used this site for favicons <https://icoconvert.com/> `.ico` format.
+- If you use the sphinx directive `.. image:: some_pic.png` then it needs a local path.
+- When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.
+- Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
+
+
+
 #### Build process.
 After you make changes to the documentation files, you need to *build* the html pages.
 
@@ -80,14 +91,6 @@ ReadTheDocs is watching the AIQC GitHub repo for changes pushed to `/docs`:
 Only run when a page 404s
 
 - https://docs.readthedocs.io/en/stable/user-defined-redirects.html
-
-
-#### Images
-
-- Used this site for favicons <https://icoconvert.com/> `.ico` format.
-- If you use the sphinx directive `.. image:: some_pic.png` then it needs a local path.
-- When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.
-- Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
 
 
 #### Links

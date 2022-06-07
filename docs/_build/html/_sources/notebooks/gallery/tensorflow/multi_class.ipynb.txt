@@ -21,7 +21,7 @@
    "id": "joint-robinson",
    "metadata": {},
    "source": [
-    "![farming](../../../images/banner/plants.png)"
+    "![farming](../../../_static/images/banner/plants.png)"
    ]
   },
   {

@@ -7,7 +7,7 @@ Open Source
 
 ----
 
-.. image:: images/celebrate_circle.png
+.. image:: ../_static/images/pages/celebrate_circle.png
   :width: 100%
   :align: center
   :alt: community banner
@@ -42,17 +42,13 @@ How can I get involved?
 ----
 
 **********************
-What can I contribute?
+How can I contribute?
 **********************
 
 - Have a look at the `GitHub Issues <https://github.com/aiqc/aiqc/issues>`__ for something that interests you.
   
   + Keep an eye out for issues are tagged with <kbd>good first issue</kbd>.
-  
-  + Every issue has a `Difficulty: ★★★☆☆` score based on how much effort and how complex it has the potential to be.
-  
-  + Also check out the `Compatibility Matrix <https://aiqc.readthedocs.io/en/latest/pages/mission.html>`__, to help you find a focus area.
-
+    
   + We can design a *sprint* for you that represents a meaningful contribution to the project. This is not limited to software engineering. For example, it could be something like graphic design, blog-writing, or grant-writing. As described in the *Governance* section, completing a *sprint* is how you join the Core Team.
 
 - Take a look at the `Pull Request Template <https://github.com/aiqc/aiqc/blob/main/.github/pull_request_template.md>`__.
@@ -215,7 +211,7 @@ Open source.
 Choosing a license
 ==================
 
-.. image:: images/license_badge.png
+.. image:: ../_static/images/pages/license_badge.png
   :width: 30%
   :alt: OSI-BSD Badge
   :class: no-scaled-link

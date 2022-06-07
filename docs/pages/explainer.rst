@@ -35,7 +35,7 @@ Deep Learning 101
 |
 
 
-.. image:: images/explainer/analysis_type.png
+.. image:: ../_static/images/explainer/analysis_type.png
   :width: 75%
   :align: center
   :alt: gears
@@ -76,7 +76,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/categorize_quantify.png
+.. image:: ../_static/images/explainer/categorize_quantify.png
   :width: 85%
   :align: center
   :alt: categorize_quantify
@@ -140,7 +140,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/turtle_ruler.png
+.. image:: ../_static/images/explainer/turtle_ruler.png
   :width: 45%
   :align: center
   :alt: turtle_ruler
@@ -176,7 +176,7 @@ Deep Learning 101
   
 
 
-.. image:: images/explainer/stratification.png
+.. image:: ../_static/images/explainer/stratification.png
   :width: 85%
   :align: center
   :alt: turtle_ruler
@@ -257,7 +257,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/encode_decode.png
+.. image:: ../_static/images/explainer/encode_decode.png
   :width: 50%
   :align: center
   :alt: encoding
@@ -334,7 +334,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/gradient.png
+.. image:: ../_static/images/explainer/gradient.png
   :width: 80%
   :align: center
   :alt: gradient
@@ -355,7 +355,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/memory_foam.png
+.. image:: ../_static/images/explainer/memory_foam.png
   :width: 35%
   :align: center
   :alt: memory_foam
@@ -447,7 +447,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/lights.png
+.. image:: ../_static/images/explainer/lights.png
   :width: 50%
   :align: center
   :alt: lights
@@ -486,7 +486,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/topology_rectangle.png
+.. image:: ../_static/images/explainer/topology_rectangle.png
   :width: 95%
   :align: center
   :alt: oz
@@ -556,7 +556,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/layers.png
+.. image:: ../_static/images/explainer/layers.png
   :width: 30%
   :align: center
   :alt: layers
@@ -598,7 +598,7 @@ Deep Learning 101
     How does a neuron in the brain process information? 
   </p>
 
-.. image:: images/explainer/neuron.png
+.. image:: ../_static/images/explainer/neuron.png
   :width: 60%
   :align: center
   :alt: neuron
@@ -621,7 +621,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/squid.png
+.. image:: ../_static/images/explainer/squid.png
   :width: 100%
   :align: center
   :alt: squid
@@ -662,7 +662,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/activation.png
+.. image:: ../_static/images/explainer/activation.png
   :width: 60%
   :align: center
   :alt: activation
@@ -760,7 +760,7 @@ Deep Learning 101
   </p>
 
 
-.. image:: images/explainer/classify_learn.png
+.. image:: ../_static/images/explainer/classify_learn.png
   :width: 90%
   :align: center
   :alt: learning_curve
@@ -813,7 +813,7 @@ Deep Learning 101
 
 |
 
-.. image:: images/explainer/cooking.png
+.. image:: ../_static/images/explainer/cooking.png
   :width: 55%
   :align: center
   :alt: cooking

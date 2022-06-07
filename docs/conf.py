@@ -35,8 +35,8 @@ html_js_files    = []
 # -- Options -------------------------------------------------
 # SVG logo: stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs-logo-rendering-at-0px-wide
 html_theme          = "sphinx_rtd_theme" # see extension and `import` above.
-html_logo           = 'images/web/aiqc_logo_square_blues_transparent.svg'
-html_favicon        = 'images/web/favicon.ico'
+html_logo           = '_static/images/web/aiqc_logo_square_blues_transparent.svg'
+html_favicon        = '_static/images/web/favicon.ico'
 html_show_sphinx    = False
 html_show_copyright = False
 html_title          = 'AIQC'

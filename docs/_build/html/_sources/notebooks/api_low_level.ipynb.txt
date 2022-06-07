@@ -56,7 +56,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "![Datasets](../images/api/dimensions.png)"
+    "![Datasets](../_static/images/api/dimensions.png)"
    ]
   },
   {
@@ -1624,7 +1624,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "![Windows](../images/api/sliding_windows.png)"
+    "![Windows](../_static/images/api/sliding_windows.png)"
    ]
   },
   {
@@ -2021,7 +2021,7 @@
    "source": [
     "Reference the [scikit-learn documentation](https://scikit-learn.org/stable/modules/cross_validation.html) to learn more about folding.\n",
     "\n",
-    "![Cross Folds](../images/api/cross_fold.png)"
+    "![Cross Folds](../_static/images/api/cross_fold.png)"
    ]
   },
   {
@@ -2069,7 +2069,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "![cross fold objects](../images/api/cross_fold_objects.png)"
+    "![cross fold objects](../_static/images/api/cross_fold_objects.png)"
    ]
   },
   {
@@ -2277,7 +2277,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "![interpolate](../images/api/interpolate_windows.png)"
+    "![interpolate](../_static/images/api/interpolate_windows.png)"
    ]
   },
   {

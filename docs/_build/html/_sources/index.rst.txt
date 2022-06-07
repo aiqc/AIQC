@@ -58,7 +58,7 @@
   </br></br>
 
 
-.. image:: images/web/framework_may4.png
+.. image:: _static/images/web/framework_may4.png
   :width: 93%
   :align: center
   :alt: framework
@@ -71,7 +71,7 @@
     <div class="flex-item shadowBox">
       <div class="flex-top">
         <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
-          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/psf_logo.png'">
+          <img class="flex-image" src='_static/images/web/psf_logo.png'">
         </a>
       </div>
       <div class="flex-bottom">
@@ -83,7 +83,7 @@
     <div class="flex-item shadowBox">
        <div class="flex-top">
         <a href="https://aiqc.medium.com/" target="_blank">
-          <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/tds_logo_bw.png' />
+          <img class="flex-image" src='_static/images/web/tds_logo_bw.png' />
         </a>
       </div>
       <div class="flex-bottom">
@@ -95,7 +95,7 @@
     <div class="flex-item shadowBox">
       <div class="flex-top">
         <a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" target="_blank">
-         <image class="flex-image" src='https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/web/pydata_logo.png' />
+         <img class="flex-image" src='_static/images/web/pydata_logo.png' />
         </a>
       </div>
       <div class="flex-bottom">
@@ -109,7 +109,7 @@
   </br></br></br>
 
   <center>
-    <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
+    <img src="_static/images/dashboard/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
   </center>
   </br>
 
@@ -155,7 +155,7 @@
 
   </br></br></br></br></br></br>
   <center>
-    <div class="headerz-light">Write <span class="goldz-light">90% less code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a>.</div>
+    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a>.</div>
   </center>
   </br></br>
 
@@ -169,17 +169,17 @@
     <tr>
       <td class="tbl-head top-left">Classification</br><small>(binary, multi)</small></td>
       <td class="done">
-        <a href='notebooks/tensorflow/multi_tcga.html'>
+        <a href='notebooks/gallery/tensorflow/multi_tcga.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
       <td class="done">
-        <a href='notebooks/tensorflow/seq_class.html'>
+        <a href='notebooks/gallery/tensorflow/seq_class.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
       <td class="done">
-        <a href='notebooks/tensorflow/img_class.html'>
+        <a href='notebooks/gallery/tensorflow/img_class.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -188,7 +188,7 @@
     <tr>
       <td class="tbl-head">Quantification</br><small>(regression)</small></td>
       <td class="done">
-        <a href='notebooks/tensorflow/reg.html'>
+        <a href='notebooks/gallery/tensorflow/reg.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -203,7 +203,7 @@
     <tr>
       <td class="tbl-head bottom-left">Forecasting</br><small>(multivariate)</small></td>
       <td class="done">
-        <a href='notebooks/tensorflow/tab_forecast.html'>
+        <a href='notebooks/gallery/tensorflow/tab_forecast.html'>
           <span class="checkmark">✓</span>
         </a>
       </td>
@@ -211,7 +211,7 @@
         <span class="checkmark">✓</span>
       </td>
       <td class="done bottom-right">
-        <a href='notebooks/tensorflow/img_forecast.html'>
+        <a href='notebooks/gallery/tensorflow/img_forecast.html'>
           <span class="checkmark">✓</span>
         </a>
     </tr>
@@ -325,7 +325,7 @@ AIQC
   <div style="background-image: linear-gradient(#ffffff, #122536);">
     </br></br></br></br></br></br>
     <center>
-      <img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
+      <img src="_static/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
       </br></br>
       <div class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating each split & fold of every model.</div>
     </center>

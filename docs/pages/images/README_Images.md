@@ -1,1 +1,0 @@
-If you use the sphinx directive `.. image:: some_pic.png` then it needs a local path.
