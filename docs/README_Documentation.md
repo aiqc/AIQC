@@ -32,6 +32,14 @@ These are the important files:
 - Everything else in the root directory (e.g. 'make.bat' or 'Makefile') was boilerplate from when sphinx created the project. Don't delete them.
 
 
+#### Static assets.
+- `html_static_path` in conf
+- Register each asset file `html_css_files` & `html_js_files` in conf.py
+- Register `/_static/fonts` within css `@font-face`.
+- `make html` is supposed to replicate to `.../docs/_build/html/_static/css/custom.css` 
+  but it seem I have to manually overwrite the _build css file at that location.
+
+
 #### Build process.
 After you make changes to the documentation files, you need to *build* the html pages.
 
@@ -81,6 +89,25 @@ Only run when a page 404s
 - When referencing images in markdown `![some_img]path.png` the underscore breaks it on RTD.
 - Due to JS dependencies, readthedocs.io is not rendering the plots anymore. So I stored them in `/docs/images` and reference them from the notebooks.
 
-#### Fonts
 
-- When adding fonts to `/_static/fonts` you need to register it in css with `@font-face`.
+#### Links
+For notebook hyperlinks, I seem to have to use a `[](.html)` syntax to get it to work on RTD.
+https://nbsphinx.readthedocs.io/en/0.8.1/markdown-cells.html#Links-to-Other-Notebooks
+
+
+#### Plotly Plots
+
+Plotly plots stopped working because they could no longer access JS dependencies
+
+Here is some of the troubleshooting I tried:
+Adding this options due to plotly browser error w require.min.js
+https://cdnjs.com/libraries/require.js/2.1.10    Integrity in the "</> Copy Script Tag" button.
+https://github.com/readthedocs/sphinx_rtd_theme/issues/788#issuecomment-772785054 also had to save `https://cdn.plot.ly/plotly-latest.min.js` to `/Users/layne/Desktop/aiqc/docs/_build/html/notebooks/plotly.js`
+
+```js
+nbsphinx_requirejs_options = {
+ 	"src": "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js",
+ 	"integrity": "sha512-VCK7oF67GXNc+J7zsu5o57jtxhLA75nSMHGaq8Q8TCOxDj4nMDw5dhQZvm9Cd9RN+3zgcodqbKcRc9gyPP8a2w==",
+ 	"crossorigin": "anonymous"
+}
+```
