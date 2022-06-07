@@ -32,7 +32,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Reference [Example Datasets](example_datasets.ipynb) for more information."
+    "Reference [Example Datasets](datasets.html) for more information."
    ]
   },
   {
