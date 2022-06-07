@@ -771,7 +771,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-    Have a look at the other <a href='notebooks/visualization.html' target="_blank">visualizations & metrics</a>
+    Have a look at the other <a href='../notebooks/visualization.html' target="_blank">visualizations & metrics</a>
      provided by AIQC.
   </p>
 
@@ -825,7 +825,7 @@ Deep Learning 101
   
   </br>
   <p class="explain">
-    At first, the number of <i>tuning</i> options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='pages/gallery.html'>recipes</a> in order to get by.
+    At first, the number of <i>tuning</i> options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='gallery.html'>recipes</a> in order to get by.
   </p>
 
 |
@@ -845,7 +845,7 @@ Deep Learning 101
   </br>
   <p class="explain">
     It's really that simple. The rest is just figuring out how to feed your data into and out of the algorithms, 
-    which is where <a href='index.html' target="_blank">AIQC</a> comes into play.
+    which is where <a href='../index.html' target="_blank">AIQC</a> comes into play.
   </p>
   </br>
 
