@@ -54,10 +54,12 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "from aiqc.mlops import *"
+    "```\n",
+    "from aiqc.mlops import *\n",
+    "```"
    ]
   },
   {
@@ -87,29 +89,31 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Pipeline(\n",
     "    inputs:list\n",
     "    , target:object     = None\n",
     "    , stratifier:object = None\n",
     "    , name:str          = None\n",
     "    , description:str   = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Argument | Description |\n",
+    "| Argument</div> | Description |\n",
     "| --- | --- |\n",
-    "| `inputs` | Reference `Input` below. Multiple inputs may be provided for heterogenous/ multi-modal analysis.  |\n",
-    "| `target` | Reference `Target` below. Left blank during unsupervised/ self-supervised analysis. |\n",
-    "| `stratifier` | Reference `Stratifier` below. Left blank during inference. |\n",
-    "| `name` | An auto-incrementing version will be assigned to `Pipelines` that share a name.  |\n",
-    "| `description` | Describes how this particular workflow is unique. |"
+    "| *inputs* | Reference `Input` below. Multiple inputs may be provided for heterogenous/ multi-modal analysis. |\n",
+    "| *target* | Reference `Target` below. Left blank during unsupervised/ self-supervised analysis. |\n",
+    "| *stratifier* | Reference `Stratifier` below. Left blank during inference. |\n",
+    "| *name* | An auto-incrementing version will be assigned to `Pipelines` that share a name.  |\n",
+    "| *description* | Describes how this particular workflow is unique. |"
    ]
   },
   {
@@ -150,9 +154,10 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Input(\n",
     "    dataset:object\n",
     "    , exclude_columns:list  = None\n",
@@ -161,7 +166,8 @@
     "    , window:object         = None\n",
     "    , encoders:list         = None\n",
     "    , reshape_indices:tuple = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -170,13 +176,13 @@
    "source": [
     "| Argument | Description |\n",
     "| --- | --- |\n",
-    "| `dataset` | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
-    "| `exclude_columns` | The columns from the `Dataset` that will not be used. |\n",
-    "| `include_columns` | The columns from the `Dataset` that will be used. |\n",
-    "| `interpolaters`| Reference `Input.Interpolater` below. |\n",
-    "| `window` | Reference `Input.Window` below. |\n",
-    "| `encoders` | Reference `Input.Encoder` below. |\n",
-    "| `reshape_indices` | *nadarray.shape* indices used to reshape the final feature array. Reference `FeatureShaper` in the [Low-Level API](api_low_level.html).  |\n",
+    "| *dataset* | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
+    "| *exclude_columns* | The columns from the `Dataset` that will not be used. |\n",
+    "| *include_columns* | The columns from the `Dataset` that will be used. |\n",
+    "| *interpolaters* | Reference `Input.Interpolater` below. |\n",
+    "| *window* | Reference `Input.Window` below. |\n",
+    "| *encoders* | Reference `Input.Encoder` below. |\n",
+    "| *reshape_indices* | *nadarray.shape* indices used to reshape the final feature array. Reference `FeatureShaper` in the [Low-Level API](api_low_level.html).  |\n",
     "\n",
     "> Both `exclude_columns` and `include_columns` cannot be used simultaneously.\n"
    ]
@@ -196,16 +202,18 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Input.Interpolater(\n",
     "    process_separately:bool   = True\n",
     "    , verbose:bool            = False\n",
     "    , interpolate_kwargs:dict = None\n",
     "    , dtypes:list             = None\n",
     "    , columns:list            = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -223,10 +231,12 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Input.Window(size_window:int, size_shift:int)"
+    "```\n",
+    "Input.Window(size_window:int, size_shift:int)\n",
+    "```"
    ]
   },
   {
@@ -244,16 +254,18 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Input.Encoder(\n",
     "    sklearn_preprocess:object\n",
     "    , verbose:bool = False\n",
     "    , include:bool = True\n",
     "    , dtypes:list  = None\n",
     "    , columns:list = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -278,15 +290,17 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Target(\n",
     "    dataset:object\n",
     "    , column:str          = None\n",
     "    , interpolater:object = None\n",
     "    , encoder:object      = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -295,10 +309,10 @@
    "source": [
     "| Argument | Description |\n",
     "| --- | --- |\n",
-    "| `dataset` | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
-    "| `column` | The column from the `Dataset` to use as the target. | \n",
-    "| `interpolater` | Reference `Target.Interpolater` below. |\n",
-    "| `encoder` | Reference `Target.Encoder` below. |"
+    "| *dataset* | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
+    "| *column* | The column from the `Dataset` to use as the target. | \n",
+    "| *interpolater* | Reference `Target.Interpolater` below. |\n",
+    "| *encoder* | Reference `Target.Encoder` below. |"
    ]
   },
   {
@@ -316,10 +330,15 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Target.Interpolater(process_separately:bool=True, interpolate_kwargs:dict=None)"
+    "```\n",
+    "Target.Interpolater(\n",
+    "    process_separately:bool=True\n",
+    "    , interpolate_kwargs:dict=None\n",
+    ")\n",
+    "```"
    ]
   },
   {
@@ -337,10 +356,12 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Target.Encoder(sklearn_preprocess:object)"
+    "```\n",
+    "Target.Encoder(sklearn_preprocess:object)\n",
+    "```"
    ]
   },
   {
@@ -365,15 +386,17 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Stratifier(\n",
     "    size_test:float         = None\n",
     "    , size_validation:float = None\n",
     "    , fold_count:int        = None\n",
     "    , bin_count:int         = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -398,10 +421,15 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Experiment(architecture:object, trainer:object).run_jobs()"
+    "```\n",
+    "Experiment(\n",
+    "    architecture:object\n",
+    "    , trainer:object\n",
+    ")\n",
+    "```"
    ]
   },
   {
@@ -410,8 +438,8 @@
    "source": [
     "| Argument | Description |\n",
     "| --- | --- |\n",
-    "| `architecture` | Reference `Architecture` below. |\n",
-    "| `trainer` | Reference `Trainer` below. |"
+    "| *architecture* | Reference `Architecture` below. |\n",
+    "| *trainer* | Reference `Trainer` below. |"
    ]
   },
   {
@@ -438,9 +466,10 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Architecture(\n",
     "    library:str\n",
     "    , analysis_type:str\n",
@@ -450,7 +479,8 @@
     "    , fn_lose:object     = None\n",
     "    , fn_predict:object  = None\n",
     "    , hyperparameters:dict = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -468,16 +498,18 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "```\n",
     "Trainer(\n",
     "    pipeline_id:int\n",
     "    , repeat_count:int     = 1\n",
     "    , permute_count:int    = 3\n",
     "    , search_count         = None\n",
     "    , search_percent       = None\n",
-    ")"
+    ")\n",
+    "```"
    ]
   },
   {
@@ -502,10 +534,16 @@
    ]
   },
   {
-   "cell_type": "raw",
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Inference(predictor:object, feature_datasets:list, label_dataset:object=None)"
+    "```\n",
+    "Inference(\n",
+    "    predictor:object\n",
+    "    , feature_datasets:list\n",
+    "    , label_dataset:object=None\n",
+    ")\n",
+    "```"
    ]
   },
   {
@@ -514,9 +552,9 @@
    "source": [
     "| Argument | Description |\n",
     "| --- | --- |\n",
-    "| `predictor` | Reference `Predictor` in the [Low-Level API](api_low_level.html). | \n",
-    "| `input_datasets`| Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
-    "| `target_dataset` | Leave this blank for pure inference where no metrics will be calculared. Reference `Dataset` in the [Low-Level API](api_low_level.html). |"
+    "| *predictor* | Reference `Predictor` in the [Low-Level API](api_low_level.html). | \n",
+    "| *input_datasets* | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
+    "| *target_dataset* | Leave this blank for pure inference where no metrics will be calculared. Reference `Dataset` in the [Low-Level API](api_low_level.html). |"
    ]
   },
   {
