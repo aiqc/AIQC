@@ -136,14 +136,14 @@
 
       <!-- https://codepen.io/davehert/pen/MWrYjZy -->
       <div class="slider">
-        <div class="slide"><img src="../../images/slideshow/1.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/2.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/3.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/4.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/5.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/6.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/7.svg"/></div>
-        <div class="slide"><img src="../../images/slideshow/8.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/1.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/2.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/3.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/4.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/5.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/6.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/7.svg"/></div>
+        <div class="slide"><img src="_static/images/slideshow/8.svg"/></div>
 
         <!-- Control buttons -->
         <div class="btn btn-next"> > </div>
