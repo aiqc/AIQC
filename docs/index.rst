@@ -39,7 +39,7 @@
   <div style="background-image: linear-gradient(#24435f, #122536); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
     </br></br>
     <center>
-      <div class="headerz titlez headerz-dark" style="font-family:Abel !important; font-size:26px !important">
+      <div class="headerz titlez headerz-dark" style="font-family:Abel !important; font-size:28.5px !important">
         Open Source <span class="goldz-dark">MLOps</span>
       </div>
     </center>
@@ -132,7 +132,7 @@
     </br></br>
     <center>
       <div class="headerz headerz-dark" style="line-height:170%;">Reduce <span class="goldz-dark">data wrangling</span> with a declarative API for machine learning</div>
-      </br></br>
+      </br></br></br>
 
       <!-- https://codepen.io/davehert/pen/MWrYjZy -->
       <div class="slider">
@@ -150,7 +150,7 @@
         <div class="btn btn-prev"> < </div>
       </div>
     </center>
-    </br></br></br></br></br>
+    </br></br></br></br></br></br>
   </div>
 
   </br></br></br></br></br></br>
@@ -294,7 +294,7 @@ AIQC
 .. raw:: html
 
   <div style="background-image: linear-gradient(#ffffff, #122536);">
-    </br></br></br></br></br></br>
+    </br></br></br></br></br></br></br>
     <center>
       <img src="_static/images/web/setup.png" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
       </br></br>
@@ -308,6 +308,12 @@ AIQC
       <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
+
+  </br></br></br></br></br>
+  <center>
+    <img src="_static/images/web/decagon.svg" alt="ecosystem" width="85%">
+  </center>
+  </br></br></br>
 
 
   </br></br></br>
