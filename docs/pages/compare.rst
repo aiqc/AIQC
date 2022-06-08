@@ -49,7 +49,7 @@ Competition
 
   <table class="compatibility" valign="center" style="width:97%;">
   <tr>
-    <td id="top-left"></td>
+    <td id="empty-cell"></td>
     <td class="tbl-head  top-left">AIQC</td>
     <td class="tbl-head">MLflow</td>
     <td class="tbl-head">WandB</td>

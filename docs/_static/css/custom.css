@@ -488,24 +488,23 @@ h1, h2, h3, h5 {
     font-family:   Abel;
     font-size:     18px;
     width:         90%; 
-    */border:      2px solid black;
     table-layout:  fixed;
     text-align:    center;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left:   auto;
+    margin-right:  auto;
 }
 
 .compatibility td {
-    vertical-align: middle;
-    border:         2.5px solid #fbfbfb;
-    background:     #EFEFEF;
-    height:         80px;
-    font-size:      85%;
+    vertical-align:  middle;
+    border:          2.5px solid #ffffff;
+    background:      #efefef;
+    height:          80px;
+    font-size:       85%;
     border-collapse: separate; 
 }
 
 .compatibility td small {
-    color: gray;
+    color: #a4a4a4;
 }
 
 .done {
@@ -530,46 +529,36 @@ h1, h2, h3, h5 {
     visibility: hidden;
 }
 
-/* id is for blank cell, whereas class is for header cell*/
-#top-left {
-    background: #fff0;
-    border: 0px !important;
+#empty-cell {
+    background: white !important;
 }
 
 .top-left {
     border-top-left-radius: 22px;
-    border-top: 0px !important;
-    border-left: 0px !important;
 }
 
 .tbl-head {
-    background: #131313FF !important;
+    background: #042440 !important;
     color:      white;
     font-size:  105% !important;
 }
 
 .row-head {
-    background: #131313FF !important;
+    background: #042440 !important;
     color:      white;
     font-size:  88% !important;
 }
 
 .bottom-left {
     border-bottom-left-radius:  22px;
-    border-bottom: 0px !important;
-    border-left: 0px !important;
 }
 
 .top-right {
     border-top-right-radius:    22px;
-    border-top: 0px !important;
-    border-right: 0px !important;
 }
 
 .bottom-right {
     border-bottom-right-radius: 22px;
-    border-bottom: 0px !important;
-    border-right: 0px !important;
 }
 
 .qc td{
