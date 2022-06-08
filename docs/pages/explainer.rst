@@ -608,8 +608,7 @@ Deep Learning 101
   </br>
   <p class="explain">
     However, neurons only forward information if certain conditions are met.
-    As the neuron receives incoming signals, it builds up an electrically charged chemical concentration (aka <i>action potential</i>) inside its cell membrane ⚡
-    When this concentration exceeds a certain threshold, it fires a <i>spike</i>. 
+    As the neuron receives incoming signals, it builds up an electrically charged chemical concentration (aka <i>action potential</i>) inside its cell membrane. When this concentration exceeds a certain threshold, it fires a <i>spike</i>. 
   </p>
 
 |
