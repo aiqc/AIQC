@@ -595,7 +595,7 @@ div.rendered_html tbody tr:hover {
 <hr class="docutils" />
 <p>AIQC makes comparing and evaluating models effortless with its reactive <a class="reference external" href="https://aiqc.medium.com/dash-is-deeper-than-dashboards-5ab7414f121e">Dash-Plotly</a> user interface. The following dashboards put precalculated metrics &amp; charts for each split/fold of every model right at your fingertips.</p>
 <blockquote>
-<div><p>Reference the <a class="reference external" href="visualization.html">Visualization</a> section for more information about the precalculated plots and statistics.</p>
+<div><p>Reference the <a class="reference external" href="visualization.html">Visualization</a> section for more information about the plots and metrics.</p>
 </div></blockquote>
 <section id="Experiment-Tracker">
 <h2>Experiment Tracker<a class="headerlink" href="#Experiment-Tracker" title="Permalink to this headline"></a></h2>
@@ -622,18 +622,68 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="Runtime">
 <h2>Runtime<a class="headerlink" href="#Runtime" title="Permalink to this headline"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">aiqc.lab.Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app. It has 2 user-facing attributes:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">refresh_seconds:int=10</span></code> determines the polling frequency (between 5 &amp; 30 seconds). This ensures that the UI has access to up-to-date database information.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">server_runtime:dict=None</span></code> is passed through to: <code class="docutils literal notranslate"><span class="pre">dash.Dash.app.run_server()</span></code> as **kwargs.</p></li>
-</ul>
-<p>These are the default <code class="docutils literal notranslate"><span class="pre">server_runtime</span></code> items, which are overridable:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mode='external'</span></code> options: <em>‘external’</em> browser tab | <em>‘inline’</em> Jupyter cell | <em>‘jupyterlab’</em> Jupyter tab</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">debug=False</span></code> for inspecting Dash errors and callback DAG</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">host='127.0.0.1'</span></code> aka <em>localhost</em></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">port=9991</span></code> the range <em>9991:9995</em> seems fairly <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports">unoccupied</a></p></li>
-</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">aiqc.ui.Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tracker(
+    refresh_seconds:int = 10,
+    server_runtime:dict = None
+)
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>refresh_seconds</em></p></td>
+<td><p>Polling frequency (between 5 &amp; 30 seconds). Ensures that the UI has access to up-to-date information.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>server_runtime</em></p></td>
+<td><p>Passed through to: <code class="docutils literal notranslate"><span class="pre">dash.Dash.app.run_server()</span></code> as **kwargs.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>server_runtime = dict(
+    mode    = &#39;external&#39;
+    , debug = False
+    , host  = &#39;127.0.0.1&#39;
+    , port  = 9991
+)
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>mode</em></p></td>
+<td><p>options: <em>‘external’</em> browser tab</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>debug</em></p></td>
+<td><p>For inspecting Dash errors and callback DAG</p></td>
+</tr>
+<tr class="row-even"><td><p><em>host</em></p></td>
+<td><p>Aka <em>localhost</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>port</em></p></td>
+<td><p>The range <em>9991:9995</em> seems fairly unoccupied</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p><a class="reference external" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports">https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports</a></p>
+</div></blockquote>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -695,7 +745,7 @@ div.rendered_html tbody tr:hover {
 Try passing a different port to run_server.
 </pre></div>
 </div>
-<p>If you run into this just increase the port number by 1 and try again.</p>
+<p>If you run into this just increase the port number by 1 and try again:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">(</span><span class="n">server_runtime</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">9992</span><span class="p">))</span>
 <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>

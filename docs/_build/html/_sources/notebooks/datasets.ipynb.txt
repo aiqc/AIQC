@@ -11,7 +11,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "---"
+    "![datasets](../_static/images/banner/datums.png)"
    ]
   },
   {

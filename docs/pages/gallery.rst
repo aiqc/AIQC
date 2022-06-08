@@ -15,7 +15,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/plants.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">🌱 Plant Species</div>
+        <div class="flex-title">🌱 Identify Plants</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/gallery/tensorflow/multi_class.html">
@@ -65,7 +65,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/drugs.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">💊 Drug Design</div>
+        <div class="flex-title">💊 Design Drugs</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/gallery/tensorflow/bin_mapk.html">
@@ -83,7 +83,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/genes.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">🧬 Cancer Genes</div>
+        <div class="flex-title">🧬 Hunt Cancer Genes</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/gallery/tensorflow/multi_tcga.html">
@@ -130,7 +130,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/mines.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">💣 Mine Sweeping</div>
+        <div class="flex-title">💣 Sweep Mines</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/gallery/tensorflow/bin_class.html">
@@ -197,18 +197,6 @@ Gallery
               TensorFlow
             </a>
           </div>
-          <div class="flex-tag tag-analysis">Regress</div>
-          <div class="flex-tag tag-data">Tabular</div>
-        </div>
-      </div>
-    </div>
-    <div class="flex-item shadowBox gallery-item">
-      <div class="flex-left">
-        <img class="gallery-img" src='../_static/images/gallery/houses.png'">
-      </div>
-      <div class="flex-right">
-        <div class="flex-title">🏡 Real Estate Prices</div>
-        <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/gallery/pytorch/reg.html">
               PyTorch
@@ -216,6 +204,27 @@ Gallery
           </div>
           <div class="flex-tag tag-analysis">Regress</div>
           <div class="flex-tag tag-data">Tabular</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-item shadowBox gallery-item">
+      <div class="flex-left">
+        <img class="gallery-img" src='../_static/images/gallery/spirals.png'">
+      </div>
+      <div class="flex-right">
+        <div class="flex-title">🌀 Label Galaxies</div>
+        <div class="flex-tags">
+          <div class="flex-tag tag-tool">
+            <a href="/en/latest/notebooks/gallery/tensorflow/heterogeneous.html">
+              TensorFlow
+            </a>
+          </div>
+          <div class="flex-tag tag-analysis">Classify</div>
+          <div class="flex-tag tag-analysis">Binary</div>
+          <div class="flex-tag tag-data">Multimodal</div>
+          <div class="flex-tag tag-data">Tabular</div>
+          <div class="flex-tag tag-data">Image</div>
         </div>
       </div>
     </div>
@@ -247,7 +256,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/temps.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">🌤️ Climate of India</div>
+        <div class="flex-title">🌤️ Forecast Climate</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/en/latest/notebooks/gallery/tensorflow/tab_forecast.html">
@@ -264,39 +273,21 @@ Gallery
       </div>
     </div>
   </div>
-  
-  <div class="flex-container">
-    <div class="flex-item shadowBox gallery-item">
-      <div class="flex-left">
-        <img class="gallery-img" src='../_static/images/gallery/spirals.png'">
-      </div>
-      <div class="flex-right">
-        <div class="flex-title">🌀 Galaxy Formations</div>
-        <div class="flex-tags">
-          <div class="flex-tag tag-tool">
-            <a href="/en/latest/notebooks/gallery/tensorflow/heterogeneous.html">
-              TensorFlow
-            </a>
+
+  <!--  
+    <div class="flex-container">
+      <div class="flex-item shadowBox gallery-item">
+        <div class="flex-left">
+          <img class="gallery-img" src='https://www.news-medical.net/image.axd?picture=2020%2F9%2Fshutterstock_1086033464.jpg'">
+        </div>
+        <div class="flex-right">
+          <div class="flex-title">🐣 [TBD] Generative</div>
+          <div class="flex-tags">
+            <div class="flex-tag tag-tool">TBD</div>
+            <div class="flex-tag tag-analysis">TBD</div>
+            <div class="flex-tag tag-data">TBD</div>
           </div>
-          <div class="flex-tag tag-analysis">Classify</div>
-          <div class="flex-tag tag-analysis">Binary</div>
-          <div class="flex-tag tag-data">Multimodal</div>
-          <div class="flex-tag tag-data">Tabular</div>
-          <div class="flex-tag tag-data">Image</div>
         </div>
       </div>
     </div>
-    <div class="flex-item shadowBox gallery-item">
-      <div class="flex-left">
-        <img class="gallery-img" src='https://www.news-medical.net/image.axd?picture=2020%2F9%2Fshutterstock_1086033464.jpg'">
-      </div>
-      <div class="flex-right">
-        <div class="flex-title">🐣 [TBD] Generative</div>
-        <div class="flex-tags">
-          <div class="flex-tag tag-tool">TBD</div>
-          <div class="flex-tag tag-analysis">TBD</div>
-          <div class="flex-tag tag-data">TBD</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  -->
