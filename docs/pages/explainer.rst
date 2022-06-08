@@ -866,7 +866,7 @@ Deep Learning 101
     </small>
 
     </br></br></br></br>
-    <a href="pages/gallery.html">
+    <a href="gallery.html">
       <div class="bttn"><b>→</b> <span class="textz">Use Cases & Tutorials</span></div>
     </a>
   </center>

@@ -10,7 +10,7 @@ Competition
     <h2>Expect More from your Experiment Tracker</h2>
     <hr style="width:35%; margin-top:35px;margin-bottom:35px;">
     <p class="intro" style="width:90%;">
-      The AIQC framework provides teams a standardized methodology that trains better algorithms in less time. The reason why AIQC is able to do so is that its backend is not only <b style="color:#122536;">data-aware</b> (e.g. splits, folds, encoders, shapes, dtypes) but also <b style="color:#122536;">analysis-aware</b> (e.g. supervision, binary/ multi).
+      The AIQC framework provides teams a standardized methodology that trains better algorithms in less time. The secret sauce of the AIQC backend is that it is not only <b style="color:#122536;">data-aware</b> (e.g. splits, folds, encoders, shapes, dtypes) but also <b style="color:#122536;">analysis-aware</b> (e.g. supervision, binary/ multi).
     </p>
   </center>
 
@@ -36,7 +36,7 @@ Competition
 
   <center>
     <p class="intro" style="width:90%; margin-bottom:35px;">
-      This <i>declarative</i> approach results in significant time savings and, ultimately, more generalizable models. It's like Terraform for MLOps. By simplifying the processes of data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce <i>validation</i> splits/ folds into their workflow. Which, in turn, helps prevent <a href="https://towardsdatascience.com/evaluation-bias-are-you-inadvertently-training-on-your-entire-dataset-b3961aea8283"><i>evaluation bias & overfitting</i></a> during model training.
+      This <i>declarative</i> approach results in significant time savings. It's like Terraform for MLOps. By simplifying the processes of data wrangling and model evaluation, AIQC makes it easy for practitioners to introduce <i>validation</i> splits/ folds into their workflow. Which, in turn, helps train more generalizable models by preventing <a href="https://towardsdatascience.com/evaluation-bias-are-you-inadvertently-training-on-your-entire-dataset-b3961aea8283"><i>evaluation bias & overfitting</i></a> during model training.
     </p>
 
     <hr style="width:35%;">
@@ -130,8 +130,21 @@ Competition
     <hr style="width:35%;">
     </br>
 
+    <p class="intro" style="width:78%">
+      AIQC takes pride in automating thorough solutions to tedious challenges such as: (1) evaluation bias, (2) data leakage, (3) multivariate decoding, (4) continuous stratification -- no matter how many folds or data dimensions are involved.
+    </p>
     <p class="intro">
-      AIQC takes pride in solving tedious challenges such as: (1) evaluation bias, (2) data leakage, (3) multivariate decoding, (4) continuous stratification -- no matter how many folds or data dimensions are involved.</br>Reference our blogs on <i>Towards Data Science <a href="https://aiqc.medium.com" target="_blank">aiqc.medium.com</a></i> for more details.
+      Reference our blogs on <i>Towards Data Science <a href="https://aiqc.medium.com" target="_blank">aiqc.medium.com</a></i> for more details.
     </p>
   </center>
   </br>
+
+
+  <script>
+    window.addEventListener('load', function() {
+      var art = document.querySelector("div[itemprop='articleBody']")
+      art.style.borderRadius = "25px";
+      art.style.background = "#ffffff"; 
+      art.style.padding = "25px";
+    });
+  </script>

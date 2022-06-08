@@ -537,49 +537,37 @@
 </center>
 </br></br>
 
-<table class="compatibility qc" valign="center" style="width: 93% !important">
+<table class="compatibility qc" valign="center" style="width: 70% !important">
   <colgroup>
-     <col span="1" style="width: 32%;">
-     <col span="1" style="width: 14%;">
-     <col span="1" style="width: 14%;">
-     <col span="1" style="width: 14%;">
-     <col span="1" style="width: 26%;">
+     <col span="1" style="width: 20%;">
+     <col span="1" style="width: 20%;">
+     <col span="1" style="width: 20%;">
+     <col span="1" style="width: 40%;">
   </colgroup>
 
   <tr>
-    <td id="top-left"></td>
     <td class="tbl-head  top-left">Train</td>
     <td class="tbl-head">Validation</td>
     <td class="tbl-head">Test</td>
     <td class="tbl-head  top-right">Inference</td>
   </tr>
   <tr>
-    <td class="top-left alt-gray">Prevent <span class="goldz-highlight">evaluation bias</span> with 3-way+ stratification.</td>
-    <td class="alt-gray">Split</br>or Folds</td>
-    <td class="alt-gray">Split</br>or Folds</td>
-    <td class="alt-gray">Holdout</br>split</td>
-    <td class="best-practice"><span class="goldz-highlight">Verify the schema</span> of incoming samples.</td>
+    <td class="alt-gray" colspan="3">Prevent <span class="goldz-highlight">evaluation bias</span> with</br> 3-way+ stratification.</td>
+    <td class="best-practice"><span class="goldz-highlight">Validate the structure</span></br> of new samples.</td>
   </tr>
 
   <tr>
-    <td class="alt-darkerGray">Prevent <span class="goldz-highlight">data leakage</span> with </br>fit-on-train preprocessing.</td>
-    <td class="alt-darkerGray">fit()’s &</br>transform()’s</td>
-    <td class="alt-darkerGray">Apply</br>transform()’s</td>
-    <td class="alt-darkerGray">Apply</br>transform()’s</td>
-    <td class="best-practice alt-darkerGray">Help prevent <span class="goldz-highlight">data drift</span> </br>by using original preprocessors.</td>
+    <td class="alt-darkerGray" colspan="3">Prevent <span class="goldz-highlight">data leakage</span> by only using preprocessing information derived from the training split/fold.</td>
+    <td class="best-practice alt-darkerGray">Prevent <span class="goldz-highlight">data drift</span> by</br> using original preprocessors.</td>
   </tr>
 
   <tr>
-    <td class="alt-gray">Detect <span class="goldz-highlight">overfitting</span> by evaluating each split/ fold of every model.</td>
-    <td class="alt-gray">Metrics</br>& charts</td>
-    <td class="alt-gray">Metrics</br>& charts</td>
-    <td class="alt-gray">Metrics</br>& charts</td>
+    <td class="alt-gray" colspan="3">Prevent <span class="goldz-highlight">overfitting</span> by evaluating each</br> split/ fold of every model.</td>
     <td class="alt-gray">Detect <span class="goldz-highlight">model rot</span> by reevaluating with supervised datasets.</td>
   </tr>
 
   <tr>
-    <td class="bottom-left alt-darkerGray">Ensure <span class="goldz-highlight">reproducibility</span> by recording the entire workflow.</td>
-    <td class="bottom-right alt-darkerGray" colspan="4">Easily query experiment metadata</br>e.g. `aiqc.Algorithm.get_by_id(n).fn_build`</td>
+    <td class="bottom-left alt-darkerGray bottom-right" colspan="4">Ensure <span class="goldz-highlight">reproducibility</span> by using a standardized framework</br> that records the entire workflow.</td>
   </tr>
 </table>
 </br></br></br></br>
