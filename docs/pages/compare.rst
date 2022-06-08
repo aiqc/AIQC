@@ -139,12 +139,11 @@ Competition
   </center>
   </br>
 
-
   <script>
     window.addEventListener('load', function() {
       var art = document.querySelector("div[itemprop='articleBody']")
       art.style.borderRadius = "25px";
       art.style.background = "#ffffff"; 
-      art.style.padding = "25px";
+      art.style.padding = "40px";
     });
   </script>

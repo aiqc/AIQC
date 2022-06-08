@@ -281,10 +281,10 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Troubleshooting:\n",
+    "**Troubleshooting**:\n",
     "\n",
     "* Be sure to include `--upgrade` when running the command above.\n",
-    "  * The command above must often be ran twice (PyPI bug).\n",
+    "  * This was a 2020 bug with PyPI itself. \n",
     "* Upgrade `pip` itself: `pip install --upgrade pip`\n",
     "* Install`wheel` is recommended: `pip install --upgrade wheel` \n",
     "* If you find yourself reinstalling unwanted packages from the cache, then use `pip install --upgrade --no-cache-dir aiqc`"
@@ -318,7 +318,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**UPDATE:** `setup()` is now automatically ran when import `orm`."
+    "**UPDATE:** `setup()` is now automatically ran when importing `orm`."
    ]
   },
   {

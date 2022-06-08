@@ -46,7 +46,8 @@
 
 
 .wy-body-for-nav {
-    background-image: linear-gradient(to bottom, #111, #424242);
+    background-image: linear-gradient(to bottom, #111, #595959);
+    background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
@@ -106,7 +107,7 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
     color:          #333;
     letter-spacing: .01rem;
     font-weight:    400;
-    font-size:      17.5px;
+    font-size:      19px;
     margin-right:   20%;
     margin-left:    20%;
     line-height:    175%;
@@ -117,7 +118,7 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
     color:          #efefef;
     letter-spacing: .03rem;
     font-weight:    200;
-    font-size:      18.5px;
+    font-size:      19.5px;
     margin-right:   20%;
     margin-left:    20%;
 }
@@ -605,56 +606,6 @@ a .checkmark {
     font-size:      90%;
     list-style:     circle; 
     margin-bottom:  12px;
-}
-
-.blockz-container {
-    border:        2px solid #e3e3e3;
-    border-radius: 25px;
-    background:  white;
-    padding:       23px;
-}
-
-.blockz-title {
-    font-family:    Abel;
-    color:          #828282;
-    font-size:      18px;
-    letter-spacing: 0.02em;
-}
-
-.blockz div {
-    display:        inline-block;
-    margin:         6px;
-    padding:        10px;
-    border-radius:  5px;
-    font-family:    Abel;
-    font-size:      15px;
-}
-
-.low-level div {
-    border: 2px solid #deb887;
-    color: #291e0f;
-    background: #f5deb3;
-    margin-bottom: 4px;
-}
-
-.low-level div:hover {
-    border: 2px solid #c7a377;
-}
-
-.high-level div  {
-    border: 2px solid #8fbd8f;
-    color: #251634;
-    background: #bcf5bc;
-}
-
-.high-level div:hover {
-    border: 2px solid #68ac68;
-}
-
-.blockz .etc {
-    color:rgb(148, 148, 148);
-    font-family: arial;
-    font-size: 13px;
 }
 /* --- End: compatibility table index page --- */
 

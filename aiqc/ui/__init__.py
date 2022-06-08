@@ -62,7 +62,7 @@ class Tracker(object):
             JupyterDash._terminate_server_for_port(
                 self.server_runtime['host'], self.server_runtime['port'],
             )
-            print("🚥 AIQC Tracker stopped 🚥")
+            print("\n└── 🚥 Stopped dashboard\n")
 
 
     def start(self):
@@ -545,7 +545,7 @@ class Tracker(object):
                 # Could check something more advanced, but this works for now.
                 if ("Dash app running on" in output):
                     url = f"http://{self.server_runtime['host']}:{self.server_runtime['port']}"
-                    print(f"📊 AIQC Tracker {url} 📊")
+                    print(f"\n└── 📊 Launched dashboard {url}\n")
                 else:
                     print(output)
             except:

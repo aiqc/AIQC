@@ -26,8 +26,8 @@
 
   pages/explainer
   pages/community
-  pages/mission
   pages/compare
+  pages/mission
 
 
 ..
@@ -51,8 +51,8 @@
   </div>
   </br></br>
   <center>
-    <div class="headerz-light" style="color:#828282; font-size: 16px !important;">
-      A framework that makes end-to-end deep learning accessible for scientific research
+    <div class="headerz-light" style="color:#828282; font-size:17px !important; margin-left:15% !important; margin-right:15% !important; line-height:180% !important;">
+      Declarative framework that makes deep learning accessible for scientific research
     </div> 
   </center>
   </br></br>
@@ -116,7 +116,7 @@
   
   <center style="margin-bottom:50px;">
     <a class="linx" href="pages/compare.html" target="_blank">
-      <span class="textz" style="color:#626262; font-size:17.5px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
+      <span class="textz" style="color:#626262; font-size:18px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
     </a>
   </center>
   <!-- 3 BRs or a 60% margin makes the shapes below get misaligned -->
@@ -131,7 +131,7 @@
   <div style="background-image: linear-gradient(#122536, #ffffff);">
     </br></br>
     <center>
-      <div class="headerz headerz-dark" style="line-height:170%;">Reduce <span class="goldz-dark">data wrangling</span> with a declarative API for machine learning.</div>
+      <div class="headerz headerz-dark" style="line-height:170%;">Reduce <span class="goldz-dark">data wrangling</span> with a declarative API for machine learning</div>
       </br></br>
 
       <!-- https://codepen.io/davehert/pen/MWrYjZy -->
@@ -155,7 +155,7 @@
 
   </br></br></br></br></br></br>
   <center>
-    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a>.</div>
+    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a></div>
   </center>
   </br></br>
 
@@ -261,7 +261,7 @@
     </tr>
 
     <tr>
-      <td class="alt-gray" colspan="3">Prevent <span class="goldz-highlight">overfitting</span> by evaluating each</br> split/ fold of every model.</td>
+      <td class="alt-gray" colspan="3">Prevent <span class="goldz-highlight">overfitting</span> by evaluating each</br> split/ fold of every model</td>
       <td class="alt-gray">Detect <span class="goldz-highlight">model rot</span> by reevaluating with supervised datasets.</td>
     </tr>
 
@@ -275,28 +275,11 @@
     <hr style="width:35%;">
   </center>
 
-  </br></br></br></br>
+  </br></br></br>
   <center>
-    <div class="headerz-light" style="line-height:190%;">Goodbye, boilerplate scripts <i>(X_train, y_test)</i>.</br>Hello, <span class="goldz-light">object-oriented</span> machine learning.</div>
-    </br></br></br>
-    
-    <div class="blockz-container" style="width:83%;">
-      <div class="blockz-title">Low-Level API</div>
-      </br>
-      <div class="blockz low-level">
-        <div>Dataset()</div><div>Feature()</div><div>Label()</div><div>Splitset()</div><div>Encoder()</div>
-        <div>Algorithm()</div><div>Hyperparamset()</div><div>Job()</div><div>Queue()</div><div>Prediction()</div>
-        <span class="etc"><i>etc.</i></span>
-      </div>
-    </div>
-    </br>
-    <div class="blockz-container" style="width:39%;margin-top:16px;">
-      <div class="blockz-title">High-Level API</div>
-      </br>
-      <div class="blockz high-level">
-        <div>Pipeline()</div><div>Experiment()</div>
-      </div>
-    </div>
+    <div class="headerz-light" style="line-height:190%;">Automated <span class="goldz-light">visualizations</span> for evaluating each split & fold of every model</div>
+    </br></br>
+    <img src="_static/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
   </center>
   </br></br></br></br>
 
@@ -313,9 +296,10 @@ AIQC
   <div style="background-image: linear-gradient(#ffffff, #122536);">
     </br></br></br></br></br></br>
     <center>
-      <img src="_static/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
+      <img src="_static/images/web/setup.png" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
       </br></br>
-      <div class="headerz-dark" style="line-height:170%;">Automated <span class="goldz-dark">visualizations</span> for evaluating each split & fold of every model.</div>
+      <div class="headerz-dark" style="line-height:170%;">Zero <span class="goldz-dark">server setup</span> for a metastore, dataset registry, & experiment tracker</div>
+      <br/>
     </center>
     </br>
   </div>
@@ -330,7 +314,7 @@ AIQC
   <center>
     <p style="font-size:18px; font-family:Exo;"><i>Let's get started!</i></p>
     </br>
-    <a href="gallery.html">
+    <a href="pages/gallery.html">
       <div class="bttn"><b>→</b> <span class="textz">Use Cases & Tutorials</span></div>
     </a>
   </center>
@@ -400,6 +384,6 @@ AIQC
     window.addEventListener('load', function() {
       var art = document.querySelector("div[itemprop='articleBody']")
       art.style.borderRadius = "25px";
-      art.style.background = "#ffffff"; 
+      art.style.background = "#ffffff";
     });
   </script>
