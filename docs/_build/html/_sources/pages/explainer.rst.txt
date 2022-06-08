@@ -12,7 +12,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Types of Analysis</h3>
+    <h3>🔍 Types of Analysis</h3>
   </center>
 
   </br>
@@ -30,7 +30,7 @@ Deep Learning 101
     - Given what we know about rows 1:1000 → generate row 1001.
 
   * - **Discriminative**
-    - Given what we know about columns A:F → determine the values of column G.
+    - Given what we know about columns A:F → determine column G's values.
 
 |
 
@@ -53,7 +53,7 @@ Deep Learning 101
   
   </br>
   <center>
-    <h3>Subtypes of Analysis</h3>
+    <h3>🔬 Subtypes of Analysis</h3>
   </center>
 
   </br>
@@ -115,14 +115,14 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Variables</h3>
+    <h3>🌡️ Variables</h3>
   </center>
 
 .. raw:: html
 
   </br>
   <p class="explain">
-    As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals 🐢&nbsp;We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
+    As an example, let's pretend we work at a zoo where we have a spreadsheet that contains information about the traits of different animals. We want to use <i>discriminative learning</i> in order to <i>categorize</i> the species of a given animal.
   </p>
 
 
@@ -165,7 +165,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Stratification</h3>
+    <h3>🍱 Stratification</h3>
   </center>
 
   </br>
@@ -219,7 +219,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Encoding & Decoding</h3>
+    <h3>📞 Encoding & Decoding</h3>
   </center>
 
   </br>
@@ -239,11 +239,11 @@ Deep Learning 101
   
   * - **OneHotEncode(OHE)**
     - Categorical
-    - Expand a single multi-category col into many binary cols.
+    - Expand 1 multi-category col into many binary cols.
 
   * - **Ordinal**
     - Categorical
-    - [Bad form] Each category is assigned an integer [0,1,2].
+    - [Bad form] Each category assigned an integer [0,1,2].
 
   * - **Scale**
     - Continuous
@@ -268,7 +268,7 @@ Deep Learning 101
 .. raw:: html
  
   <p class="explain">
-    After the algorithm makes its prediction, 📞 that information needs to be decoded back into its orginal format
+    After the algorithm makes its prediction, that information needs to be decoded back into its orginal format
     so that it can be understood by practitioners.
   </p>
 
@@ -283,13 +283,12 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Algorithm</h3>
+    <h3>⚖️ Algorithm</h3>
   </center>
 
   </br>
   <p class="explain">
-    Now we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. 
-    ✨ Here is our simplified example:
+    Now we need an equation (aka <i>algorithm</i> or <i>model</i>) that predicts our <i>label</i> when we show it a set of <i>features</i>. Here is our simplified example:
   </p>
   
 |
@@ -324,12 +323,12 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Gradient Descent</h3>
+    <h3>🎢 Gradient Descent</h3>
   </center>
 
   </br>
   <p class="explain">
-    Fortunately, computers can rapidly perform these repetetitive calculations on our behalf. This is where the magic of AI comes into play 🔮 It simply automates that trial-and-error.
+    Fortunately, computers can rapidly perform these repetetitive calculations on our behalf. This is where the magic of AI comes into play. It simply automates that trial-and-error.
   </p>
 
 |
@@ -380,13 +379,14 @@ Deep Learning 101
   
   </br>
   <center>
-    <h3>Architectures</h3>
+    <h3>🏛️ Architectures</h3>
   </center>
 
   </br>
   <p class="explain">
-    There are different types of algorithms (aka neural network architectures) for working with different types of data:
+    There are different types of algorithms (aka neural network architectures)<br/> for working with different types of data:
   </p>
+  <br/>
 
 
 .. list-table::
@@ -424,7 +424,7 @@ Deep Learning 101
   
   </br>
   <center>
-    <h3>Networks</h3>
+    <h3>🕸️ Networks</h3>
   </center>
 
   </br>
@@ -434,16 +434,18 @@ Deep Learning 101
 
 
 .. list-table::
-  :widths: 15, 55, 25
+  :widths: 12, 12, 40, 21
   :align: center
 
   * - **Nodes**
+    - neurons
     - participants in the network
-    - e.g. lightbulbs
+    - 💡 e.g. lightbulbs
 
   * - **Edges**
+    - weights
     - connect (aka link) the nodes together
-    - e.g. wires
+    - 🔌 e.g. wires
 
 |
 
@@ -452,15 +454,6 @@ Deep Learning 101
   :align: center
   :alt: lights
   :class: no-scaled-link
-
-|
-
-.. raw:: html
-
-  <p class="explain">
-    In a neural network, the 💡 <i>nodes are neurons</i> and the 🔌 <i>edges are weights</i>.
-  </p>
-
 
 |
 |
@@ -473,7 +466,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Topology</h3>
+    <h3>🗺️ Topology</h3>
   </center>
 
   </br>
@@ -529,7 +522,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Layers</h3>
+    <h3>🧅 Layers</h3>
   </center>
 
   </br>
@@ -546,13 +539,13 @@ Deep Learning 101
     - Receives the data. Mirrors the shape of incoming data.
 
   * - **Hidden**
-    - Learns from the patterns in data. # of layers & neurons varies based on data complexity.
+    - Learns from patterns in data. # of layers & neurons with feature complexity.
 
   * - **Output**
-    - Compares the data to the real label. Mirrors the shape of the labels (# of categories).
+    - Compares predictions to real label. Mirrors shape of labels (# of categories).
   
   * - **Regulatory**
-    - [Not pictured here] *Dropout, BatchNorm, MaxPool* help keep the network balanced.
+    - [Not pictured here] *Dropout, BatchNorm, MaxPool* keep the network balanced.
 
 |
 
@@ -590,7 +583,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Biological Neurons</h3>
+    <h3>🧠 Biological Neurons</h3>
   </center>
 
   </br>
@@ -609,7 +602,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-    In the brain, networks of neurons work together to respond to an incoming stimulus 🧠
+    In the brain, networks of neurons work together to respond to an incoming stimulus. 
     They repeatedly pass information to downstream neurons in the form of neurotransmitters.
   </p>
   </br>
@@ -647,7 +640,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Artificial Neurons</h3>
+    <h3>⚡ Artificial Neurons</h3>
   </center>
 
   </br>
@@ -656,7 +649,7 @@ Deep Learning 101
   </p>
 
   <p class="explain">
-   Similar to how a biological neuron aggregates an <i>action potential</i> based on input from preceding neurons ➕ 
+   Similar to how a biological neuron aggregates an <i>action potential</i> based on input from preceding neurons - 
    an artificial neuron aggregates a <i>weighted sum</i> by adding up all of the values of its incoming weights.
   </p>
 
@@ -693,7 +686,7 @@ Deep Learning 101
     - The de facto activation function is *ReLU*. Rarely, *Tanh*.
 
   * - **Output**
-    - *Sigmoid* for binary classification. *Softmax* for multi-label classification. None for regression.
+    - *Sigmoid* for binary classify. *Softmax* for multi-label classify. None for regression.
 
 |
 |
@@ -706,7 +699,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Performance Metrics</h3>
+    <h3>📈 Performance Metrics</h3>
   </center>
   
   </br>
@@ -735,7 +728,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-   Although neural networks are great at minimizing loss, this metric is hard for humans to understand 📉
+   Although neural networks are great at minimizing loss, this metric is hard for humans to understand.
    The following two <b><a href="https://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics">metrics</a></b>
    are easy to understand because they both max out at 1.0 aka 100%:
   </p>
@@ -786,12 +779,12 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Tuning</h3>
+    <h3>🎛️ Tuning</h3>
   </center>
 
   </br>
   <p class="explain">
-    A data scientist oversees the training of an neural network much like a chef prepares a meal 🔥🎛️&nbsp;The heat is what actually cooks the food, but there are still a few things that the chef controls:
+    A data scientist oversees the training of an neural network much like a chef prepares a meal. The heat is what actually cooks the food, but there are still a few things that the chef controls:
   </p>
 
 
@@ -803,7 +796,7 @@ Deep Learning 101
     - Food isn't fully cooked? Train for more *epochs* or decrease the size of each *batch*.
   
   * - **Parameters**
-    - Burning? Turn down *learning rate*. Tastes bad? Change *initialization* & *activation* spices.
+    - Burning? Turn down *learning rate*. Tastes bad? Try *initialization*/ *activation* spices.
 
   * - **Topology**
     - If the food doesn't fit in the pan, switch to a larger pan with deeper/ taller *layers*.
@@ -839,7 +832,7 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>Let's Get Started</h3>
+    <h3>🍻 Let's Get Started</h3>
   </center>
 
   </br>
@@ -871,5 +864,13 @@ Deep Learning 101
     </a>
   </center>
 
-|
-|
+
+  <script>
+    window.addEventListener('load', function() {
+      var art = document.querySelector("div[itemprop='articleBody']")
+      art.style.borderRadius = "25px";
+      art.style.background = "#ffffff"; 
+      art.style.padding = "25px";
+    });
+  </script>
+
