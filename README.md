@@ -16,17 +16,22 @@
 
 <center>
 	<a href="https://aiqc.readthedocs.io/">
-		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/framework_simple.png" width="95%" alt="framework"/>
+		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/framework_simple.png" width="95%" alt="framework"/>
 	</a>
 </center>
 </br></br></br>
 
 
-<h1>Technical Overview</h1>
+<h2>Technical Overview</h2>
+</br>
+<h3>What is it?</h3>
 <p>
-	<b>What is it?</b> -- AIQC is an open source Python package that provides <i>high-level APIs for end-to-end MLOps</i> (dataset registration, preprocessing, experiment tracking, model evaluation, inference, post-processing, etc) in order to make deep learning more accessible to researchers.
-	<br><br>
-	<b>How does it work?</b> -- The backend is a <i>SQLite object-relational model (ORM)</i> for machine learning objects (Dataset, Feature, Label, Splits, Algorithm, Job, etc). The high-level API stacks these building blocks into <i>standardized workflows</i> for various: analyses (classify, regress, generate), data types (tabular, sequence, image), and libraries (TensorFlow, PyTorch). The benefits of this approach are:
+	AIQC is an open source Python package that provides a <i>declarative API for end-to-end MLOps</i> (dataset registration, preprocessing, experiment tracking, model evaluation, inference, post-processing, etc) in order to make deep learning more accessible to researchers.
+</p>
+</br>
+<h3>How does it work?</h3>
+<p>
+	The backend is a <i>SQLite object-relational model (ORM)</i> for machine learning objects (Dataset, Feature, Label, Splits, Algorithm, Job, etc). The high-level API stacks these building blocks into <i>standardized workflows</i> for various: analyses (classify, regress, generate), data types (tabular, sequence, image), and libraries (TensorFlow, PyTorch). The benefits of this approach are:
 </p>
 </br>
 <ol>
@@ -43,7 +48,8 @@
 	</li>
 </ol>
 </br>
-<p><b>What's on the roadmap?</b></p>
+
+<h3>What's on the roadmap?</h3>
 <ol>
 	<li>
 		🖥️ &nbsp;&nbsp;Expand the UI (e.g. dataset registration and model design) to make it even more approachable for less technical users.
@@ -60,21 +66,21 @@
 
 <h2>Experiment Tracker</h2>
 <a href="https://aiqc.readthedocs.io/">
-	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
+	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/_static/images/dashboard/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
 </a>
 </br></br></br>
 
 <h2>Compare Models</h2>
 <a href="https://aiqc.readthedocs.io/">
-	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/images/dashboard/compare_models.gif" width="95%" alt="compare_models"/>
+	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/_static/images/dashboard/compare_models.gif" width="95%" alt="compare_models"/>
 </a>
 </br></br></br></br>
 
 
-# Usage
+<h2>Usage</h2>
 
 ```python
-# Designed for Python 3.7.12 to mirror Google Colab
+# Designed on Python 3.7.12 to mirror Google Colab
 pip install --upgrade pip
 pip install --upgrade wheel
 pip install --upgrade aiqc

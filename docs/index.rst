@@ -54,6 +54,11 @@
     <div class="headerz-light" style="color:#828282; font-size:17px !important; line-height:180% !important;">
       Declarative framework that makes deep learning accessible to researchers
     </div> 
+    <br/><br/>
+    <a class="github-button" href="https://github.com/aiqc/aiqc" data-color-scheme="no-preference: light; light: light; dark: light;" data-size="large" data-show-count="false" aria-label="Star aiqc/aiqc on GitHub">
+      Star on GitHub
+    </a>
+    <br/>
   </center>
   </br></br>
 
@@ -384,6 +389,8 @@ AIQC
       });
     });
   </script>
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
 
   <script>
     window.addEventListener('load', function() {

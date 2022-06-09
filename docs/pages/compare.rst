@@ -223,7 +223,7 @@ Competition
     </p>
 
     <p class="intro" style="width:90%; margin-top:35px;">
-      MLflow has a nice user interface, but all it shows you is the fruits of your data wrangling.
+      MLflow has a nice user interface, but all it shows you is the fruits of your data wrangling. For example, even if you were conducting transfering learning using pretrained models, you'd still have to do all of the preprocessing and post-processing by hand.
     </p>
 
     <br/>
