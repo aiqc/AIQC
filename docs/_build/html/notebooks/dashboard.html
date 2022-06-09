@@ -144,7 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api_high_level.html#2b.-Trainer">2b. Trainer</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Inference">Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_high_level.html#3.-Inference">3. Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
@@ -625,10 +625,10 @@ div.rendered_html tbody tr:hover {
 <section id="Runtime">
 <h2>Runtime<a class="headerlink" href="#Runtime" title="Permalink to this headline"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">aiqc.ui.Tracker</span></code> class allows us to inspect &amp; interact with our dashboard app.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tracker(
-    refresh_seconds:int = 10,
-    server_runtime:dict = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Tracker</span><span class="p">(</span>
+    <span class="n">refresh_seconds</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">server_runtime</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -650,12 +650,12 @@ div.rendered_html tbody tr:hover {
 </tr>
 </tbody>
 </table>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>server_runtime = dict(
-    mode    = &#39;external&#39;
-    , debug = False
-    , host  = &#39;127.0.0.1&#39;
-    , port  = 9991
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server_runtime</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">mode</span>    <span class="o">=</span> <span class="s1">&#39;external&#39;</span>
+    <span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">host</span>  <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+    <span class="p">,</span> <span class="n">port</span>  <span class="o">=</span> <span class="mi">9991</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -748,7 +748,9 @@ Try passing a different port to run_server.
 </pre></div>
 </div>
 <p>If you run into this just increase the port number by 1 and try again:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">(</span><span class="n">server_runtime</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">9992</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">(</span>
+    <span class="n">server_runtime</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">9992</span><span class="p">)</span>
+<span class="p">)</span>
 <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>

@@ -16,7 +16,7 @@
 /* Responsiveness */
 @media (max-width: 922px) {
     .flex-container {
-      flex-direction: column;
+      flex-direction: column !important;
     }
     .flex-item {
         width: 45%;
@@ -108,8 +108,8 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
     letter-spacing: .01rem;
     font-weight:    400;
     font-size:      19px;
-    margin-right:   20%;
-    margin-left:    20%;
+    margin-right:   25%;
+    margin-left:    25%;
     line-height:    175%;
 }
 
@@ -119,8 +119,8 @@ https://stackoverflow.com/questions/59215996/how-to-add-a-logo-to-my-readthedocs
     letter-spacing: .03rem;
     font-weight:    200;
     font-size:      19.5px;
-    margin-right:   20%;
-    margin-left:    20%;
+    margin-right:   25%;
+    margin-left:    25%;
 }
 
 .titlez {
@@ -547,6 +547,12 @@ h1, h2, h3, h5 {
 #empty-cell {
     background: white !important;
 }
+#empty-cell:hover {
+    box-shadow:         0px 0px #fff;
+    -moz-box-shadow:    0px 0px #fff;
+    -webkit-box-shadow: 0px 0px #fff;
+    -o-box-shadow:      0px 0px #fff;
+}
 
 .top-left {
     border-top-left-radius: 22px;
@@ -723,7 +729,7 @@ p.explain {
 
 /* --- Start: Slideshow --- */
 .slider {
-    width: 50%;
+    width: 58%;
     max-width: 800px;
     height: 350px;
     position: relative;

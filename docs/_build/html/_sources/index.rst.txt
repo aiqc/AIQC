@@ -51,8 +51,8 @@
   </div>
   </br></br>
   <center>
-    <div class="headerz-light" style="color:#828282; font-size:17px !important; margin-left:15% !important; margin-right:15% !important; line-height:180% !important;">
-      Declarative framework that makes deep learning accessible for scientific research
+    <div class="headerz-light" style="color:#828282; font-size:17px !important; line-height:180% !important;">
+      Declarative framework that makes deep learning accessible to researchers
     </div> 
   </center>
   </br></br>
@@ -130,7 +130,7 @@
   <div style="background-image: linear-gradient(#122536, #ffffff);">
     </br></br>
     <center>
-      <div class="headerz headerz-dark" style="line-height:170%;">Reduce <span class="goldz-dark">data wrangling</span> with a declarative API for machine learning</div>
+      <div class="headerz headerz-dark" style="line-height:170%;">Reduce <span class="goldz-dark">data wrangling</span> with a declarative API</div>
       </br></br></br>
 
       <!-- https://codepen.io/davehert/pen/MWrYjZy -->
@@ -154,7 +154,7 @@
 
   </br></br></br></br></br></br></br>
   <center>
-    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with rapid, rigorous, & reproducible <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a></div>
+    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with structured <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a></div>
   </center>
   </br></br>
 
@@ -235,7 +235,7 @@
   </center>
   </br></br>
 
-  <table class="compatibility qc" valign="center" style="width: 70% !important">
+  <table class="compatibility qc" valign="center" style="width: 73% !important">
     <colgroup>
        <col span="1" style="width: 16.5%;">
        <col span="1" style="width: 21%;">
@@ -276,7 +276,7 @@
 
   </br></br></br></br></br>
   <center>
-    <div class="headerz-light" style="line-height:190%;">Automated <span class="goldz-light">visualizations</span> for evaluating each split & fold of every model</div>
+    <div class="headerz-light" style="line-height:190%;">Automated <span class="goldz-light">visualizations</span> for each split & fold of every model</div>
     </br></br>
     <img src="_static/images/dashboard/compare_models.gif" alt="visualizations" width="91%" style="display:block;">
   </center>
@@ -297,7 +297,7 @@ AIQC
     <center>
       <img src="_static/images/web/setup.gif" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
       </br></br>
-      <div class="headerz-dark" style="line-height:170%;">Zero <span class="goldz-dark">server setup</span> for a metastore, dataset registry, & experiment tracker</div>
+      <div class="headerz-dark" style="line-height:170%;"><span class="goldz-dark">Zero setup</span> metastore, dataset registry, & experiment tracker</div>
       <br/>
     </center>
     </br>
