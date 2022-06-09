@@ -1,0 +1,83 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "2f1790ba-140c-4a18-b42d-c125fad872e5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "└── 🚀 Welcome to AIQC. Running `orm.setup()` ...\n",
+      "\n",
+      "\n",
+      "└── 📁 Success - created database file at path:\n",
+      "/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3\n",
+      "\n",
+      "\n",
+      "└── 💾 Success - created database tables\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "from aiqc import orm"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "39a24e8c-1cd4-4d54-8bd9-db78c23cacbb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from aiqc.ui import Tracker\n",
+    "app = Tracker()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "f90bd7f0-f1e5-4277-b4c9-0ef2c4b412b0",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "└── 📊 Launched dashboard http://127.0.0.1:9991\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "app.start()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

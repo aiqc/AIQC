@@ -1,5 +1,4 @@
 # Local modules.
-from xmlrpc.client import boolean
 from .. import orm
 from ..utils.meter import metrics_classify, metrics_regress
 # Python modules.

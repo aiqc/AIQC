@@ -295,7 +295,7 @@ AIQC
   <div style="background-image: linear-gradient(#ffffff, #122536);">
     </br></br></br></br></br></br></br></br>
     <center>
-      <img src="_static/images/web/setup.png" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
+      <img src="_static/images/web/setup.gif" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
       </br></br>
       <div class="headerz-dark" style="line-height:170%;">Zero <span class="goldz-dark">server setup</span> for a metastore, dataset registry, & experiment tracker</div>
       <br/>
