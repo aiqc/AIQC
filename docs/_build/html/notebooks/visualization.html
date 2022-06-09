@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/visualization.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="plots Prerequisites: Plotly is used for interactive charts (hover, toggle, zoom). Reference the Installation section for information about configuring Plotly. However, static images are used in thi..." />
+  <meta property="og:description" content="plots Overview: As described in the Low-Level Docs, every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_type determines which metrics ..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />
@@ -104,8 +104,8 @@
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Visualization &amp; Metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Classification">Classification</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Queue-Visualization">Queue Visualization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Queue-Metrics">Queue Metrics</a></li>
@@ -595,11 +595,6 @@ div.rendered_html tbody tr:hover {
 <section id="Visualization-&amp;-Metrics">
 <h1>Visualization &amp; Metrics<a class="headerlink" href="#Visualization-&-Metrics" title="Permalink to this headline"></a></h1>
 <img alt="plots" src="../_images/plots.png" />
-<section id="Prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for interactive charts (hover, toggle, zoom). Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> section for information about configuring Plotly. However, static images are used in this notebook due to lack of support for 3rd party JS in the documentation portal.</p>
-<hr class="docutils" />
-</section>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
 <p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
@@ -613,6 +608,10 @@ div.rendered_html tbody tr:hover {
 <li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> - When <code class="docutils literal notranslate"><span class="pre">True</span></code>, it performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of plots.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p></li>
 </ul>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for interactive charts (hover, toggle, zoom). Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> section for information about configuring Plotly. However, static images are used in this notebook due to lack of support for 3rd party JS in the documentation portal.</p>
 <hr class="docutils" />
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly generate a couple examples.</p>
 <div class="nbinput nblast docutils container">

@@ -503,6 +503,12 @@ h1, h2, h3, h5 {
     border-collapse: separate; 
 }
 
+.compatibility td:hover {
+    -moz-box-shadow:    inset 0 0 5px #8a8a8a;
+    -webkit-box-shadow: inset 0 0 5px #8a8a8a;
+    box-shadow:         inset 0 0 5px #8a8a8a;
+ }
+
 .compatibility td small {
     color: #a4a4a4;
 }
@@ -523,6 +529,15 @@ h1, h2, h3, h5 {
 
 .medium:hover {
     background: radial-gradient(rgb(255, 248, 232), rgb(255, 235, 176)) !important;
+}
+
+.manual {
+    background: #ffdada !important;
+    color:      #000;
+}
+
+.manual:hover {
+    background: radial-gradient(#f7e1e3, #ffcfcf) !important;
 }
 
 .last {

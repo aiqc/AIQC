@@ -58,7 +58,7 @@
   </br></br>
 
 
-.. image:: _static/images/web/framework_may4.png
+.. image:: _static/images/web/framework_simple.png
   :width: 93%
   :align: center
   :alt: framework
