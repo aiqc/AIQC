@@ -56,9 +56,9 @@ html_theme_options  = dict(
 # https://www.linkedin.com/post-inspector/
 ogp_site_url         = "https://aiqc.readthedocs.io/"
 ogp_site_name        = "AIQC"
-ogp_image            = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png"
+ogp_image            = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png"
 ogp_image_alt        = "Artificial Intelligence Quality Control"
 ogp_type             = "website"
 ogp_custom_meta_tags = [
-    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/images/web/meta_image_tall_rect.png" />'
+    '<meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />'
 ]
