@@ -144,7 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#2b.-Trainer">2b. Trainer</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Inference">Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Inference">3. Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
@@ -375,13 +375,13 @@
 <li><p>Post-processing (e.g. decoding) during model evaluation.</p></li>
 <li><p>Inference: encoding and decoding new data.</p></li>
 </ul>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Pipeline(
-    inputs:list
-    , target:object     = None
-    , stratifier:object = None
-    , name:str          = None
-    , description:str   = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">inputs</span><span class="p">:</span><span class="nb">list</span>
+    <span class="p">,</span> <span class="n">target</span><span class="p">:</span><span class="nb">object</span>     <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">stratifier</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span>          <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">description</span><span class="p">:</span><span class="nb">str</span>   <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -432,15 +432,15 @@
 <section id="1a.-Input">
 <h3>1a. Input<a class="headerlink" href="#1a.-Input" title="Permalink to this headline"></a></h3>
 <p>These are the features that our model will learn from. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Feature</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Input(
-    dataset:object
-    , exclude_columns:list  = None
-    , include_columns:list  = None
-    , interpolaters:list    = None
-    , window:object         = None
-    , encoders:list         = None
-    , reshape_indices:tuple = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">exclude_columns</span><span class="p">:</span><span class="nb">list</span>  <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">include_columns</span><span class="p">:</span><span class="nb">list</span>  <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">interpolaters</span><span class="p">:</span><span class="nb">list</span>    <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">window</span><span class="p">:</span><span class="nb">object</span>         <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">encoders</span><span class="p">:</span><span class="nb">list</span>         <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">reshape_indices</span><span class="p">:</span><span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -483,13 +483,13 @@
 <section id="1ai.-Input.Interpolater">
 <h4>1ai. Input.Interpolater<a class="headerlink" href="#1ai.-Input.Interpolater" title="Permalink to this headline"></a></h4>
 <p>Used to fill in the blanks in a sequence. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Input.Interpolater(
-    process_separately:bool   = True
-    , verbose:bool            = False
-    , interpolate_kwargs:dict = None
-    , dtypes:list             = None
-    , columns:list            = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="o">.</span><span class="n">Interpolater</span><span class="p">(</span>
+    <span class="n">process_separately</span><span class="p">:</span><span class="nb">bool</span>   <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">,</span> <span class="n">verbose</span><span class="p">:</span><span class="nb">bool</span>            <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">interpolate_kwargs</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">dtypes</span><span class="p">:</span><span class="nb">list</span>             <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">columns</span><span class="p">:</span><span class="nb">list</span>            <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -503,13 +503,13 @@
 <section id="1aiii.-Input.Encoder">
 <h4>1aiii. Input.Encoder<a class="headerlink" href="#1aiii.-Input.Encoder" title="Permalink to this headline"></a></h4>
 <p>Used to numerically encode data. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Input.Encoder(
-    sklearn_preprocess:object
-    , verbose:bool = False
-    , include:bool = True
-    , dtypes:list  = None
-    , columns:list = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
+    <span class="n">sklearn_preprocess</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">verbose</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">include</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">,</span> <span class="n">dtypes</span><span class="p">:</span><span class="nb">list</span>  <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">columns</span><span class="p">:</span><span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -518,12 +518,12 @@
 <section id="1b.-Target">
 <h3>1b. Target<a class="headerlink" href="#1b.-Target" title="Permalink to this headline"></a></h3>
 <p>What the model is trying to predict. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Label</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Target(
-    dataset:object
-    , column:str          = None
-    , interpolater:object = None
-    , encoder:object      = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">column</span><span class="p">:</span><span class="nb">str</span>          <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">interpolater</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">encoder</span><span class="p">:</span><span class="nb">object</span>      <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -554,10 +554,10 @@
 <section id="1bi.-Target.Interpolater">
 <h4>1bi. Target.Interpolater<a class="headerlink" href="#1bi.-Target.Interpolater" title="Permalink to this headline"></a></h4>
 <p>Used to fill in the blanks in a sequence. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Target.Interpolater(
-    process_separately:bool=True
-    , interpolate_kwargs:dict=None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="o">.</span><span class="n">Interpolater</span><span class="p">(</span>
+    <span class="n">process_separately</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">,</span> <span class="n">interpolate_kwargs</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -573,12 +573,12 @@
 <section id="1c.-Stratifier">
 <h3>1c. Stratifier<a class="headerlink" href="#1c.-Stratifier" title="Permalink to this headline"></a></h3>
 <p>Used to slice the dataset into training, validation, test, and/or cross-validated subsets. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Stratifier(
-    size_test:float         = None
-    , size_validation:float = None
-    , fold_count:int        = None
-    , bin_count:int         = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Stratifier</span><span class="p">(</span>
+    <span class="n">size_test</span><span class="p">:</span><span class="nb">float</span>         <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">size_validation</span><span class="p">:</span><span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">fold_count</span><span class="p">:</span><span class="nb">int</span>        <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">bin_count</span><span class="p">:</span><span class="nb">int</span>         <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -587,10 +587,10 @@
 <section id="2.-Experiment">
 <h2>2. Experiment<a class="headerlink" href="#2.-Experiment" title="Permalink to this headline"></a></h2>
 <p>Used to declare variations of models that will be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Experiment(
-    architecture:object
-    , trainer:object
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">architecture</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">trainer</span><span class="p">:</span><span class="nb">object</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -628,42 +628,42 @@
 <section id="2a.-Architecture">
 <h3>2a. Architecture<a class="headerlink" href="#2a.-Architecture" title="Permalink to this headline"></a></h3>
 <p>The model and hyperparameters to be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Architecture(
-    library:str
-    , analysis_type:str
-    , fn_build:object
-    , fn_train:object
-    , fn_optimize:object = None
-    , fn_lose:object     = None
-    , fn_predict:object  = None
-    , hyperparameters:dict = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Architecture</span><span class="p">(</span>
+    <span class="n">library</span><span class="p">:</span><span class="nb">str</span>
+    <span class="p">,</span> <span class="n">analysis_type</span><span class="p">:</span><span class="nb">str</span>
+    <span class="p">,</span> <span class="n">fn_build</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">fn_train</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">fn_lose</span><span class="p">:</span><span class="nb">object</span>     <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">fn_predict</span><span class="p">:</span><span class="nb">object</span>  <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">hyperparameters</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="2b.-Trainer">
 <h3>2b. Trainer<a class="headerlink" href="#2b.-Trainer" title="Permalink to this headline"></a></h3>
 <p>The options used for training. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Trainer(
-    pipeline_id:int
-    , repeat_count:int     = 1
-    , permute_count:int    = 3
-    , search_count         = None
-    , search_percent       = None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">pipeline_id</span><span class="p">:</span><span class="nb">int</span>
+    <span class="p">,</span> <span class="n">repeat_count</span><span class="p">:</span><span class="nb">int</span>     <span class="o">=</span> <span class="mi">1</span>
+    <span class="p">,</span> <span class="n">permute_count</span><span class="p">:</span><span class="nb">int</span>    <span class="o">=</span> <span class="mi">3</span>
+    <span class="p">,</span> <span class="n">search_count</span>         <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">search_percent</span>       <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
 </section>
 </section>
-<section id="Inference">
-<h2>Inference<a class="headerlink" href="#Inference" title="Permalink to this headline"></a></h2>
+<section id="3.-Inference">
+<h2>3. Inference<a class="headerlink" href="#3.-Inference" title="Permalink to this headline"></a></h2>
 <p>Used to preprocess new samples, run predictions on them, decode the output, and, optionally, evaluate the predictions.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Inference(
-    predictor:object
-    , feature_datasets:list
-    , label_dataset:object=None
-)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Inference</span><span class="p">(</span>
+    <span class="n">predictor</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">feature_datasets</span><span class="p">:</span><span class="nb">list</span>
+    <span class="p">,</span> <span class="n">label_dataset</span><span class="p">:</span><span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
