@@ -32,7 +32,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> Under the hood, the High-Level API is actually weaving together a workflow using the *object-relational model (ORM)* of the [Low-Level API](api_low_level.html). Practitioners can use the low-level interface themselves, but it's a bit more cumbersome in that you need to string together object IDs. "
+    "> Under the hood, the High-Level API is actually weaving together a workflow using the *object-relational model (ORM)* of the [Low-Level API](api_low_level.html). Practitioners can use the low-level interface themselves, but it's more cumbersome in that you need to chain together object IDs. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "from aiqc.mlops import *\n",
+    "```"
    ]
   },
   {
@@ -57,15 +66,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "```\n",
-    "from aiqc.mlops import *\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "---"
    ]
   },
@@ -73,14 +73,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 1. Pipeline"
+    "## 1. `Pipeline`"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Declares how to prepare data. This workflow is used during:\n",
+    "Declares how to prepare data. The steps defined within the pipeline are used at multiple points in the machine learning lifecycle:\n",
     "\n",
     "- Preprocessing of training and evaluation data.\n",
     "- Caching of preprocessed training and evaluation data.\n",
@@ -93,12 +93,12 @@
    "metadata": {},
    "source": [
     "```python\n",
-    "Pipeline(\n",
-    "    inputs:list\n",
-    "    , target:object     = None\n",
-    "    , stratifier:object = None\n",
-    "    , name:str          = None\n",
-    "    , description:str   = None\n",
+    "pipeline = Pipeline(\n",
+    "    inputs\n",
+    "    , target\n",
+    "    , stratifier\n",
+    "    , name\n",
+    "    , description\n",
     ")\n",
     "```"
    ]
@@ -107,22 +107,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Argument | Description |\n",
-    "| --- | --- |\n",
-    "| *inputs* | Reference `Input` below. Multiple inputs may be provided for heterogenous/ multi-modal analysis. |\n",
-    "| *target* | Reference `Target` below. Left blank during unsupervised/ self-supervised analysis. |\n",
-    "| *stratifier* | Reference `Stratifier` below. Left blank during inference. |\n",
-    "| *name* | An auto-incrementing version will be assigned to `Pipelines` that share a name.  |\n",
-    "| *description* | Describes how this particular workflow is unique. |"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "| Returns |\n",
-    "| --- |\n",
-    "| A `Splitset` object as seen in the [Low-Level API](api_low_level.html). | "
+    "| Argument | Type | Default | Description |\n",
+    "| --- | --- | --- | --- |\n",
+    "| *inputs* | list[type([Input](#1a.-Input))]| Required | Multiple Inputs may be provided for heterogenous/ multi-modal analysis. |\n",
+    "| *target* | type([Target](#1b.-Target)) | None | Leave blank during unsupervised/ self-supervised analysis. |\n",
+    "| *stratifier* | type([Stratifier](#1c.-Stratifier)) | None | Leave blank during inference. |\n",
+    "| *name* | str | None | An auto-incrementing version will be assigned to `Pipelines` that share a name.  |\n",
+    "| *description* | str | None | Describes how this particular workflow is unique. |"
    ]
   },
   {
@@ -136,6 +127,15 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "|||\n",
+    "| --- | --- |\n",
+    "| **Returns** | `Splitset` instance as seen in the [Low-Level API](api_low_level.html). |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "---"
    ]
   },
@@ -143,14 +143,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1a. Input"
+    "### 1a. `Input`"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "These are the features that our model will learn from. This is a wrapper for `Feature` in the [Low-Level API](api_low_level.html)."
+    "These are the features that our model will learn from. This is a wrapper for `Feature` and all of its preprocessors in the [Low-Level API](api_low_level.html)."
    ]
   },
   {
@@ -159,13 +159,13 @@
    "source": [
     "```python\n",
     "Input(\n",
-    "    dataset:object\n",
-    "    , exclude_columns:list  = None\n",
-    "    , include_columns:list  = None\n",
-    "    , interpolaters:list    = None\n",
-    "    , window:object         = None\n",
-    "    , encoders:list         = None\n",
-    "    , reshape_indices:tuple = None\n",
+    "    dataset\n",
+    "    , exclude_columns\n",
+    "    , include_columns\n",
+    "    , interpolaters\n",
+    "    , window\n",
+    "    , encoders\n",
+    "    , reshape_indices\n",
     ")\n",
     "```"
    ]
@@ -174,17 +174,31 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Argument | Description |\n",
-    "| --- | --- |\n",
-    "| *dataset* | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
-    "| *exclude_columns* | The columns from the `Dataset` that will not be used. |\n",
-    "| *include_columns* | The columns from the `Dataset` that will be used. |\n",
-    "| *interpolaters* | Reference `Input.Interpolater` below. |\n",
-    "| *window* | Reference `Input.Window` below. |\n",
-    "| *encoders* | Reference `Input.Encoder` below. |\n",
-    "| *reshape_indices* | *nadarray.shape* indices used to reshape the final feature array. Reference `FeatureShaper` in the [Low-Level API](api_low_level.html).  |\n",
-    "\n",
-    "> Both `exclude_columns` and `include_columns` cannot be used simultaneously.\n"
+    "| Argument | Type | Default | Description |\n",
+    "| --- | --- | --- | --- |\n",
+    "| *dataset* | type(Dataset) | N/A | See `Dataset` in the [Low-Level API](api_low_level.html). |\n",
+    "| *exclude_columns* | list[str] | None | The columns from the `Dataset` that will not be used. |\n",
+    "| *include_columns* | list[str] | None | The columns from the `Dataset` that will be used. |\n",
+    "| *interpolaters* | list[type(Input.Interpolater)] | None | Reference `Input.Interpolater` below. |\n",
+    "| *window* | type(Input.Window) | None | Reference `Input.Window` below. |\n",
+    "| *encoders* | list[type(Input.Encoder) ] | None | Reference `Input.Encoder` below. |\n",
+    "| *reshape_indices* | tuple(int/str/tuple(int/str)) | None | See `FeatureShaper` in the [Low-Level API](api_low_level.html).  |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Both `exclude_columns` and `include_columns` cannot be used simultaneously."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "|||\n",
+    "|---|---|\n",
+    "| **Returns** | `Input` instance |"
    ]
   },
   {
@@ -198,7 +212,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 1ai. Input.Interpolater"
+    "#### 1ai. `Input.Interpolater`"
    ]
   },
   {
@@ -214,11 +228,11 @@
    "source": [
     "```python\n",
     "Input.Interpolater(\n",
-    "    process_separately:bool   = True\n",
-    "    , verbose:bool            = False\n",
-    "    , interpolate_kwargs:dict = None\n",
-    "    , dtypes:list             = None\n",
-    "    , columns:list            = None\n",
+    "    process_separately\n",
+    "    , verbose\n",
+    "    , interpolate_kwargs\n",
+    "    , dtypes\n",
+    "    , columns\n",
     ")\n",
     "```"
    ]
@@ -227,7 +241,21 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 1aii. Input.Window"
+    "> Both `dtypes` and `columns` cannot be used simultaneously."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### 1aii. `Input.Window`"
    ]
   },
   {
@@ -242,7 +270,10 @@
    "metadata": {},
    "source": [
     "```\n",
-    "Input.Window(size_window:int, size_shift:int)\n",
+    "Input.Window(\n",
+    "    size_window\n",
+    "    , size_shift\n",
+    ")\n",
     "```"
    ]
   },
@@ -250,7 +281,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 1aiii. Input.Encoder"
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### 1aiii. `Input.Encoder`"
    ]
   },
   {
@@ -266,13 +304,20 @@
    "source": [
     "```python\n",
     "Input.Encoder(\n",
-    "    sklearn_preprocess:object\n",
-    "    , verbose:bool = False\n",
-    "    , include:bool = True\n",
-    "    , dtypes:list  = None\n",
-    "    , columns:list = None\n",
+    "    sklearn_preprocess\n",
+    "    , verbose\n",
+    "    , include\n",
+    "    , dtypes\n",
+    "    , columns\n",
     ")\n",
     "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Both `dtypes` and `columns` cannot be used simultaneously."
    ]
   },
   {
@@ -286,14 +331,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1b. Target"
+    "### 1b. `Target`"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "What the model is trying to predict. This is a wrapper for `Label` in the [Low-Level API](api_low_level.html)."
+    "What the model is trying to predict. This is a wrapper for `Label` and all of its preprocessors in the [Low-Level API](api_low_level.html)."
    ]
   },
   {
@@ -302,10 +347,10 @@
    "source": [
     "```python\n",
     "Target(\n",
-    "    dataset:object\n",
-    "    , column:str          = None\n",
-    "    , interpolater:object = None\n",
-    "    , encoder:object      = None\n",
+    "    dataset\n",
+    "    , column\n",
+    "    , interpolater\n",
+    "    , encoder\n",
     ")\n",
     "```"
    ]
@@ -314,12 +359,21 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Argument | Description |\n",
-    "| --- | --- |\n",
-    "| *dataset* | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
-    "| *column* | The column from the `Dataset` to use as the target. | \n",
-    "| *interpolater* | Reference `Target.Interpolater` below. |\n",
-    "| *encoder* | Reference `Target.Encoder` below. |"
+    "| Argument | Type | Default | Description |\n",
+    "| --- | --- | --- | --- |\n",
+    "| *dataset* | type(Dataset) | N/A | See `Dataset` in the [Low-Level API](api_low_level.html). |\n",
+    "| *column* | list[str] | None | The column from the `Dataset` to use as the target.  |\n",
+    "| *interpolater* | type(Target.Interpolater) | None | Reference `Target.Interpolater` below. |\n",
+    "| *encoder* | type(Target.Encoder) | None | Reference `Target.Encoder` below.  |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "|||\n",
+    "|---|---|\n",
+    "| **Returns** | `Target` instance |"
    ]
   },
   {
@@ -333,7 +387,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 1bi. Target.Interpolater"
+    "#### 1bi. `Target.Interpolater`"
    ]
   },
   {
@@ -349,32 +403,9 @@
    "source": [
     "```python\n",
     "Target.Interpolater(\n",
-    "    process_separately:bool=True\n",
-    "    , interpolate_kwargs:dict=None\n",
+    "    process_separately\n",
+    "    , interpolate_kwargs\n",
     ")\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### 1bii. Target.Encoder"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Used to numerically encode data. This is a wrapper for `LabelCoder` in the [Low-Level API](api_low_level.html). "
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "```python\n",
-    "Target.Encoder(sklearn_preprocess:object)\n",
     "```"
    ]
   },
@@ -389,7 +420,39 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1c. Stratifier"
+    "#### 1bii. `Target.Encoder`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Used to numerically encode data. This is a wrapper for `LabelCoder` in the [Low-Level API](api_low_level.html). "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```python\n",
+    "Target.Encoder(\n",
+    "    sklearn_preprocess\n",
+    ")\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1c. `Stratifier`"
    ]
   },
   {
@@ -405,10 +468,10 @@
    "source": [
     "```python\n",
     "Stratifier(\n",
-    "    size_test:float         = None\n",
-    "    , size_validation:float = None\n",
-    "    , fold_count:int        = None\n",
-    "    , bin_count:int         = None\n",
+    "    size_test\n",
+    "    , size_validation\n",
+    "    , fold_count\n",
+    "    , bin_count\n",
     ")\n",
     "```"
    ]
@@ -424,7 +487,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 2. Experiment"
+    "## 2. `Experiment`"
    ]
   },
   {
@@ -440,8 +503,8 @@
    "source": [
     "```python\n",
     "Experiment(\n",
-    "    architecture:object\n",
-    "    , trainer:object\n",
+    "    architecture\n",
+    "    , trainer\n",
     ")\n",
     "```"
    ]
@@ -450,19 +513,19 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Argument | Description |\n",
-    "| --- | --- |\n",
-    "| *architecture* | Reference `Architecture` below. |\n",
-    "| *trainer* | Reference `Trainer` below. |"
+    "| Argument | Type | Default | Description |\n",
+    "| --- | --- | --- | --- |\n",
+    "| *architecture* | type(Architecture) | N/A | See `Architecture` below.  |\n",
+    "| *trainer* | type | N/A | Reference `Trainer` below. |"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Returns |\n",
-    "| --- |\n",
-    "| A `Queue` object as seen in the [Low-Level API](api_low_level.html). | "
+    "|||\n",
+    "| --- | --- |\n",
+    "| **Returns** | `Queue` instance as seen in the [Low-Level API](api_low_level.html). |"
    ]
   },
   {
@@ -476,14 +539,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2a. Architecture"
+    "### 2a. `Architecture`"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The model and hyperparameters to be trained. This is a wrapper for `Algorithm` in the [Low-Level API](api_low_level.html)."
+    "The model and hyperparameters to be trained. This is a wrapper for `Algorithm` in the [Low-Level API](api_low_level.html), with the addition of `hyperparameters`."
    ]
   },
   {
@@ -492,14 +555,14 @@
    "source": [
     "```python\n",
     "Architecture(\n",
-    "    library:str\n",
-    "    , analysis_type:str\n",
-    "    , fn_build:object\n",
-    "    , fn_train:object\n",
-    "    , fn_optimize:object = None\n",
-    "    , fn_lose:object     = None\n",
-    "    , fn_predict:object  = None\n",
-    "    , hyperparameters:dict = None\n",
+    "    library\n",
+    "    , analysis_type\n",
+    "    , fn_build\n",
+    "    , fn_train\n",
+    "    , fn_optimize\n",
+    "    , fn_lose\n",
+    "    , fn_predict\n",
+    "    , hyperparameters\n",
     ")\n",
     "```"
    ]
@@ -515,14 +578,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2b. Trainer"
+    "### 2b. `Trainer`"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The options used for training. This is a wrapper for `Queue` in the [Low-Level API](api_low_level.html)."
+    "The options used for training. This is a wrapper for `Queue` in the [Low-Level API](api_low_level.html), with the addition of `pipeline`."
    ]
   },
   {
@@ -531,11 +594,11 @@
    "source": [
     "```python\n",
     "Trainer(\n",
-    "    pipeline_id:int\n",
-    "    , repeat_count:int     = 1\n",
-    "    , permute_count:int    = 3\n",
-    "    , search_count         = None\n",
-    "    , search_percent       = None\n",
+    "    pipeline\n",
+    "    , repeat_count\n",
+    "    , permute_count\n",
+    "    , search_count\n",
+    "    , search_percent\n",
     ")\n",
     "```"
    ]
@@ -551,7 +614,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 3. Inference"
+    "## 3. `Inference`"
    ]
   },
   {
@@ -567,9 +630,9 @@
    "source": [
     "```python\n",
     "Inference(\n",
-    "    predictor:object\n",
-    "    , feature_datasets:list\n",
-    "    , label_dataset:object = None\n",
+    "    predictor\n",
+    "    , input_datasets\n",
+    "    , label_dataset\n",
     ")\n",
     "```"
    ]
@@ -578,11 +641,11 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Argument | Description |\n",
-    "| --- | --- |\n",
-    "| *predictor* | Reference `Predictor` in the [Low-Level API](api_low_level.html). | \n",
-    "| *input_datasets* | Reference `Dataset` in the [Low-Level API](api_low_level.html). |\n",
-    "| *target_dataset* | Leave this blank for pure inference where no metrics will be calculared. Reference `Dataset` in the [Low-Level API](api_low_level.html). |"
+    "| Argument | Type | Default | Description |\n",
+    "| --- | --- | --- | --- |\n",
+    "| *predictor* | type(Predictor) |  | See [`Predictor`](api_low_level.html). |\n",
+    "| *input_datasets* | list[type(Dataset)] | None | New [`Datasets`](api_low_level.html) to run inference on. |\n",
+    "| *target_dataset* | type(Target) | None | New [`Datasets`](api_low_level.html) for scoring inference.  Leave this blank for pure inference where no metrics will be calculared.|"
    ]
   },
   {
@@ -596,17 +659,10 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Returns |\n",
-    "| --- |\n",
-    "| A `Prediction` object as seen in the [Low-Level API](api_low_level.html). | "
+    "|||\n",
+    "| --- | --- |\n",
+    "| **Returns** | `Prediction` instance as seen in the [Low-Level API](api_low_level.html).  |"
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {

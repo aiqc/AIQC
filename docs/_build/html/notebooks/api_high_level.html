@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_high_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="9217e088c0e94487b5107648fa68b594 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
+  <meta property="og:description" content="7faa4892e65d4c4d9718a0c6f7791907 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -124,27 +124,27 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">High-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Declarative">Declarative</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#1.-Pipeline">1. Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#1a.-Input">1a. Input</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#1ai.-Input.Interpolater">1ai. Input.Interpolater</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#1aii.-Input.Window">1aii. Input.Window</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#1aiii.-Input.Encoder">1aiii. Input.Encoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Pipeline">1. <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1a.-Input">1a. <code class="docutils literal notranslate"><span class="pre">Input</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1ai.-Input.Interpolater">1ai. <code class="docutils literal notranslate"><span class="pre">Input.Interpolater</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1aii.-Input.Window">1aii. <code class="docutils literal notranslate"><span class="pre">Input.Window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1aiii.-Input.Encoder">1aiii. <code class="docutils literal notranslate"><span class="pre">Input.Encoder</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#1b.-Target">1b. Target</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#1bi.-Target.Interpolater">1bi. Target.Interpolater</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#1bii.-Target.Encoder">1bii. Target.Encoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1b.-Target">1b. <code class="docutils literal notranslate"><span class="pre">Target</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1bi.-Target.Interpolater">1bi. <code class="docutils literal notranslate"><span class="pre">Target.Interpolater</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1bii.-Target.Encoder">1bii. <code class="docutils literal notranslate"><span class="pre">Target.Encoder</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#1c.-Stratifier">1c. Stratifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1c.-Stratifier">1c. <code class="docutils literal notranslate"><span class="pre">Stratifier</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#2.-Experiment">2. Experiment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#2a.-Architecture">2a. Architecture</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#2b.-Trainer">2b. Trainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Experiment">2. <code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#2a.-Architecture">2a. <code class="docutils literal notranslate"><span class="pre">Architecture</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2b.-Trainer">2b. <code class="docutils literal notranslate"><span class="pre">Trainer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#3.-Inference">3. Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Inference">3. <code class="docutils literal notranslate"><span class="pre">Inference</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
@@ -325,252 +325,6 @@
              
   
 <style>
-/* CSS for nbsphinx extension */
-
-/* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-}
-
-/* avoid gaps between output lines */
-div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-}
-
-/* input/output containers */
-div.nbinput.container,
-div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
-    width: 100%;
-}
-@media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-}
-
-/* input container */
-div.nbinput.container {
-    padding-top: 5px;
-}
-
-/* last container */
-div.nblast.container {
-    padding-bottom: 5px;
-}
-
-/* input prompt */
-div.nbinput.container div.prompt pre {
-    color: #307FC1;
-}
-
-/* output prompt */
-div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-}
-
-/* all prompts */
-div.nbinput.container div.prompt,
-div.nboutput.container div.prompt {
-    width: 4.5ex;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-}
-
-div.nbinput.container div.prompt > div,
-div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-}
-
-@media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-}
-
-/* disable scrollbars on prompts */
-div.nbinput.container div.prompt pre,
-div.nboutput.container div.prompt pre {
-    overflow: hidden;
-}
-
-/* input/output area */
-div.nbinput.container div.input_area,
-div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-}
-@media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-}
-
-/* input area */
-div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    /*background: #f5f5f5;*/
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.imgmath center alignment in output cells */
-div.nboutput.container div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-default-inverse-fg { color: #FFFFFF; }
-.ansi-default-inverse-bg { background-color: #000000; }
-
-.ansi-bold { font-weight: bold; }
-.ansi-underline { text-decoration: underline; }
-
-
-div.nbinput.container div.input_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight].math,
-div.nboutput.container div.output_area.rendered_html,
-div.nboutput.container div.output_area > div.output_javascript,
-div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-}
-
-/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-div.nbinput.container div.input_area > div[class^='highlight'],
-div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-}
-
-/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
-    display: none;
-}
-
-/* Some additional styling taken form the Jupyter notebook CSS */
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-div.rendered_html th {
-  font-weight: bold;
-}
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-
 /* CSS overrides for sphinx_rtd_theme */
 
 /* 24px margin */
@@ -595,238 +349,316 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="High-Level-API">
 <h1>High-Level API<a class="headerlink" href="#High-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="9217e088c0e94487b5107648fa68b594" class="banner-photo" src="../_images/pawns.png" /></p>
+<p><img alt="7faa4892e65d4c4d9718a0c6f7791907" class="banner-photo" src="../_images/pawns.png" /></p>
 <section id="Declarative">
 <h2>Declarative<a class="headerlink" href="#Declarative" title="Permalink to this headline"></a></h2>
 <p>The <em>High-Level API</em> is <em>declarative</em>. What does that mean? All you have to do is specify the <em>state</em> that you want the data in, and then the backend executes all of the tedious data wrangling needed to achieve that state. It’s like Terraform for machine learning.</p>
 <blockquote>
-<div><p>Under the hood, the High-Level API is actually weaving together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>. Practitioners can use the low-level interface themselves, but it’s a bit more cumbersome in that you need to string together object IDs.</p>
+<div><p>Under the hood, the High-Level API is actually weaving together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>. Practitioners can use the low-level interface themselves, but it’s more cumbersome in that you need to chain together object IDs.</p>
 </div></blockquote>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from aiqc.mlops import *
+</pre></div>
+</div>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> declares how to preprocess data.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Experiment</span></code> declares variations of models to train and evaluate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Inference</span></code> declares new samples to predict.</p></li>
 </ol>
 <p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> to the see the high level API in action for various types of data and analysis.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from aiqc.mlops import *
-</pre></div>
-</div>
 <hr class="docutils" />
 </section>
 <section id="1.-Pipeline">
-<h2>1. Pipeline<a class="headerlink" href="#1.-Pipeline" title="Permalink to this headline"></a></h2>
-<p>Declares how to prepare data. This workflow is used during:</p>
+<h2>1. <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code><a class="headerlink" href="#1.-Pipeline" title="Permalink to this headline"></a></h2>
+<p>Declares how to prepare data. The steps defined within the pipeline are used at multiple points in the machine learning lifecycle:</p>
 <ul class="simple">
 <li><p>Preprocessing of training and evaluation data.</p></li>
 <li><p>Caching of preprocessed training and evaluation data.</p></li>
 <li><p>Post-processing (e.g. decoding) during model evaluation.</p></li>
 <li><p>Inference: encoding and decoding new data.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Pipeline</span><span class="p">(</span>
-    <span class="n">inputs</span><span class="p">:</span><span class="nb">list</span>
-    <span class="p">,</span> <span class="n">target</span><span class="p">:</span><span class="nb">object</span>     <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">stratifier</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span>          <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">description</span><span class="p">:</span><span class="nb">str</span>   <span class="o">=</span> <span class="kc">None</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">inputs</span>
+    <span class="p">,</span> <span class="n">target</span>
+    <span class="p">,</span> <span class="n">stratifier</span>
+    <span class="p">,</span> <span class="n">name</span>
+    <span class="p">,</span> <span class="n">description</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><em>inputs</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input</span></code> below. Multiple inputs may be provided for heterogenous/ multi-modal analysis.</p></td>
+<td><p>list[type(<a class="reference external" href="#1a.-Input">Input</a>)]</p></td>
+<td><p>Required</p></td>
+<td><p>Multiple Inputs may be provided for heterogenous/ multi-modal analysis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>target</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Target</span></code> below. Left blank during unsupervised/ self-supervised analysis.</p></td>
+<td><p>type(<a class="reference external" href="#1b.-Target">Target</a>)</p></td>
+<td><p>None</p></td>
+<td><p>Leave blank during unsupervised/ self-supervised analysis.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>stratifier</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Stratifier</span></code> below. Left blank during inference.</p></td>
+<td><p>type(<a class="reference external" href="#1c.-Stratifier">Stratifier</a>)</p></td>
+<td><p>None</p></td>
+<td><p>Leave blank during inference.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>name</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
 <td><p>An auto-incrementing version will be assigned to <code class="docutils literal notranslate"><span class="pre">Pipelines</span></code> that share a name.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>description</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
 <td><p>Describes how this particular workflow is unique.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Returns</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>A <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> object as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 </tbody>
 </table>
 <blockquote>
 <div><p>It is possible for an <code class="docutils literal notranslate"><span class="pre">Input</span></code> and a <code class="docutils literal notranslate"><span class="pre">Target</span></code> to share a <code class="docutils literal notranslate"><span class="pre">dataset</span></code>. The <code class="docutils literal notranslate"><span class="pre">Input.include_columns</span></code> and <code class="docutils literal notranslate"><span class="pre">Input.exclude_columns</span></code> will automatically be adjusted to exclude <code class="docutils literal notranslate"><span class="pre">Target.column</span></code>.</p>
 </div></blockquote>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 87%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Returns</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Splitset</span></code> instance as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 <section id="1a.-Input">
-<h3>1a. Input<a class="headerlink" href="#1a.-Input" title="Permalink to this headline"></a></h3>
-<p>These are the features that our model will learn from. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Feature</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<h3>1a. <code class="docutils literal notranslate"><span class="pre">Input</span></code><a class="headerlink" href="#1a.-Input" title="Permalink to this headline"></a></h3>
+<p>These are the features that our model will learn from. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Feature</span></code> and all of its preprocessors in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">exclude_columns</span><span class="p">:</span><span class="nb">list</span>  <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">include_columns</span><span class="p">:</span><span class="nb">list</span>  <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">interpolaters</span><span class="p">:</span><span class="nb">list</span>    <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">window</span><span class="p">:</span><span class="nb">object</span>         <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">encoders</span><span class="p">:</span><span class="nb">list</span>         <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">reshape_indices</span><span class="p">:</span><span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">dataset</span>
+    <span class="p">,</span> <span class="n">exclude_columns</span>
+    <span class="p">,</span> <span class="n">include_columns</span>
+    <span class="p">,</span> <span class="n">interpolaters</span>
+    <span class="p">,</span> <span class="n">window</span>
+    <span class="p">,</span> <span class="n">encoders</span>
+    <span class="p">,</span> <span class="n">reshape_indices</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><em>dataset</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>type(Dataset)</p></td>
+<td><p>N/A</p></td>
+<td><p>See <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>exclude_columns</em></p></td>
+<td><p>list[str]</p></td>
+<td><p>None</p></td>
 <td><p>The columns from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> that will not be used.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>include_columns</em></p></td>
+<td><p>list[str]</p></td>
+<td><p>None</p></td>
 <td><p>The columns from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> that will be used.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>interpolaters</em></p></td>
+<td><p>list[type(Input.Interpolater)]</p></td>
+<td><p>None</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input.Interpolater</span></code> below.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>window</em></p></td>
+<td><p>type(Input.Window)</p></td>
+<td><p>None</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input.Window</span></code> below.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>encoders</em></p></td>
+<td><p>list[type(Input.Encoder) ]</p></td>
+<td><p>None</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input.Encoder</span></code> below.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>reshape_indices</em></p></td>
-<td><p><em>nadarray.shape</em> indices used to reshape the final feature array. Reference <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>tuple(int/str/tuple(int/str))</p></td>
+<td><p>None</p></td>
+<td><p>See <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 </tbody>
 </table>
 <blockquote>
 <div><p>Both <code class="docutils literal notranslate"><span class="pre">exclude_columns</span></code> and <code class="docutils literal notranslate"><span class="pre">include_columns</span></code> cannot be used simultaneously.</p>
 </div></blockquote>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 62%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Returns</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Input</span></code> instance</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 <section id="1ai.-Input.Interpolater">
-<h4>1ai. Input.Interpolater<a class="headerlink" href="#1ai.-Input.Interpolater" title="Permalink to this headline"></a></h4>
+<h4>1ai. <code class="docutils literal notranslate"><span class="pre">Input.Interpolater</span></code><a class="headerlink" href="#1ai.-Input.Interpolater" title="Permalink to this headline"></a></h4>
 <p>Used to fill in the blanks in a sequence. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="o">.</span><span class="n">Interpolater</span><span class="p">(</span>
-    <span class="n">process_separately</span><span class="p">:</span><span class="nb">bool</span>   <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">,</span> <span class="n">verbose</span><span class="p">:</span><span class="nb">bool</span>            <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">,</span> <span class="n">interpolate_kwargs</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">dtypes</span><span class="p">:</span><span class="nb">list</span>             <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">columns</span><span class="p">:</span><span class="nb">list</span>            <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">process_separately</span>
+    <span class="p">,</span> <span class="n">verbose</span>
+    <span class="p">,</span> <span class="n">interpolate_kwargs</span>
+    <span class="p">,</span> <span class="n">dtypes</span>
+    <span class="p">,</span> <span class="n">columns</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>Both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> cannot be used simultaneously.</p>
+</div></blockquote>
+<hr class="docutils" />
 </section>
 <section id="1aii.-Input.Window">
-<h4>1aii. Input.Window<a class="headerlink" href="#1aii.-Input.Window" title="Permalink to this headline"></a></h4>
+<h4>1aii. <code class="docutils literal notranslate"><span class="pre">Input.Window</span></code><a class="headerlink" href="#1aii.-Input.Window" title="Permalink to this headline"></a></h4>
 <p>Used to slice and shift samples into many time series windows for walk-forward/ backward analysis. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Window</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Input.Window(size_window:int, size_shift:int)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Input.Window(
+    size_window
+    , size_shift
+)
 </pre></div>
 </div>
+<hr class="docutils" />
 </section>
 <section id="1aiii.-Input.Encoder">
-<h4>1aiii. Input.Encoder<a class="headerlink" href="#1aiii.-Input.Encoder" title="Permalink to this headline"></a></h4>
+<h4>1aiii. <code class="docutils literal notranslate"><span class="pre">Input.Encoder</span></code><a class="headerlink" href="#1aiii.-Input.Encoder" title="Permalink to this headline"></a></h4>
 <p>Used to numerically encode data. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
-    <span class="n">sklearn_preprocess</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">verbose</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">,</span> <span class="n">include</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">,</span> <span class="n">dtypes</span><span class="p">:</span><span class="nb">list</span>  <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">columns</span><span class="p">:</span><span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sklearn_preprocess</span>
+    <span class="p">,</span> <span class="n">verbose</span>
+    <span class="p">,</span> <span class="n">include</span>
+    <span class="p">,</span> <span class="n">dtypes</span>
+    <span class="p">,</span> <span class="n">columns</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>Both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> cannot be used simultaneously.</p>
+</div></blockquote>
 <hr class="docutils" />
 </section>
 </section>
 <section id="1b.-Target">
-<h3>1b. Target<a class="headerlink" href="#1b.-Target" title="Permalink to this headline"></a></h3>
-<p>What the model is trying to predict. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Label</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<h3>1b. <code class="docutils literal notranslate"><span class="pre">Target</span></code><a class="headerlink" href="#1b.-Target" title="Permalink to this headline"></a></h3>
+<p>What the model is trying to predict. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Label</span></code> and all of its preprocessors in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">column</span><span class="p">:</span><span class="nb">str</span>          <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">interpolater</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">encoder</span><span class="p">:</span><span class="nb">object</span>      <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">dataset</span>
+    <span class="p">,</span> <span class="n">column</span>
+    <span class="p">,</span> <span class="n">interpolater</span>
+    <span class="p">,</span> <span class="n">encoder</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><em>dataset</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>type(Dataset)</p></td>
+<td><p>N/A</p></td>
+<td><p>See <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>column</em></p></td>
+<td><p>list[str]</p></td>
+<td><p>None</p></td>
 <td><p>The column from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> to use as the target.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>interpolater</em></p></td>
+<td><p>type(Target.Interpolater)</p></td>
+<td><p>None</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">Target.Interpolater</span></code> below.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>encoder</em></p></td>
+<td><p>type(Target.Encoder)</p></td>
+<td><p>None</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">Target.Encoder</span></code> below.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 63%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Returns</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Target</span></code> instance</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <section id="1bi.-Target.Interpolater">
-<h4>1bi. Target.Interpolater<a class="headerlink" href="#1bi.-Target.Interpolater" title="Permalink to this headline"></a></h4>
+<h4>1bi. <code class="docutils literal notranslate"><span class="pre">Target.Interpolater</span></code><a class="headerlink" href="#1bi.-Target.Interpolater" title="Permalink to this headline"></a></h4>
 <p>Used to fill in the blanks in a sequence. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="o">.</span><span class="n">Interpolater</span><span class="p">(</span>
-    <span class="n">process_separately</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">,</span> <span class="n">interpolate_kwargs</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">process_separately</span>
+    <span class="p">,</span> <span class="n">interpolate_kwargs</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<hr class="docutils" />
 </section>
 <section id="1bii.-Target.Encoder">
-<h4>1bii. Target.Encoder<a class="headerlink" href="#1bii.-Target.Encoder" title="Permalink to this headline"></a></h4>
+<h4>1bii. <code class="docutils literal notranslate"><span class="pre">Target.Encoder</span></code><a class="headerlink" href="#1bii.-Target.Encoder" title="Permalink to this headline"></a></h4>
 <p>Used to numerically encode data. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">sklearn_preprocess</span><span class="p">:</span><span class="nb">object</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
+    <span class="n">sklearn_preprocess</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
 </section>
 </section>
 <section id="1c.-Stratifier">
-<h3>1c. Stratifier<a class="headerlink" href="#1c.-Stratifier" title="Permalink to this headline"></a></h3>
+<h3>1c. <code class="docutils literal notranslate"><span class="pre">Stratifier</span></code><a class="headerlink" href="#1c.-Stratifier" title="Permalink to this headline"></a></h3>
 <p>Used to slice the dataset into training, validation, test, and/or cross-validated subsets. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Stratifier</span><span class="p">(</span>
-    <span class="n">size_test</span><span class="p">:</span><span class="nb">float</span>         <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">size_validation</span><span class="p">:</span><span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">fold_count</span><span class="p">:</span><span class="nb">int</span>        <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">bin_count</span><span class="p">:</span><span class="nb">int</span>         <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">size_test</span>
+    <span class="p">,</span> <span class="n">size_validation</span>
+    <span class="p">,</span> <span class="n">fold_count</span>
+    <span class="p">,</span> <span class="n">bin_count</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -834,73 +666,79 @@ div.rendered_html tbody tr:hover {
 </section>
 </section>
 <section id="2.-Experiment">
-<h2>2. Experiment<a class="headerlink" href="#2.-Experiment" title="Permalink to this headline"></a></h2>
+<h2>2. <code class="docutils literal notranslate"><span class="pre">Experiment</span></code><a class="headerlink" href="#2.-Experiment" title="Permalink to this headline"></a></h2>
 <p>Used to declare variations of models that will be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Experiment</span><span class="p">(</span>
-    <span class="n">architecture</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">trainer</span><span class="p">:</span><span class="nb">object</span>
+    <span class="n">architecture</span>
+    <span class="p">,</span> <span class="n">trainer</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
+<col style="width: 21%" />
+<col style="width: 27%" />
+<col style="width: 10%" />
+<col style="width: 42%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><em>architecture</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Architecture</span></code> below.</p></td>
+<td><p>type(Architecture)</p></td>
+<td><p>N/A</p></td>
+<td><p>See <code class="docutils literal notranslate"><span class="pre">Architecture</span></code> below.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>trainer</em></p></td>
+<td><p>type</p></td>
+<td><p>N/A</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> below.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 100%" />
+<col style="width: 13%" />
+<col style="width: 87%" />
 </colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Returns</p></th>
-</tr>
-</thead>
 <tbody>
-<tr class="row-even"><td><p>A <code class="docutils literal notranslate"><span class="pre">Queue</span></code> object as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<tr class="row-odd"><td><p><strong>Returns</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Queue</span></code> instance as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <section id="2a.-Architecture">
-<h3>2a. Architecture<a class="headerlink" href="#2a.-Architecture" title="Permalink to this headline"></a></h3>
-<p>The model and hyperparameters to be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<h3>2a. <code class="docutils literal notranslate"><span class="pre">Architecture</span></code><a class="headerlink" href="#2a.-Architecture" title="Permalink to this headline"></a></h3>
+<p>The model and hyperparameters to be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>, with the addition of <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Architecture</span><span class="p">(</span>
-    <span class="n">library</span><span class="p">:</span><span class="nb">str</span>
-    <span class="p">,</span> <span class="n">analysis_type</span><span class="p">:</span><span class="nb">str</span>
-    <span class="p">,</span> <span class="n">fn_build</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">fn_train</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">fn_lose</span><span class="p">:</span><span class="nb">object</span>     <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">fn_predict</span><span class="p">:</span><span class="nb">object</span>  <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">library</span>
+    <span class="p">,</span> <span class="n">analysis_type</span>
+    <span class="p">,</span> <span class="n">fn_build</span>
+    <span class="p">,</span> <span class="n">fn_train</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span>
+    <span class="p">,</span> <span class="n">fn_lose</span>
+    <span class="p">,</span> <span class="n">fn_predict</span>
+    <span class="p">,</span> <span class="n">hyperparameters</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
 </section>
 <section id="2b.-Trainer">
-<h3>2b. Trainer<a class="headerlink" href="#2b.-Trainer" title="Permalink to this headline"></a></h3>
-<p>The options used for training. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<h3>2b. <code class="docutils literal notranslate"><span class="pre">Trainer</span></code><a class="headerlink" href="#2b.-Trainer" title="Permalink to this headline"></a></h3>
+<p>The options used for training. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>, with the addition of <code class="docutils literal notranslate"><span class="pre">pipeline</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Trainer</span><span class="p">(</span>
-    <span class="n">pipeline_id</span><span class="p">:</span><span class="nb">int</span>
-    <span class="p">,</span> <span class="n">repeat_count</span><span class="p">:</span><span class="nb">int</span>     <span class="o">=</span> <span class="mi">1</span>
-    <span class="p">,</span> <span class="n">permute_count</span><span class="p">:</span><span class="nb">int</span>    <span class="o">=</span> <span class="mi">3</span>
-    <span class="p">,</span> <span class="n">search_count</span>         <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">search_percent</span>       <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pipeline</span>
+    <span class="p">,</span> <span class="n">repeat_count</span>
+    <span class="p">,</span> <span class="n">permute_count</span>
+    <span class="p">,</span> <span class="n">search_count</span>
+    <span class="p">,</span> <span class="n">search_percent</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -908,34 +746,45 @@ div.rendered_html tbody tr:hover {
 </section>
 </section>
 <section id="3.-Inference">
-<h2>3. Inference<a class="headerlink" href="#3.-Inference" title="Permalink to this headline"></a></h2>
+<h2>3. <code class="docutils literal notranslate"><span class="pre">Inference</span></code><a class="headerlink" href="#3.-Inference" title="Permalink to this headline"></a></h2>
 <p>Used to preprocess new samples, run predictions on them, decode the output, and, optionally, evaluate the predictions.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Inference</span><span class="p">(</span>
-    <span class="n">predictor</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">feature_datasets</span><span class="p">:</span><span class="nb">list</span>
-    <span class="p">,</span> <span class="n">label_dataset</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">predictor</span>
+    <span class="p">,</span> <span class="n">input_datasets</span>
+    <span class="p">,</span> <span class="n">label_dataset</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><em>predictor</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>type(Predictor)</p></td>
+<td></td>
+<td><p>See <code class="docutils literal notranslate"><span class="pre">`Predictor</span></code> &lt;api_low_level.html&gt;`__.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>input_datasets</em></p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>list[type(Dataset)]</p></td>
+<td><p>None</p></td>
+<td><p>New <code class="docutils literal notranslate"><span class="pre">`Datasets</span></code> &lt;api_low_level.html&gt;`__ to run inference on.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>target_dataset</em></p></td>
-<td><p>Leave this blank for pure inference where no metrics will be calculared. Reference <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>type(Target)</p></td>
+<td><p>None</p></td>
+<td><p>New <code class="docutils literal notranslate"><span class="pre">`Datasets</span></code> &lt;api_low_level.html&gt;`__ for scoring inference. Leave this blank for pure inference where no metrics will
+be calculared.</p></td>
 </tr>
 </tbody>
 </table>
@@ -944,26 +793,15 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 100%" />
+<col style="width: 12%" />
+<col style="width: 88%" />
 </colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Returns</p></th>
-</tr>
-</thead>
 <tbody>
-<tr class="row-even"><td><p>A <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> object as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<tr class="row-odd"><td><p><strong>Returns</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Prediction</span></code> instance as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 </tbody>
 </table>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 

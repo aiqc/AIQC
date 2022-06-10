@@ -264,16 +264,18 @@ h1, h2, h3, h5 {
 }
 
 /* 
-    This makes the tds wrap instead of overflow
+    This makes markdown tables wrap instead of overflow
     however, it 
  */
 .wy-table-responsive table td,
 .wy-table-responsive table th {
   white-space: normal !important;
 }
-
+/* 
+    override equal widths of markdown tables 
+    https://stackoverflow.com/a/72577950/5739514
+*/
 .docutils.align-default colgroup col {
-    /* override equal widths of markdown tables */
     width: auto !important;
 }
 
