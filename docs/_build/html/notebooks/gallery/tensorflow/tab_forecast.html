@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/tensorflow/tab_forecast.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Climate Forecasting Using a 2D Time Series of Multi-Variate Features Over Shifting Windows. 4a46d925ad0e487397b9ceda20a3b851 Highly dimensional forecasting is another holy grail of deep learning. T..." />
+  <meta property="og:description" content="Climate Forecasting Using a 2D Time Series of Multi-Variate Features Over Shifting Windows. 48068fea866f4cd89d89275588864f67 Highly dimensional forecasting is another holy grail of deep learning. T..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -594,7 +594,7 @@ div.rendered_html tbody tr:hover {
 <section id="TensorFlow:-Tabular-Forecasting">
 <h1>TensorFlow: Tabular Forecasting<a class="headerlink" href="#TensorFlow:-Tabular-Forecasting" title="Permalink to this headline"></a></h1>
 <p><em>Climate Forecasting Using a 2D Time Series of Multi-Variate Features Over Shifting Windows.</em></p>
-<p><img alt="4a46d925ad0e487397b9ceda20a3b851" class="banner-photo" src="../../../_images/temps.png" /></p>
+<p><img alt="48068fea866f4cd89d89275588864f67" class="banner-photo" src="../../../_images/temps.png" /></p>
 <p>Highly dimensional forecasting is another holy grail of deep learning. This process encodes information about the state of the future as a function of the states of the past. Here the learnable parameters of a neural network effectively serve as coefficients in an ‘infinitely’ long polynomial equation for predicting the future.</p>
 <p>Most tutorials in this space focus on the stock market. To be fair, the NYSE provides a reliable source of uniformly distributed, time-stamped data. However, in this example we’ll examine the climate of Delhi in order to predict both it’s temperature and humidity in the future.</p>
 <p>To do this, we’ll use a sliding <code class="docutils literal notranslate"><span class="pre">aiqc.Window</span></code> wherein the past 25 days of data is used to predict the next 5 days of data. We’ll study each 25 day interval (e.g. [0…24]) in the dataset and shift it forward by 5 days (e.g. [5…29]) to learn about the transformation it undergoes.</p>
