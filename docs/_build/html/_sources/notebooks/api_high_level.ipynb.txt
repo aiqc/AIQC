@@ -109,9 +109,9 @@
    "source": [
     "| Argument | Type | Default | Description |\n",
     "| --- | --- | --- | --- |\n",
-    "| *inputs* | list[type([Input](#1a.-Input))]| Required | Multiple Inputs may be provided for heterogenous/ multi-modal analysis. |\n",
-    "| *target* | type([Target](#1b.-Target)) | None | Leave blank during unsupervised/ self-supervised analysis. |\n",
-    "| *stratifier* | type([Stratifier](#1c.-Stratifier)) | None | Leave blank during inference. |\n",
+    "| *inputs* | list[type(Input)]| Required | [Input](#1a.-Input) -- Multiple Inputs may be provided for heterogenous/ multi-modal analysis. |\n",
+    "| *target* | type(Target) | None | [Target](#1b.-Target) -- Leave blank during unsupervised/ self-supervised analysis. |\n",
+    "| *stratifier* | type(Stratifier) | None | [Stratifier](#1c.-Stratifier) -- Leave blank during inference. |\n",
     "| *name* | str | None | An auto-incrementing version will be assigned to `Pipelines` that share a name.  |\n",
     "| *description* | str | None | Describes how this particular workflow is unique. |"
    ]
