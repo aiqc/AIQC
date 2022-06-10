@@ -5,10 +5,10 @@ Gallery
 ..
   Putting a comment here so parser doesn't complain about 'page starting with a transition'
 
-----
 
 .. raw:: html
- 
+  
+  <hr/>
   <div class="flex-container">
     <div class="flex-item shadowBox gallery-item">
       <div class="flex-left">

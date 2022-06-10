@@ -11,7 +11,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "![pawns](../_static/images/banner/pawns.png)"
+    "<img src=\"../_static/images/banner/pawns.png\" class=\"banner-photo\"/>"
    ]
   },
   {
@@ -120,16 +120,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "> It is possible for an `Input` and a `Target` to share a `dataset`. The `Input.include_columns` and `Input.exclude_columns` will automatically be adjusted to exclude `Target.column`."
+    "| Returns |\n",
+    "| --- |\n",
+    "| A `Splitset` object as seen in the [Low-Level API](api_low_level.html). | "
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Returns |\n",
-    "| --- |\n",
-    "| A `Splitset` object as seen in the [Low-Level API](api_low_level.html). | "
+    "> It is possible for an `Input` and a `Target` to share a `dataset`. The `Input.include_columns` and `Input.exclude_columns` will automatically be adjusted to exclude `Target.column`."
    ]
   },
   {
@@ -185,6 +185,13 @@
     "| *reshape_indices* | *nadarray.shape* indices used to reshape the final feature array. Reference `FeatureShaper` in the [Low-Level API](api_low_level.html).  |\n",
     "\n",
     "> Both `exclude_columns` and `include_columns` cannot be used simultaneously.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
    ]
   },
   {
@@ -319,6 +326,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "#### 1bi. Target.Interpolater"
    ]
   },
@@ -359,7 +373,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "```\n",
+    "```python\n",
     "Target.Encoder(sklearn_preprocess:object)\n",
     "```"
    ]
@@ -455,6 +469,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "### 2a. Architecture"
    ]
   },
@@ -481,6 +502,13 @@
     "    , hyperparameters:dict = None\n",
     ")\n",
     "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
    ]
   },
   {
@@ -541,7 +569,7 @@
     "Inference(\n",
     "    predictor:object\n",
     "    , feature_datasets:list\n",
-    "    , label_dataset:object=None\n",
+    "    , label_dataset:object = None\n",
     ")\n",
     "```"
    ]
@@ -572,6 +600,13 @@
     "| --- |\n",
     "| A `Prediction` object as seen in the [Low-Level API](api_low_level.html). | "
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {

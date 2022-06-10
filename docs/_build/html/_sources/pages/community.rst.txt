@@ -137,40 +137,39 @@ Guild bylaws (aka governance)
 
 `Based on advice from our friends at Django and Jupyter: <https://www.djangoproject.com/weblog/2020/mar/12/governance/>`__
 
-  - "Governance in the early days was largely about reviewing PRs and asking ourselves, *'Should we do this?'*"
-  - "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
-  - “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
+- "Governance in the early days was largely about reviewing PRs and asking ourselves, *'Should we do this?'*"
+- "This is an unfortunate need, but you should have as part of it how someone can be removed from their role, voluntarily or otherwise."
+- “In smaller projects, the leadership handles the quality of what’s brought into the project’s technical assets and shepherds the people.”
 
 The vernacular is modeled after a D&D-like guild in order to make governance less dry.
 
 *Band of Squires [aka Public Participants]*:
 
-  - Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a *sprint*.
-  - All are welcome. Get in touch and we will help design a *sprint* for you.
-  - PRs must be reviewed by a council member before a merger.
-  - All participants are subject to the *Code of Conduct*.
-  - 
+- Anyone that participates in community chat/ discussion board or submits a PR, but has not yet completed a *sprint*.
+- All are welcome. Get in touch and we will help design a *sprint* for you.
+- PRs must be reviewed by a council member before a merger.
+- All participants are subject to the *Code of Conduct*.
 
 *Fellowship of Archmages [aka Core Team]*:
 
-  - Anyone who has completed 2 *sprints* (level I, II, III, IV).
-  - Participates in the biweekly team meetings.
-  - Helps administer the Slack community and discussion board.
-  - PRs must still be reviewed by a council member before a merger.
-  - If it becomes absolutely necessary, the team can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strike depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
-  - The team can force any proposal submitted to the discussion board up to the council with a 2/3 vote (assuming there are at least 3 people on the team). However, rational discourse is preferred to forced votes.
+- Anyone who has completed 2 *sprints* (level I, II, III, IV).
+- Participates in the biweekly team meetings.
+- Helps administer the Slack community and discussion board.
+- PRs must still be reviewed by a council member before a merger.
+- If it becomes absolutely necessary, the team can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strike depending on severity) or technical malpractice (1 strike). The penalty may be either temporary or permanent depending on the severity.
+- The team can force any proposal submitted to the discussion board up to the council with a 2/3 vote (assuming there are at least 3 people on the team). However, rational discourse is preferred to forced votes.
 
 *Council of Warlocks [aka Steering Committee]*:
 
-  - Anyone who has completed 5+ *sprints* (level V+). With at least 2 sprints being related to core deep learning functionality.
-  - Ability to approve PRs.
-  - Ability to release software (e.g. PyPI).
-  - Design sprints for new members.
-  - Inclusion in the license copyright.
-  - The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
-  - The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.
-  - If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strikes depending on severity), intentional malpractice (1 strike), technical incompetence (3 strikes). The penalty may be either temporary or permanent depending on the severity.
-  - Changes to either the *Governance*, *Code of Conduct*, or *License* require a proposal to the discussion board.
+- Anyone who has completed 5+ *sprints* (level V+). With at least 2 sprints being related to core deep learning functionality.
+- Ability to approve PRs.
+- Ability to release software (e.g. PyPI).
+- Design sprints for new members.
+- Inclusion in the license copyright.
+- The council can vote on proposals submitted to the discussion board regarding the technical direction/ architecture of the project. Decisions will be made by a 2/3 majority, using U.S. Senate as a precedent.
+- The Grand Warlock [aka Project Creator] reserves the right to a tie-breaking vote. They can also veto a majority vote on a given proposal, and the proposal cannot be brought up again until 6 months have passed. After which, if the same proposal succeeds a vote a second time, then they cannot veto it.
+- If it becomes absolutely necessary, the council can submit a proposal to remove/demote a team member for either repeated breach of *Code of Conduct* (2 strikes depending on severity), intentional malpractice (1 strike), technical incompetence (3 strikes). The penalty may be either temporary or permanent depending on the severity.
+- Changes to either the *Governance*, *Code of Conduct*, or *License* require a proposal to the discussion board.
 
 ----
 

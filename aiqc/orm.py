@@ -4596,12 +4596,12 @@ class Prediction(BaseModel):
 	  input: e.g. columns may need autocreation, and who knows what connectors we'll have 
 	  in the future. This forces us to  validate dtypes and columns after the fact.
 	"""
-	predictions = PickleField()
+	predictions        = PickleField()
 	feature_importance = JSONField(null=True)#['feature_id']['feature_column']{'median':float,'loss_impacts':list}
-	probabilities = PickleField(null=True) # Not used for regression.
-	metrics = PickleField(null=True) #Not used for inference
-	metrics_aggregate = PickleField(null=True) #Not used for inference.
-	plot_data = PickleField(null=True) # No regression-specific plots yet.
+	probabilities      = PickleField(null=True) # Not used for regression.
+	metrics            = PickleField(null=True) #Not used for inference
+	metrics_aggregate  = PickleField(null=True) #Not used for inference.
+	plot_data          = PickleField(null=True) # No regression-specific plots yet.
 
 	predictor = ForeignKeyField(Predictor, backref='predictions')
 

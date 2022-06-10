@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/visualization.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="plots Overview: As described in the Low-Level Docs, every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_type determines which metrics ..." />
+  <meta property="og:description" content="cf2a9a40523643a089254928a1591c1f Overview: As described in the Low-Level Docs, every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_typ..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -263,6 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#Overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#Remote-Data">Remote Data</a></li>
@@ -594,25 +595,25 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Visualization-&amp;-Metrics">
 <h1>Visualization &amp; Metrics<a class="headerlink" href="#Visualization-&-Metrics" title="Permalink to this headline"></a></h1>
-<img alt="plots" src="../_images/plots.png" />
+<p><img alt="cf2a9a40523643a089254928a1591c1f" class="banner-photo" src="../_images/plots.png" /></p>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
 <p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
 <ul class="simple">
-<li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, they go about producing these artifacts differently. For example, ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots. Note that unsupervised/ self-supervised models are also considered a regression.</p></li>
+<li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, although they go about producing these artifacts differently: e.g. ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots in AIQC yet. Note that unsupervised/ self-supervised models are also considered a regression.</p></li>
 </ul>
 <p>In order to accomodate the <a class="reference external" href="dashboard.html">dashboards</a>, the following arguments were added:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> - When <code class="docutils literal notranslate"><span class="pre">True</span></code>, it performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of plots.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> when <code class="docutils literal notranslate"><span class="pre">True</span></code>, performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of figs.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p></li>
 </ul>
+<hr class="docutils" />
 </section>
 <section id="Prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for interactive charts (hover, toggle, zoom). Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> section for information about configuring Plotly. However, static images are used in this notebook due to lack of support for 3rd party JS in the documentation portal.</p>
-<hr class="docutils" />
 <p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly generate a couple examples.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:

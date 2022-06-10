@@ -263,6 +263,61 @@ h1, h2, h3, h5 {
     display: none !important;
 }
 
+/* 
+    This makes the tds wrap instead of overflow
+    however, it 
+ */
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+  white-space: normal !important;
+}
+
+/* changes code cell color */
+.rst-content code.literal, .rst-content tt.literal {
+    color: #1a795f;
+    white-space: normal;
+}
+
+.rst-content blockquote {
+    color:                     #717171;
+    border-left:               6px lightgray solid;
+    padding-left:              15px;
+    border-top-left-radius:    5px;
+    border-bottom-left-radius: 6px;
+    margin:                    30px 0px 30px 45px;
+}
+
+/* raw cells */
+.rst-content div[class^="highlight"], .rst-content pre.literal-block {
+    border-radius:10px;
+    margin: 30px 0px 30px 45px;
+}
+
+/* code cells */
+div.nbinput.container div.input_area {
+    border-radius:10px !important;
+}
+.nbinput.docutils.container {
+    /* can't get margin-right to do anything*/
+    margin: 30px 100px 30px 10px;
+}
+.nboutput.nblast.docutils.container {
+    /* can't get margin-right to do anything*/
+    margin: 30px 100px 30px 10px;
+}
+
+hr.docutils {
+    margin: 60px 10px;
+}
+
+div.wy-table-responsive {
+    margin: 30px 0px 30px 45px;
+}
+
+.banner-photo {
+    margin-bottom: 30px;
+}
+
 
 /* ^ shadowBox class also applies to these items */
 .flex-container {

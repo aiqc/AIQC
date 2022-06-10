@@ -21,7 +21,7 @@
    "id": "adequate-personal",
    "metadata": {},
    "source": [
-    "![liberty](../../../_static/images/banner/moons.png)"
+    "<img src=\"../../../_static/images/banner/moons.png\" class=\"banner-photo\"/>"
    ]
   },
   {

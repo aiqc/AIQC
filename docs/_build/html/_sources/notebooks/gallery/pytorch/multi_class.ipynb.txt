@@ -25,7 +25,7 @@
    "id": "hearing-ministry",
    "metadata": {},
    "source": [
-    "![farming](../../../_static/images/banner/plants.png)"
+    "<img src=\"../../../_static/images/banner/plants.png\" class=\"banner-photo\"/>"
    ]
   },
   {
