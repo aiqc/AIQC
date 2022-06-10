@@ -272,6 +272,11 @@ h1, h2, h3, h5 {
   white-space: normal !important;
 }
 
+.docutils.align-default colgroup col {
+    /* override equal widths of markdown tables */
+    width: auto !important;
+}
+
 /* changes code cell color */
 .rst-content code.literal, .rst-content tt.literal {
     color: #1a795f;

@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="17708223744d418f9e13d711839da32f Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the API maps to a table in a SQLite database. The..." />
+  <meta property="og:description" content="bf47b37707b24cc09811b44649c2b35c Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the API maps to a table in a SQLite database. The..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -595,7 +595,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="17708223744d418f9e13d711839da32f" class="banner-photo" src="../_images/pipes.png" /></p>
+<p><img alt="bf47b37707b24cc09811b44649c2b35c" class="banner-photo" src="../_images/pipes.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an object-relational model for machine learning. Each class in the API maps to a table in a SQLite database. These objects serve as the building blocks that are stacked into AIQC workflows. However, the real power lies in the the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>). These relationships allow us to weave together rule-base protocols that are <em>data-aware</em> and
@@ -625,15 +625,29 @@ div.rendered_html tbody tr:hover {
 <h3>Object Relational Model (ORM)<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
 <img alt="Datasets" src="../_images/dimensions.png" />
 <p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different types of data. During each stage of both the preprocessing and postprocessing pipelines, these types need to be handled differently. For example, <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> cannot act as a supervised <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
-<table class="docutils"><thead><tr><th><p>Subclass</p>
-</th><th><p>Dimensionality</p>
-</th></tr></thead><tbody><tr><td><p>Tabular</p>
-</td><td><p>2D</p>
-</td></tr><tr><td><p>Sequence</p>
-</td><td><p>3D</p>
-</td></tr><tr><td><p>Image</p>
-</td><td><p>4D</p>
-</td></tr></tbody></table><hr class="docutils" />
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 64%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Subclass</p></th>
+<th class="head"><p>Dimensionality</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Tabular</p></td>
+<td><p>2D</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sequence</p></td>
+<td><p>3D</p></td>
+</tr>
+<tr class="row-even"><td><p>Image</p></td>
+<td><p>4D</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
 </section>
 <section id="a)-Registering-Datasets">
 <h3>a) Registering Datasets<a class="headerlink" href="#a)-Registering-Datasets" title="Permalink to this headline"></a></h3>
