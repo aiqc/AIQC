@@ -332,7 +332,6 @@ class Dataset(BaseModel):
 
 		def from_path(
 			file_path:str
-			, file_format:str
 			, name:str = None
 			, description:str = None
 			, dtype:object = None
@@ -342,12 +341,22 @@ class Dataset(BaseModel):
 		):
 			column_names = listify(column_names)
 
-			accepted_formats = ['csv', 'tsv', 'parquet']
-			if (file_format not in accepted_formats):
-				raise Exception(f"\nYikes - Available file formats include csv, tsv, and parquet.\nYour file format: {file_format}\n")
+			# In case we want buffer support
+			if isinstance(file_path, str):
+				file_path = file_path.lower()
+				if file_path.endswith('.tsv'):
+					file_format = 'tsv'
+				elif file_path.endswith('.csv'):
+					file_format = 'csv'
+				elif (file_path.endswith('.parquet') or str.endswith('.pq')):
+					file_format = 'parquet'
+				else:
+					msg = "\nYikes - `file_path.lower()` ended with neither '.tsv', '.csv', '.parquet', nor '.pq':\n{file_path}\n"
+					raise Exception(msg)
 
 			if (not path.exists(file_path)):
-				raise Exception(f"\nYikes - The path you provided does not exist according to `path.exists(file_path)`:\n{file_path}\n")
+				msg = f"\nYikes - The file_path you provided does not exist according to `path.exists(file_path)`:\n{file_path}\n"
+				raise Exception(msg)
 
 			if (not path.isfile(file_path)):
 				raise Exception(dedent(
@@ -457,44 +466,6 @@ class Dataset(BaseModel):
 			except:
 				dataset.delete_instance() # Orphaned.
 				raise 
-			return dataset
-		
-
-		def parse_data(
-			df_arr_path:object, dtype:object=None, name:str=None, description:str=None, column_names:list=None
-		):
-			"""Determine how `df_arr_path` should be handled by the low-level API"""
-			d = df_arr_path
-			data_type = str(type(d))
-			if (data_type == "<class 'pandas.core.frame.DataFrame'>"):
-				dataset = Dataset.Tabular.from_pandas(
-					dataframe=d, dtype=dtype, name=name, description=description
-				)
-			elif (data_type == "<class 'numpy.ndarray'>"):
-				dataset = Dataset.Tabular.from_numpy(
-					ndarray=d, dtype=dtype, name=name, description=description, column_names=column_names
-				)
-			elif (data_type == "<class 'str'>"):
-				if ('.csv' in d):
-					file_format='csv'
-				elif ('.tsv' in d):
-					file_format='tsv'
-				elif ('.parquet' in d):
-					file_format='parquet'
-				else:
-					raise Exception(dedent("""
-					Yikes - None of the following file extensions were found in the path you provided:
-					'.csv', '.tsv', '.parquet'
-					"""))
-				dataset = Dataset.Tabular.from_path(
-					file_path = d
-					, file_format = file_format
-					, dtype = dtype
-					, name=name
-					, description=description
-				)
-			else:
-				raise Exception("\nYikes - The `dataFrame_or_filePath` is neither a string nor a Pandas dataframe.\n")
 			return dataset
 
 
@@ -1048,6 +1019,7 @@ class File(BaseModel):
 		, ingest:bool = True
 	):
 		column_names = listify(column_names)
+		
 		df = path_to_df(
 			file_path = file_path
 			, file_format = file_format

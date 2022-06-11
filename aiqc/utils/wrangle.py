@@ -239,9 +239,8 @@ def path_to_df(
 		raise Exception(f"\nYikes - The path you provided is not a file according to `path.isfile(path)`:\n{file_path}\n")
 
 	if (file_format == 'tsv') or (file_format == 'csv'):
-		if (file_format == 'tsv') or (file_format is None):
+		if (file_format == 'tsv'):
 			sep='\t'
-			file_format = 'tsv' # Null condition.
 		elif (file_format == 'csv'):
 			sep=','
 

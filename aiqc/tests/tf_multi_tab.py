@@ -62,7 +62,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	
 	shared_dataset = Dataset.Tabular.from_path(
 		file_path = file_path
-		, file_format = 'tsv'
 		, dtype = None
 	)
 
