@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_high_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="598581013bed439e9d25769167a85937 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
+  <meta property="og:description" content="50c6df60c5de444da16ac184ebbf0376 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -349,14 +349,12 @@
 </style>
 <section id="High-Level-API">
 <h1>High-Level API<a class="headerlink" href="#High-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="598581013bed439e9d25769167a85937" class="banner-photo" src="../_images/pawns.png" /></p>
+<p><img alt="50c6df60c5de444da16ac184ebbf0376" class="banner-photo" src="../_images/pawns.png" /></p>
 <section id="Declarative">
 <h2>Declarative<a class="headerlink" href="#Declarative" title="Permalink to this headline"></a></h2>
 <p>The <em>High-Level API</em> is <em>declarative</em>. What does that mean? All you have to do is specify the <em>state</em> that you want the data in, and then the backend executes all of the tedious data wrangling needed to achieve that state. It’s like Terraform for machine learning.</p>
-<blockquote>
-<div><p>Under the hood, the High-Level API is actually weaving together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>. Practitioners can use the low-level interface themselves, but it’s more cumbersome in that you need to chain together object IDs.</p>
-</div></blockquote>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from aiqc.mlops import *
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from aiqc.orm import Dataset
+from aiqc.mlops import *
 </pre></div>
 </div>
 <ol class="arabic simple">
@@ -365,6 +363,9 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Inference</span></code> declares new samples to predict.</p></li>
 </ol>
 <p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> to the see the high level API in action for various types of data and analysis.</p>
+<blockquote>
+<div><p>Under the hood, the High-Level API is actually chaining together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+</div></blockquote>
 <hr class="docutils" />
 </section>
 <section id="1.-Pipeline">
@@ -376,7 +377,7 @@
 <li><p>Post-processing (e.g. decoding) during model evaluation.</p></li>
 <li><p>Inference: encoding and decoding new data.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Pipeline</span><span class="p">(</span>
     <span class="n">inputs</span>
     <span class="p">,</span> <span class="n">target</span>
     <span class="p">,</span> <span class="n">stratifier</span>
@@ -403,17 +404,17 @@
 <tr class="row-even"><td><p><em>inputs</em></p></td>
 <td><p>list[type(Input)]</p></td>
 <td><p>Required</p></td>
-<td><p><a class="reference external" href="#1a.-Input">Input</a> – Multiple Inputs may be provided for heterogenous/ multi-modal analysis.</p></td>
+<td><p><a class="reference external" href="#1a.-Input">Input</a> - Multiple Inputs may be provided for heterogenous/ multi-modal analysis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>target</em></p></td>
 <td><p>type(Target)</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1b.-Target">Target</a> – Leave blank during unsupervised/ self-supervised analysis.</p></td>
+<td><p><a class="reference external" href="#1b.-Target">Target</a> - Leave blank during unsupervised/ self-supervised analysis.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>stratifier</em></p></td>
 <td><p>type(Stratifier)</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1c.-Stratifier">Stratifier</a> – Leave blank during inference.</p></td>
+<td><p><a class="reference external" href="#1c.-Stratifier">Stratifier</a> - Leave blank during inference.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>name</em></p></td>
 <td><p>str</p></td>
@@ -432,12 +433,12 @@
 </div></blockquote>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 13%" />
-<col style="width: 87%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Returns</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Splitset</span></code> instance as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p><a class="reference external" href="api_low_level.html">Splitset</a> instance, which will be passed to <a class="reference external" href="#2b.-Trainer">Trainer</a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -473,7 +474,7 @@
 <tbody>
 <tr class="row-even"><td><p><em>dataset</em></p></td>
 <td><p>type(Dataset)</p></td>
-<td><p>N/A</p></td>
+<td><p>Required</p></td>
 <td><p>See <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>exclude_columns</em></p></td>
@@ -597,7 +598,7 @@
 <tbody>
 <tr class="row-even"><td><p><em>dataset</em></p></td>
 <td><p>type(Dataset)</p></td>
-<td><p>N/A</p></td>
+<td><p>Required</p></td>
 <td><p>See <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>column</em></p></td>
@@ -772,12 +773,12 @@
 <tbody>
 <tr class="row-even"><td><p><em>predictor</em></p></td>
 <td><p>type(Predictor)</p></td>
-<td></td>
+<td><p>Required</p></td>
 <td><p>See <code class="docutils literal notranslate"><span class="pre">`Predictor</span></code> &lt;api_low_level.html&gt;`__.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>input_datasets</em></p></td>
 <td><p>list[type(Dataset)]</p></td>
-<td><p>None</p></td>
+<td><p>Required</p></td>
 <td><p>New <code class="docutils literal notranslate"><span class="pre">`Datasets</span></code> &lt;api_low_level.html&gt;`__ to run inference on.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>target_dataset</em></p></td>
