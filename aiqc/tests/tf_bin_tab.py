@@ -1,5 +1,6 @@
 """TensorFlow Binary Classification with Tabular data"""
 # Internal modules
+from unicodedata import name
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..orm import Dataset
@@ -47,9 +48,15 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 
 	file_path = datum.get_path('sonar.csv')
 
+	# testing overlap of hashes
+	if (fold_count is not None):
+		name = 'rocks n radio'
+	else:
+		name = 'mines'
+
 	shared_dataset = Dataset.Tabular.from_path(
 		file_path = file_path
-		, name = 'rocks n radio'
+		, name = name
 		, dtype = None
 	)
 	

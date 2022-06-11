@@ -25,22 +25,6 @@ def listify(supposed_lst:object=None):
 	return supposed_lst
 
 
-def match_name(instance:object, created:bool):
-	latest_match = None
-	name = instance.name
-	if ((name is not None) and (created==True)):
-		klass = instance.__class__
-		name_matches = klass.select().where(klass.name==name)
-		num_matches = name_matches.count()
-		if (num_matches==0):
-			latest_version = 1
-		elif (num_matches>0):
-			latest_match = name_matches.order_by(klass.version)[-1]
-			latest_version = latest_match.version + 1
-		instance.version = latest_version
-	return instance, latest_match
-
-
 def if_1d_make_2d(array:object):
 	if (len(array.shape) == 1):
 		array = array.reshape(array.shape[0], 1)
@@ -201,23 +185,6 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 	
 	# Each object has the potential to be transformed so each object must be returned.
 	return dataframe, columns, shape, dtype
-
-
-def df_to_compressed_parquet_bytes(dataframe:object):
-	"""
-	- The Parquet file format naturally preserves pandas/numpy dtypes.
-	  Originally, we were using the `pyarrow` engine, but it has poor timedelta dtype support.
-	  https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
-	
-	- Although `fastparquet` engine preserves timedelta dtype, but it does not work with BytesIO.
-	  https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
-	"""
-	fs = filesystem("memory")
-	temp_path = "memory://temp.parq"
-	dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
-	blob = fs.cat(temp_path)
-	fs.delete(temp_path)
-	return blob
 
 
 def path_to_df(

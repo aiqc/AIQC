@@ -17,6 +17,7 @@ There is a circular depedency between:
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
+from pyparsing import Char
 from .utils.wrangle import *
 from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
@@ -26,6 +27,8 @@ from os import path, remove, makedirs
 from sys import modules
 from io import BytesIO
 from shutil import rmtree
+from hashlib import sha256
+from gzip import compress
 from random import randint, sample
 from uuid import uuid1
 from itertools import product
@@ -200,7 +203,6 @@ class BaseModel(Model):
 	time_created = DateTimeField()
 	time_updated = DateTimeField()
 	name = CharField(null=True)
-	version = IntegerField(null=True)
 	description = CharField(null=True)
 	
 	class Meta:
@@ -222,18 +224,6 @@ def add_timestamps(model_class, instance, created):
 	instance.time_updated = timezone_now()
 
 
-@pre_save(sender=BaseModel)
-def increment_version(model_class, instance, created):
-	"""Rules about new versions"""
-	klass = instance.__class__.__name__
-	# Minimize performance impact of this signal when creating a one thousand file dataset
-	if (klass!="File"):
-		instance, latest_match = match_name(instance, created)
-		if (latest_match is not None):
-			if (klass=="Dataset"):
-				if (latest_match.typ!=instance.typ):
-					msg = f"Yikes - New Dataset type <{instance.typ}> must match the type of the most recent version <{latest_match.typ}>."
-					raise Exception(msg)
 
 
 class Dataset(BaseModel):
@@ -245,6 +235,8 @@ class Dataset(BaseModel):
 	typ = CharField()
 	file_count = IntegerField()# see docs. do not delete, as `.count()` does not capture all functionality.
 	source_path = CharField(null=True)
+	version = IntegerField(null=True)
+
 	#docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
 	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
 
@@ -302,7 +294,7 @@ class Dataset(BaseModel):
 		return file
 	
 
-	def drop(id:int):
+	def delete_dropFiles(id:int):
 		"""Tried to get `on_delete='CASCADE'` working, but it seems bugged"""
 		dataset = Dataset.get_by_id(id)
 		typ = dataset.typ
@@ -317,6 +309,40 @@ class Dataset(BaseModel):
 					f.delete_instance()
 				d.delete_instance()
 		dataset.delete_instance()
+	
+
+	def get_hashes(id:int):
+		dataset = Dataset.get_by_id(id)
+		hashes = [f.sha256_hexdigest for f in dataset.files]
+		return hashes
+
+
+	def increment_version(id:int):
+		"""Files are created after Dataset, so we can't compare hashes as a db signal"""
+		dataset = Dataset.get_by_id(id)
+		name = dataset.name
+		if (name is not None):
+			latest_match = None
+			name_matches = Dataset.select().where(Dataset.name==name, Dataset.id!=id)
+			num_matches = name_matches.count()
+
+			if (num_matches==0):
+				latest_version = 1
+			elif (num_matches>0):
+				latest_match = name_matches.order_by(Dataset.version)[-1]
+				latest_version = latest_match.version + 1
+				
+			if (latest_match is not None):
+				if (latest_match.typ != dataset.typ):
+					msg = f"\nYikes - Dataset creation failed. New type <{dataset.typ}> != latest versions type <{latest_match.typ}>.\n"
+					raise Exception(msg)
+				
+				if (latest_match.get_hashes() == dataset.get_hashes()):
+					msg = f"\nYikes - Dataset creation failed. Hashes identical to latest Dataset name <{latest_match.name}> version <{latest_match.version}>.\n"
+					raise Exception(msg)
+			
+			dataset.version = latest_version
+			dataset.save()
 
 
 	class Tabular():
@@ -365,35 +391,32 @@ class Dataset(BaseModel):
 					f"But `typ=='tabular'` only supports a single file, not an entire directory.`"
 				))
 
-			# Use the raw, not absolute path for the name.
-			if (name is None):
-				name = file_path
-
 			source_path = path.abspath(file_path)
 
 			dataset = Dataset.create(
-				typ = Dataset.Tabular.typ
-				, idx = Dataset.Tabular.idx
-				, file_count = Dataset.Tabular.file_count
+				typ           = Dataset.Tabular.typ
+				, idx         = Dataset.Tabular.idx
+				, file_count  = Dataset.Tabular.file_count
 				, source_path = source_path
-				, name = name
+				, name        = name
 				, description = description
 			)
 
 			try:
 				File.from_path(
-					file_path = file_path
-					, file_format = file_format
-					, dtype = dtype
-					, column_names = column_names
+					file_path          = file_path
+					, file_format      = file_format
+					, dtype            = dtype
+					, column_names     = column_names
 					, skip_header_rows = skip_header_rows
-					, ingest = ingest
-					, dataset_id = dataset.id
+					, ingest           = ingest
+					, dataset_id       = dataset.id
 				)
+				
+				dataset.increment_version()
 			except:
-				dataset.delete_instance() # Orphaned.
+				dataset.delete_dropFiles() # Orphaned.
 				raise
-
 			return dataset
 
 		
@@ -425,9 +448,11 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, dataset_id = dataset.id
 				)
+				dataset.increment_version()
+
 			except:
-				dataset.delete_instance() # Orphaned.
-				raise 
+				dataset.delete_dropFiles() # Orphaned.
+				raise
 			return dataset
 
 
@@ -463,9 +488,11 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, dataset_id = dataset.id
 				)
+				
+				dataset.increment_version()
 			except:
-				dataset.delete_instance() # Orphaned.
-				raise 
+				dataset.delete_dropFiles() # Orphaned.
+				raise
 			return dataset
 
 
@@ -558,6 +585,7 @@ class Dataset(BaseModel):
 			elif (_idx is None):
 				idx = Dataset.Sequence.idx
 			file_count = len(ndarray_3D)
+			
 			dataset = Dataset.create(
 				typ = Dataset.Sequence.typ
 				, idx = idx
@@ -584,8 +612,10 @@ class Dataset(BaseModel):
 						, _idx = i
 						, ingest = ingest
 					)
+				
+				dataset.increment_version()
 			except:
-				dataset.delete_instance() # Orphaned.
+				dataset.delete_dropFiles() # Orphaned.
 				raise
 			return dataset
 
@@ -693,8 +723,9 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, ingest = ingest
 				)
+				dataset.increment_version()
 			except:
-				dataset.delete_instance()
+				dataset.delete_dropFiles() # Orphaned.
 				raise
 			return dataset
 
@@ -750,8 +781,10 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, ingest = ingest
 				)
+				
+				dataset.increment_version()
 			except:
-				dataset.delete_instance()
+				dataset.delete_dropFiles() # Orphaned.
 				raise
 			return dataset
 
@@ -813,8 +846,10 @@ class Dataset(BaseModel):
 					, ingest = ingest
 					, source_path = source_path
 				)
+				
+				dataset.increment_version()
 			except:
-				dataset.delete_instance()
+				dataset.delete_dropFiles() # Orphaned.
 				raise
 			return dataset
 
@@ -924,6 +959,7 @@ class File(BaseModel):
 	is_ingested = BooleanField()
 	columns = JSONField()
 	dtypes = JSONField()
+	sha256_hexdigest = CharField()
 	skip_header_rows = PickleField(null=True) #Image does not have.
 	source_path = CharField(null=True) # when `from_numpy` or `from_pandas`.
 	blob = BlobField(null=True) # when `is_ingested==False`.
@@ -942,6 +978,7 @@ class File(BaseModel):
 		, skip_header_rows:int = 'infer'
 		, _idx:int = 0 # Dataset.Sequence overwrites this.
 	):
+		"""This is the only place where File.create is ran"""
 		column_names = listify(column_names)
 		df_validate(dataframe, column_names)
 
@@ -949,10 +986,34 @@ class File(BaseModel):
 		dataframe, columns, shape, dtype = df_set_metadata(
 			dataframe=dataframe, column_names=column_names, dtype=dtype
 		)
-		if (ingest==True):
-			blob = df_to_compressed_parquet_bytes(dataframe)
-		elif (ingest==False):
-			blob = None
+
+		"""
+		- The Parquet file format naturally preserves pandas/numpy dtypes.
+		  Originally, we were using the `pyarrow` engine, but it has poor timedelta dtype support.
+		  https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+		
+		- Although `fastparquet` engine preserves timedelta dtype, it does not work with BytesIO.
+		  So we write to a cache first.
+		  https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
+
+		- fastparquet default compression level = 6
+		  github.com/dask/fastparquet/blob/efd3fd19a9f0dcf91045c31ff4dbb7cc3ec504f2/fastparquet/compression.py#L15
+		  github.com/dask/fastparquet/issues/344
+		
+		- Originally github used sha1, but they plan to migrate to sha256
+		- Originally github hashed the compressed data, but later they switched to hashing pre-compressed data
+		- However running gzip compression an uncompressed parquet file will also compress the parquet metadata
+		  at the end of the file. So for simplicity's sake, we hash the compressed file generated by fastparquet.
+		"""
+		fs = filesystem("memory")
+		temp_path = "memory://temp.parq"
+		dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
+		blob = fs.cat(temp_path)
+		fs.delete(temp_path)
+		sha256_hexdigest = sha256(blob).hexdigest()
+
+		# We just want the hash
+		if (ingest==False): blob=None	
 
 		dataset = Dataset.get_by_id(dataset_id)
 
@@ -966,6 +1027,7 @@ class File(BaseModel):
 			, is_ingested = ingest
 			, columns = columns
 			, dtypes = dtype
+			, sha256_hexdigest = sha256_hexdigest
 			, dataset = dataset
 		)
 		return file
@@ -1064,6 +1126,7 @@ class File(BaseModel):
 		elif (file.is_ingested==True):
 			df = pd.read_parquet(
 				BytesIO(file.blob)
+				, engine = 'fastparquet'
 				, columns=columns
 			)
 
@@ -2069,6 +2132,7 @@ class Splitset(BaseModel):
 	key_train = CharField(null=True) #None during inference
 	key_evaluation = CharField(null=True)
 	key_test = CharField(null=True)
+	version = IntegerField(null=True)
 
 	label = ForeignKeyField(Label, deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
 	predictor = DeferredForeignKey('Predictor', deferrable='INITIALLY DEFERRED', null=True, backref='splitsets')
@@ -2372,42 +2436,33 @@ class Splitset(BaseModel):
 			, predictor = None
 		)
 
-		# --- Attach the features ---
 		try:
+			# --- Attach the features ---
 			for f_id in feature_ids:
 				feature = Feature.get_by_id(f_id)
 				feature.splitset = splitset
 				feature.save()
-		except:
-			splitset.delete_instance()
-			raise
 
-		# --- Attach the folds ---
-		try:
+			# --- Attach the folds ---
 			if (fold_count > 0):
 				splitset.make_folds()
 				splitset.key_train = "folds_train_combined"
 				splitset.key_evaluation = "fold_validation"
 				splitset.save()
+			
+			# --- Validate for inference ---
+			if (predictor_id is not None):
+				predictor = Predictor.get_by_id(predictor_id)
+				splitset_old = predictor.job.queue.splitset
+				schemaNew_matches_schemaOld(splitset, splitset_old)
+				splitset.predictor = predictor
+				splitset.save()
+
 		except:
 			for fold in splitset.folds:
 				fold.delete_instance()
 			splitset.delete_instance()
 			raise
-		
-		# --- Validate for inference ---
-		if (predictor_id is not None):
-			try:
-				predictor = Predictor.get_by_id(predictor_id)
-				splitset_old = predictor.job.queue.splitset
-				schemaNew_matches_schemaOld(splitset, splitset_old)
-			except:
-				for fold in splitset.folds:
-					fold.delete_instance()
-				splitset.delete_instance()
-				raise
-			splitset.predictor = predictor
-			splitset.save()
 		return splitset
 
 
