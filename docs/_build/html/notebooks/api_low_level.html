@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="1a670b37bb25409aa97ee65931728004,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, te..." />
+  <meta property="og:description" content="10cca767683f4cf4b6fef8229c30b0a4,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, te..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -150,18 +150,20 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Low-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#1.-Ingest-a-Dataset">1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Object Relational Model (ORM)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a)-Registering-Datasets">a) Registering Datasets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Dataset.Tabular"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Dataset.Sequence"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Dataset.Image"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Dataset">1. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Dataset-Attributes">Dataset Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#File-Attributes">File Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1a.-Ingestion">1a. Ingestion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Reading-Datasets-into-Memory">b) Reading Datasets into Memory</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1b.-Read">1b. Read</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1bi.-Dataset.Tabular">1bi. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1bii.-Dataset.Sequence">1bii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1biii.-Dataset.Image">1biii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -174,7 +176,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id11">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Specifying-Features">Specifying Features</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Reading-Features">Reading Features</a></li>
 </ul>
@@ -183,7 +185,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#3.-Slicing-samples.">3. Slicing samples.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id12">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Specifying-Windows">Specifying Windows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Reading-Windows">Reading Windows</a></li>
 </ul>
@@ -195,7 +197,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#c)-fold_count-triggers-cross-validation.">c) <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> triggers cross-validation.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id13">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Specifying-Folds">Specifying Folds</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Reading-Folds">Reading Folds</a></li>
@@ -204,7 +206,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id14">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
@@ -222,7 +224,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#6.-Preprocessing---Reshaping.">6. Preprocessing - Reshaping.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id15">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Reshaping-by-Index">Reshaping by Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Reshaping-Explicitly">Reshaping Explicitly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
@@ -595,7 +597,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="1a670b37bb25409aa97ee65931728004" class="banner-photo" src="../_images/pipes.png" /></p>
+<p><img alt="10cca767683f4cf4b6fef8229c30b0a4" class="banner-photo" src="../_images/pipes.png" /></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 27%" />
@@ -638,21 +640,10 @@ div.rendered_html tbody tr:hover {
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 39%" />
-<col style="width: 61%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>Returns</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Some</span></code> instance</p></td>
-</tr>
-</tbody>
-</table>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
-<p>The Low-Level API is an object-relational model for machine learning. Each class in the API maps to a table in a SQLite database. These objects serve as the building blocks that are stacked into AIQC workflows. However, the real power lies in the the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>). These relationships allow us to weave together rule-base protocols that are <em>data-aware</em> and
-<em>analysis-aware</em>.</p>
+<p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the API maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>. These objects serve as the building blocks that are stacked into AIQC workflows. However, the real power lies in the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>). These relationships allow us to weave together
+rule-base protocols that are <em>data-aware</em> and <em>analysis-aware</em>.</p>
 <p>Goobye, <em>X_train, y_test</em>. Hello, object-oriented machine learning.</p>
 <hr class="docutils" />
 </section>
@@ -672,45 +663,163 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="1.-Ingest-a-Dataset">
-<h2>1. Ingest a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code><a class="headerlink" href="#1.-Ingest-a-Dataset" title="Permalink to this headline"></a></h2>
-<section id="id1">
-<h3>Object Relational Model (ORM)<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<section id="1.-Dataset">
+<h2>1. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code><a class="headerlink" href="#1.-Dataset" title="Permalink to this headline"></a></h2>
+<section id="Description">
+<h3>Description<a class="headerlink" href="#Description" title="Permalink to this headline"></a></h3>
 <img alt="Datasets" src="../_images/dimensions.png" />
-<p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different types of data. During each stage of both the preprocessing and postprocessing pipelines, these types need to be handled differently. For example, <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> cannot act as a supervised <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different types of data:</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 36%" />
-<col style="width: 64%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Subclass</p></th>
 <th class="head"><p>Dimensionality</p></th>
+<th class="head"><p>Formats</p></th>
+<th class="head"><p>Schema</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Tabular</p></td>
 <td><p>2D</p></td>
+<td><p>CSV, TSV, Parquet, Pandas DataFrame, NumPy ndarray</p></td>
+<td><p>Single <code class="docutils literal notranslate"><span class="pre">File</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Sequence</p></td>
 <td><p>3D</p></td>
+<td><p>Numpy ndarray/ npy</p></td>
+<td><p>Many <code class="docutils literal notranslate"><span class="pre">Files</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Image</p></td>
 <td><p>4D</p></td>
+<td><p>Numpy ndarray/ npy, any Pillow-supported image format</p></td>
+<td><p>Many <code class="docutils literal notranslate"><span class="pre">Dataset.Sequences</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>During each stage of both the preprocessing and postprocessing pipelines, these types need to be handled differently. For example, <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> cannot act as a supervised <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
+</section>
+<section id="Dataset-Attributes">
+<h3>Dataset Attributes<a class="headerlink" href="#Dataset-Attributes" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>idx</em></p></td>
+<td><p>type(IntegerField)</p></td>
+<td><p>Required</p></td>
+<td><p>Used to keep track of the number of Sequences in an Image Dataset, essentially a count on the number of Dataset-Dataset
+relationships</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>typ</em></p></td>
+<td><p>type(CharField)</p></td>
+<td><p>Required</p></td>
+<td><p>The subclass of dataset: Tabular, Image, Sequence</p></td>
+</tr>
+<tr class="row-even"><td><p><em>file_count</em></p></td>
+<td><p>type(IntegerField)</p></td>
+<td><p>Required</p></td>
+<td><p>Used by sequence as a shortcut for Dataset.files.count(). However, also used by Image as a shortcut for the number of
+Sequences.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>source_path</em></p></td>
+<td><p>type(CharField)</p></td>
+<td><p>None</p></td>
+<td><p>Records the absolute path of the original file or folder. Optional for in-memory data and url-based ingestion.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="File-Attributes">
+<h3>File Attributes<a class="headerlink" href="#File-Attributes" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>idx</em></p></td>
+<td><p>type(IntegerField)</p></td>
+<td><p>Required</p></td>
+<td><p>Counts the number of files in a Sequence dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>file_format</em></p></td>
+<td><p>type(CharField)</p></td>
+<td><p>Required</p></td>
+<td><p>CSV, TSV, Parquet, NPY, or Pillow-supported. If ingested from dataframe/ndarray, this will be Parquet.</p></td>
+</tr>
+<tr class="row-even"><td><p><em>shape</em></p></td>
+<td><p>type(JSONField)</p></td>
+<td><p>Required</p></td>
+<td><p>{rows:int, columns:int}</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>is_ingested</em></p></td>
+<td><p>type(BooleanField)</p></td>
+<td><p>Required</p></td>
+<td><p>Whether or not data was ingested from either a path/url or in-memory data</p></td>
+</tr>
+<tr class="row-even"><td><p><em>columns</em></p></td>
+<td><p>type(JSONField)</p></td>
+<td><p>Required</p></td>
+<td><p>List of columns. Int/range-based columns are coerced to strings during ingestion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>dtypes</em></p></td>
+<td><p>type(JSONField)</p></td>
+<td><p>Required</p></td>
+<td><p>Coerced to a <code class="docutils literal notranslate"><span class="pre">dict(column=dtype)</span></code> during ingestion</p></td>
+</tr>
+<tr class="row-even"><td><p><em>skip_header_rows</em></p></td>
+<td><p>type(PickleField)</p></td>
+<td><p>None</p></td>
+<td><p>CSV/TSV files use this for pd.read_csv(header)</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>source_path</em></p></td>
+<td><p>type(CharField)</p></td>
+<td><p>None</p></td>
+<td><p>Path/ url if provided.</p></td>
+</tr>
+<tr class="row-even"><td><p><em>blob</em></p></td>
+<td><p>type(BlobField)</p></td>
+<td><p>None</p></td>
+<td><p>The bytes of the file if provided</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 </section>
-<section id="a)-Registering-Datasets">
-<h3>a) Registering Datasets<a class="headerlink" href="#a)-Registering-Datasets" title="Permalink to this headline"></a></h3>
+<section id="1a.-Ingestion">
+<h3>1a. Ingestion<a class="headerlink" href="#1a.-Ingestion" title="Permalink to this headline"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">ingest:bool=True</span></code> argument is common to all of the Dataset subclasses. It dictates whether or not the data is ingested into the metastore or if remains on disk.</p>
-<p>Although ingesting the Datasets is not a scalable approach for power-users, this provides the following benefits for entry-level users:</p>
+<p>Although ingesting the Datasets is not a scalable approach for large (&gt;21GB) files, it provides the following benefits for entry-level users:</p>
 <ul class="simple">
-<li><p>Gives users working with mutable, in-memory datasets (pandas, numpy) a way to persist their data.</p></li>
-<li><p>Controlling the persistence of data using the Parquet format allows for more exact control of dtypes in comparison to file formats like CSV.</p></li>
-<li><p>Gives the option to keep the data coupled with the experiment in the portable SQLite file.</p></li>
+<li><p>A way to persist their data mutable, in-memory datasets (Pandas DataFrames, NumPy ndarrays).</p></li>
+<li><p>Keep the data coupled with the experiment in the portable SQLite file.</p></li>
 <li><p>Provides a more immutable and out-of-the-way place to store data than the file system.</p></li>
+<li><p>More exact preservation of <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> via conversion into the columnar Parquet file format. Parquet preserves every dtype except certain datetimes, which would need to be parsed into floats/ ordinal ints priorto encoding anyway. Parquet is better at preserving dtypes than other common file formats like CSV. Parquet also provides up to 90% compression via gzip. Parquet also integrates with both Spark and Dask; frameworks for distributed, in-memory computation.</p></li>
 </ul>
 <table class="docutils align-default">
 <colgroup>
@@ -723,23 +832,78 @@ div.rendered_html tbody tr:hover {
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
-<td><p>By default, the actual bytes of the data are persisted to the SQLite <code class="docutils literal notranslate"><span class="pre">BlobField</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Each <code class="docutils literal notranslate"><span class="pre">File</span></code> in the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> will be fetched using <code class="docutils literal notranslate"><span class="pre">File.source_path</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-<td><p>Data will be fetched using <code class="docutils literal notranslate"><span class="pre">File.source_path</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Each <code class="docutils literal notranslate"><span class="pre">File</span></code> in the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> is compressed using Parquet’s <code class="docutils literal notranslate"><span class="pre">fastparquet</span></code> engine and stored in <code class="docutils literal notranslate"><span class="pre">File.blob</span></code> a <code class="docutils literal notranslate"><span class="pre">BlobField</span></code>. The maximum size of this field is 2.147 GB (after compression). So the bottleneck is more likely to be memory/RAM.
+Because the data did not come from a file, the <code class="docutils literal notranslate"><span class="pre">File.source_path=None</span></code> attribute is blank.</p></td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<div><p>Ingested data is gzip compressed, reducing the size by up to 90%. Maximum BlobField size is 2.147 GB, but once you factor in compression, your bottleneck is more likely to be memory beyond that size. The bytes themselves are Parquet (single-partitioned), using the PyArrow engine, which preserves every dtype except certain datetimes (which are honestly better off parsed into floats/ ordinal ints). Parquet also integrates with both Spark and Dask; frameworks for distributed, in-memory
-computation.</p>
-</div></blockquote>
 <hr class="docutils" />
-<section id="Dataset.Tabular">
-<h4><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#Dataset.Tabular" title="Permalink to this headline"></a></h4>
+<section id="1ai.-Dataset.Tabular">
+<h4>1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai.-Dataset.Tabular" title="Permalink to this headline"></a></h4>
 <section id="└──-from_pandas()">
 <h5>└── <code class="docutils literal notranslate"><span class="pre">from_pandas()</span></code><a class="headerlink" href="#└──-from_pandas()" title="Permalink to this headline"></a></h5>
+<p>def from_path( file_path:str , file_format:str , name:str = None , description:str = None , dtype:object = None , column_names:list = None , skip_header_rows:object = ‘infer’ , ingest:bool = True ):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>file_path</em></p></td>
+<td><p>str</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>file_format</em></p></td>
+<td><p>str</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-even"><td><p><em>name</em></p></td>
+<td><p>type</p></td>
+<td><p>str</p></td>
+<td><p>Like</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>description</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-even"><td><p><em>dtype</em></p></td>
+<td><p>type</p></td>
+<td><p>dtype / dict(str,dtype)</p></td>
+<td><p><a class="reference external" href="https://pandas.pydata.org/docs/user_guide/basics.html#dtypes">Pandas dtype</a> - provides the ability to hardcode dtypes</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>column_names</em></p></td>
+<td><p>bool</p></td>
+<td><p>str</p></td>
+<td><p>‘infer’</p></td>
+</tr>
+<tr class="row-even"><td><p><em>skip_header_rows</em></p></td>
+<td><p>type</p></td>
+<td><p>None</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>ingest</em></p></td>
+<td><p>type</p></td>
+<td><p>None</p></td>
+<td><p>text</p></td>
+</tr>
+</tbody>
+</table>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -814,8 +978,8 @@ computation.</p>
 <hr class="docutils" />
 </section>
 </section>
-<section id="Dataset.Sequence">
-<h4><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#Dataset.Sequence" title="Permalink to this headline"></a></h4>
+<section id="1aii.-Dataset.Sequence">
+<h4>1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1aii.-Dataset.Sequence" title="Permalink to this headline"></a></h4>
 <p>The sequence dataset is a 3 dimensional structure intended for multi-observations per sample to enable time series analysis.</p>
 <p>Observations must be ordered in an <em>ascending</em> manner, which means:</p>
 <ul class="simple">
@@ -863,8 +1027,8 @@ computation.</p>
 </div>
 </div>
 <hr class="docutils" />
-<section id="id2">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id2" title="Permalink to this headline"></a></h5>
+<section id="id1">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id1" title="Permalink to this headline"></a></h5>
 <p><code class="docutils literal notranslate"><span class="pre">ndarray3D_or_npyPath:object</span></code> requires either an in-memory 3D NumPy array or a <em>.npy</em> file. Each 2D array represents a sample.</p>
 <p>So we’ll drop our seizure column from our DataFrame and reshape it into a 3D array.</p>
 <div class="nbinput nblast docutils container">
@@ -922,8 +1086,8 @@ computation.</p>
 <hr class="docutils" />
 </section>
 </section>
-<section id="Dataset.Image">
-<h4><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#Dataset.Image" title="Permalink to this headline"></a></h4>
+<section id="1aiii.-Dataset.Image">
+<h4>1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1aiii.-Dataset.Image" title="Permalink to this headline"></a></h4>
 <p>Image datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they require a loosely coupled <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that contains their labels.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -1138,8 +1302,8 @@ computation.</p>
 </div>
 <hr class="docutils" />
 </section>
-<section id="id3">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id3" title="Permalink to this headline"></a></h5>
+<section id="id2">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id2" title="Permalink to this headline"></a></h5>
 <p>The <code class="docutils literal notranslate"><span class="pre">ndarray4D_or_npyPath:object</span></code> requires either an in-memory 4D NumPy array or a <em>.npy</em> file. Each 3D sequence represents an image sample.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
         <span class="n">ndarray4D_or_npyPath</span><span class="p">:</span><span class="nb">object</span>
@@ -1154,8 +1318,8 @@ computation.</p>
 </section>
 </section>
 </section>
-<section id="b)-Reading-Datasets-into-Memory">
-<h3>b) Reading Datasets into Memory<a class="headerlink" href="#b)-Reading-Datasets-into-Memory" title="Permalink to this headline"></a></h3>
+<section id="1b.-Read">
+<h3>1b. Read<a class="headerlink" href="#1b.-Read" title="Permalink to this headline"></a></h3>
 <p>All of the sample-related objects in the API have <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> methods that accept the following arguments:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">samples=[]</span></code> list of indices to fetch.</p></li>
@@ -1164,8 +1328,8 @@ computation.</p>
 </ul>
 <p>For structured data, since the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> itself is fairly removed from the <code class="docutils literal notranslate"><span class="pre">File.Tabular</span></code> it creates, you can get that tabular file with <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.get_main_tabular(dataset_id)</span></code> to inspect attributes like <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code>.</p>
 <hr class="docutils" />
-<section id="id4">
-<h4><code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#id4" title="Permalink to this headline"></a></h4>
+<section id="1bi.-Dataset.Tabular">
+<h4>1bi. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1bi.-Dataset.Tabular" title="Permalink to this headline"></a></h4>
 <section id="└──-to_pandas()">
 <h5>└── <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code><a class="headerlink" href="#└──-to_pandas()" title="Permalink to this headline"></a></h5>
 <div class="nbinput docutils container">
@@ -1373,10 +1537,10 @@ array([[5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;],
 <hr class="docutils" />
 </section>
 </section>
-<section id="id5">
-<h4><code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#id5" title="Permalink to this headline"></a></h4>
-<section id="id6">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code><a class="headerlink" href="#id6" title="Permalink to this headline"></a></h5>
+<section id="1bii.-Dataset.Sequence">
+<h4>1bii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1bii.-Dataset.Sequence" title="Permalink to this headline"></a></h4>
+<section id="id3">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code><a class="headerlink" href="#id3" title="Permalink to this headline"></a></h5>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
@@ -1401,8 +1565,8 @@ array([5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;], dtype=object)
 </div>
 <p>This essentially internal method only exists to enable Pandas-related preprocessing such as interpolation. Produces a list of dataframes.</p>
 </section>
-<section id="id7">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code><a class="headerlink" href="#id7" title="Permalink to this headline"></a></h5>
+<section id="id4">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code><a class="headerlink" href="#id4" title="Permalink to this headline"></a></h5>
 <p>This essentially internal method only exists to enable Pandas-related preprocessing such as interpolation. Produces a list of dataframes.</p>
 </section>
 <section id="└──-to_pillow()">
@@ -1411,10 +1575,10 @@ array([5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;], dtype=object)
 <hr class="docutils" />
 </section>
 </section>
-<section id="id8">
-<h4><code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#id8" title="Permalink to this headline"></a></h4>
-<section id="id9">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">to_pillow()</span></code><a class="headerlink" href="#id9" title="Permalink to this headline"></a></h5>
+<section id="1biii.-Dataset.Image">
+<h4>1biii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1biii.-Dataset.Image" title="Permalink to this headline"></a></h4>
+<section id="id5">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">to_pillow()</span></code><a class="headerlink" href="#id5" title="Permalink to this headline"></a></h5>
 <p>Returns a list of <code class="docutils literal notranslate"><span class="pre">PIL.Image</span></code>’s. You can actually see the image when you call them.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
@@ -1431,13 +1595,13 @@ array([5.1, 3.5, 1.4, 0.2, &#39;setosa&#39;], dtype=object)
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_api_low_level_106_0.png" src="../_images/notebooks_api_low_level_106_0.png" />
+<img alt="../_images/notebooks_api_low_level_111_0.png" src="../_images/notebooks_api_low_level_111_0.png" />
 </div>
 </div>
 <hr class="docutils" />
 </section>
-<section id="id10">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code><a class="headerlink" href="#id10" title="Permalink to this headline"></a></h5>
+<section id="id6">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code><a class="headerlink" href="#id6" title="Permalink to this headline"></a></h5>
 <p>This simply performs <code class="docutils literal notranslate"><span class="pre">np.array(Pillow.Image)</span></code>. Returns an N-dimensional array where the dimensions vary based on the <code class="docutils literal notranslate"><span class="pre">mode</span></code> aka colorscale of the image. For example, it returns ‘3D of 2Ds for black and white’ or ‘4D of 3Ds for colored’ - which would change the class of convultional layer you would use (<code class="docutils literal notranslate"><span class="pre">Conv1D</span></code>:<code class="docutils literal notranslate"><span class="pre">Conv3D</span></code>).</p>
 <blockquote>
 <div><p>By default, the returned arrays will be scaled by 255 because <a class="reference external" href="https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes">Pillow pixel values range from 0-255</a>.</p>
@@ -1617,8 +1781,8 @@ array([[&#39;setosa&#39;],
 </section>
 <section id="b)-Select-the-Feature-column(s).">
 <h3>b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).<a class="headerlink" href="#b)-Select-the-Feature-column(s)." title="Permalink to this headline"></a></h3>
-<section id="id11">
-<h4>ORM<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h4>
+<section id="id7">
+<h4>ORM<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h4>
 <p>Creating a Feature won’t duplicate your data! It simply records the Dataset <code class="docutils literal notranslate"><span class="pre">columns</span></code> to be used as features during training.</p>
 <p>There are three ways to define which columns you want to use as features:</p>
 <ul class="simple">
@@ -1800,8 +1964,8 @@ array([[5.1, 3.5, 1.4, 0.2],
 <h2>3. Slicing samples.<a class="headerlink" href="#3.-Slicing-samples." title="Permalink to this headline"></a></h2>
 <section id="a)-Define-sliding-time-series-Windows.">
 <h3>a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.<a class="headerlink" href="#a)-Define-sliding-time-series-Windows." title="Permalink to this headline"></a></h3>
-<section id="id12">
-<h4>ORM<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h4>
+<section id="id8">
+<h4>ORM<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">Window</span></code> object is provided in order to facilitate sliding windows for unsupervised/ self-supervised time series forecasting and backcasting. It assumes that the last time point is the most recent (aka ascending time).</p>
 <img alt="Windows" src="../_images/sliding_windows.png" />
 <p><strong>Concept of a sliding sample:</strong></p>
@@ -2015,8 +2179,8 @@ dict_keys([&#39;train&#39;, &#39;validation&#39;, &#39;test&#39;])
 </section>
 <section id="c)-fold_count-triggers-cross-validation.">
 <h3>c) <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> triggers cross-validation.<a class="headerlink" href="#c)-fold_count-triggers-cross-validation." title="Permalink to this headline"></a></h3>
-<section id="id13">
-<h4>ORM<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h4>
+<section id="id9">
+<h4>ORM<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h4>
 <p>Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about folding.</p>
 <img alt="Cross Folds" src="../_images/cross_fold.png" />
 <p>We refer to the left out fold (blue) as the <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> and the remaining training data as the <code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code> (green).</p>
@@ -2117,8 +2281,8 @@ to do something undersized like “150 samples in their dataset and a <code clas
 </section>
 <section id="4.-Preprocessing---Interpolation.">
 <h2>4. Preprocessing - Interpolation.<a class="headerlink" href="#4.-Preprocessing---Interpolation." title="Permalink to this headline"></a></h2>
-<section id="id14">
-<h3>ORM<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h3>
+<section id="id10">
+<h3>ORM<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h3>
 <p>If you have columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. If you don’t have time series data then you do not need interpolation.</p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">pandas.DataFrame.interpolate</span></code></p>
@@ -2326,8 +2490,8 @@ No more FeatureCoders can be added to this Encoderset.
 </section>
 <section id="6.-Preprocessing---Reshaping.">
 <h2>6. Preprocessing - Reshaping.<a class="headerlink" href="#6.-Preprocessing---Reshaping." title="Permalink to this headline"></a></h2>
-<section id="id15">
-<h3>ORM<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h3>
+<section id="id11">
+<h3>ORM<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h3>
 <p>When working with architectures that are highly dimensional such convolutional and recurrent networks (Conv1D, Conv2D, Conv3D / ConvLSTM1D, ConvLSTM2D, ConvLSTM3D), you’ll often find yourself needing to reshape data to fit a layer’s required input shape.</p>
 <p>AIQC ingestion &amp; preprocessing favors a <em>“channels_first”</em> (samples, channels, rows, columns) approach as opposed to <em>“channels_last”</em> (samples, rows, columns, channels).</p>
 <ul class="simple">

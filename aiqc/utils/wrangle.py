@@ -230,7 +230,7 @@ def path_to_df(
 	Previously, I was using pyarrow for all tabular/ sequence file formats. 
 	However, it had worse support for missing column names and header skipping.
 	So I switched to pandas for handling csv/tsv, but read_parquet()
-	doesn't let you change column names easily, so using pyarrow for parquet.
+	doesn't let you change column names easily, so using fastparquet for parquet.
 	""" 
 	if (not path.exists(file_path)):
 		raise Exception(f"\nYikes - The path you provided does not exist according to `path.exists(path)`:\n{file_path}\n")
@@ -526,10 +526,10 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 	for i, feature_new in enumerate(features_new):
 		feature_old = features_old[i]
 		# --- Data type ---
-		feature_old_typ = feature_old.dataset.dataset_type
-		feature_new_typ = feature_new.dataset.dataset_type
+		feature_old_typ = feature_old.dataset.typ
+		feature_new_typ = feature_new.dataset.typ
 		if (feature_old_typ != feature_new_typ):
-			raise Exception(f"\nYikes - New Feature dataset_type={feature_new_typ} != old Feature dataset_type={feature_old_typ}.\n")
+			raise Exception(f"\nYikes - New Feature typ={feature_new_typ} != old Feature typ={feature_old_typ}.\n")
 		tabular_schemas_match(feature_old, feature_new)
 		# --- Window ---
 		if (
@@ -554,16 +554,16 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 	label = splitset_new.label
 	if (label is not None):
 		label_new = label
-		label_new_typ = label_new.dataset.dataset_type
+		label_new_typ = label_new.dataset.typ
 
 		if (splitset_old.supervision == 'unsupervised'):
 			raise Exception("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
 
 		elif (splitset_old.supervision == 'supervised'):
 			label_old =  splitset_old.label
-			label_old_typ = label_old.dataset.dataset_type
+			label_old_typ = label_old.dataset.typ
 		
 		if (label_old_typ != label_new_typ):
-			raise Exception("\nYikes - New Label and original Label come from different `dataset_types`.\n")
+			raise Exception("\nYikes - New Label and original Label come from different `typs`.\n")
 		if (label_new_typ == 'tabular'):
 			tabular_schemas_match(label_old, label_new)
