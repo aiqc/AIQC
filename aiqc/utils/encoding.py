@@ -79,7 +79,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 					sklearn_preprocess.copy = False
 					print(dedent("""
 						└── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-							This saves memory when concatenating the output of many encoders.
+						This saves memory when concatenating the output of many encoders.
 					"""))
 				except:
 					raise Exception(dedent(f"""

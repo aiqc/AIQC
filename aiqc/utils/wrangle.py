@@ -228,24 +228,6 @@ def path_to_df(
 	return df
 
 
-def dataset_matchVersionName(name:str, typ:str):
-	latest_match, version_num = None, None
-	if (name is not None):
-		name_matches = Dataset.select().where(Dataset.name==name)
-		num_matches = name_matches.count()
-
-		if (num_matches==0):
-			version_num = 1
-		elif (num_matches>0):
-			latest_match = name_matches.order_by(Dataset.version)[-1]
-			version_num = latest_match.version + 1
-
-			if (latest_match.typ != typ):
-				msg = f"\nYikes - Cannot creat Dataset with name <{name}>. New type <{typ}> != latest version type <{latest_match.typ}>.\n"
-				raise Exception(msg)
-	return latest_match, version_num
-
-
 def size_shift_defined(size_window:int=None, size_shift:int=None):
 	"""Used by high level API classes."""
 	if (

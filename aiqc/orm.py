@@ -242,7 +242,7 @@ def dataset_matchVersion(name:str, typ:str):
 			version_num = latest_match.version + 1
 
 			if (latest_match.typ != typ):
-				msg = f"\n└── Yikes - Cannot create Dataset with name <{name}>. New type <{typ}> != latest version type <{latest_match.typ}>.\n"
+				msg = f"\n└── Yikes - Cannot create `Dataset.name={name}`. `Dataset.typ={typ}` != latest version type `{latest_match.typ}`.\n"
 				raise Exception(msg)
 	return latest_match, version_num
 
@@ -540,9 +540,10 @@ class Dataset(BaseModel):
 			, _idx:int = None #used by Dataset.Image
 			, _dataset:object = None #used by Dataset.Image
 		):
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Sequence.typ)
 			"""Both `ingest=False` and `_source_path=None` is possible"""
 			if ((ingest==False) and (isinstance(dtype, dict))):
-				msg = "\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n"
+				msg = "\nYikes - If `ingest=False` then `dtype` must be either a str or a single NumPy-based type.\n"
 				raise Exception(msg)
 			# Fetch array from .npy if it is not an in-memory array.
 			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
@@ -604,6 +605,7 @@ class Dataset(BaseModel):
 				, description = description
 				, source_path = source_path
 				, dataset = _dataset
+				, version = version_num
 			)
 
 			try:
@@ -622,12 +624,11 @@ class Dataset(BaseModel):
 						, _idx = i
 						, ingest = ingest
 					)
-				
-				dataset.increment_version()
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 
 		def to_numpy(id:int, columns:list=None, samples:list=None):
@@ -696,7 +697,7 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
-			if (name is None): name = folder_path
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Image.typ)
 			source_path = path.abspath(folder_path)
 			file_paths = sorted_file_list(source_path)
 			file_count = len(file_paths)
@@ -721,6 +722,7 @@ class Dataset(BaseModel):
 				, name = name
 				, description = description
 				, source_path = source_path
+				, version = version_num
 			)
 			try:		
 				# Intentionally not passing name to avoid versioning conflicts
@@ -733,11 +735,11 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, ingest = ingest
 				)
-				dataset.increment_version()
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 
 		def from_urls_pillow(
@@ -749,6 +751,7 @@ class Dataset(BaseModel):
 			, dtype:dict = None
 			, column_names:list = None
 		):
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Image.typ)
 			urls = listify(urls)
 			file_count = len(urls)
 
@@ -778,6 +781,7 @@ class Dataset(BaseModel):
 				, name = name
 				, description = description
 				, source_path = source_path
+				, version = version_num
 			)
 
 			try:
@@ -791,12 +795,11 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, ingest = ingest
 				)
-				
-				dataset.increment_version()
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 
 		def from_numpy(
@@ -807,6 +810,7 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, ingest:bool = True
 		):
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Image.typ)
 			# Fetch array from .npy if it is not an in-memory array.
 			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
 				if (not isinstance(ndarray4D_or_npyPath, str)):
@@ -844,6 +848,7 @@ class Dataset(BaseModel):
 				, name = name
 				, description = description
 				, source_path = source_path
+				, version = version_num
 			)
 			try:
 				# Intentionally not passing name/ description
@@ -856,12 +861,11 @@ class Dataset(BaseModel):
 					, ingest = ingest
 					, source_path = source_path
 				)
-				
-				dataset.increment_version()
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 
 		def sequences_from_4D(
@@ -874,6 +878,7 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, source_path:str = None
 		):
+			"""Don't need to do versioning here because it happens at the Dataset.Image level"""
 			column_names = listify(column_names)
 			if ((ingest==False) and (isinstance(dtype, dict))):
 				raise Exception("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")

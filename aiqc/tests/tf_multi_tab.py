@@ -57,12 +57,17 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	# Note: iris 10x has ordinal labels, not text.
 	if (fold_count is not None):
 		file_path = datum.get_path('iris_10x.tsv')
+		name = "iris"
+		description = "Expanded sample population for cross validation"
 	else:
 		file_path = datum.get_path('iris.tsv')
+		name = "iris"
+		description = "Just large enough to be representative of population"
 	
 	shared_dataset = Dataset.Tabular.from_path(
 		file_path = file_path
-		, dtype = None
+		, name = name
+		, description = description
 	)
 
 	pipeline = Pipeline(
