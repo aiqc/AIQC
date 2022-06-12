@@ -225,6 +225,27 @@ def add_timestamps(model_class, instance, created):
 
 
 
+def dataset_matchVersion(name:str, typ:str):
+	"""
+	- New dataset doesn't have an ID yet/ isn't created
+	- Can't put this in wrangle because it uses ORM for query.
+	"""
+	latest_match, version_num = None, None
+	if (name is not None):
+		name_matches = Dataset.select().where(Dataset.name==name)
+		num_matches = name_matches.count()
+
+		if (num_matches==0):
+			version_num = 1
+		elif (num_matches>0):
+			latest_match = name_matches.order_by(Dataset.version)[-1]
+			version_num = latest_match.version + 1
+
+			if (latest_match.typ != typ):
+				msg = f"\n└── Yikes - Cannot create Dataset with name <{name}>. New type <{typ}> != latest version type <{latest_match.typ}>.\n"
+				raise Exception(msg)
+	return latest_match, version_num
+
 
 class Dataset(BaseModel):
 	"""
@@ -309,7 +330,7 @@ class Dataset(BaseModel):
 					f.delete_instance()
 				d.delete_instance()
 		dataset.delete_instance()
-	
+
 
 	def get_hashes(id:int):
 		dataset = Dataset.get_by_id(id)
@@ -317,32 +338,18 @@ class Dataset(BaseModel):
 		return hashes
 
 
-	def increment_version(id:int):
+	def match_versionHash(id:int, latest_match:object):
 		"""Files are created after Dataset, so we can't compare hashes as a db signal"""
 		dataset = Dataset.get_by_id(id)
 		name = dataset.name
-		if (name is not None):
-			latest_match = None
-			name_matches = Dataset.select().where(Dataset.name==name, Dataset.id!=id)
-			num_matches = name_matches.count()
-
-			if (num_matches==0):
-				latest_version = 1
-			elif (num_matches>0):
-				latest_match = name_matches.order_by(Dataset.version)[-1]
-				latest_version = latest_match.version + 1
-				
-			if (latest_match is not None):
-				if (latest_match.typ != dataset.typ):
-					msg = f"\nYikes - Dataset creation failed. New type <{dataset.typ}> != latest versions type <{latest_match.typ}>.\n"
-					raise Exception(msg)
-				
-				if (latest_match.get_hashes() == dataset.get_hashes()):
-					msg = f"\nYikes - Dataset creation failed. Hashes identical to latest Dataset name <{latest_match.name}> version <{latest_match.version}>.\n"
-					raise Exception(msg)
-			
-			dataset.version = latest_version
-			dataset.save()
+		proceed_dataset = dataset
+		if ((name is not None) and (latest_match is not None)):
+			if (latest_match.get_hashes() == dataset.get_hashes()):
+				msg = f"\n└── Info - Hashes identical to `Dataset.version={latest_match.version}`.\nReusing & returning that Dataset instead of creating duplicate version.\n"
+				print(msg)
+				dataset.delete_dropFiles()
+				proceed_dataset = latest_match
+		return proceed_dataset
 
 
 	class Tabular():
@@ -365,6 +372,7 @@ class Dataset(BaseModel):
 			, skip_header_rows:object = 'infer'
 			, ingest:bool = True
 		):
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
 			column_names = listify(column_names)
 
 			# In case we want buffer support
@@ -400,6 +408,7 @@ class Dataset(BaseModel):
 				, source_path = source_path
 				, name        = name
 				, description = description
+				, version     = version_num
 			)
 
 			try:
@@ -412,12 +421,11 @@ class Dataset(BaseModel):
 					, ingest           = ingest
 					, dataset_id       = dataset.id
 				)
-				
-				dataset.increment_version()
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 		
 		def from_pandas(
@@ -427,6 +435,7 @@ class Dataset(BaseModel):
 			, dtype:object = None
 			, column_names:list = None
 		):
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
 			column_names = listify(column_names)
 
 			if (type(dataframe).__name__ != 'DataFrame'):
@@ -439,6 +448,7 @@ class Dataset(BaseModel):
 				, name = name
 				, description = description
 				, source_path = None
+				, version = version_num
 			)
 
 			try:
@@ -448,12 +458,11 @@ class Dataset(BaseModel):
 					, column_names = column_names
 					, dataset_id = dataset.id
 				)
-				dataset.increment_version()
-
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 
 		def from_numpy(
@@ -463,6 +472,7 @@ class Dataset(BaseModel):
 			, dtype:object = None
 			, column_names:list = None
 		):
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
 			column_names = listify(column_names)
 			arr_validate(ndarray)
 
@@ -474,12 +484,13 @@ class Dataset(BaseModel):
 				"""))
 			
 			dataset = Dataset.create(
-				typ = Dataset.Tabular.typ
-				, idx = Dataset.Tabular.idx
-				, file_count = Dataset.Tabular.file_count
-				, name = name
+				typ           = Dataset.Tabular.typ
+				, idx         = Dataset.Tabular.idx
+				, file_count  = Dataset.Tabular.file_count
+				, name        = name
 				, description = description
 				, source_path = None
+				, version     = version_num
 			)
 			try:
 				File.from_numpy(
@@ -487,13 +498,12 @@ class Dataset(BaseModel):
 					, dtype = dtype
 					, column_names = column_names
 					, dataset_id = dataset.id
-				)
-				
-				dataset.increment_version()
+				)				
 			except:
 				dataset.delete_dropFiles() # Orphaned.
 				raise
-			return dataset
+			proceed_dataset = dataset.match_versionHash(latest_match)
+			return proceed_dataset
 
 
 		def to_pandas(id:int, columns:list=None, samples:list=None):
