@@ -74,7 +74,7 @@ def cols_by_indices(arr:object, col_indices:list):
 	return subset_arr
 
 
-def df_stringifyCols(df, columns):
+def df_stringifyCols(df:object, rename_columns:list):
 	"""
 	- `columns` is user-defined.
 	- Pandas will assign a range of int-based columns if there are no column names.
@@ -87,7 +87,7 @@ def df_stringifyCols(df, columns):
 		# in case the columns were a range of ints.
 		cols_str = [str(c) for c in cols_raw]
 	else:
-		cols_str = columns
+		cols_str = [str(c) for c in columns]
 	# dict from 2 lists
 	cols_dct = dict(zip(cols_raw, cols_str))
 	
@@ -110,7 +110,7 @@ def df_validate(dataframe:object, column_names:list):
 			"""))
 
 
-def df_set_metadata(dataframe:object, rename_columns:list=None, dtype:object=None):
+def df_set_metadata(dataframe:object, rename_columns:list=None, retype:object=None):
 	shape = {}
 	shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 	"""
@@ -118,38 +118,38 @@ def df_set_metadata(dataframe:object, rename_columns:list=None, dtype:object=Non
 	- Pandas auto-assigns int-based columns return a range when `df.columns`, 
 		but this forces each column name to be its own str.
 		"""
-	dataframe, columns = df_stringifyCols(df=dataframe, columns=rename_columns)
+	dataframe, columns = df_stringifyCols(df=dataframe, rename_columns=rename_columns)
 	"""
 	- At this point, user-provided `dtype` can be either a dict or a singular string/ class.
 	- If columns are renamed, then dtype must used the renamed column names.
 	- But a Pandas dataframe in-memory only has `dtypes` dict not a singular `dtype` str.
 	- So we will ensure that there is 1 dtype per column.
 	"""
-	if (dtype is not None):
+	if (retype is not None):
 		# Accepts dict{'column_name':'dtype_str'} or a single str.
 		try:
-			dataframe = dataframe.astype(dtype)
+			dataframe = dataframe.astype(retype)
 		except:
 			print("\nYikes - Failed to apply the dtypes you specified to the data you provided.\n")
 			raise
 		"""
-		Check if any user-provided dtype against actual dataframe dtypes to see if conversions failed.
+		Check if any user-provided dtype conversions failed in the actual dataframe dtypes
 		Pandas dtype seems robust in comparing dtypes: 
 		Even things like `'double' == dataframe['col_name'].dtype` will pass when `.dtype==np.float64`.
 		Despite looking complex, category dtype converts to simple 'category' string.
 		"""
-		if (not isinstance(dtype, dict)):
+		if (not isinstance(retype, dict)):
 			# Inspect each column:dtype pair and check to see if it is the same as the user-provided dtype.
 			actual_dtypes = dataframe.dtypes.to_dict()
 			for col_name, typ in actual_dtypes.items():
-				if (typ != dtype):
+				if (typ != retype):
 					raise Exception(dedent(f"""
-					Yikes - You specified `dtype={dtype},
+					Yikes - You specified `dtype={retype},
 					but Pandas did not convert it: `dataframe['{col_name}'].dtype == {typ}`.
 					You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
 					"""))
-		elif (isinstance(dtype, dict)):
-			for col_name, typ in dtype.items():
+		elif (isinstance(retype, dict)):
+			for col_name, typ in retype.items():
 				if (typ != dataframe[col_name].dtype):
 					raise Exception(dedent(f"""
 					Yikes - You specified `dataframe['{col_name}']:dtype('{typ}'),

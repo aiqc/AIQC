@@ -272,7 +272,7 @@ class Dataset(BaseModel):
 	sha256_hexdigest = CharField()
 	size_MB          = IntegerField()
 	contains_nan     = BooleanField()
-	header  = PickleField(null=True) #Image does not have.
+	header           = PickleField(null=True) #Image does not have.
 	source_path      = CharField(null=True) # when `from_numpy` or `from_pandas`.
 	urls             = JSONField(null=True)
 	version          = IntegerField(null=True)
@@ -352,7 +352,7 @@ class Dataset(BaseModel):
 			
 			df_validate(dataframe, column_names)
 			# Gather metadata whether ingested or not.
-			dataframe, columns, shape, dtype = df_set_metadata(
+			dataframe, columns, shape, dtype = df_setMetadata(
 				dataframe        = dataframe
 				, rename_columns = rename_columns
 				, retype         = retype
@@ -391,7 +391,6 @@ class Dataset(BaseModel):
 				dataset = Dataset.create(
 					typ                = Dataset.Tabular.typ
 					, shape            = shape
-					, is_ingested      = _ingest
 					, columns          = columns
 					, dtypes           = dtype
 					, sha256_hexdigest = sha256_hexdigest
@@ -401,10 +400,10 @@ class Dataset(BaseModel):
 					, blob             = blob
 					, name             = name
 					, description      = description
+					, is_ingested      = _ingest
 					, source_path      = _source_path
 					, source_format    = _source_format
 					, header           = _header
-					, urls             = None
 				)
 			return dataset
 
@@ -560,6 +559,8 @@ class Dataset(BaseModel):
 
 
 		def to_arr(id:int, columns:list=None, samples:list=None):
+			columns = listify(columns)
+			samples = listify(samples)
 			dataset = Dataset.get_by_id(id)
 			df = dataset.to_df(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
@@ -568,21 +569,16 @@ class Dataset(BaseModel):
 	
 	class Sequence():
 		typ = 'sequence'
-		idx = 0
 
 		def from_numpy(
 			ndarray3D_or_npyPath:object
-			, name:str = None
-			, description:str = None
-			, dtype:object = None
-			, column_names:list = None
-			, ingest:bool = True
-			, _file_format:str = None #used by Dataset.Image
-			, _disable_tqdm:bool = False #used by Dataset.Image
-			, _source_path:str = None #used by Dataset.Image
-			, _idx:int = None #used by Dataset.Image
-			, _dataset:object = None #used by Dataset.Image
+			, name:str            = None
+			, description:str     = None
+			, rename_columns:list = None
+			, retype:object       = None
+			, ingest:bool         = True
 		):
+			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name, Dataset.Sequence.typ)
 			"""Both `ingest=False` and `_source_path=None` is possible"""
 			if ((ingest==False) and (isinstance(dtype, dict))):
@@ -599,82 +595,76 @@ class Dataset(BaseModel):
 				if (not path.isfile(ndarray3D_or_npyPath)):
 					msg = "\nYikes - The path you provided is not a file according to `path.isfile(ndarray3D_or_npyPath)`\n"
 					raise Exception(msg)
-				if (_source_path is not None):
-					# Path or url to 3D image.
-					source_path = _source_path
-				elif (_source_path is None):
-					source_path = ndarray3D_or_npyPath
+				source_path = ndarray3D_or_npyPath
 				if (not source_path.lower().endswith(".npy")):
-					raise Exception("\nYikes - Path must end with '.npy' or '.NPY'\n")
+					raise Exception("\nYikes - Path must end with '.npy'\n")
 				try:
 					# `allow_pickle=False` prevented it from reading the file.
-					ndarray_3D = np.load(file=ndarray3D_or_npyPath)
+					arr = np.load(file=ndarray3D_or_npyPath)
 				except:
 					msg = "\nYikes - Failed to `np.load(file=ndarray3D_or_npyPath)` with your `ndarray3D_or_npyPath`:\n{ndarray3D_or_npyPath}\n"
-					raise Exception(msg)
-				_file_format = "npy"
+					raise Exception(msg)				
+				source_format = "npy"
 			elif (str(ndarray3D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
-				ndarray_3D = ndarray3D_or_npyPath 
-				if (_source_path is not None):
-					# Path or url to 3D image.
-					source_path = _source_path
-				elif (_source_path is None):
-					source_path = None
-				# Image may pass in its own format
-				if (_file_format is None):
-					_file_format = "parquet"
+				arr = ndarray3D_or_npyPath 
+				source_path = None
+				source_format = "ndarray"
 
-			column_names = listify(column_names)
-			arr_validate(ndarray_3D)
+			arr_validate(arr)
 
-			if (ndarray_3D.ndim != 3):
+			if (arr.ndim != 3):
 				raise Exception(dedent(f"""
 				Yikes - Sequence Datasets can only be constructed from 3D arrays.
-				Your array dimensions had <{ndarray_3D.ndim}> dimensions.
+				Your array dimensions had <{arr.ndim}> dimensions.
 				Tip: the shape of each internal array must be the same.
 				"""))
 
-			if (_idx is not None):
-				idx = _idx
-			elif (_idx is None):
-				idx = Dataset.Sequence.idx
-			file_count = len(ndarray_3D)
+			shape = {}
+			ashape = arr.shape
+			shape['samples'], shape['rows'], shape['columns']  = ashape[0], ashape[1], ashape[2]
 			
-			dataset = Dataset.create(
-				typ = Dataset.Sequence.typ
-				, idx = idx
-				, file_count = file_count
-				, name = name
-				, description = description
-				, source_path = source_path
-				, dataset = _dataset
-				, version = version_num
-			)
+			# Reshape into a tall array and check metadata, then reshape back
+			# Avoid copying the item in memory
+			arr = arr.reshape(shape['samples']*shape['rows'], shape['columns'])
+			arr = pd.DataFrame(arr)
+			contains_nan = arr.isnull().values.any()
+			arr, columns, shape, dtype = df_setMetadata(arr, rename_columns, retype)
+			arr = arr.to_numpy()
+			arr = arr.reshape(shape['samples'], shape['rows'], shape['columns'])
+			size_MB = getsizeof(arr)/1048576
 
-			try:
-				for i, arr in enumerate(tqdm(
-					ndarray_3D
-					, desc = "⏱️ Ingesting Sequences 🧬"
-					, ncols = 85
-					, disable = _disable_tqdm
-				)):
-					File.from_numpy(
-						ndarray = arr
-						, file_format = _file_format
-						, dataset_id = dataset.id
-						, column_names = column_names
-						, dtype = dtype
-						, _idx = i
-						, ingest = ingest
-					)
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
+			fs = filesystem("memory")
+			temp_path = "memory://temp.npy"
+			np.save(temp_path, arr)
+			blob = fs.cat(temp_path)
+			fs.delete(temp_path)
+			sha256_hexdigest = sha256(blob).hexdigest()
+			if (ingest==False): blob=None
+			
+			# Check for duplicates
+			dataset = dataset_matchHash(sha256_hexdigest, latest_match, name)
+
+			if (dataset is None):
+				dataset = Dataset.create(
+					typ                = Dataset.Sequence.typ
+					, shape            = shape
+					, columns          = columns
+					, dtypes           = dtype
+					, sha256_hexdigest = sha256_hexdigest
+					, size_MB          = size_MB
+					, contains_nan     = contains_nan
+					, version          = version_num
+					, blob             = blob
+					, name             = name
+					, description      = description
+					, is_ingested      = ingest
+					, source_path      = source_path
+					, source_format    = source_format
+				)
+			return dataset
 
 
-		def to_numpy(id:int, columns:list=None, samples:list=None):
+		def to_arr(id:int, columns:list=None, samples:list=None):
 			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
 			if (samples is None):
@@ -693,7 +683,7 @@ class Dataset(BaseModel):
 			return arr_3D
 
 
-		def to_pandas(id:int, columns:list=None, samples:list=None):
+		def to_df(id:int, columns:list=None, samples:list=None):
 			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
 			if (samples is None):
@@ -710,10 +700,10 @@ class Dataset(BaseModel):
 			dfs = [file.to_pandas(columns=columns) for file in files]
 			return dfs
 
-
+		### move this to image
 		def to_pillow(id:int):
 			dataset = Dataset.get_by_id(id)
-			arr = dataset.to_numpy().astype('uint8')
+			arr = dataset.to_arr().astype('uint8')
 			if (arr.shape[0]==1):
 				arr = arr.reshape(arr.shape[1], arr.shape[2])
 				img = Imaje.fromarray(arr, 'L')
@@ -1001,271 +991,6 @@ class Dataset(BaseModel):
 			images = [d.to_pillow() for d in datasets]
 			return images
 
-
-
-
-class File(BaseModel):
-	"""
-	- If we didn't have the File class and only chained Datasets together, then we would 
-	  have a bunch of optional attributes on Dataset class (e.g. blob) that wouldn't really make sense.
-	- If `blob=None` then isn't persisted therefore fetch from source_path or s3_path.
-	- Note that `dtype` does not require every column to be included as a key in the dictionary.
-	"""
-	idx = IntegerField()
-	file_format = CharField()
-	shape = JSONField()
-	is_ingested = BooleanField()
-	columns = JSONField()
-	dtypes = JSONField()
-	sha256_hexdigest = CharField()
-	size_MB = IntegerField()
-	header = PickleField(null=True) #Image does not have.
-	source_path = CharField(null=True) # when `from_numpy` or `from_pandas`.
-	blob = BlobField(null=True) # when `is_ingested==False`.
-
-	dataset = ForeignKeyField(Dataset, backref='files')
-	
-
-	def from_pandas(
-		dataframe:object
-		, dataset_id:int
-		, retype:object = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
-		, rename_columns:list = None
-		, source_path:str = None # passed in via from_path(), but not from_numpy().
-		, ingest:bool = True # from_path() method overwrites this.
-		, file_format:str = 'parquet' # from_path() method overwrites this.
-		, header:int = 'infer'
-		, _idx:int = 0 # Dataset.Sequence overwrites this.
-	):
-		"""This is the only place where File.create is ran"""
-		column_names = listify(rename_columns)
-		df_validate(dataframe, rename_columns)
-
-		# We need this metadata whether ingested or not.
-		dataframe, columns, shape, dtype = df_set_metadata(
-			dataframe=dataframe, rename_columns=rename_columns, dtype=retype
-		)
-
-		"""
-		- The Parquet file format naturally preserves pandas/numpy dtypes.
-		  Originally, we were using the `pyarrow` engine, but it has poor timedelta dtype support.
-		  https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
-		
-		- Although `fastparquet` engine preserves timedelta dtype, it does not work with BytesIO.
-		  So we write to a cache first.
-		  https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
-
-		- fastparquet default compression level = 6
-		  github.com/dask/fastparquet/blob/efd3fd19a9f0dcf91045c31ff4dbb7cc3ec504f2/fastparquet/compression.py#L15
-		  github.com/dask/fastparquet/issues/344
-		
-		- Originally github used sha1, but they plan to migrate to sha256
-		- Originally github hashed the compressed data, but later they switched to hashing pre-compressed data
-		- However running gzip compression an uncompressed parquet file will also compress the parquet metadata
-		  at the end of the file. So for simplicity's sake, we hash the compressed file generated by fastparquet.
-		"""
-		fs = filesystem("memory")
-		temp_path = "memory://temp.parq"
-		dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
-		blob = fs.cat(temp_path)
-		# bytes per MB
-		size_MB = getsizeof(blob)/1048576
-		fs.delete(temp_path)
-		sha256_hexdigest = sha256(blob).hexdigest()
-
-		# We just want the hash
-		if (ingest==False): blob=None	
-
-		dataset = Dataset.get_by_id(dataset_id)
-
-		file = File.create(
-			blob = blob
-			, file_format = file_format
-			, idx = _idx
-			, shape = shape
-			, source_path = source_path
-			, header = header
-			, is_ingested = ingest
-			, columns = columns
-			, dtypes = dtype
-			, sha256_hexdigest = sha256_hexdigest
-			, size_MB           = size_MB
-			, dataset = dataset
-		)
-		return file
-
-
-	def from_numpy(
-		ndarray:object
-		, file_format:str
-		, dataset_id:int
-		, column_names:list = None
-		, dtype:object = None #Or single string.
-		, _idx:int = 0
-		, ingest:bool = True
-	):
-		column_names = listify(column_names)
-		"""
-		Only supporting homogenous arrays because structured arrays are a pain
-		when it comes time to convert them to dataframes. It complained about
-		setting an index, scalar types, and dimensionality... yikes.
-		
-		Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
-		Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
-		Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
-		"""
-		arr_validate(ndarray)
-		"""
-		column_names and dict-based dtype will be handled by our `from_pandas()` method.
-		`pd.DataFrame` method only accepts a single dtype str, or infers if None.
-		"""
-		df = pd.DataFrame(data=ndarray)
-		file = File.from_pandas(
-			dataframe = df
-			, file_format = file_format
-			, dataset_id = dataset_id
-			, dtype = dtype
-			# Setting `column_names` will not overwrite the first row of homogenous array:
-			, column_names = column_names
-			, _idx = _idx
-			, ingest = ingest
-		)
-		return file
-
-
-	def from_path(
-		file_path:str
-		, file_format:str
-		, dataset_id:int
-		, dtype:object = None
-		, column_names:list = None
-		, header:object = 'infer'
-		, ingest:bool = True
-	):
-		column_names = listify(column_names)
-		
-		df = path_to_df(
-			file_path = file_path
-			, file_format = file_format
-			, column_names = column_names
-			, header = header
-		)
-
-		file = File.from_pandas(
-			dataframe = df
-			, dataset_id = dataset_id
-			, dtype = dtype
-			, column_names = None # See docstring above.
-			, source_path = file_path
-			, file_format = file_format
-			, header = header
-			, ingest = ingest
-		)
-		return file
-
-
-	def to_pandas(id:int, columns:list=None, samples:list=None):
-		file = File.get_by_id(id)
-		columns = listify(columns)
-		samples = listify(samples)
-		
-		f_dtypes = file.dtypes
-		f_cols = file.columns
-
-		if (file.is_ingested==False):
-			# future: check if `query_fetcher` defined.
-			df = path_to_df(
-				file_path = file.source_path
-				, file_format = file.file_format
-				, column_names = columns
-				, header = file.header
-			)
-		elif (file.is_ingested==True):
-			df = pd.read_parquet(
-				BytesIO(file.blob)
-				, engine = 'fastparquet'
-				, columns=columns
-			)
-
-		# Ensures columns are rearranged to be in the correct order.
-		if ((columns is not None) and (df.columns.to_list() != columns)):
-			df = df.filter(columns)
-		# Specific rows.
-		if (samples is not None):
-			df = df.loc[samples]
-		
-		# Accepts dict{'column_name':'dtype_str'} or a single str.
-		if (isinstance(f_dtypes, dict)):
-			if (columns is None):
-				columns = f_cols
-			# Prunes out the excluded columns from the dtype dict.
-			df_dtype_cols = list(f_dtypes.keys())
-			for col in df_dtype_cols:
-				if (col not in columns):
-					del f_dtypes[col]
-		elif (isinstance(f_dtypes, str)):
-			pass #dtype just gets applied as-is.
-		df = df.astype(f_dtypes)
-		return df
-
-
-	def to_numpy(id:int, columns:list=None, samples:list=None):
-		"""
-		This is the only place where to_numpy() relies on to_pandas(). 
-		It does so because pandas is good with the parquet and dtypes.
-		"""
-		columns = listify(columns)
-		samples = listify(samples)
-		file = File.get_by_id(id)
-		f_dataset = file.dataset
-		# Handles when Dataset.Sequence is stored as a single .npy file
-		if ((f_dataset.typ=='sequence') and (file.is_ingested==False)):
-			# Subsetting a File via `samples` is irrelevant here because the entire File is 1 sample.
-			# Subset the columns:
-			if (columns is not None):
-				col_indices = colIndices_from_colNames(
-					column_names = file.columns
-					, desired_cols = columns
-				)
-			dtype = list(file.dtypes.values())[0] #`ingest==False` only allows singular dtype.
-
-			source_path = file.dataset.source_path
-			if (source_path.lower().endswith('.npy')):
-				# The .npy file represents the entire dataset so we'll lazy load and grab a slice.			
-				arr = np.load(source_path)
-			else:
-				# Handled by PIL. Check if it is a url or not. 
-				if (val_url(source_path)):
-					arr = np.array(
-						Imaje.open(
-							requests_get(source_path, stream=True).raw
-					))
-				else:
-					arr = np.array(Imaje.open(source_path))
-			
-			if (arr.ndim==2):
-				# grayscale image.
-				if (columns is not None):
-					arr = arr[:,col_indices].astype(dtype)
-				else:
-					arr = arr.astype(dtype)
-			elif (arr.ndim==3):
-				if (columns is not None):
-					# 1st accessor[] gets the 2D. 2nd accessor[] the cols.
-					arr = arr[file.idx][:,col_indices].astype(dtype)
-				else:
-					arr = arr[file.idx].astype(dtype)
-			elif (arr.ndim==4):
-				if (columns is not None):
-					# 1st accessor[] gets the 3D. 2nd accessor[] the 2D. 3rd [] the cols.
-					arr = arr[f_dataset.idx][file.idx][:,col_indices].astype(dtype)
-				else:
-					arr = arr[f_dataset.idx][file.idx].astype(dtype)
-
-		else:
-			df = File.to_pandas(id=id, columns=columns, samples=samples)
-			arr = df.to_numpy()
-		return arr
 
 
 class Label(BaseModel):
