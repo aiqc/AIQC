@@ -447,9 +447,9 @@ class Dataset(BaseModel):
 			source_path = path.abspath(file_path)
 
 			df = path_to_df(
-				file_path         = source_path
-				, file_format     = source_format
-				, header = header
+				file_path     = source_path
+				, file_format = source_format
+				, header      = header
 			)
 
 			dataset = Dataset.Tabular.from_df(
@@ -468,10 +468,10 @@ class Dataset(BaseModel):
 
 		def from_arr(
 			ndarray:object
-			, name:str          = None
-			, description:str   = None
-			, dtype:object      = None
-			, column_names:list = None
+			, name:str            = None
+			, description:str     = None
+			, rename_columns:list = None
+			, retype:object       = None
 		):
 			"""
 			Only supporting homogenous arrays because structured arrays are a pain
@@ -485,7 +485,7 @@ class Dataset(BaseModel):
 			column_names and dict-based dtype will be handled by our `from_df` method 
 			because `pd.DataFrame` method only accepts a single dtype str, or infers if None.
 			"""
-			column_names = listify(column_names)
+			rename_columns = listify(rename_columns)
 			arr_validate(ndarray)
 
 			dim = ndarray.ndim
@@ -494,18 +494,18 @@ class Dataset(BaseModel):
 				Yikes - Tabular Datasets only support 1D and 2D arrays.
 				Your array dimensions had <{dim}> dimensions.
 				"""))
-			df = pd.DataFrame(ndarray, columns=column_names)
+			df = pd.DataFrame(ndarray)
 
 			dataset = Dataset.Tabular.from_df(
-				dataframe          = df
-				, name             = name
-				, description      = description
-				, column_names     = column_names
-				, dtype            = dtype
-				, _ingest          = True 
-				, _source_format   = 'ndarray'
-				, _source_path     = None
-				, _header          = None
+				dataframe        = df
+				, name           = name
+				, description    = description
+				, rename_columns = rename_columns
+				, retype         = retype
+				, _ingest        = True 
+				, _source_format = 'ndarray'
+				, _source_path   = None
+				, _header        = None
 			)
 			return dataset
 
@@ -522,7 +522,7 @@ class Dataset(BaseModel):
 			if (dataset.is_ingested==False):
 				df = path_to_df(
 					file_path     = dataset.source_path
-					, file_format = dataset.file_format
+					, file_format = dataset.source_format
 					, header      = dataset.header
 				)
 				# Don't know col names at source - can't filter until renamed
