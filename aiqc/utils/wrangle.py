@@ -110,7 +110,7 @@ def df_validate(dataframe:object, column_names:list):
 			"""))
 
 
-def df_set_metadata(dataframe:object, rename_columns:list=None, retype:object=None):
+def df_setMetadata(dataframe:object, rename_columns:list=None, retype:object=None):
 	shape = {}
 	shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 	"""

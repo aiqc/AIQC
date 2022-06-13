@@ -28,7 +28,6 @@ from sys import modules, getsizeof
 from io import BytesIO
 from shutil import rmtree
 from hashlib import sha256
-from gzip import compress
 from random import randint, sample
 from uuid import uuid1
 from itertools import product
@@ -328,10 +327,8 @@ class Dataset(BaseModel):
 		"""
 		- Does not inherit the Dataset class e.g. `class Tabular(Dataset):`
 		  because then ORM would make a separate table for it.
-		- It is just a collection of methods and default variables.
+		- It is just a collection of methods.
 		"""
-		typ = 'tabular'
-
 
 		def from_df(
 			dataframe:object
@@ -349,7 +346,7 @@ class Dataset(BaseModel):
 				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
 			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
 			column_names = listify(column_names)
-			
+
 			df_validate(dataframe, column_names)
 			# Gather metadata whether ingested or not.
 			dataframe, columns, shape, dtype = df_setMetadata(
@@ -379,7 +376,7 @@ class Dataset(BaseModel):
 			fs = filesystem("memory")
 			temp_path = "memory://temp.parq"
 			size_MB = getsizeof(dataframe)/1048576
-			dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
+			dataframe.to_parquet(temp_path, engine="fastparquet", compression="zstd", index=False)
 			blob = fs.cat(temp_path)
 			fs.delete(temp_path)
 			sha256_hexdigest = sha256(blob).hexdigest()
@@ -389,7 +386,7 @@ class Dataset(BaseModel):
 			
 			if (dataset is None):
 				dataset = Dataset.create(
-					typ                = Dataset.Tabular.typ
+					typ                = 'tabular'
 					, shape            = shape
 					, columns          = columns
 					, dtypes           = dtype
@@ -526,6 +523,9 @@ class Dataset(BaseModel):
 				)
 				# Don't know col names at source - can't filter until renamed
 				df = df_stringifyCols(df,d_cols)
+				if (d_dtypes is not None):
+					df = df.astype(d_dtypes)
+
 			elif (dataset.is_ingested==True):
 				# Columns have been saved as renamed
 				df = pd.read_parquet(
@@ -568,8 +568,6 @@ class Dataset(BaseModel):
 
 	
 	class Sequence():
-		typ = 'sequence'
-
 		def from_numpy(
 			ndarray3D_or_npyPath:object
 			, name:str            = None
@@ -579,11 +577,12 @@ class Dataset(BaseModel):
 			, ingest:bool         = True
 		):
 			rename_columns = listify(rename_columns)
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Sequence.typ)
-			"""Both `ingest=False` and `_source_path=None` is possible"""
-			if ((ingest==False) and (isinstance(dtype, dict))):
-				msg = "\nYikes - If `ingest=False` then `dtype` must be either a str or a single NumPy-based type.\n"
+			latest_match, version_num = dataset_matchVersion(name, 'sequence')
+			
+			if (not isinstance(retype,str)):
+				msg = "\nYikes - AIQC 3D NumPy ingestion only supports string-based retyping.\n"
 				raise Exception(msg)
+
 			# Fetch array from .npy if it is not an in-memory array.
 			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
 				if (not isinstance(ndarray3D_or_npyPath, str)):
@@ -599,7 +598,6 @@ class Dataset(BaseModel):
 				if (not source_path.lower().endswith(".npy")):
 					raise Exception("\nYikes - Path must end with '.npy'\n")
 				try:
-					# `allow_pickle=False` prevented it from reading the file.
 					arr = np.load(file=ndarray3D_or_npyPath)
 				except:
 					msg = "\nYikes - Failed to `np.load(file=ndarray3D_or_npyPath)` with your `ndarray3D_or_npyPath`:\n{ndarray3D_or_npyPath}\n"
@@ -622,17 +620,27 @@ class Dataset(BaseModel):
 			shape = {}
 			ashape = arr.shape
 			shape['samples'], shape['rows'], shape['columns']  = ashape[0], ashape[1], ashape[2]
-			
-			# Reshape into a tall array and check metadata, then reshape back
-			# Avoid copying the item in memory
-			arr = arr.reshape(shape['samples']*shape['rows'], shape['columns'])
-			arr = pd.DataFrame(arr)
-			contains_nan = arr.isnull().values.any()
-			arr, columns, shape, dtype = df_setMetadata(arr, rename_columns, retype)
-			arr = arr.to_numpy()
-			arr = arr.reshape(shape['samples'], shape['rows'], shape['columns'])
-			size_MB = getsizeof(arr)/1048576
 
+			if (rename_columns is not None):
+				cols_len = len(rename_columns)
+				if (shape['columns'] != cols_len):
+					msg = f"\nYikes - `len(rename_columns)=={cols_len} not equal to `array.shape[-1]=={shape['columns']}`\n"
+					raise Exception(msg)
+				columns = rename_columns
+			else:
+				nums = list(range(arr.shape['columns']))
+				columns = [str(i) for i in nums]
+			
+			if (retype is not None):
+				try:
+					arr = arr.astype(retype)
+					dtype = str(arr.dtype)
+				except:
+					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
+					raise
+
+			contains_nan = any(np.isnan(arr))
+			size_MB = getsizeof(arr)/1048576
 			fs = filesystem("memory")
 			temp_path = "memory://temp.npy"
 			np.save(temp_path, arr)
@@ -646,7 +654,7 @@ class Dataset(BaseModel):
 
 			if (dataset is None):
 				dataset = Dataset.create(
-					typ                = Dataset.Sequence.typ
+					typ                = 'sequence'
 					, shape            = shape
 					, columns          = columns
 					, dtypes           = dtype
@@ -665,132 +673,211 @@ class Dataset(BaseModel):
 
 
 		def to_arr(id:int, columns:list=None, samples:list=None):
-			columns, samples = listify(columns), listify(samples)
+			columns, samples = listify(columns), listify(samples)			
 			dataset = Dataset.get_by_id(id)
-			if (samples is None):
-				files = dataset.files
-			elif (samples is not None):
-				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
-				# So run a query to get those files: `<<` means `in`.
-				files = File.select().join(Dataset).where(
-					Dataset.id==dataset.id, File.idx<<samples
+
+			if (dataset.is_ingested==False):
+				arr = np.load(dataset.source_path)
+				if (dataset.retype is not None):
+					arr = arr.astype(dataset.retype)
+			elif (dataset.is_ingested==True):
+				blob = BytesIO(dataset.blob)
+				arr = np.load(blob)
+
+			if (columns is not None):
+				col_indices = colIndices_from_colNames(
+					column_names = dataset.columns
+					, desired_cols = columns
 				)
-			files = list(files)
-			# Then call them with the column filter.
-			# So don't pass `samples=samples` to the file.
-			list_2D = [f.to_numpy(columns=columns) for f in files]
-			arr_3D = np.array(list_2D)
-			return arr_3D
+				# Verified that this has index replacement
+				arr = arr[samples,:,col_indices]
+			else:
+				arr = arr[samples]
+			return arr
 
 
 		def to_df(id:int, columns:list=None, samples:list=None):
+			"""Need dataframes for interpolation"""
 			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
-			if (samples is None):
-				files = dataset.files
-			elif (samples is not None):
-				# Here the 'sample' is the entire file. Whereas, in 2D 'sample==row'.
-				# So run a query to get those files: `<<` means `in`.
-				files = File.select().join(Dataset).where(
-					Dataset.id==dataset.id, File.idx<<samples
-				)
-			files = list(files)
-			# Then call them with the column filter.
-			# So don't pass `samples=samples` to the file.
-			dfs = [file.to_pandas(columns=columns) for file in files]
-			return dfs
-
-		### move this to image
-		def to_pillow(id:int):
-			dataset = Dataset.get_by_id(id)
-			arr = dataset.to_arr().astype('uint8')
-			if (arr.shape[0]==1):
-				arr = arr.reshape(arr.shape[1], arr.shape[2])
-				img = Imaje.fromarray(arr, 'L')
-			elif (arr.shape[0]==3):
-				img = Imaje.fromarray(arr, 'RGB')
-			elif (arr.shape[0]==4):
-				img = Imaje.fromarray(arr, 'RGBA')
+			arr_3D = dataset.to_arr(columns,samples)
+			if (columns is not None):
+				dfs = [pd.DataFrame(arr_2D, columns=columns) for arr_2D in arr_3D]
 			else:
-				raise Exception("\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n")
-			return img
+				dfs = [pd.DataFrame(arr_2D, columns=dataset.columns) for arr_2D in arr_3D]
+			return dfs
 
 
 	class Image():
-		"""Each Image sample is a Dataset.Sequence of 1 or more Files."""
-		# PIL supported file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
-		typ = 'image'
-		idx = 0
+		"""PIL formats: pillow.readthedocs.io/en/stable/handbook/image-file-formats.html"""
+
+		def from_numpy(
+			ndarray4D_or_npyPath:object
+			, ingest:bool         = True
+			, name:str            = None
+			, description:str     = None
+			, rename_columns:list = None
+			, retype:object       = None
+			, _source_path:str    = None # from folder/urls may override
+			, _source_format:str  = None # from folder/urls overrides
+		):
+			rename_columns = listify(rename_columns)
+			latest_match, version_num = dataset_matchVersion(name, 'image')
+			
+			if (not isinstance(retype,str)):
+				msg = "\nYikes - AIQC 4D NumPy ingestion only supports string-based retyping.\n"
+				raise Exception(msg)
+
+			# Fetch array from .npy if it is not an in-memory array.
+			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
+				if (not isinstance(ndarray4D_or_npyPath, str)):
+					msg = "\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n"
+					raise Exception(msg)
+				if (not path.exists(ndarray4D_or_npyPath)):
+					msg = "\nYikes - The path you provided does not exist according to `path.exists(ndarray4D_or_npyPath)`\n"
+					raise Exception(msg)
+				if (not path.isfile(ndarray4D_or_npyPath)):
+					msg = "\nYikes - The path you provided is not a file according to `path.isfile(ndarray4D_or_npyPath)`\n"
+					raise Exception(msg)
+				source_path = ndarray4D_or_npyPath
+				if (not source_path.lower().endswith(".npy")):
+					raise Exception("\nYikes - Path must end with '.npy'\n")
+				try:
+					arr = np.load(file=ndarray4D_or_npyPath)
+				except:
+					msg = "\nYikes - Failed to `np.load(file=ndarray4D_or_npyPath)` with your `ndarray4D_or_npyPath`:\n{ndarray4D_or_npyPath}\n"
+					raise Exception(msg)				
+				source_format = "npy"
+				
+			elif (str(ndarray4D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
+				arr = ndarray4D_or_npyPath 
+				if (_source_path is None):
+					source_path = None
+				if (_source_format is None):
+					source_format = "ndarray"
+
+			arr_validate(arr)
+
+			if (arr.ndim != 4):
+				raise Exception(dedent(f"""
+				Yikes - Sequence Datasets can only be constructed from 4D arrays.
+				Your array dimensions had <{arr.ndim}> dimensions.
+				Tip: the shape of each internal array must be the same.
+				"""))
+
+			shape = {}
+			s = arr.shape
+			shape['samples'], shape['channels'], shape['rows'], shape['columns']  = s[0], s[1], s[2], s[3]
+
+			if (rename_columns is not None):
+				cols_len = len(rename_columns)
+				if (shape['columns'] != cols_len):
+					msg = f"\nYikes - `len(rename_columns)=={cols_len} not equal to `array.shape[-1]=={shape['columns']}`\n"
+					raise Exception(msg)
+				columns = rename_columns
+			else:
+				nums = list(range(arr.shape['columns']))
+				columns = [str(i) for i in nums]
+			
+			if (retype is not None):
+				try:
+					arr = arr.astype(retype)
+					dtype = str(arr.dtype)
+				except:
+					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
+					raise
+
+			contains_nan = any(np.isnan(arr))
+			size_MB = getsizeof(arr)/1048576
+			fs = filesystem("memory")
+			temp_path = "memory://temp.npy"
+			np.save(temp_path, arr)
+			blob = fs.cat(temp_path)
+			fs.delete(temp_path)
+			sha256_hexdigest = sha256(blob).hexdigest()
+			if (ingest==False): blob=None
+			
+			# Check for duplicates
+			dataset = dataset_matchHash(sha256_hexdigest, latest_match, name)
+
+			if (dataset is None):
+				dataset = Dataset.create(
+					typ                = 'image'
+					, shape            = shape
+					, columns          = columns
+					, dtypes           = dtype
+					, sha256_hexdigest = sha256_hexdigest
+					, size_MB          = size_MB
+					, contains_nan     = contains_nan
+					, version          = version_num
+					, blob             = blob
+					, name             = name
+					, description      = description
+					, is_ingested      = ingest
+					, source_path      = source_path
+					, source_format    = source_format
+				)
+			return dataset
+
 
 		def from_folder_pillow(
 			folder_path:str
-			, ingest:bool = True
-			, name:str = None
-			, description:str = None
-			, dtype:dict = None
-			, column_names:list = None
+			, ingest:bool         = False
+			, name:str            = None
+			, description:str     = None
+			, retype:object       = None
+			, rename_columns:list = None
 		):
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Image.typ)
+			#pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.format
 			source_path = path.abspath(folder_path)
 			file_paths = sorted_file_list(source_path)
-			file_count = len(file_paths)
 
 			# Validated during `sequences_from_4D`.
-			arr_4d = []
-			file_formats = []
+			arr_3Ds = []
+			formats = []
 			for p in file_paths:
 				img = Imaje.open(p)
+				formats.append(img.format)
 				arr = np.array(img)
+				# Coerce to 3D
 				if (arr.ndim==2):
 					arr=np.array([arr])
-				arr_4d.append(arr)
-				#pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.format
-				file_formats.append(img.format)
-			arr_4d = np.array(arr_4d)
+				arr_3Ds.append(arr)
+			arr_4D = np.array(arr_4D)
 
-			dataset = Dataset.create(
-				typ = Dataset.Image.typ
-				, idx = Dataset.Image.idx
-				, file_count = file_count
-				, name = name
-				, description = description
-				, source_path = source_path
-				, version = version_num
+			formats = set(formats)
+			if len(formats)==1:
+				_source_format = formats[0]
+			else:
+				_source_format = 'mixed'
+
+			dataset = Dataset.Image.from_numpy(
+				ndarray4D_or_npyPath = arr_4D
+				, name               = name
+				, description        = description
+				, rename_columns     = rename_columns
+				, retype             = retype
+				, ingest             = ingest
+				, _source_path       = source_path
+				, _source_format     = _source_format
 			)
-			try:		
-				# Intentionally not passing name to avoid versioning conflicts
-				Dataset.Image.sequences_from_4D(
-					dataset = dataset
-					, ndarray_4D = arr_4d
-					, paths = file_paths
-					, file_formats = file_formats
-					, dtype = dtype
-					, column_names = column_names
-					, ingest = ingest
-				)
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
+			return dataset
 
 
 		def from_urls_pillow(
 			urls:list
-			, source_path:str = None # not used anywhere, but doesn't hurt to record.
-			, ingest:bool = True
-			, name:str = None
-			, description:str = None
-			, dtype:dict = None
-			, column_names:list = None
+			, ingest:bool         = False
+			, source_path:str     = None # not used anywhere, but doesn't hurt to record e.g. FTP site
+			, name:str            = None
+			, description:str     = None
+			, retype:object       = None
+			, rename_columns:list = None
 		):
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Image.typ)
 			urls = listify(urls)
-			file_count = len(urls)
 
 			# Validated during `sequences_from_4D`.
-			arr_4d = []
-			file_formats = []
+			arr_4D = []
+			formats = []
 			for url in urls:
 				validation = val_url(url)
 				if (validation != True): #`== False` doesn't work.
@@ -799,197 +886,96 @@ class Dataset(BaseModel):
 				img = Imaje.open(
 					requests_get(url, stream=True).raw
 				)
+				formats.append(img.format)
 				arr = np.array(img)
+				# Coerce 3D
 				if (arr.ndim==2):
 					arr=np.array([arr])
-				arr_4d.append(arr)
-				#pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.format
-				file_formats.append(img.format)
-			arr_4d = np.array(arr_4d)
+				arr_4D.append(arr)
+			arr_4D = np.array(arr_4D)
 
-			dataset = Dataset.create(
-				typ = Dataset.Image.typ
-				, idx = Dataset.Image.idx
-				, file_count = file_count
-				, name = name
-				, description = description
-				, source_path = source_path
-				, version = version_num
+			formats = set(formats)
+			if len(formats)==1:
+				source_format = formats[0]
+			else:
+				source_format = 'mixed'
+
+			dataset = Dataset.Image.from_numpy(
+				ndarray4D_or_npyPath = arr_4D
+				, name               = name
+				, description        = description
+				, rename_columns     = rename_columns
+				, retype             = retype
+				, ingest             = ingest
+				, _source_path       = source_path
+				, _source_format     = source_format
 			)
+			return dataset
+		
 
-			try:
-				# Intentionally not passing name to avoid versioning conflicts
-				Dataset.Image.sequences_from_4D(
-					dataset = dataset
-					, ndarray_4D = arr_4d
-					, paths = urls
-					, file_formats = file_formats
-					, dtype = dtype
-					, column_names = column_names
-					, ingest = ingest
+		def to_arr(id:int, columns:list=None, samples:list=None):
+			columns, samples = listify(columns), listify(samples)			
+			dataset = Dataset.get_by_id(id)
+
+			if (dataset.is_ingested==False):
+				arr = np.load(dataset.source_path)
+				if (dataset.retype is not None):
+					arr = arr.astype(dataset.retype)
+			elif (dataset.is_ingested==True):
+				blob = BytesIO(dataset.blob)
+				arr = np.load(blob)
+
+			if (columns is not None):
+				col_indices = colIndices_from_colNames(
+					column_names = dataset.columns
+					, desired_cols = columns
 				)
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
+				# Verified that this has index replacement
+				arr = arr[samples,:,:,col_indices]
+			else:
+				arr = arr[samples]
+			return arr
 
 
-		def from_numpy(
-			ndarray4D_or_npyPath:object
-			, name:str = None
-			, description:str = None
-			, dtype:object = None
-			, column_names:list = None
-			, ingest:bool = True
-		):
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Image.typ)
-			# Fetch array from .npy if it is not an in-memory array.
-			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
-				if (not isinstance(ndarray4D_or_npyPath, str)):
-					msg = "\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n"
-					raise Exception(msg)
-				if (not path.exists(ndarray4D_or_npyPath)):
-					msg = "\nYikes - The path you provided does not exist according to `path.exists(ndarray3D_or_npyPath)`\n"
-					raise Exception(msg)
-				if (not path.isfile(ndarray4D_or_npyPath)):
-					msg = "\nYikes - The path you provided is not a file according to `path.isfile(ndarray3D_or_npyPath)`\n"
-					raise Exception(msg)
-				if (not ndarray4D_or_npyPath.lower().endswith('.npy')):
-					msg = "\nYikes - Path must end with '.npy' or '.NPY'\n"
-					raise Exception(msg)
-				source_path = ndarray4D_or_npyPath
-				try:
-					# `allow_pickle=False` prevented it from reading the file.
-					ndarray_4D = np.load(file=ndarray4D_or_npyPath)
-				except:
-					msg = "\nYikes - Failed to `np.load(file=ndarray4D_or_npyPath)` with your `ndarray4D_or_npyPath`:\n{ndarray4D_or_npyPath}\n"
-					raise Exception(msg)
-				file_formats = ["npy" for i in range(len(ndarray_4D))]
-			elif (str(ndarray4D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
-				source_path = None
-				ndarray_4D = ndarray4D_or_npyPath
-				if (ingest==False):
-					raise Exception("\nYikes - If provided an in-memory array, then `ingest` cannot be False.\n")
-				file_formats = ["parquet" for i in range(len(ndarray_4D))]
-
-			file_count = ndarray_4D.shape[1]#This is the 3rd dimension
-			dataset = Dataset.create(
-				typ = Dataset.Image.typ
-				, idx = Dataset.Image.idx
-				, file_count = file_count
-				, name = name
-				, description = description
-				, source_path = source_path
-				, version = version_num
-			)
-			try:
-				# Intentionally not passing name/ description
-				Dataset.Image.sequences_from_4D(
-					dataset = dataset
-					, file_formats = file_formats
-					, ndarray_4D = ndarray_4D
-					, dtype = dtype
-					, column_names = column_names
-					, ingest = ingest
-					, source_path = source_path
-				)
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
-
-
-		def sequences_from_4D(
-			dataset:object
-			, file_formats:list
-			, ndarray_4D:object
-			, ingest:bool = True
-			, paths:list = None
-			, dtype:object = None
-			, column_names:list = None
-			, source_path:str = None
-		):
-			"""Don't need to do versioning here because it happens at the Dataset.Image level"""
-			column_names = listify(column_names)
-			if ((ingest==False) and (isinstance(dtype, dict))):
-				raise Exception("\nYikes - If `ingest==False` then `dtype` must be either a str or a single NumPy-based type.\n")
-			# Checking that the shape is 4D validates that each internal array is uniformly shaped.
-			if (ndarray_4D.ndim!=4):
-				raise Exception("\nYikes - Ingestion failed: `ndarray_4D.ndim!=4`. Tip: shapes of each image array must be the same.\n")
-			arr_validate(ndarray_4D)
+		def to_df(id:int, columns:list=None, samples:list=None):
+			"""Need dataframes for interpolation"""
+			columns, samples = listify(columns), listify(samples)
+			dataset = Dataset.get_by_id(id)
+			arr_4D = dataset.to_arr(columns,samples)
 			
-			if (paths is not None):
-				for i, arr in enumerate(tqdm(
-					ndarray_4D
-					, desc = "🖼️ Ingesting Images 🖼️"
-					, ncols = 85
-				)):
-					Dataset.Sequence.from_numpy(
-						ndarray3D_or_npyPath = arr
-						, dtype = dtype
-						, column_names = column_names
-						, ingest = ingest
-						, _file_format = file_formats[i]
-						, _idx = i
-						, _source_path = paths[i]
-						, _disable_tqdm = True
-						, _dataset = dataset
-					)
-			# Creating Sequences is optional for the npy file approach.
-			elif (paths is None):
-				for i, arr in enumerate(tqdm(
-					ndarray_4D
-					, desc = "🖼️ Ingesting Images 🖼️"
-					, ncols = 85
-				)):
-					file_format = file_formats[i]
-					Dataset.Sequence.from_numpy(
-						ndarray3D_or_npyPath = arr
-						, file_formats = file_formats[i]
-						, dtype = dtype
-						, column_names = column_names
-						, ingest = ingest
-						, _idx = i
-						, _source_path = source_path
-						, _disable_tqdm = True
-						, _dataset = dataset
-					)
+			if (columns is None):
+				columns = dataset.columns
 
-
-		def to_numpy(id:int, samples:list=None, columns:list=None):
-			samples, columns = listify(samples), listify(columns)
-			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
-			if (samples is not None):
-				# ORM was queries were being weird about the self foreign key.
-				datasets = [Dataset.get_by_id(s) for s in samples]
-			elif (samples is None):
-				datasets = list(Dataset.get_by_id(id).datasets)
-			arr_4d = np.array([d.to_numpy(columns=columns) for d in datasets])
-			return arr_4d
-
-
-		def to_pandas(id:int, samples:list=None, columns:list=None):
-			samples, columns = listify(samples), listify(columns)
-			# The 3D array is the sample. Some `samples` not passed `to_numpy()`.
-			if (samples is not None):
-				# ORM was queries were being weird about the self foreign key.
-				datasets = [Dataset.get_by_id(s) for s in samples]
-			elif (samples is None):
-				datasets = list(Dataset.get_by_id(id).datasets)
-			dfs = [d.to_pandas(columns=columns) for d in datasets]
+			dfs = []
+			for arr_3D in arr_4D:
+				df_layer = []
+				for arr_2D in arr_3D:
+					df = pd.DataFrame(arr_2D, columns=columns)
+					df_layer.append(df)
+				dfs.append(df_layer)
 			return dfs
-
+		
 
 		def to_pillow(id:int, samples:list=None):
+			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
-			datasets = dataset.datasets
-			if (samples is not None):
-				samples = listify(samples)
-				datasets = [d for d in datasets if d.idx in samples]
-			images = [d.to_pillow() for d in datasets]
-			return images
+			arr_4D = dataset.to_arr(columns,samples).astype('uint8')
+			
+			imgs = []
+			for arr in arr_4D:
+				# shappe: channels, rows, columns
+				if (arr.shape[0]==1):
+					arr = arr.reshape(arr.shape[1], arr.shape[2])
+					img = Imaje.fromarray(arr, 'L')
+				elif (arr.shape[0]==3):
+					img = Imaje.fromarray(arr, 'RGB')
+				elif (arr.shape[0]==4):
+					img = Imaje.fromarray(arr, 'RGBA')
+				else:
+					raise Exception("\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n")
+				imgs.append(img)
+			return imgs
+
 
 
 
