@@ -74,13 +74,13 @@ def cols_by_indices(arr:object, col_indices:list):
 	return subset_arr
 
 
-def pandas_stringify_columns(df, columns):
+def df_stringifyCols(df, columns):
 	"""
 	- `columns` is user-defined.
 	- Pandas will assign a range of int-based columns if there are no column names.
-		So I want to coerce them to strings because I don't want both string and int-based 
-		column names for when calling columns programmatically, 
-		and more importantly, 'Exception: parquet must have string column names'
+	  So I want to coerce them to strings because I don't want both string and int-based 
+	  column names for when calling columns programmatically, 
+	  and more importantly, 'Exception: parquet must have string column names'
 	"""
 	cols_raw = df.columns.to_list()
 	if (columns is None):
@@ -110,7 +110,7 @@ def df_validate(dataframe:object, column_names:list):
 			"""))
 
 
-def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None):
+def df_set_metadata(dataframe:object, rename_columns:list=None, dtype:object=None):
 	shape = {}
 	shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 	"""
@@ -118,7 +118,7 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 	- Pandas auto-assigns int-based columns return a range when `df.columns`, 
 		but this forces each column name to be its own str.
 		"""
-	dataframe, columns = pandas_stringify_columns(df=dataframe, columns=column_names)
+	dataframe, columns = df_stringifyCols(df=dataframe, columns=rename_columns)
 	"""
 	- At this point, user-provided `dtype` can be either a dict or a singular string/ class.
 	- If columns are renamed, then dtype must used the renamed column names.
@@ -157,7 +157,7 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 					You can either use a different dtype, or try to set your dtypes prior to ingestion in Pandas.
 					"""))
 	"""
-	Testing outlandish dtypes:
+	Tested outlandish dtypes:
 	- `DataFrame.to_parquet(engine='auto')` fails on:
 		'complex', 'longfloat', 'float128'.
 	- `DataFrame.to_parquet(engine='auto')` succeeds on:
@@ -190,41 +190,56 @@ def df_set_metadata(dataframe:object, column_names:list=None, dtype:object=None)
 def path_to_df(
 	file_path:str
 	, file_format:str
-	, column_names:list
-	, skip_header_rows:object
+	, header:object
 ):
 	"""
-	Previously, I was using pyarrow for all tabular/ sequence file formats. 
-	However, it had worse support for missing column names and header skipping.
-	So I switched to pandas for handling csv/tsv, but read_parquet()
-	doesn't let you change column names easily, so using fastparquet for parquet.
+	- We do not know how the columns are named at source, so do not handle 
+	  the filtering of columns here.
+	- Previously, I was using pyarrow for all tabular/ sequence file formats. 
+	  However, it had worse support for missing column names and header skipping.
+	  So I switched to pandas for handling csv/tsv, but read_parquet()
+	  doesn't let you change column names easily, so using fastparquet for parquet.
 	""" 
 	if (not path.exists(file_path)):
-		raise Exception(f"\nYikes - The path you provided does not exist according to `path.exists(path)`:\n{file_path}\n")
-
+		msg = f"\nYikes - The path you provided does not exist according to `path.exists(path)`:\n{file_path}\n"
+		raise Exception(msg)
 	if (not path.isfile(file_path)):
-		raise Exception(f"\nYikes - The path you provided is not a file according to `path.isfile(path)`:\n{file_path}\n")
+		msg = f"\nYikes - The path you provided is not a file according to `path.isfile(path)`:\n{file_path}\n"
+		raise Exception(msg)
 
 	if (file_format == 'tsv') or (file_format == 'csv'):
 		if (file_format == 'tsv'):
 			sep='\t'
 		elif (file_format == 'csv'):
 			sep=','
-
 		df = pd.read_csv(
 			filepath_or_buffer = file_path
-			, sep = sep
-			, names = column_names
-			, header = skip_header_rows
+			, sep              = sep
+			, header           = header
 		)
+
 	elif (file_format == 'parquet'):
-		if (skip_header_rows != 'infer'):
+		if (header != 'infer'):
 			raise Exception(dedent("""
-			Yikes - The argument `skip_header_rows` is not supported for `file_format='parquet'`
+			Yikes - The argument `header` is not supported for `file_format='parquet'`
 			because Parquet stores column names as metadata.\n
 			"""))
 		df = pd.read_parquet(path=file_path, engine='fastparquet')
-		df, columns = pandas_stringify_columns(df=df, columns=column_names)
+
+	elif (file_format == 'npy'):
+		if (header != 'infer'):
+			raise Exception(dedent("""
+			Yikes - The argument `header` is not supported for `file_format='npy'`
+			"""))
+		arr = np.load(file_path)
+		arr_validate(arr)
+		dim = arr.ndim
+		if ((dim!=2) and (dim!=1)):
+			raise Exception(dedent(f"""
+			Yikes - Tabular Datasets only support 1D and 2D arrays.
+			Your array dimensions had <{dim}> dimensions.
+			"""))
+		df = pd.DataFrame(arr)
 	return df
 
 

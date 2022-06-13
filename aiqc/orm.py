@@ -24,7 +24,7 @@ from .plots import Plot
 from . import utils
 # --- Python modules ---
 from os import path, remove, makedirs
-from sys import modules
+from sys import modules, getsizeof
 from io import BytesIO
 from shutil import rmtree
 from hashlib import sha256
@@ -247,16 +247,36 @@ def dataset_matchVersion(name:str, typ:str):
 	return latest_match, version_num
 
 
+def dataset_matchHash(hash:str, latest_match:object, name:str=None):
+	"""Files are created after Dataset, so we can't compare hashes as a db signal"""
+	if ((name is not None) and (latest_match is not None)):
+		if (hash == latest_match.sha256_hexdigest):
+			msg = f"\n└── Info - Hashes identical to `Dataset.version={latest_match.version}`.\nReusing & returning that Dataset instead of creating duplicate version.\n"
+			print(msg)
+			return latest_match
+	else:
+		return None
+
+
 class Dataset(BaseModel):
 	"""
 	The sub-classes are not 1-1 tables. They simply provide namespacing for functions
 	to avoid functions riddled with if statements about typ and null parameters.
 	"""
-	idx = IntegerField()
-	typ = CharField()
-	file_count = IntegerField()# see docs. do not delete, as `.count()` does not capture all functionality.
-	source_path = CharField(null=True)
-	version = IntegerField(null=True)
+	typ              = CharField()
+	source_format    = CharField()
+	shape            = JSONField()
+	is_ingested      = BooleanField()
+	columns          = JSONField()
+	dtypes           = JSONField()
+	sha256_hexdigest = CharField()
+	size_MB          = IntegerField()
+	contains_nan     = BooleanField()
+	header  = PickleField(null=True) #Image does not have.
+	source_path      = CharField(null=True) # when `from_numpy` or `from_pandas`.
+	urls             = JSONField(null=True)
+	version          = IntegerField(null=True)
+	blob             = BlobField(null=True) # when `is_ingested==False`.
 
 	#docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
 	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
@@ -304,89 +324,114 @@ class Dataset(BaseModel):
 		return image
 
 
-	def get_main_file(id:int):
-		dataset = Dataset.get_by_id(id)
-		if (dataset.typ != 'image'):
-			file = File.select().join(Dataset).where(
-				Dataset.id==id, File.idx==0
-			)[0]
-		elif (dataset.typ == 'image'):
-			file = dataset.datasets[0].get_main_file()#Recursion.
-		return file
-	
-
-	def delete_dropFiles(id:int):
-		"""Tried to get `on_delete='CASCADE'` working, but it seems bugged"""
-		dataset = Dataset.get_by_id(id)
-		typ = dataset.typ
-
-		if (typ=='tabular' or typ=='sequence'):
-			for f in dataset.files:
-				f.delete_instance()
-		if (dataset.typ=='image'):
-			# Many sequence datasets
-			for d in dataset.datasets:
-				for f in d.files:
-					f.delete_instance()
-				d.delete_instance()
-		dataset.delete_instance()
-
-
-	def get_hashes(id:int):
-		dataset = Dataset.get_by_id(id)
-		hashes = [f.sha256_hexdigest for f in dataset.files]
-		return hashes
-
-
-	def match_versionHash(id:int, latest_match:object):
-		"""Files are created after Dataset, so we can't compare hashes as a db signal"""
-		dataset = Dataset.get_by_id(id)
-		name = dataset.name
-		proceed_dataset = dataset
-		if ((name is not None) and (latest_match is not None)):
-			if (latest_match.get_hashes() == dataset.get_hashes()):
-				msg = f"\n└── Info - Hashes identical to `Dataset.version={latest_match.version}`.\nReusing & returning that Dataset instead of creating duplicate version.\n"
-				print(msg)
-				dataset.delete_dropFiles()
-				proceed_dataset = latest_match
-		return proceed_dataset
-
-
 	class Tabular():
 		"""
 		- Does not inherit the Dataset class e.g. `class Tabular(Dataset):`
 		  because then ORM would make a separate table for it.
 		- It is just a collection of methods and default variables.
 		"""
-		idx = 0
 		typ = 'tabular'
-		file_count = 1
-		idx = 0
+
+
+		def from_df(
+			dataframe:object
+			, name:str            = None
+			, description:str     = None
+			, rename_columns:list = None
+			, retype:object       = None
+			, _source_format:str  = 'dataframe' # from_path and from_arr overwrite
+			, _ingest:bool        = True # from_path may overwrite
+			, _source_path:str    = None # from_path overwrites
+			, _header:object      = None # from_path may overwrite
+		):
+			"""This method is used downstream of from_path and from_numpy once they read into a df"""
+			if (type(dataframe).__name__ != 'DataFrame'):
+				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
+			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
+			column_names = listify(column_names)
+			
+			df_validate(dataframe, column_names)
+			# Gather metadata whether ingested or not.
+			dataframe, columns, shape, dtype = df_set_metadata(
+				dataframe        = dataframe
+				, rename_columns = rename_columns
+				, retype         = retype
+			)
+			contains_nan = dataframe.isnull().values.any()
+			"""
+			- Switched to `fastparquet` because `pyarrow` doesn't preserve timedelta dtype
+			https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
+			
+			- `fastparquet` does not work with BytesIO. So we write to a cache first.
+			https://github.com/dask/fastparquet/issues/586#issuecomment-861634507
+
+			- fastparquet default compression level = 6
+			github.com/dask/fastparquet/blob/efd3fd19a9f0dcf91045c31ff4dbb7cc3ec504f2/fastparquet/compression.py#L15
+			github.com/dask/fastparquet/issues/344
+			
+			- Originally github used sha1, but they plan to migrate to sha256
+			- Originally github hashed the compressed data, but later they switched to hashing pre-compressed data
+			- However running gzip compression an uncompressed parquet file will also compress the parquet metadata
+			at the end of the file. So for simplicity's sake, we hash the compressed file generated by fastparquet.
+
+			- 1048576 Bytes per MB
+			"""
+			fs = filesystem("memory")
+			temp_path = "memory://temp.parq"
+			size_MB = getsizeof(dataframe)/1048576
+			dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
+			blob = fs.cat(temp_path)
+			fs.delete(temp_path)
+			sha256_hexdigest = sha256(blob).hexdigest()
+			if (_ingest==False): blob=None	
+			# Check for duplicates
+			dataset = dataset_matchHash(sha256_hexdigest, latest_match, name)
+			
+			if (dataset is None):
+				dataset = Dataset.create(
+					typ                = Dataset.Tabular.typ
+					, shape            = shape
+					, is_ingested      = _ingest
+					, columns          = columns
+					, dtypes           = dtype
+					, sha256_hexdigest = sha256_hexdigest
+					, size_MB          = size_MB
+					, contains_nan     = contains_nan
+					, version          = version_num
+					, blob             = blob
+					, name             = name
+					, description      = description
+					, source_path      = _source_path
+					, source_format    = _source_format
+					, header           = _header
+					, urls             = None
+				)
+			return dataset
+
 
 		def from_path(
 			file_path:str
-			, name:str = None
-			, description:str = None
-			, dtype:object = None
-			, column_names:list = None
-			, skip_header_rows:object = 'infer'
-			, ingest:bool = True
+			, ingest:bool         = True
+			, rename_columns:list = None
+			, retype:object       = None
+			, name:str            = None
+			, description:str     = None
+			, header:object       = 'infer'
 		):
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
-			column_names = listify(column_names)
+			rename_columns = listify(rename_columns)
 
-			# In case we want buffer support
-			if isinstance(file_path, str):
-				file_path = file_path.lower()
-				if file_path.endswith('.tsv'):
-					file_format = 'tsv'
-				elif file_path.endswith('.csv'):
-					file_format = 'csv'
-				elif (file_path.endswith('.parquet') or str.endswith('.pq')):
-					file_format = 'parquet'
-				else:
-					msg = "\nYikes - `file_path.lower()` ended with neither '.tsv', '.csv', '.parquet', nor '.pq':\n{file_path}\n"
-					raise Exception(msg)
+			file_path = file_path.lower()
+			if file_path.endswith('.tsv'):
+				source_format = 'tsv'
+			elif file_path.endswith('.csv'):
+				source_format = 'csv'
+			elif file_path.endswith('.parquet'):
+				source_format = 'parquet'
+			elif file_path.endswith('.npy'):
+				source_format = 'npy'
+			else:
+				msg = f"\nYikes - `file_path.lower()` ended with neither: '.tsv', '.csv', '.parquet', nor '.npy':\n{file_path}\n"
+				raise Exception(msg)
 
 			if (not path.exists(file_path)):
 				msg = f"\nYikes - The file_path you provided does not exist according to `path.exists(file_path)`:\n{file_path}\n"
@@ -401,124 +446,122 @@ class Dataset(BaseModel):
 
 			source_path = path.abspath(file_path)
 
-			dataset = Dataset.create(
-				typ           = Dataset.Tabular.typ
-				, idx         = Dataset.Tabular.idx
-				, file_count  = Dataset.Tabular.file_count
-				, source_path = source_path
-				, name        = name
-				, description = description
-				, version     = version_num
+			df = path_to_df(
+				file_path         = source_path
+				, file_format     = source_format
+				, header = header
 			)
 
-			try:
-				File.from_path(
-					file_path          = file_path
-					, file_format      = file_format
-					, dtype            = dtype
-					, column_names     = column_names
-					, skip_header_rows = skip_header_rows
-					, ingest           = ingest
-					, dataset_id       = dataset.id
-				)
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
-
-		
-		def from_pandas(
-			dataframe:object
-			, name:str = None
-			, description:str = None
-			, dtype:object = None
-			, column_names:list = None
-		):
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
-			column_names = listify(column_names)
-
-			if (type(dataframe).__name__ != 'DataFrame'):
-				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
-
-			dataset = Dataset.create(
-				typ = Dataset.Tabular.typ
-				, idx = Dataset.Tabular.idx
-				, file_count = Dataset.Tabular.file_count
-				, name = name
-				, description = description
-				, source_path = None
-				, version = version_num
+			dataset = Dataset.Tabular.from_df(
+				dataframe          = df
+				, name             = name
+				, description      = description
+				, rename_columns   = rename_columns
+				, retype           = retype
+				, _ingest          = ingest
+				, _source_path     = source_path
+				, _source_format   = source_format
+				, _header          = header
 			)
-
-			try:
-				File.from_pandas(
-					dataframe = dataframe
-					, dtype = dtype
-					, column_names = column_names
-					, dataset_id = dataset.id
-				)
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
+			return dataset
 
 
-		def from_numpy(
+		def from_arr(
 			ndarray:object
-			, name:str = None
-			, description:str = None
-			, dtype:object = None
+			, name:str          = None
+			, description:str   = None
+			, dtype:object      = None
 			, column_names:list = None
 		):
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
+			"""
+			Only supporting homogenous arrays because structured arrays are a pain
+			when it comes time to convert them to dataframes. It complained about
+			setting an index, scalar types, and dimensionality... yikes.
+			
+			Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
+			Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
+			Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
+
+			column_names and dict-based dtype will be handled by our `from_df` method 
+			because `pd.DataFrame` method only accepts a single dtype str, or infers if None.
+			"""
 			column_names = listify(column_names)
 			arr_validate(ndarray)
 
-			dimensions = len(ndarray.shape)
-			if (dimensions > 2) or (dimensions < 1):
+			dim = ndarray.ndim
+			if ((dim!=2) and (dim!=1)):
 				raise Exception(dedent(f"""
 				Yikes - Tabular Datasets only support 1D and 2D arrays.
-				Your array dimensions had <{dimensions}> dimensions.
+				Your array dimensions had <{dim}> dimensions.
 				"""))
-			
-			dataset = Dataset.create(
-				typ           = Dataset.Tabular.typ
-				, idx         = Dataset.Tabular.idx
-				, file_count  = Dataset.Tabular.file_count
-				, name        = name
-				, description = description
-				, source_path = None
-				, version     = version_num
+			df = pd.DataFrame(ndarray, columns=column_names)
+
+			dataset = Dataset.Tabular.from_df(
+				dataframe          = df
+				, name             = name
+				, description      = description
+				, column_names     = column_names
+				, dtype            = dtype
+				, _ingest          = True 
+				, _source_format   = 'ndarray'
+				, _source_path     = None
+				, _header          = None
 			)
-			try:
-				File.from_numpy(
-					ndarray = ndarray
-					, dtype = dtype
-					, column_names = column_names
-					, dataset_id = dataset.id
-				)				
-			except:
-				dataset.delete_dropFiles() # Orphaned.
-				raise
-			proceed_dataset = dataset.match_versionHash(latest_match)
-			return proceed_dataset
+			return dataset
 
 
-		def to_pandas(id:int, columns:list=None, samples:list=None):
-			file = Dataset.get_main_file(id)#`id` belongs to dataset, not file
+		def to_df(id:int, columns:list=None, samples:list=None):
 			columns = listify(columns)
 			samples = listify(samples)
-			df = File.to_pandas(id=file.id, samples=samples, columns=columns)
+			
+			dataset  = Dataset.get_by_id(id)
+			d_dtypes = dataset.dtypes
+			d_cols   = dataset.columns
+
+			# --- Fetch ---
+			if (dataset.is_ingested==False):
+				df = path_to_df(
+					file_path     = dataset.source_path
+					, file_format = dataset.file_format
+					, header      = dataset.header
+				)
+				# Don't know col names at source - can't filter until renamed
+				df = df_stringifyCols(df,d_cols)
+			elif (dataset.is_ingested==True):
+				# Columns have been saved as renamed
+				df = pd.read_parquet(
+					BytesIO(dataset.blob)
+					, engine  = 'fastparquet'
+					, columns = columns
+				)
+
+			# --- Filter ---
+			# <!> Dual role in ensuring df columns rearranged to match order of func's columns arg
+			if ((columns is not None) and (df.columns.to_list() != columns)):
+				df = df.filter(columns)
+			# Specific rows.
+			if (samples is not None):
+				df = df.loc[samples]
+			
+			# --- Type ---
+			# Accepts dict{'column_name':'dtype_str'} or a single str.
+			if (isinstance(d_dtypes, dict)):
+				if (columns is None):
+					columns = d_cols
+				# Prunes out the excluded columns from the dtype dict.
+				df_dtype_cols = list(d_dtypes.keys())
+				for col in df_dtype_cols:
+					if (col not in columns):
+						del d_dtypes[col]
+			elif (isinstance(d_dtypes, str)):
+				pass #dtype just gets applied as-is.
+			df = df.astype(d_dtypes)
 			return df
 
 
-		def to_numpy(id:int, columns:list=None, samples:list=None):
+		def to_arr(id:int, columns:list=None, samples:list=None):
 			dataset = Dataset.get_by_id(id)
-			columns = listify(columns)
-			samples = listify(samples)
-			df = dataset.to_pandas(columns=columns, samples=samples)
+			df = dataset.to_df(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
 			return ndarray
 
@@ -535,7 +578,7 @@ class Dataset(BaseModel):
 			, column_names:list = None
 			, ingest:bool = True
 			, _file_format:str = None #used by Dataset.Image
-			, _disable:bool = False #used by Dataset.Image
+			, _disable_tqdm:bool = False #used by Dataset.Image
 			, _source_path:str = None #used by Dataset.Image
 			, _idx:int = None #used by Dataset.Image
 			, _dataset:object = None #used by Dataset.Image
@@ -613,7 +656,7 @@ class Dataset(BaseModel):
 					ndarray_3D
 					, desc = "⏱️ Ingesting Sequences 🧬"
 					, ncols = 85
-					, disable = _disable
+					, disable = _disable_tqdm
 				)):
 					File.from_numpy(
 						ndarray = arr
@@ -901,7 +944,7 @@ class Dataset(BaseModel):
 						, _file_format = file_formats[i]
 						, _idx = i
 						, _source_path = paths[i]
-						, _disable = True
+						, _disable_tqdm = True
 						, _dataset = dataset
 					)
 			# Creating Sequences is optional for the npy file approach.
@@ -920,7 +963,7 @@ class Dataset(BaseModel):
 						, ingest = ingest
 						, _idx = i
 						, _source_path = source_path
-						, _disable = True
+						, _disable_tqdm = True
 						, _dataset = dataset
 					)
 
@@ -975,7 +1018,8 @@ class File(BaseModel):
 	columns = JSONField()
 	dtypes = JSONField()
 	sha256_hexdigest = CharField()
-	skip_header_rows = PickleField(null=True) #Image does not have.
+	size_MB = IntegerField()
+	header = PickleField(null=True) #Image does not have.
 	source_path = CharField(null=True) # when `from_numpy` or `from_pandas`.
 	blob = BlobField(null=True) # when `is_ingested==False`.
 
@@ -985,21 +1029,21 @@ class File(BaseModel):
 	def from_pandas(
 		dataframe:object
 		, dataset_id:int
-		, dtype:object = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
-		, column_names:list = None
+		, retype:object = None # Accepts a single str for the entire df, but utlimate it gets saved as one dtype per column.
+		, rename_columns:list = None
 		, source_path:str = None # passed in via from_path(), but not from_numpy().
 		, ingest:bool = True # from_path() method overwrites this.
 		, file_format:str = 'parquet' # from_path() method overwrites this.
-		, skip_header_rows:int = 'infer'
+		, header:int = 'infer'
 		, _idx:int = 0 # Dataset.Sequence overwrites this.
 	):
 		"""This is the only place where File.create is ran"""
-		column_names = listify(column_names)
-		df_validate(dataframe, column_names)
+		column_names = listify(rename_columns)
+		df_validate(dataframe, rename_columns)
 
 		# We need this metadata whether ingested or not.
 		dataframe, columns, shape, dtype = df_set_metadata(
-			dataframe=dataframe, column_names=column_names, dtype=dtype
+			dataframe=dataframe, rename_columns=rename_columns, dtype=retype
 		)
 
 		"""
@@ -1024,6 +1068,8 @@ class File(BaseModel):
 		temp_path = "memory://temp.parq"
 		dataframe.to_parquet(temp_path, engine="fastparquet", compression="gzip", index=False)
 		blob = fs.cat(temp_path)
+		# bytes per MB
+		size_MB = getsizeof(blob)/1048576
 		fs.delete(temp_path)
 		sha256_hexdigest = sha256(blob).hexdigest()
 
@@ -1038,11 +1084,12 @@ class File(BaseModel):
 			, idx = _idx
 			, shape = shape
 			, source_path = source_path
-			, skip_header_rows = skip_header_rows
+			, header = header
 			, is_ingested = ingest
 			, columns = columns
 			, dtypes = dtype
 			, sha256_hexdigest = sha256_hexdigest
+			, size_MB           = size_MB
 			, dataset = dataset
 		)
 		return file
@@ -1092,7 +1139,7 @@ class File(BaseModel):
 		, dataset_id:int
 		, dtype:object = None
 		, column_names:list = None
-		, skip_header_rows:object = 'infer'
+		, header:object = 'infer'
 		, ingest:bool = True
 	):
 		column_names = listify(column_names)
@@ -1101,7 +1148,7 @@ class File(BaseModel):
 			file_path = file_path
 			, file_format = file_format
 			, column_names = column_names
-			, skip_header_rows = skip_header_rows
+			, header = header
 		)
 
 		file = File.from_pandas(
@@ -1111,18 +1158,13 @@ class File(BaseModel):
 			, column_names = None # See docstring above.
 			, source_path = file_path
 			, file_format = file_format
-			, skip_header_rows = skip_header_rows
+			, header = header
 			, ingest = ingest
 		)
 		return file
 
 
 	def to_pandas(id:int, columns:list=None, samples:list=None):
-		"""
-		This function could be optimized to read columns and rows selectively
-		rather than dropping them after the fact.
-		https://stackoverflow.com/questions/64050609/pyarrow-read-parquet-via-column-index-or-order
-		"""
 		file = File.get_by_id(id)
 		columns = listify(columns)
 		samples = listify(samples)
@@ -1136,7 +1178,7 @@ class File(BaseModel):
 				file_path = file.source_path
 				, file_format = file.file_format
 				, column_names = columns
-				, skip_header_rows = file.skip_header_rows
+				, header = file.header
 			)
 		elif (file.is_ingested==True):
 			df = pd.read_parquet(
