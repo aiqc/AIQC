@@ -4075,15 +4075,12 @@ class Predictor(BaseModel):
 			if (fitted_featurecoders is not None):
 				for split, data in predictions.items():
 					# Make sure it is 2D.
-					data_shape = data.shape
-					if (len(data_shape)==3):
-						data = data.reshape(data_shape[0]*data_shape[1], data_shape[2])
-						originally_3d = True
-						originally_4d = False
-					elif (len(data_shape)==4):
-						originally_4d = True
-						originally_3d = False
-						data = data.reshape(data_shape[0]*data_shape[1]*data_shape[2], data_shape[3])
+					og_dim = data.ndim
+					og_shape = data.shape
+					if (og_dim==3):
+						data = data.reshape(og_shape[0]*og_shape[1], og_shape[2])
+					elif (og_dim==4):
+						data = data.reshape(og_shape[0]*og_shape[1]*og_shape[2], og_shape[3])
 
 					encoded_column_names = []
 					for i, fc in enumerate(featurecoders):
@@ -4092,7 +4089,7 @@ class Predictor(BaseModel):
 						fitted_encoder = fitted_featurecoders[i][0]
 						stringified_encoder = str(fitted_encoder)
 						matching_columns = fc.matching_columns
-						[encoded_column_names.append(mc) for mc in matching_columns]
+						encoded_column_names += matching_columns
 						# Figure out how many columns they account for in the encoded data.
 						if ("OneHotEncoder" in stringified_encoder):
 							num_matching_columns = 0
@@ -4145,11 +4142,11 @@ class Predictor(BaseModel):
 
 					# Restore original shape.
 					# Due to inverse OHE or text extraction, the number of columns may have decreased.
-					new_col_count = decoded_data.shape[1]
-					if (originally_3d==True):
-						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], new_col_count)
-					elif (originally_4d==True):
-						decoded_data = decoded_data.reshape(data_shape[0], data_shape[1], data_shape[2], new_col_count)
+					new_colCount = decoded_data.shape[-1]
+					if (og_dim==3):
+						decoded_data = decoded_data.reshape(og_shape[0], og_shape[1], new_colCount)
+					elif (og_dim==4):
+						decoded_data = decoded_data.reshape(og_shape[0], og_shape[1], og_shape[2], new_colCount)
 
 					predictions[split] = decoded_data
 
@@ -4221,36 +4218,6 @@ class Predictor(BaseModel):
 				prediction.delete_instance()
 				raise
 		return prediction
-
-
-	def export_model(id:int, file_path:str=None):
-		predictor = Predictor.get_by_id(id)
-		algorithm = predictor.job.queue.algorithm
-		
-		if (file_path is None):
-			dtime = timezone_now(as_str=True)
-			if (algorithm.library == "keras"):
-				ext = '.h5'
-			elif (algorithm.library == 'pytorch'):
-				ext = '.pt'
-
-			path_models = app_folders['models']
-			path_file = "temp_keras_model.h5"
-			path_full = path.join(path_models,path_file)
-
-		# We already have the bytes of the file we need to write.
-		model_blob = predictor.model_file
-		# trying `+` because directory may not exist yet.
-		with open(path_full, 'wb+') as f:
-			f.write(model_blob)
-			f.close()
-
-		path.exists(path_full)
-		print(dedent(
-			f"\nModel exported to the following absolute path:" \
-			f"\n{path_full}\n"
-		))
-		return path_full
 
 
 	def get_hyperparameters(id:int, as_pandas:bool=False):
