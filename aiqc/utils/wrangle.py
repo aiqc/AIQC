@@ -8,6 +8,13 @@ import pandas as pd
 from torch import FloatTensor
 from tqdm import tqdm #progress bar.
 
+default_interpolate_kwargs = dict(
+	method = 'linear'
+	, limit_direction = 'both'
+	, limit_area = None
+	, axis = 0
+	, order = 1
+)
 
 def listify(supposed_lst:object=None):
 	"""When only providing a single element, it's easy to forget to put it inside a list!"""
@@ -302,7 +309,7 @@ def floats_only(label:object):
 			raise Exception(f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n")
 
 
-def verify_attributes(interpolate_kwargs:dict):
+def verify_interpolateKwargs(interpolate_kwargs:dict):
 	if (interpolate_kwargs['method'] == 'polynomial'):
 		raise Exception("\nYikes - `method=polynomial` is prevented due to bug <https://stackoverflow.com/questions/67222606/interpolate-polynomial-forward-and-backward-missing-nans>.\n")
 	if ((interpolate_kwargs['axis'] != 0) and (interpolate_kwargs['axis'] != 'index')):

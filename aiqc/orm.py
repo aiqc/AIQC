@@ -1311,10 +1311,12 @@ class Feature(BaseModel):
 		, samples:dict=None
 	):
 		"""
-		- `array` is assumed to be the output of `feature.to_arr()`.
+		- `array` is assumed to be the output of `feature.to_arr()` or `feature.preprocess()`
 		- I was originally calling `feature.to_df` but all preprocesses receive and return arrays.
 		- `samples` is used for indices only. It does not get repacked into a new dict.
 		- Extremely tricky to interpolate windowed splits separately.
+		- By overwriting the orginal columns, we don't need to worry about putting columns back 
+		  in their original order.
 		"""
 		feature = Feature.get_by_id(id)
 		fps = feature.featureinterpolaters
@@ -1332,7 +1334,6 @@ class Feature(BaseModel):
 					windows_unshifted = window.samples_unshifted
 					
 					"""
-					- Augment our evaluation splits/folds with training data.
 					- At this point, indices are groups of rows (windows), not raw rows.
 					  We need all of the rows from all of the windows. 
 					"""
@@ -1348,7 +1349,11 @@ class Feature(BaseModel):
 							for row in rows_train:
 								df_fp.loc[row] = df_train.loc[row]
 
-					# We need `df_train` from above.
+					"""
+					Since there is no `fit` on training data for interpolate, we inform 
+					the transformation of other splits with the training data just like
+					how we apply the training `fit` to the other splits
+					"""
 					for split, indices in samples.items():
 						if ('train' not in split):
 							split_windows = [windows_unshifted[idx] for idx in indices]
@@ -1388,31 +1393,45 @@ class Feature(BaseModel):
 						dataframe[c] = df[c]
 			array = dataframe.to_numpy()
 
-		elif ((typ=='sequence') or (typ=='image')):###
-			# Expects 3D data. Convert 4D to tall 3D
-			### ^ i don't this that's right??? need to process each seq sep
-			if (typ=='image'):
-				shape = array.shape
-				array = array.reshape(shape[0]*shape[1], shape[2], shape[3])
-
+		# For sequence and image datasets, each 2D is interpolated separately.
+		elif (typ=='sequence'):
 			# One df per sequence array.
-			dataframes = [pd.DataFrame(arr, columns=columns) for arr in array]
-			# Each one needs to be interpolated separately.
-			for i, dataframe in enumerate(dataframes):
+			seqframes = [pd.DataFrame(arr2D, columns=columns) for arr2D in array]
+			for i, seqframe in enumerate(seqframes):
 				for fp in fps:
-					df_cols = dataframe[fp.matching_columns]
+					df_cols = seqframe[fp.matching_columns]
 					# Don't need to parse anything. Straight to DVD.
-					df_cols = fp.interpolate(dataframe=df_cols, samples=None)
+					df_cols = fp.interpolate(seqframe=df_cols, samples=None)
 					# Overwrite columns.
-					if (dataframe.index.size != df_cols.index.size):
+					if (seqframe.index.size != df_cols.index.size):
 						raise Exception("Yikes - Internal error. Index sizes inequal.")
 					for c in fp.matching_columns:
-						dataframe[c] = df_cols[c]
+						seqframe[c] = df_cols[c]
 				# Update the list. Might as well array it while accessing it.
-				dataframes[i] = dataframe.to_numpy()
-			array = np.array(dataframes)
-			if (typ=='image'):
-				array = array.reshape(shape[0],shape[1],shape[2],shape[3])
+				seqframes[i] = seqframe.to_numpy()
+			array = np.array(seqframes)
+
+		elif (typ=='image'):
+			# Do the same as sequence, but with an extra loop
+			imgarrs = []
+			for img in array:
+				# One df per sequence array.
+				seqframes = [pd.DataFrame(arr2D, columns=columns) for arr2D in img]
+				for i, seqframe in enumerate(seqframes):
+					for fp in fps:
+						df_cols = seqframe[fp.matching_columns]
+						# Don't need to parse anything. Straight to DVD.
+						df_cols = fp.interpolate(seqframe=df_cols, samples=None)
+						# Overwrite columns.
+						if (seqframe.index.size != df_cols.index.size):
+							raise Exception("Yikes - Internal error. Index sizes inequal.")
+						for c in fp.matching_columns:
+							seqframe[c] = df_cols[c]
+					# Update the list. Might as well array it while accessing it.
+					seqframes[i] = seqframe.to_numpy()
+				img = np.array(seqframes)
+				imgarrs.append(img)
+			array = np.array(imgarrs)
 		return array
 
 
@@ -1469,7 +1488,7 @@ class Feature(BaseModel):
 		if ((is_interpolated==True) and (feature.featureinterpolaters.count()>0)):
 			# inference intentionally leaves `samples==None`
 			feature_array = feature.interpolate(array=feature_array, samples=samples, window=window)
-		
+
 		# --- Future:Impute ---
 		# --- Future:Outliers ---
 
@@ -1594,6 +1613,7 @@ class Feature(BaseModel):
 	):
 		"""
 		- Used by the preprocessors to figure out which columns have yet to be assigned preprocessors.
+		- It is okay for both `dtypes` and `columns` to be used at the same time. It handles overlap.
 		"""
 		feature = Feature.get_by_id(id)
 		feature_cols = feature.columns
@@ -2523,7 +2543,7 @@ class LabelInterpolater(BaseModel):
 	- `proces_separately` is for 2D time series. Where splits are rows and processed separately.
 	- Label can only be `typ=='tabular'` so don't need to worry about multi-dimensional data.
 	"""
-	process_separately = BooleanField()# use False if you have few evaluate samples.
+	process_separately = BooleanField()# use False if you don't have enough samples.
 	interpolate_kwargs = JSONField()
 	matching_columns = JSONField()
 
@@ -2541,17 +2561,11 @@ class LabelInterpolater(BaseModel):
 		floats_only(label)
 
 		if (interpolate_kwargs is None):
-			interpolate_kwargs = dict(
-				method = 'linear'
-				, limit_direction = 'both'
-				, limit_area = None
-				, axis = 0
-				, order = 1
-			)
+			interpolate_kwargs = default_interpolateKwargs
 		elif (interpolate_kwargs is not None):
-			verify_attributes(interpolate_kwargs)
+			verify_interpolateKwargs(interpolate_kwargs)
 
-		# Check that the arguments actually work.
+		# Verify that everything actually works
 		try:
 			df = label.to_df()
 			run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
@@ -2578,7 +2592,6 @@ class LabelInterpolater(BaseModel):
 			df_labels = pd.DataFrame(array, columns=label.columns)
 			df_labels = run_interpolate(df_labels, interpolate_kwargs)	
 		elif ((lp.process_separately==True) and (samples is not None)):
-			# Augment our evaluation splits/folds with training data.
 			for split, indices in samples.items():
 				if ('train' in split):
 					array_train = array[indices]
@@ -2586,7 +2599,11 @@ class LabelInterpolater(BaseModel):
 					df_train = run_interpolate(df_train, interpolate_kwargs)
 					df_labels = df_train
 
-			# We need `df_train` from above.
+			"""
+			Since there is no `fit` on training data for interpolate, we inform 
+			the transformation of other splits with the training data just like
+			how we apply the training `fit` to the other splits
+			"""
 			for split, indices in samples.items():
 				if ('train' not in split):
 					arr = array[indices]
@@ -2628,22 +2645,17 @@ class FeatureInterpolater(BaseModel):
 	):
 		"""
 		- By default it takes all of the float columns, but you can include columns manually too.
-		- Only `include=True` is allowed so that the dtype can be included.
+		- Unlike encoders, there is no exclusion of cols/dtypes, only inclusion.
 		"""
 		feature = Feature.get_by_id(feature_id)
 		existing_preprocs = feature.featureinterpolaters
 
 		if (interpolate_kwargs is None):
-			interpolate_kwargs = dict(
-				method = 'linear'
-				, limit_direction = 'both'
-				, limit_area = None
-				, axis = 0
-				, order = 1
-			)
+			interpolate_kwargs = default_interpolateKwargs
 		elif (interpolate_kwargs is not None):
-			verify_attributes(interpolate_kwargs)
+			verify_interpolateKwargs(interpolate_kwargs)
 
+		# It is okay for both `dtypes` and `columns` to be used at the same time.
 		dtypes = listify(dtypes)
 		columns = listify(columns)
 		if (dtypes is not None):
@@ -2656,13 +2668,14 @@ class FeatureInterpolater(BaseModel):
 				if (not np.issubdtype(feature_dtypes[c], np.floating)):
 					raise Exception(f"\nYikes - The column <{c}> that you provided is not of dtype `np.floating`.\n")
 
+
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_preprocs
 			, include = True
 			, columns = columns
 			, dtypes = dtypes
 			, verbose = verbose
-		)		
+		)
 
 		# Check that it actually works.
 		fp = FeatureInterpolater.create(
@@ -2677,6 +2690,7 @@ class FeatureInterpolater(BaseModel):
 		)
 		try:
 			test_arr = feature.to_arr()#Don't pass matching cols.
+			### but what if other cols fail?
 			feature.interpolate(array=test_arr, samples=_samples)
 		except:
 			fp.delete_instance() # Orphaned.
@@ -2688,7 +2702,6 @@ class FeatureInterpolater(BaseModel):
 		"""
 		- Called by the `Feature.interpolate` loop.
 		- Assuming that matching cols have already been sliced from main array before this is called.
-		- No need to stack 3D into 2D because each sequence has to be processed independently.
 		"""
 		fp = FeatureInterpolater.get_by_id(id)
 		interpolate_kwargs = fp.interpolate_kwargs
@@ -2823,7 +2836,7 @@ class FeatureCoder(BaseModel):
 		feature_id:int
 		, sklearn_preprocess:object
 		, include:bool = True
-		, dtypes:list = None
+		, dtypes:list  = None
 		, columns:list = None
 		, verbose:bool = True
 	):
