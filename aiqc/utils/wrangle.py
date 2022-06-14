@@ -104,7 +104,7 @@ def df_validate(dataframe:object, column_names:list):
 
 def df_setMetadata(dataframe:object, rename_columns:list=None, retype:object=None):
 	shape = {}
-	shape['rows'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
+	shape['samples'], shape['columns'] = dataframe.shape[0], dataframe.shape[1]
 	"""
 	- Passes in user-defined columns in case they are specified.
 	- Pandas auto-assigns int-based columns return a range when `df.columns`, 
@@ -171,7 +171,7 @@ def df_setMetadata(dataframe:object, rename_columns:list=None, retype:object=Non
 	"""
 	Now, we take the all of the resulting dataframe dtypes and save them.
 	Regardless of whether or not they were user-provided.
-	Convert the classed `dtype('float64')` to a string so we can use it in `.to_pandas()`
+	Convert the classed `dtype('float64')` to a string so we can use it in `.to_df()`
 	"""
 	dtype = {k: str(v) for k, v in actual_dtypes}
 	

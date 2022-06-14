@@ -543,7 +543,7 @@
     }
    ],
    "source": [
-    "queue.metrics_to_pandas()"
+    "queue.metrics_df()"
    ]
   },
   {

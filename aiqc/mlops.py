@@ -81,9 +81,15 @@ class Input:
             self.columns       		= listify(columns)
     
     class Window:
-        def __init__(self, size_window:int, size_shift:int):
-            self.size_window = size_window
-            self.size_shift = size_shift
+        def __init__(
+            self
+            , size_window:int
+            , size_shift:int
+            , _record_shifted:bool = True # overwritten by pure inference.
+        ):
+            self.size_window     = size_window
+            self.size_shift     = size_shift
+            self.record_shifted = _record_shifted
     
     class Encoder:
         def __init__(
@@ -318,9 +324,12 @@ class Inference:
                 """
                 if (f.windows.count()>0):
                     old_window = f.windows[-1]
+
+                    # Only pure inference is supported
                     new_window = Input.Window(
-                        size_window = old_window.size_window,
-                        size_shift  = old_window.size_shift
+                        size_window      = old_window.size_window
+                        , size_shift     = old_window.size_shift
+                        , _record_shifted = False
                     )
             # Use `include_columns` in case users decided to stop gathering the excluded columns.
             input_ = Input(

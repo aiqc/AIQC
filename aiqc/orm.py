@@ -281,39 +281,32 @@ class Dataset(BaseModel):
 
 	def to_df(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		columns = listify(columns)
-		samples = listify(samples)
-
 		if (dataset.typ == 'tabular'):
-			df = Dataset.Tabular.to_pandas(id=dataset.id, columns=columns, samples=samples)
+			df = Dataset.Tabular.to_df(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.typ == 'sequence'):
-			df = Dataset.Sequence.to_pandas(id=dataset.id, columns=columns, samples=samples)
+			df = Dataset.Sequence.to_df(id=dataset.id, columns=columns, samples=samples)
 		elif (dataset.typ == 'image'):
-			df = Dataset.Image.to_pandas(id=dataset.id, columns=columns, samples=samples)
+			df = Dataset.Image.to_df(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
 	def to_arr(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
-		columns = listify(columns)
-		samples = listify(samples)
-
 		if (dataset.typ == 'tabular'):
-			arr = Dataset.Tabular.to_numpy(id=id, columns=columns, samples=samples)
+			arr = Dataset.Tabular.to_arr(id=id, columns=columns, samples=samples)
 		elif (dataset.typ == 'sequence'):
-			arr = Dataset.Sequence.to_numpy(id=id, columns=columns, samples=samples)
+			arr = Dataset.Sequence.to_arr(id=id, columns=columns, samples=samples)
 		elif (dataset.typ == 'image'):
-			arr = Dataset.Image.to_numpy(id=id, columns=columns, samples=samples)
+			arr = Dataset.Image.to_arr(id=id, columns=columns, samples=samples)
 		return arr
 
 
 	def to_pillow(id:int, samples:list=None):
-		samples = listify(samples)
 		dataset = Dataset.get_by_id(id)
-		if ((dataset.typ == 'tabular') or (dataset.typ == 'sequence')):
-			raise Exception("\nYikes - Only `Dataset.Image` supports `to_pillow()`\n")
-		elif (dataset.typ == 'image'):
+		if (dataset.typ == 'image'):
 			image = Dataset.Image.to_pillow(id=id, samples=samples)
+		elif (dataset.typ != 'image'):
+			raise Exception("\nYikes - Only `Dataset.Image` supports `to_pillow()`\n")
 		return image
 	
 
@@ -642,7 +635,7 @@ class Dataset(BaseModel):
 					raise Exception(msg)
 				columns = rename_columns
 			else:
-				col_indices = list(range(arr.shape['columns']))
+				col_indices = list(range(shape['columns']))
 				columns = [str(i) for i in col_indices]
 			
 			if (retype is not None):
@@ -797,7 +790,7 @@ class Dataset(BaseModel):
 					raise Exception(msg)
 				columns = rename_columns
 			else:
-				col_indices = list(range(arr.shape['columns']))
+				col_indices = list(range(shape['columns']))
 				columns = [str(i) for i in col_indices]
 			
 			if (retype is not None):
@@ -853,7 +846,6 @@ class Dataset(BaseModel):
 			source_path = path.abspath(folder_path)
 			file_paths = sorted_file_list(source_path)
 
-			# Validated during `sequences_from_4D`.
 			arr_3Ds = []
 			formats = []
 			for p in file_paths:
@@ -900,7 +892,6 @@ class Dataset(BaseModel):
 		):
 			urls = listify(urls)
 
-			# Validated during `sequences_from_4D`.
 			arr_4D = []
 			formats = []
 			for url in urls:
@@ -1032,7 +1023,7 @@ class Label(BaseModel):
 			Yikes - Labels can only be created from `typ='tabular'.
 			But you provided `typ`: <{d.typ}>
 			"""))
-		d_cols = Dataset.get_main_file(dataset_id).columns
+		d_cols = d.columns
 		
 		if (columns is None):
 			# Handy for sequence and image pipelines
@@ -1049,7 +1040,7 @@ class Label(BaseModel):
 		metrics can't be run on > 2 columns.
 		- Negative values do not alter type of numpy int64 and float64 arrays.
 		"""
-		label_df = Dataset.to_pandas(id=dataset_id, columns=columns)
+		label_df = Dataset.to_df(id=dataset_id, columns=columns)
 		column_count = len(columns)
 		if (column_count > 1):
 			unique_values = []
@@ -1082,7 +1073,7 @@ class Label(BaseModel):
 			del label_df
 
 			# Now check if each row in the labels is truly OHE.
-			label_arr = Dataset.to_numpy(id=dataset_id, columns=columns)
+			label_arr = Dataset.to_arr(id=dataset_id, columns=columns)
 			for i, arr in enumerate(label_arr):
 				if 1 in arr:
 					arr = list(arr)
@@ -1135,21 +1126,19 @@ class Label(BaseModel):
 		return label
 
 
-	def to_pandas(id:int, samples:list=None):
+	def to_df(id:int, samples:list=None):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		samples = listify(samples)
-		df = Dataset.to_pandas(id=dataset.id, columns=columns, samples=samples)
+		df = Dataset.to_df(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
-	def to_numpy(id:int, samples:list=None):
+	def to_arr(id:int, samples:list=None):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		samples = listify(samples)
-		arr = Dataset.to_numpy(id=dataset.id, columns=columns, samples=samples)
+		arr = Dataset.to_arr(id=dataset.id, columns=columns, samples=samples)
 		return arr
 
 
@@ -1174,9 +1163,9 @@ class Label(BaseModel):
 		"""During inference, we want to use the original label's relationships"""
 		label = Label.get_by_id(id)
 		if (inference_labelID is not None):
-			label_array = Label.get_by_id(inference_labelID).to_numpy()
+			label_array = Label.get_by_id(inference_labelID).to_arr()
 		else:
-			label_array = label.to_numpy()
+			label_array = label.to_arr()
 
 		# --- Interpolate ---
 		if ((is_interpolated==True) and (label.labelinterpolaters.count()>0)):
@@ -1247,7 +1236,7 @@ class Feature(BaseModel):
 		dataset = Dataset.get_by_id(dataset_id)
 		include_columns = listify(include_columns)
 		exclude_columns = listify(exclude_columns)
-		d_cols = Dataset.get_main_file(dataset_id).columns
+		d_cols = dataset.columns
 		
 		if ((include_columns is not None) and (exclude_columns is not None)):
 			raise Exception("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
@@ -1292,62 +1281,20 @@ class Feature(BaseModel):
 		return feature
 
 
-	def to_pandas(id:int, samples:list=None, columns:list=None):
-		samples = listify(samples)
-		columns = listify(columns)
-		df = Feature.get_feature(
-			id = id
-			, numpy_or_pandas = 'pandas'
-			, samples = samples
-			, columns = columns
-		)
+	def to_df(id:int, samples:list=None):
+		feature = Feature.get_by_id(id)
+		dataset = feature.dataset
+		columns = feature.columns
+		df = Dataset.to_df(id=dataset.id, columns=columns, samples=samples)
 		return df
 
 
-	def to_numpy(id:int, samples:list=None, columns:list=None):
-		samples = listify(samples)
-		columns = listify(columns)
-		arr = Feature.get_feature(
-			id = id
-			, numpy_or_pandas = 'numpy'
-			, samples = samples
-			, columns = columns
-		)
-		return arr
-
-
-	def get_feature(
-		id:int
-		, numpy_or_pandas:str
-		, samples:list = None
-		, columns:list = None
-	):
+	def to_arr(id:int, samples:list=None):
 		feature = Feature.get_by_id(id)
-		samples = listify(samples)
-		columns = listify(columns)
-		f_cols = feature.columns
-
-		if (columns is not None):
-			for c in columns:
-				if c not in f_cols:
-					raise Exception("\nYikes - Cannot fetch column '{c}' because it is not in `Feature.columns`.\n")
-			f_cols = columns    
-
-		dataset_id = feature.dataset.id
-
-		if (numpy_or_pandas == 'numpy'):
-			f_data = Dataset.to_numpy(
-				id = dataset_id
-				, columns = f_cols
-				, samples = samples
-			)
-		elif (numpy_or_pandas == 'pandas'):
-			f_data = Dataset.to_pandas(
-				id = dataset_id
-				, columns = f_cols
-				, samples = samples
-			)
-		return f_data
+		dataset = feature.dataset
+		columns = feature.columns
+		arr = Dataset.to_arr(id=dataset.id, columns=columns, samples=samples)
+		return arr
 
 
 	def get_dtypes(id:int):
@@ -1364,8 +1311,8 @@ class Feature(BaseModel):
 		, samples:dict=None
 	):
 		"""
-		- `array` is assumed to be the output of `feature.to_numpy()`.
-		- I was originally calling `feature.to_pandas` but all preprocesses take in and return arrays.
+		- `array` is assumed to be the output of `feature.to_arr()`.
+		- I was originally calling `feature.to_df` but all preprocesses receive and return arrays.
 		- `samples` is used for indices only. It does not get repacked into a new dict.
 		- Extremely tricky to interpolate windowed splits separately.
 		"""
@@ -1441,9 +1388,10 @@ class Feature(BaseModel):
 						dataframe[c] = df[c]
 			array = dataframe.to_numpy()
 
-		elif ((typ=='sequence') or (typ=='image')):
+		elif ((typ=='sequence') or (typ=='image')):###
+			# Expects 3D data. Convert 4D to tall 3D
+			### ^ i don't this that's right??? need to process each seq sep
 			if (typ=='image'):
-				# Sequences are nested. Multiply number of 4D by number of 3D.
 				shape = array.shape
 				array = array.reshape(shape[0]*shape[1], shape[2], shape[3])
 
@@ -1491,14 +1439,14 @@ class Feature(BaseModel):
 		feature = Feature.get_by_id(id)
 		if (inference_featureID is None):
 			inference_feature = None
-			feature_array = feature.to_numpy()
+			feature_array = feature.to_arr()
 			
 			# Used for `fit` to avoid data leakage
 			if (key_train is not None):
 				samples_train = samples[key_train]
 		else:
 			inference_feature = Feature.get_by_id(inference_featureID)
-			feature_array = inference_feature.to_numpy()
+			feature_array = inference_feature.to_arr()
 
 		# Downstream preprocesses need to know the window ranges.
 		if ((is_windowed==True) and (feature.windows.count()>0)):
@@ -1830,16 +1778,8 @@ class Window(BaseModel):
 		if (feature.splitset is not None):
 			msg = "\nYikes - Window must be created prior to Splitset because it influences `Splitset.samples`.\n"
 			raise Exception(msg)
-
-		typ = feature.dataset.typ
 		
-		if (typ=='tabular' or typ=='sequence'):
-			# Works for both since it is based on their 2D/ inner 2D dimensions.
-			sample_count = feature.dataset.get_main_file().shape['rows']
-		elif (typ=='image'):
-			# If each seq is an img, think images over time.
-			sample_count = feature.dataset.datasets.count()
-
+		sample_count = feature.dataset.shape['samples']
 		if (record_shifted==True):
 			if ((size_window < 1) or (size_window > (sample_count - size_shift))):
 				raise Exception("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
@@ -1966,24 +1906,19 @@ class Splitset(BaseModel):
 		for f_id in feature_ids:
 			f = Feature.get_by_id(f_id)
 			f_dataset = f.dataset
-			f_dset_type = f_dataset.typ
+			f_dset_typ = f_dataset.typ
 
 			# Determine the number of samples in each feature. Varies based on dset_type and windowing.
 			if (
 				(f.windows.count()>0)
 				and 
-				# In 3D sequence, the sample is the patient, not the intra-patient time windows.
-				((f_dset_type == 'tabular') or (f_dset_type == 'image'))
+				# Excludes sequence, because in 3D, the sample is the patient.
+				((f_dset_typ == 'tabular') or (f_dset_typ == 'image'))###
 			):
 				window = f.windows[-1]
 				f_length = window.window_count
 			else:
-				if (f_dset_type == 'tabular'):
-					f_length = Dataset.get_main_file(f_dataset.id).shape['rows']
-				elif (f_dset_type == 'sequence'):
-					f_length = f_dataset.file_count
-				elif (f_dset_type == 'image'):
-					f_length = f_dataset.datasets.count()
+				f_length = f_dataset.shape['samples']
 			feature_lengths.append(f_length)
 		if (len(set(feature_lengths)) != 1):
 			raise Exception("Yikes - List of Features you provided contain different amounts of samples.")
@@ -1993,7 +1928,7 @@ class Splitset(BaseModel):
 		# --- Prepare for splitting ---
 		feature = Feature.get_by_id(feature_ids[0])
 		f_dataset = feature.dataset
-		f_dset_type = f_dataset.typ
+		f_dset_typ = f_dataset.typ
 		"""
 		- Simulate an index to be split alongside features and labels
 		  in order to keep track of the samples being used in the resulting splits.
@@ -2019,7 +1954,7 @@ class Splitset(BaseModel):
 				stratify_arr = label.preprocess(is_encoded=False)
 
 				# Check number of samples in Label vs Feature, because they can come from different Datasets.
-				l_length = label.dataset.get_main_file().shape['rows']				
+				l_length = label.dataset.shape['samples']				
 				if (label.dataset.id != f_dataset.id):
 					if (l_length != sample_count):
 						raise Exception("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
@@ -2043,7 +1978,7 @@ class Splitset(BaseModel):
 
 				if (unsupervised_stratify_col is not None):
 					# Get the column for stratification.
-					column_names = f_dataset.get_main_file().columns
+					column_names = f_dataset.columns
 					col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
 
 					dimensions = feature_array.ndim
@@ -2278,7 +2213,7 @@ class Splitset(BaseModel):
 				stratify_arr = stratify_arr[arr_train_indices]
 
 				stratify_col = splitset.unsupervised_stratify_col
-				column_names = feature.dataset.get_main_file().columns
+				column_names = feature.dataset.columns
 				col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
 				
 				dimensions = stratify_arr.ndim
@@ -2583,10 +2518,10 @@ class Fold(BaseModel):
 
 class LabelInterpolater(BaseModel):
 	"""
-	- Label cannot be of `typ=='sequence'` so don't need to worry about 3D data.
 	- Based on `pandas.DataFrame.interpolate
 	- Only works on floats.
 	- `proces_separately` is for 2D time series. Where splits are rows and processed separately.
+	- Label can only be `typ=='tabular'` so don't need to worry about multi-dimensional data.
 	"""
 	process_separately = BooleanField()# use False if you have few evaluate samples.
 	interpolate_kwargs = JSONField()
@@ -2618,7 +2553,7 @@ class LabelInterpolater(BaseModel):
 
 		# Check that the arguments actually work.
 		try:
-			df = label.to_pandas()
+			df = label.to_df()
 			run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
 			raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
@@ -2741,7 +2676,7 @@ class FeatureInterpolater(BaseModel):
 			, feature = feature
 		)
 		try:
-			test_arr = feature.to_numpy()#Don't pass matching cols.
+			test_arr = feature.to_arr()#Don't pass matching cols.
 			feature.interpolate(array=test_arr, samples=_samples)
 		except:
 			fp.delete_instance() # Orphaned.
@@ -2780,7 +2715,7 @@ class FeatureInterpolater(BaseModel):
 				df_interp = df_interp.sort_index()
 			else:
 				raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
-		elif ((typ=='sequence') or (typ=='image')):
+		elif ((typ=='sequence') or (typ=='image')):###
 			df_interp = run_interpolate(dataframe, interpolate_kwargs)
 		else:
 			raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with typ provided.\n")
@@ -2821,7 +2756,7 @@ class LabelCoder(BaseModel):
 			sklearn_preprocess, is_label=True
 		)
 
-		samples_to_encode = label.to_numpy()
+		samples_to_encode = label.to_arr()
 		# 2. Test Fit.
 		try:
 			fitted_encoders, encoding_dimension = utils.encoding.fit_dynamicDimensions(
@@ -2829,7 +2764,7 @@ class LabelCoder(BaseModel):
 				, samples_to_fit = samples_to_encode
 			)
 		except:
-			print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}` on `label.to_numpy())`.\n")
+			print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}` on `label.to_arr()`.\n")
 			raise
 
 		# 3. Test Transform/ Encode.
@@ -2930,7 +2865,7 @@ class FeatureCoder(BaseModel):
 			"""))
 
 		# Test fitting the encoder to matching columns.
-		samples_to_encode = feature.to_numpy(columns=matching_columns)
+		samples_to_encode = feature.to_arr(columns=matching_columns)
 		# Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
 		f_shape = samples_to_encode.shape
 		if (len(f_shape)==3):
@@ -3481,7 +3416,7 @@ class Queue(BaseModel):
 					raise
 
 
-	def metrics_to_pandas(
+	def metrics_df(
 		id:int
 		, selected_metrics:list=None
 		, sort_by:list=None
@@ -3671,7 +3606,7 @@ class Queue(BaseModel):
 		elif (max_loss < 0):
 			raise Exception("\nYikes - `max_loss` must be >= 0\n")
 
-		df = queue.metrics_to_pandas()#handles empty
+		df = queue.metrics_df()#handles empty
 		qry_str = "(loss >= {}) | ({} <= {})".format(max_loss, score_type, min_score)
 		failed = df.query(qry_str)
 		failed_runs = failed['predictor_id'].to_list()
@@ -4197,7 +4132,7 @@ class Predictor(BaseModel):
 					# Now we have `decoded_data` but its columns needs to be reordered to match original.
 					# OHE, text extraction are condensed at this point.
 					# Mapping of original col names {0:"first_column_name"}
-					original_col_names = feature.dataset.get_main_file().columns
+					original_col_names = feature.dataset.columns
 					original_dict = {}
 					for i, name in enumerate(original_col_names):
 						original_dict[i] = name

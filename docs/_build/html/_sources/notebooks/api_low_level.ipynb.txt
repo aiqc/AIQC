@@ -1580,7 +1580,7 @@
     }
    ],
    "source": [
-    "label.to_pandas().tail()"
+    "label.to_df().tail()"
    ]
   },
   {
@@ -1604,7 +1604,7 @@
     }
    ],
    "source": [
-    "label.to_numpy(samples=[0,33,66,99,132])[:5]"
+    "label.to_arr(samples=[0,33,66,99,132])[:5]"
    ]
   },
   {
@@ -1859,7 +1859,7 @@
     }
    ],
    "source": [
-    "feature.to_pandas(samples=[0,16,32,64]).tail()"
+    "feature.to_df(samples=[0,16,32,64]).tail()"
    ]
   },
   {

@@ -254,7 +254,7 @@ def transform_dynamicDimensions(
 	the logic for other sklearn classes like feature extraction.
 	"""
 	if (encoding_dimension == '2D_multiColumn'):
-		# Our `to_numpy` method fetches data as 2D. So it has 1+ columns. 
+		# Our `to_arr` method fetches data as 2D. So it has 1+ columns. 
 		encoded_samples = fitted_encoders[0].transform(samples_to_transform)
 		encoded_samples = if_1d_make_2d(array=encoded_samples)
 	elif (encoding_dimension == '2D_singleColumn'):
