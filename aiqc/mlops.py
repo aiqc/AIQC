@@ -85,11 +85,11 @@ class Input:
             self
             , size_window:int
             , size_shift:int
-            , _record_shifted:bool = True # overwritten by pure inference.
+            , record_shifted:bool = True # overwritten by pure inference.
         ):
-            self.size_window     = size_window
+            self.size_window    = size_window
             self.size_shift     = size_shift
-            self.record_shifted = _record_shifted
+            self.record_shifted = record_shifted
     
     class Encoder:
         def __init__(
@@ -295,7 +295,8 @@ class Inference:
         cls
         , predictor:object
         , input_datasets:list
-        , target_dataset:object = None
+        , target_dataset:object = None # overwritten by during monitored inference
+        , record_shifted:bool   = False # overwritten by during monitored inference
     ):
         """Reference `utils.wrangle.schemaNew_matches_schemaOld()` for validation"""
         input_datasets = listify(input_datasets)
@@ -329,7 +330,7 @@ class Inference:
                     new_window = Input.Window(
                         size_window      = old_window.size_window
                         , size_shift     = old_window.size_shift
-                        , _record_shifted = False
+                        , record_shifted = record_shifted
                     )
             # Use `include_columns` in case users decided to stop gathering the excluded columns.
             input_ = Input(
