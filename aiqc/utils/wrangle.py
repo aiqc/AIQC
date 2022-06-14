@@ -1,7 +1,6 @@
 """Functions that help with data ingestion, preprocessing, and inference."""
 from .config import create_folder
 from os import path, listdir
-from fsspec import filesystem
 from natsort import natsorted
 from textwrap import dedent
 import numpy as np
@@ -49,7 +48,7 @@ def sorted_file_list(dir_path:str):
 	return file_paths
 
 
-def arr_validate(ndarray):
+def arr_validate(ndarray:object):
 	if (type(ndarray).__name__ != 'ndarray'):
 		raise Exception("\nYikes - The `ndarray` you provided is not of the type 'ndarray'.\n")
 	if (ndarray.dtype.names is not None):
@@ -57,7 +56,7 @@ def arr_validate(ndarray):
 		Yikes - Sorry, we do not support NumPy Structured Arrays.
 		However, you can use the `dtype` dict and `column_names` to handle each column specifically.
 		"""))
-	if (ndarray.size == 0):
+	if (ndarray.size==0):
 		raise Exception("\nYikes - The ndarray you provided is empty: `ndarray.size == 0`.\n")
 
 
@@ -65,13 +64,6 @@ def colIndices_from_colNames(column_names:list, desired_cols:list):
 	desired_cols = listify(desired_cols)
 	col_indices = [column_names.index(c) for c in desired_cols]
 	return col_indices
-
-
-def cols_by_indices(arr:object, col_indices:list):
-	# Input and output 2D array. Fetches a subset of columns using their indices.
-	# In the future if this needs to be adjusted to handle 3D array `[:,col_indices,:]`.
-	subset_arr = arr[:,col_indices]
-	return subset_arr
 
 
 def df_stringifyCols(df:object, rename_columns:list):

@@ -1,4 +1,4 @@
-from .wrangle import if_1d_make_2d, cols_by_indices, colIndices_from_colNames
+from .wrangle import if_1d_make_2d, colIndices_from_colNames
 from inspect import isclass
 from warnings import catch_warnings
 from scipy import sparse
@@ -355,7 +355,7 @@ def fit_features(
 				column_names=f_cols, desired_cols=matching_columns
 			)
 			# Filter the array using those indices.
-			features_to_fit = cols_by_indices(features_to_fit, col_indices)
+			features_to_fit = features_to_fit[:,col_indices]
 
 			# Fit the encoder on the subset.
 			fitted_coders, encoding_dimension = fit_dynamicDimensions(
@@ -399,7 +399,7 @@ def transform_features(
 				column_names=f_cols, desired_cols=matching_columns
 			)
 			# Filter the array using those indices.
-			features_to_transform = cols_by_indices(arr_features, col_indices)
+			features_to_transform = arr_features[:,col_indices]
 
 			if (idx == 0):
 				# It's the first encoder. Nothing to concat with, so just overwite the None value.
@@ -428,7 +428,7 @@ def transform_features(
 				column_names=f_cols, desired_cols=leftover_columns
 			)
 			# Filter the array using those indices.
-			leftover_features = cols_by_indices(arr_features, col_indices)
+			leftover_features = arr_features[:,col_indices]
 					
 			transformed_features = np.concatenate(
 				(transformed_features, leftover_features)

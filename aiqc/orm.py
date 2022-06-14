@@ -5,19 +5,18 @@ Low-Level API
 This is an Object-Relational Model (ORM) for the SQLite database that keeps track of the workflow.
 It acts like an persistent, object-oriented API for machine learning.
 
-There is a circular depedency between: 
+<!> There is a circular depedency between: 
 1: Model(BaseModel)
 2: db.create_tables(Models)
-3: BaseModel(db).
+3: BaseModel(db)
 
 	In an attempt to fix this, I split db.create_tables(Models) into a separate file, which allowed me 
 	to put the Models in separate files. However, this introduced a problem where the Models couldn't 
 	be reloaded without restarting the kernel and rerunning setup(), which isn't very user-friendly.
-	I tried all kinds of importlib.reload() to fix this new problem, but decided to move on.
+	I tried all kinds of importlib.reload() to work around this new problem, but decided to move on.
 	See also: github.com/coleifer/peewee/issues/856
 """
 # --- Local modules ---
-from pyparsing import Char
 from .utils.wrangle import *
 from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
@@ -25,6 +24,7 @@ from . import utils
 # --- Python modules ---
 from os import path, remove, makedirs
 from sys import modules, getsizeof
+from fsspec import filesystem
 from io import BytesIO
 from shutil import rmtree
 from hashlib import sha256
@@ -126,7 +126,7 @@ def create_db():
 	table_count = len(tables)
 	if (table_count==0):
 		db.create_tables([
-			File, Dataset, Label, Feature, Splitset, Fold, 
+			Dataset, Label, Feature, Splitset, Fold, 
 			LabelInterpolater, FeatureInterpolater,
 			LabelCoder, FeatureCoder, 
 			Window, FeatureShaper,
@@ -226,8 +226,8 @@ def add_timestamps(model_class, instance, created):
 
 def dataset_matchVersion(name:str, typ:str):
 	"""
-	- New dataset doesn't have an ID yet/ isn't created
-	- Can't put this in wrangle because it uses ORM for query.
+	- Runs prior to Dataset creation, so it can't be placed inside Dataset class
+	- Can't refactor this in wrangle because it uses ORM for query.
 	"""
 	latest_match, version_num = None, None
 	if (name is not None):
@@ -245,9 +245,8 @@ def dataset_matchVersion(name:str, typ:str):
 				raise Exception(msg)
 	return latest_match, version_num
 
-
 def dataset_matchHash(hash:str, latest_match:object, name:str=None):
-	"""Files are created after Dataset, so we can't compare hashes as a db signal"""
+	"""Runs prior to Dataset creation, so it can't be placed inside Dataset class"""
 	if ((name is not None) and (latest_match is not None)):
 		if (hash == latest_match.sha256_hexdigest):
 			msg = f"\n└── Info - Hashes identical to `Dataset.version={latest_match.version}`.\nReusing & returning that Dataset instead of creating duplicate version.\n"
@@ -259,8 +258,10 @@ def dataset_matchHash(hash:str, latest_match:object, name:str=None):
 
 class Dataset(BaseModel):
 	"""
-	The sub-classes are not 1-1 tables. They simply provide namespacing for functions
-	to avoid functions riddled with if statements about typ and null parameters.
+	- The sub-classes are not 1-1 tables. They simply provide namespacing for functions
+	  to avoid functions riddled with if statements about typ and null parameters.
+	- The initial methods (e.g. `to_arr`) of the class abstract and route requests 
+	  so that downstream processes can uniformly fetch a dataset.
 	"""
 	typ              = CharField()
 	source_format    = CharField()
@@ -269,19 +270,16 @@ class Dataset(BaseModel):
 	columns          = JSONField()
 	dtypes           = JSONField()
 	sha256_hexdigest = CharField()
-	size_MB          = IntegerField()
+	memory_MB        = IntegerField()
 	contains_nan     = BooleanField()
 	header           = PickleField(null=True) #Image does not have.
-	source_path      = CharField(null=True) # when `from_numpy` or `from_pandas`.
+	source_path      = CharField(null=True) # when `from_numpy` or `from_pandas` and `from_urls`
 	urls             = JSONField(null=True)
-	version          = IntegerField(null=True)
+	version          = IntegerField(null=True) # when not named
 	blob             = BlobField(null=True) # when `is_ingested==False`.
 
-	#docs.peewee-orm.com/en/latest/peewee/models.html#self-referential-foreign-keys
-	dataset = ForeignKeyField('self', deferrable='INITIALLY DEFERRED', null=True, backref='datasets')
 
-
-	def to_pandas(id:int, columns:list=None, samples:list=None):
+	def to_df(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
 		columns = listify(columns)
 		samples = listify(samples)
@@ -295,7 +293,7 @@ class Dataset(BaseModel):
 		return df
 
 
-	def to_numpy(id:int, columns:list=None, samples:list=None):
+	def to_arr(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
 		columns = listify(columns)
 		samples = listify(samples)
@@ -312,24 +310,14 @@ class Dataset(BaseModel):
 	def to_pillow(id:int, samples:list=None):
 		samples = listify(samples)
 		dataset = Dataset.get_by_id(id)
-		if (dataset.typ == 'tabular'):
-			raise Exception("\nYikes - Only `Dataset.Image` and `Dataset.Sequence` support `to_pillow()`\n")
+		if ((dataset.typ == 'tabular') or (dataset.typ == 'sequence')):
+			raise Exception("\nYikes - Only `Dataset.Image` supports `to_pillow()`\n")
 		elif (dataset.typ == 'image'):
 			image = Dataset.Image.to_pillow(id=id, samples=samples)
-		elif (dataset.typ == 'sequence'):
-			if (samples is not None):
-				raise Exception("\nYikes - `Dataset.Sequence.to_pillow()` does not support a `samples` argument.\n")
-			image = Dataset.Sequence.to_pillow(id=id)
 		return image
 
 
 	class Tabular():
-		"""
-		- Does not inherit the Dataset class e.g. `class Tabular(Dataset):`
-		  because then ORM would make a separate table for it.
-		- It is just a collection of methods.
-		"""
-
 		def from_df(
 			dataframe:object
 			, name:str            = None
@@ -341,14 +329,17 @@ class Dataset(BaseModel):
 			, _source_path:str    = None # from_path overwrites
 			, _header:object      = None # from_path may overwrite
 		):
-			"""This method is used downstream of from_path and from_numpy once they read into a df"""
+			"""The internal args `_*` exist because `from_path` & `from_ndarray` call this function."""
 			if (type(dataframe).__name__ != 'DataFrame'):
-				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__ == 'DataFrame'`\n")
-			latest_match, version_num = dataset_matchVersion(name, Dataset.Tabular.typ)
-			column_names = listify(column_names)
+				raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__=='DataFrame'`\n")
+			latest_match, version_num = dataset_matchVersion(name=name, typ='tabular')
+			rename_columns = listify(rename_columns)
 
-			df_validate(dataframe, column_names)
-			# Gather metadata whether ingested or not.
+			df_validate(dataframe, rename_columns)
+			"""
+			- We gather metadata regardless of whether ingested or not. 
+			- Variables are intentionally renamed.
+			"""
 			dataframe, columns, shape, dtype = df_setMetadata(
 				dataframe        = dataframe
 				, rename_columns = rename_columns
@@ -375,12 +366,12 @@ class Dataset(BaseModel):
 			"""
 			fs = filesystem("memory")
 			temp_path = "memory://temp.parq"
-			size_MB = getsizeof(dataframe)/1048576
+			memory_MB = getsizeof(dataframe)/1048576
 			dataframe.to_parquet(temp_path, engine="fastparquet", compression="zstd", index=False)
 			blob = fs.cat(temp_path)
 			fs.delete(temp_path)
 			sha256_hexdigest = sha256(blob).hexdigest()
-			if (_ingest==False): blob=None	
+			if (_ingest==False): blob=None
 			# Check for duplicates
 			dataset = dataset_matchHash(sha256_hexdigest, latest_match, name)
 			
@@ -391,7 +382,7 @@ class Dataset(BaseModel):
 					, columns          = columns
 					, dtypes           = dtype
 					, sha256_hexdigest = sha256_hexdigest
-					, size_MB          = size_MB
+					, memory_MB          = memory_MB
 					, contains_nan     = contains_nan
 					, version          = version_num
 					, blob             = blob
@@ -471,12 +462,12 @@ class Dataset(BaseModel):
 		):
 			"""
 			Only supporting homogenous arrays because structured arrays are a pain
-			when it comes time to convert them to dataframes. It complained about
-			setting an index, scalar types, and dimensionality... yikes.
+			when it comes time to convert them to dataframes; warnings across the
+			board about setting an index, scalar types, and dimensionality.
 			
 			Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
 			Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
-			Per column dtypes dtypes from structured array <https://stackoverflow.com/a/65224410/5739514>
+			Per column dtypes dtypes from structured array <stackoverflow.com/a/65224410/5739514>
 
 			column_names and dict-based dtype will be handled by our `from_df` method 
 			because `pd.DataFrame` method only accepts a single dtype str, or infers if None.
@@ -513,6 +504,8 @@ class Dataset(BaseModel):
 			dataset  = Dataset.get_by_id(id)
 			d_dtypes = dataset.dtypes
 			d_cols   = dataset.columns
+			if (columns is None):
+				columns = d_cols
 
 			# --- Fetch ---
 			if (dataset.is_ingested==False):
@@ -521,13 +514,13 @@ class Dataset(BaseModel):
 					, file_format = dataset.source_format
 					, header      = dataset.header
 				)
-				# Don't know col names at source - can't filter until renamed
+				# Don't know col names/types at source so can't filter
 				df = df_stringifyCols(df,d_cols)
 				if (d_dtypes is not None):
 					df = df.astype(d_dtypes)
 
 			elif (dataset.is_ingested==True):
-				# Columns have been saved as renamed
+				# Columns were saved as renamed & retyped
 				df = pd.read_parquet(
 					BytesIO(dataset.blob)
 					, engine  = 'fastparquet'
@@ -535,8 +528,8 @@ class Dataset(BaseModel):
 				)
 
 			# --- Filter ---
-			# <!> Dual role in ensuring df columns rearranged to match order of func's columns arg
-			if ((columns is not None) and (df.columns.to_list() != columns)):
+			# <!> Dual role in rearranged cols to match the order of func's columns arg
+			if (df.columns.to_list() != columns):
 				df = df.filter(columns)
 			# Specific rows.
 			if (samples is not None):
@@ -545,8 +538,6 @@ class Dataset(BaseModel):
 			# --- Type ---
 			# Accepts dict{'column_name':'dtype_str'} or a single str.
 			if (isinstance(d_dtypes, dict)):
-				if (columns is None):
-					columns = d_cols
 				# Prunes out the excluded columns from the dtype dict.
 				df_dtype_cols = list(d_dtypes.keys())
 				for col in df_dtype_cols:
@@ -559,8 +550,6 @@ class Dataset(BaseModel):
 
 
 		def to_arr(id:int, columns:list=None, samples:list=None):
-			columns = listify(columns)
-			samples = listify(samples)
 			dataset = Dataset.get_by_id(id)
 			df = dataset.to_df(columns=columns, samples=samples)
 			ndarray = df.to_numpy()
@@ -574,39 +563,47 @@ class Dataset(BaseModel):
 			, description:str     = None
 			, rename_columns:list = None
 			, retype:object       = None
-			, ingest:bool         = True
+			, ingest:bool         = None
 		):
 			rename_columns = listify(rename_columns)
-			latest_match, version_num = dataset_matchVersion(name, 'sequence')
+			latest_match, version_num = dataset_matchVersion(name=name, typ='sequence')
 			
 			if (not isinstance(retype,str)):
 				msg = "\nYikes - AIQC 3D NumPy ingestion only supports string-based retyping.\n"
 				raise Exception(msg)
 
+			arr   = ndarray3D_or_npyPath 
+			klass = str(arr.__class__) != "<class 'numpy.ndarray'>"
+			short = 'ndarray3D_or_npyPath'
 			# Fetch array from .npy if it is not an in-memory array.
-			if (str(ndarray3D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
-				if (not isinstance(ndarray3D_or_npyPath, str)):
-					msg = "\nYikes - If `ndarray3D_or_npyPath` is not an array then it must be a string-based path.\n"
+			if (klass):
+				if (not isinstance(arr, str)):
+					msg = f"\nYikes - If `{short}` is not an array then it must be a string-based path.\n"
 					raise Exception(msg)
-				if (not path.exists(ndarray3D_or_npyPath)):
-					msg = "\nYikes - The path you provided does not exist according to `path.exists(ndarray3D_or_npyPath)`\n"
+				if (not path.exists(arr)):
+					msg = f"\nYikes - The path you provided does not exist according to `path.exists({short})`\n"
 					raise Exception(msg)
-				if (not path.isfile(ndarray3D_or_npyPath)):
-					msg = "\nYikes - The path you provided is not a file according to `path.isfile(ndarray3D_or_npyPath)`\n"
+				if (not path.isfile(arr)):
+					msg = f"\nYikes - The path you provided is not a file according to `path.isfile({short})`\n"
 					raise Exception(msg)
-				source_path = ndarray3D_or_npyPath
+				
+				source_path = arr
 				if (not source_path.lower().endswith(".npy")):
 					raise Exception("\nYikes - Path must end with '.npy'\n")
 				try:
-					arr = np.load(file=ndarray3D_or_npyPath)
+					arr = np.load(file=arr)
 				except:
-					msg = "\nYikes - Failed to `np.load(file=ndarray3D_or_npyPath)` with your `ndarray3D_or_npyPath`:\n{ndarray3D_or_npyPath}\n"
+					msg = f"\nYikes - Failed to `np.load(file={short})` with your `{short}`:\n{arr}\n"
 					raise Exception(msg)				
 				source_format = "npy"
-			elif (str(ndarray3D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
-				arr = ndarray3D_or_npyPath 
-				source_path = None
+				if (ingest is None):
+					ingest = False
+
+			elif (klass):
+				source_path   = None
 				source_format = "ndarray"
+				if (ingest is None):
+					ingest = True
 
 			arr_validate(arr)
 
@@ -628,21 +625,21 @@ class Dataset(BaseModel):
 					raise Exception(msg)
 				columns = rename_columns
 			else:
-				nums = list(range(arr.shape['columns']))
-				columns = [str(i) for i in nums]
+				col_indices = list(range(arr.shape['columns']))
+				columns = [str(i) for i in col_indices]
 			
 			if (retype is not None):
 				try:
 					arr = arr.astype(retype)
-					dtype = str(arr.dtype)
 				except:
 					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
 					raise
+			dtype = str(arr.dtype)
 
 			contains_nan = any(np.isnan(arr))
-			size_MB = getsizeof(arr)/1048576
-			fs = filesystem("memory")
-			temp_path = "memory://temp.npy"
+			memory_MB    = getsizeof(arr)/1048576
+			fs           = filesystem("memory")
+			temp_path    = "memory://temp.npy"
 			np.save(temp_path, arr)
 			blob = fs.cat(temp_path)
 			fs.delete(temp_path)
@@ -659,7 +656,7 @@ class Dataset(BaseModel):
 					, columns          = columns
 					, dtypes           = dtype
 					, sha256_hexdigest = sha256_hexdigest
-					, size_MB          = size_MB
+					, memory_MB        = memory_MB
 					, contains_nan     = contains_nan
 					, version          = version_num
 					, blob             = blob
@@ -674,19 +671,18 @@ class Dataset(BaseModel):
 
 		def to_arr(id:int, columns:list=None, samples:list=None):
 			columns, samples = listify(columns), listify(samples)			
-			dataset = Dataset.get_by_id(id)
+			dataset          = Dataset.get_by_id(id)
+			d_dtypes         = dataset.dtypes
 
 			if (dataset.is_ingested==False):
-				arr = np.load(dataset.source_path)
-				if (dataset.retype is not None):
-					arr = arr.astype(dataset.retype)
+				arr = np.load(dataset.source_path).astype(d_dtypes)
 			elif (dataset.is_ingested==True):
 				blob = BytesIO(dataset.blob)
 				arr = np.load(blob)
 
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
-					column_names = dataset.columns
+					column_names   = dataset.columns
 					, desired_cols = columns
 				)
 				# Verified that this has index replacement
@@ -697,23 +693,24 @@ class Dataset(BaseModel):
 
 
 		def to_df(id:int, columns:list=None, samples:list=None):
-			"""Need dataframes for interpolation"""
-			columns, samples = listify(columns), listify(samples)
+			"""Interpolation requires dataframes"""
 			dataset = Dataset.get_by_id(id)
-			arr_3D = dataset.to_arr(columns,samples)
-			if (columns is not None):
-				dfs = [pd.DataFrame(arr_2D, columns=columns) for arr_2D in arr_3D]
-			else:
-				dfs = [pd.DataFrame(arr_2D, columns=dataset.columns) for arr_2D in arr_3D]
+			# Filters columns and samples
+			arr_3D = dataset.to_arr(columns=columns, samples=samples)
+
+			if (columns is None):
+				columns = dataset.columns
+			
+			# But we still need to name the df columns
+			dfs = [pd.DataFrame(arr_2D, columns=columns) for arr_2D in arr_3D]
 			return dfs
 
 
 	class Image():
 		"""PIL formats: pillow.readthedocs.io/en/stable/handbook/image-file-formats.html"""
-
 		def from_numpy(
 			ndarray4D_or_npyPath:object
-			, ingest:bool         = True
+			, ingest:bool         = None
 			, name:str            = None
 			, description:str     = None
 			, rename_columns:list = None
@@ -722,42 +719,49 @@ class Dataset(BaseModel):
 			, _source_format:str  = None # from folder/urls overrides
 		):
 			rename_columns = listify(rename_columns)
-			latest_match, version_num = dataset_matchVersion(name, 'image')
+			latest_match, version_num = dataset_matchVersion(name=name, typ='image')
 			
 			if (not isinstance(retype,str)):
 				msg = "\nYikes - AIQC 4D NumPy ingestion only supports string-based retyping.\n"
 				raise Exception(msg)
 
+			arr   = ndarray4D_or_npyPath 
+			klass = str(arr.__class__) != "<class 'numpy.ndarray'>"
+			short = 'ndarray3D_or_npyPath'
 			# Fetch array from .npy if it is not an in-memory array.
-			if (str(ndarray4D_or_npyPath.__class__) != "<class 'numpy.ndarray'>"):
-				if (not isinstance(ndarray4D_or_npyPath, str)):
-					msg = "\nYikes - If `ndarray4D_or_npyPath` is not an array then it must be a string-based path.\n"
+			if (klass):
+				if (not isinstance(arr, str)):
+					msg = f"\nYikes - If `{short}` is not an array then it must be a string-based path.\n"
 					raise Exception(msg)
-				if (not path.exists(ndarray4D_or_npyPath)):
-					msg = "\nYikes - The path you provided does not exist according to `path.exists(ndarray4D_or_npyPath)`\n"
+				if (not path.exists(arr)):
+					msg = f"\nYikes - The path you provided does not exist according to `path.exists({short})`\n"
 					raise Exception(msg)
-				if (not path.isfile(ndarray4D_or_npyPath)):
-					msg = "\nYikes - The path you provided is not a file according to `path.isfile(ndarray4D_or_npyPath)`\n"
+				if (not path.isfile(arr)):
+					msg = f"\nYikes - The path you provided is not a file according to `path.isfile({short})`\n"
 					raise Exception(msg)
-				source_path = ndarray4D_or_npyPath
+				source_path = arr
+				
 				if (not source_path.lower().endswith(".npy")):
 					raise Exception("\nYikes - Path must end with '.npy'\n")
 				try:
-					arr = np.load(file=ndarray4D_or_npyPath)
+					arr = np.load(file=arr)
 				except:
-					msg = "\nYikes - Failed to `np.load(file=ndarray4D_or_npyPath)` with your `ndarray4D_or_npyPath`:\n{ndarray4D_or_npyPath}\n"
+					msg = "\nYikes - Failed to `np.load(file={short})` with your `{short}`:\n{arr}\n"
 					raise Exception(msg)				
 				source_format = "npy"
+				if (ingest is None):
+					ingest = False
 				
-			elif (str(ndarray4D_or_npyPath.__class__) == "<class 'numpy.ndarray'>"):
-				arr = ndarray4D_or_npyPath 
+			elif (klass):
+				# Only overwrite internal args if they are undefined
 				if (_source_path is None):
 					source_path = None
 				if (_source_format is None):
 					source_format = "ndarray"
+				if (ingest is None):
+					ingest = True
 
 			arr_validate(arr)
-
 			if (arr.ndim != 4):
 				raise Exception(dedent(f"""
 				Yikes - Sequence Datasets can only be constructed from 4D arrays.
@@ -776,21 +780,21 @@ class Dataset(BaseModel):
 					raise Exception(msg)
 				columns = rename_columns
 			else:
-				nums = list(range(arr.shape['columns']))
-				columns = [str(i) for i in nums]
+				col_indices = list(range(arr.shape['columns']))
+				columns = [str(i) for i in col_indices]
 			
 			if (retype is not None):
 				try:
 					arr = arr.astype(retype)
-					dtype = str(arr.dtype)
 				except:
 					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
 					raise
+			dtype = str(arr.dtype)
 
 			contains_nan = any(np.isnan(arr))
-			size_MB = getsizeof(arr)/1048576
-			fs = filesystem("memory")
-			temp_path = "memory://temp.npy"
+			memory_MB    = getsizeof(arr)/1048576
+			fs           = filesystem("memory")
+			temp_path    = "memory://temp.npy"
 			np.save(temp_path, arr)
 			blob = fs.cat(temp_path)
 			fs.delete(temp_path)
@@ -807,7 +811,7 @@ class Dataset(BaseModel):
 					, columns          = columns
 					, dtypes           = dtype
 					, sha256_hexdigest = sha256_hexdigest
-					, size_MB          = size_MB
+					, memory_MB        = memory_MB
 					, contains_nan     = contains_nan
 					, version          = version_num
 					, blob             = blob
@@ -820,7 +824,7 @@ class Dataset(BaseModel):
 			return dataset
 
 
-		def from_folder_pillow(
+		def from_folder(
 			folder_path:str
 			, ingest:bool         = False
 			, name:str            = None
@@ -845,11 +849,15 @@ class Dataset(BaseModel):
 				arr_3Ds.append(arr)
 			arr_4D = np.array(arr_4D)
 
-			formats = set(formats)
-			if len(formats)==1:
-				_source_format = formats[0]
+			formats     = set(formats)
+			single_form = len(formats)==1
+			real_form   = formats[0]==None
+			if ((single_form==True) and (real_form==True)):
+				source_format = formats[0]
+			elif (single_form==False):
+				source_format = 'mixed'
 			else:
-				_source_format = 'mixed'
+				source_format = 'pillow'
 
 			dataset = Dataset.Image.from_numpy(
 				ndarray4D_or_npyPath = arr_4D
@@ -859,12 +867,12 @@ class Dataset(BaseModel):
 				, retype             = retype
 				, ingest             = ingest
 				, _source_path       = source_path
-				, _source_format     = _source_format
+				, _source_format     = source_format
 			)
 			return dataset
 
 
-		def from_urls_pillow(
+		def from_urls(
 			urls:list
 			, ingest:bool         = False
 			, source_path:str     = None # not used anywhere, but doesn't hurt to record e.g. FTP site
@@ -879,13 +887,11 @@ class Dataset(BaseModel):
 			arr_4D = []
 			formats = []
 			for url in urls:
-				validation = val_url(url)
-				if (validation != True): #`== False` doesn't work.
-					raise Exception(f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n")
-
-				img = Imaje.open(
-					requests_get(url, stream=True).raw
-				)
+				if (val_url(url) != True):
+					msg = f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n"
+					raise Exception(msg)
+				raw_request = requests_get(url, stream=True).raw
+				img = Imaje.open(raw_request)
 				formats.append(img.format)
 				arr = np.array(img)
 				# Coerce 3D
@@ -894,11 +900,15 @@ class Dataset(BaseModel):
 				arr_4D.append(arr)
 			arr_4D = np.array(arr_4D)
 
-			formats = set(formats)
-			if len(formats)==1:
+			formats     = set(formats)
+			single_form = len(formats)==1
+			real_form   = formats[0]==None
+			if ((single_form==True) and (real_form==True)):
 				source_format = formats[0]
-			else:
+			elif (single_form==False):
 				source_format = 'mixed'
+			else:
+				source_format = 'pillow'
 
 			dataset = Dataset.Image.from_numpy(
 				ndarray4D_or_npyPath = arr_4D
@@ -915,19 +925,19 @@ class Dataset(BaseModel):
 
 		def to_arr(id:int, columns:list=None, samples:list=None):
 			columns, samples = listify(columns), listify(samples)			
-			dataset = Dataset.get_by_id(id)
+			dataset          = Dataset.get_by_id(id)
+			d_dtypes         = dataset.dtypes
 
 			if (dataset.is_ingested==False):
-				arr = np.load(dataset.source_path)
-				if (dataset.retype is not None):
-					arr = arr.astype(dataset.retype)
+				arr = np.load(dataset.source_path).astype(d_dtypes)
+
 			elif (dataset.is_ingested==True):
 				blob = BytesIO(dataset.blob)
-				arr = np.load(blob)
+				arr  = np.load(blob)
 
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
-					column_names = dataset.columns
+					column_names   = dataset.columns
 					, desired_cols = columns
 				)
 				# Verified that this has index replacement
@@ -939,7 +949,6 @@ class Dataset(BaseModel):
 
 		def to_df(id:int, columns:list=None, samples:list=None):
 			"""Need dataframes for interpolation"""
-			columns, samples = listify(columns), listify(samples)
 			dataset = Dataset.get_by_id(id)
 			arr_4D = dataset.to_arr(columns,samples)
 			
@@ -957,22 +966,27 @@ class Dataset(BaseModel):
 		
 
 		def to_pillow(id:int, samples:list=None):
-			columns, samples = listify(columns), listify(samples)
+			"""User-facing for inspecting. Not used in library."""
 			dataset = Dataset.get_by_id(id)
-			arr_4D = dataset.to_arr(columns,samples).astype('uint8')
+			arr_4D = dataset.to_arr(samples=samples).astype('uint8')
 			
 			imgs = []
 			for arr in arr_4D:
+				channel_dim = arr.shape[0]
 				# shappe: channels, rows, columns
-				if (arr.shape[0]==1):
+				if (channel_dim==1):
 					arr = arr.reshape(arr.shape[1], arr.shape[2])
 					img = Imaje.fromarray(arr, 'L')
-				elif (arr.shape[0]==3):
+
+				elif (channel_dim==3):
 					img = Imaje.fromarray(arr, 'RGB')
-				elif (arr.shape[0]==4):
+
+				elif (channel_dim==4):
 					img = Imaje.fromarray(arr, 'RGBA')
+
 				else:
-					raise Exception("\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n")
+					msg = "\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n"
+					raise Exception(msg)
 				imgs.append(img)
 			return imgs
 

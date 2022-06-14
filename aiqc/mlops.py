@@ -24,8 +24,8 @@ class Target:
         encoder:object		= None,
     ):
         """`column:str` in order to encourage single-column labels"""
-        self.dataset 	   = dataset
-        self.column  	   = listify(column)
+        self.dataset = dataset
+        self.column  = listify(column)
 
         l_id = Label.from_dataset(dataset_id=dataset.id, columns=column).id
         if (interpolater is not None):
@@ -57,13 +57,13 @@ class Input:
         , encoders:list 		= None
         , reshape_indices:tuple = None
     ):
-        self.dataset 			= dataset
-        self.exclude_columns    = listify(exclude_columns)
-        self.include_columns 	= listify(include_columns)
-        self.interpolaters 		= listify(interpolaters)
-        self.window 			= window
-        self.encoders 			= listify(encoders)
-        self.reshape_indices 	= reshape_indices
+        self.dataset 		 = dataset
+        self.exclude_columns = listify(exclude_columns)
+        self.include_columns = listify(include_columns)
+        self.interpolaters 	 = listify(interpolaters)
+        self.window 		 = window
+        self.encoders 		 = listify(encoders)
+        self.reshape_indices = reshape_indices
     
     class Interpolater:
         def __init__(
@@ -74,11 +74,11 @@ class Input:
             , dtypes:list             = None
             , columns:list            = None
         ):
-            self.process_separately   = process_separately
-            self.verbose       		  = verbose
-            self.interpolate_kwargs   = interpolate_kwargs
-            self.dtypes        		  = listify(dtypes)
-            self.columns       		  = listify(columns)
+            self.process_separately = process_separately
+            self.verbose       		= verbose
+            self.interpolate_kwargs = interpolate_kwargs
+            self.dtypes        		= listify(dtypes)
+            self.columns       		= listify(columns)
     
     class Window:
         def __init__(self, size_window:int, size_shift:int):
@@ -89,10 +89,10 @@ class Input:
         def __init__(
             self
             , sklearn_preprocess:object
-            , verbose:bool 			= False
-            , include:bool 			= True
-            , dtypes:list  			= None
-            , columns:list 			= None
+            , verbose:bool = False
+            , include:bool = True
+            , dtypes:list  = None
+            , columns:list = None
         ):
             self.sklearn_preprocess = sklearn_preprocess
             self.verbose 			= verbose
@@ -109,10 +109,10 @@ class Stratifier:
         , fold_count:int 		= None
         , bin_count:int 		= None
     ):
-        self.size_test 		 	= size_test
-        self.size_validation 	= size_validation
-        self.fold_count 	 	= fold_count
-        self.bin_count 		 	= bin_count
+        self.size_test 		 = size_test
+        self.size_validation = size_validation
+        self.fold_count 	 = fold_count
+        self.bin_count 		 = bin_count
 
 
 class Pipeline:
@@ -223,13 +223,13 @@ class Architecture:
         """Putting params here as `fn_*` can change when editing params"""
         self.hyperparameters = hyperparameters
         self.id = Algorithm.make(
-            library 	  	   = library
-            , analysis_type    = analysis_type
-            , fn_build 	  	   = fn_build
-            , fn_train 	  	   = fn_train
-            , fn_optimize      = fn_optimize
-            , fn_lose 	  	   = fn_lose
-            , fn_predict       = fn_predict
+            library 	  	= library
+            , analysis_type = analysis_type
+            , fn_build 	  	= fn_build
+            , fn_train 	  	= fn_train
+            , fn_optimize   = fn_optimize
+            , fn_lose 	  	= fn_lose
+            , fn_predict    = fn_predict
         ).id
         
 
@@ -237,17 +237,17 @@ class Trainer:
     def __init__(
         self
         , pipeline:object
-        , repeat_count:int 	   = 1
-        , permute_count:int    = 3
-        , search_count 		   = None
-        , search_percent 	   = None
+        , repeat_count:int 	= 1
+        , permute_count:int = 3
+        , search_count 		= None
+        , search_percent 	= None
     ):
         """Intentionally switch to splitset here so it can be used in **kwargs"""
-        self.splitset_id 	 = pipeline.id
-        self.repeat_count 	 = repeat_count
-        self.permute_count 	 = permute_count
-        self.search_count 	 = search_count
-        self.search_percent  = search_percent
+        self.splitset_id 	= pipeline.id
+        self.repeat_count 	= repeat_count
+        self.permute_count 	= permute_count
+        self.search_count 	= search_count
+        self.search_percent = search_percent
 
 
 class Experiment:
@@ -264,10 +264,10 @@ class Experiment:
         hyperparameters = architecture.hyperparameters
         if (hyperparameters is not None):
             h_id = Hyperparamset.from_algorithm(
-                algorithm_id = architecture.id
+                algorithm_id      = architecture.id
                 , hyperparameters = hyperparameters
-                , search_count = trainer.search_count
-                , search_percent = trainer.search_percent
+                , search_count    = trainer.search_count
+                , search_percent  = trainer.search_percent
             ).id
         elif (hyperparameters is None):
             h_id = None
@@ -298,9 +298,9 @@ class Inference:
         if (target_dataset is not None):
             label = old_splitset.label 
             if (label is not None):
-                cols = label.columns
+                cols           = label.columns
                 target_dataset = label.dataset
-                target = Target(dataset=target_dataset,column=cols)
+                target         = Target(dataset=target_dataset,column=cols)
         else:
             target = None
 
@@ -320,21 +320,21 @@ class Inference:
                     old_window = f.windows[-1]
                     new_window = Input.Window(
                         size_window = old_window.size_window,
-                        size_shift = old_window.size_shift
+                        size_shift  = old_window.size_shift
                     )
             # Use `include_columns` in case users decided to stop gathering the excluded columns.
             input_ = Input(
-                dataset=dataset, 
-                include_columns=cols, 
-                window=new_window
+                dataset         = dataset, 
+                include_columns = cols, 
+                window          = new_window
             )
             inputs.append(input_)
 
         pipeline = Pipeline(
-            inputs = inputs,
-            target = target,
-            stratifier = Stratifier(),
-            _predictor = predictor
+            inputs       = inputs
+            , target     = target
+            , stratifier = Stratifier()
+            , _predictor = predictor
         )
         prediction = pipeline.infer()
         return prediction
