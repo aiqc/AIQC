@@ -315,6 +315,23 @@ class Dataset(BaseModel):
 		elif (dataset.typ == 'image'):
 			image = Dataset.Image.to_pillow(id=id, samples=samples)
 		return image
+	
+
+	def get_dtypes(id:int, columns:list=None):
+		"""`dtypes` may be a single str, but preprocessing requires dict"""
+		columns = listify(columns)
+		dataset = Dataset.get_by_id(id)
+		if (columns is None):
+			columns = dataset.columns
+
+		# Only include types of the columns of interest
+		if isinstance(dtypes, str):
+			dtypes = {}
+			for c in columns:
+				dtypes[c] = dataset.dtypes
+		elif isinstance(dtypes, dict):
+			dtypes = {col:dtypes[col] for col in columns}
+		return dtypes
 
 
 	class Tabular():
@@ -976,13 +993,13 @@ class Dataset(BaseModel):
 				# shappe: channels, rows, columns
 				if (channel_dim==1):
 					arr = arr.reshape(arr.shape[1], arr.shape[2])
-					img = Imaje.fromarray(arr, 'L')
+					img = Imaje.fromarray(arr, mode='L')
 
 				elif (channel_dim==3):
-					img = Imaje.fromarray(arr, 'RGB')
+					img = Imaje.fromarray(arr, mode='RGB')
 
 				elif (channel_dim==4):
-					img = Imaje.fromarray(arr, 'RGBA')
+					img = Imaje.fromarray(arr, mode='RGBA')
 
 				else:
 					msg = "\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n"
@@ -1138,19 +1155,9 @@ class Label(BaseModel):
 
 	def get_dtypes(id:int):
 		label = Label.get_by_id(id)
-
-		dataset = label.dataset
-		l_cols = label.columns
-		tabular_dtype = Dataset.get_main_file(dataset.id).dtypes
-
-		label_dtypes = {}
-		for key,value in tabular_dtype.items():
-			for col in l_cols:         
-				if (col == key):
-					label_dtypes[col] = value
-					# Exit `col` loop early becuase matching `col` found.
-					break
-		return label_dtypes
+		cols = label.columns
+		dtypes = label.dataset.get_dtypes(columns=cols)
+		return dtypes
 
 
 	def preprocess(
@@ -1343,21 +1350,11 @@ class Feature(BaseModel):
 		return f_data
 
 
-	def get_dtypes(
-		id:int
-	):
+	def get_dtypes(id:int):
 		feature = Feature.get_by_id(id)
-		f_cols = feature.columns
-		tabular_dtype = feature.dataset.get_main_file().dtypes
-
-		feature_dtypes = {}
-		for key,value in tabular_dtype.items():
-			for col in f_cols:         
-				if (col == key):
-					feature_dtypes[col] = value
-					# Exit `col` loop early becuase matching `col` found.
-					break
-		return feature_dtypes
+		cols = feature.columns
+		dtypes = feature.dataset.get_dtypes(columns=cols)
+		return dtypes
 
 
 	def interpolate(
