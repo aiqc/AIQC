@@ -1474,13 +1474,15 @@ class Feature(BaseModel):
 			else:
 				window = inference_feature.windows[-1]
 				
-			# During encoding we'll need the raw rows, not window indices.
+			# When fitting encoders, we need the original indices, not high-level window indices.
 			if (key_train is not None):
 				samples_unshifted = window.samples_unshifted
 				train_windows = [samples_unshifted[idx] for idx in samples_train]
-				# We need all of the rows from all of the windows. But only the unique ones. 
-				windows_flat = [item for sublist in train_windows for item in sublist]
-				samples_train = list(set(windows_flat))
+				# Get all of the indices from all of the windows aka flatten a list of lists.
+				# stackoverflow.com/a/952952/5739514
+				windowsIndices_flat = [idx for window in train_windows for idx in window]
+				# Since windows can overlap, only keep the unique ones. Sort it just in case.
+				samples_train = list(set(windowsIndices_flat)).sort()
 		else:
 			window = None
 
@@ -1520,51 +1522,22 @@ class Feature(BaseModel):
 
 		# --- Window ---
 		if ((is_windowed==True) and (feature.windows.count()>0)):
-			# Window object is fetched above because the other features need it. 
-			features_ndim = feature_array.ndim
 			"""
-			- *Need to do the label first in order to access the unwindowed `arr_features`.*
+			- Window object is fetched above because the other preprocessors need it. 
 			- During pure inference, there may be no shifted samples.
+			- Label must come first in order to access the unwindowed `arr_features`
+			  so before windowed features overwrite the array.
 			- The window grouping adds an extra dimension to the data.
 			"""
-			if (window.samples_shifted is not None):
-				# ndim 2 and 3 are grouping rows of 2D tables.
-				if ((features_ndim==2) or (features_ndim==4)):
-					label_array = np.array([feature_array[w] for w in window.samples_shifted])
-				elif (features_ndim==3):
-					label_array = []
-					for i, sample in enumerate(feature_array):
-						label_array.append(
-							[feature_array[i][w] for w in window.samples_shifted]
-						)
-					label_array = np.array(label_array)
-				# whereas ndim 4 is grouping entire images.
-				elif (features_ndim==4):
-					label_array = []
-					for window in window.samples_shifted:
-						window_arr = [feature_array[sample] for sample in window]
-						label_array.append(window_arr)
-					label_array = np.array(label_array)
+			samples_shifted = window.samples_shifted
+			samples_unshifted = window.samples_unshifted
 
-			elif (window.samples_shifted is None):
+			if (samples_shifted is None):
 				label_array = None
+			elif (samples_shifted is not None):
+				label_array = feature_array[samples_shifted]
 
-			# Unshifted features.
-			if ((features_ndim==2) or (features_ndim==4)):
-				feature_array = np.array([feature_array[w] for w in window.samples_unshifted])
-			elif (features_ndim==3):
-				feature_holder = []
-				for i, site in enumerate(feature_array):
-					feature_holder.append(
-						[feature_array[i][w] for w in window.samples_unshifted]
-					)
-				feature_array = np.array(feature_holder)
-			elif (features_ndim==4):
-				feature_holder = []
-				for window in window.samples_unshifted:
-					window_arr = [feature_array[sample] for sample in window]
-					feature_holder.append(window_arr)
-				feature_array = np.array(feature_holder)
+			feature_array = feature_array[samples_unshifted]			
 
 		# --- Shaping ---
 		if ((is_shaped==True) and (feature.featureshapers.count()>0)):
@@ -1585,18 +1558,21 @@ class Feature(BaseModel):
 			try:
 				feature_array = feature_array.reshape(new_shape)
 			except:
-				raise Exception(f"\nYikes - Failed to rearrange the feature of shape:<{old_shape}> into new shape:<{new_shape}> based on the `reshape_indices`:<{reshape_indices}> provided. Make sure both shapes have the same multiplication product.\n")
+				msg = f"\nYikes - Failed to rearrange the feature of shape:<{old_shape}> into new shape:<{new_shape}> based on the `reshape_indices`:<{reshape_indices}> provided. Make sure both shapes have the same multiplication product.\n"
+				raise Exception(msg)
 			
 			column_position = featureshaper.column_position
 			if (old_shape[-1] != new_shape[column_position]):
-				raise Exception(f"\nYikes - Reshape succeeded, but expected the last dimension of the old shape:<{old_shape[-1]}> to match the dimension found <{old_shape[column_position]}> in the new shape's `featureshaper.column_position:<{column_position}>.\n")
+				msg = f"\nYikes - Reshape succeeded, but expected the last dimension of the old shape:<{old_shape[-1]}> to match the dimension found <{old_shape[column_position]}> in the new shape's `featureshaper.column_position:<{column_position}>.\n"
+				raise Exception(msg)
 
 			# Unsupervised labels.
 			if ((is_windowed==True) and (feature.windows.count()>0) and (window.samples_shifted is not None)):
 				try:
 					label_array = label_array.reshape(new_shape)
 				except:
-					raise Exception(f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n")
+					msg = f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n"
+					raise Exception(msg)
 		if (supervision=='supervised'):
 			return feature_array
 		elif (supervision=='unsupervised'):
@@ -1926,20 +1902,13 @@ class Splitset(BaseModel):
 		for f_id in feature_ids:
 			f = Feature.get_by_id(f_id)
 			f_dataset = f.dataset
-			f_dset_typ = f_dataset.typ
 
-			# Determine the number of samples in each feature. Varies based on dset_type and windowing.
-			if (
-				(f.windows.count()>0)
-				and 
-				# Excludes sequence, because in 3D, the sample is the patient.
-				((f_dset_typ == 'tabular') or (f_dset_typ == 'image'))###
-			):
+			# Windows abstract samples, so window_count==sample_count
+			if (f.windows.count()>0):
 				window = f.windows[-1]
 				f_length = window.window_count
-			else:
-				f_length = f_dataset.shape['samples']
 			feature_lengths.append(f_length)
+
 		if (len(set(feature_lengths)) != 1):
 			raise Exception("Yikes - List of Features you provided contain different amounts of samples.")
 		sample_count = feature_lengths[0]		
@@ -1948,7 +1917,6 @@ class Splitset(BaseModel):
 		# --- Prepare for splitting ---
 		feature = Feature.get_by_id(feature_ids[0])
 		f_dataset = feature.dataset
-		f_dset_typ = f_dataset.typ
 		"""
 		- Simulate an index to be split alongside features and labels
 		  in order to keep track of the samples being used in the resulting splits.
@@ -1963,9 +1931,11 @@ class Splitset(BaseModel):
 			# ------ Stratification prep ------
 			if (label_id is not None):
 				if (unsupervised_stratify_col is not None):
-					raise Exception("\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n")
+					msg = "\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n"
+					raise Exception(msg)
 				if (len(feature.windows)>0):
-					raise Exception("\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n")
+					msg = "\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n"
+					raise Exception(msg)
 
 				supervision = "supervised"
 
@@ -1977,7 +1947,8 @@ class Splitset(BaseModel):
 				l_length = label.dataset.shape['samples']				
 				if (label.dataset.id != f_dataset.id):
 					if (l_length != sample_count):
-						raise Exception("\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n")
+						msg = "\nYikes - The Datasets of your Label and Feature do not contains the same number of samples.\n"
+						raise Exception(msg)
 
 				# check for OHE cols and reverse them so we can still stratify ordinally.
 				if (stratify_arr.shape[1] > 1):
@@ -1989,7 +1960,8 @@ class Splitset(BaseModel):
 			elif (label_id is None):
 				if (len(feature_ids) > 1):
 					# Mainly because it would require multiple labels.
-					raise Exception("\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n")
+					msg = "\nYikes - Sorry, at this time, AIQC does not support unsupervised learning on multiple Features.\n"
+					raise Exception(msg)
 
 				supervision = "unsupervised"
 				label = None
@@ -2037,8 +2009,9 @@ class Splitset(BaseModel):
 
 				elif (unsupervised_stratify_col is None):
 					if (bin_count is not None):
-			 			raise Exception("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
-					stratify_arr = None#Used in if statements below.
+						msg = "\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n"
+						raise Exception(msg)
+					stratify_arr = None
 
 			# ------ Stratified vs Unstratified ------		
 			if (stratify_arr is not None):
@@ -2112,7 +2085,8 @@ class Splitset(BaseModel):
 		# This is used by inference where we just want all of the samples.
 		elif(size_test is None):
 			if (unsupervised_stratify_col is not None):
-				raise Exception("\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n")
+				msg = "\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n"
+				raise Exception(msg)
 
 			samples["train"] = arr_idx.tolist()
 			sizes["train"] = {"percent": 1.0, "count":sample_count}
@@ -2272,7 +2246,8 @@ class Splitset(BaseModel):
 
 			elif (splitset.unsupervised_stratify_col is None):
 				if (bin_count is not None):
-					raise Exception("\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n")
+					msg = "\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n"
+					raise Exception(msg)
 				stratify_arr = None#Used in if statements below.
 
 		# If the Labels are binned *overwite* the values w bin numbers. Otherwise untouched.
@@ -2689,19 +2664,22 @@ class FeatureInterpolater(BaseModel):
 			, feature = feature
 		)
 		try:
-			test_arr = feature.to_arr()#Don't pass matching cols.
-			### but what if other cols fail?
+			"""
+			Don't need to specify columns because `feature.interpolate
+			figures out the `featureinterpolater.matching_columns`
+			"""
+			test_arr = feature.to_arr()
 			feature.interpolate(array=test_arr, samples=_samples)
 		except:
-			fp.delete_instance() # Orphaned.
+			fp.delete_instance()
 			raise
 		return fp
 
 
 	def interpolate(id:int, dataframe:object, samples:dict=None):
 		"""
-		- Called by the `Feature.interpolate` loop.
-		- Assuming that matching cols have already been sliced from main array before this is called.
+		- The `Feature.interpolate` loop calls this function.
+		- Matching cols are obtained via `fp.matching_columns`
 		"""
 		fp = FeatureInterpolater.get_by_id(id)
 		interpolate_kwargs = fp.interpolate_kwargs
@@ -2728,7 +2706,7 @@ class FeatureInterpolater(BaseModel):
 				df_interp = df_interp.sort_index()
 			else:
 				raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
-		elif ((typ=='sequence') or (typ=='image')):###
+		elif ((typ=='sequence') or (typ=='image')):
 			df_interp = run_interpolate(dataframe, interpolate_kwargs)
 		else:
 			raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with typ provided.\n")

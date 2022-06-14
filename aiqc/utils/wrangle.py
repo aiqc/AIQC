@@ -8,7 +8,7 @@ import pandas as pd
 from torch import FloatTensor
 from tqdm import tqdm #progress bar.
 
-default_interpolate_kwargs = dict(
+default_interpolateKwargs = dict(
 	method = 'linear'
 	, limit_direction = 'both'
 	, limit_area = None
