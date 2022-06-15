@@ -170,19 +170,19 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 def fit_dynamicDimensions(sklearn_preprocess:object, samples_to_fit:object):
 	"""
 	- There are 17 uppercase sklearn encoders, and 10 different data types across float, str, int 
-		when consider negatives, 2D multiple columns, 2D single columns.
+	  when consider negatives, 2D multiple columns, 2D single columns.
 	- Different encoders work with different data types and dimensionality.
 	- This function normalizes that process by coercing the dimensionality that the encoder wants,
-		and erroring if the wrong data type is used. The goal in doing so is to return 
-		that dimensionality for future use.
+	  and erroring if the wrong data type is used. The goal in doing so is to return 
+	  that dimensionality for future use.
 
 	- `samples_to_transform` is pre-filtered for the appropriate `matching_columns`.
 	- The rub lies in that if you have many columns, but the encoder only fits 1 column at a time, 
-		then you return many fits for a single type of preprocess.
+	  then you return many fits for a single type of preprocess.
 	- Remember this is for a single Featurecoder that is potential returning multiple fits.
 
 	- UPDATE: after disabling LabelBinarizer and LabelEncoder from running on multiple columns,
-		everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
+	  everything seems to be fitting as "2D_multiColumn", but let's keep the logic for new sklearn methods.
 	"""
 	fitted_encoders = []
 	incompatibilities = {
@@ -338,15 +338,25 @@ def fit_features(
 				features_to_fit = arr_features[samples_train]
 			elif (featurecoder.only_fit_train == False):
 				features_to_fit = arr_features
+
+			"""
+			Encoders want 2D data. 1-way trip; data destroyed after encoding.
+			3D = seq | tab window
+			4D = img | seq window
+			5D = img window
+			"""			
+			shape = features_to_fit.shape
+			dim   = features_to_fit.ndim
 			
-			# Handles `Dataset.Sequence` by stacking the 2D arrays into a tall 2D array.
-			features_shape = features_to_fit.shape
-			if (len(features_shape)==3):
-				rows_2D = features_shape[0] * features_shape[1]
-				features_to_fit = features_to_fit.reshape(rows_2D, features_shape[2])
-			elif (len(features_shape)==4):
-				rows_2D = features_shape[0] * features_shape[1] * features_shape[2]
-				features_to_fit = features_to_fit.reshape(rows_2D, features_shape[3])
+			if (dim==3):
+				rows = shape[0] * shape[1]
+				features_to_fit = features_to_fit.reshape(rows, shape[2])
+			elif (dim==4):
+				rows = shape[0] * shape[1] * shape[2]
+				features_to_fit = features_to_fit.reshape(rows, shape[3])
+			elif (dim==5):
+				rows = shape[0] * shape[1] * shape[2] * shape[3]
+				features_to_fit = features_to_fit.reshape(rows, shape[4])
 
 			# Only fit these columns.
 			matching_columns = featurecoder.matching_columns
@@ -354,7 +364,8 @@ def fit_features(
 			col_indices = colIndices_from_colNames(
 				column_names=f_cols, desired_cols=matching_columns
 			)
-			# Filter the array using those indices.
+
+			# Data is coerced to 2D above
 			features_to_fit = features_to_fit[:,col_indices]
 
 			# Fit the encoder on the subset.

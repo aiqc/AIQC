@@ -2,11 +2,13 @@
 # Internal modules
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
+from ..utils.encoding import div255, mult255
 from ..utils.pytorch import fit
 from ..orm import Dataset
 # External modules
 import torch.nn as nn
 import torchmetrics as tm
+from sklearn.preprocessing import FunctionTransformer
 
 
 def fn_build(features_shape, label_shape, **hp):
@@ -73,12 +75,13 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=2):
 	# Dataset.Image
 	folder_path = 'remote_datum/image/brain_tumor/images'
 	feature_dataset = Dataset.Image.from_folder(
-		folder_path=folder_path, ingest=False, dtype='float64'
+		folder_path=folder_path, ingest=False, retype='float64'
 	)
 
 	pipeline = Pipeline(
 		Input(
 			dataset  = feature_dataset,
+			encoders = Input.Encoder(FunctionTransformer(div255, inverse_func=mult255)),
 			reshape_indices = (0,2,3)
 		),
 

@@ -1537,20 +1537,32 @@ class Feature(BaseModel):
 		if ((is_windowed==True) and (feature.windows.count()>0)):
 			"""
 			- Window object is fetched above because the other preprocessors need it. 
-			- During pure inference, there may be no shifted samples.
-			- Label must come first in order to access the unwindowed `arr_features`
-			  so before windowed features overwrite the array.
 			- The window grouping adds an extra dimension to the data.
 			"""
-			samples_shifted = window.samples_shifted
+			# These are list of lists[indices]
 			samples_unshifted = window.samples_unshifted
+			samples_shifted   = window.samples_shifted
 
+			"""
+			- During pure inference, there may be no shifted arr
+			- Label must come first in order to access the unwindowed `arr_features`
+			  so before windowed features overwrite the array.
+
+			- Putting this pattern in a list comprehension for speed:
+			```
+			label_array = []
+			for window_indices in samples_shifted:
+				window_arr = feature_array[window_indices]
+				label_array.append(window_arr)
+			label_array = np.array(label_array)
+			```
+			"""
 			if (samples_shifted is None):
 				label_array = None
 			elif (samples_shifted is not None):
-				label_array = feature_array[samples_shifted]
+				label_array = np.array([feature_array[window_indices] for window_indices in samples_shifted])
 
-			feature_array = feature_array[samples_unshifted]			
+			feature_array = np.array([feature_array[window_indices] for window_indices in samples_unshifted])			
 
 		# --- Shaping ---
 		if ((is_shaped==True) and (feature.featureshapers.count()>0)):
