@@ -6,7 +6,13 @@ from textwrap import dedent
 import numpy as np
 import pandas as pd
 from torch import FloatTensor
-from tqdm import tqdm #progress bar.
+from tqdm import tqdm
+from validators import url as val_url
+from requests import get as requests_get
+from PIL.Image import open as img_open
+
+
+
 
 default_interpolateKwargs = dict(
 	method = 'linear'
@@ -240,6 +246,42 @@ def path_to_df(
 			"""))
 		df = pd.DataFrame(arr)
 	return df
+
+
+def imgFolder_to_arr4D(folder:str):
+	file_paths = sorted_file_list(folder)
+	arr_3Ds = []
+	formats = []
+	for p in file_paths:
+		img = img_open(p)
+		formats.append(img.format)
+		arr = np.array(img)
+		# Coerce to 3D
+		if (arr.ndim==2):
+			arr=np.array([arr])
+		arr_3Ds.append(arr)
+	arr_4D = np.array(arr_3Ds)
+	return arr_4D, formats
+
+
+def imgURLs_to_arr4D(urls:list):
+	arr_3Ds = []
+	formats = []
+	for url in urls:
+		if (val_url(url) != True):
+			msg = f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n"
+			raise Exception(msg)
+		raw_request = requests_get(url, stream=True).raw
+		img = img_open(raw_request)
+		formats.append(img.format)
+		arr = np.array(img)
+		# Coerce 3D
+		if (arr.ndim==2):
+			arr=np.array([arr])
+		arr_3Ds.append(arr)
+	arr_4D = np.array(arr_3Ds)
+	return arr_4D, formats
+
 
 
 def size_shift_defined(size_window:int=None, size_shift:int=None):

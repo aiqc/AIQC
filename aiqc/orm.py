@@ -31,8 +31,6 @@ from hashlib import sha256
 from random import randint, sample
 from uuid import uuid1
 from itertools import product
-from requests import get as requests_get
-from validators import url as val_url
 from pprint import pformat
 from scipy.stats import mode
 from h5py import File as h5_File
@@ -55,7 +53,7 @@ from playhouse.fields import PickleField
 # ETL.
 import pandas as pd
 import numpy as np
-from PIL import Image as Imaje
+from PIL.Image import fromarray as img_fromarray
 # Preprocessing & metrics.
 import sklearn #mandatory to import submodules separately.
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
@@ -418,6 +416,7 @@ class Dataset(BaseModel):
 		):
 			rename_columns = listify(rename_columns)
 
+			# --- Parsing & validation ---
 			file_path = file_path.lower()
 			if file_path.endswith('.tsv'):
 				source_format = 'tsv'
@@ -576,6 +575,7 @@ class Dataset(BaseModel):
 			, retype:object       = None
 			, ingest:bool         = None
 		):
+			# --- Validation ---
 			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name=name, typ='sequence')
 			
@@ -585,11 +585,11 @@ class Dataset(BaseModel):
 					raise Exception(msg)
 
 			arr       = ndarray3D_or_npyPath 
-			klass     = str(arr.__class__)
-			arr_klass = "<class 'numpy.ndarray'>"
+			arr_klass = arr.__class__.__name__
+			klass     = 'ndarray'
 			short     = 'ndarray3D_or_npyPath'
 			# Fetch array from .npy if it is not an in-memory array.
-			if (klass != arr_klass):
+			if (arr_klass != klass):
 				if (not isinstance(arr, str)):
 					msg = f"\nYikes - If `{short}` is not an array then it must be a string-based path.\n"
 					raise Exception(msg)
@@ -612,7 +612,7 @@ class Dataset(BaseModel):
 				if (ingest is None):
 					ingest = False
 
-			if (klass == arr_klass):
+			if (arr_klass == klass):
 				source_path   = None
 				source_format = "ndarray"
 				if (ingest is None):
@@ -627,6 +627,7 @@ class Dataset(BaseModel):
 				Tip: the shape of each internal array must be the same.
 				"""))
 
+			# --- Metadata ---
 			shape = {}
 			ashape = arr.shape
 			shape['samples'], shape['rows'], shape['columns']  = ashape[0], ashape[1], ashape[2]
@@ -649,6 +650,7 @@ class Dataset(BaseModel):
 					raise
 			dtype = str(arr.dtype)
 
+			# --- Persistence ---
 			contains_nan     = np.isnan(arr).any()
 			memory_MB        = arr.nbytes/1048576
 			blob = BytesIO()
@@ -733,7 +735,9 @@ class Dataset(BaseModel):
 			, retype:object       = None
 			, _source_path:str    = None # from folder/urls may override
 			, _source_format:str  = None # from folder/urls overrides
+			, _urls:list          = None # from urls overrides
 		):
+			# --- Validation ---
 			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name=name, typ='image')
 			
@@ -743,11 +747,11 @@ class Dataset(BaseModel):
 					raise Exception(msg)
 
 			arr       = ndarray4D_or_npyPath 
-			klass     = str(arr.__class__)
-			arr_klass = "<class 'numpy.ndarray'>"
+			arr_klass = arr.__class__.__name__
+			klass     = 'ndarray'
 			short     = 'ndarray4D_or_npyPath'
 			# Fetch array from .npy if it is not an in-memory array.
-			if (klass != arr_klass):
+			if (arr_klass != klass):
 				if (not isinstance(arr, str)):
 					msg = f"\nYikes - If `{short}` is not an array then it must be a string-based path.\n"
 					raise Exception(msg)
@@ -770,14 +774,21 @@ class Dataset(BaseModel):
 				if (ingest is None):
 					ingest = False
 				
-			elif (klass == arr_klass):
-				# Only overwrite internal args if they are undefined
-				if (_source_path is None):
-					source_path = None
-				if (_source_format is None):
-					source_format = "ndarray"
+			elif (arr_klass == klass):
+				# from_folder and from_urls both pass through here
+				# Only overwrite _internal args if they are undefined
 				if (ingest is None):
 					ingest = True
+				
+				if (_source_path is None):
+					source_path = None
+				else:
+					source_path = _source_path
+
+				if (_source_format is None):
+					source_format = "ndarray"
+				else:
+					source_format = _source_format
 
 			arr_validate(arr)
 			if (arr.ndim != 4):
@@ -786,7 +797,8 @@ class Dataset(BaseModel):
 				Your array dimensions had <{arr.ndim}> dimensions.
 				Tip: the shape of each internal array must be the same.
 				"""))
-
+			
+			# --- Metadata ---
 			shape = {}
 			s = arr.shape
 			shape['samples'], shape['channels'], shape['rows'], shape['columns']  = s[0], s[1], s[2], s[3]
@@ -808,14 +820,13 @@ class Dataset(BaseModel):
 					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
 					raise
 			dtype = str(arr.dtype)
-
+			
+			# --- Persistence ---
 			contains_nan = np.isnan(arr).any()
 			memory_MB    = arr.nbytes/1048576
-			fs           = filesystem("memory")
-			temp_path    = "memory://temp"
-			np.save(temp_path, arr)
-			blob = fs.cat(temp_path)
-			fs.delete(temp_path)
+			blob = BytesIO()
+			np.save(blob, arr, allow_pickle=False)
+			blob = blob.getvalue()
 			sha256_hexdigest = sha256(blob).hexdigest()
 			if (ingest==False): blob=None
 			
@@ -838,6 +849,7 @@ class Dataset(BaseModel):
 					, is_ingested      = ingest
 					, source_path      = source_path
 					, source_format    = source_format
+					, urls             = _urls
 				)
 			return dataset
 
@@ -850,31 +862,21 @@ class Dataset(BaseModel):
 			, retype:object       = None
 			, rename_columns:list = None
 		):
-			#pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.format
-			source_path = path.abspath(folder_path)
-			file_paths = sorted_file_list(source_path)
+			# --- Assemble the array ---
+			source_path     = path.abspath(folder_path)
+			arr_4D, formats = imgFolder_to_arr4D(source_path)
 
-			arr_3Ds = []
-			formats = []
-			for p in file_paths:
-				img = Imaje.open(p)
-				formats.append(img.format)
-				arr = np.array(img)
-				# Coerce to 3D
-				if (arr.ndim==2):
-					arr=np.array([arr])
-				arr_3Ds.append(arr)
-			arr_4D = np.array(arr_4D)
+			# --- Detect file formats ---
+			formats       = list(set(formats))
+			single_format = len(formats)==1
+			real_format   = formats[0]!=None
 
-			formats     = set(formats)
-			single_form = len(formats)==1
-			real_form   = formats[0]==None
-			if ((single_form==True) and (real_form==True)):
+			if ((single_format==True) and (real_format==True)):
 				source_format = formats[0]
-			elif (single_form==False):
-				source_format = 'mixed'
-			else:
+			elif ((single_format==True) and (real_format==False)):
 				source_format = 'pillow'
+			elif (single_format==False):
+				source_format = 'mixed'
 
 			dataset = Dataset.Image.from_numpy(
 				ndarray4D_or_npyPath = arr_4D
@@ -898,33 +900,21 @@ class Dataset(BaseModel):
 			, retype:object       = None
 			, rename_columns:list = None
 		):
-			urls = listify(urls)
+			# --- Assemble the array ---
+			urls            = listify(urls)
+			arr_4D, formats = imgURLs_to_arr4D(urls)
+			
+			# --- Detect file formats ---
+			formats       = list(set(formats))
+			single_format = len(formats)==1
+			real_format   = formats[0]!=None
 
-			arr_4D = []
-			formats = []
-			for url in urls:
-				if (val_url(url) != True):
-					msg = f"\nYikes - Invalid url detected within `urls` list:\n'{url}'\n"
-					raise Exception(msg)
-				raw_request = requests_get(url, stream=True).raw
-				img = Imaje.open(raw_request)
-				formats.append(img.format)
-				arr = np.array(img)
-				# Coerce 3D
-				if (arr.ndim==2):
-					arr=np.array([arr])
-				arr_4D.append(arr)
-			arr_4D = np.array(arr_4D)
-
-			formats     = set(formats)
-			single_form = len(formats)==1
-			real_form   = formats[0]==None
-			if ((single_form==True) and (real_form==True)):
+			if ((single_format==True) and (real_format==True)):
 				source_format = formats[0]
-			elif (single_form==False):
-				source_format = 'mixed'
-			else:
+			elif ((single_format==True) and (real_format==False)):
 				source_format = 'pillow'
+			elif (single_format==False):
+				source_format = 'mixed'
 
 			dataset = Dataset.Image.from_numpy(
 				ndarray4D_or_npyPath = arr_4D
@@ -935,31 +925,44 @@ class Dataset(BaseModel):
 				, ingest             = ingest
 				, _source_path       = source_path
 				, _source_format     = source_format
+				, _urls              = urls
 			)
 			return dataset
 		
 
 		def to_arr(id:int, columns:list=None, samples:list=None):
 			columns, samples = listify(columns), listify(samples)			
-			dataset          = Dataset.get_by_id(id)
-			d_dtypes         = dataset.dtypes
+			
+			# --- Fetch ---
+			d        = Dataset.get_by_id(id)
+			d_dtypes = d.dtypes
+			d_path   = d.source_path
+			d_urls   = d.urls
+			d_ingest = d.is_ingested
+				
+			if (d_urls is not None):
+				arr, _ = imgURLs_to_arr4D(d_urls)
+			
+			elif (path.isdir(d_path)):
+				arr, _ = imgFolder_to_arr4D(d_path)
+			
+			elif (d_ingest==False):
+				arr = np.load(d.source_path, allow_pickle=False).astype(d_dtypes)
 
-			if (dataset.is_ingested==False):
-				arr = np.load(dataset.source_path, allow_pickle=False).astype(d_dtypes)
-			elif (dataset.is_ingested==True):
-				arr  = np.load(BytesIO(dataset.blob), allow_pickle=False)
+			elif (d_ingest==True):
+				arr = np.load(BytesIO(d.blob), allow_pickle=False)
 
+			# --- Shaping ---
 			if (samples is None):
 				# Verified that it accepts a range
-				samples = range(dataset.shape["samples"])
+				samples = range(d.shape["samples"])
 
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
-					column_names   = dataset.columns
+					column_names   = d.columns
 					, desired_cols = columns
 				)
-				# Verified that this has index replacement
-				# Tricky multi-dims = stackoverflow.com/questions/72633011/how-to-access-3d-array-using-multiple-positions-in-a-single-call
+				# Tricky: stackoverflow.com/questions/72633011
 				arr = arr[samples,:,:,:][:,:,:,col_indices]
 			else:
 				arr = arr[samples]
@@ -995,13 +998,13 @@ class Dataset(BaseModel):
 				# shappe: channels, rows, columns
 				if (channel_dim==1):
 					arr = arr.reshape(arr.shape[1], arr.shape[2])
-					img = Imaje.fromarray(arr, mode='L')
+					img = img_fromarray(arr, mode='L')
 
 				elif (channel_dim==3):
-					img = Imaje.fromarray(arr, mode='RGB')
+					img = img_fromarray(arr, mode='RGB')
 
 				elif (channel_dim==4):
-					img = Imaje.fromarray(arr, mode='RGBA')
+					img = img_fromarray(arr, mode='RGBA')
 
 				else:
 					msg = "\nYikes - Rendering only enabled for images with either 2, 3, or 4 channels.\n"
