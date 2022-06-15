@@ -1489,7 +1489,7 @@ class Feature(BaseModel):
 
 		# --- Interpolate ---
 		if ((is_interpolated==True) and (feature.featureinterpolaters.count()>0)):
-			# inference intentionally leaves `samples==None`
+			# Here inference intentionally leaves `samples==None`
 			feature_array = feature.interpolate(array=feature_array, samples=samples, window=window)
 
 		# --- Future:Impute ---
@@ -2553,8 +2553,6 @@ class LabelInterpolater(BaseModel):
 			run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
 		except:
 			raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
-		else:
-			print("\n└── Tested interpolation of Label successfully.\n")
 
 		lp = LabelInterpolater.create(
 			process_separately = process_separately
@@ -2653,10 +2651,10 @@ class FeatureInterpolater(BaseModel):
 
 		index, matching_columns, leftover_columns, original_filter, initial_dtypes = feature.preprocess_remaining_cols(
 			existing_preprocs = existing_preprocs
-			, include = True
-			, columns = columns
-			, dtypes = dtypes
-			, verbose = verbose
+			, include         = True
+			, columns         = columns
+			, dtypes          = dtypes
+			, verbose         = verbose
 		)
 
 		# Check that it actually works.
@@ -2754,8 +2752,9 @@ class LabelCoder(BaseModel):
 			sklearn_preprocess, is_label=True
 		)
 
-		samples_to_encode = label.to_arr()
-		# 2. Test Fit.
+		# 2. --- Test fitting ---
+		# Need preprocess() to interpolate/impute missing data first
+		samples_to_encode = label.preprocess(is_encoded=False)
 		try:
 			fitted_encoders, encoding_dimension = utils.encoding.fit_dynamicDimensions(
 				sklearn_preprocess = sklearn_preprocess
@@ -2862,8 +2861,10 @@ class FeatureCoder(BaseModel):
 				time or switch to another encoder.
 			"""))
 
-		# Test fitting the encoder to matching columns.
-		samples_to_encode = feature.to_arr(columns=matching_columns)
+		# --- Test fitting the encoder to matching columns ---
+		# When fetching data, we want to interpolate/impute first.
+		samples_to_encode = feature.preprocess(is_encoded=False)
+
 		# Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
 		f_shape = samples_to_encode.shape
 		if (len(f_shape)==3):

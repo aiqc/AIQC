@@ -50,9 +50,9 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		, epochs     = [5]
 	)
 	
-	df = datum.to_pandas('epilepsy.parquet')
+	df = datum.to_df('epilepsy.parquet')
 	label_df = df[['seizure']]
-	label_dataset = Dataset.Tabular.from_pandas(label_df)
+	label_dataset = Dataset.Tabular.from_df(label_df)
 	
 	seq_ndarray3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1)
 	feature_dataset = Dataset.Sequence.from_numpy(seq_ndarray3D)

@@ -193,7 +193,7 @@ def get_path(name:str):
 	return full_path
 
 
-def to_pandas(name:str):
+def to_df(name:str):
 	file_path = get_path(name)
 
 	if (('.tsv' in name) or ('.csv' in name)):
@@ -211,6 +211,6 @@ def to_pandas(name:str):
 
 def get_remote_urls(manifest_name:'str'):
 	# `to_pandas` looks weird but it's right.
-	df = to_pandas(name=manifest_name)
+	df = to_df(name=manifest_name)
 	remote_urls = df['url'].to_list()
 	return remote_urls

@@ -43,7 +43,7 @@ def fn_train(
 
 
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
-	df = datum.to_pandas('epilepsy.parquet')
+	df = datum.to_df('epilepsy.parquet')
 	# testing FeatureInterpolater 3D.
 	df['sensor_1'][10] = np.NaN
 	df['sensor_1'][0] = np.NaN
@@ -52,7 +52,7 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df['sensor_170'][0] = np.NaN
 	
 	label_df = df[['seizure']]
-	label_dataset = Dataset.Tabular.from_pandas(label_df)
+	label_dataset = Dataset.Tabular.from_df(label_df)
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')	
 	feature_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)

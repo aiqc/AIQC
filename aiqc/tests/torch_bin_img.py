@@ -67,12 +67,12 @@ def fn_predict(model, samples_predict):
 
 
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=2):
-	df = datum.to_pandas(name='brain_tumor.csv')
-	label_dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	df = datum.to_df(name='brain_tumor.csv')
+	label_dataset = Dataset.Tabular.from_df(dataframe=df)
 	
 	# Dataset.Image
 	folder_path = 'remote_datum/image/brain_tumor/images'
-	feature_dataset = Dataset.Image.from_folder_pillow(
+	feature_dataset = Dataset.Image.from_folder(
 		folder_path=folder_path, ingest=False, dtype='float64'
 	)
 

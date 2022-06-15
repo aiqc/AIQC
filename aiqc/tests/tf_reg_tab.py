@@ -52,7 +52,7 @@ def fn_train(
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	hyperparameters = dict(neuron_count=[24], epochs=[10])
 
-	df = datum.to_pandas('houses.csv')
+	df = datum.to_df('houses.csv')
 	# testing Labelpolater (we don't have a regression-sequence example yet).
 	df['price'][0] = np.NaN
 	df['price'][5] = np.NaN
@@ -62,11 +62,15 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	df['indus'][10] = np.NaN
 	df['age'][19] = np.NaN
 	
-	shared_dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	shared_dataset = Dataset.Tabular.from_df(dataframe=df)
 
 	pipeline = Pipeline(
 		Input(
 			dataset  = shared_dataset,
+			interpolaters = [
+				Input.Interpolater(columns='nox'),
+				Input.Interpolater(dtypes='float64')
+			],
 			encoders = [
 				Input.Encoder(
 					MinMaxScaler(copy=False)
@@ -80,10 +84,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 					, dtypes = None
 					, columns = None
 				)
-			],
-			interpolaters = [
-				Input.Interpolater(columns='nox'),
-				Input.Interpolater(dtypes='float64')
 			]
 		),
 		

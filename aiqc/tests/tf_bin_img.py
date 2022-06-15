@@ -84,12 +84,12 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=None):
 		, "cnn_init": ['he_normal']
 	}
 
-	df = datum.to_pandas(name='brain_tumor.csv')
-	label_dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	df = datum.to_df(name='brain_tumor.csv')
+	label_dataset = Dataset.Tabular.from_df(dataframe=df)
 
 	# Takes a while to run, but it tests both `from_urls` and `datum` functionality
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	feature_dataset = Dataset.Image.from_urls_pillow(urls=image_urls)
+	feature_dataset = Dataset.Image.from_urls(urls=image_urls)
 	
 	pipeline = Pipeline(
 		Input(

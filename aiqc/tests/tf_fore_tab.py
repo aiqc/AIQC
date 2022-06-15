@@ -57,11 +57,11 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 		, "dense_multiplier": [1]
 	}
 	
-	df = datum.to_pandas('delhi_climate.parquet')
+	df = datum.to_df('delhi_climate.parquet')
 	df['temperature'][0] = np.NaN
 	df['temperature'][13] = np.NaN
 	
-	dataset = Dataset.Tabular.from_pandas(dataframe=df)
+	dataset = Dataset.Tabular.from_df(dataframe=df)
 
 	pipeline = Pipeline(
 		inputs = Input(
