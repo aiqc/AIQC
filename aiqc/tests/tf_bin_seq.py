@@ -55,8 +55,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	label_dataset = Dataset.Tabular.from_df(label_df)
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')
-	print("og test shape")
-	print(sensor_arr3D.shape)###
 	feature_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)
 
 	hyperparameters = dict(neuron_count= [18], batch_size=[8], epochs=[5])

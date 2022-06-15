@@ -517,15 +517,15 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 		columns_match(f_old, f_new)
 		
 		if ((typ_new=='sequence') or (typ_new=='image')):
-			rows_new = f_new.shape['rows']
-			rows_old = f_old.shape['rows']
+			rows_new = f_new.dataset.shape['rows']
+			rows_old = f_old.dataset.shape['rows']
 			if (rows_new != rows_old):
 				msg = f"\nYikes - Row dimension does not match. New:{rows_new} vs Old:{rows_old}\n"
 				raise Exception(msg)
 
 		if (typ_new=='image'):
-			channels_new = f_new.shape['channels']
-			channels_old = f_old.shape['channels']
+			channels_new = f_new.dataset.shape['channels']
+			channels_old = f_old.dataset.shape['channels']
 			if (channels_new != channels_old):
 				msg = f"\nYikes - Image channel dimension does not match. New:{channels_new} vs Old:{channels_old}\n"
 				raise Exception(msg)					

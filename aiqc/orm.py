@@ -1412,7 +1412,7 @@ class Feature(BaseModel):
 				for fp in fps:
 					df_cols = seqframe[fp.matching_columns]
 					# Don't need to parse anything. Straight to DVD.
-					df_cols = fp.interpolate(seqframe=df_cols, samples=None)
+					df_cols = fp.interpolate(dataframe=df_cols, samples=None)
 					# Overwrite columns.
 					if (seqframe.index.size != df_cols.index.size):
 						raise Exception("Yikes - Internal error. Index sizes inequal.")
@@ -1432,7 +1432,7 @@ class Feature(BaseModel):
 					for fp in fps:
 						df_cols = seqframe[fp.matching_columns]
 						# Don't need to parse anything. Straight to DVD.
-						df_cols = fp.interpolate(seqframe=df_cols, samples=None)
+						df_cols = fp.interpolate(dataframe=df_cols, samples=None)
 						# Overwrite columns.
 						if (seqframe.index.size != df_cols.index.size):
 							raise Exception("Yikes - Internal error. Index sizes inequal.")
