@@ -27,17 +27,17 @@ def fn_train(
 	**hp
 ):
 	model.compile(
-		loss=loser
-		, optimizer=optimizer
-		, metrics=['accuracy']
+		loss        = loser
+		, optimizer = optimizer
+		, metrics   = ['accuracy']
 	)
 	model.fit(
 		train_features, train_label
 		, validation_data = (eval_features, eval_label)
-		, verbose = 0
-		, batch_size = hp['batch_size']
-		, epochs = hp['epochs']
-		, callbacks = [tf.keras.callbacks.History()]
+		, verbose         = 0
+		, batch_size      = hp['batch_size']
+		, epochs          = hp['epochs']
+		, callbacks       = [tf.keras.callbacks.History()]
 	)
 	return model
 
@@ -45,11 +45,11 @@ def fn_train(
 def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	df = datum.to_df('epilepsy.parquet')
 	# testing FeatureInterpolater 3D.
-	df['sensor_1'][10] = np.NaN
-	df['sensor_1'][0] = np.NaN
+	df['sensor_1'][10]   = np.NaN
+	df['sensor_1'][0]    = np.NaN
 	df['sensor_150'][80] = np.NaN
 	df['sensor_152'][22] = np.NaN
-	df['sensor_170'][0] = np.NaN
+	df['sensor_170'][0]  = np.NaN
 	
 	label_df = df[['seizure']]
 	label_dataset = Dataset.Tabular.from_df(label_df)

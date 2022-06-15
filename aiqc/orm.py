@@ -393,7 +393,7 @@ class Dataset(BaseModel):
 					, columns          = columns
 					, dtypes           = dtype
 					, sha256_hexdigest = sha256_hexdigest
-					, memory_MB          = memory_MB
+					, memory_MB        = memory_MB
 					, contains_nan     = contains_nan
 					, version          = version_num
 					, blob             = blob
@@ -604,9 +604,9 @@ class Dataset(BaseModel):
 				if (not source_path.lower().endswith(".npy")):
 					raise Exception("\nYikes - Path must end with '.npy'\n")
 				try:
-					arr = np.load(file=arr)
+					arr = np.load(file=arr, allow_pickle=False)
 				except:
-					msg = f"\nYikes - Failed to `np.load(file={short})` with your `{short}`:\n{arr}\n"
+					msg = f"\nYikes - Failed to `np.load(file={short}, allow_pickle=False)` with your `{short}`:\n{arr}\n"
 					raise Exception(msg)				
 				source_format = "npy"
 				if (ingest is None):
@@ -649,13 +649,11 @@ class Dataset(BaseModel):
 					raise
 			dtype = str(arr.dtype)
 
-			contains_nan = any(np.isnan(arr))
-			memory_MB    = arr.nbytes/1048576
-			fs           = filesystem("memory")
-			temp_path    = "memory://temp.npy"
-			np.save(temp_path, arr)
-			blob = fs.cat(temp_path)
-			fs.delete(temp_path)
+			contains_nan     = np.isnan(arr).any()
+			memory_MB        = arr.nbytes/1048576
+			blob = BytesIO()
+			np.save(blob, arr, allow_pickle=False)
+			blob = blob.getvalue()
 			sha256_hexdigest = sha256(blob).hexdigest()
 			if (ingest==False): blob=None
 			
@@ -688,10 +686,9 @@ class Dataset(BaseModel):
 			d_dtypes         = dataset.dtypes
 
 			if (dataset.is_ingested==False):
-				arr = np.load(dataset.source_path).astype(d_dtypes)
+				arr = np.load(dataset.source_path, allow_pickle=False).astype(d_dtypes)
 			elif (dataset.is_ingested==True):
-				blob = BytesIO(dataset.blob)
-				arr = np.load(blob)
+				arr = np.load(BytesIO(dataset.blob), allow_pickle=False)
 
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
@@ -759,9 +756,9 @@ class Dataset(BaseModel):
 				if (not source_path.lower().endswith(".npy")):
 					raise Exception("\nYikes - Path must end with '.npy'\n")
 				try:
-					arr = np.load(file=arr)
+					arr = np.load(file=arr, allow_pickle=False)
 				except:
-					msg = "\nYikes - Failed to `np.load(file={short})` with your `{short}`:\n{arr}\n"
+					msg = "\nYikes - Failed to `np.load(file={short}, allow_pickle=False)` with your `{short}`:\n{arr}\n"
 					raise Exception(msg)				
 				source_format = "npy"
 				if (ingest is None):
@@ -806,10 +803,10 @@ class Dataset(BaseModel):
 					raise
 			dtype = str(arr.dtype)
 
-			contains_nan = any(np.isnan(arr))
+			contains_nan = np.isnan(arr).any()
 			memory_MB    = arr.nbytes/1048576
 			fs           = filesystem("memory")
-			temp_path    = "memory://temp.npy"
+			temp_path    = "memory://temp"
 			np.save(temp_path, arr)
 			blob = fs.cat(temp_path)
 			fs.delete(temp_path)
@@ -942,11 +939,10 @@ class Dataset(BaseModel):
 			d_dtypes         = dataset.dtypes
 
 			if (dataset.is_ingested==False):
-				arr = np.load(dataset.source_path).astype(d_dtypes)
+				arr = np.load(dataset.source_path, allow_pickle=False).astype(d_dtypes)
 
 			elif (dataset.is_ingested==True):
-				blob = BytesIO(dataset.blob)
-				arr  = np.load(blob)
+				arr  = np.load(BytesIO(dataset.blob), allow_pickle=False)
 
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
@@ -2401,7 +2397,7 @@ class Splitset(BaseModel):
 
 		if (label_features=='label'):
 			data = path.join(path_split, "label.npy")
-			data = np.load(data)
+			data = np.load(data, allow_pickle=False)
 			data = conditional_torch(data, library)
 			shape = data[0].shape
 		
@@ -2411,7 +2407,7 @@ class Splitset(BaseModel):
 			for e, feature in enumerate(splitset.features):
 				f = f"feature_{e}.npy"
 				f = path.join(path_split, f)
-				f = np.load(f)
+				f = np.load(f, allow_pickle=False)
 				shape.append(f[0].shape)
 				f = conditional_torch(f, library)
 				data.append(f)
