@@ -282,11 +282,11 @@ class Dataset(BaseModel):
 	def to_df(id:int, columns:list=None, samples:list=None):
 		dataset = Dataset.get_by_id(id)
 		if (dataset.typ == 'tabular'):
-			df = Dataset.Tabular.to_df(id=dataset.id, columns=columns, samples=samples)
+			df = Dataset.Tabular.to_df(id=id, columns=columns, samples=samples)
 		elif (dataset.typ == 'sequence'):
-			df = Dataset.Sequence.to_df(id=dataset.id, columns=columns, samples=samples)
+			df = Dataset.Sequence.to_df(id=id, columns=columns, samples=samples)
 		elif (dataset.typ == 'image'):
-			df = Dataset.Image.to_df(id=dataset.id, columns=columns, samples=samples)
+			df = Dataset.Image.to_df(id=id, columns=columns, samples=samples)
 		return df
 
 
@@ -690,13 +690,19 @@ class Dataset(BaseModel):
 			elif (dataset.is_ingested==True):
 				arr = np.load(BytesIO(dataset.blob), allow_pickle=False)
 
+
+			if (samples is None):
+				# Verified that it accepts a range
+				samples = range(dataset.shape["samples"])
+
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
 					column_names   = dataset.columns
 					, desired_cols = columns
 				)
 				# Verified that this has index replacement
-				arr = arr[samples,:,col_indices]
+				# Tricky multi-dims = stackoverflow.com/questions/72633011/how-to-access-3d-array-using-multiple-positions-in-a-single-call
+				arr = arr[samples,:,:][:,:,col_indices]
 			else:
 				arr = arr[samples]
 			return arr
@@ -940,9 +946,12 @@ class Dataset(BaseModel):
 
 			if (dataset.is_ingested==False):
 				arr = np.load(dataset.source_path, allow_pickle=False).astype(d_dtypes)
-
 			elif (dataset.is_ingested==True):
 				arr  = np.load(BytesIO(dataset.blob), allow_pickle=False)
+
+			if (samples is None):
+				# Verified that it accepts a range
+				samples = range(dataset.shape["samples"])
 
 			if (columns is not None):
 				col_indices = colIndices_from_colNames(
@@ -950,7 +959,8 @@ class Dataset(BaseModel):
 					, desired_cols = columns
 				)
 				# Verified that this has index replacement
-				arr = arr[samples,:,:,col_indices]
+				# Tricky multi-dims = stackoverflow.com/questions/72633011/how-to-access-3d-array-using-multiple-positions-in-a-single-call
+				arr = arr[samples,:,:,:][:,:,:,col_indices]
 			else:
 				arr = arr[samples]
 			return arr
@@ -1127,19 +1137,19 @@ class Label(BaseModel):
 		return label
 
 
-	def to_df(id:int, columns:list=None, samples:list=None):
+	def to_df(id:int):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		df = Dataset.to_df(id=dataset.id, columns=columns, samples=samples)
+		df = Dataset.to_df(id=dataset.id, columns=columns)
 		return df
 
 
-	def to_arr(id:int, columns:list=None, samples:list=None):
+	def to_arr(id:int):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
-		arr = Dataset.to_arr(id=dataset.id, columns=columns, samples=samples)
+		arr = Dataset.to_arr(id=dataset.id, columns=columns)
 		return arr
 
 
@@ -1282,19 +1292,19 @@ class Feature(BaseModel):
 		return feature
 
 
-	def to_df(id:int, columns:list=None, samples:list=None):
+	def to_df(id:int):
 		feature = Feature.get_by_id(id)
 		dataset = feature.dataset
 		columns = feature.columns
-		df = Dataset.to_df(id=dataset.id, columns=columns, samples=samples)
+		df = Dataset.to_df(id=dataset.id, columns=columns)
 		return df
 
 
-	def to_arr(id:int, columns:list=None, samples:list=None):
+	def to_arr(id:int):
 		feature = Feature.get_by_id(id)
 		dataset = feature.dataset
 		columns = feature.columns
-		arr = Dataset.to_arr(id=dataset.id, columns=columns, samples=samples)
+		arr = Dataset.to_arr(id=dataset.id, columns=columns)
 		return arr
 
 
@@ -1312,7 +1322,7 @@ class Feature(BaseModel):
 		, samples:dict=None
 	):
 		"""
-		- `array` is assumed to be the output of `feature.to_arr()` or `feature.preprocess()`
+		- `array` is assumed to come from `feature.preprocess()`
 		- I was originally calling `feature.to_df` but all preprocesses receive and return arrays.
 		- `samples` is used for indices only. It does not get repacked into a new dict.
 		- Extremely tricky to interpolate windowed splits separately.
@@ -2673,7 +2683,7 @@ class FeatureInterpolater(BaseModel):
 			Don't need to specify columns because `feature.interpolate
 			figures out the `featureinterpolater.matching_columns`
 			"""
-			test_arr = feature.to_arr()
+			test_arr = feature.preprocess(is_encoded=False)
 			feature.interpolate(array=test_arr, samples=_samples)
 		except:
 			fp.delete_instance()
@@ -2761,7 +2771,7 @@ class LabelCoder(BaseModel):
 				, samples_to_fit = samples_to_encode
 			)
 		except:
-			print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}` on `label.to_arr()`.\n")
+			print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}``.\n")
 			raise
 
 		# 3. Test Transform/ Encode.
