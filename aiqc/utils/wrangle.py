@@ -125,7 +125,7 @@ def df_setMetadata(dataframe:object, rename_columns:list=None, retype:object=Non
 	- So we will ensure that there is 1 dtype per column.
 	"""
 	if (retype is not None):
-		# Accepts dict{'column_name':'dtype_str'} or a single str.
+		# Accepts dict{'column_name':'dtype_str'}, string e.g. 'int64', or class `np.int64`.
 		try:
 			dataframe = dataframe.astype(retype)
 		except:

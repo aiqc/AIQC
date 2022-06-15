@@ -579,15 +579,17 @@ class Dataset(BaseModel):
 			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name=name, typ='sequence')
 			
-			if (not isinstance(retype,str)):
-				msg = "\nYikes - AIQC 3D NumPy ingestion only supports string-based retyping.\n"
-				raise Exception(msg)
+			if (retype is not None):
+				if ((not isinstance(retype,str)) and (retype.__class__.__name__!='type')):
+					msg = "\nYikes - 3D ingestion only supports singular retyping:\ne.g. 'int64' or `np.float64`\n"
+					raise Exception(msg)
 
-			arr   = ndarray3D_or_npyPath 
-			klass = str(arr.__class__) != "<class 'numpy.ndarray'>"
-			short = 'ndarray3D_or_npyPath'
+			arr       = ndarray3D_or_npyPath 
+			klass     = str(arr.__class__)
+			arr_klass = "<class 'numpy.ndarray'>"
+			short     = 'ndarray3D_or_npyPath'
 			# Fetch array from .npy if it is not an in-memory array.
-			if (klass):
+			if (klass != arr_klass):
 				if (not isinstance(arr, str)):
 					msg = f"\nYikes - If `{short}` is not an array then it must be a string-based path.\n"
 					raise Exception(msg)
@@ -610,7 +612,7 @@ class Dataset(BaseModel):
 				if (ingest is None):
 					ingest = False
 
-			elif (klass):
+			if (klass == arr_klass):
 				source_path   = None
 				source_format = "ndarray"
 				if (ingest is None):
@@ -648,7 +650,7 @@ class Dataset(BaseModel):
 			dtype = str(arr.dtype)
 
 			contains_nan = any(np.isnan(arr))
-			memory_MB    = getsizeof(arr)/1048576
+			memory_MB    = arr.nbytes/1048576
 			fs           = filesystem("memory")
 			temp_path    = "memory://temp.npy"
 			np.save(temp_path, arr)
@@ -732,15 +734,17 @@ class Dataset(BaseModel):
 			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name=name, typ='image')
 			
-			if (not isinstance(retype,str)):
-				msg = "\nYikes - AIQC 4D NumPy ingestion only supports string-based retyping.\n"
-				raise Exception(msg)
+			if (retype is not None):
+				if ((not isinstance(retype,str)) and (retype.__class__.__name__!='type')):
+					msg = "\nYikes - 4D ingestion only supports singular retyping:\ne.g. 'int64' or `np.float64`\n"
+					raise Exception(msg)
 
-			arr   = ndarray4D_or_npyPath 
-			klass = str(arr.__class__) != "<class 'numpy.ndarray'>"
-			short = 'ndarray3D_or_npyPath'
+			arr       = ndarray4D_or_npyPath 
+			klass     = str(arr.__class__)
+			arr_klass = "<class 'numpy.ndarray'>"
+			short     = 'ndarray4D_or_npyPath'
 			# Fetch array from .npy if it is not an in-memory array.
-			if (klass):
+			if (klass != arr_klass):
 				if (not isinstance(arr, str)):
 					msg = f"\nYikes - If `{short}` is not an array then it must be a string-based path.\n"
 					raise Exception(msg)
@@ -763,7 +767,7 @@ class Dataset(BaseModel):
 				if (ingest is None):
 					ingest = False
 				
-			elif (klass):
+			elif (klass == arr_klass):
 				# Only overwrite internal args if they are undefined
 				if (_source_path is None):
 					source_path = None
@@ -803,7 +807,7 @@ class Dataset(BaseModel):
 			dtype = str(arr.dtype)
 
 			contains_nan = any(np.isnan(arr))
-			memory_MB    = getsizeof(arr)/1048576
+			memory_MB    = arr.nbytes/1048576
 			fs           = filesystem("memory")
 			temp_path    = "memory://temp.npy"
 			np.save(temp_path, arr)
