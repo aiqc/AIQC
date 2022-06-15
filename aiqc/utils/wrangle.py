@@ -483,14 +483,14 @@ def fetchLabel_ifAbsent(
 	return data
 
 
-def columns_match(set_original, set_new):
+def columns_match(old:object, new:list):
 	"""
 	- Set can be either Label or Feature.
 	- Do not validate dtypes. If new columns have different NaN values, it changes their dtype.
 	  Encoders and other preprocessors ultimately record and use `matching_columns`, not dtypes.
 	"""
-	cols_old = set_original.columns
-	cols_new = set_new.columns
+	cols_old = old.columns
+	cols_new = new.columns
 	if (cols_new != cols_old):
 		msg = f"\nYikes - Columns do not match.\nNew: {cols_new}\n\nOld: {cols_old}.\n"
 		raise Exception(msg)
@@ -504,43 +504,43 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 	if (len(features_new) != len(features_old)):
 		raise Exception("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
 
-	for i, feature_new in enumerate(features_new):
-		feature_old = features_old[i]
+	for i, f_new in enumerate(features_new):
+		f_old = features_old[i]
 		
 		# --- Type & Dimensions ---
-		feature_old_typ = feature_old.dataset.typ
-		feature_new_typ = feature_new.dataset.typ
-		if (feature_old_typ != feature_new_typ):
-			msg = f"\nYikes - New Feature typ={feature_new_typ} != old Feature typ={feature_old_typ}.\n"
+		typ_old = f_old.dataset.typ
+		typ_new = f_new.dataset.typ
+		if (typ_old != typ_new):
+			msg = f"\nYikes - New Feature typ={typ_new} != old Feature typ={typ_old}.\n"
 			raise Exception(msg)
 		
-		columns_match(feature_old, feature_new)
+		columns_match(f_old, f_new)
 		
-		if ((feature_new_typ=='sequence') or (feature_new_typ=='image')):
-			rows_new = feature_new.shape['rows']
-			rows_old = feature_old.shape['rows']
+		if ((typ_new=='sequence') or (typ_new=='image')):
+			rows_new = f_new.shape['rows']
+			rows_old = f_old.shape['rows']
 			if (rows_new != rows_old):
 				msg = f"\nYikes - Row dimension does not match. New:{rows_new} vs Old:{rows_old}\n"
 				raise Exception(msg)
 
-		if (feature_new_typ=='image'):
-			channels_new = feature_new.shape['channels']
-			channels_old = feature_old.shape['channels']
+		if (typ_new=='image'):
+			channels_new = f_new.shape['channels']
+			channels_old = f_old.shape['channels']
 			if (channels_new != channels_old):
 				msg = f"\nYikes - Image channel dimension does not match. New:{channels_new} vs Old:{channels_old}\n"
 				raise Exception(msg)					
 		
 		# --- Window ---
 		if (
-			((feature_old.windows.count()>0) and (feature_new.windows.count()==0))
+			((f_old.windows.count()>0) and (f_new.windows.count()==0))
 			or
-			((feature_new.windows.count()>0) and (feature_old.windows.count()==0))
+			((f_new.windows.count()>0) and (f_old.windows.count()==0))
 		):
 			raise Exception("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
 
-		if ((feature_old.windows.count()>0) and (feature_new.windows.count()>0)):
-			window_old = feature_old.windows[-1]
-			window_new = feature_new.windows[-1]
+		if ((f_old.windows.count()>0) and (f_new.windows.count()>0)):
+			window_old = f_old.windows[-1]
+			window_new = f_new.windows[-1]
 			if (
 				(window_old.size_window != window_new.size_window)
 				or
@@ -559,6 +559,6 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 			msg = "\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n"
 			raise Exception(msg)
 		elif (splitset_old.supervision == 'supervised'):
-			labelOld =  splitset_old.label
+			label_Old =  splitset_old.label
 
-		columns_match(labelOld, label)
+		columns_match(label_Old, label)
