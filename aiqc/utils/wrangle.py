@@ -507,19 +507,27 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 	for i, feature_new in enumerate(features_new):
 		feature_old = features_old[i]
 		
-		# --- Data type ---
+		# --- Type & Dimensions ---
 		feature_old_typ = feature_old.dataset.typ
 		feature_new_typ = feature_new.dataset.typ
 		if (feature_old_typ != feature_new_typ):
 			msg = f"\nYikes - New Feature typ={feature_new_typ} != old Feature typ={feature_old_typ}.\n"
 			raise Exception(msg)
+		
 		columns_match(feature_old, feature_new)
-		# Verify that the number of channels matches
+		
+		if ((feature_new_typ=='sequence') or (feature_new_typ=='image')):
+			rows_new = feature_new.shape['rows']
+			rows_old = feature_old.shape['rows']
+			if (rows_new != rows_old):
+				msg = f"\nYikes - Row dimension does not match. New:{rows_new} vs Old:{rows_old}\n"
+				raise Exception(msg)
+
 		if (feature_new_typ=='image'):
 			channels_new = feature_new.shape['channels']
 			channels_old = feature_old.shape['channels']
 			if (channels_new != channels_old):
-				msg = f"\nYikes - channel dimensions do not match. New:{channels_new} vs Old:{channels_old}\n"
+				msg = f"\nYikes - Image channel dimension does not match. New:{channels_new} vs Old:{channels_old}\n"
 				raise Exception(msg)					
 		
 		# --- Window ---
