@@ -353,7 +353,7 @@ def floats_only(label:object):
 
 def verify_interpolateKwargs(interpolate_kwargs:dict):
 	if (interpolate_kwargs['method'] == 'polynomial'):
-		raise Exception("\nYikes - `method=polynomial` is prevented due to bug <https://stackoverflow.com/questions/67222606/interpolate-polynomial-forward-and-backward-missing-nans>.\n")
+		raise Exception("\nYikes - `method=polynomial` is prevented due to bug: stackoverflow.com/questions/6722260.\n")
 	if ((interpolate_kwargs['axis'] != 0) and (interpolate_kwargs['axis'] != 'index')):
 		# This makes it so that you can run on sparse indices.
 		raise Exception("\nYikes - `axis` must be either 0 or 'index'.\n")

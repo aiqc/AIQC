@@ -27,7 +27,7 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
 		"""))
 
 	# Encoder parent modules vary: `sklearn.preprocessing._data` vs `sklearn.preprocessing._label`
-	# Feels cleaner than this: https://stackoverflow.com/questions/14570802/python-check-if-object-is-instance-of-any-class-from-a-certain-module
+	# Feels cleaner than this: stackoverflow.com/questions/14570802
 	coder_type = str(type(sklearn_preprocess))
 	if ('sklearn.preprocessing' not in coder_type):
 		raise Exception(dedent("""

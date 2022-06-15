@@ -54,7 +54,7 @@ class TrainingCallback():
 	class MetricCutoff(tf.keras.callbacks.Callback):
 		"""
 		- Worried that these inner functions are not pickling during multi-processing.
-		https://stackoverflow.com/a/8805244/5739514
+		  stackoverflow.com/a/8805244/5739514
 		"""
 		def __init__(self, thresholds:list):
 			"""

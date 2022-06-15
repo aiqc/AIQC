@@ -477,7 +477,7 @@ class Dataset(BaseModel):
 			
 			Homogenous arrays keep dtype in `arr.dtype==dtype('int64')`
 			Structured arrays keep column names in `arr.dtype.names==('ID', 'Ring')`
-			Per column dtypes dtypes from structured array <stackoverflow.com/a/65224410/5739514>
+			Per column dtypes dtypes from structured array: stackoverflow.com/a/65224410/5739514
 
 			column_names and dict-based dtype will be handled by our `from_df` method 
 			because `pd.DataFrame` method only accepts a single dtype str, or infers if None.
@@ -702,8 +702,7 @@ class Dataset(BaseModel):
 					column_names   = dataset.columns
 					, desired_cols = columns
 				)
-				# Verified that this has index replacement
-				# Tricky multi-dims = stackoverflow.com/questions/72633011/how-to-access-3d-array-using-multiple-positions-in-a-single-call
+				# Tricky: stackoverflow.com/questions/72633011
 				arr = arr[samples,:,:][:,:,col_indices]
 			else:
 				arr = arr[samples]
@@ -3077,7 +3076,7 @@ class Hyperparamset(BaseModel):
 	- `param_count` is the number of paramets that are being hypertuned.
 	- `possible_combos_count` is the number of possible combinations of parameters.
 
-	- On setting kwargs with `**` and a dict: https://stackoverflow.com/a/29028601/5739514
+	- On setting kwargs with `**` and a dict: stackoverflow.com/a/29028601/5739514
 	"""
 	hyperparamcombo_count = IntegerField()
 	#strategy = CharField() # set to all by default #all/ random. this would generate a different dict with less params to try that should be persisted for transparency.
@@ -4545,7 +4544,7 @@ class Prediction(BaseModel):
 				# Stores the losses of each permutation before taking the mean.
 				permutations_feature = []
 				# Dynamically access dimension and column: 
-				# https://stackoverflow.com/a/70511277/5739514
+				# stackoverflow.com/a/70511277/5739514
 				col_index = (slice(None),) * dimension + ([ci], Ellipsis)
 				# `feature_subset` needs to be accessible for restoring the column
 				feature_subset = feature_data[col_index]
