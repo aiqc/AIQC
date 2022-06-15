@@ -194,7 +194,7 @@ def path_to_df(
 	"""
 	- We do not know how the columns are named at source, so do not handle 
 	  the filtering of columns here.
-	- Previously, I was using pyarrow for all tabular/ sequence file formats. 
+	- Previously, I was using pyarrow for all tabular file formats. 
 	  However, it had worse support for missing column names and header skipping.
 	  So I switched to pandas for handling csv/tsv, but read_parquet()
 	  doesn't let you change column names easily, so using fastparquet for parquet.
@@ -483,16 +483,17 @@ def fetchLabel_ifAbsent(
 	return data
 
 
-def tabular_schemas_match(set_original, set_new):
-	# Set can be either Label or Feature. Needs `columns` and `.get_dtypes`.
+def columns_match(set_original, set_new):
+	"""
+	- Set can be either Label or Feature.
+	- Do not validate dtypes. If new columns have different NaN values, it changes their dtype.
+	  Encoders and other preprocessors ultimately record and use `matching_columns`, not dtypes.
+	"""
 	cols_old = set_original.columns
 	cols_new = set_new.columns
 	if (cols_new != cols_old):
-		raise Exception("\nYikes - New columns do not match original columns.\n")
-	"""
-	Do not validate dtypes. If new columns have different NaN values, it changes their dtype to `object`.
-	Encoders and other preprocessors ultimately record and use `matching_columns`, not dtypes.
-	"""
+		msg = f"\nYikes - Columns do not match.\nNew: {cols_new}\n\nOld: {cols_old}.\n"
+		raise Exception(msg)
 
 
 def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
@@ -505,12 +506,22 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 
 	for i, feature_new in enumerate(features_new):
 		feature_old = features_old[i]
+		
 		# --- Data type ---
 		feature_old_typ = feature_old.dataset.typ
 		feature_new_typ = feature_new.dataset.typ
 		if (feature_old_typ != feature_new_typ):
-			raise Exception(f"\nYikes - New Feature typ={feature_new_typ} != old Feature typ={feature_old_typ}.\n")
-		tabular_schemas_match(feature_old, feature_new)
+			msg = f"\nYikes - New Feature typ={feature_new_typ} != old Feature typ={feature_old_typ}.\n"
+			raise Exception(msg)
+		columns_match(feature_old, feature_new)
+		# Verify that the number of channels matches
+		if (feature_new_typ=='image'):
+			channels_new = feature_new.shape['channels']
+			channels_old = feature_old.shape['channels']
+			if (channels_new != channels_old):
+				msg = f"\nYikes - channel dimensions do not match. New:{channels_new} vs Old:{channels_old}\n"
+				raise Exception(msg)					
+		
 		# --- Window ---
 		if (
 			((feature_old.windows.count()>0) and (feature_new.windows.count()==0))
@@ -529,21 +540,17 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
 			):
 				raise Exception("\nYikes - New Window and old Window schemas do not match.\n")
 
-	# Only verify Labels if the inference new Splitset provides Labels.
-	# Otherwise, it may be conducting pure inference.
+	"""
+	- Only verify Labels if the inference new Splitset provides Labels.
+	- Otherwise, it may be conducting pure inference.
+	- Labels can only be 'tabular' so don't need to validate type
+	"""
 	label = splitset_new.label
 	if (label is not None):
-		label_new = label
-		label_new_typ = label_new.dataset.typ
-
 		if (splitset_old.supervision == 'unsupervised'):
-			raise Exception("\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n")
-
+			msg = "\nYikes - New Splitset has Labels, but old Splitset does not have Labels.\n"
+			raise Exception(msg)
 		elif (splitset_old.supervision == 'supervised'):
-			label_old =  splitset_old.label
-			label_old_typ = label_old.dataset.typ
-		
-		if (label_old_typ != label_new_typ):
-			raise Exception("\nYikes - New Label and original Label come from different `typs`.\n")
-		if (label_new_typ == 'tabular'):
-			tabular_schemas_match(label_old, label_new)
+			labelOld =  splitset_old.label
+
+		columns_match(labelOld, label)

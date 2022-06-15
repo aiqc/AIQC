@@ -2422,8 +2422,9 @@ class Splitset(BaseModel):
 		new_id = splitset_new.id
 
 		predictor = splitset_new.predictor
-		for e, s in enumerate(predictor.splitsets):
-			if (s.id == new_id):
+		# Name the samples/metrics split based on relationship count
+		for e, splitset in enumerate(predictor.splitsets):
+			if (splitset.id == new_id):
 				infer_idx = f"infer_{e}"
 		fold = predictor.job.fold
 		library = predictor.job.queue.algorithm.library
