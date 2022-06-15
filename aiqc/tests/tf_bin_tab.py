@@ -1,6 +1,5 @@
 """TensorFlow Binary Classification with Tabular data"""
 # Internal modules
-from unicodedata import name
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..orm import Dataset
@@ -57,7 +56,6 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=2):
 	shared_dataset = Dataset.Tabular.from_path(
 		file_path = file_path
 		, name = name
-		, dtype = None
 	)
 	
 	pipeline = Pipeline(

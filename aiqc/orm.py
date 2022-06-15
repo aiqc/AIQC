@@ -318,6 +318,7 @@ class Dataset(BaseModel):
 			columns = dataset.columns
 
 		# Only include types of the columns of interest
+		dtypes = dataset.dtypes
 		if isinstance(dtypes, str):
 			dtypes = {}
 			for c in columns:
@@ -1126,7 +1127,7 @@ class Label(BaseModel):
 		return label
 
 
-	def to_df(id:int, samples:list=None):
+	def to_df(id:int, columns:list=None, samples:list=None):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
@@ -1134,7 +1135,7 @@ class Label(BaseModel):
 		return df
 
 
-	def to_arr(id:int, samples:list=None):
+	def to_arr(id:int, columns:list=None, samples:list=None):
 		label = Label.get_by_id(id)
 		dataset = label.dataset
 		columns = label.columns
@@ -1281,7 +1282,7 @@ class Feature(BaseModel):
 		return feature
 
 
-	def to_df(id:int, samples:list=None):
+	def to_df(id:int, columns:list=None, samples:list=None):
 		feature = Feature.get_by_id(id)
 		dataset = feature.dataset
 		columns = feature.columns
@@ -1289,7 +1290,7 @@ class Feature(BaseModel):
 		return df
 
 
-	def to_arr(id:int, samples:list=None):
+	def to_arr(id:int, columns:list=None, samples:list=None):
 		feature = Feature.get_by_id(id)
 		dataset = feature.dataset
 		columns = feature.columns
@@ -1896,6 +1897,7 @@ class Splitset(BaseModel):
 		# It's okay to use the same random state for repeated stratification.
 		random_state = randint(0, 4294967295)
 
+		
 		# --- Verify features ---
 		feature_ids = listify(feature_ids)
 		feature_lengths = []
@@ -1907,10 +1909,14 @@ class Splitset(BaseModel):
 			if (f.windows.count()>0):
 				window = f.windows[-1]
 				f_length = window.window_count
+			else:
+				f_length = f_dataset.shape["samples"]
 			feature_lengths.append(f_length)
 
-		if (len(set(feature_lengths)) != 1):
-			raise Exception("Yikes - List of Features you provided contain different amounts of samples.")
+		uniq_lengths = set(feature_lengths)
+		if (len(uniq_lengths) != 1):
+			msg = f"\nYikes - List of Features you provided contain different amounts of samples:{uniq_lengths}\n"
+			raise Exception(msg)
 		sample_count = feature_lengths[0]		
 		arr_idx = np.arange(sample_count)
 

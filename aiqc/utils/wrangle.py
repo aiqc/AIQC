@@ -73,20 +73,20 @@ def colIndices_from_colNames(column_names:list, desired_cols:list):
 	return col_indices
 
 
-def df_stringifyCols(df:object, rename_columns:list):
+def df_stringifyCols(df:object, rename_columns:list=None):
 	"""
-	- `columns` is user-defined.
+	- `rename_columns` is user-defined.
 	- Pandas will assign a range of int-based columns if there are no column names.
 	  So I want to coerce them to strings because I don't want both string and int-based 
 	  column names for when calling columns programmatically, 
 	  and more importantly, 'Exception: parquet must have string column names'
 	"""
 	cols_raw = df.columns.to_list()
-	if (columns is None):
+	if (rename_columns is None):
 		# in case the columns were a range of ints.
 		cols_str = [str(c) for c in cols_raw]
 	else:
-		cols_str = [str(c) for c in columns]
+		cols_str = [str(c) for c in rename_columns]
 	# dict from 2 lists
 	cols_dct = dict(zip(cols_raw, cols_str))
 	
