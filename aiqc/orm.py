@@ -579,10 +579,12 @@ class Dataset(BaseModel):
 			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name=name, typ='sequence')
 			
-			if (retype is not None):
-				if ((not isinstance(retype,str)) and (retype.__class__.__name__!='type')):
-					msg = "\nYikes - 3D ingestion only supports singular retyping:\ne.g. 'int64' or `np.float64`\n"
-					raise Exception(msg)
+			if (
+				(retype is not None) and (not isinstance(retype,str)) 
+				and (retype.__class__.__name__!='type')
+			):
+				msg = "\nYikes - 3D ingestion only supports singular retyping:\ne.g. 'int64' or `np.float64`\n"
+				raise Exception(msg)
 
 			arr       = ndarray3D_or_npyPath 
 			arr_klass = arr.__class__.__name__
@@ -648,7 +650,11 @@ class Dataset(BaseModel):
 				except:
 					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
 					raise
-			dtype = str(arr.dtype)
+			try:
+				retype = str(arr.dtype)
+			except:
+				print(f"\nYikes - Failed to conert final array dtype to a string: {arr.dtype}\n")
+				raise
 
 			# --- Persistence ---
 			contains_nan     = np.isnan(arr).any()
@@ -667,7 +673,7 @@ class Dataset(BaseModel):
 					typ                = 'sequence'
 					, shape            = shape
 					, columns          = columns
-					, dtypes           = dtype
+					, dtypes           = retype
 					, sha256_hexdigest = sha256_hexdigest
 					, memory_MB        = memory_MB
 					, contains_nan     = contains_nan
@@ -687,11 +693,10 @@ class Dataset(BaseModel):
 			dataset          = Dataset.get_by_id(id)
 			d_dtypes         = dataset.dtypes
 
-			if (dataset.is_ingested==False):
-				arr = np.load(dataset.source_path, allow_pickle=False).astype(d_dtypes)
-			elif (dataset.is_ingested==True):
+			if (dataset.is_ingested==True):
 				arr = np.load(BytesIO(dataset.blob), allow_pickle=False)
-
+			elif (dataset.is_ingested==False):
+				arr = np.load(dataset.source_path, allow_pickle=False).astype(d_dtypes)
 
 			if (samples is None):
 				# Verified that it accepts a range
@@ -715,10 +720,10 @@ class Dataset(BaseModel):
 			# Filters columns and samples
 			arr_3D = dataset.to_arr(columns=columns, samples=samples)
 
+			# But we still need to name the df columns
 			if (columns is None):
 				columns = dataset.columns
 			
-			# But we still need to name the df columns
 			dfs = [pd.DataFrame(arr_2D, columns=columns) for arr_2D in arr_3D]
 			return dfs
 
@@ -740,10 +745,12 @@ class Dataset(BaseModel):
 			rename_columns = listify(rename_columns)
 			latest_match, version_num = dataset_matchVersion(name=name, typ='image')
 			
-			if (retype is not None):
-				if ((not isinstance(retype,str)) and (retype.__class__.__name__!='type')):
-					msg = "\nYikes - 4D ingestion only supports singular retyping:\ne.g. 'int64' or `np.float64`\n"
-					raise Exception(msg)
+			if (
+				(retype is not None) and (not isinstance(retype,str)) 
+				and (retype.__class__.__name__!='type')
+			):
+				msg = "\nYikes - 3D ingestion only supports singular retyping:\ne.g. 'int64' or `np.float64`\n"
+				raise Exception(msg)
 
 			arr       = ndarray4D_or_npyPath 
 			arr_klass = arr.__class__.__name__
@@ -816,9 +823,13 @@ class Dataset(BaseModel):
 				try:
 					arr = arr.astype(retype)
 				except:
-					print(f"\nYikes - Failed to cast array to retype:{retype}.\n")
+					print(f"\nYikes - Failed to cast array to retype:{retype}\n")
 					raise
-			dtype = str(arr.dtype)
+			try:
+				retype = str(arr.dtype)
+			except:
+				print(f"\nYikes - Failed to conert final array dtype to a string: {arr.dtype}\n")
+				raise
 			
 			# --- Persistence ---
 			contains_nan = np.isnan(arr).any()
@@ -837,7 +848,7 @@ class Dataset(BaseModel):
 					typ                = 'image'
 					, shape            = shape
 					, columns          = columns
-					, dtypes           = dtype
+					, dtypes           = retype
 					, sha256_hexdigest = sha256_hexdigest
 					, memory_MB        = memory_MB
 					, contains_nan     = contains_nan
@@ -938,18 +949,26 @@ class Dataset(BaseModel):
 			d_path   = d.source_path
 			d_urls   = d.urls
 			d_ingest = d.is_ingested
-				
-			if (d_urls is not None):
+			
+			# Cases must be in this order
+			if (d_ingest==True):
+				arr = np.load(BytesIO(d.blob), allow_pickle=False)
+
+			elif (d_urls is not None):
 				arr, _ = imgURLs_to_arr4D(d_urls)
 			
 			elif (path.isdir(d_path)):
 				arr, _ = imgFolder_to_arr4D(d_path)
 			
-			elif (d_ingest==False):
-				arr = np.load(d.source_path, allow_pickle=False).astype(d_dtypes)
-
-			elif (d_ingest==True):
-				arr = np.load(BytesIO(d.blob), allow_pickle=False)
+			else:
+				arr = np.load(d.source_path, allow_pickle=False)
+			
+			if (d_ingest==False):
+				try:
+					arr = arr.astype(d_dtypes)
+				except:
+					msg = "\nYikes - Failed to convert array to dtype: {d_dtypes}\n"
+					print(msg)
 
 			# --- Shaping ---
 			if (samples is None):

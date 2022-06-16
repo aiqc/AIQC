@@ -45,9 +45,9 @@ def fn_train(
 	**hp
 ):
 	model.compile(
-		optimizer=optimizer
-		, loss=loser
-		, metrics=['mean_squared_error']
+		optimizer = optimizer
+		, loss    = loser
+		, metrics = ['mean_squared_error']
 	)
 	
 	model.fit(
@@ -105,10 +105,10 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=None):
 		),
 		
 		Trainer(
-			pipeline       = pipeline
-			, repeat_count    = repeat_count
-			, permute_count   = permute_count
-			, search_percent  = None
+			pipeline         = pipeline
+			, repeat_count   = repeat_count
+			, permute_count  = permute_count
+			, search_percent = None
 		)
 	)
 	return experiment
