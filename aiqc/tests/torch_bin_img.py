@@ -2,13 +2,19 @@
 # Internal modules
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
+from ..utils.config import app_folders, create_folder
+from ..utils.ingest import imgFolder_to_arr4D
 from ..utils.encoding import div255, mult255
 from ..utils.pytorch import fit
 from ..orm import Dataset
 # External modules
+from os import path
+from numpy import save as np_save
 import torch.nn as nn
 import torchmetrics as tm
 from sklearn.preprocessing import FunctionTransformer
+
+
 
 
 def fn_build(features_shape, label_shape, **hp):
@@ -73,10 +79,25 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=2):
 	label_dataset = Dataset.Tabular.from_df(dataframe=df)
 	
 	# Dataset.Image
+	# Just ensuring we test all kinds of ingestion
 	folder_path = 'remote_datum/image/brain_tumor/images'
-	feature_dataset = Dataset.Image.from_folder(
-		folder_path=folder_path, ingest=False, retype='float64'
-	)
+	arr, _ = imgFolder_to_arr4D(folder_path)
+
+	if (fold_count is None):
+		feature_dataset = Dataset.Image.from_numpy(
+			arr4D_or_npyPath=arr, retype='float64'
+		)
+		path_full = None
+	else:
+		path_models_cache = app_folders['cache_tests']
+		create_folder(path_models_cache)
+		path_file = f"temp_arr.npy"
+		path_full = path.join(path_models_cache,path_file)
+		np_save(path_full, arr, allow_pickle=True)
+		feature_dataset = Dataset.Image.from_numpy(
+			arr4D_or_npyPath=path_full, ingest=False, retype='float64'
+		)
+
 
 	pipeline = Pipeline(
 		Input(

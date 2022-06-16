@@ -1,4 +1,5 @@
-from .wrangle import if_1d_make_2d, colIndices_from_colNames
+from .wrangle import if_1d_make_2d
+from .ingest import colIndices_from_colNames
 from inspect import isclass
 from warnings import catch_warnings
 from scipy import sparse

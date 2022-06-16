@@ -89,7 +89,12 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=None):
 
 	# Takes a while to run, but it tests both `from_urls` and `datum` functionality
 	image_urls = datum.get_remote_urls(manifest_name='brain_tumor.csv')
-	feature_dataset = Dataset.Image.from_urls(urls=image_urls)
+	
+	# Just ensuring we test all forms of ingestion.
+	if (fold_count is None):
+		feature_dataset = Dataset.Image.from_urls(urls=image_urls)
+	else:
+		feature_dataset = Dataset.Image.from_urls(urls=image_urls, ingest=False)
 	
 	pipeline = Pipeline(
 		Input(

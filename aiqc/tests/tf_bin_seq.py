@@ -3,7 +3,10 @@
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..orm import Dataset
+from ..utils.config import app_folders, create_folder
 # External modules
+from os import path
+from numpy import save as np_save
 import tensorflow as tf
 import tensorflow.keras.layers as l
 from sklearn.preprocessing import StandardScaler
@@ -55,7 +58,18 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count:int=3):
 	label_dataset = Dataset.Tabular.from_df(label_df)
 
 	sensor_arr3D = df.drop(columns=['seizure']).to_numpy().reshape(1000,178,1).astype('float64')
-	feature_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)
+	# Just testing all ingestion scenarios
+	if (fold_count is None):
+		feature_dataset = Dataset.Sequence.from_numpy(sensor_arr3D)
+	else:
+		path_models_cache = app_folders['cache_tests']
+		create_folder(path_models_cache)
+		path_file = f"temp_arr.npy"
+		path_full = path.join(path_models_cache,path_file)
+		np_save(path_full, sensor_arr3D, allow_pickle=True)
+		feature_dataset = Dataset.Sequence.from_numpy(
+			arr3D_or_npyPath=path_full, ingest=False, retype='float64'
+		)
 
 	hyperparameters = dict(neuron_count= [18], batch_size=[8], epochs=[5])
 

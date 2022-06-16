@@ -73,9 +73,16 @@ def make_queue(repeat_count:int=1, fold_count:int=None, permute_count=None):
 	
 	
 	folder_path = 'remote_datum/image/liberty_moon/images'
-	dataset = Dataset.Image.from_folder(
-		folder_path=folder_path, ingest=False, retype='float64'
-	)
+	
+		# Just ensuring we test all forms of ingestion.
+	if (fold_count is None):
+		dataset = Dataset.Image.from_folder(
+			folder_path=folder_path, ingest=False, retype='float64'
+		)
+	else:
+		dataset = Dataset.Image.from_folder(
+			folder_path=folder_path, ingest=True, retype='float64'
+		)
 
 	pipeline = Pipeline(
 		inputs = Input(

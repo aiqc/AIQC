@@ -1,6 +1,5 @@
 """TensorFlow Regression with Tabular data"""
 # Internal modules
-from configparser import Interpolation
 from ..mlops import Pipeline, Input, Target, Stratifier, Experiment, Architecture, Trainer
 from .. import datum
 from ..orm import Dataset

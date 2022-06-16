@@ -6,9 +6,8 @@ Create `config.json` for storing settings.
 Create `aiqc.sqlite3` database.
 """
 # Python modules
-from os import path, makedirs, name, system, access, remove, listdir
+from os import path, makedirs, name, system, access, remove, R_OK, W_OK
 from sys import version, modules, prefix
-from shutil import rmtree
 from json import load, dump
 from appdirs import user_data_dir
 from importlib import reload as importlib_reload
@@ -25,6 +24,7 @@ models_dir = path.join(app_dir, 'models')#user-exported
 cache_dir = path.join(app_dir, 'cache')
 cache_samples_dir = path.join(cache_dir, 'samples')
 cache_models_dir = path.join(cache_dir, 'models')
+cache_tests_dir = path.join(cache_dir, 'tests')
 
 app_folders = dict(
 	# Try not to use root. Make a new folder.
@@ -33,6 +33,7 @@ app_folders = dict(
 	, cache = cache_dir
 	, cache_samples = cache_samples_dir
 	, cache_models = cache_models_dir
+	, cache_tests = cache_tests_dir
 )
 
 default_config_path = app_dir + "config.json"
@@ -157,7 +158,6 @@ def grant_permissions_folder():
 #==================================================
 # CONFIG
 #==================================================
-
 def get_config():
 	config_exists = path.exists(default_config_path)
 	if (config_exists==True):
