@@ -90,7 +90,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "df = datum.to_pandas('galaxies.tsv')"
+    "df = datum.to_df('galaxies.tsv')"
    ]
   },
   {
@@ -244,7 +244,7 @@
     }
    ],
    "source": [
-    "dataset_img = Dataset.Image.from_urls_pillow(urls)"
+    "dataset_img = Dataset.Image.from_urls(urls)"
    ]
   },
   {

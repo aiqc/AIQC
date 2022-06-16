@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="10cca767683f4cf4b6fef8229c30b0a4,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, te..." />
+  <meta property="og:description" content="dffaefdb555a40e7af9436d75b48d1e0,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, text,, item, type, None, te..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -154,7 +154,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Dataset-Attributes">Dataset Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#File-Attributes">File Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1a.-Ingestion">1a. Ingestion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1a.-Registration">1a. Registration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
@@ -597,7 +597,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="10cca767683f4cf4b6fef8229c30b0a4" class="banner-photo" src="../_images/pipes.png" /></p>
+<p><img alt="dffaefdb555a40e7af9436d75b48d1e0" class="banner-photo" src="../_images/pipes.png" /></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 27%" />
@@ -642,8 +642,8 @@ div.rendered_html tbody tr:hover {
 </table>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
-<p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the API maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>. These objects serve as the building blocks that are stacked into AIQC workflows. However, the real power lies in the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>). These relationships allow us to weave together
-rule-base protocols that are <em>data-aware</em> and <em>analysis-aware</em>.</p>
+<p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
+<p>The real power lies in the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>), which enable us to construct rule-base protocols for various types of data and analysis.</p>
 <p>Goobye, <em>X_train, y_test</em>. Hello, object-oriented machine learning.</p>
 <hr class="docutils" />
 </section>
@@ -680,7 +680,7 @@ rule-base protocols that are <em>data-aware</em> and <em>analysis-aware</em>.</p
 <tr class="row-odd"><th class="head"><p>Subclass</p></th>
 <th class="head"><p>Dimensionality</p></th>
 <th class="head"><p>Formats</p></th>
-<th class="head"><p>Schema</p></th>
+<th class="head"><p>Structure</p></th>
 </tr>
 </thead>
 <tbody>
@@ -701,7 +701,6 @@ rule-base protocols that are <em>data-aware</em> and <em>analysis-aware</em>.</p
 </tr>
 </tbody>
 </table>
-<p>During each stage of both the preprocessing and postprocessing pipelines, these types need to be handled differently. For example, <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code> cannot act as a supervised <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
 </section>
 <section id="Dataset-Attributes">
 <h3>Dataset Attributes<a class="headerlink" href="#Dataset-Attributes" title="Permalink to this headline"></a></h3>
@@ -723,27 +722,30 @@ rule-base protocols that are <em>data-aware</em> and <em>analysis-aware</em>.</p
 <tr class="row-even"><td><p><em>idx</em></p></td>
 <td><p>type(IntegerField)</p></td>
 <td><p>Required</p></td>
-<td><p>Used to keep track of the number of Sequences in an Image Dataset, essentially a count on the number of Dataset-Dataset
-relationships</p></td>
+<td><p>Zero-based index used to keep track of the number of Sequences in an Image Dataset, essentially a count on the number of
+Dataset-Dataset relationships</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>typ</em></p></td>
 <td><p>type(CharField)</p></td>
 <td><p>Required</p></td>
-<td><p>The subclass of dataset: Tabular, Image, Sequence</p></td>
+<td><p>The subclass of Dataset: Tabular, Sequence, Image</p></td>
 </tr>
 <tr class="row-even"><td><p><em>file_count</em></p></td>
 <td><p>type(IntegerField)</p></td>
 <td><p>Required</p></td>
-<td><p>Used by sequence as a shortcut for Dataset.files.count(). However, also used by Image as a shortcut for the number of
-Sequences.</p></td>
+<td><p>Used by Sequence as a shortcut for Dataset.files.count(). However, it is also used by Image as a shortcut for the number
+of Sequences.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>source_path</em></p></td>
 <td><p>type(CharField)</p></td>
 <td><p>None</p></td>
-<td><p>Records the absolute path of the original file or folder. Optional for in-memory data and url-based ingestion.</p></td>
+<td><p>Path/ url, if provided. Paths may be provided as either relative or absolute, but will ultimately be stored as absolute.
+Image records the folder path, whereas Tabular and Sequences record an individual file path. Optional for in-memory and
+multi-url derived Datasets.</p></td>
 </tr>
 </tbody>
 </table>
+<p>Under the hood, <code class="docutils literal notranslate"><span class="pre">Datasets</span></code> are comprised of one or more <code class="docutils literal notranslate"><span class="pre">File</span></code> objects that are used to record metadata that comes in handy for downstream data wrangling.</p>
 </section>
 <section id="File-Attributes">
 <h3>File Attributes<a class="headerlink" href="#File-Attributes" title="Permalink to this headline"></a></h3>
@@ -765,7 +767,7 @@ Sequences.</p></td>
 <tr class="row-even"><td><p><em>idx</em></p></td>
 <td><p>type(IntegerField)</p></td>
 <td><p>Required</p></td>
-<td><p>Counts the number of files in a Sequence dataset</p></td>
+<td><p>Zero-based index used to count the number of files in a dataset</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>file_format</em></p></td>
 <td><p>type(CharField)</p></td>
@@ -775,7 +777,7 @@ Sequences.</p></td>
 <tr class="row-even"><td><p><em>shape</em></p></td>
 <td><p>type(JSONField)</p></td>
 <td><p>Required</p></td>
-<td><p>{rows:int, columns:int}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict(rows:int,</span> <span class="pre">columns:int)</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><em>is_ingested</em></p></td>
 <td><p>type(BooleanField)</p></td>
@@ -785,41 +787,56 @@ Sequences.</p></td>
 <tr class="row-even"><td><p><em>columns</em></p></td>
 <td><p>type(JSONField)</p></td>
 <td><p>Required</p></td>
-<td><p>List of columns. Int/range-based columns are coerced to strings during ingestion.</p></td>
+<td><p>List of columns in the file. Int/range-based columns are coerced to strings during ingestion. User may have provided a
+custom list of columns. Regular <em>ndarrays</em> don’t have column names, and I don’t like the API for <em>structured arrays</em>. If
+you don’t provide column names for an ndarray, then a stringified, zero-based index will be used to name columns.</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>dtypes</em></p></td>
 <td><p>type(JSONField)</p></td>
 <td><p>Required</p></td>
-<td><p>Coerced to a <code class="docutils literal notranslate"><span class="pre">dict(column=dtype)</span></code> during ingestion</p></td>
+<td><p>Columnar types stored in <code class="docutils literal notranslate"><span class="pre">dict(column=dtype)</span></code>. User may have provided their own
+<a class="reference external" href="https://pandas.pydata.org/docs/user_guide/basics.html#dtypes">Pandas-compatible</a> typing: using ‘dtype’, dtype, or
+<code class="docutils literal notranslate"><span class="pre">dict(column=dtype)</span></code>. Disallowed types include: ‘string’, ‘complex’, ‘longfloat’, ‘float128’</p></td>
+</tr>
+<tr class="row-even"><td><p><em>sha256_hexdigest</em></p></td>
+<td><p>type(CharField)</p></td>
+<td><p>Required</p></td>
+<td><p>Hash of the compressed blob used to determine uniqueness when versioning a Dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>size_MB</em></p></td>
+<td><p>type(IntegerField)</p></td>
+<td><p>Required</p></td>
+<td><p>Size of the compressed blob in megabytes.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>skip_header_rows</em></p></td>
 <td><p>type(PickleField)</p></td>
 <td><p>None</p></td>
-<td><p>CSV/TSV files use this for pd.read_csv(header)</p></td>
+<td><p>CSV/TSV formats use this for pd.read_csv(header)</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>source_path</em></p></td>
 <td><p>type(CharField)</p></td>
 <td><p>None</p></td>
-<td><p>Path/ url if provided.</p></td>
+<td><p>Path/ url, if provided. Paths may be provided as either relative or absolute, but will ultimately be stored as absolute.</p></td>
 </tr>
 <tr class="row-even"><td><p><em>blob</em></p></td>
 <td><p>type(BlobField)</p></td>
 <td><p>None</p></td>
-<td><p>The bytes of the file if provided</p></td>
+<td><p>The raw BytesIO of the file, if a path/ url was provided</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 </section>
-<section id="1a.-Ingestion">
-<h3>1a. Ingestion<a class="headerlink" href="#1a.-Ingestion" title="Permalink to this headline"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">ingest:bool=True</span></code> argument is common to all of the Dataset subclasses. It dictates whether or not the data is ingested into the metastore or if remains on disk.</p>
-<p>Although ingesting the Datasets is not a scalable approach for large (&gt;21GB) files, it provides the following benefits for entry-level users:</p>
+<section id="1a.-Registration">
+<h3>1a. Registration<a class="headerlink" href="#1a.-Registration" title="Permalink to this headline"></a></h3>
+<p>No matter what data type is specified (e.g. ndarray, PNG), it will be read into a Pandas DataFrame during registration so that metadata about it (shape, dtypes, and columns) can be uniformly recorded. Each file is 2D, so highly dimensional objects are recorded as 2D chunks.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ingest:bool=True</span></code> argument is common to all of the Dataset subclasses. It dictates whether or not the raw data is either stored directly inside the metastore or remains on disk to be accessed via path/url.</p>
+<p>Although ingesting the Datasets into SQLite is not a scalable approach for large (&gt;21GB) files, it provides the following benefits for entry-level users:</p>
 <ul class="simple">
 <li><p>A way to persist their data mutable, in-memory datasets (Pandas DataFrames, NumPy ndarrays).</p></li>
 <li><p>Keep the data coupled with the experiment in the portable SQLite file.</p></li>
 <li><p>Provides a more immutable and out-of-the-way place to store data than the file system.</p></li>
-<li><p>More exact preservation of <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> via conversion into the columnar Parquet file format. Parquet preserves every dtype except certain datetimes, which would need to be parsed into floats/ ordinal ints priorto encoding anyway. Parquet is better at preserving dtypes than other common file formats like CSV. Parquet also provides up to 90% compression via gzip. Parquet also integrates with both Spark and Dask; frameworks for distributed, in-memory computation.</p></li>
+<li><p>Exact preservation of <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> via conversion into the columnar Parquet file format. Parquet via fastparquet engine preserves every dtype. Common file formats like CSV are not good at preserving dtypes. My tests show that Parquet provides up to 90% compression via gzip. Parquet also integrates with both Spark and Dask; frameworks for distributed, in-memory computation.</p></li>
 </ul>
 <table class="docutils align-default">
 <colgroup>
@@ -833,11 +850,11 @@ Sequences.</p></td>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-<td><p>Each <code class="docutils literal notranslate"><span class="pre">File</span></code> in the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> will be fetched using <code class="docutils literal notranslate"><span class="pre">File.source_path</span></code></p></td>
+<td><p>Each <code class="docutils literal notranslate"><span class="pre">File</span></code> in the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> will be fetched using <code class="docutils literal notranslate"><span class="pre">File.source_path</span></code>. Even though the File is not ingested, metadata about is still gathered (e.g. dtypes, size, shape).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
 <td><p>Each <code class="docutils literal notranslate"><span class="pre">File</span></code> in the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> is compressed using Parquet’s <code class="docutils literal notranslate"><span class="pre">fastparquet</span></code> engine and stored in <code class="docutils literal notranslate"><span class="pre">File.blob</span></code> a <code class="docutils literal notranslate"><span class="pre">BlobField</span></code>. The maximum size of this field is 2.147 GB (after compression). So the bottleneck is more likely to be memory/RAM.
-Because the data did not come from a file, the <code class="docutils literal notranslate"><span class="pre">File.source_path=None</span></code> attribute is blank.</p></td>
+Because the data did not come from a file, the <code class="docutils literal notranslate"><span class="pre">File.source_path=None</span></code> attribute is blank. Methods for in-memory (dataframe/ ndarray) dataset ingestion always use <code class="docutils literal notranslate"><span class="pre">ingest=True</span></code> behind the scenes.</p></td>
 </tr>
 </tbody>
 </table>
@@ -846,7 +863,117 @@ Because the data did not come from a file, the <code class="docutils literal not
 <h4>1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai.-Dataset.Tabular" title="Permalink to this headline"></a></h4>
 <section id="└──-from_pandas()">
 <h5>└── <code class="docutils literal notranslate"><span class="pre">from_pandas()</span></code><a class="headerlink" href="#└──-from_pandas()" title="Permalink to this headline"></a></h5>
-<p>def from_path( file_path:str , file_format:str , name:str = None , description:str = None , dtype:object = None , column_names:list = None , skip_header_rows:object = ‘infer’ , ingest:bool = True ):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span>
+    <span class="n">dataframe</span>
+    <span class="p">,</span> <span class="n">name</span>
+    <span class="p">,</span> <span class="n">description</span>
+    <span class="p">,</span> <span class="n">dtype</span>
+    <span class="p">,</span> <span class="n">column_names</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 5%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>dataframe</em></p></td>
+<td><p>type(DataFrame)</p></td>
+<td><p>Required</p></td>
+<td><p><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas-dataframe">pd.DataFrame</a> with a generic index</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>name</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>See Dataset.name</p></td>
+</tr>
+<tr class="row-even"><td><p><em>description</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>See Dataset.description</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>dtype</em></p></td>
+<td><p>object</p></td>
+<td><p>None</p></td>
+<td><p>See File.dtypes</p></td>
+</tr>
+<tr class="row-even"><td><p><em>column_names</em></p></td>
+<td><p>list[str]</p></td>
+<td><p>None</p></td>
+<td><p>See File.columns</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+</section>
+<section id="└──-from_numpy()">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#└──-from_numpy()" title="Permalink to this headline"></a></h5>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+    <span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">name</span>
+    <span class="p">,</span> <span class="n">description</span>
+    <span class="p">,</span> <span class="n">dtype</span>
+    <span class="p">,</span> <span class="n">column_names</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 8%" />
+<col style="width: 7%" />
+<col style="width: 74%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>ndarray</em></p></td>
+<td><p>type</p></td>
+<td><p>Required</p></td>
+<td><p>2D <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html">np.ndarray</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>name</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>See Dataset.name</p></td>
+</tr>
+<tr class="row-even"><td><p><em>description</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>See Dataset.description</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>dtype</em></p></td>
+<td><p>object</p></td>
+<td><p>None</p></td>
+<td><p>See File.dtypes</p></td>
+</tr>
+<tr class="row-even"><td><p><em>column_names</em></p></td>
+<td><p>list[str]</p></td>
+<td><p>None</p></td>
+<td><p>See File.columns</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+</section>
+<section id="└──-from_path()">
+<h5>└── <code class="docutils literal notranslate"><span class="pre">from_path()</span></code><a class="headerlink" href="#└──-from_path()" title="Permalink to this headline"></a></h5>
+<p>```python dataset = Dataset.Tabular.from_path( file_path:str , file_format:str , name:str = None , description:str = None , dtype:object = None , column_names:list = None , skip_header_rows:object = ‘infer’ , ingest:bool = True ):</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25%" />
@@ -865,94 +992,43 @@ Because the data did not come from a file, the <code class="docutils literal not
 <tr class="row-even"><td><p><em>file_path</em></p></td>
 <td><p>str</p></td>
 <td><p>Required</p></td>
-<td><p>text</p></td>
+<td><p>See Dataset.source_path. Accepted formats for this method: ‘.tsv’ or ‘.csv’ for
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">pd.read_csv</a>, as well as ‘.parquet’ or ‘.pq’ for
+(<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html">pd.read_parquet</a>)</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>file_format</em></p></td>
-<td><p>str</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><em>name</em></p></td>
-<td><p>type</p></td>
-<td><p>str</p></td>
-<td><p>Like</p></td>
-</tr>
-<tr class="row-odd"><td><p><em>description</em></p></td>
+<tr class="row-odd"><td><p><em>name</em></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>text</p></td>
+<td><p>See Dataset.name</p></td>
 </tr>
-<tr class="row-even"><td><p><em>dtype</em></p></td>
+<tr class="row-even"><td><p><em>description</em></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>See Dataset.description</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>dtype</em></p></td>
 <td><p>type</p></td>
-<td><p>dtype / dict(str,dtype)</p></td>
-<td><p><a class="reference external" href="https://pandas.pydata.org/docs/user_guide/basics.html#dtypes">Pandas dtype</a> - provides the ability to hardcode dtypes</p></td>
+<td><p>object</p></td>
+<td><p>See Dataset.dtype</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>column_names</em></p></td>
+<tr class="row-even"><td><p><em>column_names</em></p></td>
 <td><p>bool</p></td>
 <td><p>str</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>skip_header_rows</em></p></td>
+<td><p>type</p></td>
 <td><p>‘infer’</p></td>
+<td><p>Passed to <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">pd.read_csv(header)</a>`, incompatible w
+Parquet.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>skip_header_rows</em></p></td>
+<tr class="row-even"><td><p><em>ingest</em></p></td>
 <td><p>type</p></td>
-<td><p>None</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><em>ingest</em></p></td>
-<td><p>type</p></td>
-<td><p>None</p></td>
-<td><p>text</p></td>
+<td><p>True</p></td>
+<td><p>See <a class="reference external" href="#1a.-Registration">Dataset Registration section</a></p></td>
 </tr>
 </tbody>
 </table>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="s1">&#39;iris.tsv&#39;</span><span class="p">)</span>
-
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span>
-    <span class="n">dataframe</span>      <span class="o">=</span> <span class="n">df</span>
-    <span class="p">,</span> <span class="n">name</span>         <span class="o">=</span> <span class="s1">&#39;tab separated plants&#39;</span>
-    <span class="p">,</span> <span class="n">dtype</span>        <span class="o">=</span> <span class="kc">None</span> <span class="c1">#passed to pd.Dataframe(dtype)/ inferred</span>
-    <span class="p">,</span> <span class="n">column_names</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#passed to pd.Dataframe(columns)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<blockquote>
-<div><p>Optionally, <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, as seen in the <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame.astype(dtype)</span></code> <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.astype.html">docs</a>, can be specified as either a single type for all columns, or as a dictionary that maps a specific type to each column name. This encodes features for analysis. We read NumPy into Pandas before persisting it, so <code class="docutils literal notranslate"><span class="pre">columns</span></code> and <code class="docutils literal notranslate"><span class="pre">dtype</span></code> are read directly by <code class="docutils literal notranslate"><span class="pre">pd.DataFrame()</span></code>.</p>
-</div></blockquote>
-<hr class="docutils" />
-</section>
-<section id="└──-from_numpy()">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#└──-from_numpy()" title="Permalink to this headline"></a></h5>
-<p>Must be a 2D NumPy N-Dimensional Array.</p>
-<blockquote>
-<div><p><em>In the future, we may add support for ingesting 3D arrays as multi-file sequences.</em></p>
-</div></blockquote>
-<p>Regular <em>ndarrays</em> don’t have column names, and I didn’t like the API for <em>structured arrays</em> so you have to pass in columns names as a list. If you don’t then column names will be numerically assigned in ascending order (zero-based index), but I didn’t like the range object, so I stringified numerically assigned columns to string-based numbers.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">arr</span> <span class="o">=</span>  <span class="n">df</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-<span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-
-<span class="n">other_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
-    <span class="n">ndarray</span>        <span class="o">=</span> <span class="n">arr</span>
-    <span class="p">,</span> <span class="n">column_names</span> <span class="o">=</span> <span class="n">cols</span> <span class="c1">#passed to pd.Dataframe(columns)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="└──-from_path()">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">from_path()</span></code><a class="headerlink" href="#└──-from_path()" title="Permalink to this headline"></a></h5>
-<p>Intended for flat files, delimited text, and structured tabular data. Reads in via Pandas, so it supports URLs to raw data and bytes as well.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">file_path</span></code> itself can be either absolute or relative.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -1029,7 +1105,7 @@ Because the data did not come from a file, the <code class="docutils literal not
 <hr class="docutils" />
 <section id="id1">
 <h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id1" title="Permalink to this headline"></a></h5>
-<p><code class="docutils literal notranslate"><span class="pre">ndarray3D_or_npyPath:object</span></code> requires either an in-memory 3D NumPy array or a <em>.npy</em> file. Each 2D array represents a sample.</p>
+<p><code class="docutils literal notranslate"><span class="pre">arr3D_or_npyPath:object</span></code> requires either an in-memory 3D NumPy array or a <em>.npy</em> file. Each 2D array represents a sample.</p>
 <p>So we’ll drop our seizure column from our DataFrame and reshape it into a 3D array.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
@@ -1046,7 +1122,7 @@ Because the data did not come from a file, the <code class="docutils literal not
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">dataset_sequence</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
-    <span class="n">ndarray3D_or_npyPath</span><span class="o">=</span><span class="n">seq_ndarray3D</span><span class="p">,</span> <span class="n">column_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
+    <span class="n">arr3D_or_npyPath</span><span class="o">=</span><span class="n">seq_ndarray3D</span><span class="p">,</span> <span class="n">column_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1304,9 +1380,9 @@ Because the data did not come from a file, the <code class="docutils literal not
 </section>
 <section id="id2">
 <h5>└── <code class="docutils literal notranslate"><span class="pre">from_numpy()</span></code><a class="headerlink" href="#id2" title="Permalink to this headline"></a></h5>
-<p>The <code class="docutils literal notranslate"><span class="pre">ndarray4D_or_npyPath:object</span></code> requires either an in-memory 4D NumPy array or a <em>.npy</em> file. Each 3D sequence represents an image sample.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">arr4D_or_npyPath:object</span></code> requires either an in-memory 4D NumPy array or a <em>.npy</em> file. Each 3D sequence represents an image sample.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
-        <span class="n">ndarray4D_or_npyPath</span><span class="p">:</span><span class="nb">object</span>
+        <span class="n">arr4D_or_npyPath</span><span class="p">:</span><span class="nb">object</span>
         <span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">,</span> <span class="n">dtype</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">,</span> <span class="n">column_names</span><span class="p">:</span><span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1699,7 +1775,7 @@ array([[[20, 19, 18, ..., 77, 78, 78],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+<span></span><span class="n">label</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1759,7 +1835,7 @@ array([[[20, 19, 18, ..., 77, 78, 78],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">label</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">66</span><span class="p">,</span><span class="mi">99</span><span class="p">,</span><span class="mi">132</span><span class="p">])[:</span><span class="mi">5</span><span class="p">]</span>
+<span></span><span class="n">label</span><span class="o">.</span><span class="n">to_arr</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">66</span><span class="p">,</span><span class="mi">99</span><span class="p">,</span><span class="mi">132</span><span class="p">])[:</span><span class="mi">5</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1890,7 +1966,7 @@ array([[5.1, 3.5, 1.4, 0.2],
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">feature</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+<span></span><span class="n">feature</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">])</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

@@ -194,8 +194,8 @@
     }
    ],
    "source": [
-    "df = datum.to_pandas('exoplanets.parquet')\n",
-    "shared_dataset = Dataset.Tabular.from_pandas(df)\n",
+    "df = datum.to_df('exoplanets.parquet')\n",
+    "shared_dataset = Dataset.Tabular.from_df(df)\n",
     "df.head()"
    ]
   },

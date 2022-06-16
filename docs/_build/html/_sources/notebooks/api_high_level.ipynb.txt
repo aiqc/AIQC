@@ -130,7 +130,7 @@
    "source": [
     "|||\n",
     "| --- | --- |\n",
-    "| **Returns** | [Splitset](api_low_level.html) instance, which will be passed to [Trainer](#2b.-Trainer). |"
+    "| **Returns** | [Splitset](api_low_level.html) instance instance as seen in the [Low-Level API](api_low_level.html). We will use this later as the [Trainer.pipeline](#2b.-Trainer) argument. |"
    ]
   },
   {
@@ -183,7 +183,7 @@
     "| *interpolaters* | list[type(Input.Interpolater)] | None | Reference `Input.Interpolater` below. |\n",
     "| *window* | type(Input.Window) | None | Reference `Input.Window` below. |\n",
     "| *encoders* | list[type(Input.Encoder) ] | None | Reference `Input.Encoder` below. |\n",
-    "| *reshape_indices* | tuple(int/str/tuple(int/str)) | None | See `FeatureShaper` in the [Low-Level API](api_low_level.html).  |"
+    "| *reshape_indices* | tuple(int/str/tuple) | None | See `FeatureShaper` in the [Low-Level API](api_low_level.html).  |"
    ]
   },
   {
@@ -191,15 +191,6 @@
    "metadata": {},
    "source": [
     "> Both `exclude_columns` and `include_columns` cannot be used simultaneously."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "|||\n",
-    "|---|---|\n",
-    "| **Returns** | `Input` instance |"
    ]
   },
   {
@@ -274,6 +265,7 @@
     "Input.Window(\n",
     "    size_window\n",
     "    , size_shift\n",
+    "    , record_shifted\n",
     ")\n",
     "```"
    ]
@@ -366,15 +358,6 @@
     "| *column* | list[str] | None | The column from the `Dataset` to use as the target.  |\n",
     "| *interpolater* | type(Target.Interpolater) | None | Reference `Target.Interpolater` below. |\n",
     "| *encoder* | type(Target.Encoder) | None | Reference `Target.Encoder` below.  |"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "|||\n",
-    "|---|---|\n",
-    "| **Returns** | `Target` instance |"
    ]
   },
   {

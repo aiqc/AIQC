@@ -1398,7 +1398,7 @@
     }
    ],
    "source": [
-    "dataset.file_count"
+    "dataset.shape[\"samples\"]"
    ]
   },
   {
