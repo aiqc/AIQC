@@ -407,12 +407,12 @@ class Dataset(BaseModel):
 
         def from_path(
             file_path:str
-            , ingest:bool         = True
             , rename_columns:list = None
             , retype:object       = None
-            , name:str            = None
-            , description:str     = None
+            , ingest:bool         = True
             , header:object       = 'infer'
+            , description:str     = None
+            , name:str            = None
         ):
             rename_columns = listify(rename_columns)
 
@@ -527,11 +527,11 @@ class Dataset(BaseModel):
     class Sequence():
         def from_numpy(
             arr3D_or_npyPath:object
-            , name:str            = None
-            , description:str     = None
             , rename_columns:list = None
             , retype:object       = None
             , ingest:bool         = None
+            , description:str     = None
+            , name:str            = None
         ):
             # --- Validation ---
             rename_columns = listify(rename_columns)
@@ -690,11 +690,11 @@ class Dataset(BaseModel):
         """PIL formats: pillow.readthedocs.io/en/stable/handbook/image-file-formats.html"""
         def from_numpy(
             arr4D_or_npyPath:object
-            , ingest:bool         = None
-            , name:str            = None
-            , description:str     = None
             , rename_columns:list = None
             , retype:object       = None
+            , ingest:bool         = None
+            , description:str     = None
+            , name:str            = None
             , _source_path:str    = None # from folder/urls may override
             , _source_format:str  = None # from folder/urls overrides
             , _urls:list          = None # from urls overrides
@@ -824,11 +824,11 @@ class Dataset(BaseModel):
 
         def from_folder(
             folder_path:str
-            , ingest:bool         = False
-            , name:str            = None
-            , description:str     = None
-            , retype:object       = None
             , rename_columns:list = None
+            , retype:object       = None
+            , ingest:bool         = False
+            , description:str     = None
+            , name:str            = None
         ):
             # --- Assemble the array ---
             source_path     = path.abspath(folder_path)
@@ -861,12 +861,12 @@ class Dataset(BaseModel):
 
         def from_urls(
             urls:list
-            , ingest:bool         = False
             , source_path:str     = None # not used anywhere, but doesn't hurt to record e.g. FTP site
-            , name:str            = None
-            , description:str     = None
-            , retype:object       = None
             , rename_columns:list = None
+            , retype:object       = None
+            , ingest:bool         = False
+            , description:str     = None
+            , name:str            = None
         ):
             # --- Assemble the array ---
             urls            = listify(urls)
