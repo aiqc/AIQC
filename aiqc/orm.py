@@ -329,10 +329,10 @@ class Dataset(BaseModel):
     class Tabular():
         def from_df(
             dataframe:object
-            , name:str            = None
-            , description:str     = None
             , rename_columns:list = None
             , retype:object       = None
+            , description:str     = None
+            , name:str            = None
             , _source_format:str  = 'dataframe' # from_path and from_arr overwrite
             , _ingest:bool        = True # from_path may overwrite
             , _source_path:str    = None # from_path overwrites
