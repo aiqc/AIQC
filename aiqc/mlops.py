@@ -207,7 +207,7 @@ class Pipeline:
             , fold_count 	  = stratifier.fold_count
             , name 			  = name
             , description 	  = description
-            , predictor_id    = _predictor
+            , _predictor_id    = _predictor
         )
         return splitset
 

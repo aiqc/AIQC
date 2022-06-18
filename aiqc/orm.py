@@ -1224,8 +1224,8 @@ class Feature(BaseModel):
 
     def from_dataset(
         dataset_id:int
-        , include_columns:list=None
-        , exclude_columns:list=None
+        , include_columns:list = None
+        , exclude_columns:list = None
     ):
         #As we get further away from the `Dataset.<Types>` they need less isolation.
         dataset = Dataset.get_by_id(dataset_id)
@@ -1234,16 +1234,17 @@ class Feature(BaseModel):
         d_cols = dataset.columns
         
         if ((include_columns is not None) and (exclude_columns is not None)):
-            raise Exception("\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n")
+            msg = "\nYikes - You can set either `include_columns` or `exclude_columns`, but not both.\n"
+            raise Exception(msg)
 
-        if (include_columns is not None):
-            # check columns exist
+        elif (include_columns is not None):
+            # Check columns exist
             all_cols_found = all(col in d_cols for col in include_columns)
             if (not all_cols_found):
                 raise Exception("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
-            # inclusion
+            # Inclusion
             columns = include_columns
-            # exclusion
+            # Exclusion
             columns_excluded = d_cols
             for col in include_columns:
                 columns_excluded.remove(col)
@@ -1251,7 +1252,8 @@ class Feature(BaseModel):
         elif (exclude_columns is not None):
             all_cols_found = all(col in d_cols for col in exclude_columns)
             if (not all_cols_found):
-                raise Exception("\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n")
+                msg = "\nYikes - You specified `exclude_columns` that do not exist in the Dataset.\n"
+                raise Exception(msg)
             # exclusion
             columns_excluded = exclude_columns
             # inclusion
@@ -1259,7 +1261,8 @@ class Feature(BaseModel):
             for col in exclude_columns:
                 columns.remove(col)
             if (not columns):
-                raise Exception("\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n")
+                msg = "\nYikes - You cannot exclude every column in the Dataset. For there will be nothing to analyze.\n"
+                raise Exception(msg)
         # Both are None
         else:
             columns = d_cols
@@ -1851,7 +1854,7 @@ class Splitset(BaseModel):
     has_validation = BooleanField()
     fold_count = IntegerField()
     bin_count = IntegerField(null=True)
-    unsupervised_stratify_col = CharField(null=True)
+    unsupervised_stratifyCol = CharField(null=True)
     key_train = CharField(null=True) #None during inference
     key_evaluation = CharField(null=True)
     key_test = CharField(null=True)
@@ -1869,10 +1872,10 @@ class Splitset(BaseModel):
         , size_validation:float = None
         , bin_count:float = None
         , fold_count:int = None
-        , unsupervised_stratify_col:str = None
+        , unsupervised_stratifyCol:str = None
         , name:str = None
         , description:str = None
-        , predictor_id:int = None
+        , _predictor_id:int = None
     ):
         # The first feature_id is used for stratification, so it's best to use Tabular data in this slot.
         if (fold_count is None):
@@ -1943,8 +1946,8 @@ class Splitset(BaseModel):
         if (size_test is not None):
             # ------ Stratification prep ------
             if (label_id is not None):
-                if (unsupervised_stratify_col is not None):
-                    msg = "\nYikes - `unsupervised_stratify_col` cannot be present is there is a Label.\n"
+                if (unsupervised_stratifyCol is not None):
+                    msg = "\nYikes - `unsupervised_stratifyCol` cannot be present is there is a Label.\n"
                     raise Exception(msg)
                 if (len(feature.windows)>0):
                     msg = "\nYikes - At this point in time, AIQC does not support the use of windowed Features with Labels.\n"
@@ -1981,10 +1984,10 @@ class Splitset(BaseModel):
 
                 indices_lst_train = arr_idx.tolist()
 
-                if (unsupervised_stratify_col is not None):
+                if (unsupervised_stratifyCol is not None):
                     # Get the column for stratification.
                     column_names = f_dataset.columns
-                    col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratify_col])[0]
+                    col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[unsupervised_stratifyCol])[0]
 
                     dimensions = feature_array.ndim
                     if (dimensions==2):
@@ -2020,9 +2023,9 @@ class Splitset(BaseModel):
                         # Now its 1D so reshape to 2D for the rest of the process.
                         stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
-                elif (unsupervised_stratify_col is None):
+                elif (unsupervised_stratifyCol is None):
                     if (bin_count is not None):
-                        msg = "\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n"
+                        msg = "\nYikes - `bin_count` cannot be set if `unsupervised_stratifyCol is None` and `label_id is None`.\n"
                         raise Exception(msg)
                     stratify_arr = None
 
@@ -2097,8 +2100,8 @@ class Splitset(BaseModel):
 
         # This is used by inference where we just want all of the samples.
         elif(size_test is None):
-            if (unsupervised_stratify_col is not None):
-                msg = "\nYikes - `unsupervised_stratify_col` present without a `size_test`.\n"
+            if (unsupervised_stratifyCol is not None):
+                msg = "\nYikes - `unsupervised_stratifyCol` present without a `size_test`.\n"
                 raise Exception(msg)
 
             samples["train"] = arr_idx.tolist()
@@ -2150,7 +2153,7 @@ class Splitset(BaseModel):
             , key_test = key_test
             , random_state = random_state
             , bin_count = bin_count
-            , unsupervised_stratify_col = unsupervised_stratify_col
+            , unsupervised_stratifyCol = unsupervised_stratifyCol
             , name = name
             , description = description
             , fold_count = fold_count
@@ -2172,8 +2175,8 @@ class Splitset(BaseModel):
                 splitset.save()
             
             # --- Validate for inference ---
-            if (predictor_id is not None):
-                predictor = Predictor.get_by_id(predictor_id)
+            if (_predictor_id is not None):
+                predictor = Predictor.get_by_id(_predictor_id)
                 splitset_old = predictor.job.queue.splitset
                 schemaNew_matches_schemaOld(splitset, splitset_old)
                 splitset.predictor = predictor
@@ -2211,7 +2214,7 @@ class Splitset(BaseModel):
             stratify_dtype = stratify_arr.dtype
 
         elif (splitset.supervision=="unsupervised"):
-            if (splitset.unsupervised_stratify_col is not None):
+            if (splitset.unsupervised_stratifyCol is not None):
                 feature = splitset.features[0]
                 _, stratify_arr = feature.preprocess(
                     supervision='unsupervised', is_encoded=False
@@ -2219,7 +2222,7 @@ class Splitset(BaseModel):
                 # Only take the training samples.
                 stratify_arr = stratify_arr[arr_train_indices]
 
-                stratify_col = splitset.unsupervised_stratify_col
+                stratify_col = splitset.unsupervised_stratifyCol
                 column_names = feature.dataset.columns
                 col_index = colIndices_from_colNames(column_names=column_names, desired_cols=[stratify_col])[0]
                 
@@ -2257,9 +2260,9 @@ class Splitset(BaseModel):
                     # Now its 1D so reshape to 2D for the rest of the process.
                     stratify_arr = stratify_arr.reshape(stratify_arr.shape[0], 1)
 
-            elif (splitset.unsupervised_stratify_col is None):
+            elif (splitset.unsupervised_stratifyCol is None):
                 if (bin_count is not None):
-                    msg = "\nYikes - `bin_count` cannot be set if `unsupervised_stratify_col is None` and `label_id is None`.\n"
+                    msg = "\nYikes - `bin_count` cannot be set if `unsupervised_stratifyCol is None` and `label_id is None`.\n"
                     raise Exception(msg)
                 stratify_arr = None#Used in if statements below.
 
