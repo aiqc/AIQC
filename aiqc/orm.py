@@ -407,9 +407,9 @@ class Dataset(BaseModel):
 
         def from_path(
             file_path:str
+            , ingest:bool         = True
             , rename_columns:list = None
             , retype:object       = None
-            , ingest:bool         = True
             , header:object       = 'infer'
             , description:str     = None
             , name:str            = None
@@ -527,9 +527,9 @@ class Dataset(BaseModel):
     class Sequence():
         def from_numpy(
             arr3D_or_npyPath:object
+            , ingest:bool         = None
             , rename_columns:list = None
             , retype:object       = None
-            , ingest:bool         = None
             , description:str     = None
             , name:str            = None
         ):
@@ -577,6 +577,9 @@ class Dataset(BaseModel):
                 source_format = "ndarray"
                 if (ingest is None):
                     ingest = True
+                elif (ingest==False):
+                    msg = "\nYikes - In-memory ndarrays must be ingested.\n"
+                    raise Exception(msg)
 
             arr_validate(arr)
 
@@ -687,12 +690,11 @@ class Dataset(BaseModel):
 
 
     class Image():
-        """PIL formats: pillow.readthedocs.io/en/stable/handbook/image-file-formats.html"""
         def from_numpy(
             arr4D_or_npyPath:object
+            , ingest:bool         = None # from folder/urls may override
             , rename_columns:list = None
             , retype:object       = None
-            , ingest:bool         = None
             , description:str     = None
             , name:str            = None
             , _source_path:str    = None # from folder/urls may override
@@ -743,6 +745,9 @@ class Dataset(BaseModel):
                 # Only overwrite _internal args if they are undefined
                 if (ingest is None):
                     ingest = True
+                elif(ingest==False):
+                    msg = "\nYikes - In-memory ndarrays must be ingested.\n"
+                    raise Exception(msg)
                 
                 if (_source_path is None):
                     source_path = None
@@ -824,9 +829,9 @@ class Dataset(BaseModel):
 
         def from_folder(
             folder_path:str
+            , ingest:bool         = False
             , rename_columns:list = None
             , retype:object       = None
-            , ingest:bool         = False
             , description:str     = None
             , name:str            = None
         ):
@@ -862,9 +867,9 @@ class Dataset(BaseModel):
         def from_urls(
             urls:list
             , source_path:str     = None # not used anywhere, but doesn't hurt to record e.g. FTP site
+            , ingest:bool         = False
             , rename_columns:list = None
             , retype:object       = None
-            , ingest:bool         = False
             , description:str     = None
             , name:str            = None
         ):

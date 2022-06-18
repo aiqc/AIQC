@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_high_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="be03bb50e42e4c0dae5d15a2711b61ad Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
+  <meta property="og:description" content="046fe1eea4bf4677b2142509aa95df94 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -34,7 +34,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Low-Level API" href="api_low_level.html" />
+    <link rel="next" title="Low-Level API [under construction for v7.0.0]" href="api_low_level.html" />
     <link rel="prev" title="Visualization &amp; Metrics" href="visualization.html" /> 
 </head>
 
@@ -147,23 +147,20 @@
 <li class="toctree-l2"><a class="reference internal" href="#3.-Inference">3. <code class="docutils literal notranslate"><span class="pre">Inference</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="api_low_level.html">Low-Level API [under construction for v7.0.0]</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#1.-Dataset">1. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Description">Description</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Dataset-Attributes">Dataset Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#File-Attributes">File Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1a.-Registration">1a. Registration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1b.-Read">1b. Read</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1a.-Overview">1a. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1b.-Registration">1b. Registration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1bi.-Dataset.Tabular">1bi. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1bii.-Dataset.Sequence">1bii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#1biii.-Dataset.Image">1biii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1c.-Fetching">1c. Fetching</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id1">1bi. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id2">1bii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id5">1biii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -176,7 +173,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Select-the-Feature-column(s).">b) Select the <code class="docutils literal notranslate"><span class="pre">Feature</span></code> column(s).</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id7">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id8">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Features">Specifying Features</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Features">Reading Features</a></li>
 </ul>
@@ -185,7 +182,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Slicing-samples.">3. Slicing samples.</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Define-sliding-time-series-Windows.">a) Define sliding time series <code class="docutils literal notranslate"><span class="pre">Windows</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id8">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id9">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Windows">Specifying Windows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Windows">Reading Windows</a></li>
 </ul>
@@ -197,7 +194,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#c)-fold_count-triggers-cross-validation.">c) <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> triggers cross-validation.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id9">ORM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#id10">ORM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Fold-objects"><code class="docutils literal notranslate"><span class="pre">Fold</span></code> objects</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Specifying-Folds">Specifying Folds</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Reading-Folds">Reading Folds</a></li>
@@ -206,7 +203,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#4.-Preprocessing---Interpolation.">4. Preprocessing - Interpolation.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id10">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id11">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#a)-Interpolate-Labels-with-LabelInterpolater.">a) Interpolate Labels with <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code>.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#b)-Interpolate-Features-with-Interpolaterset.">b) Interpolate Features with <code class="docutils literal notranslate"><span class="pre">Interpolaterset</span></code>.</a></li>
 </ul>
@@ -224,7 +221,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#6.-Preprocessing---Reshaping.">6. Preprocessing - Reshaping.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id11">ORM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#id12">ORM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reshaping-by-Index">Reshaping by Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Reshaping-Explicitly">Reshaping Explicitly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
@@ -351,7 +348,7 @@
 </style>
 <section id="High-Level-API">
 <h1>High-Level API<a class="headerlink" href="#High-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="be03bb50e42e4c0dae5d15a2711b61ad" class="banner-photo" src="../_images/pawns.png" /></p>
+<p><img alt="046fe1eea4bf4677b2142509aa95df94" class="banner-photo" src="../_images/pawns.png" /></p>
 <section id="Declarative">
 <h2>Declarative<a class="headerlink" href="#Declarative" title="Permalink to this headline"></a></h2>
 <p>The <em>High-Level API</em> is <em>declarative</em>. What does that mean? All you have to do is specify the <em>state</em> that you want the data in, and then the backend executes all of the tedious data wrangling needed to achieve that state. It’s like Terraform for machine learning.</p>
@@ -364,9 +361,9 @@ from aiqc.mlops import *
 <li><p><code class="docutils literal notranslate"><span class="pre">Experiment</span></code> declares variations of models to train and evaluate.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Inference</span></code> declares new samples to predict.</p></li>
 </ol>
-<p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> to the see the high level API in action for various types of data and analysis.</p>
+<p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> to the see the high level API in action for various types of data and analysis. It’s declarative nature makes it easy to learn by reading examples as opposed to piecing together which arguments point to each other. Check back here if you get stuck.</p>
 <blockquote>
-<div><p>Under the hood, the High-Level API is actually chaining together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<div><p><em>Why so many pointer variables?</em> – Under the hood, the High-Level API is actually chaining together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>. So many of the classes provided here are just an easier-to-use versions of their ORM counterparts.</p>
 </div></blockquote>
 <hr class="docutils" />
 </section>
@@ -403,27 +400,27 @@ from aiqc.mlops import *
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><em>inputs</em></p></td>
-<td><p>list[type(Input)]</p></td>
+<tr class="row-even"><td><p><strong>inputs</strong></p></td>
+<td><p>list(Input)</p></td>
 <td><p>Required</p></td>
-<td><p><a class="reference external" href="#1a.-Input">Input</a> - Multiple Inputs may be provided for supervised, multi-modal analysis.</p></td>
+<td><p><a class="reference external" href="#1a.-Input">Input</a> - One or more featuresets</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>target</em></p></td>
-<td><p>type(Target)</p></td>
+<tr class="row-odd"><td><p><strong>target</strong></p></td>
+<td><p>Target</p></td>
 <td><p>None</p></td>
 <td><p><a class="reference external" href="#1b.-Target">Target</a> - Leave blank during unsupervised/ self-supervised analysis.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>stratifier</em></p></td>
-<td><p>type(Stratifier)</p></td>
+<tr class="row-even"><td><p><strong>stratifier</strong></p></td>
+<td><p>Stratifier</p></td>
 <td><p>None</p></td>
 <td><p><a class="reference external" href="#1c.-Stratifier">Stratifier</a> - Leave blank during inference.</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>name</em></p></td>
+<tr class="row-odd"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>An auto-incrementing version will be assigned to <code class="docutils literal notranslate"><span class="pre">Pipelines</span></code> that share a name.</p></td>
+<td><p>An auto-incrementing version will be assigned to Pipelines that share a name.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>description</em></p></td>
+<tr class="row-even"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
 <td><p>Describes how this particular workflow is unique.</p></td>
@@ -440,14 +437,15 @@ from aiqc.mlops import *
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Returns</strong></p></td>
-<td><p><a class="reference external" href="api_low_level.html">Splitset</a> instance instance as seen in the <a class="reference external" href="api_low_level.html">Low-Level API</a>. We will use this later as the <a class="reference external" href="#2b.-Trainer">Trainer.pipeline</a> argument.</p></td>
+<td><p><a class="reference external" href="api_low_level.html">Splitset</a> instance as seen in the Low-Level API. We will use this later as the <a class="reference external" href="#2b.-Trainer">Trainer.pipeline</a> argument.</p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <section id="1a.-Input">
 <h3>1a. <code class="docutils literal notranslate"><span class="pre">Input</span></code><a class="headerlink" href="#1a.-Input" title="Permalink to this headline"></a></h3>
-<p>These are the features that our model will learn from. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Feature</span></code> and all of its preprocessors in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>These are the features that our model will learn from.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Feature</span></code> and all of its preprocessors in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="p">(</span>
     <span class="n">dataset</span>
     <span class="p">,</span> <span class="n">exclude_columns</span>
@@ -475,39 +473,39 @@ from aiqc.mlops import *
 </thead>
 <tbody>
 <tr class="row-even"><td><p><em>dataset</em></p></td>
-<td><p>type(Dataset)</p></td>
+<td><p>Dataset</p></td>
 <td><p>Required</p></td>
-<td><p>See <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Dataset</span></code> from <a class="reference external" href="api_low_level.html">Low-Level API</a></p></td>
 </tr>
 <tr class="row-odd"><td><p><em>exclude_columns</em></p></td>
-<td><p>list[str]</p></td>
+<td><p>list(str)</p></td>
 <td><p>None</p></td>
-<td><p>The columns from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> that will not be used.</p></td>
+<td><p>The columns from the Dataset that will <em>not</em> be used in the featureset</p></td>
 </tr>
 <tr class="row-even"><td><p><em>include_columns</em></p></td>
-<td><p>list[str]</p></td>
+<td><p>list(str)</p></td>
 <td><p>None</p></td>
-<td><p>The columns from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> that will be used.</p></td>
+<td><p>The columns from the Dataset that <em>will</em> be used in the featureset</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>interpolaters</em></p></td>
-<td><p>list[type(Input.Interpolater)]</p></td>
+<td><p>list(Input.Interpolater)</p></td>
 <td><p>None</p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input.Interpolater</span></code> below.</p></td>
+<td><p><a class="reference external" href="#1ai.-Input.Interpolater">Input.Interpolater</a></p></td>
 </tr>
 <tr class="row-even"><td><p><em>window</em></p></td>
-<td><p>type(Input.Window)</p></td>
+<td><p>Input.Window</p></td>
 <td><p>None</p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input.Window</span></code> below.</p></td>
+<td><p><a class="reference external" href="#1aii.-Input.Window">Input.Window</a></p></td>
 </tr>
 <tr class="row-odd"><td><p><em>encoders</em></p></td>
-<td><p>list[type(Input.Encoder) ]</p></td>
+<td><p>list(Input.Encoder)</p></td>
 <td><p>None</p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Input.Encoder</span></code> below.</p></td>
+<td><p><a class="reference external" href="#1aiii.-Input.Encoder">Input.Encoder</a></p></td>
 </tr>
 <tr class="row-even"><td><p><em>reshape_indices</em></p></td>
 <td><p>tuple(int/str/tuple)</p></td>
 <td><p>None</p></td>
-<td><p>See <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p>Reference <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> from <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -517,7 +515,8 @@ from aiqc.mlops import *
 <hr class="docutils" />
 <section id="1ai.-Input.Interpolater">
 <h4>1ai. <code class="docutils literal notranslate"><span class="pre">Input.Interpolater</span></code><a class="headerlink" href="#1ai.-Input.Interpolater" title="Permalink to this headline"></a></h4>
-<p>Used to fill in the blanks in a sequence. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to fill in the blanks in a sequence.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="o">.</span><span class="n">Interpolater</span><span class="p">(</span>
     <span class="n">process_separately</span>
     <span class="p">,</span> <span class="n">verbose</span>
@@ -527,14 +526,12 @@ from aiqc.mlops import *
 <span class="p">)</span>
 </pre></div>
 </div>
-<blockquote>
-<div><p>Both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> cannot be used simultaneously.</p>
-</div></blockquote>
 <hr class="docutils" />
 </section>
 <section id="1aii.-Input.Window">
 <h4>1aii. <code class="docutils literal notranslate"><span class="pre">Input.Window</span></code><a class="headerlink" href="#1aii.-Input.Window" title="Permalink to this headline"></a></h4>
-<p>Used to slice and shift samples into many time series windows for walk-forward/ backward analysis. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Window</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to slice and shift samples into many time series windows for walk-forward/ backward analysis.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Window</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Input.Window(
     size_window
     , size_shift
@@ -546,7 +543,8 @@ from aiqc.mlops import *
 </section>
 <section id="1aiii.-Input.Encoder">
 <h4>1aiii. <code class="docutils literal notranslate"><span class="pre">Input.Encoder</span></code><a class="headerlink" href="#1aiii.-Input.Encoder" title="Permalink to this headline"></a></h4>
-<p>Used to numerically encode data. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to numerically encode data.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
     <span class="n">sklearn_preprocess</span>
     <span class="p">,</span> <span class="n">verbose</span>
@@ -556,15 +554,13 @@ from aiqc.mlops import *
 <span class="p">)</span>
 </pre></div>
 </div>
-<blockquote>
-<div><p>Both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> cannot be used simultaneously.</p>
-</div></blockquote>
 <hr class="docutils" />
 </section>
 </section>
 <section id="1b.-Target">
 <h3>1b. <code class="docutils literal notranslate"><span class="pre">Target</span></code><a class="headerlink" href="#1b.-Target" title="Permalink to this headline"></a></h3>
-<p>What the model is trying to predict. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Label</span></code> and all of its preprocessors in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>What the model is trying to predict.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Label</span></code> and all of its preprocessors in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="p">(</span>
     <span class="n">dataset</span>
     <span class="p">,</span> <span class="n">column</span>
@@ -575,10 +571,10 @@ from aiqc.mlops import *
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
+<col style="width: 16%" />
+<col style="width: 19%" />
+<col style="width: 8%" />
+<col style="width: 56%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -588,32 +584,33 @@ from aiqc.mlops import *
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><em>dataset</em></p></td>
-<td><p>type(Dataset)</p></td>
+<tr class="row-even"><td><p><strong>dataset</strong></p></td>
+<td><p>Dataset</p></td>
 <td><p>Required</p></td>
-<td><p>See <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Dataset</span></code> from <a class="reference external" href="api_low_level.html">Low-Level API</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><em>column</em></p></td>
-<td><p>list[str]</p></td>
+<tr class="row-odd"><td><p><strong>column</strong></p></td>
+<td><p>list(str)</p></td>
 <td><p>None</p></td>
-<td><p>The column from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> to use as the target.</p></td>
+<td><p>The column from the Dataset to use as the target.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>interpolater</em></p></td>
-<td><p>type(Target.Interpolater)</p></td>
+<tr class="row-even"><td><p><strong>interpolater</strong></p></td>
+<td><p>Target.Interpolater</p></td>
 <td><p>None</p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Target.Interpolater</span></code> below.</p></td>
+<td><p><a class="reference external" href="#1bi.-Target.Interpolater">Target.Interpolater</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><em>encoder</em></p></td>
-<td><p>type(Target.Encoder)</p></td>
+<tr class="row-odd"><td><p><strong>encoder</strong></p></td>
+<td><p>Target.Encoder</p></td>
 <td><p>None</p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Target.Encoder</span></code> below.</p></td>
+<td><p><a class="reference external" href="#1bii.-Target.Encoder">Target.Encoder</a></p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <section id="1bi.-Target.Interpolater">
 <h4>1bi. <code class="docutils literal notranslate"><span class="pre">Target.Interpolater</span></code><a class="headerlink" href="#1bi.-Target.Interpolater" title="Permalink to this headline"></a></h4>
-<p>Used to fill in the blanks in a sequence. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to fill in the blanks in a sequence.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="o">.</span><span class="n">Interpolater</span><span class="p">(</span>
     <span class="n">process_separately</span>
     <span class="p">,</span> <span class="n">interpolate_kwargs</span>
@@ -624,7 +621,8 @@ from aiqc.mlops import *
 </section>
 <section id="1bii.-Target.Encoder">
 <h4>1bii. <code class="docutils literal notranslate"><span class="pre">Target.Encoder</span></code><a class="headerlink" href="#1bii.-Target.Encoder" title="Permalink to this headline"></a></h4>
-<p>Used to numerically encode data. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to numerically encode data.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span>
     <span class="n">sklearn_preprocess</span>
 <span class="p">)</span>
@@ -635,7 +633,8 @@ from aiqc.mlops import *
 </section>
 <section id="1c.-Stratifier">
 <h3>1c. <code class="docutils literal notranslate"><span class="pre">Stratifier</span></code><a class="headerlink" href="#1c.-Stratifier" title="Permalink to this headline"></a></h3>
-<p>Used to slice the dataset into training, validation, test, and/or cross-validated subsets. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to slice the dataset into training, validation, test, and/or cross-validated subsets.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Stratifier</span><span class="p">(</span>
     <span class="n">size_test</span>
     <span class="p">,</span> <span class="n">size_validation</span>
@@ -649,7 +648,8 @@ from aiqc.mlops import *
 </section>
 <section id="2.-Experiment">
 <h2>2. <code class="docutils literal notranslate"><span class="pre">Experiment</span></code><a class="headerlink" href="#2.-Experiment" title="Permalink to this headline"></a></h2>
-<p>Used to declare variations of models that will be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
+<p>Used to declare variations of models that will be trained.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Experiment</span><span class="p">(</span>
     <span class="n">architecture</span>
     <span class="p">,</span> <span class="n">trainer</span>
@@ -658,10 +658,10 @@ from aiqc.mlops import *
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
-<col style="width: 27%" />
-<col style="width: 10%" />
-<col style="width: 42%" />
+<col style="width: 22%" />
+<col style="width: 17%" />
+<col style="width: 11%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -671,15 +671,15 @@ from aiqc.mlops import *
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><em>architecture</em></p></td>
-<td><p>type(Architecture)</p></td>
-<td><p>N/A</p></td>
-<td><p>See <code class="docutils literal notranslate"><span class="pre">Architecture</span></code> below.</p></td>
+<tr class="row-even"><td><p><strong>architecture</strong></p></td>
+<td><p>Architecture</p></td>
+<td><p>Required</p></td>
+<td><p><a class="reference external" href="#2a.-Architecture">Architecture</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><em>trainer</em></p></td>
-<td><p>type</p></td>
-<td><p>N/A</p></td>
-<td><p>Reference <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> below.</p></td>
+<tr class="row-odd"><td><p><strong>trainer</strong></p></td>
+<td><p>Trainer</p></td>
+<td><p>Required</p></td>
+<td><p><a class="reference external" href="#2b.-Trainer">Trainer</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -697,7 +697,8 @@ from aiqc.mlops import *
 <hr class="docutils" />
 <section id="2a.-Architecture">
 <h3>2a. <code class="docutils literal notranslate"><span class="pre">Architecture</span></code><a class="headerlink" href="#2a.-Architecture" title="Permalink to this headline"></a></h3>
-<p>The model and hyperparameters to be trained. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>, with the addition of <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code>.</p>
+<p>The model and hyperparameters to be trained.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>, with the addition of <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Architecture</span><span class="p">(</span>
     <span class="n">library</span>
     <span class="p">,</span> <span class="n">analysis_type</span>
@@ -714,7 +715,8 @@ from aiqc.mlops import *
 </section>
 <section id="2b.-Trainer">
 <h3>2b. <code class="docutils literal notranslate"><span class="pre">Trainer</span></code><a class="headerlink" href="#2b.-Trainer" title="Permalink to this headline"></a></h3>
-<p>The options used for training. This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>, with the addition of <code class="docutils literal notranslate"><span class="pre">pipeline</span></code>.</p>
+<p>The options used for training.</p>
+<p>This is a wrapper for <code class="docutils literal notranslate"><span class="pre">Queue</span></code> in the <a class="reference external" href="api_low_level.html">Low-Level API</a>, with the addition of <code class="docutils literal notranslate"><span class="pre">pipeline</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Trainer</span><span class="p">(</span>
     <span class="n">pipeline</span>
     <span class="p">,</span> <span class="n">repeat_count</span>
@@ -734,6 +736,7 @@ from aiqc.mlops import *
     <span class="n">predictor</span>
     <span class="p">,</span> <span class="n">input_datasets</span>
     <span class="p">,</span> <span class="n">label_dataset</span>
+    <span class="p">,</span> <span class="n">record_shifted</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -752,21 +755,26 @@ from aiqc.mlops import *
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><em>predictor</em></p></td>
-<td><p>type(Predictor)</p></td>
+<tr class="row-even"><td><p><strong>predictor</strong></p></td>
+<td><p>Predictor</p></td>
 <td><p>Required</p></td>
-<td><p>See <code class="docutils literal notranslate"><span class="pre">`Predictor</span></code> &lt;api_low_level.html&gt;`__.</p></td>
+<td><p><a class="reference external" href="api_low_level.html">Predictor</a> to use for inference</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>input_datasets</em></p></td>
-<td><p>list[type(Dataset)]</p></td>
+<tr class="row-odd"><td><p><strong>input_datasets</strong></p></td>
+<td><p>list(Dataset)</p></td>
 <td><p>Required</p></td>
-<td><p>New <code class="docutils literal notranslate"><span class="pre">`Datasets</span></code> &lt;api_low_level.html&gt;`__ to run inference on.</p></td>
+<td><p>New <a class="reference external" href="api_low_level.html">Datasets</a> to run inference on.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>target_dataset</em></p></td>
-<td><p>type(Target)</p></td>
+<tr class="row-even"><td><p><strong>target_dataset</strong></p></td>
+<td><p>Dataset</p></td>
 <td><p>None</p></td>
-<td><p>New <code class="docutils literal notranslate"><span class="pre">`Datasets</span></code> &lt;api_low_level.html&gt;`__ for scoring inference. Leave this blank for pure inference where no metrics will
-be calculared.</p></td>
+<td><p>New <a class="reference external" href="api_low_level.html">Datasets</a> for scoring inference. Leave this blank for pure inference where no metrics will be
+calculared.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>record_shifted</strong></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Set this to True for scoring during unsupervised time series inference</p></td>
 </tr>
 </tbody>
 </table>
