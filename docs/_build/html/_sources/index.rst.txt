@@ -13,9 +13,9 @@
   :caption: Documentation
   :hidden:
 
-  notebooks/visualization
   notebooks/api_high_level
   notebooks/api_low_level
+  notebooks/evaluation
   notebooks/datasets
 
 

@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta property="og:title" content="Install" />
+  <meta property="og:title" content="Evaluation" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/installation.html" />
+  <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/evaluation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="91d85adfdfd54a1bbd2ee1402b3595b2 TLDR:[ ]: pip install --upgrade pip pip install --upgrade wheel pip install --upgrade aiqc If that doesn’t work, read the rest of this notebook (e.g. supported Pyth..." />
+  <meta property="og:description" content="fd2fd5f914bc4751bda1cb37c3a5e954 Overview: As described in the Low-Level Docs, every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_typ..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Install &mdash; AIQC</title>
+  <title>Evaluation &mdash; AIQC</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
@@ -34,8 +34,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Dashboards" href="dashboard.html" />
-    <link rel="prev" title="Gallery" href="../pages/gallery.html" /> 
+    <link rel="next" title="Datasets" href="datasets.html" />
+    <link rel="prev" title="Low-Level API" href="api_low_level.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,37 +55,37 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Getting Started</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../pages/gallery.html">Gallery</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#TLDR">TLDR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Environment">Environment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Pickle-Disclaimer">Pickle Disclaimer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#TLDR">TLDR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Environment">Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Python-Version">Python Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Pickle-Disclaimer">Pickle Disclaimer</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Operating-System">Operating System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Plotting">Plotting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="installation.html#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Config-File">Config File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Location-Based-on-OS">Location Based on OS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a)-One-Liner">a) One-Liner</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#a)-One-Liner">a) One-Liner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#b)-Or-Line-by-Line">b) Or Line-by-Line</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#Troubleshooting">Troubleshooting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Reloading-the-Package">Reloading the Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Reloading-the-Package">Reloading the Package</a></li>
 </ul>
 </li>
 </ul>
@@ -102,7 +102,7 @@
 </li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api_high_level.html">High-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#Declarative">Declarative</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_high_level.html#1.-Pipeline">1. <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a><ul>
@@ -280,21 +280,21 @@
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Evaluation">Evaluation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evaluation.html#Overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation.html#Classification">Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#Queue-Visualization">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#Queue-Metrics">Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#Job-Visualization">Job Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#Job-Metrics">Job Metrics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Evaluation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Classification">Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Queue-Visualization">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Job-Visualization">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Job-Metrics">Job Metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation.html#Regression">Regression</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#id1">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#id2">Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#id3">Job Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evaluation.html#id4">Job Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Regression">Regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Job Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -350,9 +350,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Install</li>
+      <li>Evaluation</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/installation.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/notebooks/evaluation.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -630,343 +630,389 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Install">
-<h1>Install<a class="headerlink" href="#Install" title="Permalink to this headline"></a></h1>
-<p><img alt="91d85adfdfd54a1bbd2ee1402b3595b2" class="banner-photo" src="../_images/install.png" /></p>
-<section id="TLDR">
-<h2>TLDR<a class="headerlink" href="#TLDR" title="Permalink to this headline"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">wheel</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
-</pre></div>
-</div>
-</div>
-<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook. Be sure to read the plotting section below.</p>
-<hr class="docutils" />
-</section>
-<section id="Environment">
-<h2>Environment<a class="headerlink" href="#Environment" title="Permalink to this headline"></a></h2>
-<section id="Python-Version">
-<h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline"></a></h3>
-<p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was developed on Python 3.7.12 in order to ensure compatibility with Google Colab.</p>
-<p>We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing Python installations and virtualenvs.</p>
-<p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is in the root of the github.com/aiqc/aiqc repository.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">version</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&#39;3.7.12 (default, Dec 10 2021, 10:49:04) \n[Clang 13.0.0 (clang-1300.0.29.3)]&#39;
-</pre></div></div>
-</div>
-<section id="Pickle-Disclaimer">
-<h4>Pickle Disclaimer<a class="headerlink" href="#Pickle-Disclaimer" title="Permalink to this headline"></a></h4>
-<p>AIQC, much like PyTorch, relies heavily on <a class="reference external" href="https://docs.python.org/3/library/pickle.html">Pickle</a> for saving Python objects in its database. Therefore, as a caveat of Pickle, if you create objects in your <code class="docutils literal notranslate"><span class="pre">aiqc.sqlite</span></code> file using one version of Python and try to interact with it on a newer version of Python, then you may find that pickle is no longer able to deserialize the object. For this reason, <code class="docutils literal notranslate"><span class="pre">sys.version</span></code> and other helpful info about your OS/ Python version is stored in the
-<code class="docutils literal notranslate"><span class="pre">config.json</span></code> file at the time of creation.</p>
-</section>
-</section>
-<section id="Operating-System">
-<h3>Operating System<a class="headerlink" href="#Operating-System" title="Permalink to this headline"></a></h3>
-<p>AIQC was designed to be OS-agnostic. It has been tested on the following operating systems:</p>
+<section id="Evaluation">
+<h1>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h1>
+<p><img alt="fd2fd5f914bc4751bda1cb37c3a5e954" class="banner-photo" src="../_images/plots.png" /></p>
+<section id="Overview">
+<h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
+<p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
 <ul class="simple">
-<li><p>macOS 10.15 and 11.6.1</p></li>
-<li><p>Linux (Ubuntu, Alpine, RHEL).</p></li>
-<li><p>Windows 10 (and WSL).</p></li>
+<li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, although they go about producing these artifacts differently: e.g. ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots in AIQC yet. Note that unsupervised/ self-supervised models are also considered a regression.</p></li>
 </ul>
-<blockquote>
-<div><p>If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible.</p>
-</div></blockquote>
-</section>
-<section id="Optional---JupyterLab-IDE">
-<h3>Optional - JupyterLab IDE<a class="headerlink" href="#Optional---JupyterLab-IDE" title="Permalink to this headline"></a></h3>
-<p>AIQC runs anywhere Python runs. We just like Jupyter for interactive visualization and data transformation. FYI, <em>jupyterlab</em> is not an official dependency of the AIQC package.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">jupyterlab</span>
-</pre></div>
-</div>
-</div>
-<p>JupyterLab requires Node.js &gt;= 10. Once all extensions switch to JupyterLab 3.0 prebuilding, this will no longer be necessary.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">!</span>node -v
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-v14.7.0
-</pre></div></div>
-</div>
-</section>
-<section id="Plotting">
-<h3>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline"></a></h3>
-<p>AIQC uses Plotly for interactive charts.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">plotly</span>
-</pre></div>
-</div>
-</div>
-<section id="Optional---Plotly-in-JupyterLab">
-<h4>Optional - Plotly in JupyterLab<a class="headerlink" href="#Optional---Plotly-in-JupyterLab" title="Permalink to this headline"></a></h4>
-<p>This requires the following dependencies:</p>
+<p>In order to accomodate the <a class="reference external" href="dashboard.html">dashboards</a>, the following arguments were added:</p>
 <ul class="simple">
-<li><p>Python packages: [<code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code>, <code class="docutils literal notranslate"><span class="pre">plotly</span></code>]</p></li>
-<li><p>JupyterLab Extension: [<code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code>].</p></li>
-</ul>
-<blockquote>
-<div><p><a class="reference external" href="https://github.com/plotly/plotly.py#jupyterlab-support">https://github.com/plotly/plotly.py#jupyterlab-support</a></p>
-</div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipywidgets</span>
-</pre></div>
-</div>
-</div>
-<section id="New:-simplified,-pre-built-extension-for-plotly&gt;=5.0.0">
-<h5>New: simplified, pre-built extension for plotly&gt;=5.0.0<a class="headerlink" href="#New:-simplified,-pre-built-extension-for-plotly>=5.0.0" title="Permalink to this headline"></a></h5>
-<p>The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.</p>
-</section>
-<section id="Deprecated:-manually-building-extension-process-for-plotly&lt;=5.0.0">
-<h5><em>Deprecated:</em> manually building extension process for plotly&lt;=5.0.0<a class="headerlink" href="#Deprecated:-manually-building-extension-process-for-plotly<=5.0.0" title="Permalink to this headline"></a></h5>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Deprecated</span>
-<span class="c1">#!jupyter labextension install jupyterlab-plotly</span>
-<span class="c1">#!jupyter labextension check jupyterlab-plotly</span>
-<span class="c1">#!jupyter lab build</span>
-
-<span class="c1">#After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</span>
-</pre></div>
-</div>
-</div>
-</section>
-</section>
-</section>
-<section id="Optional---Swap-Space-for-Failover-Memory">
-<h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline"></a></h3>
-<p>On local machines, it is good practice to configure “swap space.” This way, if your processes run out of memory/ RAM, then the excess information will simply spill over onto the (potentially dynamically sized) swap partition of your hard drive, as opposed to causing an out-of-memory crash. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for usage with swap, but you could get by with NVMe/ SSD.</p>
-<hr class="docutils" />
-</section>
-</section>
-<section id="AIQC-Package">
-<h2>AIQC Package<a class="headerlink" href="#AIQC-Package" title="Permalink to this headline"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">wheel</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
-</pre></div>
-</div>
-</div>
-<p><strong>Troubleshooting</strong>:</p>
-<ul class="simple">
-<li><p>Be sure to include <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> when running the command above.</p>
-<ul>
-<li><p>This was a 2020 bug with PyPI itself.</p></li>
-</ul>
-</li>
-<li><p>Upgrade <code class="docutils literal notranslate"><span class="pre">pip</span></code> itself: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span></code></p></li>
-<li><p>Install<code class="docutils literal notranslate"><span class="pre">wheel</span></code> is recommended: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">wheel</span></code></p></li>
-<li><p>If you find yourself reinstalling unwanted packages from the cache, then use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">--no-cache-dir</span> <span class="pre">aiqc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> when <code class="docutils literal notranslate"><span class="pre">True</span></code>, performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of figs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p></li>
 </ul>
 <hr class="docutils" />
 </section>
-<section id="Config-File">
-<h2>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline"></a></h2>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Plotly</span></code> is used for interactive charts (hover, toggle, zoom). Reference the <a class="reference external" href="installation.html#Plotting">Installation</a> section for information about configuring Plotly. However, static images are used in this notebook due to lack of support for 3rd party JS in the documentation portal.</p>
+<p>We’ll use the <code class="docutils literal notranslate"><span class="pre">datum</span></code> and <code class="docutils literal notranslate"><span class="pre">tests</span></code> modules to rapidly generate a couple examples.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">setup</span>
-<span class="n">setup</span><span class="p">()</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">tests</span>
 </pre></div>
 </div>
 </div>
-<p><strong>UPDATE:</strong> <code class="docutils literal notranslate"><span class="pre">setup()</span></code> is now automatically ran when importing <code class="docutils literal notranslate"><span class="pre">orm</span></code>.</p>
-<p>This command only needs to be ran once. If you run it again, it skip the creation of any configuration folders and files that already exist.</p>
-<blockquote>
-<div><p>Although the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import the package, the AIQC developers make a concious choice of not running system commands without explicit user consent.</p>
-</div></blockquote>
-<p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
-<blockquote>
-<div><p>So you <strong>do not</strong> have to worry about anything like installing a database server, database client, database users, configuring ports, configuring passwords/ secrets/ environment variables, or starting and restopping the database. Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>. Glad we found this fantastic and simple alternative to SQLAlchemy.</p>
-</div></blockquote>
-<p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
+<hr class="docutils" />
+</section>
+<section id="Classification">
+<h2>Classification<a class="headerlink" href="#Classification" title="Permalink to this headline"></a></h2>
+<p>Let’s quickly generate a trained classification model to inspect.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">config</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">config</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+<span></span><span class="o">%%capture</span>
+<span class="n">queue_multiclass</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">tf_multi_tab</span><span class="o">.</span><span class="n">make_queue</span><span class="p">()</span>
+<span class="n">queue_multiclass</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;created_at&#39;: &#39;2022-03-02 10:57:12.603550&#39;,
- &#39;config_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/config.json&#39;,
- &#39;db_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3&#39;,
- &#39;sys.version&#39;: &#39;3.7.12 (default, Dec 10 2021, 10:49:04) \n[Clang 13.0.0 (clang-1300.0.29.3)]&#39;,
- &#39;platform.python_implementation()&#39;: &#39;CPython&#39;,
- &#39;sys.prefix&#39;: &#39;/Users/layne/.pyenv/versions/3.7.12/envs/aiqc_dev&#39;,
- &#39;os.name&#39;: &#39;posix&#39;,
- &#39;platform.version()&#39;: &#39;Darwin Kernel Version 20.6.0: Tue Oct 12 18:33:42 PDT 2021; root:xnu-7195.141.8~1/RELEASE_X86_64&#39;,
- &#39;platform.java_ver()&#39;: [&#39;&#39;, &#39;&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], [&#39;&#39;, &#39;&#39;, &#39;&#39;]],
- &#39;platform.win32_ver()&#39;: [&#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;],
- &#39;platform.libc_ver()&#39;: [&#39;&#39;, &#39;&#39;],
- &#39;platform.mac_ver()&#39;: [&#39;11.6.1&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], &#39;x86_64&#39;],
- &#39;aws_api_key&#39;: None}
-</pre></div></div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="Location-of-AIQC-Files">
-<h2>Location of AIQC Files<a class="headerlink" href="#Location-of-AIQC-Files" title="Permalink to this headline"></a></h2>
-<p>AIQC makes use of the Python package, <code class="docutils literal notranslate"><span class="pre">appdirs</span></code>, for an operating system (OS) agnostic location to store configuration and database files. This not only keeps your <code class="docutils literal notranslate"><span class="pre">$HOME</span></code> directory clean, but also helps prevent careless users from deleting your database.</p>
-<blockquote>
-<div><p>The installation process checks not only that the corresponding appdirs folder exists on your system but also that you have the permissions neceessary to read from and write to that location. If these conditions are not met, then you will be provided instructions during the installation about how to create the folder and/ or grant yourself the appropriate permissions.</p>
-</div></blockquote>
-<blockquote>
-<div><p>We have attempted to support both Windows (<code class="docutils literal notranslate"><span class="pre">icacls</span></code> permissions and backslashes <code class="docutils literal notranslate"><span class="pre">C:\\</span></code>) as well as POSIX including Mac and Linux including containers &amp; Google Colab (<code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">letters</span></code> permissions and slashes <code class="docutils literal notranslate"><span class="pre">/</span></code>). Note: due to variations in the ordering of appdirs author and app directories in different OS’, we do not make use of the appdirs <code class="docutils literal notranslate"><span class="pre">appauthor</span></code> directory, only the <code class="docutils literal notranslate"><span class="pre">appname</span></code> directory.</p>
-</div></blockquote>
-<section id="Location-Based-on-OS">
-<h3>Location Based on OS<a class="headerlink" href="#Location-Based-on-OS" title="Permalink to this headline"></a></h3>
-<p>Test it for yourself: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">appdirs;</span> <span class="pre">appdirs.user_data_dir('aiqc');</span></code></p>
-<ul class="simple">
-<li><p>Mac: <code class="docutils literal notranslate"><span class="pre">/Users/Username/Library/Application</span> <span class="pre">Support/aiqc</span></code></p></li>
-<li><p>Linux - Alpine and Ubuntu: <code class="docutils literal notranslate"><span class="pre">/root/.local/share/aiqc</span></code></p></li>
-<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">C:\Users\Username\AppData\Local\aiqc</span></code></p></li>
-</ul>
-<hr class="docutils" />
-</section>
-</section>
-<section id="Optional---Deleting-the-Database">
-<h2>Optional - Deleting the Database<a class="headerlink" href="#Optional---Deleting-the-Database" title="Permalink to this headline"></a></h2>
-<p>If, for whatever reason, you find that you need to destroy your SQLite database file and start from scratch, then you can do so without having to manually find and <code class="docutils literal notranslate"><span class="pre">rm</span></code> the database file. In order to reduce the chance of an accident, <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> by default.</p>
-<blockquote>
-<div><p>Bear in mind that if you are on either a server or shared OS, then this database may contain more than just your data.</p>
-</div></blockquote>
-<section id="a)-One-Liner">
-<h3>a) One-Liner<a class="headerlink" href="#a)-One-Liner" title="Permalink to this headline"></a></h3>
-<p>Both <code class="docutils literal notranslate"><span class="pre">confirm:bool=False</span></code> and <code class="docutils literal notranslate"><span class="pre">rebuild:bool=False</span></code>, so it only does what you command it to do.</p>
+<section id="Queue-Visualization">
+<h3>Queue Visualization<a class="headerlink" href="#Queue-Visualization" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plot_performance</span></code> aka the “boomerang chart” is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds.</p>
+<p>When evaluating a classification-based <code class="docutils literal notranslate"><span class="pre">Queue.analysis_type</span></code>, the following <code class="docutils literal notranslate"><span class="pre">score_type:str</span></code> are available: accuracy, f1, roc_auc, precision, and recall.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">create_db</span><span class="p">,</span> <span class="n">destroy_db</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
+    <span class="n">max_loss</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">score_type</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">min_score</span> <span class="o">=</span> <span class="mf">0.70</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=&gt; Success - deleted database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-=&gt; Success - created database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-💾  Success - created all database tables.  💾
-
-</pre></div></div>
-</div>
+<img alt="Classify Boomerang" src="../_images/classify_boomerang.png" />
 </section>
-<section id="b)-Or-Line-by-Line">
-<h3>b) Or Line-by-Line<a class="headerlink" href="#b)-Or-Line-by-Line" title="Permalink to this headline"></a></h3>
+<section id="Queue-Metrics">
+<h3>Queue Metrics<a class="headerlink" href="#Queue-Metrics" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">selected_metrics:list</span></code> - If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort_by:str</span></code> - You can sort the dataframe by any column name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ascending:bool=False</span></code> - Descending if False.</p></li>
+</ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_df</span><span class="p">(</span>
+    <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;predictor_id&#39;</span>
+    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-=&gt; Success - deleted database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-</pre></div></div>
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hyperparamcombo_id</th>
+      <th>job_id</th>
+      <th>predictor_id</th>
+      <th>split</th>
+      <th>accuracy</th>
+      <th>f1</th>
+      <th>loss</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>roc_auc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>17</td>
+      <td>23</td>
+      <td>23</td>
+      <td>train</td>
+      <td>0.912</td>
+      <td>0.911</td>
+      <td>0.271</td>
+      <td>0.917</td>
+      <td>0.912</td>
+      <td>0.983</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>17</td>
+      <td>23</td>
+      <td>23</td>
+      <td>validation</td>
+      <td>0.810</td>
+      <td>0.806</td>
+      <td>0.317</td>
+      <td>0.822</td>
+      <td>0.810</td>
+      <td>0.966</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>17</td>
+      <td>23</td>
+      <td>23</td>
+      <td>test</td>
+      <td>0.963</td>
+      <td>0.963</td>
+      <td>0.240</td>
+      <td>0.967</td>
+      <td>0.963</td>
+      <td>1.000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 </div>
+<p>These are also aggregated by metric across all splits/folds.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">create_db</span><span class="p">()</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">(</span>
+    <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">,</span> <span class="n">selected_stats</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;predictor_id&#39;</span>
+    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hyperparamcombo_id</th>
+      <th>job_id</th>
+      <th>predictor_id</th>
+      <th>metric</th>
+      <th>maximum</th>
+      <th>minimum</th>
+      <th>pstdev</th>
+      <th>median</th>
+      <th>mean</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>17</td>
+      <td>23</td>
+      <td>25</td>
+      <td>accuracy</td>
+      <td>0.963</td>
+      <td>0.810</td>
+      <td>0.063608</td>
+      <td>0.912</td>
+      <td>0.895000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>17</td>
+      <td>23</td>
+      <td>25</td>
+      <td>f1</td>
+      <td>0.963</td>
+      <td>0.806</td>
+      <td>0.065301</td>
+      <td>0.911</td>
+      <td>0.893333</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>17</td>
+      <td>23</td>
+      <td>25</td>
+      <td>loss</td>
+      <td>0.317</td>
+      <td>0.240</td>
+      <td>0.031633</td>
+      <td>0.271</td>
+      <td>0.276000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>17</td>
+      <td>23</td>
+      <td>25</td>
+      <td>precision</td>
+      <td>0.967</td>
+      <td>0.822</td>
+      <td>0.060139</td>
+      <td>0.917</td>
+      <td>0.902000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>17</td>
+      <td>23</td>
+      <td>25</td>
+      <td>recall</td>
+      <td>0.963</td>
+      <td>0.810</td>
+      <td>0.063608</td>
+      <td>0.912</td>
+      <td>0.895000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>17</td>
+      <td>23</td>
+      <td>25</td>
+      <td>roc_auc</td>
+      <td>1.000</td>
+      <td>0.966</td>
+      <td>0.013880</td>
+      <td>0.983</td>
+      <td>0.983000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Job-Visualization">
+<h3>Job Visualization<a class="headerlink" href="#Job-Visualization" title="Permalink to this headline"></a></h3>
+<p>A learning curve will be generated for each train-evaluation pair of metrics in the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> dictionary. Reference the <a class="reference external" href="api_low_level.html#Customizable-history">low-level API</a> for more details.</p>
+<p>Loss values in the first few epochs can often be extremely high before they plummet and become more gradual. This really stretches out the graph and makes it hard to see if the evaluation set is diverging or not. The <code class="docutils literal notranslate"><span class="pre">skip_head:bool</span></code> parameter skips displaying the first 15% of epochs so that figure is easier to interpret.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">skip_head</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<img alt="Classify Learn" src="../_images/classify_learn.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">top_n</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<img alt="Classify Features" src="../_images/classify_features.png" />
+<p>These classification metrics are preformatted for plotting.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recall_curve&#39;])
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="Classify ROC" src="../_images/classify_roc.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="Plot Confusion" src="../_images/classify_confusion.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="Precision Recall" src="../_images/classify_pr.png" />
+</section>
+<section id="Job-Metrics">
+<h3>Job Metrics<a class="headerlink" href="#Job-Metrics" title="Permalink to this headline"></a></h3>
+<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics by split/fold:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="k">as</span> <span class="n">p</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -975,28 +1021,173 @@ v14.7.0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
-=&gt; Success - created database file at path:
-/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3
-
-
-💾  Success - created all database tables.  💾
-
+{&#39;test&#39;: {&#39;accuracy&#39;: 0.963,
+          &#39;f1&#39;: 0.963,
+          &#39;loss&#39;: 0.24,
+          &#39;precision&#39;: 0.967,
+          &#39;recall&#39;: 0.963,
+          &#39;roc_auc&#39;: 1.0},
+ &#39;train&#39;: {&#39;accuracy&#39;: 0.912,
+           &#39;f1&#39;: 0.911,
+           &#39;loss&#39;: 0.271,
+           &#39;precision&#39;: 0.917,
+           &#39;recall&#39;: 0.912,
+           &#39;roc_auc&#39;: 0.983},
+ &#39;validation&#39;: {&#39;accuracy&#39;: 0.81,
+                &#39;f1&#39;: 0.806,
+                &#39;loss&#39;: 0.317,
+                &#39;precision&#39;: 0.822,
+                &#39;recall&#39;: 0.81,
+                &#39;roc_auc&#39;: 0.966}}
+</pre></div></div>
+</div>
+<p>It also contains per-epoch <code class="docutils literal notranslate"><span class="pre">History</span></code> metrics calculated during model training.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accuracy&#39;])
 </pre></div></div>
 </div>
 <hr class="docutils" />
 </section>
 </section>
-<section id="Troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#Troubleshooting" title="Permalink to this headline"></a></h2>
-<section id="Reloading-the-Package">
-<h3>Reloading the Package<a class="headerlink" href="#Reloading-the-Package" title="Permalink to this headline"></a></h3>
-<p>After CRUD’ing the config files, AIQC needs the be reimported in order to detect those changes. This can be done in one of three ways:</p>
-<ul class="simple">
-<li><p>If everything goes smoothly, it should automatically happen behind the scenes: <code class="docutils literal notranslate"><span class="pre">reload(sys.modules['aiqc'])</span></code>.</p></li>
-<li><p>Manually by the user: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">importlib</span> <span class="pre">import</span> <span class="pre">reload;</span> <span class="pre">reload(aiqc)</span></code>.</p></li>
-<li><p>Manually restarting your Python kernel/ session and <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">aiqc</span></code>.</p></li>
-</ul>
+<section id="Regression">
+<h2>Regression<a class="headerlink" href="#Regression" title="Permalink to this headline"></a></h2>
+<p>Let’s quickly generate a trained quantification model to inspect.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%%capture</span>
+<span class="n">queue_regression</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">tf_reg_tab</span><span class="o">.</span><span class="n">make_queue</span><span class="p">()</span>
+<span class="n">queue_regression</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<section id="id1">
+<h3>Queue Visualization<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p>When evaluating a regression-based <code class="docutils literal notranslate"><span class="pre">Queue.analysis_type</span></code>, the following <code class="docutils literal notranslate"><span class="pre">score_type:str</span></code> are available: r2, mse, and explained_variance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
+    <span class="n">max_loss</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">score_type</span><span class="o">=</span><span class="s1">&#39;r2&#39;</span><span class="p">,</span> <span class="n">min_score</span><span class="o">=</span><span class="mf">0.65</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<img alt="Regression Boomerang" src="../_images/regression_boomerang.png" />
+</section>
+<section id="id2">
+<h3>Queue Metrics<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_df</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>These are also aggregated by metric across all splits/folds.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h3>Job Visualization<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span><span class="n">skip_head</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<img alt="Regression Learn" src="../_images/regression_learn.png" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">top_n</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<img alt="Regression Features" src="../_images/regression_features.png" />
+</section>
+<section id="id4">
+<h3>Job Metrics<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+<p>Each training <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> contains the following metrics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span><span class="p">(</span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;test&#39;: {&#39;explained_variance&#39;: 0.048,
+          &#39;loss&#39;: 0.754,
+          &#39;mse&#39;: 1.045,
+          &#39;r2&#39;: -0.045},
+ &#39;train&#39;: {&#39;explained_variance&#39;: 0.036,
+           &#39;loss&#39;: 0.733,
+           &#39;mse&#39;: 0.971,
+           &#39;r2&#39;: 0.029},
+ &#39;validation&#39;: {&#39;explained_variance&#39;: 0.048,
+                &#39;loss&#39;: 0.678,
+                &#39;mse&#39;: 0.822,
+                &#39;r2&#39;: 0.043}}
+</pre></div></div>
+</div>
+<p>It also contains per-epoch metrics calculated during model training.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;loss&#39;, &#39;mean_squared_error&#39;, &#39;val_loss&#39;, &#39;val_mean_squared_error&#39;])
+</pre></div></div>
+</div>
 </section>
 </section>
 </section>

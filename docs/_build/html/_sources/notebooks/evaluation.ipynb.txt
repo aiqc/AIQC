@@ -1,0 +1,911 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Evaluation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<img src=\"../_static/images/banner/plots.png\" class=\"banner-photo\"/>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Overview"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As described in the [Low-Level Docs](api_low_level.html#10.-Assess-the-Results.), every training `Job` automatically generates metrics when evaluated against each split/ fold. \n",
+    "\n",
+    "The `Algorithm.analysis_type` determines which metrics and plots are prepared:\n",
+    "\n",
+    "* Although `'classification_multi'` and `'classification_binary'` share the same metrics and plots, although they go about producing these artifacts differently: e.g. ROC curves `roc_multi_class=None` vs `roc_multi_class='ovr'`.\n",
+    "\n",
+    "* `'regression'`, unlike the classification analyses, does not have an 'accuracy' metric, so we substitute 'r2', R^2 (coefficient of determination, for it. There are no regression-specific plots in AIQC yet. Note that unsupervised/ self-supervised models are also considered a regression."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In order to accomodate the [dashboards](dashboard.html), the following arguments were added:\n",
+    "\n",
+    "- `call_display:bool=True` when `True`, performs `fig.display()`. Whereas when `False`, it returns the raw `fig` object. The learning curve, feature importance, and confusion matrix functions return a list of figs.\n",
+    "\n",
+    "- `height:int=None` pixel-based adjustment for boomerang chart and feature importance."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Prerequisites"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`Plotly` is used for interactive charts (hover, toggle, zoom). Reference the [Installation](installation.html#Plotting) section for information about configuring Plotly. However, static images are used in this notebook due to lack of support for 3rd party JS in the documentation portal."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We'll use the `datum` and `tests` modules to rapidly generate a couple examples."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from aiqc import datum\n",
+    "from aiqc import tests"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Classification"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Let's quickly generate a trained classification model to inspect."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "%%capture\n",
+    "queue_multiclass = tests.tf_multi_tab.make_queue()\n",
+    "queue_multiclass.run_jobs()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Queue Visualization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`plot_performance` aka the \"boomerang chart\" is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "When evaluating a classification-based `Queue.analysis_type`, the following `score_type:str` are available: \taccuracy, f1, roc_auc, precision, and recall."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_multiclass.plot_performance(\n",
+    "    max_loss = 1.5, score_type='accuracy', min_score = 0.70\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Classify Boomerang](../_static/images/visualization/classify_boomerang.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Queue Metrics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "* `selected_metrics:list` - If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.\n",
+    "* `sort_by:str` - You can sort the dataframe by any column name.\n",
+    "* `ascending:bool=False` - Descending if False."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>hyperparamcombo_id</th>\n",
+       "      <th>job_id</th>\n",
+       "      <th>predictor_id</th>\n",
+       "      <th>split</th>\n",
+       "      <th>accuracy</th>\n",
+       "      <th>f1</th>\n",
+       "      <th>loss</th>\n",
+       "      <th>precision</th>\n",
+       "      <th>recall</th>\n",
+       "      <th>roc_auc</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>23</td>\n",
+       "      <td>train</td>\n",
+       "      <td>0.912</td>\n",
+       "      <td>0.911</td>\n",
+       "      <td>0.271</td>\n",
+       "      <td>0.917</td>\n",
+       "      <td>0.912</td>\n",
+       "      <td>0.983</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>23</td>\n",
+       "      <td>validation</td>\n",
+       "      <td>0.810</td>\n",
+       "      <td>0.806</td>\n",
+       "      <td>0.317</td>\n",
+       "      <td>0.822</td>\n",
+       "      <td>0.810</td>\n",
+       "      <td>0.966</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>23</td>\n",
+       "      <td>test</td>\n",
+       "      <td>0.963</td>\n",
+       "      <td>0.963</td>\n",
+       "      <td>0.240</td>\n",
+       "      <td>0.967</td>\n",
+       "      <td>0.963</td>\n",
+       "      <td>1.000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   hyperparamcombo_id  job_id  predictor_id       split  accuracy     f1  \\\n",
+       "0                  17      23            23       train     0.912  0.911   \n",
+       "1                  17      23            23  validation     0.810  0.806   \n",
+       "2                  17      23            23        test     0.963  0.963   \n",
+       "\n",
+       "    loss  precision  recall  roc_auc  \n",
+       "0  0.271      0.917   0.912    0.983  \n",
+       "1  0.317      0.822   0.810    0.966  \n",
+       "2  0.240      0.967   0.963    1.000  "
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "queue_multiclass.metrics_df(\n",
+    "    selected_metrics=None\n",
+    "    , sort_by='predictor_id'\n",
+    "\t, ascending=True\n",
+    ").head(6)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "These are also aggregated by metric across all splits/folds."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>hyperparamcombo_id</th>\n",
+       "      <th>job_id</th>\n",
+       "      <th>predictor_id</th>\n",
+       "      <th>metric</th>\n",
+       "      <th>maximum</th>\n",
+       "      <th>minimum</th>\n",
+       "      <th>pstdev</th>\n",
+       "      <th>median</th>\n",
+       "      <th>mean</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>25</td>\n",
+       "      <td>accuracy</td>\n",
+       "      <td>0.963</td>\n",
+       "      <td>0.810</td>\n",
+       "      <td>0.063608</td>\n",
+       "      <td>0.912</td>\n",
+       "      <td>0.895000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>25</td>\n",
+       "      <td>f1</td>\n",
+       "      <td>0.963</td>\n",
+       "      <td>0.806</td>\n",
+       "      <td>0.065301</td>\n",
+       "      <td>0.911</td>\n",
+       "      <td>0.893333</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>25</td>\n",
+       "      <td>loss</td>\n",
+       "      <td>0.317</td>\n",
+       "      <td>0.240</td>\n",
+       "      <td>0.031633</td>\n",
+       "      <td>0.271</td>\n",
+       "      <td>0.276000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>25</td>\n",
+       "      <td>precision</td>\n",
+       "      <td>0.967</td>\n",
+       "      <td>0.822</td>\n",
+       "      <td>0.060139</td>\n",
+       "      <td>0.917</td>\n",
+       "      <td>0.902000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>25</td>\n",
+       "      <td>recall</td>\n",
+       "      <td>0.963</td>\n",
+       "      <td>0.810</td>\n",
+       "      <td>0.063608</td>\n",
+       "      <td>0.912</td>\n",
+       "      <td>0.895000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>17</td>\n",
+       "      <td>23</td>\n",
+       "      <td>25</td>\n",
+       "      <td>roc_auc</td>\n",
+       "      <td>1.000</td>\n",
+       "      <td>0.966</td>\n",
+       "      <td>0.013880</td>\n",
+       "      <td>0.983</td>\n",
+       "      <td>0.983000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   hyperparamcombo_id  job_id  predictor_id     metric  maximum  minimum  \\\n",
+       "0                  17      23            25   accuracy    0.963    0.810   \n",
+       "1                  17      23            25         f1    0.963    0.806   \n",
+       "2                  17      23            25       loss    0.317    0.240   \n",
+       "3                  17      23            25  precision    0.967    0.822   \n",
+       "4                  17      23            25     recall    0.963    0.810   \n",
+       "5                  17      23            25    roc_auc    1.000    0.966   \n",
+       "\n",
+       "     pstdev  median      mean  \n",
+       "0  0.063608   0.912  0.895000  \n",
+       "1  0.065301   0.911  0.893333  \n",
+       "2  0.031633   0.271  0.276000  \n",
+       "3  0.060139   0.917  0.902000  \n",
+       "4  0.063608   0.912  0.895000  \n",
+       "5  0.013880   0.983  0.983000  "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "queue_multiclass.metrics_aggregate_to_pandas(\n",
+    "    selected_metrics=None\n",
+    "    , selected_stats=None\n",
+    "    , sort_by='predictor_id'\n",
+    "    , ascending=True\n",
+    ").head(12)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Job Visualization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "A learning curve will be generated for each train-evaluation pair of metrics in the `Predictor.history` dictionary. Reference the [low-level API](api_low_level.html#Customizable-history) for more details."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Loss values in the first few epochs can often be extremely high before they plummet and become more gradual. This really stretches out the graph and makes it hard to see if the evaluation set is diverging or not. The `skip_head:bool` parameter skips displaying the first 15% of epochs so that figure is easier to interpret."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].plot_learning_curve(skip_head=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Classify Learn](../_static/images/visualization/classify_learn.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].predictions[0].plot_feature_importance(top_n=4)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Classify Features](../_static/images/visualization/classify_features.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "These classification metrics are preformatted for plotting."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['confusion_matrix', 'roc_curve', 'precision_recall_curve'])"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].predictions[0].plot_data['test'].keys()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].predictions[0].plot_roc_curve()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Classify ROC](../_static/images/visualization/classify_roc.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].predictions[0].plot_confusion_matrix()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Plot Confusion](../_static/images/visualization/classify_confusion.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].predictions[0].plot_precision_recall()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Precision Recall](../_static/images/visualization/classify_pr.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "### Job Metrics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Each training `Prediction` contains the following metrics by split/fold:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from pprint import pprint as p"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'test': {'accuracy': 0.963,\n",
+      "          'f1': 0.963,\n",
+      "          'loss': 0.24,\n",
+      "          'precision': 0.967,\n",
+      "          'recall': 0.963,\n",
+      "          'roc_auc': 1.0},\n",
+      " 'train': {'accuracy': 0.912,\n",
+      "           'f1': 0.911,\n",
+      "           'loss': 0.271,\n",
+      "           'precision': 0.917,\n",
+      "           'recall': 0.912,\n",
+      "           'roc_auc': 0.983},\n",
+      " 'validation': {'accuracy': 0.81,\n",
+      "                'f1': 0.806,\n",
+      "                'loss': 0.317,\n",
+      "                'precision': 0.822,\n",
+      "                'recall': 0.81,\n",
+      "                'roc_auc': 0.966}}\n"
+     ]
+    }
+   ],
+   "source": [
+    "p(queue_multiclass.jobs[0].predictors[0].predictions[0].metrics)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It also contains per-epoch `History` metrics calculated during model training."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "queue_multiclass.jobs[0].predictors[0].history.keys()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Regression"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Let's quickly generate a trained quantification model to inspect."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "%%capture\n",
+    "queue_regression = tests.tf_reg_tab.make_queue()\n",
+    "queue_regression.run_jobs()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "### Queue Visualization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "When evaluating a regression-based `Queue.analysis_type`, the following `score_type:str` are available: r2, mse, and explained_variance."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "queue_regression.plot_performance(\n",
+    "    max_loss=1.5, score_type='r2', min_score=0.65\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Regression Boomerang](../_static/images/visualization/regression_boomerang.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Queue Metrics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_regression.metrics_df().head(9)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "These are also aggregated by metric across all splits/folds."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "queue_regression.metrics_aggregate_to_pandas().tail(12)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Job Visualization"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_regression.jobs[0].predictors[0].plot_learning_curve(skip_head=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Regression Learn](../_static/images/visualization/regression_learn.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "queue_regression.jobs[0].predictors[0].predictions[0].plot_feature_importance(top_n=12)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Regression Features](../_static/images/visualization/regression_features.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "### Job Metrics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Each training `Prediction` contains the following metrics."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'test': {'explained_variance': 0.048,\n",
+      "          'loss': 0.754,\n",
+      "          'mse': 1.045,\n",
+      "          'r2': -0.045},\n",
+      " 'train': {'explained_variance': 0.036,\n",
+      "           'loss': 0.733,\n",
+      "           'mse': 0.971,\n",
+      "           'r2': 0.029},\n",
+      " 'validation': {'explained_variance': 0.048,\n",
+      "                'loss': 0.678,\n",
+      "                'mse': 0.822,\n",
+      "                'r2': 0.043}}\n"
+     ]
+    }
+   ],
+   "source": [
+    "p(queue_regression.jobs[0].predictors[0].predictions[0].metrics)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It also contains per-epoch metrics calculated during model training."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['loss', 'mean_squared_error', 'val_loss', 'val_mean_squared_error'])"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "queue_regression.jobs[0].predictors[0].history.keys()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

@@ -2562,7 +2562,8 @@ class LabelInterpolater(BaseModel):
             df = label.to_df()
             run_interpolate(dataframe=df, interpolate_kwargs=interpolate_kwargs)
         except:
-            raise Exception("\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n")
+            msg = "\nYikes - `pandas.DataFrame.interpolate(**interpolate_kwargs)` failed.\n"
+            raise Exception(msg)
 
         lp = LabelInterpolater.create(
             process_separately = process_separately
@@ -2748,7 +2749,6 @@ class LabelCoder(BaseModel):
     sklearn_preprocess = PickleField()
     matching_columns = JSONField() # kinda unecessary, but maybe multi-label future.
     encoding_dimension = CharField()
-    fits = JSONField()
 
     label = ForeignKeyField(Label, backref='labelcoders')
 
@@ -2800,7 +2800,6 @@ class LabelCoder(BaseModel):
             , matching_columns = label.columns
             , is_categorical = is_categorical
             , label = label
-            , fits = []
         )
         return lc
 
@@ -2822,7 +2821,6 @@ class FeatureCoder(BaseModel):
     encoding_dimension = CharField()
     only_fit_train = BooleanField()
     is_categorical = BooleanField()
-    fits = JSONField()
 
     feature = ForeignKeyField(Feature, backref='featurecoders')
 
@@ -2932,14 +2930,13 @@ class FeatureCoder(BaseModel):
             , original_filter = original_filter
             , feature = feature
             , encoding_dimension = encoding_dimension
-            , fits = []
         )
         return featurecoder
 
 
 class FeatureShaper(BaseModel):
     reshape_indices = PickleField()#tuple has no json equivalent
-    column_position = IntegerField()#the dimension used for columns aka width. etymologically, dimensions aren't zero-based.
+    column_position = IntegerField()
     feature = ForeignKeyField(Feature, backref='featureshapers')
 
     def from_feature(feature_id:int, reshape_indices:tuple):
@@ -2990,16 +2987,16 @@ class Algorithm(BaseModel):
     https://github.com/coleifer/peewee/issues/2385
     """
     library = CharField()
-    analysis_type = CharField()#classification_multi, classification_binary, regression, clustering.
+    analysis_type = CharField()#classification_multi, classification_binary, regression
     
-    fn_build = BlobField()
-    fn_lose = BlobField() # null? do unsupervised algs have loss?
+    fn_build = BlobField()#dill, not pickle
+    fn_lose = BlobField()
     fn_optimize = BlobField()
     fn_train = BlobField()
     fn_predict = BlobField()
 
 
-    def make(###
+    def make(
         library:str
         , analysis_type:str
         , fn_build:object
@@ -3078,7 +3075,6 @@ class Hyperparamset(BaseModel):
     - On setting kwargs with `**` and a dict: stackoverflow.com/a/29028601/5739514
     """
     hyperparamcombo_count = IntegerField()
-    #strategy = CharField() # set to all by default #all/ random. this would generate a different dict with less params to try that should be persisted for transparency.
     hyperparameters = JSONField()
     search_count = IntegerField(null=True)
     search_percent = FloatField(null=True)
@@ -3162,7 +3158,6 @@ class Hyperparamset(BaseModel):
 
 class Hyperparamcombo(BaseModel):
     combination_index = IntegerField()
-    favorite = BooleanField()
     hyperparameters = JSONField()
 
     hyperparamset = ForeignKeyField(Hyperparamset, backref='hyperparamcombos')
@@ -3186,7 +3181,7 @@ class Hyperparamcombo(BaseModel):
 
 class Queue(BaseModel):
     repeat_count = IntegerField()
-    run_count = IntegerField()
+    total_runs = IntegerField()
     permute_count = IntegerField()
     runs_completed = IntegerField()
 
@@ -3331,14 +3326,14 @@ class Queue(BaseModel):
             hyperparamset = None
 
         # The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
-        run_count = len(combos) * len(folds) * repeat_count
+        total_runs = len(combos) * len(folds) * repeat_count
 
         # Handles when overrides default to be None
         if (permute_count is None):
             permute_count = 0
 
         queue = Queue.create(
-            run_count        = run_count
+            total_runs        = total_runs
             , repeat_count   = repeat_count
             , algorithm      = algorithm
             , splitset       = splitset

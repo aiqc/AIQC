@@ -101,25 +101,6 @@
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization &amp; Metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../visualization.html#Overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../visualization.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../visualization.html#Classification">Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#Queue-Visualization">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#Queue-Metrics">Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#Job-Visualization">Job Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#Job-Metrics">Job Metrics</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../visualization.html#Regression">Regression</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#id1">Queue Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#id2">Queue Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#id3">Job Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../visualization.html#id4">Job Metrics</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../../api_high_level.html">High-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api_high_level.html#Declarative">Declarative</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_high_level.html#1.-Pipeline">1. <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a><ul>
@@ -145,10 +126,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api_high_level.html#3.-Inference">3. <code class="docutils literal notranslate"><span class="pre">Inference</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_low_level.html">Low-Level API [under construction]</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_low_level.html">Low-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#1.-Dataset">1. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#1a.-Register">1a. Register</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#1.-Dataset">1. Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#1a.-Register">1a. Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Dataset.Tabular.from_df()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_df()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Dataset.Tabular.from_path()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path()</span></code></a></li>
@@ -171,95 +152,149 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Dataset.get_dtypes()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#1c.-Attributes">1c. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#2.-Feature">2. <code class="docutils literal notranslate"><span class="pre">Feature</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#2.-Feature">2. Feature</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#2a.-Create">2a. Create</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Feature.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#2b.-Fetch">2b. Fetch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#2c.-Attributes">2c. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#3.-Label">3. <code class="docutils literal notranslate"><span class="pre">Label</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#3.-Label">3. Label</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#3a.-Create">3a. Create</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Label.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#3b.-Fetch">3b. Fetch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#3c.-Attributes">3c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#4.-Interpolate">4. Interpolate</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#4a.-LabelInterpolater">4a. <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-LabelInterpolater.from_label()">└── <code class="docutils literal notranslate"><span class="pre">LabelInterpolater.from_label()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#4ai.-Create">4ai. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#4aii.-Attributes">4aii. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#4b.-FeatureInterpolater">4b. <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-FeatureInterpolater.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater.from_feature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#4bi.-Create">4bi. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#4bii.-Attributes">4bii. Attributes</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#5.-Encode-Features-&amp;-Labels">5. Encode Features &amp; Labels</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#5.-Encode">5. Encode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#5a.-LabelCoder">5a. <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#5ai.-Create">5ai. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#5aii.-Attributes">5aii. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#b)-Encode-Features-sequentially-with-FeatureCoders.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">FeatureCoders</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Filtering-feature-columns">Filtering feature columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#5b.-FeatureCoder">5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#5bi.-Create">5bi. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-FeatureCoder.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#5bii.-Attributes">5bii. Attributes</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#6.-Reshape-Features">6. Reshape Features</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#ORM">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#Reshaping-by-Index">Reshaping by Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#Reshaping-Explicitly">Reshaping Explicitly</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#6.-Shape">6. Shape</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#6a.-Strategies">6a. Strategies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Reshaping-by-Index">Reshaping by Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Reshaping-Explicitly">Reshaping Explicitly</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#7.-Window-Features">7. Window Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#6b.-Create">6b. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-FeatureShaper.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#6c.-Attributes">6c. Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#7.-Window">7. Window</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#7a.-Create">7a. Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#7b.-Attributes">7b. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#8.-Splitset">8. <code class="docutils literal notranslate"><span class="pre">Splitset</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#8.-Splitset">8. Splitset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#8a.-Create">8a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#8b.-Cross-Validation">8b. Cross-Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#8c.-Attributes">8c. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#7.-Defining-Architectures-&amp;-Hyperparameters.">7. Defining Architectures &amp; Hyperparameters.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Model-Definition">Model Definition</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#9.-Algorithm">9. Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#9a.-Create">9a. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Algorithm.make()">└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#9b.-PyTorch-fit">9b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#9b.-History-Metrics">9b. History Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#9c.-TensorFlow-Early-Stopping">9c. TensorFlow Early Stopping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#9d.-Attributes">9d. Attributes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#10.-Hyperparameters">10. Hyperparameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#10a.-Philosophy">10a. Philosophy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#10b.-Create">10b. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Hyperparamset.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#8.-Queue-of-training-Jobs.">8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#10c.-Attributes">10c. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#11.-Queue">11. Queue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#11a.-Create">11a. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Queue.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#11b.-Methods">11b. Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Queue.run_jobs()">└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#11c.-Attributes">11c. Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#9.-Metrics-&amp;-Visualization">9. Metrics &amp; Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#12.-Job">12. Job</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#12a.-Methods">12a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#12b.-Attributes">12b. Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13b.-Attributes">13b. Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#14.-Prediction">14. Prediction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#14a.-Attributes">14a. Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#Evaluation">Evaluation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../evaluation.html">Evaluation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../evaluation.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../evaluation.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../evaluation.html#Classification">Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#Queue-Visualization">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#Queue-Metrics">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#Job-Visualization">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#Job-Metrics">Job Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../evaluation.html#Regression">Regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#id1">Queue Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#id2">Queue Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#id3">Job Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../evaluation.html#id4">Job Metrics</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a><ul>
