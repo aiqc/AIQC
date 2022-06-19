@@ -134,3 +134,26 @@ if (os.name != 'nt'):
 			if (j['predictor_id'] is None):
 				Job.run(id=j['job_id'], verbose=verbose, repeat_index=j['repeat_index'])
 	"""
+
+
+
+
+#### ii) DEPRECATED - `queue.run_jobs(in_background=True)`.
+
+*Support for background processing has not been restored after decoupling the preprocessing pipelines from the Queue/Job logic.*
+
+* The Jobs loop is executed on a separate, parallel `multiprocessing.Process`
+
+* Stop the Jobs with `queue.stop_jobs()` (also deprecated), which kills the parallel *Process* unless it already failed.
+
+* The benefit is that you can continue to code while your models are trained. There is no performance boost.
+
+* On Mac and Linux (Unix), `'fork'` multiprocessing is used (`force=True`), which allows us to display the progress bar. FYI, even in 'fork' mode, Python multiprocessing is much more fragile in Python 3.8, which seems to be caused by how pickling is handled in passing variables to the child process.
+
+* On Windows, `'spawn'` multiprocessing is used, which requires polling:
+
+  * `queue.poll_statuses()`
+  
+  * `queue.poll_progress(raw:bool=False, loop:bool=False, loop_delay:int=3)` where `raw=True` is just a float, `loop=True` won't stop checking jobs until they are all complete, and `loop_delay=3` checks the progress every 3 seconds. 
+  
+* Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.

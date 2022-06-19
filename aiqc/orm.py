@@ -2651,7 +2651,7 @@ class FeatureInterpolater(BaseModel):
         if (dtypes is not None):
             for typ in dtypes:
                 if (not np.issubdtype(typ, np.floating)):
-                    msg = f"\nYikes - All `dtypes` must match `np.issubdtype(dtype, np.floating`.\nYour dtype: <{typ}>"
+                    msg = f"\nYikes - All `dtypes` must match `np.issubdtype(dtype, np.floating)`.\nYour dtype: <{typ}>"
                     raise Exception(msg)
         if (columns is not None):
             feature_dtypes = feature.get_dtypes()
@@ -2999,7 +2999,7 @@ class Algorithm(BaseModel):
     fn_predict = BlobField()
 
 
-    def make(
+    def make(###
         library:str
         , analysis_type:str
         , fn_build:object
@@ -3089,7 +3089,6 @@ class Hyperparamset(BaseModel):
     def from_algorithm(
         algorithm_id:int
         , hyperparameters:dict
-        , description:str = None
         , search_count:int = None
         , search_percent:float = None
     ):
@@ -3119,17 +3118,21 @@ class Hyperparamset(BaseModel):
         # These are the random selection strategies.
         if (search_count is not None):
             if (search_count < 1):
-                raise Exception(f"\nYikes - search_count:<{search_count}> cannot be less than 1.\n")
+                msg = f"\nYikes - search_count:<{search_count}> cannot be less than 1.\n"
+                raise Exception(msg)
             elif (search_count > hyperparamcombo_count):
-                print(f"\nInfo - search_count:<{search_count}> greater than the number of hyperparameter combinations:<{hyperparamcombo_count}>.\nProceeding with all combinations.\n")
+                msg = f"\nInfo - search_count:<{search_count}> greater than the number of hyperparameter combinations:<{hyperparamcombo_count}>.\nProceeding with all combinations.\n"
+                print(msg)
             else:
                 # `sample` handles replacement.
                 params_combos_dicts = sample(params_combos_dicts, search_count)
                 hyperparamcombo_count = len(params_combos_dicts)
         elif (search_percent is not None):
             if ((search_percent > 1.0) or (search_percent <= 0.0)):
-                raise Exception(f"\nYikes - search_percent:<{search_percent}> must be between 0.0 and 1.0.\n")
+                msg = f"\nYikes - search_percent:<{search_percent}> must be between 0.0 and 1.0.\n"
+                raise Exception(msg)
             else:
+                # `ceil` ensures it will always be 1 or higher.
                 select_count = math.ceil(hyperparamcombo_count * search_percent)
                 params_combos_dicts = sample(params_combos_dicts, select_count)
                 hyperparamcombo_count = len(params_combos_dicts)
@@ -3137,7 +3140,6 @@ class Hyperparamset(BaseModel):
         # Now that we have the metadata about combinations
         hyperparamset = Hyperparamset.create(
             algorithm = algorithm
-            , description = description
             , hyperparameters = hyperparameters
             , hyperparamcombo_count = hyperparamcombo_count
             , search_count = search_count
@@ -3199,6 +3201,7 @@ class Queue(BaseModel):
         , repeat_count:int = 1
         , permute_count:int = 3
         , hyperparamset_id:int = None
+        , description:str = None
     ):
         algorithm = Algorithm.get_by_id(algorithm_id)
         library = algorithm.library
@@ -3335,13 +3338,14 @@ class Queue(BaseModel):
             permute_count = 0
 
         queue = Queue.create(
-            run_count = run_count
-            , repeat_count = repeat_count
-            , algorithm = algorithm
-            , splitset = splitset
-            , permute_count = permute_count
-            , hyperparamset = hyperparamset
+            run_count        = run_count
+            , repeat_count   = repeat_count
+            , algorithm      = algorithm
+            , splitset       = splitset
+            , permute_count  = permute_count
+            , hyperparamset  = hyperparamset
             , runs_completed = 0
+            , description    = description
         )
         try:
             for c in combos:

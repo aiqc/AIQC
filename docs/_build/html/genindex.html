@@ -222,32 +222,46 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#8b.-Cross-Validation">8b. Cross-Validation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#7.-Defining-Architectures-&amp;-Hyperparameters.">7. Defining Architectures &amp; Hyperparameters.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Model-Definition">Model Definition</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#7.-Algorithm">7. Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#id6">7a. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#└──-Algorithm.make()">└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#7b.-PyTorch-fit">7b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#7b.-History-Metrics">7b. History Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#7c.-TensorFlow-Early-Stopping">7c. TensorFlow Early Stopping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#8.-Hyperparameters">8. Hyperparameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#8a.-Philosophy">8a. Philosophy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#8b.-Search-Strategies">8b. Search Strategies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Grid-search">Grid search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Random-selection">Random selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Bayesian">Bayesian</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#8b.-Create">8b. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#└──-Hyperparamset.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#8.-Queue-of-training-Jobs.">8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#9.-Queue">9. Queue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#9a.-Create">9a. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#└──-Queue.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-the-trained-model.">Fetching the trained model.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#9b.-Run">9b. Run</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#└──-Queue.run_jobs()">└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#10.-Job">10. Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#11.-Predictor">11. Predictor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#12.-Prediction">12. Prediction</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="notebooks/api_low_level.html#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>

@@ -179,7 +179,8 @@ def fit(
 		for m in metrics:
 			# An initialized metric actually contains `None` so `utils.listify` doesn't work here.
 			if ('torchmetrics' not in str(type(m))):
-				raise Exception("\nYikes - Did you forget to initialize your metric?\ne.g. do `torchmetrics.Accuracy()`, not `torchmetrics.Accuracy`\n")
+				msg = "\nYikes - Did you forget to initialize your metric?\ne.g. do `torchmetrics.Accuracy()`, not `torchmetrics.Accuracy`\n"
+				raise Exception(msg)
 			name = m.__class__.__name__
 			history[name] = list()
 			val_name = f"val_{name}"

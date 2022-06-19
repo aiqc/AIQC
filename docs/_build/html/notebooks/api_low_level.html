@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="afa4d9bd50a94bd2a57b20859fae0628,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,,,, Object-Relational Model (ORM): The Low-Leve..." />
+  <meta property="og:description" content="61e97f7c76fe4aaf8fe9dd6c79827f16,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,,,, Object-Relational Model (ORM): The Low-Leve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -235,32 +235,46 @@
 <li class="toctree-l3"><a class="reference internal" href="#8b.-Cross-Validation">8b. Cross-Validation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#7.-Defining-Architectures-&amp;-Hyperparameters.">7. Defining Architectures &amp; Hyperparameters.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a)-Define-an-Algorithm">a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Model-Definition">Model Definition</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Group-the-functions-together-in-an-Algorithm!">Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Algorithm">7. Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">7a. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-Algorithm.make()">└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Combinations-of-hyperparameters-with-Hyperparamset.">b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Hyperparameter-Selection-Strategies.">Hyperparameter Selection Strategies.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Hyperparamcombo-objects."><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7b.-PyTorch-fit">7b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7b.-History-Metrics">7b. History Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7c.-TensorFlow-Early-Stopping">7c. TensorFlow Early Stopping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Hyperparameters">8. Hyperparameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#8a.-Philosophy">8a. Philosophy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#8b.-Search-Strategies">8b. Search Strategies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Grid-search">Grid search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Random-selection">Random selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Bayesian">Bayesian</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#8b.-Create">8b. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-Hyperparamset.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#8.-Queue-of-training-Jobs.">8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a)-Job-objects.">a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Executing-Jobs.">b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#i)-queue.run_jobs()">i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True).">ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Queue">9. Queue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#9a.-Create">9a. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-Queue.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#c)-Predictors-are-the-trained-models.">c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Fetching-the-trained-model.">Fetching the trained model.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Fetching-the-hyperparameters.">Fetching the hyperparameters.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#9b.-Run">9b. Run</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-Queue.run_jobs()">└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#d)-Predictions-are-the-output-of-a-Predictor.">d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#10.-Job">10. Job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#11.-Predictor">11. Predictor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#12.-Prediction">12. Prediction</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Fetching-metrics.">Fetching metrics.</a></li>
 </ul>
 </li>
@@ -602,7 +616,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Low-Level-API-[under-construction]">
 <h1>Low-Level API [under construction]<a class="headerlink" href="#Low-Level-API-[under-construction]" title="Permalink to this headline"></a></h1>
-<p><img alt="afa4d9bd50a94bd2a57b20859fae0628" class="banner-photo" src="../_images/pipes.png" /></p>
+<p><img alt="61e97f7c76fe4aaf8fe9dd6c79827f16" class="banner-photo" src="../_images/pipes.png" /></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 27%" />
@@ -1369,7 +1383,6 @@ for anything.</p></td>
 </section>
 <section id="└──-Dataset.get_dtypes()">
 <h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code><a class="headerlink" href="#└──-Dataset.get_dtypes()" title="Permalink to this headline"></a></h4>
-<p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns dtype of each column in <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
@@ -1397,6 +1410,7 @@ for anything.</p></td>
 </tr>
 </tbody>
 </table>
+<p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns then dtype of each column within a <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
 <hr class="docutils" />
 </section>
 </section>
@@ -1915,9 +1929,9 @@ to do the reshaping once up front.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 23%" />
-<col style="width: 22%" />
+<col style="width: 24%" />
 <col style="width: 10%" />
-<col style="width: 45%" />
+<col style="width: 44%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -1933,7 +1947,7 @@ to do the reshaping once up front.</p>
 <td><p>The <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code> to use</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>reshape_indices</strong></p></td>
-<td><p>tupl(int/str/tupl)</p></td>
+<td><p>tuple(int/str/tuple)</p></td>
 <td><p>Required</p></td>
 <td><p>See <a class="reference external" href="#6a.-Strategies">Strategies</a>.</p></td>
 </tr>
@@ -2201,687 +2215,484 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <hr class="docutils" />
 </section>
 </section>
-<section id="7.-Defining-Architectures-&amp;-Hyperparameters.">
-<h2>7. Defining Architectures &amp; Hyperparameters.<a class="headerlink" href="#7.-Defining-Architectures-&-Hyperparameters." title="Permalink to this headline"></a></h2>
-<section id="a)-Define-an-Algorithm">
-<h3>a) Define an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code><a class="headerlink" href="#a)-Define-an-Algorithm" title="Permalink to this headline"></a></h3>
-<p>Now that our data has been prepared, we transition to the other half of the ORM where the focus is the logic that will be applied to that data.</p>
-<blockquote>
-<div><p>An <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is our ORM’s codename for a machine learning model since <em>Model</em> is the most important <em>reserved word</em> when it comes to ORMs.</p>
-</div></blockquote>
-<p>The following attributes tell AIQC how to handle the Algorithm behind the scenes:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">library</span></code> - right now, only ‘keras’ is supported.</p>
-<ul>
-<li><p>Each library’s model object and callbacks (history, early stopping) need to be handled differently.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> - right now, these types are supported:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code>, <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code>, <code class="docutils literal notranslate"><span class="pre">'regression'</span></code>.</p></li>
-<li><p>Used to determine which performance metrics to run.</p></li>
-<li><p>Must be compatible with the type of label fed to it.</p></li>
-</ul>
-</li>
-</ul>
-<section id="Model-Definition">
-<h4>Model Definition<a class="headerlink" href="#Model-Definition" title="Permalink to this headline"></a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> is composed of the functions:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">fn_build</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fn_lose</span></code> (optional, inferred).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code> (optional, inferred).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fn_train</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fn_predict</span></code> (optional, inferred).</p></li>
-</ul>
-<blockquote>
-<div><p>May provide overridable defaults for build and train in the future.</p>
-</div></blockquote>
-<p>You can name the functions whatever you want, but do not change the predetermined arguments (e.g. <code class="docutils literal notranslate"><span class="pre">input_shape</span></code>,<code class="docutils literal notranslate"><span class="pre">**hp</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, etc.) or their position.</p>
-<p>As we define these functions, we’ll see that we can pass a dictionary of <em>hyperparameters</em> into these function using the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> kwarg, and access them like so: <code class="docutils literal notranslate"><span class="pre">hp['&lt;some_variable_name&gt;']</span></code>. Later, we’ll provide a list of values for each entry in the hyperparameters dictionary.</p>
-<p>Let’s import the modules that we need.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">tensorflow.keras.layers</span> <span class="k">as</span> <span class="nn">layers</span>
-</pre></div>
-</div>
-</div>
-<blockquote>
-<div><p>Later, when running your <code class="docutils literal notranslate"><span class="pre">Job</span></code>’s, if you receive a “module not found” error, then you can try troubleshooting by importing that module directly within the function where it is used.</p>
-</div></blockquote>
+<section id="7.-Algorithm">
+<h2>7. Algorithm<a class="headerlink" href="#7.-Algorithm" title="Permalink to this headline"></a></h2>
+<p>Now that our data has been prepared, we transition to the 2nd half of the ORM where the focus is the logic that will be applied to that data.</p>
+<p>The Algorithm contains all of the components needed to construct, train, and use our model.</p>
+<p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> for examples of how Algorithms are defined.</p>
 <hr class="docutils" />
-<section id="└──-fn_build">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">fn_build</span></code><a class="headerlink" href="#└──-fn_build" title="Permalink to this headline"></a></h5>
-<p>You can build your topology however you like, just be sure to <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">model</span></code>. Also, you don’t have to use any of the hyperparameters (<code class="docutils literal notranslate"><span class="pre">**hp</span></code>) if you don’t want to.</p>
-<p>The automatically provided <code class="docutils literal notranslate"><span class="pre">features_shape</span></code> and <code class="docutils literal notranslate"><span class="pre">label_shape</span></code> are handy because:</p>
-<ul class="simple">
-<li><p>The number of feature/ label columns is mutable due to encoders (e.g. OHE).</p></li>
-<li><p>Shapes can be less obvious in multi-dimensional scenarios like colored images.</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[56]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">input_shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;he_uniform&#39;</span><span class="p">))</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">model</span>
-</pre></div>
-</div>
-</div>
+<section id="id6">
+<h3>7a. Create<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h3>
+<p>Assemble an architecture consisting of components defined in functions.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">**hp</span></code> kwargs are common to every Algorithm function except <code class="docutils literal notranslate"><span class="pre">fn_predict</span></code>. They are used to systematically pass a dictionary of <em>hyperparameters</em> into these functions. See Hyperparameters.</p>
 <hr class="docutils" />
-</section>
-<section id="└──-fn_lose-(optional)">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">fn_lose</span></code> (optional)<a class="headerlink" href="#└──-fn_lose-(optional)" title="Permalink to this headline"></a></h5>
-<p>We can’t just specify the loss function in our training loop because we will need it later on when it comes time to produce metrics about other splits/ folds.</p>
-<p>If you do not provide an <code class="docutils literal notranslate"><span class="pre">fn_lose</span></code> then one will be automatically selected for you based on the <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> you are conducting and the <code class="docutils literal notranslate"><span class="pre">Algorithm.library</span></code> you are using.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[57]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_lose</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">loser</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">CategoricalCrossentropy</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">loser</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="└──-fn_optimize-(optional)">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code> (optional)<a class="headerlink" href="#└──-fn_optimize-(optional)" title="Permalink to this headline"></a></h5>
-<p>Some deep learning libraries persist their model and optimizer separately during checkpoint/exporting. So <code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code> provides an isolated way to access the optimizer. It also allows us to automatically set the optimizer.</p>
-<p>If you do not provide an <code class="docutils literal notranslate"><span class="pre">fn_optimize</span></code> then one will be automatically selected for you based on the <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> you are conducting and the <code class="docutils literal notranslate"><span class="pre">Algorithm.library</span></code> you are using.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[58]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">optimizer</span>
-</pre></div>
-</div>
-</div>
-<blockquote>
-<div><p>If you want to define your own optimizer, then you should do so within this function, rather than relying on <code class="docutils literal notranslate"><span class="pre">model.compile(optimizer='&lt;some_optimizer_name&gt;'</span></code>. If you do not define an optimizer, then <code class="docutils literal notranslate"><span class="pre">Adamax</span></code> will be used by default.</p>
-</div></blockquote>
-<hr class="docutils" />
-</section>
-<section id="└──-fn_train">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">fn_train</span></code><a class="headerlink" href="#└──-fn_train" title="Permalink to this headline"></a></h5>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">samples_train</span></code> - the appropriate data will be fed into the training cycle. For example, <code class="docutils literal notranslate"><span class="pre">Fold.samples[fold_index]['folds_train_combined']</span></code> or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['train']</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">samples_evaluate</span></code> - the appropriate data is made available for evaluation. For example, <code class="docutils literal notranslate"><span class="pre">Fold.samples[fold_index]['fold_validation']</span></code>, <code class="docutils literal notranslate"><span class="pre">Splitset.samples['validation']</span></code>, or <code class="docutils literal notranslate"><span class="pre">Splitset.samples['test']</span></code>.</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
-    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
-    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">hp</span>
-<span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span>        <span class="o">=</span> <span class="n">loser</span>
-        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-        <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
-        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">)</span>
-        <span class="p">,</span> <span class="n">verbose</span>         <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span>      <span class="o">=</span> <span class="mi">3</span>
-        <span class="p">,</span> <span class="n">epochs</span>          <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span>       <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">()]</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">model</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="Training-loop">
-<h5>Training loop<a class="headerlink" href="#Training-loop" title="Permalink to this headline"></a></h5>
-<ul class="simple">
-<li><p>TensorFlow: either write a custom loop or use Keras.</p></li>
-<li><p>PyTorch: either write a custom loop or use AIQC’s <code class="docutils literal notranslate"><span class="pre">utils.pytorch.fit</span></code></p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">loser</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span><span class="nb">object</span>
-
-    <span class="p">,</span> <span class="n">train_features</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">train_label</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">eval_features</span><span class="p">:</span><span class="nb">object</span>
-    <span class="p">,</span> <span class="n">eval_label</span><span class="p">:</span><span class="nb">object</span>
-
-    <span class="p">,</span> <span class="n">epochs</span><span class="p">:</span><span class="nb">int</span>              <span class="o">=</span> <span class="mi">30</span>
-    <span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span><span class="nb">int</span>          <span class="o">=</span> <span class="mi">5</span>
-    <span class="p">,</span> <span class="n">enforce_sameSize</span><span class="p">:</span><span class="nb">bool</span>   <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">,</span> <span class="n">allow_singleSample</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">,</span> <span class="n">metrics</span><span class="p">:</span><span class="nb">list</span>            <span class="o">=</span> <span class="kc">None</span>
+<section id="└──-Algorithm.make()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code><a class="headerlink" href="#└──-Algorithm.make()" title="Permalink to this headline"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="n">library</span>
+    <span class="p">,</span> <span class="n">analysis_type</span>
+    <span class="p">,</span> <span class="n">fn_build</span>
+    <span class="p">,</span> <span class="n">fn_train</span>
+    <span class="p">,</span> <span class="n">fn_predict</span>
+    <span class="p">,</span> <span class="n">fn_lose</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><em>enforce_sameSize</em></p></td>
-<td><p>removes the last batch if it is a different size</p></td>
+<tr class="row-even"><td><p><strong>library</strong></p></td>
+<td><p>str</p></td>
+<td><p>Required</p></td>
+<td><p>‘keras’ or ‘pytorch’ depending on the type of model defined in <code class="docutils literal notranslate"><span class="pre">fn_build</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><em>allow_singleSample</em></p></td>
-<td><p>errors if a batch only contains 1 sample, which often leads to layer errors during training</p></td>
+<tr class="row-odd"><td><p><strong>analysis_type</strong></p></td>
+<td><p>str</p></td>
+<td><p>Required</p></td>
+<td><p>‘classification_binary’, ‘classification_multi’, or ‘regression’. Unsupervised/ self-supervised falls under regression.
+Used to determine which performance metrics are run. Errors if it is incompatible with the Label provided:
+e.g. classification_binary is incompatible with an np.floating Label.column.</p></td>
 </tr>
-<tr class="row-even"><td><p><em>metrics</em></p></td>
-<td><p>instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes e.g. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></p></td>
+<tr class="row-even"><td><p><strong>fn_build</strong></p></td>
+<td><p>func</p></td>
+<td><p>Required</p></td>
+<td><p>See below</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>fn_train</strong></p></td>
+<td><p>func</p></td>
+<td><p>Required</p></td>
+<td><p>See below</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>fn_lose</strong></p></td>
+<td><p>func</p></td>
+<td><p>None</p></td>
+<td><p>See below</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>fn_optimize</strong></p></td>
+<td><p>func</p></td>
+<td><p>None</p></td>
+<td><p>See below</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>fn_predict</strong></p></td>
+<td><p>func</p></td>
+<td><p>None</p></td>
+<td><p>See below</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Required Functions</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span>
+    <span class="n">features_shape</span><span class="p">:</span><span class="nb">tuple</span>
+    <span class="p">,</span> <span class="n">label_shape</span><span class="p">:</span><span class="nb">tuple</span>
+    <span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">:</span><span class="nb">dict</span>
+<span class="p">):</span>
+    <span class="c1"># Define tf/torch model</span>
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">loser</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span><span class="nb">object</span>
+    <span class="p">,</span> <span class="n">train_features</span><span class="p">:</span><span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">train_label</span><span class="p">:</span><span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">eval_features</span><span class="p">:</span><span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">eval_label</span><span class="p">:</span><span class="n">ndarray</span>
+    <span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">:</span><span class="nb">dict</span>
+<span class="p">):</span>
+    <span class="c1"># Define training/ eval loop.</span>
+    <span class="c1"># See `utils.pytorch.fit`</span>
+
+    <span class="c1"># if tensorflow</span>
+    <span class="k">return</span> <span class="n">model</span>
+    <span class="c1"># if torch</span>
+    <span class="c1"># See `utils.pytorch.fit` and history metrics below</span>
+    <span class="k">return</span> <span class="n">history</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">model</span>
+</pre></div>
+</div>
+<p><strong>Optional Functions</strong></p>
+<blockquote>
+<div><p><em>Where are the defaults for optional functions defined?</em> See <a class="reference external" href="https://github.com/aiqc/AIQC/blob/main/aiqc/utils/tensorflow.py">utils.tensorflow</a> and <a class="reference external" href="https://github.com/aiqc/AIQC/blob/main/aiqc/utils/pytorch.py">utils.pytorch</a> for examples of loss, optimization, and prediction.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_lose</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># Define tf/torch loss function</span>
+    <span class="k">return</span> <span class="n">loser</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># Define tf/torch optimizer</span>
+    <span class="k">return</span> <span class="n">optimizer</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_predict</span><span class="p">(</span><span class="n">model</span><span class="p">:</span><span class="nb">object</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="c1">#if classify: predictions as ordinal, not OHE.</span>
+    <span class="k">return</span> <span class="n">prediction</span><span class="p">:</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">:</span><span class="n">ndarray</span>
+    <span class="c1">#if regression</span>
+    <span class="k">return</span> <span class="n">prediction</span><span class="p">:</span><span class="n">ndarray</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="7b.-PyTorch-fit">
+<h3>7b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#7b.-PyTorch-fit" title="Permalink to this headline"></a></h3>
+<p>Provides an abstraction that eliminates the boilerplate code normally required to train and evaluate a PyTorch model.</p>
+<ul class="simple">
+<li><p>Before training - it shuffles samples, batches samples, and then shuffles batches.</p></li>
+<li><p>During training - it calculates batch loss, epoch loss, and epoch history metrics.</p></li>
+<li><p>After training - it calculates metrics for each split.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pytorch</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="c1"># These arguments come directly from `fn_train`</span>
+    <span class="n">model</span>
+    <span class="p">,</span> <span class="n">loser</span>
+    <span class="p">,</span> <span class="n">optimizer</span>
+
+    <span class="p">,</span> <span class="n">train_features</span>
+    <span class="p">,</span> <span class="n">train_label</span>
+    <span class="p">,</span> <span class="n">eval_features</span>
+    <span class="p">,</span> <span class="n">eval_label</span>
+
+    <span class="c1"># These arguments are user-defined</span>
+    <span class="p">,</span> <span class="n">epochs</span>
+    <span class="p">,</span> <span class="n">batch_size</span>
+    <span class="p">,</span> <span class="n">enforce_sameSize</span>
+    <span class="p">,</span> <span class="n">allow_singleSample</span>
+    <span class="p">,</span> <span class="n">metrics</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>User-Defined Arguments</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>epochs</strong></p></td>
+<td><p>int</p></td>
+<td><p>30</p></td>
+<td><p>The number of times to loop over the features</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>batch_size</strong></p></td>
+<td><p>int</p></td>
+<td><p>5</p></td>
+<td><p>Divides features and lables into chunks to be trained upon</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>enforce_sameSize</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, drops <code class="docutils literal notranslate"><span class="pre">len(batch!=batch_size)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>allow_singleSample</strong></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, drops <code class="docutils literal notranslate"><span class="pre">len(batch!=1)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>metrics</strong></p></td>
+<td><p>list(torchmetrics.metric())</p></td>
+<td><p>None</p></td>
+<td><p>List of instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes e.g. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></p></td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 </section>
-<section id="Customizable-history">
-<h5>Customizable history<a class="headerlink" href="#Customizable-history" title="Permalink to this headline"></a></h5>
+<section id="7b.-History-Metrics">
+<h3>7b. History Metrics<a class="headerlink" href="#7b.-History-Metrics" title="Permalink to this headline"></a></h3>
 <p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="visualization.html">visualization</a> section.</p>
 <ul class="simple">
 <li><p><em>Keras</em>: any <code class="docutils literal notranslate"><span class="pre">metrics=[]</span></code> specified are automatically added to the <code class="docutils literal notranslate"><span class="pre">History</span></code> callback object.</p></li>
-<li><p><em>PyTorch</em>: users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="gallery/pytorch/multi_class.html">examples</a>.</p></li>
+<li><p><em>PyTorch</em>: if you use <code class="docutils literal notranslate"><span class="pre">fit</span></code> seen above, then you don’t need to worry about this. Users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="gallery/pytorch/multi_class.html">examples</a>.</p></li>
 </ul>
 <blockquote>
-<div><p>The schema of this dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(*:ndarray,</span> <span class="pre">val_*=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
+<div><p>The schema of the <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(*:ndarray,</span> <span class="pre">val_*=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">loss</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">val_loss</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">accuracy</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">val_accuracy</span><span class="o">=</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">loss</span>           <span class="o">=</span> <span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">val_loss</span>     <span class="o">=</span> <span class="n">ndarray</span>
+
+    <span class="p">,</span> <span class="n">accuracy</span>     <span class="o">=</span> <span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">val_accuracy</span> <span class="o">=</span> <span class="n">ndarray</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
 </section>
-<section id="Optional,-callback-to-stop-training-early.">
-<h5>Optional, callback to stop training early.<a class="headerlink" href="#Optional,-callback-to-stop-training-early." title="Permalink to this headline"></a></h5>
+<section id="7c.-TensorFlow-Early-Stopping">
+<h3>7c. TensorFlow Early Stopping<a class="headerlink" href="#7c.-TensorFlow-Early-Stopping" title="Permalink to this headline"></a></h3>
 <p><em>Early stopping</em> isn’t just about efficiency in reducing the number of <code class="docutils literal notranslate"><span class="pre">epochs</span></code>. If you’ve specified 300 epochs, there’s a chance your model catches on to the underlying patterns early, say around 75-125 epochs. At this point, there’s also good chance what it learns in the remaining epochs will cause it to overfit on patterns that are specific to the training data, and thereby and lose it’s simplicity/ generalizability.</p>
 <blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">val_</span></code> prefix refers to the evaluation samples.</p>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">metric=val_*</span></code> prefix refers to the evaluation samples.</p>
 <p>Remember, regression does not have accuracy metrics.</p>
 <p><code class="docutils literal notranslate"><span class="pre">TrainingCallback.MetricCutoff</span></code> is a custom class we wrote to make <em>early stopping</em> easier, so you won’t find information about it in the official Keras documentation.</p>
 </div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[60]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">samples_train</span><span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">loser</span>
-        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
+<p>Placed within <code class="docutils literal notranslate"><span class="pre">fn_train</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
 
-    <span class="c1">#Define one or more metrics to monitor.</span>
-    <span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.96</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;above&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;metric&quot;</span><span class="p">:</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;above_or_below&quot;</span><span class="p">:</span><span class="s2">&quot;below&quot;</span><span class="p">}</span>
-    <span class="p">]</span>
-    <span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
-    <span class="c1"># Remember to append `cutoffs` to the list of callbacks.</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">History</span><span class="p">(),</span> <span class="n">cutoffs</span><span class="p">]</span>
+<span class="c1">#Define one or more metrics to monitor.</span>
+<span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_loss&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
 
-    <span class="c1"># No changes here.</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-        <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">samples_train</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
-            <span class="p">,</span> <span class="n">samples_evaluate</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">3</span>
-        <span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epoch_count&#39;</span><span class="p">]</span>
-        <span class="p">,</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="n">callbacks</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">model</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="└──-fn_predict-(optional)">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">fn_predict</span></code> (optional)<a class="headerlink" href="#└──-fn_predict-(optional)" title="Permalink to this headline"></a></h5>
-<p><code class="docutils literal notranslate"><span class="pre">fn_predict</span></code> will be generated for you automatically if set to <code class="docutils literal notranslate"><span class="pre">None</span></code>. The <code class="docutils literal notranslate"><span class="pre">analysis_type</span></code> and <code class="docutils literal notranslate"><span class="pre">library</span></code> of the Algorithm help determine how to handle the predictions.</p>
-<ol class="lowerroman simple">
-<li><p>Regression default.</p></li>
-</ol>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_predict</span><span class="p">):</span>
-    <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples_predict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">predictions</span>
-</pre></div>
-</div>
-</div>
-<ol class="lowerroman simple" start="2">
-<li><p>Classification binary default.</p></li>
-</ol>
-<p>All classification <code class="docutils literal notranslate"><span class="pre">predictions</span></code>, both mutliclass and binary, must be returned in ordinal format.</p>
-<blockquote>
-<div><p>For most libraries, classification algorithms output <em>probabilities</em> as opposed to actual predictions when running <code class="docutils literal notranslate"><span class="pre">model.predict()</span></code>. We want to return both of these object <code class="docutils literal notranslate"><span class="pre">predictions,</span> <span class="pre">probabilities</span></code> (the order matters) to generate performance metrics behind the scenes.</p>
-</div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[63]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_predict</span><span class="p">):</span>
-    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples_predict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-    <span class="c1"># This is the official keras replacement for binary classes `.predict_classes()`</span>
-    <span class="c1"># It returns one array per sample: `[[0][1][0][1]]`</span>
-    <span class="n">predictions</span> <span class="o">=</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span>
-</pre></div>
-</div>
-</div>
-<ol class="lowerroman simple" start="3">
-<li><p>Classification multiclass default.</p></li>
-</ol>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[64]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">samples_predict</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples_predict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">])</span>
-    <span class="c1"># This is the official keras replacement for multiclass `.predict_classes()`</span>
-    <span class="c1"># It returns one ordinal array per sample: `[[0][2][1][2]]`</span>
-    <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span>
-</pre></div>
-</div>
-</div>
-<hr class="docutils" />
-</section>
-</section>
-<section id="Group-the-functions-together-in-an-Algorithm!">
-<h4>Group the functions together in an <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code>!<a class="headerlink" href="#Group-the-functions-together-in-an-Algorithm!" title="Permalink to this headline"></a></h4>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[65]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
-    <span class="n">library</span> <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
-    <span class="p">,</span> <span class="n">analysis_type</span> <span class="o">=</span> <span class="s2">&quot;classification_multi&quot;</span>
-    <span class="p">,</span> <span class="n">fn_build</span> <span class="o">=</span> <span class="n">fn_build</span>
-    <span class="p">,</span> <span class="n">fn_train</span> <span class="o">=</span> <span class="n">fn_train</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="n">fn_optimize</span> <span class="c1"># Optional</span>
-    <span class="p">,</span> <span class="n">fn_predict</span> <span class="o">=</span> <span class="n">fn_predict</span> <span class="c1"># Optional</span>
-    <span class="p">,</span> <span class="n">fn_lose</span> <span class="o">=</span> <span class="n">fn_lose</span> <span class="c1"># Optional</span>
+<span class="c1"># Pass it into keras callbacks</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="c1"># other fit args</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">cutoffs</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<blockquote>
-<div><p>&lt;!&gt; Remember to use <code class="docutils literal notranslate"><span class="pre">make</span></code> and not <code class="docutils literal notranslate"><span class="pre">create</span></code>. Deceptively, <code class="docutils literal notranslate"><span class="pre">create</span></code> exists because it is a standard, built-in ORM method. However, it does so without any validation logic.</p>
-</div></blockquote>
 <hr class="docutils" />
 </section>
 </section>
-<section id="b)-Combinations-of-hyperparameters-with-Hyperparamset.">
-<h3>b) Combinations of hyperparameters with <code class="docutils literal notranslate"><span class="pre">Hyperparamset</span></code>.<a class="headerlink" href="#b)-Combinations-of-hyperparameters-with-Hyperparamset." title="Permalink to this headline"></a></h3>
-<p>Parameters are fed into Algorithm functions.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> below will be automatically fed into the functions above as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> via the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument we saw earlier.</p>
-<p>For example, wherever you see <code class="docutils literal notranslate"><span class="pre">hp['epoch_count']</span></code>, it will pull from the <em>key:value</em> pair <code class="docutils literal notranslate"><span class="pre">&quot;epoch_count&quot;:</span> <span class="pre">[30,</span> <span class="pre">60]</span></code> seen below. Where “model A” would have 30 epochs and “model B” would have 60 epochs.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">neuron_count</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">epoch_count</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">]</span>
+<section id="8.-Hyperparameters">
+<h2>8. Hyperparameters<a class="headerlink" href="#8.-Hyperparameters" title="Permalink to this headline"></a></h2>
+<p>As mentioned in <a class="reference external" href="#7a.-Create">Algorithm</a>, the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument is used to systematically pass hyperparameters into the Algorithm functions.</p>
+<p>For example, given the follow set of hyperparamets:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">epoch_count</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">neuron_count</span>  <span class="o">=</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">48</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>A grid search would produce the 2 unique hyperparameter combinations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">epoch_count</span>     <span class="o">=</span> <span class="mi">30</span>
+        <span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="p">,</span> <span class="n">neuron_count</span>  <span class="o">=</span> <span class="mi">24</span> <span class="c1">#&lt;-- varies</span>
+    <span class="p">)</span>
+
+    <span class="p">,</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">epoch_count</span>     <span class="o">=</span> <span class="mi">30</span>
+        <span class="p">,</span> <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="p">,</span> <span class="n">neuron_count</span>  <span class="o">=</span> <span class="mi">48</span> <span class="c1">#&lt;-- varies</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
 </div>
+<p>We access the current value in our model functions like so: <code class="docutils literal notranslate"><span class="pre">hp['neuron_count']</span></code>.</p>
 <hr class="docutils" />
-<section id="Hyperparameter-Selection-Strategies.">
-<h4>Hyperparameter Selection Strategies.<a class="headerlink" href="#Hyperparameter-Selection-Strategies." title="Permalink to this headline"></a></h4>
-<section id="Grid-search-strategy.">
-<h5>Grid search strategy.<a class="headerlink" href="#Grid-search-strategy." title="Permalink to this headline"></a></h5>
-<p>By default AIQC will generate all possible combinations.</p>
-<blockquote>
-<div><p>With enough practice, practitioners will get a feel for what parameters and topologies make sense so you’ll rely on shotgun-style approaches less and less. If you limit your experiments to 1-2 parameters at a time then it’s easy to see their effect as an <em>independent variable</em>. You should really start with high-level things such as topologies (# of layers, # neurons per layer) and batch size before moving on to tuning the intra-layer nuances (activation methods, weight initialization). You’re
-essentially testing high/ medium/ low or default/ edge case scenarios for each parameter.</p>
-</div></blockquote>
+<section id="8a.-Philosophy">
+<h3>8a. Philosophy<a class="headerlink" href="#8a.-Philosophy" title="Permalink to this headline"></a></h3>
+<p>There are essentially 2 phases to hyperparameter tuning:</p>
+<ol class="arabic simple">
+<li><p>Figure out the right architecture with high-level concepts such as topologies (types of layers, # of layers, # neurons per layer) and batch size.</p></li>
+<li><p>Once you find architecture that perform reasonably well, hone in on their nuances like weight initialization, activation methods, and learning rate.</p></li>
+</ol>
+<p>Due to the fact that it doesn’t really make sense to waste time training the nuances of architectures that perform poorly to begin with – I don’t recommend fancy hyperparameter search strategies. Just random search step #1 and then grid search step #2.</p>
+<ul class="simple">
+<li><p>Test high/medium/low values for each parameter. Given enough practice with an architecture, you’ll intuitively get a feel for the right balance between “model complexity and data complexity.”</p></li>
+<li><p>If you limit your experiments to tweaking just 1-2 parameters at a time, then it’s easy to see their effect as an <em>independent variable</em>.</p></li>
+<li><p>Never forget, the goal of training is to neurally encode representative information using the simplest topology possible to ensure generalizability.</p></li>
+</ul>
+<hr class="docutils" />
 </section>
-<section id="Random-selection-strategy.">
-<h5>Random selection strategy.<a class="headerlink" href="#Random-selection-strategy." title="Permalink to this headline"></a></h5>
-<p>Testing many different combinations in your initial runs can be a good way to get a feel for the parameter space. Although if you are doing this you’ll find that many of your combinations are a bit too similar. So randomly sampling (with replacement) a few of them is a less computationally expensive way to go about this.</p>
+<section id="8b.-Search-Strategies">
+<h3>8b. Search Strategies<a class="headerlink" href="#8b.-Search-Strategies" title="Permalink to this headline"></a></h3>
+<section id="Grid-search">
+<h4>Grid search<a class="headerlink" href="#Grid-search" title="Permalink to this headline"></a></h4>
+<p>By default AIQC will test all possible combinations.</p>
+</section>
+<section id="Random-selection">
+<h4>Random selection<a class="headerlink" href="#Random-selection" title="Permalink to this headline"></a></h4>
+<p>Testing many different combinations in your initial runs can be a good way to get a feel for the parameter space. Although if you are doing this you’ll find that many of your combinations are too similar. So randomly sampling a them is a less computationally expensive way to test a wide variety of architectures.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">search_count:int</span></code> the fixed # of combinations to sample.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">search_percent:float</span></code> a % of combinations to sample.</p></li>
 </ul>
 </section>
-<section id="Bayesian-selection-strategy.">
-<h5>Bayesian selection strategy.<a class="headerlink" href="#Bayesian-selection-strategy." title="Permalink to this headline"></a></h5>
-<p>“TPE (Tree-structured Parzen Estimator)” via <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code> has been suggested as a future area to explore.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[67]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparamset</span> <span class="o">=</span> <span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
-    <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
-    <span class="p">,</span> <span class="n">search_count</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">search_percent</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<section id="Bayesian">
+<h4>Bayesian<a class="headerlink" href="#Bayesian" title="Permalink to this headline"></a></h4>
+<p>“TPE (Tree-structured Parzen Estimator)” via <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code> has been suggested as a future area to explore, but it does not exist right now.</p>
 <hr class="docutils" />
 </section>
 </section>
-<section id="Hyperparamcombo-objects.">
-<h4><code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> objects.<a class="headerlink" href="#Hyperparamcombo-objects." title="Permalink to this headline"></a></h4>
-<p>Each unique combination of hyperparameters is recorded as a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
-<p>Ultimately, a training <code class="docutils literal notranslate"><span class="pre">Job</span></code> is constructed for each unique combinanation of hyperparameters aka <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code>.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[68]:
+<section id="8b.-Create">
+<h3>8b. Create<a class="headerlink" href="#8b.-Create" title="Permalink to this headline"></a></h3>
+<section id="└──-Hyperparamset.from_algorithm()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code><a class="headerlink" href="#└──-Hyperparamset.from_algorithm()" title="Permalink to this headline"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+    <span class="n">algorithm_id</span>
+    <span class="p">,</span> <span class="n">hyperparameters</span>
+    <span class="p">,</span> <span class="n">search_count</span>
+    <span class="p">,</span> <span class="n">search_percent</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparamset</span><span class="o">.</span><span class="n">hyperparamcombo_count</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[68]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-4
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparamset</span><span class="o">.</span><span class="n">hyperparamcombos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>param</th>
-      <th>value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>neuron_count</td>
-      <td>12.00</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>epoch_count</td>
-      <td>30.00</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>learning_rate</td>
-      <td>0.01</td>
-    </tr>
-  </tbody>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>algorithm_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.id</span></code> whose functions these hyperparameters will be used with</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>hyperparameters</strong></p></td>
+<td><p>dict(str:list)</p></td>
+<td><p>Required</p></td>
+<td><p>See example in <a class="reference external" href="#8.-Hyperparameters">Hyperparameters</a>. Must be JSON compatible. Open an issue if you really want Pickle
+support.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>search_count</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>Randomly select <em>n</em> hyperparameter combinations to test. Must be greater than 1. No upper limit, it will test all
+combinations if number of combinations is exceeded.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>search_percent</strong></p></td>
+<td><p>float</p></td>
+<td><p>None</p></td>
+<td><p>Cannot be used if <code class="docutils literal notranslate"><span class="pre">search_count</span></code> is used. Between <code class="docutils literal notranslate"><span class="pre">0.0:1.0</span></code></p></td>
+</tr>
+</tbody>
 </table>
-</div></div>
-</div>
 <hr class="docutils" />
 </section>
 </section>
 </section>
-<section id="8.-Queue-of-training-Jobs.">
-<h2>8. <code class="docutils literal notranslate"><span class="pre">Queue</span></code> of training <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#8.-Queue-of-training-Jobs." title="Permalink to this headline"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Queue</span></code> is the central object of the “logic side” of the ORM. It ties together everything we need for training and hyperparameter tuning.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
-    <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">splitset_id</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">hyperparamset_id</span> <span class="o">=</span> <span class="n">hyperparamset</span><span class="o">.</span><span class="n">id</span> <span class="c1"># Optional.</span>
-    <span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="p">,</span> <span class="n">permute_count</span> <span class="o">=</span> <span class="mi">3</span>
+<section id="9.-Queue">
+<h2>9. Queue<a class="headerlink" href="#9.-Queue" title="Permalink to this headline"></a></h2>
+<p>The Queue is the central object of the “logic side” of the ORM. It ties together everything we need to run training <code class="docutils literal notranslate"><span class="pre">Job</span></code>’s for hyperparameter tuning. That’s why it is referred to as an Experiment in the High-Level API.</p>
+<hr class="docutils" />
+<section id="9a.-Create">
+<h3>9a. Create<a class="headerlink" href="#9a.-Create" title="Permalink to this headline"></a></h3>
+<section id="└──-Queue.from_algorithm()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code><a class="headerlink" href="#└──-Queue.from_algorithm()" title="Permalink to this headline"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
+    <span class="n">algorithm_id</span>
+    <span class="p">,</span> <span class="n">splitset_id</span>
+    <span class="p">,</span> <span class="n">repeat_count</span>
+    <span class="p">,</span> <span class="n">permute_count</span>
+    <span class="p">,</span> <span class="n">hyperparamset_id</span>
+    <span class="p">,</span> <span class="n">description</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">repeat_count:int=1</span></code> allows us to run the same <code class="docutils literal notranslate"><span class="pre">Job</span></code> multiple times. Normally, each <code class="docutils literal notranslate"><span class="pre">Job</span></code> has 1 <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> associated with it upon completion. However, when <code class="docutils literal notranslate"><span class="pre">repeat_count</span></code> (&gt; 1 of course) is used, a single <code class="docutils literal notranslate"><span class="pre">Job</span></code> will have multiple <code class="docutils literal notranslate"><span class="pre">Predictors</span></code>.</p></li>
-</ul>
-<blockquote>
-<div><p>Due to the fact that training is a <em>nondeterministic</em> process, we get different weights each time we train a model, even if we use the same set of parameters. Perhaps you’ve have the right topology and parameters, but, this time around, the model just didn’t recgonize the patterns. Similar to flipping a coin, there is a degree of chance in it, but the real trend averages out upon repetition.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">hide_test:bool=False</span></code> excludes the test split from the performance metrics and visualizations. This avoids data leakage by forcing the user to make decisions based on the performance on their model on the training and evaluation samples.</p></li>
-</ul>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">permute_count:int=3</span></code> controls the number of times each feature column is shuffled before it’s impact on loss is compared to the baseline training loss before the median taken. Feature importance is calculated for each column of each <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>, except for <code class="docutils literal notranslate"><span class="pre">Feature.dataset.dataset_type=='image'</span></code>. If you have many columns and all you care about is the final prediction, then it may make sense to set <code class="docutils literal notranslate"><span class="pre">permute_count=0</span></code> because permutations are computationally expensive &amp; difficult to
-parallelize.</p></li>
-</ul>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;5&gt;</span> <span class="pre">permutations)]</span></code></p>
-</div></blockquote>
-<hr class="docutils" />
-<section id="a)-Job-objects.">
-<h3>a) <code class="docutils literal notranslate"><span class="pre">Job</span></code> objects.<a class="headerlink" href="#a)-Job-objects." title="Permalink to this headline"></a></h3>
-<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> in the Queue represents a <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo</span></code> that needs to be trained.</p>
-<p>If a <code class="docutils literal notranslate"><span class="pre">Splitset.fold_count</span></code> was specified, then:</p>
-<ul class="simple">
-<li><p>The number of jobs = <code class="docutils literal notranslate"><span class="pre">hyperparamcombo_count</span></code> * <code class="docutils literal notranslate"><span class="pre">fold_count</span></code>.</p></li>
-<li><p>Each Job will have a <code class="docutils literal notranslate"><span class="pre">Fold</span></code>.</p></li>
-</ul>
-<hr class="docutils" />
-</section>
-<section id="b)-Executing-Jobs.">
-<h3>b) Executing <code class="docutils literal notranslate"><span class="pre">Jobs</span></code>.<a class="headerlink" href="#b)-Executing-Jobs." title="Permalink to this headline"></a></h3>
-<p>There are two ways to execute a Queue of Jobs:</p>
-<section id="i)-queue.run_jobs()">
-<h4>i) <code class="docutils literal notranslate"><span class="pre">queue.run_jobs()</span></code><a class="headerlink" href="#i)-queue.run_jobs()" title="Permalink to this headline"></a></h4>
-<ul class="simple">
-<li><p>Jobs are simply ran on a loop on the main <em>Process</em>.</p></li>
-<li><p>Stop the Jobs with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter.</p></li>
-<li><p>It is the more reliable approach on Win/Mac/Lin.</p></li>
-<li><p>Although this locks your main process (can’t write more code) while models train, you can still fire up a second shell session or notebook.</p></li>
-<li><p>Prototype your training jobs in this method so that you can see any errors that arise in the console.</p></li>
-</ul>
-</section>
-<section id="ii)-DEPRECATED---queue.run_jobs(in_background=True).">
-<h4>ii) DEPRECATED - <code class="docutils literal notranslate"><span class="pre">queue.run_jobs(in_background=True)</span></code>.<a class="headerlink" href="#ii)-DEPRECATED---queue.run_jobs(in_background=True)." title="Permalink to this headline"></a></h4>
-<p><em>Support for background processing has not been restored after decoupling the preprocessing pipelines from the Queue/Job logic.</em></p>
-<ul class="simple">
-<li><p>The Jobs loop is executed on a separate, parallel <code class="docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code></p></li>
-<li><p>Stop the Jobs with <code class="docutils literal notranslate"><span class="pre">queue.stop_jobs()</span></code> (also deprecated), which kills the parallel <em>Process</em> unless it already failed.</p></li>
-<li><p>The benefit is that you can continue to code while your models are trained. There is no performance boost.</p></li>
-<li><p>On Mac and Linux (Unix), <code class="docutils literal notranslate"><span class="pre">'fork'</span></code> multiprocessing is used (<code class="docutils literal notranslate"><span class="pre">force=True</span></code>), which allows us to display the progress bar. FYI, even in ‘fork’ mode, Python multiprocessing is much more fragile in Python 3.8, which seems to be caused by how pickling is handled in passing variables to the child process.</p></li>
-<li><p>On Windows, <code class="docutils literal notranslate"><span class="pre">'spawn'</span></code> multiprocessing is used, which requires polling:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">queue.poll_statuses()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">queue.poll_progress(raw:bool=False,</span> <span class="pre">loop:bool=False,</span> <span class="pre">loop_delay:int=3)</span></code> where <code class="docutils literal notranslate"><span class="pre">raw=True</span></code> is just a float, <code class="docutils literal notranslate"><span class="pre">loop=True</span></code> won’t stop checking jobs until they are all complete, and <code class="docutils literal notranslate"><span class="pre">loop_delay=3</span></code> checks the progress every 3 seconds.</p></li>
-</ul>
-</li>
-<li><p>Also, during stress tests, I observed that when running multiple queues at the same time, the SQLite database would lock when simultaneous writes were attempted.</p></li>
-</ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[71]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models 🔮: 100%|████████████████████████████████████████| 12/12 [00:49&lt;00:00,  4.12s/it]
-</pre></div></div>
-</div>
-<p>The queue is interuptable. You can stop the execution of a queue and resume it later.</p>
-<blockquote>
-<div><p>This also comes in handy if either your machine or Python kernel either crashes or are interupted by accident. Whatever the reason, rest easy, just <code class="docutils literal notranslate"><span class="pre">run_jobs()</span></code> again to pick up where you left off. Be aware that the <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> iteration time in the progress bar will be wrong because it will be divided by the jobs already ran.</p>
-</div></blockquote>
-<hr class="docutils" />
-<section id="Preprocessing-during-Job-is-recorded">
-<h5>Preprocessing during Job is recorded<a class="headerlink" href="#Preprocessing-during-Job-is-recorded" title="Permalink to this headline"></a></h5>
-<p>During the execution of a Job, the LabelCoder and FeatureCoders(s) tied to the Label and Feature(s) of the Splitset used during training will record their <code class="docutils literal notranslate"><span class="pre">fit()</span></code>.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">FittedLabelCoder</span></code> for the LabelCoder used.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">fitted_encoders:object</span></code> to store the <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FittedEncoderset</span></code> for each Feature used.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">fitted_encoders:list</span></code> to store the <code class="docutils literal notranslate"><span class="pre">fit</span></code>(s).</p></li>
-</ul>
-</li>
-</ul>
-<p>This process is critical for:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">inverse_transform()</span></code>’ing aka decoding predictions.</p></li>
-<li><p>Encoding new data during inference exactly the same was as the samples that the model was trained on.</p></li>
-</ul>
-<p>It takes a lot of joins to fetch the fitted encoders after the fact. So these methods are used behind the scenes to make it a bit easier:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_encoders(job,</span> <span class="pre">label)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Predictor.get_fitted_LabelCoder(job,</span> <span class="pre">feature)</span></code></p></li>
-</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>algorithm_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.id</span></code> whose functions will be used during training and evaluation</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>splitset_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Splitset.id</span></code> whose samples will be used during training and evaluation</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>repeat_count</strong></p></td>
+<td><p>int</p></td>
+<td><p>1</p></td>
+<td><p>Each job will be repeat n times. Designed for use with random weight initialization (aka non-deterministic). This is why 1
+<code class="docutils literal notranslate"><span class="pre">Job</span></code> has many <code class="docutils literal notranslate"><span class="pre">Predictors</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>permute_count</strong></p></td>
+<td><p>int</p></td>
+<td><p>3</p></td>
+<td><p>Triggers a shuffled permutation of each training data column to determine which columns have the most impact on loss in
+comparison baseline training loss: <code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;n&gt;</span> <span class="pre">permutations)]</span></code>. The count determines how many
+times the shuffled permutation is ran before taking the median loss. Permutation does <em>not</em> get run on
+<code class="docutils literal notranslate"><span class="pre">Feature.dataset.typ=='image'</span></code>. Set this to 0 if you do not care about feature importance.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>hyperparamset_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Hyperparamset.id</span></code> whose samples will be used during training and evaluation. This needs to be specified because an
+Algorithm can have many Hyperparamsets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>description</strong></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>What is unique about this experiment?</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 </section>
 </section>
-</section>
-<section id="c)-Predictors-are-the-trained-models.">
-<h3>c) <code class="docutils literal notranslate"><span class="pre">Predictors</span></code> are the trained models.<a class="headerlink" href="#c)-Predictors-are-the-trained-models." title="Permalink to this headline"></a></h3>
-<p>Each <code class="docutils literal notranslate"><span class="pre">Job</span></code> trains a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code>. The following attributes are automatically written to the <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> after training.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">model_file</span></code>: serialization varies for Keras and Pytorch deep learning framework.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">input_shapes</span></code>: used by <code class="docutils literal notranslate"><span class="pre">get_model()</span></code> during inference.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">history</span></code>: per epoch metrics recorded during training.</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<section id="Fetching-the-trained-model.">
-<h4>Fetching the trained model.<a class="headerlink" href="#Fetching-the-trained-model." title="Permalink to this headline"></a></h4>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[72]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[72]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;keras.engine.sequential.Sequential at 0x18227fe90&gt;
-</pre></div></div>
-</div>
-</section>
-<section id="Fetching-the-hyperparameters.">
-<h4>Fetching the hyperparameters.<a class="headerlink" href="#Fetching-the-hyperparameters." title="Permalink to this headline"></a></h4>
-<p>This method is just a proxy that passes argments to <code class="docutils literal notranslate"><span class="pre">Hyperparamcombo.get_hyperparameters()</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<section id="9b.-Run">
+<h3>9b. Run<a class="headerlink" href="#9b.-Run" title="Permalink to this headline"></a></h3>
+<section id="└──-Queue.run_jobs()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code><a class="headerlink" href="#└──-Queue.run_jobs()" title="Permalink to this headline"></a></h4>
+<p>Jobs are simply ran on a loop on the main process.</p>
+<p>Stop the queue with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter. It is listening for interupts so it will usually stop gracefully. Even if it errors upon during interrupt, it’s not a problem. You can rerun the queue and it will resume on the same job it was running previously.</p>
 <hr class="docutils" />
 </section>
 </section>
-<section id="d)-Predictions-are-the-output-of-a-Predictor.">
-<h3>d) <code class="docutils literal notranslate"><span class="pre">Predictions</span></code> are the output of a Predictor.<a class="headerlink" href="#d)-Predictions-are-the-output-of-a-Predictor." title="Permalink to this headline"></a></h3>
-<p>When you feed samples through a Predictor, you get Predictions. During training, Predictions are automatically generated for every split/fold that was tied to the Queue.</p>
+<section id="10.-Job">
+<h3>10. Job<a class="headerlink" href="#10.-Job" title="Permalink to this headline"></a></h3>
+<p>The Queue spawns <code class="docutils literal notranslate"><span class="pre">Job</span></code>’s.</p>
+<p><code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">jobs</span> <span class="pre">=</span> <span class="pre">Hyperamset.hyperamcombo.count()</span> <span class="pre">*</span> <span class="pre">Queue.repeat_count</span> <span class="pre">*</span> <span class="pre">splitset.folds.count()</span></code></p>
+<hr class="docutils" />
+</section>
+<section id="11.-Predictor">
+<h3>11. Predictor<a class="headerlink" href="#11.-Predictor" title="Permalink to this headline"></a></h3>
+<p>As the Jobs finish, they save the <code class="docutils literal notranslate"><span class="pre">model</span></code> and <code class="docutils literal notranslate"><span class="pre">history</span></code> metrics within a <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> object.</p>
+<hr class="docutils" />
+<section id="└──-Predictor.get_model()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code><a class="headerlink" href="#└──-Predictor.get_model()" title="Permalink to this headline"></a></h4>
+<p>Handles fetching and initializing the model (and PyTorch optimizer) from <code class="docutils literal notranslate"><span class="pre">Predictor.model_file</span></code> and <code class="docutils literal notranslate"><span class="pre">Predictor.input_shapes</span></code></p>
+<hr class="docutils" />
+</section>
+<section id="└──-Predictor.get_hyperparameters(as_pandas:bool=True)">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code><a class="headerlink" href="#└──-Predictor.get_hyperparameters(as_pandas:bool=True)" title="Permalink to this headline"></a></h4>
+<p>This is a shortcut to fetch the hyperparameters used to train this specific model. <code class="docutils literal notranslate"><span class="pre">as_pandas</span></code> toggles between <code class="docutils literal notranslate"><span class="pre">dict()</span></code> and <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
+<hr class="docutils" />
+</section>
+</section>
+<section id="12.-Prediction">
+<h3>12. Prediction<a class="headerlink" href="#12.-Prediction" title="Permalink to this headline"></a></h3>
+<p>When data is fed through a Predictor, you get a <code class="docutils literal notranslate"><span class="pre">Prediction</span></code>. During training, Predictions are automatically generated for every split/fold in the <code class="docutils literal notranslate"><span class="pre">Queue.splitset</span></code>.</p>
 <section id="Fetching-metrics.">
 <h4>Fetching metrics.<a class="headerlink" href="#Fetching-metrics." title="Permalink to this headline"></a></h4>
 <table class="docutils align-default">
