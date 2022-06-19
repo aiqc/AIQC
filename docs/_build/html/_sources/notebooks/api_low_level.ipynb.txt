@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Low-Level API [under construction]"
+    "# Low-Level API"
    ]
   },
   {
@@ -2709,7 +2709,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 9. Metrics & Visualization"
+    "## 13. Metrics & Visualization"
    ]
   },
   {
