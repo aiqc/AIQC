@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="170d6651c5a344dc8ac41b87ba35eeee,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,,,, Object-Relational Model (ORM): The Low-Leve..." />
+  <meta property="og:description" content="afa4d9bd50a94bd2a57b20859fae0628,,,, Argument, Type, Default, Description,,, item, type, None, text,, item, type, None, text,, item, type, None, text,,,, Object-Relational Model (ORM): The Low-Leve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -149,8 +149,8 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Low-Level API [under construction]</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#1.-Dataset">1. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#1a.-Register">1a. Register</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Dataset">1. Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1a.-Register">1a. Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Tabular.from_df()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_df()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Tabular.from_path()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path()</span></code></a></li>
@@ -175,7 +175,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#2.-Feature">2. <code class="docutils literal notranslate"><span class="pre">Feature</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Feature">2. Feature</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#2a.-Create">2a. Create</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#└──-Feature.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code></a></li>
 </ul>
@@ -183,7 +183,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#2b.-Fetch">2b. Fetch</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#3.-Label">3. <code class="docutils literal notranslate"><span class="pre">Label</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Label">3. Label</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#3a.-Create">3a. Create</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#└──-Label.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code></a></li>
 </ul>
@@ -202,30 +202,35 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#5.-Encode-Features-&amp;-Labels">5. Encode Features &amp; Labels</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Encoding">Encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#a)-Encode-labels-with-LabelCoder.">a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Creating-a-LabelCoder">Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Encode">5. Encode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#5a.-LabelCoder">5a. <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-LabelCoder.from_label()"><code class="docutils literal notranslate"><span class="pre">└──</span> <span class="pre">LabelCoder.from_label()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#b)-Encode-Features-sequentially-with-FeatureCoders.">b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">FeatureCoders</span></code>.</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Filtering-feature-columns">Filtering feature columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#5b.-FeatureCoder">5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-FeatureCoder.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#6.-Reshape-Features">6. Reshape Features</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#ORM">ORM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Reshaping-by-Index">Reshaping by Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Reshaping-Explicitly">Reshaping Explicitly</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Shape">6. Shape</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#6a.-Strategies">6a. Strategies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Reshaping-by-Index">Reshaping by Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Reshaping-Explicitly">Reshaping Explicitly</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#7.-Window-Features">7. Window Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#6b.-Create">6b. Create</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#└──-FeatureShaper.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Window">7. Window</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#7a.-Create">7a. Create</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#8.-Splitset">8. <code class="docutils literal notranslate"><span class="pre">Splitset</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Splitset">8. Splitset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#8a.-Create">8a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#8b.-Cross-Validation">8b. Cross-Validation</a></li>
 </ul>
@@ -597,7 +602,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Low-Level-API-[under-construction]">
 <h1>Low-Level API [under construction]<a class="headerlink" href="#Low-Level-API-[under-construction]" title="Permalink to this headline"></a></h1>
-<p><img alt="170d6651c5a344dc8ac41b87ba35eeee" class="banner-photo" src="../_images/pipes.png" /></p>
+<p><img alt="afa4d9bd50a94bd2a57b20859fae0628" class="banner-photo" src="../_images/pipes.png" /></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 27%" />
@@ -638,7 +643,7 @@ div.rendered_html tbody tr:hover {
 <hr class="docutils" />
 </section>
 <section id="1.-Dataset">
-<h2>1. <code class="docutils literal notranslate"><span class="pre">Dataset</span></code><a class="headerlink" href="#1.-Dataset" title="Permalink to this headline"></a></h2>
+<h2>1. Dataset<a class="headerlink" href="#1.-Dataset" title="Permalink to this headline"></a></h2>
 <img alt="Datasets" src="../_images/dimensions.png" />
 <p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different types of data:</p>
 <table class="docutils align-default">
@@ -680,9 +685,8 @@ div.rendered_html tbody tr:hover {
 <div><p><em>Why not 2D NumPy?</em> The <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> class is intended for strict, column-specific dtypes and Parquet persistence upon ingestion. In practice, this conflicted too often with NumPy’s array-wide dtyping. We use the best tools for the job (df/pq for 2D) and (array/npy for ND).</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
 <section id="1a.-Register">
-<h2>1a. Register<a class="headerlink" href="#1a.-Register" title="Permalink to this headline"></a></h2>
+<h3>1a. Register<a class="headerlink" href="#1a.-Register" title="Permalink to this headline"></a></h3>
 <p><em>Most of the Dataset registration methods share these arguments:</em></p>
 <table class="docutils align-default">
 <colgroup>
@@ -736,6 +740,7 @@ duplicate, it will warn you and <code class="docutils literal notranslate"><span
 max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal of machine learning isn’t to record the entire population within the weights of a neural network, it’s to find subsets that are representative of the broader population.</p>
 </div></blockquote>
 <hr class="docutils" />
+</section>
 <section id="1ai.-Dataset.Tabular">
 <h3>1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai.-Dataset.Tabular" title="Permalink to this headline"></a></h3>
 <p>Here are some of the ways practitioners can use this 2D structure:</p>
@@ -1397,7 +1402,7 @@ for anything.</p></td>
 </section>
 </section>
 <section id="2.-Feature">
-<h2>2. <code class="docutils literal notranslate"><span class="pre">Feature</span></code><a class="headerlink" href="#2.-Feature" title="Permalink to this headline"></a></h2>
+<h2>2. Feature<a class="headerlink" href="#2.-Feature" title="Permalink to this headline"></a></h2>
 <p>Determines the columns that will be used as predictive features during training. Columns is always the last dimension <code class="docutils literal notranslate"><span class="pre">shape[-1]</span></code> of a dataset.</p>
 <hr class="docutils" />
 <section id="2a.-Create">
@@ -1486,7 +1491,7 @@ for anything.</p></td>
 </section>
 </section>
 <section id="3.-Label">
-<h2>3. <code class="docutils literal notranslate"><span class="pre">Label</span></code><a class="headerlink" href="#3.-Label" title="Permalink to this headline"></a></h2>
+<h2>3. Label<a class="headerlink" href="#3.-Label" title="Permalink to this headline"></a></h2>
 <p>Determines the column(s) that will be used as a target during supervised analysis. Do no create a Label if you intend to conduct unsupervised/ self-supervised analysis.</p>
 <hr class="docutils" />
 <section id="3a.-Create">
@@ -1565,14 +1570,15 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </section>
 <section id="4.-Interpolate">
 <h2>4. Interpolate<a class="headerlink" href="#4.-Interpolate" title="Permalink to this headline"></a></h2>
-<p>If you have continuous columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. If you don’t have time series data then you do not need interpolation.</p>
+<p>If you don’t have time series data then you do not need interpolation.</p>
+<p>If you have continuous columns with missing data in a time series, then interpolation allows you to fill in those blanks mathematically. It does so by fitting a curve to each column. Therefore each column passed to an interpolater must satisfy: <code class="docutils literal notranslate"><span class="pre">np.issubdtype(dtype,</span> <span class="pre">np.floating)</span></code>.</p>
 <p>Interpolation is the first preprocessor because you need to fill in blanks prior to encoding.</p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">pandas.DataFrame.interpolate</span></code></p>
 <p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.interpolate.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.interpolate.html</a></p>
 <p>Is utilized due to its ease of use, variety of methods, and <strong>support of sparse indices</strong>. However, it does not follow the <code class="docutils literal notranslate"><span class="pre">fit/transform</span></code> pattern like many of the class-based sklearn preprocessors, so the interpolated training data is concatenated with the evalaution split during the interpolation of evaluation splits.</p>
 </div></blockquote>
-<p>These are the default settings if <code class="docutils literal notranslate"><span class="pre">interpolate_kwargs=None</span></code>:</p>
+<p>Below are the default settings if <code class="docutils literal notranslate"><span class="pre">interpolate_kwargs=None</span></code> that get passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. In my experience, <code class="docutils literal notranslate"><span class="pre">method=spline</span></code> produces the best results. However, if either (a) spline fails to fit to your data, or (b) you know that your pattern is linear - then try <code class="docutils literal notranslate"><span class="pre">method=linear</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">interpolate_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">method</span>            <span class="o">=</span> <span class="s1">&#39;spline&#39;</span>
     <span class="p">,</span> <span class="n">limit_direction</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span>
@@ -1582,6 +1588,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>Because the sample dimension is different for each Dataset Type, they approach interpolation differently.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 50%" />
@@ -1608,6 +1615,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <section id="4a.-LabelInterpolater">
 <h3>4a. <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code><a class="headerlink" href="#4a.-LabelInterpolater" title="Permalink to this headline"></a></h3>
 <p>Label is intended for a single column, so only 1 Interpolater will be used during <code class="docutils literal notranslate"><span class="pre">Label.preprocess()</span></code></p>
+<hr class="docutils" />
 <section id="└──-LabelInterpolater.from_label()">
 <h4>└── <code class="docutils literal notranslate"><span class="pre">LabelInterpolater.from_label()</span></code><a class="headerlink" href="#└──-LabelInterpolater.from_label()" title="Permalink to this headline"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelInterpolater</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
@@ -1635,7 +1643,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <tr class="row-even"><td><p><strong>label_id</strong></p></td>
 <td><p>int</p></td>
 <td><p>Required</p></td>
-<td><p>Points to the <code class="docutils literal notranslate"><span class="pre">Label.columns</span></code> to be interpolated</p></td>
+<td><p>Points to the <code class="docutils literal notranslate"><span class="pre">Label.columns</span></code> to use</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>process_separately</strong></p></td>
 <td><p>bool</p></td>
@@ -1645,9 +1653,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <tr class="row-even"><td><p><strong>interpolate_kwargs</strong></p></td>
 <td><p>dict</p></td>
 <td><p>None</p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">interpolate_kwargs:dict=None</span></code> object is what gets passed to Pandas interpolation. In my experience,
-<code class="docutils literal notranslate"><span class="pre">method=spline</span></code> produces the best results. However, if either (a) spline fails to fit to your data, or (b) you know that
-your pattern is linear - then try <code class="docutils literal notranslate"><span class="pre">method=linear</span></code>.</p></td>
+<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference external" href="#4.-Interpolate">Interpolate</a> section for defaults.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1656,7 +1662,8 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 </section>
 <section id="4b.-FeatureInterpolater">
 <h3>4b. <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code><a class="headerlink" href="#4b.-FeatureInterpolater" title="Permalink to this headline"></a></h3>
-<p>For <em>multivariate datasets</em> there may be several columns/ dtypes that have completely different patterns/ curves to fit. So we can specify multiple FeatureInterpolaters, and give them column/dtype filters.</p>
+<p>For <em>multivariate</em> datasets, columns/dtypes may need to be handled differently. So we use column/dtype filters to apply separate transformations. If the first transformation’s filter includes a certain column/dtype, then subsequent filters may not include that column/dtype.</p>
+<hr class="docutils" />
 <section id="└──-FeatureInterpolater.from_feature()">
 <h4>└── <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater.from_feature()</span></code><a class="headerlink" href="#└──-FeatureInterpolater.from_feature()" title="Permalink to this headline"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
@@ -1687,7 +1694,7 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 <tr class="row-even"><td><p><strong>feature_id</strong></p></td>
 <td><p>int</p></td>
 <td><p>Required</p></td>
-<td><p>Points to the <code class="docutils literal notranslate"><span class="pre">Feature.columns</span></code> to be interpolated</p></td>
+<td><p>Points to the <code class="docutils literal notranslate"><span class="pre">Feature.columns</span></code> to use</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>process_separately</strong></p></td>
 <td><p>bool</p></td>
@@ -1702,12 +1709,12 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 your pattern is linear - then try <code class="docutils literal notranslate"><span class="pre">method=linear</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>dtypes</strong></p></td>
-<td><p>type</p></td>
+<td><p>list(str)</p></td>
 <td><p>None</p></td>
 <td><p>The dtypes to include</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>columns</strong></p></td>
-<td><p>type</p></td>
+<td><p>list(str)</p></td>
 <td><p>None</p></td>
 <td><p>The columns to include. Errors if any of the columns were already included by dtypes.</p></td>
 </tr>
@@ -1722,147 +1729,248 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 </section>
 </section>
 </section>
-<section id="5.-Encode-Features-&amp;-Labels">
-<h2>5. Encode Features &amp; Labels<a class="headerlink" href="#5.-Encode-Features-&-Labels" title="Permalink to this headline"></a></h2>
-<section id="Encoding">
-<h3>Encoding<a class="headerlink" href="#Encoding" title="Permalink to this headline"></a></h3>
-<p>Certain algorithms either (a) require features and/ or labels formatted a certain way, or (b) perform significantly better when their values are normalized. For example:</p>
-<ul class="simple">
-<li><p>Scaling continuous features from (-1 to 1) or (0.0 to 1.0). Or transforming them to resemble a more Gaussian distribution.</p></li>
-<li><p>Converting ordinal or categorical string data <code class="docutils literal notranslate"><span class="pre">[dog,</span> <span class="pre">cat,</span> <span class="pre">fish]</span></code> into one-hot encoded format <code class="docutils literal notranslate"><span class="pre">[[1,0,0][0,1,0][0,0,1]]</span></code>.</p></li>
-</ul>
-<p>There are two phases of encoding: 1. <code class="docutils literal notranslate"><span class="pre">fit</span></code> - where the encoder learns about the values of the samples made available to it. Ideally, you only want to <code class="docutils literal notranslate"><span class="pre">fit</span></code> aka learn from your training split so that you are not <em>“leaking”</em> information from your validation and test spits into your encoder! 2. <code class="docutils literal notranslate"><span class="pre">transform</span></code> - where the encoder transforms all of the samples in the population.</p>
-<p>AIQC has solved the following challenges related to encoding:</p>
-<ul class="simple">
-<li><p>How does one dynamically <code class="docutils literal notranslate"><span class="pre">fit</span></code> on only the training samples in advanced scenarios like cross-validation where a different fold is used for validation each time?</p></li>
-<li><p>For certain encoders, especially categorical ones, there is arguably no leakage. If an encoder is arbitrarilly assigning values/ tags to a sample through a process that is not aggregate-informed, then the information that is reveal to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> is largely irrelevant. As an analogy, if we are examining swan color and all of a sudden there is a black swan… it’s clearly not white, so slap a non-white label on it and move on. In fact, the prediction process and performance metric calucatlion
-may fail if it doesn’t know how to handle the previously unseen category.</p></li>
-<li><p>Certain encoders only accept certain dtypes. Certain encoders only accept certain dimensionality (e.g. 1D, 2D, 3D) or shape patterns (odd-by-odd square). Unfortunately, there is not much uniformity here.</p></li>
-<li><p>Certain encoders output extraneous objects that don’t work with deep learning libraries.</p></li>
-</ul>
+<section id="5.-Encode">
+<h2>5. Encode<a class="headerlink" href="#5.-Encode" title="Permalink to this headline"></a></h2>
+<p>Transform data into numerical format that is close to zero. Reference <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/explainer.html">Encoding</a> for more information.</p>
+<p>There are two phases of encoding: 1. <code class="docutils literal notranslate"><span class="pre">fit</span></code> on train - where the encoder learns about the values of the samples made available to it. Ideally, you only want to <code class="docutils literal notranslate"><span class="pre">fit</span></code> aka learn from your training split so that you are not <a class="reference external" href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4">leaking</a> information from your validation and test spits into your model! However, categorical encoders are always fit on the entire dataset because they are not prone to leakage and any weights tied to empty OHE
+inputs will zero-out. 2. <code class="docutils literal notranslate"><span class="pre">transform</span></code> each split/fold</p>
 <blockquote>
-<div><p>Only <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> methods are officially supported, but we have experimented with <code class="docutils literal notranslate"><span class="pre">sklearn.feature_extraction.text.CountVectorizer</span></code></p>
+<div><p>Only <a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing">sklearn.preprocessing</a> methods are officially supported, but we have experimented with <code class="docutils literal notranslate"><span class="pre">sklearn.feature_extraction.text.CountVectorizer</span></code></p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
-<section id="a)-Encode-labels-with-LabelCoder.">
-<h3>a) Encode labels with <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>.<a class="headerlink" href="#a)-Encode-labels-with-LabelCoder." title="Permalink to this headline"></a></h3>
-<p>Unfortunately, the name “LabelEncoder” is occupied by <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing.LabelEncoder</span></code></p>
-<p>Of course, you cannot encode Labels if your <code class="docutils literal notranslate"><span class="pre">Splitset</span></code> does not have labels in the first place.</p>
-<p>The process is straightforward. You provide an instantiated encoder [e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> not <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code>], and then AIQC will:</p>
-<ul class="simple">
-<li><p>Verify that the encoder works with your <code class="docutils literal notranslate"><span class="pre">Label</span></code>’s dtype, sample values, and figure out what dimensionality it needs in order to succeed.</p></li>
-<li><p>Automatically correct the attributes of your encoder to smooth out any common errors they would cause. For example, preventing the output of a sparse scipy matrix.</p></li>
-<li><p>Determine whether the encoder should be <code class="docutils literal notranslate"><span class="pre">fit</span></code> either (a) exclusively on the train split, or (b) if it is not prone to leakage, inclusively on the entire dataset thereby reducing the chance of errors arising.</p></li>
-</ul>
-<section id="Creating-a-LabelCoder">
-<h4>Creating a <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code><a class="headerlink" href="#Creating-a-LabelCoder" title="Permalink to this headline"></a></h4>
-<p>AIQC only supports the uppercase <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> methods (e.g. <code class="docutils literal notranslate"><span class="pre">RobustScaler</span></code>, but not <code class="docutils literal notranslate"><span class="pre">robust_scale</span></code>) because the lowercase methods do not separate the <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">transform</span></code> steps. FYI, most of the uppercase methods have a combined <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method if you need them.</p>
+<section id="5a.-LabelCoder">
+<h3>5a. <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code><a class="headerlink" href="#5a.-LabelCoder" title="Permalink to this headline"></a></h3>
+<p>Label is intended for a single column, so only 1 LabelCoder will be used during <code class="docutils literal notranslate"><span class="pre">Label.preprocess()</span></code></p>
 <blockquote>
-<div><p><a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing">https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing</a></p>
+<div><p>Unfortunately, the name “LabelEncoder” is occupied by <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing.LabelEncoder</span></code></p>
 </div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="o">*</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[52]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">labelcoder</span> <span class="o">=</span> <span class="n">LabelCoder</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
-    <span class="n">label_id</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">sklearn_preprocess</span><span class="o">=</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<hr class="docutils" />
+<section id="└──-LabelCoder.from_label()">
+<h4><code class="docutils literal notranslate"><span class="pre">└──</span> <span class="pre">LabelCoder.from_label()</span></code><a class="headerlink" href="#└──-LabelCoder.from_label()" title="Permalink to this headline"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelCoder</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
+    <span class="n">label_id</span>
+    <span class="p">,</span> <span class="n">sklearn_preprocess</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<p>The following method is used behind the scenes to fetch the most recently create LabelCoder for your Label when it comes time to encode data during training.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>label_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>Points to the <code class="docutils literal notranslate"><span class="pre">Label.columns</span></code> to use</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>sklearn_preprocess</strong></p></td>
+<td><p>object</p></td>
+<td><p>Required</p></td>
+<td><p>An instantiated <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> class-based encoder - e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> neither <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> nor
+<code class="docutils literal notranslate"><span class="pre">scale()</span></code>. AIQC will automatically correct the attributes of your encoder to smooth out any common errors they would
+cause. For example, preventing sparse SciPy matrix output (errors during tensor conversion) and data <code class="docutils literal notranslate"><span class="pre">copy()</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 </section>
 </section>
-<section id="b)-Encode-Features-sequentially-with-FeatureCoders.">
-<h3>b) Encode Features sequentially with <code class="docutils literal notranslate"><span class="pre">FeatureCoders</span></code>.<a class="headerlink" href="#b)-Encode-Features-sequentially-with-FeatureCoders." title="Permalink to this headline"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code> has the same validation process as the <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code>. However, it is not without its own challenges:</p>
-<ul class="simple">
-<li><p>We want to be able to apply different encoders to columns of different dtypes.</p></li>
-<li><p>Additionally, even within the same dtype (e.g. float/ continuous), different distributions call for different encoders.</p></li>
-<li><p>Commonly used encoders such a <code class="docutils literal notranslate"><span class="pre">OneHotEncoder</span></code> can ouput multiple columns from a single column input. Therefore, the <em>shape</em> of the features can change during encoding.</p></li>
-<li><p>And finally, throughout this entire process, we need to avoid data leakage.</p></li>
-</ul>
-<p>For these reasons, <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code>’s are applied sequentially; in an ordered chain, one after the other. After an encoder is applied, its columns are removed from the raw feature and placed into an intermediary cache specific to each split/ fold.</p>
-<section id="Filtering-feature-columns">
-<h4>Filtering feature columns<a class="headerlink" href="#Filtering-feature-columns" title="Permalink to this headline"></a></h4>
-<p>The filtering mode is either:</p>
-<ul class="simple">
-<li><p>Inclusive (<code class="docutils literal notranslate"><span class="pre">include=True</span></code>) encode columns that match the filter.</p></li>
-<li><p>Exclusive (<code class="docutils literal notranslate"><span class="pre">include=False</span></code>) encode columns outside of the filter.</p></li>
-</ul>
-<p>Then you can select:</p>
-<ol class="arabic simple">
-<li><p>An optional list of <code class="docutils literal notranslate"><span class="pre">dtypes</span></code>.</p></li>
-<li><p>An optional list of <code class="docutils literal notranslate"><span class="pre">columns</span></code> name.</p></li>
-</ol>
-<ul class="simple">
-<li><p>The column filter is applied after the dtype filter.</p></li>
-</ul>
-<blockquote>
-<div><p>You can create a filter for all columns by setting <code class="docutils literal notranslate"><span class="pre">include=False</span></code> and then seting both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</div></blockquote>
-<p>After submitting your encoder, if <code class="docutils literal notranslate"><span class="pre">verbose=True</span></code> is enabled: * The validation rules help determine why it may have failed. * The print statements help determine which columns your current filter matched, and which raw columns remain.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[54]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">FeatureCoder</span> <span class="o">=</span> <span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
-    <span class="n">feature_id</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">id</span>
-    <span class="p">,</span> <span class="n">sklearn_preprocess</span> <span class="o">=</span> <span class="n">PowerTransformer</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;yeo-johnson&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">include</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">,</span> <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<section id="5b.-FeatureCoder">
+<h3>5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code><a class="headerlink" href="#5b.-FeatureCoder" title="Permalink to this headline"></a></h3>
+<p>For <em>multivariate</em> datasets, columns/dtypes may need to be handled differently. So we use column/dtype filters to apply separate transformations. If the first transformation’s filter includes a certain column/dtype, then subsequent filters may not include that column/dtype.</p>
+<hr class="docutils" />
+<section id="└──-FeatureCoder.from_feature()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code><a class="headerlink" href="#└──-FeatureCoder.from_feature()" title="Permalink to this headline"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
+    <span class="n">feature_id</span>
+    <span class="p">,</span> <span class="n">sklearn_preprocess</span>
+    <span class="p">,</span> <span class="n">include</span>
+    <span class="p">,</span> <span class="n">dtypes</span>
+    <span class="p">,</span> <span class="n">columns</span>
+    <span class="p">,</span> <span class="n">verbose</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
-___/ featurecoder_index: 0 \_________
-
-=&gt; The column(s) below matched your filter(s) featurecoder filters.
-
-[&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;, &#39;petal_width&#39;]
-
-=&gt; Done. All feature column(s) have featurecoder(s) associated with them.
-No more FeatureCoders can be added to this Encoderset.
-
-</pre></div></div>
-</div>
-<p>You can also view this information via the following attributes: <code class="docutils literal notranslate"><span class="pre">matching_columns</span></code>, <code class="docutils literal notranslate"><span class="pre">leftover_dtypes</span></code>, and <code class="docutils literal notranslate"><span class="pre">leftover_columns</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>feature_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>Points to the <code class="docutils literal notranslate"><span class="pre">Feature.columns</span></code> to use</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>sklearn_preprocess</strong></p></td>
+<td><p>object</p></td>
+<td><p>Required</p></td>
+<td><p>An instantiated <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> class-based encoder - e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> neither <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> nor
+<code class="docutils literal notranslate"><span class="pre">scale()</span></code>. AIQC will automatically correct the attributes of your encoder to smooth out any common errors they would
+cause. For example, preventing sparse SciPy matrix output (errors during tensor conversion) and data <code class="docutils literal notranslate"><span class="pre">copy()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>include</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>Whether to include or exclude the dtypes/columns that match the filter. You can create a filter for all columns by setting
+<code class="docutils literal notranslate"><span class="pre">include=False</span></code> and then setting both <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>dtypes</strong></p></td>
+<td><p>list(str)</p></td>
+<td><p>None</p></td>
+<td><p>The dtypes to filter</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>columns</strong></p></td>
+<td><p>list(str)</p></td>
+<td><p>None</p></td>
+<td><p>The columns to filter. Errors if any of the columns were already used by dtypes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>verbose</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If True, messages will be printed about the status of the encoders as they attempt to fit on the filtered columns</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 </section>
 </section>
 </section>
-<section id="6.-Reshape-Features">
-<h2>6. Reshape Features<a class="headerlink" href="#6.-Reshape-Features" title="Permalink to this headline"></a></h2>
-<section id="ORM">
-<h3>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h3>
+<section id="6.-Shape">
+<h2>6. Shape<a class="headerlink" href="#6.-Shape" title="Permalink to this headline"></a></h2>
+<p>Changes the shape of data. Only supports Features, not Labels.</p>
+<p>Reshaping is applied at the end of <code class="docutils literal notranslate"><span class="pre">Feature.preprocess()</span></code>. So if the feature data has been altered via time series windowing or One Hot Encoder, then those changes will be reflected in the shape that is fed to `</p>
 <p>When working with architectures that are highly dimensional such convolutional and recurrent networks (Conv1D, Conv2D, Conv3D / ConvLSTM1D, ConvLSTM2D, ConvLSTM3D), you’ll often find yourself needing to reshape data to fit a layer’s required input shape.</p>
-<p>AIQC ingestion &amp; preprocessing favors a <em>“channels_first”</em> (samples, channels, rows, columns) approach as opposed to <em>“channels_last”</em> (samples, rows, columns, channels).</p>
 <ul class="simple">
-<li><p><em>Reducing unused dimensions</em> - When working with grayscale/ single channel images (1 channel, 25 rows, 25 columns) there is no sense using Conv2D just to handle that 1 channel.</p></li>
+<li><p><em>Reducing unused dimensions</em> - When working with grayscale images (1 channel, 25 rows, 25 columns) it’s better to use Conv1D instead of Conv2D.</p></li>
 <li><p><em>Adding wrapper dimensions</em> - Perhaps your data is a fit for ConvLSTM1D, but that layer is only supported in the nightly TensorFlow build so you want to add a wrapper dimension in order to use the production-ready ConvLSTM2D.</p></li>
 </ul>
-<p>It is difficult do this on the fly during training (aka after the fact) because you need to: add reshaping layers/ views to your model, intercept and reshape the data in your post-processing functions, and, by this point, the data is in a variety of tensor formats. It’s also more efficient to do this wrangling once up front rather than repeatedly on every training run.</p>
+<p>AIQC favors a <em>“channels_first”</em> (samples, channels, rows, columns) approach as opposed to <em>“channels_last”</em> (samples, rows, columns, channels).</p>
+<blockquote>
+<div><p><em>Can’t I just reshape the tensors during the training loop?</em> You could. However, AIQC systemtically provides the shape of features and labels to <code class="docutils literal notranslate"><span class="pre">Algorith.fn_build</span></code> to make designing the topology easier, so it’s best to get the shape right beforehand. Additionally, if you reshape your data within the training loop, then you may also need to reshape the output of <code class="docutils literal notranslate"><span class="pre">Algorithm.fn_predict</span></code> so that it is correctly formatted for automatic post-processing. It’s also more computationally efficient
+to do the reshaping once up front.</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="6a.-Strategies">
+<h3>6a. Strategies<a class="headerlink" href="#6a.-Strategies" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">reshape_indices</span></code> argument is ultimately fed to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html">np.reshape(newshape)</a>. We use <em>index n</em> to point to the value at <code class="docutils literal notranslate"><span class="pre">ndarray.shape[n]</span></code>.</p>
+<section id="Reshaping-by-Index">
+<h4>Reshaping by Index<a class="headerlink" href="#Reshaping-by-Index" title="Permalink to this headline"></a></h4>
+<p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our problems is that the images are B&amp;W, so we don’t want a color channel because it would add unecessary dimensionality to our model. Thus, we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Thus we have wrangled ourselves a 3D feature consisting of 2D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>.</p>
+</section>
+<section id="Reshaping-Explicitly">
+<h4>Reshaping Explicitly<a class="headerlink" href="#Reshaping-Explicitly" title="Permalink to this headline"></a></h4>
+<p>But what if the dimensions we want cannot be expressed by rearranging the existing indices? If you define a number as a <code class="docutils literal notranslate"><span class="pre">str</span></code>, then that number will be used as directly as the value at that position.</p>
+<p>So if I wanted to add an extra wrapper dimension to my data to serve as a single color channel, I would simply do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p><em>Then couldn’t I just hardcode my shapes with strings?</em> Yes, but <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> is applied to all of the splits, which are assumed to have different shapes, which is why we use the indices.</p>
+</div></blockquote>
+</section>
+<section id="Multiplicative-Reshaping">
+<h4>Multiplicative Reshaping<a class="headerlink" href="#Multiplicative-Reshaping" title="Permalink to this headline"></a></h4>
+<p>Sometimes you need to stack/nest dimensions. This requires multiplying one shape index by another.</p>
+<p>For example, if I have a 3 separate hours worth of data and I want to treat it as 180 minutes, then I need to go from a shape of (3 hours * 60 minutes) to (180 minutes). Just provide the shape indices that you want to multiply in a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="6b.-Create">
+<h3>6b. Create<a class="headerlink" href="#6b.-Create" title="Permalink to this headline"></a></h3>
+<section id="└──-FeatureShaper.from_feature()">
+<h4>└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code><a class="headerlink" href="#└──-FeatureShaper.from_feature()" title="Permalink to this headline"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureShaper</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
+    <span class="n">feature_id</span>
+    <span class="p">,</span> <span class="n">reshape_indices</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 22%" />
+<col style="width: 10%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>feature_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code> to use</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>reshape_indices</strong></p></td>
+<td><p>tupl(int/str/tupl)</p></td>
+<td><p>Required</p></td>
+<td><p>See <a class="reference external" href="#6a.-Strategies">Strategies</a>.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 13%" />
+<col style="width: 23%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>item</strong></p></td>
+<td><p>type</p></td>
+<td><p>None</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>item</strong></p></td>
+<td><p>type</p></td>
+<td><p>None</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>item</strong></p></td>
+<td><p>type</p></td>
+<td><p>None</p></td>
+<td><p>text</p></td>
+</tr>
+</tbody>
+</table>
 <p>The <code class="docutils literal notranslate"><span class="pre">reshape_indices</span></code> argument accepts a tuple for rearranging indices in your order of choosing. Behind the scenes, it will use <code class="docutils literal notranslate"><span class="pre">np.reshape()</span></code> to rearrange the data at the end of your preprocessing pipeline. How the element is handled in that tuple is determined by its type.</p>
 <p><code class="docutils literal notranslate"><span class="pre">feature.make_featureshaper(reshape_indices:tuple)</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># source code from the end of `feature.preprocess()`</span>
@@ -1883,33 +1991,12 @@ No more FeatureCoders can be added to this Encoderset.
 </pre></div>
 </div>
 <p><em>Warning:</em> if your model is unsupervised (aka generative or self-supervised), then it must output data in <em>“column (aka width) last”</em> shape. Otherwise, automated column decoding will be applied along the wrong dimension.</p>
-</section>
-<section id="Reshaping-by-Index">
-<h3>Reshaping by Index<a class="headerlink" href="#Reshaping-by-Index" title="Permalink to this headline"></a></h3>
-<p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">color</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our image is B&amp;W, so we want to get rid of the single color channel. So we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Thus we have wrangled ourselves a 3D feature consisting of 2D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>.</p>
-</section>
-<section id="Reshaping-Explicitly">
-<h3>Reshaping Explicitly<a class="headerlink" href="#Reshaping-Explicitly" title="Permalink to this headline"></a></h3>
-<p>But what if the dimensions we want cannot be expressed by rearranging the existing indices? You might have been wondering why <code class="docutils literal notranslate"><span class="pre">str</span></code> appeared in the loop above. If you define a string-based number, then that number will be used as directly as the value at that position.</p>
-<p>So if I wanted to add an extra wrapper dimension to my data to serve as a single color channel, I would simply do:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="Multiplicative-Reshaping">
-<h3>Multiplicative Reshaping<a class="headerlink" href="#Multiplicative-Reshaping" title="Permalink to this headline"></a></h3>
-<p>Sometimes you need to stack/nest dimensions. This requires multiplying one shape index by another. For example, if I have a 3 separate hours worth of data and I want to treat it as 180 minutes, then I need to go from a shape of (3 hours * 60 minutes) to (180 minutes). Just provide the shape indices that you want to multiply in a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
+<hr class="docutils" />
 </section>
 </section>
-<section id="7.-Window-Features">
-<h2>7. Window Features<a class="headerlink" href="#7.-Window-Features" title="Permalink to this headline"></a></h2>
+</section>
+<section id="7.-Window">
+<h2>7. Window<a class="headerlink" href="#7.-Window" title="Permalink to this headline"></a></h2>
 <img alt="window_dimensions" src="../_images/window_dimensions.png" />
 <p>Window facilitates sliding windows for a time series Feature. It does not apply to Labels. This is used for unsupervised (aka self-supervised) time series walk-forward forecasting.</p>
 <p>As seen above, no matter what dimensionality the original data has, it will be windowed along the samples (first) dimension. <code class="docutils literal notranslate"><span class="pre">size_window</span></code> determine how many timepoints are included in a window, and <code class="docutils literal notranslate"><span class="pre">size_shift</span></code> determines how many timepoints to slide over before defining a new window.</p>
@@ -1978,7 +2065,7 @@ No more FeatureCoders can be added to this Encoderset.
 </section>
 </section>
 <section id="8.-Splitset">
-<h2>8. <code class="docutils literal notranslate"><span class="pre">Splitset</span></code><a class="headerlink" href="#8.-Splitset" title="Permalink to this headline"></a></h2>
+<h2>8. Splitset<a class="headerlink" href="#8.-Splitset" title="Permalink to this headline"></a></h2>
 <p>Used for sample stratification. Reference <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/explainer.html">Stratification</a> section.</p>
 <table class="docutils align-default">
 <colgroup>
