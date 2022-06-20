@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/pytorch/multi_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Categorizing Plant Species with Multi-Label Classification of Phenotypes. 46230223db174860b14f2f4ec12bcc46 Example Data: Reference Example Datasets for more information. This dataset is comprised o..." />
+  <meta property="og:description" content="Categorizing Plant Species with Multi-Label Classification of Phenotypes. 925c3621e60c44b089efcc74eab025d9 Example Data: Reference Example Datasets for more information. This dataset is comprised o..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -263,7 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Methods">13a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
 </ul>
@@ -631,7 +631,7 @@ div.rendered_html tbody tr:hover {
 <section id="PyTorch:-Tabular-Classify-Multi-Label">
 <h1>PyTorch: Tabular Classify Multi-Label<a class="headerlink" href="#PyTorch:-Tabular-Classify-Multi-Label" title="Permalink to this headline"></a></h1>
 <p><em>Categorizing Plant Species with Multi-Label Classification of Phenotypes.</em></p>
-<p><img alt="46230223db174860b14f2f4ec12bcc46" class="banner-photo" src="../../../_images/plants.png" /></p>
+<p><img alt="925c3621e60c44b089efcc74eab025d9" class="banner-photo" src="../../../_images/plants.png" /></p>
 <section id="Example-Data">
 <h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="../../datasets.html">Example Datasets</a> for more information.</p>
@@ -647,7 +647,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;iris.tsv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -656,9 +656,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;iris.tsv&#39;</span><span class="p">)</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -757,8 +757,9 @@ div.rendered_html tbody tr:hover {
     <span class="p">),</span>
 
     <span class="n">Stratifier</span><span class="p">(</span>
-        <span class="n">size_test</span>    <span class="o">=</span> <span class="mf">0.22</span>
-        <span class="p">,</span> <span class="n">fold_count</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">size_test</span>         <span class="o">=</span> <span class="mf">0.09</span>
+        <span class="p">,</span> <span class="n">size_validation</span> <span class="o">=</span> <span class="mf">0.22</span>
+        <span class="c1">#, fold_count     = 5</span>
     <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -781,8 +782,8 @@ This can result in misleading performance metrics for the last Fold.
 </div>
 <hr class="docutils" />
 </section>
-<section id="Modeling">
-<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<section id="Experiment">
+<h2>Experiment<a class="headerlink" href="#Experiment" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -803,15 +804,27 @@ This can result in misleading performance metrics for the last Fold.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span>
+    <span class="n">features_shape</span>
+    <span class="p">,</span> <span class="n">num_classes</span>
+    <span class="p">,</span> <span class="o">**</span><span class="n">hp</span>
+<span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">12</span><span class="p">),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="c1"># --- Input Layer ---</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l1_neurons&#39;</span><span class="p">])</span>
 
-        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># --- Hidden Layer #1 ---</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l1_neurons&#39;</span><span class="p">],</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l2_neurons&#39;</span><span class="p">])</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="c1"># --- Hidden Layer #2 ---</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l2_neurons&#39;</span><span class="p">],</span> <span class="n">num_classes</span><span class="p">)</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="c1"># --- Output Layer ---</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </pre></div>
@@ -823,16 +836,28 @@ This can result in misleading performance metrics for the last Fold.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
-    <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
-    <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">hp</span>
+    <span class="n">model</span>
+    <span class="p">,</span> <span class="n">loser</span>
+    <span class="p">,</span> <span class="n">optimizer</span>
+
+    <span class="p">,</span> <span class="n">train_features</span>
+    <span class="p">,</span> <span class="n">train_label</span>
+    <span class="p">,</span> <span class="n">eval_features</span>
+    <span class="p">,</span> <span class="n">eval_label</span>
+
+    <span class="p">,</span> <span class="o">**</span><span class="n">hp</span>
 <span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span>
-        <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
-        <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
-        <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span>
-        <span class="p">,</span> <span class="n">epochs</span>     <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">model</span>
+        <span class="p">,</span> <span class="n">loser</span>
+        <span class="p">,</span> <span class="n">optimizer</span>
+
+        <span class="p">,</span> <span class="n">train_features</span>
+        <span class="p">,</span> <span class="n">train_label</span>
+        <span class="p">,</span> <span class="n">eval_features</span>
+        <span class="p">,</span> <span class="n">eval_label</span>
+
+        <span class="p">,</span> <span class="n">epochs</span>     <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span>
         <span class="p">,</span> <span class="n">metrics</span>    <span class="o">=</span> <span class="p">[</span><span class="n">tm</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">tm</span><span class="o">.</span><span class="n">F1Score</span><span class="p">()]</span>
     <span class="p">)</span>
@@ -846,7 +871,10 @@ This can result in misleading performance metrics for the last Fold.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">reduction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;sum&#39;</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="n">batch_size</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">epochs</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">l1_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">l2_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -865,31 +893,19 @@ This can result in misleading performance metrics for the last Fold.
         <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
     <span class="p">),</span>
 
-    <span class="n">Trainer</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">repeat_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Trainer</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">repeat_count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">experiment</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-🔮 Training Models - Fold #1 🔮: 100%|████████████████████████████████| 4/4 [00:47&lt;00:00, 11.98s/it]
-🔮 Training Models - Fold #2 🔮: 100%|████████████████████████████████| 4/4 [00:48&lt;00:00, 12.12s/it]
-🔮 Training Models - Fold #3 🔮: 100%|████████████████████████████████| 4/4 [00:48&lt;00:00, 12.19s/it]
-🔮 Training Models - Fold #4 🔮: 100%|████████████████████████████████| 4/4 [00:49&lt;00:00, 12.41s/it]
-🔮 Training Models - Fold #5 🔮: 100%|████████████████████████████████| 4/4 [00:48&lt;00:00, 12.14s/it]
-</pre></div></div>
 </div>
 <hr class="docutils" />
 </section>

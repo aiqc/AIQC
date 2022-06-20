@@ -47,7 +47,7 @@ Competition
     <td class="tbl-head  top-left">AIQC</td>
     <td class="tbl-head">MLflow</td>
     <td class="tbl-head">WandB</td>
-    <td class="tbl-head  top-right">Lightning</td>
+    <td class="tbl-head  top-right">Lightning</br><small>(Complementary)</small></td>
   </tr>
 
   <tr>
@@ -189,7 +189,7 @@ Competition
   </tr>
 
   <tr>
-    <td class="row-head bottom-left">Scale</td>
+    <td class="row-head bottom-left">Scale</br><small>(if commercial)</small></td>
     <td class="manual">
       Vertical
     </td>

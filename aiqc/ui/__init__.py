@@ -290,7 +290,7 @@ class Tracker(object):
             if (queue_id is None):
                 return None
             queue = orm.Queue.get_by_id(queue_id)
-            progress = round(queue.runs_completed/queue.run_count*100)
+            progress = round(queue.runs_completed/queue.total_runs*100)
             
             if (progress<100):
                 children = dbc.Progress(

@@ -742,10 +742,14 @@ class Dataset(BaseModel):
                 
             elif (arr_klass == klass):
                 # from_folder and from_urls both pass through here
-                # Only overwrite _internal args if they are undefined
                 if (ingest is None):
                     ingest = True
-                elif(ingest==False):
+                
+                # Only calls coming from folder/urls can be (ingest==False)
+                elif (
+                    (_source_path is None) and (_source_format is None) 
+                    and (_urls is None) and (ingest==False)
+                ):
                     msg = "\nYikes - In-memory ndarrays must be ingested.\n"
                     raise Exception(msg)
                 
@@ -853,13 +857,13 @@ class Dataset(BaseModel):
 
             dataset = Dataset.Image.from_numpy(
                 arr4D_or_npyPath = arr_4D
-                , name               = name
-                , description        = description
-                , rename_columns     = rename_columns
-                , retype             = retype
-                , ingest             = ingest
-                , _source_path       = source_path
-                , _source_format     = source_format
+                , name           = name
+                , description    = description
+                , rename_columns = rename_columns
+                , retype         = retype
+                , ingest         = ingest
+                , _source_path   = source_path
+                , _source_format = source_format
             )
             return dataset
 
