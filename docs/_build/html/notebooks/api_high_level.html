@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_high_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="e02dce1447474c23a3d300d6aefdfabf Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
+  <meta property="og:description" content="3a7b96f0978f4b09a1492b9a57da5518 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -386,12 +386,12 @@
 </style>
 <section id="High-Level-API">
 <h1>High-Level API<a class="headerlink" href="#High-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="e02dce1447474c23a3d300d6aefdfabf" class="banner-photo" src="../_images/pawns.png" /></p>
+<p><img alt="3a7b96f0978f4b09a1492b9a57da5518" class="banner-photo" src="../_images/high-level_api.png" /></p>
 <section id="Declarative">
 <h2>Declarative<a class="headerlink" href="#Declarative" title="Permalink to this headline"></a></h2>
 <p>The <em>High-Level API</em> is <em>declarative</em>. What does that mean? All you have to do is specify the <em>state</em> that you want the data in, and then the backend executes all of the tedious data wrangling needed to achieve that state. It’s like Terraform for machine learning.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from aiqc.orm import Dataset
-from aiqc.mlops import *
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
 <ol class="arabic simple">
@@ -401,7 +401,7 @@ from aiqc.mlops import *
 </ol>
 <p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> to the see the high level API in action for various types of data and analysis. It’s declarative nature makes it easy to learn by reading examples as opposed to piecing together which arguments point to each other. Check back here if you get stuck.</p>
 <blockquote>
-<div><p><em>Why so many pointer variables?</em> – Under the hood, the High-Level API is actually chaining together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>. So many of the classes provided here are just an easier-to-use versions of their ORM counterparts.</p>
+<div><p><em>Why so many pointer variables?</em> – Under the hood, the High-Level API is actually chaining together a workflow using the <em>object-relational model (ORM)</em> of the <a class="reference external" href="api_low_level.html">Low-Level API</a>. Many of the classes provided here are just an easier-to-use versions of their ORM counterparts.</p>
 </div></blockquote>
 <hr class="docutils" />
 </section>
@@ -510,37 +510,37 @@ from aiqc.mlops import *
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><em>dataset</em></p></td>
+<tr class="row-even"><td><p><strong>dataset</strong></p></td>
 <td><p>Dataset</p></td>
 <td><p>Required</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Dataset</span></code> from <a class="reference external" href="api_low_level.html">Low-Level API</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><em>exclude_columns</em></p></td>
+<tr class="row-odd"><td><p><strong>exclude_columns</strong></p></td>
 <td><p>list(str)</p></td>
 <td><p>None</p></td>
 <td><p>The columns from the Dataset that will <em>not</em> be used in the featureset</p></td>
 </tr>
-<tr class="row-even"><td><p><em>include_columns</em></p></td>
+<tr class="row-even"><td><p><strong>include_columns</strong></p></td>
 <td><p>list(str)</p></td>
 <td><p>None</p></td>
 <td><p>The columns from the Dataset that <em>will</em> be used in the featureset</p></td>
 </tr>
-<tr class="row-odd"><td><p><em>interpolaters</em></p></td>
+<tr class="row-odd"><td><p><strong>interpolaters</strong></p></td>
 <td><p>list(Input.Interpolater)</p></td>
 <td><p>None</p></td>
 <td><p><a class="reference external" href="#1ai.-Input.Interpolater">Input.Interpolater</a></p></td>
 </tr>
-<tr class="row-even"><td><p><em>window</em></p></td>
+<tr class="row-even"><td><p><strong>window</strong></p></td>
 <td><p>Input.Window</p></td>
 <td><p>None</p></td>
 <td><p><a class="reference external" href="#1aii.-Input.Window">Input.Window</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><em>encoders</em></p></td>
+<tr class="row-odd"><td><p><strong>encoders</strong></p></td>
 <td><p>list(Input.Encoder)</p></td>
 <td><p>None</p></td>
 <td><p><a class="reference external" href="#1aiii.-Input.Encoder">Input.Encoder</a></p></td>
 </tr>
-<tr class="row-even"><td><p><em>reshape_indices</em></p></td>
+<tr class="row-even"><td><p><strong>reshape_indices</strong></p></td>
 <td><p>tuple(int/str/tuple)</p></td>
 <td><p>None</p></td>
 <td><p>Reference <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> from <a class="reference external" href="api_low_level.html">Low-Level API</a>.</p></td>
