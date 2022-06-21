@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="499098bf666d432f8cf7e2c4478a64c8 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="02d4345c2d4e45d982e6a85618662ce8 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -179,12 +179,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#6.-Shape">6. Shape</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#6a.-Strategies">6a. Strategies</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Reshaping-by-Index">Reshaping by Index</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Reshaping-Explicitly">Reshaping Explicitly</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#6a.-Strategies">6a. Strategies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#6b.-Create">6b. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#6c.-Attributes">6c. Attributes</a></li>
 </ul>
@@ -221,8 +216,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#12.-Job">12. Job</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#12a.-Methods">12a. Methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#12b.-Attributes">12b. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#12a.-Attributes">12a. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#13.-Predictor">13. Predictor</a><ul>
@@ -344,7 +338,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="499098bf666d432f8cf7e2c4478a64c8" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="02d4345c2d4e45d982e6a85618662ce8" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -1971,16 +1965,13 @@ to do the reshaping once up front.</p>
 <section id="6a.-Strategies">
 <h3>6a. Strategies<a class="headerlink" href="#6a.-Strategies" title="Permalink to this headline"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">reshape_indices</span></code> argument is ultimately fed to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html">np.reshape(newshape)</a>. We use <em>index n</em> to point to the value at <code class="docutils literal notranslate"><span class="pre">ndarray.shape[n]</span></code>.</p>
-<section id="Reshaping-by-Index">
-<h4>Reshaping by Index<a class="headerlink" href="#Reshaping-by-Index" title="Permalink to this headline"></a></h4>
+<p><strong>Reshaping by Index</strong></p>
 <p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our problems is that the images are B&amp;W, so we don’t want a color channel because it would add unecessary dimensionality to our model. Thus, we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Thus we have wrangled ourselves a 3D feature consisting of 2D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>.</p>
-</section>
-<section id="Reshaping-Explicitly">
-<h4>Reshaping Explicitly<a class="headerlink" href="#Reshaping-Explicitly" title="Permalink to this headline"></a></h4>
+<p><strong>Reshaping Explicitly</strong></p>
 <p>But what if the dimensions we want cannot be expressed by rearranging the existing indices? If you define a number as a <code class="docutils literal notranslate"><span class="pre">str</span></code>, then that number will be used as directly as the value at that position.</p>
 <p>So if I wanted to add an extra wrapper dimension to my data to serve as a single color channel, I would simply do:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
@@ -1989,16 +1980,13 @@ to do the reshaping once up front.</p>
 <blockquote>
 <div><p><em>Then couldn’t I just hardcode my shapes with strings?</em> Yes, but <code class="docutils literal notranslate"><span class="pre">FeatureShaper</span></code> is applied to all of the splits, which are assumed to have different shapes, which is why we use the indices.</p>
 </div></blockquote>
-</section>
-<section id="Multiplicative-Reshaping">
-<h4>Multiplicative Reshaping<a class="headerlink" href="#Multiplicative-Reshaping" title="Permalink to this headline"></a></h4>
+<p><strong>Multiplicative Reshaping</strong></p>
 <p>Sometimes you need to stack/nest dimensions. This requires multiplying one shape index by another.</p>
 <p>For example, if I have a 3 separate hours worth of data and I want to treat it as 180 minutes, then I need to go from a shape of (3 hours * 60 minutes) to (180 minutes). Just provide the shape indices that you want to multiply in a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> like so:</p>
 <blockquote>
 <div><p>&lt;!&gt; if your model is unsupervised (aka generative or self-supervised), then it must output data in <em>“column (aka width) last”</em> shape. Otherwise, automated column decoding will be applied along the wrong dimension.</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
 </section>
 <section id="6b.-Create">
 <h3>6b. Create<a class="headerlink" href="#6b.-Create" title="Permalink to this headline"></a></h3>
@@ -3177,12 +3165,8 @@ Algorithm can have many Hyperparamsets.</p></td>
 <p>The Queue spawns <code class="docutils literal notranslate"><span class="pre">Job</span></code>’s. A Job is like a spec/ manifest for training a model. It may be repeated.</p>
 <p><code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">jobs</span> <span class="pre">=</span> <span class="pre">Hyperamset.hyperamcombo.count()</span> <span class="pre">*</span> <span class="pre">Queue.repeat_count</span> <span class="pre">*</span> <span class="pre">splitset.folds.count()</span></code></p>
 <hr class="docutils" />
-<section id="12a.-Methods">
-<h3>12a. Methods<a class="headerlink" href="#12a.-Methods" title="Permalink to this headline"></a></h3>
-<hr class="docutils" />
-</section>
-<section id="12b.-Attributes">
-<h3>12b. Attributes<a class="headerlink" href="#12b.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="12a.-Attributes">
+<h3>12a. Attributes<a class="headerlink" href="#12a.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Job table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -3567,81 +3551,7 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 </section>
 <section id="Evaluation">
 <h2>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h2>
-<p>For more information on visualization of performance metrics, reference the <a class="reference external" href="evaluation.html">Evaluation</a> documentation.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 26%" />
-<col style="width: 13%" />
-<col style="width: 26%" />
-<col style="width: 35%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Argument</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 26%" />
-<col style="width: 13%" />
-<col style="width: 26%" />
-<col style="width: 35%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Argument</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>name</strong></p></td>
-<td><p>typ</p></td>
-<td><p>Required</p></td>
-<td><p>text</p></td>
-</tr>
-</tbody>
-</table>
+<p>To see the visualization of performance metrics of <code class="docutils literal notranslate"><span class="pre">Queue</span></code>, <code class="docutils literal notranslate"><span class="pre">Predictor</span></code> and <code class="docutils literal notranslate"><span class="pre">Prediction</span></code> in action – reference the <a class="reference external" href="evaluation.html">Evaluation</a> documentation.</p>
 </section>
 </section>
 
