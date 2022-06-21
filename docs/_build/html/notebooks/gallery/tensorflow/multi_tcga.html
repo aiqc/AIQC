@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/tensorflow/multi_tcga.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes. a96a3281b8a3479d8eee5291f0274a3f Context: This dataset is comprised of: Features- the expression of 20,532 genes fro..." />
+  <meta property="og:description" content="Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes. 67e19e037c754b76a5358e879a265da9 Context: This dataset is comprised of: Features- the expression of 20,532 genes fro..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -263,7 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Methods">13a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
 </ul>
@@ -631,7 +631,7 @@ div.rendered_html tbody tr:hover {
 <section id="Feature-Importance-for-Genetic-Target-Validation">
 <h1>Feature Importance for Genetic Target Validation<a class="headerlink" href="#Feature-Importance-for-Genetic-Target-Validation" title="Permalink to this headline"></a></h1>
 <p><em>Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes.</em></p>
-<p><img alt="a96a3281b8a3479d8eee5291f0274a3f" class="banner-photo" src="../../../_images/genes.png" /></p>
+<p><img alt="67e19e037c754b76a5358e879a265da9" class="banner-photo" src="../../../_images/genes.png" /></p>
 <section id="Context">
 <h2>Context<a class="headerlink" href="#Context" title="Permalink to this headline"></a></h2>
 <p>This dataset is comprised of:</p>
@@ -649,6 +649,10 @@ div.rendered_html tbody tr:hover {
 <li><p>Balanced the dataset based on the ‘Class’ column, which essentially meant deleting 150 BRCA samples.</p></li>
 <li><p>Filtered out low expression frequency (EF) genes, but that still left over 19.5K genes.</p></li>
 </ul>
+<hr class="docutils" />
+</section>
+<section id="💾-Data">
+<h2>💾 Data<a class="headerlink" href="#💾-Data" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -669,8 +673,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Pipeline">
-<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<section id="🚰-Pipeline">
+<h2>🚰 Pipeline<a class="headerlink" href="#🚰-Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -713,8 +717,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Modeling">
-<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<section id="🧪-Experiment">
+<h2>🧪 Experiment<a class="headerlink" href="#🧪-Experiment" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -835,8 +839,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Visualization-&amp;-Interpretation">
-<h2>Visualization &amp; Interpretation<a class="headerlink" href="#Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
+<section id="📊-Visualization-&amp;-Interpretation">
+<h2>📊 Visualization &amp; Interpretation<a class="headerlink" href="#📊-Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="../../dashboard.html">Dashboard</a> documentation.</p>
 <p>The patterns must be shockingly absolute. After our first try with a single hidden layer, we achieve a perfect score. This is surprising given the use of a validation and test split, and given the fact that there are 4 different categories.</p>
 <div class="nbinput nblast docutils container">

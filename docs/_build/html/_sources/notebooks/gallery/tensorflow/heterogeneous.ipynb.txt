@@ -50,10 +50,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "regulated-tablet",
+   "id": "7bc33355-96e7-485b-9d98-3ba004148509",
    "metadata": {},
    "source": [
-    "## Example Data"
+    "## 💾 Data"
    ]
   },
   {
@@ -379,10 +379,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "360d2d51-5263-4430-8471-188fad3a5f66",
+   "id": "98ed40ca-40bd-4c05-acb0-c4becb7e394b",
    "metadata": {},
    "source": [
-    "## Multi-Modal Pipeline"
+    "## 🚰 Pipeline"
    ]
   },
   {
@@ -469,10 +469,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fluid-relative",
+   "id": "13e521c1-87e0-4f2e-8b0e-1c9c9d8fc851",
    "metadata": {},
    "source": [
-    "## Modeling"
+    "## 🧪 Experiment"
    ]
   },
   {
@@ -638,30 +638,6 @@
   },
   {
    "cell_type": "markdown",
-   "id": "accredited-zealand",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "cooked-irish",
-   "metadata": {},
-   "source": [
-    "## Modeling"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "3e043350-e172-4fe4-a650-a8ff4b145209",
-   "metadata": {},
-   "source": [
-    "Reference [High-Level API Docs](../../api_high_level.ipynb) for more information."
-   ]
-  },
-  {
-   "cell_type": "markdown",
    "id": "directed-samoa",
    "metadata": {},
    "source": [
@@ -766,10 +742,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1b587b77-a8fc-40ff-b130-0bd3dea2ae8f",
+   "id": "9d9e3b16-4bb1-48dc-a9f6-df593d4dc5af",
    "metadata": {},
    "source": [
-    "## Visualization & Interpretation"
+    "## 📊 Visualization & Interpretation"
    ]
   },
   {

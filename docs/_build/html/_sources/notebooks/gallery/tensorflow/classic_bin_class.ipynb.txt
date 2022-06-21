@@ -50,10 +50,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "amended-hypothesis",
+   "id": "e100d4c4-0292-4c90-b77f-25a10a2fa8c1",
    "metadata": {},
    "source": [
-    "## Example Data"
+    "## 💾 Data"
    ]
   },
   {
@@ -62,28 +62,6 @@
    "metadata": {},
    "source": [
     "Reference [Example Datasets](../../datasets.html) for more information."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "id": "round-adrian",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "from aiqc import datum\n",
-    "from aiqc.orm import Dataset"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 5,
-   "id": "1d830e4a-ce5e-4888-9d9e-168ad168d2b8",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "df = datum.to_df('sonar.csv')\n",
-    "shared_dataset = Dataset.Tabular.from_df(df)"
    ]
   },
   {
@@ -293,7 +271,20 @@
     }
    ],
    "source": [
+    "from aiqc import datum\n",
+    "df = datum.to_df('sonar.csv')\n",
     "df.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "1d830e4a-ce5e-4888-9d9e-168ad168d2b8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from aiqc.orm import Dataset\n",
+    "shared_dataset = Dataset.Tabular.from_df(df)"
    ]
   },
   {
@@ -306,10 +297,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "separate-rebate",
+   "id": "0799361a-42aa-4af0-a3d9-a1b93499918b",
    "metadata": {},
    "source": [
-    "## Pipeline"
+    "## 🚰 Pipeline"
    ]
   },
   {
@@ -370,10 +361,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "30c789b3-fe89-4a8b-9dcd-c12c85b5f9b1",
+   "id": "cf87690d-a183-403f-bca6-42393357e21e",
    "metadata": {},
    "source": [
-    "## Modeling"
+    "## 🧪 Experiment"
    ]
   },
   {
@@ -561,10 +552,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "249cd410-11b0-4e07-be29-5dac4a311250",
+   "id": "b5f149b5-ced0-4145-bc26-5f1ec47da793",
    "metadata": {},
    "source": [
-    "## Visualization & Interpretation"
+    "## 📊 Visualization & Interpretation"
    ]
   },
   {

@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/tensorflow/seq_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Binary Detection of Epileptic Seizures Using a Cohort of Sequence of Electroencephalography (EEG) Readings. 289719733ffa4e26ac568bb48d3a30da Sequence data structures contain many observations (rows..." />
+  <meta property="og:description" content="Binary Detection of Epileptic Seizures Using a Cohort of Sequence of Electroencephalography (EEG) Readings. f59a24b08ec04b85bd1980680b8e575c Sequence data structures contain many observations (rows..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -263,7 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Methods">13a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
 </ul>
@@ -631,35 +631,26 @@ div.rendered_html tbody tr:hover {
 <section id="TensorFlow:-Times-Series-Classify-Binary">
 <h1>TensorFlow: Times Series Classify Binary<a class="headerlink" href="#TensorFlow:-Times-Series-Classify-Binary" title="Permalink to this headline"></a></h1>
 <p><em>Binary Detection of Epileptic Seizures Using a Cohort of Sequence of Electroencephalography (EEG) Readings.</em></p>
-<p><img alt="289719733ffa4e26ac568bb48d3a30da" class="banner-photo" src="../../../_images/waves.png" /></p>
+<p><img alt="f59a24b08ec04b85bd1980680b8e575c" class="banner-photo" src="../../../_images/waves.png" /></p>
 <p>Sequence data structures contain many observations (rows) for each sample (e.g. site, sensor, or patient). They are often used for grouping time-based observations into what is called a time series. However, sequences can also represent biological sequences like DNA and RNA.</p>
 <p>The cardinality of <em>many observations per sample</em> changes the dimensionality of the data from 2D to 3D. This effectively adds an additional layer of complexity to all aspects of data preparation. In this notebook, you’ll see that, once a <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code> has been ingested, the AIQC API allows you to work with multivariate 3D data as easily as if it were 2D. As an example, you can still apply encoders by dtype and column_name.</p>
 <hr class="docutils" />
-<section id="Example-Data">
-<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<section id="💾-Data">
+<h2>💾 Data<a class="headerlink" href="#💾-Data" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="../../datasets.html">Example Datasets</a> for more information.</p>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
 <li><p><em>Features</em> = a sequence of electroencephalogram (EEG) readings.</p></li>
 <li><p><em>Label</em> = presence of an epileptic seizure.</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
-</pre></div>
-</div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;epilepsy.parquet&#39;</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;epilepsy.parquet&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -836,6 +827,15 @@ div.rendered_html tbody tr:hover {
 </div></div>
 </div>
 <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -865,8 +865,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Pipeline">
-<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<section id="🚰-Pipeline">
+<h2>🚰 Pipeline<a class="headerlink" href="#🚰-Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -916,8 +916,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Modeling">
-<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<section id="🧪-Experiment">
+<h2>🧪 Experiment<a class="headerlink" href="#🧪-Experiment" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -1026,8 +1026,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Visualization-&amp;-Interpretation">
-<h2>Visualization &amp; Interpretation<a class="headerlink" href="#Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
+<section id="📊-Visualization-&amp;-Interpretation">
+<h2>📊 Visualization &amp; Interpretation<a class="headerlink" href="#📊-Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="../../dashboard.html">Dashboard</a> documentation.</p>
 </section>
 </section>

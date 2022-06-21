@@ -25,7 +25,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Example Data"
+    "## 💾 Data"
    ]
   },
   {
@@ -52,17 +52,7 @@
    "outputs": [],
    "source": [
     "from aiqc import datum\n",
-    "from aiqc.orm import Dataset"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "df = datum.to_df('brain_tumor.csv')\n",
-    "dataset_label = Dataset.Tabular.from_df(df)"
+    "df = datum.to_df('brain_tumor.csv')"
    ]
   },
   {
@@ -145,6 +135,8 @@
     }
    ],
    "source": [
+    "from aiqc.orm import Dataset\n",
+    "dataset_label = Dataset.Tabular.from_df(df)\n",
     "dataset_label.to_df().head(3)"
    ]
   },
@@ -230,7 +222,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Pipeline"
+    "## 🚰 Pipeline"
    ]
   },
   {
@@ -287,7 +279,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Modeling"
+    "## 🧪 Experiment"
    ]
   },
   {
@@ -466,7 +458,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Visualization & Interpretation"
+    "## 📊 Visualization & Interpretation"
    ]
   },
   {

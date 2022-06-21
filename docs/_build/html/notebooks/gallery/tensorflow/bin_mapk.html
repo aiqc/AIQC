@@ -263,7 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Methods">13a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
 </ul>
@@ -631,7 +631,7 @@ div.rendered_html tbody tr:hover {
 <section id="Feature-Importance-for-Drug-Discovery">
 <h1>Feature Importance for Drug Discovery<a class="headerlink" href="#Feature-Importance-for-Drug-Discovery" title="Permalink to this headline"></a></h1>
 <p><em>In silico interpretation of compound selection using permuted feature importance of neural networks to rank High Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.</em></p>
-<p><img alt="762c56b3ffa34827a965d2b55287aefd" class="banner-photo" src="../../../_images/drugs.png" /></p>
+<p><img alt="4ad869dc312e491ea6c4cb1e6150365b" class="banner-photo" src="../../../_images/drugs.png" /></p>
 <section id="Context">
 <h2>Context<a class="headerlink" href="#Context" title="Permalink to this headline"></a></h2>
 <p>This dataset is comprised of:</p>
@@ -644,12 +644,12 @@ div.rendered_html tbody tr:hover {
 </div></blockquote>
 <p>The purpose of this analysis is to use <em>permuted feature importance</em> to understand which chemical structures are driving the activation of the target.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[153]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[158]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;MAPK_bioassay.parquet&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -658,7 +658,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;MAPK_bioassay.parquet&quot;</span><span class="p">)</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>

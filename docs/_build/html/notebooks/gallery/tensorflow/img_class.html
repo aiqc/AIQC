@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/tensorflow/img_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Brain Tumor Detection via Binary Classification of Magnetic Resonance Imaging (MRI) Scans d0d792a2f3124f3f9353b4d9c95a76d6 Example Data: Reference Example Datasets for more information. This datase..." />
+  <meta property="og:description" content="Brain Tumor Detection via Binary Classification of Magnetic Resonance Imaging (MRI) Scans 2680afccf8e64e198021a1cbc12d9b6e 💾 Data: Reference Example Datasets for more information. This dataset is c..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -263,7 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Methods">13a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
 </ul>
@@ -631,9 +631,9 @@ div.rendered_html tbody tr:hover {
 <section id="TensorFlow:-Image-Classify-Binary">
 <h1>TensorFlow: Image Classify Binary<a class="headerlink" href="#TensorFlow:-Image-Classify-Binary" title="Permalink to this headline"></a></h1>
 <p><em>Brain Tumor Detection via Binary Classification of Magnetic Resonance Imaging (MRI) Scans</em></p>
-<p><img alt="d0d792a2f3124f3f9353b4d9c95a76d6" class="banner-photo" src="../../../_images/brains.png" /></p>
-<section id="Example-Data">
-<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p><img alt="2680afccf8e64e198021a1cbc12d9b6e" class="banner-photo" src="../../../_images/brains.png" /></p>
+<section id="💾-Data">
+<h2>💾 Data<a class="headerlink" href="#💾-Data" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="../../datasets.html">Example Datasets</a> for more information.</p>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
@@ -646,17 +646,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;brain_tumor.csv&#39;</span><span class="p">)</span>
-<span class="n">dataset_label</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;brain_tumor.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -665,7 +655,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dataset_label</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="n">dataset_label</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">dataset_label</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -769,7 +761,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_img_class_11_0.png" src="../../../_images/notebooks_gallery_tensorflow_img_class_11_0.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_img_class_10_0.png" src="../../../_images/notebooks_gallery_tensorflow_img_class_10_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -786,13 +778,13 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/notebooks_gallery_tensorflow_img_class_12_0.png" src="../../../_images/notebooks_gallery_tensorflow_img_class_12_0.png" />
+<img alt="../../../_images/notebooks_gallery_tensorflow_img_class_11_0.png" src="../../../_images/notebooks_gallery_tensorflow_img_class_11_0.png" />
 </div>
 </div>
 <hr class="docutils" />
 </section>
-<section id="Pipeline">
-<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<section id="🚰-Pipeline">
+<h2>🚰 Pipeline<a class="headerlink" href="#🚰-Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
@@ -832,8 +824,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Modeling">
-<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<section id="🧪-Experiment">
+<h2>🧪 Experiment<a class="headerlink" href="#🧪-Experiment" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -995,8 +987,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Visualization-&amp;-Interpretation">
-<h2>Visualization &amp; Interpretation<a class="headerlink" href="#Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
+<section id="📊-Visualization-&amp;-Interpretation">
+<h2>📊 Visualization &amp; Interpretation<a class="headerlink" href="#📊-Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="../../dashboard.html">Dashboard</a> documentation.</p>
 </section>
 </section>

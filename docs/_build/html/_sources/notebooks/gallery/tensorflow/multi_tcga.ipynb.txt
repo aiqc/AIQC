@@ -69,6 +69,22 @@
    ]
   },
   {
+   "cell_type": "markdown",
+   "id": "b68a4eee-c2c7-4689-a94f-88ff724bde02",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ab264f5a-d4bb-4679-a7a3-8dd2048d9d66",
+   "metadata": {},
+   "source": [
+    "## 💾 Data"
+   ]
+  },
+  {
    "cell_type": "code",
    "execution_count": 2,
    "id": "c4905e92-81a1-4dca-a598-a93ab05441c9",
@@ -98,10 +114,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4125b691-3080-406a-9363-698f687953e0",
+   "id": "3079fbfa-ebd5-4529-a237-7e8adbac1b32",
    "metadata": {},
    "source": [
-    "## Pipeline"
+    "## 🚰 Pipeline"
    ]
   },
   {
@@ -165,10 +181,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "142e6d7b-c562-484f-92ac-0541844cb363",
+   "id": "f4972d6c-b5c3-4544-84ca-1ab978dd3852",
    "metadata": {},
    "source": [
-    "## Modeling"
+    "## 🧪 Experiment"
    ]
   },
   {
@@ -324,10 +340,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "656aad8a-7c7a-4084-9e3a-0573bddb2ce3",
+   "id": "0f162581-e88e-4474-b632-26fc7411e44a",
    "metadata": {},
    "source": [
-    "## Visualization & Interpretation"
+    "## 📊 Visualization & Interpretation"
    ]
   },
   {
