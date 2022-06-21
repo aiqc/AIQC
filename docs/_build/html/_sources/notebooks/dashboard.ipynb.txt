@@ -139,8 +139,8 @@
    "source": [
     "```python\n",
     "Tracker(\n",
-    "    refresh_seconds:int = 10,\n",
-    "    server_runtime:dict = None\n",
+    "    refresh_seconds\n",
+    "    server_runtime\n",
     ")\n",
     "```"
    ]
@@ -151,10 +151,10 @@
     "tags": []
    },
    "source": [
-    "| Argument | Description |\n",
-    "| --- | --- |\n",
-    "| *refresh_seconds* | Polling frequency (between 5 & 30 seconds). Ensures that the UI has access to up-to-date information. |\n",
-    "| *server_runtime* | Passed through to: `dash.Dash.app.run_server()` as **kwargs. |"
+    "Argument | Type | Default | Description\n",
+    "--- | --- | --- | ---\n",
+    "| **refresh_seconds** | int | 10 | Polling frequency (between 5 & 30 seconds). Ensures that the UI has access to up-to-date information. |\n",
+    "| **server_runtime** | dict(str=any) | None | Passed through to: `dash.Dash.app.run_server()` as **kwargs. |"
    ]
   },
   {
@@ -179,14 +179,28 @@
     "tags": []
    },
    "source": [
-    "| Key | Description |\n",
-    "| --- | --- |\n",
-    "| *mode* | options: *'external'* browser tab | *'inline'* Jupyter cell | *'jupyterlab'* Jupyter tab |\n",
-    "| *debug* | For inspecting Dash errors and callback DAG |\n",
-    "| *host* | Aka *localhost* |\n",
-    "| *port* | The range *9991:9995* seems fairly unoccupied | \n",
-    "\n",
-    "> https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports"
+    "Argument | Type | Default | Description\n",
+    "--- | --- | --- | ---\n",
+    "**mode** | str | 'external' | Polling frequency (between 5 & 30 seconds). Ensures that the UI has access to up-to-date information.\n",
+    "**debug** | bool | False | Passed through to: `dash.Dash.app.run_server()` as **kwargs.\n",
+    "**host** | str | '127.0.0.1' | Aka *localhost* \n",
+    "**port** | int | 9991 | The range *9991:9995* seems fairly unoccupied. See [common ports](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Example"
    ]
   },
   {
@@ -258,9 +272,25 @@
   },
   {
    "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "metadata": {},
    "source": [
     "### Troubleshooting"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The Plotly team was kind enough to release `jupyter_dash` to enable prototyping. That being said, the tool isn't robust."
    ]
   },
   {
@@ -320,6 +350,15 @@
    "metadata": {},
    "source": [
     "The Plotly team has since removed Werkzeug as a dependency."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Known Bug** - `mode='jupyterlab'` silently fails\n",
+    "\n",
+    "Try `Tracker.stop()` and `Tracker.start()`. If that doesn't work, go back to `mode='external'`."
    ]
   },
   {

@@ -2358,7 +2358,7 @@ class Splitset(BaseModel):
     
 
     def cache_samples(id:object):
-        """See the folder structure described in stage_data()"""
+        """Reference the folder structure described in stage_data()"""
         splitset = Splitset.get_by_id(id)
         if (splitset.cache_hot==False):
             if (splitset.fold_count==0):		
@@ -4470,7 +4470,7 @@ class Prediction(BaseModel):
         """
         - Decoupled from predict() because permutation is computationally expensive/ challenging.
         - A practitioner may run several experiments and then decide which model to permute.
-        - Warning: tf can't be imported on multiple Python processes, making parallel optimization challening.
+        - Warning: tf can't be imported on multiple Python processes, making parallel optimization challenging.
         """
         # --- Fetch required objects ---
         prediction = Prediction.get_by_id(id)

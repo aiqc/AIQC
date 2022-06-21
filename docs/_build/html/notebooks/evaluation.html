@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/evaluation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="fd2fd5f914bc4751bda1cb37c3a5e954 Overview: As described in the Low-Level Docs, every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_typ..." />
+  <meta property="og:description" content="ac4214f9763e4e9f82d8e784e06c696a Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_type determines which metrics and plots..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -94,7 +94,8 @@
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Example">Example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
@@ -132,45 +133,21 @@
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#1.-Dataset">1. Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1a.-Register">1a. Register</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.Tabular.from_df()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.Tabular.from_path()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.Sequence.from_numpy()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.Image.from_numpy()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_numpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.Image.from_folder()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.Image.from_urls()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1b.-Fetch">1b. Fetch</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.to_arr()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_arr()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.to_df()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.to_pillow()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_pillow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Dataset.get_dtypes()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1b.-Fetch">1b. Fetch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#1c.-Attributes">1c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#2.-Feature">2. Feature</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#2a.-Create">2a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Feature.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#2a.-Create">2a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#2b.-Fetch">2b. Fetch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#2c.-Attributes">2c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#3.-Label">3. Label</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#3a.-Create">3a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Label.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#3a.-Create">3a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#3b.-Fetch">3b. Fetch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#3c.-Attributes">3c. Attributes</a></li>
 </ul>
@@ -196,7 +173,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#5b.-FeatureCoder">5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#5bi.-Create">5bi. Create</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-FeatureCoder.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#5bii.-Attributes">5bii. Attributes</a></li>
 </ul>
 </li>
@@ -209,16 +185,14 @@
 <li class="toctree-l4"><a class="reference internal" href="api_low_level.html#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#6b.-Create">6b. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-FeatureShaper.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#6b.-Create">6b. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#6c.-Attributes">6c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#7.-Window">7. Window</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#7a.-Create">7a. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#7b.-Attributes">7b. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#7a.-Challenges">7a. Challenges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#7b.-Create">7b. Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#7c.-Attributes">7c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#8.-Splitset">8. Splitset</a><ul>
@@ -228,10 +202,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#9.-Algorithm">9. Algorithm</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#9a.-Create">9a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Algorithm.make()">└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#9a.-Create">9a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#9b.-PyTorch-fit">9b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#9b.-History-Metrics">9b. History Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#9c.-TensorFlow-Early-Stopping">9c. TensorFlow Early Stopping</a></li>
@@ -240,22 +211,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#10.-Hyperparameters">10. Hyperparameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#10a.-Philosophy">10a. Philosophy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#10b.-Create">10b. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Hyperparamset.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#10b.-Create">10b. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#10c.-Attributes">10c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#11.-Queue">11. Queue</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#11a.-Create">11a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Queue.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#11b.-Methods">11b. Methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Queue.run_jobs()">└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#11a.-Methods">11a. Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#11c.-Attributes">11c. Attributes</a></li>
 </ul>
 </li>
@@ -265,16 +226,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#13a.-Methods">13a. Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_low_level.html#13b.-Attributes">13b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#14.-Prediction">14. Prediction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#14a.-Attributes">14a. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#14a.-Methods">14a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_low_level.html#14b.-Attributes">14b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_low_level.html#Evaluation">Evaluation</a></li>
@@ -632,10 +590,10 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Evaluation">
 <h1>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h1>
-<p><img alt="fd2fd5f914bc4751bda1cb37c3a5e954" class="banner-photo" src="../_images/plots.png" /></p>
+<p><img alt="ac4214f9763e4e9f82d8e784e06c696a" class="banner-photo" src="../_images/plots.png" /></p>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
-<p>As described in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>, every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
+<p>Every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
 <ul class="simple">
 <li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, although they go about producing these artifacts differently: e.g. ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
@@ -646,6 +604,9 @@ div.rendered_html tbody tr:hover {
 <li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> when <code class="docutils literal notranslate"><span class="pre">True</span></code>, performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of figs.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p></li>
 </ul>
+<blockquote>
+<div><p>The actual arguments of the methods in this in this notebook are documented in the <a class="reference external" href="api_low_level.html#10.-Assess-the-Results.">Low-Level Docs</a>,</p>
+</div></blockquote>
 <hr class="docutils" />
 </section>
 <section id="Prerequisites">
@@ -697,20 +658,15 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="Queue-Metrics">
 <h3>Queue Metrics<a class="headerlink" href="#Queue-Metrics" title="Permalink to this headline"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">selected_metrics:list</span></code> - If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sort_by:str</span></code> - You can sort the dataframe by any column name.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ascending:bool=False</span></code> - Descending if False.</p></li>
-</ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_df</span><span class="p">(</span>
-    <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;predictor_id&#39;</span>
-    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">selected_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">sort_by</span>        <span class="o">=</span> <span class="s1">&#39;predictor_id&#39;</span>
+    <span class="p">,</span> <span class="n">ascending</span>      <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -801,10 +757,10 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">(</span>
-    <span class="n">selected_metrics</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">,</span> <span class="n">selected_stats</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;predictor_id&#39;</span>
-    <span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">selected_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">selected_stats</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">sort_by</span>        <span class="o">=</span> <span class="s1">&#39;predictor_id&#39;</span>
+    <span class="p">,</span> <span class="n">ascending</span>      <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>

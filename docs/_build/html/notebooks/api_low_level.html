@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="9f07b5108f9d40449e91285ff9cac51d Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="499098bf666d432f8cf7e2c4478a64c8 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -94,7 +94,8 @@
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Example">Example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
@@ -132,45 +133,21 @@
 <li class="toctree-l2"><a class="reference internal" href="#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#1.-Dataset">1. Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#1a.-Register">1a. Register</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Tabular.from_df()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Tabular.from_path()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Sequence.from_numpy()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Image.from_numpy()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_numpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Image.from_folder()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.Image.from_urls()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#1b.-Fetch">1b. Fetch</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.to_arr()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_arr()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.to_df()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.to_pillow()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_pillow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Dataset.get_dtypes()">└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1b.-Fetch">1b. Fetch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#1c.-Attributes">1c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#2.-Feature">2. Feature</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#2a.-Create">2a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Feature.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#2a.-Create">2a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#2b.-Fetch">2b. Fetch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#2c.-Attributes">2c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#3.-Label">3. Label</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#3a.-Create">3a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Label.from_dataset()">└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#3a.-Create">3a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#3b.-Fetch">3b. Fetch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#3c.-Attributes">3c. Attributes</a></li>
 </ul>
@@ -196,7 +173,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#5b.-FeatureCoder">5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#5bi.-Create">5bi. Create</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-FeatureCoder.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#5bii.-Attributes">5bii. Attributes</a></li>
 </ul>
 </li>
@@ -209,16 +185,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#Multiplicative-Reshaping">Multiplicative Reshaping</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#6b.-Create">6b. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-FeatureShaper.from_feature()">└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#6b.-Create">6b. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#6c.-Attributes">6c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#7.-Window">7. Window</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#7a.-Create">7a. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#7b.-Attributes">7b. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7a.-Challenges">7a. Challenges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7b.-Create">7b. Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7c.-Attributes">7c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#8.-Splitset">8. Splitset</a><ul>
@@ -228,10 +202,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#9.-Algorithm">9. Algorithm</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#9a.-Create">9a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Algorithm.make()">└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#9a.-Create">9a. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#9b.-PyTorch-fit">9b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#9b.-History-Metrics">9b. History Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#9c.-TensorFlow-Early-Stopping">9c. TensorFlow Early Stopping</a></li>
@@ -240,22 +211,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#10.-Hyperparameters">10. Hyperparameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#10a.-Philosophy">10a. Philosophy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#10b.-Create">10b. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Hyperparamset.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#10b.-Create">10b. Create</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#10c.-Attributes">10c. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#11.-Queue">11. Queue</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#11a.-Create">11a. Create</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Queue.from_algorithm()">└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#11b.-Methods">11b. Methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Queue.run_jobs()">└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#11a.-Methods">11a. Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#11c.-Attributes">11c. Attributes</a></li>
 </ul>
 </li>
@@ -265,16 +226,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#13a.-Methods">13a. Methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#13a.-Methods">13a. Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#13b.-Attributes">13b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#14.-Prediction">14. Prediction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#14a.-Attributes">14a. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#14a.-Methods">14a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#14b.-Attributes">14b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Evaluation">Evaluation</a></li>
@@ -386,7 +344,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="9f07b5108f9d40449e91285ff9cac51d" class="banner-photo" src="../_images/pipes.png" /></p>
+<p><img alt="499098bf666d432f8cf7e2c4478a64c8" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -524,8 +482,7 @@ max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal
 <div><p>Tabular datasets may contain both features and labels</p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="└──-Dataset.Tabular.from_df()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_df()</span></code><a class="headerlink" href="#└──-Dataset.Tabular.from_df()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_df()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span>
     <span class="n">dataframe</span>
     <span class="p">,</span> <span class="n">rename_columns</span>
@@ -579,9 +536,7 @@ single index. DataFrames are always ingested.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="└──-Dataset.Tabular.from_path()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path()</span></code><a class="headerlink" href="#└──-Dataset.Tabular.from_path()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular.from_path()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span>
     <span class="n">file_path</span>
     <span class="p">,</span> <span class="n">ingest</span>
@@ -648,7 +603,6 @@ for dtypes, and compression works great in Parquet.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-</section>
 <section id="1aii.-Dataset.Sequence">
 <h3>1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1aii.-Dataset.Sequence" title="Permalink to this headline"></a></h3>
 <p>Here are some of the ways practitioners can use this 3D structure:</p>
@@ -673,8 +627,7 @@ for dtypes, and compression works great in Parquet.</p></td>
 <div><p>Sequence datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="└──-Dataset.Sequence.from_numpy()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code><a class="headerlink" href="#└──-Dataset.Sequence.from_numpy()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence.from_numpy()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Sequence</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
     <span class="n">arr3D_or_npyPath</span>
     <span class="p">,</span> <span class="n">ingest</span>
@@ -736,7 +689,6 @@ False.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-</section>
 <section id="1aiii.-Dataset.Image">
 <h3>1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1aiii.-Dataset.Image" title="Permalink to this headline"></a></h3>
 <p>Here are some of the ways you can practitioners this 4D structure:</p>
@@ -762,8 +714,7 @@ False.</p></td>
 <div><p>Image datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="└──-Dataset.Image.from_numpy()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_numpy()</span></code><a class="headerlink" href="#└──-Dataset.Image.from_numpy()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_numpy()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
     <span class="n">arr4D_or_npyPath</span>
     <span class="p">,</span> <span class="n">ingest</span>
@@ -824,9 +775,7 @@ False.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="└──-Dataset.Image.from_folder()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code><a class="headerlink" href="#└──-Dataset.Image.from_folder()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_folder()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_folder</span><span class="p">(</span>
     <span class="n">folder_path</span>
     <span class="p">,</span> <span class="n">ingest</span>
@@ -885,9 +834,7 @@ False.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="└──-Dataset.Image.from_urls()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code><a class="headerlink" href="#└──-Dataset.Image.from_urls()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.Image.from_urls()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dataset</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">from_urls</span><span class="p">(</span>
     <span class="n">urls</span>
     <span class="p">,</span> <span class="n">source_path</span>
@@ -954,13 +901,11 @@ for anything.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-</section>
 <section id="1b.-Fetch">
 <h3>1b. Fetch<a class="headerlink" href="#1b.-Fetch" title="Permalink to this headline"></a></h3>
 <p>The following methods are exposed to end-users in case they want to inspect the data that they have ingested.</p>
 <hr class="docutils" />
-<section id="└──-Dataset.to_arr()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_arr()</span></code><a class="headerlink" href="#└──-Dataset.to_arr()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_arr()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
@@ -1016,9 +961,7 @@ for anything.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="└──-Dataset.to_df()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_df()</span></code><a class="headerlink" href="#└──-Dataset.to_df()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_df()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
@@ -1074,9 +1017,7 @@ for anything.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="└──-Dataset.to_pillow()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_pillow()</span></code><a class="headerlink" href="#└──-Dataset.to_pillow()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_pillow()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
@@ -1121,9 +1062,7 @@ for anything.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="└──-Dataset.get_dtypes()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code><a class="headerlink" href="#└──-Dataset.get_dtypes()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
@@ -1153,7 +1092,6 @@ for anything.</p></td>
 </table>
 <p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns then dtype of each column within a <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
 <hr class="docutils" />
-</section>
 </section>
 <section id="1c.-Attributes">
 <h3>1c. Attributes<a class="headerlink" href="#1c.-Attributes" title="Permalink to this headline"></a></h3>
@@ -1248,8 +1186,7 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 <hr class="docutils" />
 <section id="2a.-Create">
 <h3>2a. Create<a class="headerlink" href="#2a.-Create" title="Permalink to this headline"></a></h3>
-<section id="└──-Feature.from_dataset()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code><a class="headerlink" href="#└──-Feature.from_dataset()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Feature</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
     <span class="n">dataset_id</span>
     <span class="p">,</span> <span class="n">include_columns</span>
@@ -1296,7 +1233,6 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 <div><p>Both <code class="docutils literal notranslate"><span class="pre">include_columns</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_columns</span></code> cannot be used at the same time</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
 </section>
 <section id="2b.-Fetch">
 <h3>2b. Fetch<a class="headerlink" href="#2b.-Fetch" title="Permalink to this headline"></a></h3>
@@ -1420,8 +1356,7 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 <hr class="docutils" />
 <section id="3a.-Create">
 <h3>3a. Create<a class="headerlink" href="#3a.-Create" title="Permalink to this headline"></a></h3>
-<section id="└──-Label.from_dataset()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code><a class="headerlink" href="#└──-Label.from_dataset()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Label</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
     <span class="n">dataset_id</span>
     <span class="p">,</span> <span class="n">columns</span>
@@ -1457,7 +1392,6 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
 </section>
 <section id="3b.-Fetch">
 <h3>3b. Fetch<a class="headerlink" href="#3b.-Fetch" title="Permalink to this headline"></a></h3>
@@ -1582,8 +1516,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <hr class="docutils" />
 <section id="4ai.-Create">
 <h4>4ai. Create<a class="headerlink" href="#4ai.-Create" title="Permalink to this headline"></a></h4>
-<section id="└──-LabelInterpolater.from_label()">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">LabelInterpolater.from_label()</span></code><a class="headerlink" href="#└──-LabelInterpolater.from_label()" title="Permalink to this headline"></a></h5>
+<p>└── <code class="docutils literal notranslate"><span class="pre">LabelInterpolater.from_label()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelInterpolater</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
     <span class="n">label_id</span>
     <span class="p">,</span> <span class="n">process_separately</span>
@@ -1624,7 +1557,6 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
 </section>
 <section id="4aii.-Attributes">
 <h4>4aii. Attributes<a class="headerlink" href="#4aii.-Attributes" title="Permalink to this headline"></a></h4>
@@ -1669,8 +1601,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <hr class="docutils" />
 <section id="4bi.-Create">
 <h4>4bi. Create<a class="headerlink" href="#4bi.-Create" title="Permalink to this headline"></a></h4>
-<section id="└──-FeatureInterpolater.from_feature()">
-<h5>└── <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater.from_feature()</span></code><a class="headerlink" href="#└──-FeatureInterpolater.from_feature()" title="Permalink to this headline"></a></h5>
+<p>└── <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
     <span class="p">,</span> <span class="n">process_separately</span>
@@ -1731,7 +1662,6 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
 </section>
 <section id="4bii.-Attributes">
 <h4>4bii. Attributes<a class="headerlink" href="#4bii.-Attributes" title="Permalink to this headline"></a></h4>
@@ -1805,8 +1735,7 @@ inputs will zero-out. 2. <code class="docutils literal notranslate"><span class=
 <hr class="docutils" />
 <section id="5ai.-Create">
 <h4>5ai. Create<a class="headerlink" href="#5ai.-Create" title="Permalink to this headline"></a></h4>
-<section id="└──-LabelCoder.from_label()">
-<h5><code class="docutils literal notranslate"><span class="pre">└──</span> <span class="pre">LabelCoder.from_label()</span></code><a class="headerlink" href="#└──-LabelCoder.from_label()" title="Permalink to this headline"></a></h5>
+<p>└── `LabelCoder.from_label()</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelCoder</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
     <span class="n">label_id</span>
     <span class="p">,</span> <span class="n">sklearn_preprocess</span>
@@ -1843,7 +1772,6 @@ cause. For example, preventing sparse SciPy matrix output (errors during tensor 
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
 </section>
 <section id="5aii.-Attributes">
 <h4>5aii. Attributes<a class="headerlink" href="#5aii.-Attributes" title="Permalink to this headline"></a></h4>
@@ -1896,9 +1824,7 @@ cause. For example, preventing sparse SciPy matrix output (errors during tensor 
 <hr class="docutils" />
 <section id="5bi.-Create">
 <h4>5bi. Create<a class="headerlink" href="#5bi.-Create" title="Permalink to this headline"></a></h4>
-</section>
-<section id="└──-FeatureCoder.from_feature()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code><a class="headerlink" href="#└──-FeatureCoder.from_feature()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
     <span class="p">,</span> <span class="n">sklearn_preprocess</span>
@@ -2076,8 +2002,7 @@ to do the reshaping once up front.</p>
 </section>
 <section id="6b.-Create">
 <h3>6b. Create<a class="headerlink" href="#6b.-Create" title="Permalink to this headline"></a></h3>
-<section id="└──-FeatureShaper.from_feature()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code><a class="headerlink" href="#└──-FeatureShaper.from_feature()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureShaper</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
     <span class="p">,</span> <span class="n">reshape_indices</span>
@@ -2112,7 +2037,6 @@ to do the reshaping once up front.</p>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
 </section>
 <section id="6c.-Attributes">
 <h3>6c. Attributes<a class="headerlink" href="#6c.-Attributes" title="Permalink to this headline"></a></h3>
@@ -2196,16 +2120,27 @@ to do the reshaping once up front.</p>
 </section>
 <section id="7.-Window">
 <h2>7. Window<a class="headerlink" href="#7.-Window" title="Permalink to this headline"></a></h2>
-<img alt="window_dimensions" src="../_images/window_dimensions.png" />
-<p>Window facilitates sliding windows for a time series Feature. It does not apply to Labels. This is used for unsupervised (aka self-supervised) time series walk-forward forecasting.</p>
-<p>As seen above, no matter what dimensionality the original data has, it will be windowed along the samples (first) dimension. <code class="docutils literal notranslate"><span class="pre">size_window</span></code> determine how many timepoints are included in a window, and <code class="docutils literal notranslate"><span class="pre">size_shift</span></code> determines how many timepoints to slide over before defining a new window.</p>
+<p>Window facilitates sliding windows for a time series Feature. It does not apply to Labels. This is used for unsupervised (aka self-supervised) walk-forward forecasting for time series data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">size_window</span></code> determine how many timepoints are included in a window, and <code class="docutils literal notranslate"><span class="pre">size_shift</span></code> determines how many timepoints to slide over before defining a new window.</p>
 <blockquote>
 <div><p>For example, if we want to be able to <em>predict the next 7 days</em> worth of weather <em>using the past 21 days</em> of weather, then our <code class="docutils literal notranslate"><span class="pre">size_window=21</span></code> and our <code class="docutils literal notranslate"><span class="pre">size_shift=7</span></code>.</p>
 </div></blockquote>
-<img alt="window_samples" src="../_images/stratify_window.png" />
+<hr class="docutils" />
+<section id="7a.-Challenges">
+<h3>7a. Challenges<a class="headerlink" href="#7a.-Challenges" title="Permalink to this headline"></a></h3>
+<p>Dealing with stratified windowed data demands a systematic approach.</p>
+<img alt="window_dimensions" src="../_images/window_dimensions.png" />
+<p><strong>Windowing always increases dimensionality</strong></p>
 <p>After data is windowed, its dimensionality increases by 1. Why? Well, originally we had a <em>single time series</em>. However, if we window that data, then we have <em>many time series subsets</em>.</p>
-<p>This means that the windows now act as the sample dimension, which is important for stratification. Therefore, Window must be created prior to Splitset.</p>
+<img alt="interpolate_windows" src="../_images/interpolate_windows.png" />
+<p><strong>As the highest dimension, it becomes the “sample”</strong></p>
+<p>No matter what dimensionality the original data has, it will be windowed along the first dimension.</p>
+<p>This means that the windows now serve as the samples, which is important for stratification. If we have a year’s worth of windows, we don’t want all of our training windows to come from the same season. Therefore, Window must be created prior to Splitset.</p>
+<p><strong>Windowing may causes overlap in splits</strong></p>
+<p>In addition to increasing the dimensionality of our data, it makes it harder to nail down the boundaries of our splits in order to prevent data leakage.</p>
+<p>As seen in the diagram above, the timesteps of the train and test splits may <em>overlap</em>. So if we are fitting an interpolater to our training split, the first 3 NaNs would be included, but the last 2 would not.</p>
 <img alt="Windows" src="../_images/sliding_windows.png" />
+<p><strong>Shifted and unshifted windows</strong></p>
 <p>In a walk-forward analysis, we learn about the future by looking at the past. So we need 2 sets of windows:</p>
 <ul class="simple">
 <li><p><em>Unshifted windows</em> (orange in diagram above): represent the past and serves as the features we learn from</p></li>
@@ -2213,8 +2148,10 @@ to do the reshaping once up front.</p>
 </ul>
 <p>However, when conducting inference, we are trying to predict the shifted windows not learn from them. So we don’t need to record any shifted windows.</p>
 <hr class="docutils" />
-<section id="7a.-Create">
-<h3>7a. Create<a class="headerlink" href="#7a.-Create" title="Permalink to this headline"></a></h3>
+</section>
+<section id="7b.-Create">
+<h3>7b. Create<a class="headerlink" href="#7b.-Create" title="Permalink to this headline"></a></h3>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Window.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Window</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
     <span class="p">,</span> <span class="n">size_window</span>
@@ -2262,8 +2199,8 @@ to do the reshaping once up front.</p>
 </table>
 <hr class="docutils" />
 </section>
-<section id="7b.-Attributes">
-<h3>7b. Attributes<a class="headerlink" href="#7b.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="7c.-Attributes">
+<h3>7c. Attributes<a class="headerlink" href="#7c.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Window table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -2338,6 +2275,7 @@ to do the reshaping once up front.</p>
 <hr class="docutils" />
 <section id="8a.-Create">
 <h3>8a. Create<a class="headerlink" href="#8a.-Create" title="Permalink to this headline"></a></h3>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.make()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">feature_ids</span>
     <span class="p">,</span> <span class="n">label_id</span>
@@ -2538,8 +2476,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 <p>Assemble an architecture consisting of components defined in functions.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">**hp</span></code> kwargs are common to every Algorithm function except <code class="docutils literal notranslate"><span class="pre">fn_predict</span></code>. They are used to systematically pass a dictionary of <em>hyperparameters</em> into these functions. See Hyperparameters.</p>
 <hr class="docutils" />
-<section id="└──-Algorithm.make()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code><a class="headerlink" href="#└──-Algorithm.make()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Algorithm.make()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Algorithm</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">library</span>
     <span class="p">,</span> <span class="n">analysis_type</span>
@@ -2661,7 +2598,18 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 </pre></div>
 </div>
 <hr class="docutils" />
-</section>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Algorithm.get_code()</span></code></p>
+<p>Reveals the strings of the Algorithm functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">fn_build</span>      <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_build</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_lose</span>     <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_lose</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_optimize</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_train</span>    <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_predict</span>  <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_predict</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
 </section>
 <section id="9b.-PyTorch-fit">
 <h3>9b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#9b.-PyTorch-fit" title="Permalink to this headline"></a></h3>
@@ -2877,8 +2825,7 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 </section>
 <section id="10b.-Create">
 <h3>10b. Create<a class="headerlink" href="#10b.-Create" title="Permalink to this headline"></a></h3>
-<section id="└──-Hyperparamset.from_algorithm()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code><a class="headerlink" href="#└──-Hyperparamset.from_algorithm()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
     <span class="n">algorithm_id</span>
     <span class="p">,</span> <span class="n">hyperparameters</span>
@@ -2930,7 +2877,6 @@ is used.</p></td>
 <div><p>“Bayesian TPE (Tree-structured Parzen Estimator)” via <code class="docutils literal notranslate"><span class="pre">hyperopt</span></code> has been suggested as a future area to explore, but it does not exist right now.</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
 </section>
 <section id="10c.-Attributes">
 <h3>10c. Attributes<a class="headerlink" href="#10c.-Attributes" title="Permalink to this headline"></a></h3>
@@ -3005,10 +2951,9 @@ is used.</p></td>
 <h2>11. Queue<a class="headerlink" href="#11.-Queue" title="Permalink to this headline"></a></h2>
 <p>The Queue is the central object of the “logic side” of the ORM. It ties together everything we need to run training <code class="docutils literal notranslate"><span class="pre">Job</span></code>’s for hyperparameter tuning. That’s why it is referred to as an Experiment in the High-Level API.</p>
 <hr class="docutils" />
-<section id="11a.-Create">
-<h3>11a. Create<a class="headerlink" href="#11a.-Create" title="Permalink to this headline"></a></h3>
-<section id="└──-Queue.from_algorithm()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code><a class="headerlink" href="#└──-Queue.from_algorithm()" title="Permalink to this headline"></a></h4>
+<section id="11a.-Methods">
+<h3>11a. Methods<a class="headerlink" href="#11a.-Methods" title="Permalink to this headline"></a></h3>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
     <span class="n">algorithm_id</span>
     <span class="p">,</span> <span class="n">splitset_id</span>
@@ -3072,16 +3017,111 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-</section>
-<section id="11b.-Methods">
-<h3>11b. Methods<a class="headerlink" href="#11b.-Methods" title="Permalink to this headline"></a></h3>
-<section id="└──-Queue.run_jobs()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code><a class="headerlink" href="#└──-Queue.run_jobs()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></p>
 <p>Jobs are simply ran on a loop on the main process.</p>
 <p>Stop the queue with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter. It is listening for interupts so it will usually stop gracefully. Even if it errors upon during interrupt, it’s not a problem. You can rerun the queue and it will resume on the same job it was running previously.</p>
 <hr class="docutils" />
-</section>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.plot_performance()</span></code></p>
+<p>Plots every model trained by the queue for comparison.</p>
+<ul class="simple">
+<li><p>X axis = loss</p></li>
+<li><p>Y axis = score</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
+    <span class="n">call_display</span>
+    <span class="p">,</span> <span class="n">max_loss</span>
+    <span class="p">,</span> <span class="n">min_score</span>
+    <span class="p">,</span> <span class="n">score_type</span>
+    <span class="p">,</span> <span class="n">height</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, calls <code class="docutils literal notranslate"><span class="pre">display()</span></code> on plot. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns Plotly <code class="docutils literal notranslate"><span class="pre">figure</span></code> object(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>max_loss</strong></p></td>
+<td><p>float</p></td>
+<td><p>None</p></td>
+<td><p>Models with any split with higher loss than this threshold will not be plotted.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>min_score</strong></p></td>
+<td><p>typ</p></td>
+<td><p>None</p></td>
+<td><p>Models with any split with a lower score than this threshold will not be plotted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>score_type</strong></p></td>
+<td><p>typ</p></td>
+<td><p>None</p></td>
+<td><p>Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;accuracy&quot;</span></code> for classification analysis, and <code class="docutils literal notranslate"><span class="pre">&quot;r2&quot;</span></code> for regression analysis. See
+<a class="reference external" href="https://github.com/aiqc/AIQC/blob/main/aiqc/utils/meter.py">aiqc.utils.meter</a> for available metrics.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>height</strong></p></td>
+<td><p>typ</p></td>
+<td><p>None</p></td>
+<td><p>Default height is <code class="docutils literal notranslate"><span class="pre">560</span></code> but you can force it to be taller</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.metrics_df()</span></code></p>
+<p>Displays metrics for every split/fold of every model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">metrics_df</span><span class="p">(</span>
+    <span class="n">selected_metrics</span>
+    <span class="p">,</span> <span class="n">sort_by</span>
+    <span class="p">,</span> <span class="n">ascending</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>selected_metrics</strong></p></td>
+<td><p>list(str)</p></td>
+<td><p>None</p></td>
+<td><p>If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>sort_by</strong></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>You can sort the dataframe by any column name.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ascending</strong></p></td>
+<td><p>typ</p></td>
+<td><p>False</p></td>
+<td><p>Descending if False.</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
 </section>
 <section id="11c.-Attributes">
 <h3>11c. Attributes<a class="headerlink" href="#11c.-Attributes" title="Permalink to this headline"></a></h3>
@@ -3184,16 +3224,75 @@ Algorithm can have many Hyperparamsets.</p></td>
 <hr class="docutils" />
 <section id="13a.-Methods">
 <h3>13a. Methods<a class="headerlink" href="#13a.-Methods" title="Permalink to this headline"></a></h3>
-<section id="└──-Predictor.get_model()">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code><a class="headerlink" href="#└──-Predictor.get_model()" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></p>
 <p>Handles fetching and initializing the model (and PyTorch optimizer) from <code class="docutils literal notranslate"><span class="pre">Predictor.model_file</span></code> and <code class="docutils literal notranslate"><span class="pre">Predictor.input_shapes</span></code></p>
 <hr class="docutils" />
-</section>
-<section id="└──-Predictor.get_hyperparameters(as_pandas:bool=True)">
-<h4>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code><a class="headerlink" href="#└──-Predictor.get_hyperparameters(as_pandas:bool=True)" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters()</span></code></p>
 <p>This is a shortcut to fetch the hyperparameters used to train this specific model. <code class="docutils literal notranslate"><span class="pre">as_pandas</span></code> toggles between <code class="docutils literal notranslate"><span class="pre">dict()</span></code> and <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>as_pandas</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
-</section>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.plot_learning_curve()</span></code></p>
+<p>A learning curve will be generated for each train-evaluation pair of metrics in the Predictor.history dictionary</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Predictor</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span>
+    <span class="n">skip_head</span>
+    <span class="p">,</span> <span class="n">call_display</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>skip_head</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>Skips displaying the first 15% of epochs. Loss values in the first few epochs can often be extremely high before they
+plummet and become more gradual. This really stretches out the graph and makes it hard to see if the evaluation set is
+diverging or not.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
 </section>
 <section id="13b.-Attributes">
 <h3>13b. Attributes<a class="headerlink" href="#13b.-Attributes" title="Permalink to this headline"></a></h3>
@@ -3260,8 +3359,178 @@ Algorithm can have many Hyperparamsets.</p></td>
 <h2>14. Prediction<a class="headerlink" href="#14.-Prediction" title="Permalink to this headline"></a></h2>
 <p>When data is fed through a Predictor, you get a <code class="docutils literal notranslate"><span class="pre">Prediction</span></code>. During training, Predictions are automatically generated for every split/fold in the <code class="docutils literal notranslate"><span class="pre">Queue.splitset</span></code>.</p>
 <hr class="docutils" />
-<section id="14a.-Attributes">
-<h3>14a. Attributes<a class="headerlink" href="#14a.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="14a.-Methods">
+<h3>14a. Methods<a class="headerlink" href="#14a.-Methods" title="Permalink to this headline"></a></h3>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.calc_featureImportance()</span></code></p>
+<p>This method is provided for conducting feature importance after training. It was decoupled from training for the following reasons:</p>
+<ul class="simple">
+<li><p>Permutation is computationally expensive, especially for many-columned datasets.</p></li>
+<li><p>We don’t care about the feature importance of poorly performing models, which constitute the vast majority of training.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">calc_featureImportance</span><span class="p">(</span><span class="n">permute_count</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>permute_count</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>Triggers a shuffled permutation of each training data column to determine which columns have the most impact on loss in
+comparison baseline training loss: <code class="docutils literal notranslate"><span class="pre">[training</span> <span class="pre">loss</span> <span class="pre">-</span> <span class="pre">(median</span> <span class="pre">loss</span> <span class="pre">of</span> <span class="pre">&lt;n&gt;</span> <span class="pre">permutations)]</span></code>. The count determines how many
+times the shuffled permutation is ran before taking the median loss. Permutation does <em>not</em> get run on
+<code class="docutils literal notranslate"><span class="pre">Feature.dataset.typ=='image'</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_feature_importance()</span></code></p>
+<p>Plots <code class="docutils literal notranslate"><span class="pre">prediction.feature_importance</span></code> if <code class="docutils literal notranslate"><span class="pre">Queue.permute_count&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">Prediction.calc_featureImportance()</span></code> was ran after the fact.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span>
+    <span class="n">call_display</span>
+    <span class="p">,</span> <span class="n">top_n</span>
+    <span class="p">,</span> <span class="n">height</span>
+    <span class="p">,</span> <span class="n">margin_left</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>top_n</strong></p></td>
+<td><p>int</p></td>
+<td><p>10</p></td>
+<td><p>The number of features to display. If greater than the actual number of features, it just returns all features.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>height</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, dynamically makes the plot taller to fit all of the columns</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>margin_left</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, dynamically makes the y axis margin wider the longest column name</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_roc_curve()</span></code></p>
+<p>Receiver operating curve (ROC) for classification metrics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">(</span><span class="n">call_display</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_precision_recall()</span></code></p>
+<p>Precision/recall curve for classification metrics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">(</span><span class="n">call_display</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_confusion_matrix()</span></code></p>
+<p>Confusion matrices for classification metrics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">call_display</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+</section>
+<section id="14b.-Attributes">
+<h3>14b. Attributes<a class="headerlink" href="#14b.-Attributes" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 50%" />
@@ -3299,6 +3568,80 @@ Algorithm can have many Hyperparamsets.</p></td>
 <section id="Evaluation">
 <h2>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="evaluation.html">Evaluation</a> documentation.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 13%" />
+<col style="width: 26%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 13%" />
+<col style="width: 26%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>name</strong></p></td>
+<td><p>typ</p></td>
+<td><p>Required</p></td>
+<td><p>text</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 

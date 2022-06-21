@@ -25,7 +25,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "As described in the [Low-Level Docs](api_low_level.html#10.-Assess-the-Results.), every training `Job` automatically generates metrics when evaluated against each split/ fold. \n",
+    "\n",
+    "Every training `Job` automatically generates metrics when evaluated against each split/ fold. \n",
     "\n",
     "The `Algorithm.analysis_type` determines which metrics and plots are prepared:\n",
     "\n",
@@ -43,6 +44,13 @@
     "- `call_display:bool=True` when `True`, performs `fig.display()`. Whereas when `False`, it returns the raw `fig` object. The learning curve, feature importance, and confusion matrix functions return a list of figs.\n",
     "\n",
     "- `height:int=None` pixel-based adjustment for boomerang chart and feature importance."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> The actual arguments of the methods in this in this notebook are documented in the [Low-Level Docs](api_low_level.html#10.-Assess-the-Results.), "
    ]
   },
   {
@@ -168,15 +176,6 @@
    ]
   },
   {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "* `selected_metrics:list` - If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.\n",
-    "* `sort_by:str` - You can sort the dataframe by any column name.\n",
-    "* `ascending:bool=False` - Descending if False."
-   ]
-  },
-  {
    "cell_type": "code",
    "execution_count": 5,
    "metadata": {
@@ -279,9 +278,9 @@
    ],
    "source": [
     "queue_multiclass.metrics_df(\n",
-    "    selected_metrics=None\n",
-    "    , sort_by='predictor_id'\n",
-    "\t, ascending=True\n",
+    "    selected_metrics = None\n",
+    "    , sort_by        = 'predictor_id'\n",
+    "    , ascending      = True\n",
     ").head(6)"
    ]
   },
@@ -433,10 +432,10 @@
    ],
    "source": [
     "queue_multiclass.metrics_aggregate_to_pandas(\n",
-    "    selected_metrics=None\n",
-    "    , selected_stats=None\n",
-    "    , sort_by='predictor_id'\n",
-    "    , ascending=True\n",
+    "    selected_metrics = None\n",
+    "    , selected_stats = None\n",
+    "    , sort_by        = 'predictor_id'\n",
+    "    , ascending      = True\n",
     ").head(12)"
    ]
   },
