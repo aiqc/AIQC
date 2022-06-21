@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/pytorch/multi_class.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Categorizing Plant Species with Multi-Label Classification of Phenotypes. 925c3621e60c44b089efcc74eab025d9 Example Data: Reference Example Datasets for more information. This dataset is comprised o..." />
+  <meta property="og:description" content="Categorizing Plant Species with Multi-Label Classification of Phenotypes. 28f49aeea6a246a4882ed5913dfbb011 💾 Data: Reference Example Datasets for more information. This dataset is comprised of: Lab..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -631,9 +631,9 @@ div.rendered_html tbody tr:hover {
 <section id="PyTorch:-Tabular-Classify-Multi-Label">
 <h1>PyTorch: Tabular Classify Multi-Label<a class="headerlink" href="#PyTorch:-Tabular-Classify-Multi-Label" title="Permalink to this headline"></a></h1>
 <p><em>Categorizing Plant Species with Multi-Label Classification of Phenotypes.</em></p>
-<p><img alt="925c3621e60c44b089efcc74eab025d9" class="banner-photo" src="../../../_images/plants.png" /></p>
-<section id="Example-Data">
-<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p><img alt="28f49aeea6a246a4882ed5913dfbb011" class="banner-photo" src="../../../_images/plants.png" /></p>
+<section id="💾-Data">
+<h2>💾 Data<a class="headerlink" href="#💾-Data" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="../../datasets.html">Example Datasets</a> for more information.</p>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
@@ -723,8 +723,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Pipeline">
-<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<section id="🚰-Pipeline">
+<h2>🚰 Pipeline<a class="headerlink" href="#🚰-Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -782,8 +782,8 @@ This can result in misleading performance metrics for the last Fold.
 </div>
 <hr class="docutils" />
 </section>
-<section id="Experiment">
-<h2>Experiment<a class="headerlink" href="#Experiment" title="Permalink to this headline"></a></h2>
+<section id="🧪-Experiment">
+<h2>🧪 Experiment<a class="headerlink" href="#🧪-Experiment" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -810,20 +810,13 @@ This can result in misleading performance metrics for the last Fold.
     <span class="p">,</span> <span class="o">**</span><span class="n">hp</span>
 <span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-        <span class="c1"># --- Input Layer ---</span>
-        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l1_neurons&#39;</span><span class="p">])</span>
-
-        <span class="c1"># --- Hidden Layer #1 ---</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l1_neurons&#39;</span><span class="p">],</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l2_neurons&#39;</span><span class="p">])</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-        <span class="c1"># --- Hidden Layer #2 ---</span>
-        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;l2_neurons&#39;</span><span class="p">],</span> <span class="n">num_classes</span><span class="p">)</span>
+        <span class="c1"># --- Input/Hidden Layer ---</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">features_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neurons&#39;</span><span class="p">])</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 
         <span class="c1"># --- Output Layer ---</span>
+        <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neurons&#39;</span><span class="p">],</span> <span class="n">num_classes</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
@@ -871,10 +864,10 @@ This can result in misleading performance metrics for the last Fold.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">batch_size</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">epochs</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">l1_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">]</span>
-    <span class="p">,</span> <span class="n">l2_neurons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+    <span class="n">batch_size</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">epochs</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span><span class="mi">25</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">neurons</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">]</span>
+    <span class="p">,</span> <span class="n">learn_rate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -893,7 +886,7 @@ This can result in misleading performance metrics for the last Fold.
         <span class="p">,</span> <span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
     <span class="p">),</span>
 
-    <span class="n">Trainer</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">repeat_count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Trainer</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">repeat_count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -909,8 +902,8 @@ This can result in misleading performance metrics for the last Fold.
 </div>
 <hr class="docutils" />
 </section>
-<section id="Visualization-&amp;-Interpretation">
-<h2>Visualization &amp; Interpretation<a class="headerlink" href="#Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
+<section id="📊-Visualization-&amp;-Interpretation">
+<h2>📊 Visualization &amp; Interpretation<a class="headerlink" href="#📊-Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="../../dashboard.html">Dashboard</a> documentation.</p>
 </section>
 </section>

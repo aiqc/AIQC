@@ -26,10 +26,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a4eb2208-0794-4e07-b73a-330a66413a15",
+   "id": "f9842693-37f3-454f-97b9-3895c755c032",
    "metadata": {},
    "source": [
-    "## Example Data"
+    "## 💾 Data"
    ]
   },
   {
@@ -59,7 +59,7 @@
    "outputs": [],
    "source": [
     "from aiqc import datum\n",
-    "from aiqc.orm import Dataset"
+    "df = datum.to_df('exoplanets.parquet')"
    ]
   },
   {
@@ -194,9 +194,9 @@
     }
    ],
    "source": [
-    "df = datum.to_df('exoplanets.parquet')\n",
+    "from aiqc.orm import Dataset\n",
     "shared_dataset = Dataset.Tabular.from_df(df)\n",
-    "df.head()"
+    "df.sample(5)"
    ]
   },
   {
@@ -209,10 +209,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "vulnerable-japan",
+   "id": "9c79faad-10a2-440c-9c60-da7f17e5e7cb",
    "metadata": {},
    "source": [
-    "## Pipeline"
+    "## 🚰 Pipeline"
    ]
   },
   {
@@ -302,10 +302,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dfdf2450-ba91-45d6-bc51-4ea97e65e732",
+   "id": "5d195a5c-6cfd-4483-a905-572e5e5ce1d1",
    "metadata": {},
    "source": [
-    "## Modeling"
+    "## 🧪 Experiment"
    ]
   },
   {
@@ -342,16 +342,19 @@
     "    nc = hp['neuron_count']\n",
     "\n",
     "    model = nn.Sequential(\n",
+    "        # --- Input/Hidden Layer ---\n",
     "        nn.Linear(features_shape[-1], nc)\n",
     "        , nn.BatchNorm1d(nc,nc)\n",
     "        , nn.ReLU()\n",
     "        , nn.Dropout(p=0.4)\n",
-    "\n",
+    "        \n",
+    "        # --- Hidden Layer ---\n",
     "        , nn.Linear(nc, nc)\n",
     "        , nn.BatchNorm1d(nc,nc)\n",
     "        , nn.ReLU()\n",
     "        , nn.Dropout(p=0.4)\n",
     "\n",
+    "        # --- Output Layer ---\n",
     "        , nn.Linear(nc, label_shape[-1])\n",
     "    )\n",
     "    return model"
@@ -464,10 +467,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ee41c4c3-d3a8-44ef-a6da-ec3a1e69bb29",
+   "id": "a360a899-4d1c-4cda-8305-0e679c1ea72e",
    "metadata": {},
    "source": [
-    "## Visualization & Interpretation"
+    "## 📊 Visualization & Interpretation"
    ]
   },
   {

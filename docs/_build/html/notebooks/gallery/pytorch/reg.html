@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/gallery/pytorch/reg.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Predicting Exoplanet Surface Temperature Using Kepler Satellite Sensor Data. aa0313cccec74f97b7586019b4a5ae28 Example Data: Reference Example Datasets for more information. This dataset is comprise..." />
+  <meta property="og:description" content="Predicting Exoplanet Surface Temperature Using Kepler Satellite Sensor Data. e4572aa487d14bd08bb7843f66471f0f 💾 Data: Reference Example Datasets for more information. This dataset is comprised of: ..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -263,7 +263,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_low_level.html#13.-Predictor">13. Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Predictor">13a. Predictor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_low_level.html#13a.-Methods">13a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_model()">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_low_level.html#└──-Predictor.get_hyperparameters(as_pandas:bool=True)">└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters(as_pandas:bool=True)</span></code></a></li>
 </ul>
@@ -631,9 +631,9 @@ div.rendered_html tbody tr:hover {
 <section id="PyTorch:-Tabular-Regression">
 <h1>PyTorch: Tabular Regression<a class="headerlink" href="#PyTorch:-Tabular-Regression" title="Permalink to this headline"></a></h1>
 <p><em>Predicting Exoplanet Surface Temperature Using Kepler Satellite Sensor Data.</em></p>
-<p><img alt="aa0313cccec74f97b7586019b4a5ae28" class="banner-photo" src="../../../_images/planets.png" /></p>
-<section id="Example-Data">
-<h2>Example Data<a class="headerlink" href="#Example-Data" title="Permalink to this headline"></a></h2>
+<p><img alt="e4572aa487d14bd08bb7843f66471f0f" class="banner-photo" src="../../../_images/planets.png" /></p>
+<section id="💾-Data">
+<h2>💾 Data<a class="headerlink" href="#💾-Data" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="../../datasets.html">Example Datasets</a> for more information.</p>
 <p>This dataset is comprised of:</p>
 <ul class="simple">
@@ -646,7 +646,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">aiqc</span> <span class="kn">import</span> <span class="n">datum</span>
-<span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;exoplanets.parquet&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -655,9 +655,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="s1">&#39;exoplanets.parquet&#39;</span><span class="p">)</span>
+<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -762,8 +762,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Pipeline">
-<h2>Pipeline<a class="headerlink" href="#Pipeline" title="Permalink to this headline"></a></h2>
+<section id="🚰-Pipeline">
+<h2>🚰 Pipeline<a class="headerlink" href="#🚰-Pipeline" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -832,8 +832,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Modeling">
-<h2>Modeling<a class="headerlink" href="#Modeling" title="Permalink to this headline"></a></h2>
+<section id="🧪-Experiment">
+<h2>🧪 Experiment<a class="headerlink" href="#🧪-Experiment" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference internal" href="../../api_high_level.html"><span class="doc">High-Level API Docs</span></a> for more information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -858,16 +858,19 @@ div.rendered_html tbody tr:hover {
     <span class="n">nc</span> <span class="o">=</span> <span class="n">hp</span><span class="p">[</span><span class="s1">&#39;neuron_count&#39;</span><span class="p">]</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+        <span class="c1"># --- Input/Hidden Layer ---</span>
         <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">features_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nc</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="n">nc</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 
+        <span class="c1"># --- Hidden Layer ---</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="n">nc</span><span class="p">)</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 
+        <span class="c1"># --- Output Layer ---</span>
         <span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
@@ -961,8 +964,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <hr class="docutils" />
 </section>
-<section id="Visualization-&amp;-Interpretation">
-<h2>Visualization &amp; Interpretation<a class="headerlink" href="#Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
+<section id="📊-Visualization-&amp;-Interpretation">
+<h2>📊 Visualization &amp; Interpretation<a class="headerlink" href="#📊-Visualization-&-Interpretation" title="Permalink to this headline"></a></h2>
 <p>For more information on visualization of performance metrics, reference the <a class="reference external" href="../../dashboard.html">Dashboard</a> documentation.</p>
 </section>
 </section>
