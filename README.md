@@ -6,16 +6,16 @@
 	e.g. can't use html <center> tags.
 -->
 <a href="https://badge.fury.io/py/aiqc"><img src="https://badge.fury.io/py/aiqc.svg" alt="PyPI version" height="18"></a>
-<a href="https://aiqc.readthedocs.io"> <img src="https://readthedocs.org/projects/aiqc/badge/?version=latest" alt="docs status" height="18"></a>
-[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+<a href="https://docs.aiqc.io"> <img src="https://readthedocs.org/projects/aiqc/badge/?version=latest" alt="docs status" height="18"></a>
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-brightgreen.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 
 </br>
-<h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
+<h1 align='center'>📚&nbsp;&nbsp;<a href="https://docs.aiqc.io">Documentation</a></h1>
 </br></br>
 
 <center>
-	<a href="https://aiqc.readthedocs.io/">
+	<a href="https://docs.aiqc.io">
 		<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/framework_simple.png" width="95%" alt="framework"/>
 	</a>
 </center>
@@ -60,18 +60,18 @@
 </ol>
 
 </br></br>
-<h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
+<h1 align='center'>📚&nbsp;&nbsp;<a href="https://docs.aiqc.io">Documentation</a></h1>
 </br></br>
 
 
 <h2>Experiment Tracker</h2>
-<a href="https://aiqc.readthedocs.io/">
+<a href="https://docs.aiqc.io">
 	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/_static/images/dashboard/experiment_tracker.gif" width="95%" alt="experiment_tracker"/>
 </a>
 </br></br></br>
 
 <h2>Compare Models</h2>
-<a href="https://aiqc.readthedocs.io/">
+<a href="https://docs.aiqc.io">
 	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/_static/images/dashboard/compare_models.gif" width="95%" alt="compare_models"/>
 </a>
 </br></br></br></br>
@@ -106,4 +106,4 @@ mlops.Inference()
 
 
 </br></br>
-<h1 align='center'>📚&nbsp;&nbsp;<a href="https://aiqc.readthedocs.io/">Documentation</a></h1>
+<h1 align='center'>📚&nbsp;&nbsp;<a href="https://docs.aiqc.io">Documentation</a></h1>

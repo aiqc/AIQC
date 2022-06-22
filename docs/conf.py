@@ -63,7 +63,7 @@ html_theme_options  = dict(
 	https://www.linkedin.com/pulse/how-clear-linkedin-link-preview-cache-ananda-kannan-p/
 	https://www.linkedin.com/post-inspector/
 """
-ogp_site_url         = "https://aiqc.readthedocs.io/"
+ogp_site_url         = "https://docs.aiqc.io/"
 ogp_site_name        = "AIQC"
 ogp_image            = "https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png"
 ogp_image_alt        = "Artificial Intelligence Quality Control"

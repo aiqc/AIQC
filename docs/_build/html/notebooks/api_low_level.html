@@ -5,9 +5,9 @@
 
   <meta property="og:title" content="Low-Level API" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://aiqc.readthedocs.io/notebooks/api_low_level.html" />
+  <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="02d4345c2d4e45d982e6a85618662ce8 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="6f731c347972407bb2b6cd434fac0edf Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -94,11 +94,9 @@
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Runtime">Runtime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Example">Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Run">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 </ul>
@@ -131,35 +129,37 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Low-Level API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#0.-BaseModel">0. BaseModel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#0a.-Methods">0a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#0b.-Attributes">0b. Attributes</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#1.-Dataset">1. Dataset</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#1a.-Register">1a. Register</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1ai.-Dataset.Tabular">1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1aii.-Dataset.Sequence">1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1aiii.-Dataset.Image">1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1b.-Fetch">1b. Fetch</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#1c.-Attributes">1c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1a.-Methods">1a. Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#1ai.-Registration">1ai. Registration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#1b.-Attributes">1b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#2.-Feature">2. Feature</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#2a.-Create">2a. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#2b.-Fetch">2b. Fetch</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#2c.-Attributes">2c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2a.-Methods">2a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2b.-Attributes">2b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#3.-Label">3. Label</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#3a.-Create">3a. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#3b.-Fetch">3b. Fetch</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#3c.-Attributes">3c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3a.-Methods">3a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3b.-Attributes">3b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#4.-Interpolate">4. Interpolate</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#4a.-LabelInterpolater">4a. <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#4ai.-Create">4ai. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#4ai.-Methods">4ai. Methods</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#4aii.-Attributes">4aii. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#4b.-FeatureInterpolater">4b. <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#4bi.-Create">4bi. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#4bi.-Methods">4bi. Methods</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#4bii.-Attributes">4bii. Attributes</a></li>
 </ul>
 </li>
@@ -167,56 +167,50 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#5.-Encode">5. Encode</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#5a.-LabelCoder">5a. <code class="docutils literal notranslate"><span class="pre">LabelCoder</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#5ai.-Create">5ai. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5ai.-Methods">5ai. Methods</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#5aii.-Attributes">5aii. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#5b.-FeatureCoder">5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#5bi.-Create">5bi. Create</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#5bi.-Methods">5bi. Methods</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#5bii.-Attributes">5bii. Attributes</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#6.-Shape">6. Shape</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#6a.-Strategies">6a. Strategies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#6b.-Create">6b. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#6c.-Attributes">6c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#6a.-Methods">6a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#6b.-Attributes">6b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#7.-Window">7. Window</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#7a.-Challenges">7a. Challenges</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#7b.-Create">7b. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#7c.-Attributes">7c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7a.-Methods">7a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#7b.-Attributes">7b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#8.-Splitset">8. Splitset</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#8a.-Create">8a. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#8b.-Cross-Validation">8b. Cross-Validation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#8c.-Attributes">8c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#8a.-Methods">8a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#8b.-Attributes">8b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#9.-Algorithm">9. Algorithm</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#9a.-Create">9a. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#9b.-PyTorch-fit">9b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#9b.-History-Metrics">9b. History Metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#9c.-TensorFlow-Early-Stopping">9c. TensorFlow Early Stopping</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#9d.-Attributes">9d. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#9a.-Methods">9a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#9b.-Attributes">9b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#10.-Hyperparameters">10. Hyperparameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#10a.-Philosophy">10a. Philosophy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#10b.-Create">10b. Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#10c.-Attributes">10c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#10a.-Methods">10a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#10b.-Attributes">10b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#11.-Queue">11. Queue</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#11a.-Methods">11a. Methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#11c.-Attributes">11c. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#11b.-Attributes">11b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#12.-Job">12. Job</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#12a.-Attributes">12a. Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#12a.-Methods">12a. Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#12b.-Attributes">12b. Attributes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#13.-Predictor">13. Predictor</a><ul>
@@ -338,7 +332,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="02d4345c2d4e45d982e6a85618662ce8" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="6f731c347972407bb2b6cd434fac0edf" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -348,6 +342,47 @@
 </pre></div>
 </div>
 <hr class="docutils" />
+</section>
+<section id="0.-BaseModel">
+<h2>0. BaseModel<a class="headerlink" href="#0.-BaseModel" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> class applies to all tables in the ORM.</p>
+<p>Localized timestamps are handled by <a class="reference external" href="https://github.com/aiqc/AIQC/blob/4743f8a36ca84dcebbf1b757c1969720bc15450b/aiqc/utils/config.py">utils.config.timezone_now()</a>. They are made human-readable via <code class="docutils literal notranslate"><span class="pre">strftime('%Y%b%d_%H:%M:%S')</span></code></p>
+<hr class="docutils" />
+<section id="0a.-Methods">
+<h3>0a. Methods<a class="headerlink" href="#0a.-Methods" title="Permalink to this headline"></a></h3>
+<p>└── <code class="docutils literal notranslate"><span class="pre">created_at()</span></code></p>
+<p>Returns the creation timestamp in human-readable format.</p>
+<p>└── <code class="docutils literal notranslate"><span class="pre">updated_at()</span></code></p>
+<p>Returns timestamp of the most recent update in human-readable format.</p>
+<hr class="docutils" />
+</section>
+<section id="0b.-Attributes">
+<h3>0b. Attributes<a class="headerlink" href="#0b.-Attributes" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>time_created</strong></p></td>
+<td><p>DateTimeField</p></td>
+<td><p>Records a timestamp when the record is created</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>time_updated</strong></p></td>
+<td><p>DateTimeField</p></td>
+<td><p>Records a timestamp when the record is created. Overwritten every time the record is updated.</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+</section>
 </section>
 <section id="1.-Dataset">
 <h2>1. Dataset<a class="headerlink" href="#1.-Dataset" title="Permalink to this headline"></a></h2>
@@ -392,8 +427,10 @@
 <div><p><em>Why not 2D NumPy?</em> The <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> class is intended for strict, column-specific dtypes and Parquet persistence upon ingestion. In practice, this conflicted too often with NumPy’s array-wide dtyping. We use the best tools for the job (df/pq for 2D) and (array/npy for ND).</p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="1a.-Register">
-<h3>1a. Register<a class="headerlink" href="#1a.-Register" title="Permalink to this headline"></a></h3>
+<section id="1a.-Methods">
+<h3>1a. Methods<a class="headerlink" href="#1a.-Methods" title="Permalink to this headline"></a></h3>
+<section id="1ai.-Registration">
+<h4>1ai. Registration<a class="headerlink" href="#1ai.-Registration" title="Permalink to this headline"></a></h4>
 <p><em>Most of the Dataset registration methods share these arguments/ concepts:</em></p>
 <table class="docutils align-default">
 <colgroup>
@@ -447,9 +484,8 @@ duplicate, it will warn you and <code class="docutils literal notranslate"><span
 max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal of machine learning isn’t to record the entire population within the weights of a neural network, it’s to find subsets that are representative of the broader population.</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
-<section id="1ai.-Dataset.Tabular">
-<h3>1ai. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai.-Dataset.Tabular" title="Permalink to this headline"></a></h3>
+<section id="1ai1.-Dataset.Tabular">
+<h5>1ai1. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai1.-Dataset.Tabular" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways practitioners can use this 2D structure:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -597,8 +633,8 @@ for dtypes, and compression works great in Parquet.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-<section id="1aii.-Dataset.Sequence">
-<h3>1aii. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1aii.-Dataset.Sequence" title="Permalink to this headline"></a></h3>
+<section id="1ai2.-Dataset.Sequence">
+<h5>1ai2. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1ai2.-Dataset.Sequence" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways practitioners can use this 3D structure:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -683,8 +719,8 @@ False.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-<section id="1aiii.-Dataset.Image">
-<h3>1aiii. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1aiii.-Dataset.Image" title="Permalink to this headline"></a></h3>
+<section id="1ai3.-Dataset.Image">
+<h5>1ai3. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1ai3.-Dataset.Image" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways you can practitioners this 4D structure:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -895,8 +931,8 @@ for anything.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-<section id="1b.-Fetch">
-<h3>1b. Fetch<a class="headerlink" href="#1b.-Fetch" title="Permalink to this headline"></a></h3>
+<section id="1aii.-Fetch">
+<h5>1aii. Fetch<a class="headerlink" href="#1aii.-Fetch" title="Permalink to this headline"></a></h5>
 <p>The following methods are exposed to end-users in case they want to inspect the data that they have ingested.</p>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_arr()</span></code></p>
@@ -1087,8 +1123,10 @@ for anything.</p></td>
 <p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns then dtype of each column within a <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
 <hr class="docutils" />
 </section>
-<section id="1c.-Attributes">
-<h3>1c. Attributes<a class="headerlink" href="#1c.-Attributes" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="1b.-Attributes">
+<h3>1b. Attributes<a class="headerlink" href="#1b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields in the Dataset table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1178,8 +1216,9 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 <h2>2. Feature<a class="headerlink" href="#2.-Feature" title="Permalink to this headline"></a></h2>
 <p>Determines the columns that will be used as predictive features during training. Columns is always the last dimension <code class="docutils literal notranslate"><span class="pre">shape[-1]</span></code> of a dataset.</p>
 <hr class="docutils" />
-<section id="2a.-Create">
-<h3>2a. Create<a class="headerlink" href="#2a.-Create" title="Permalink to this headline"></a></h3>
+<section id="2a.-Methods">
+<h3>2a. Methods<a class="headerlink" href="#2a.-Methods" title="Permalink to this headline"></a></h3>
+<hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Feature.from_dataset()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Feature</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
     <span class="n">dataset_id</span>
@@ -1227,9 +1266,7 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 <div><p>Both <code class="docutils literal notranslate"><span class="pre">include_columns</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_columns</span></code> cannot be used at the same time</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
-<section id="2b.-Fetch">
-<h3>2b. Fetch<a class="headerlink" href="#2b.-Fetch" title="Permalink to this headline"></a></h3>
+<p><strong>Fetch</strong></p>
 <p>Theses methods wrap Dataset’s <a class="reference external" href="#1b.-Fetch">fetch</a> methods:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1260,8 +1297,8 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 </table>
 <hr class="docutils" />
 </section>
-<section id="2c.-Attributes">
-<h3>2c. Attributes<a class="headerlink" href="#2c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="2b.-Attributes">
+<h3>2b. Attributes<a class="headerlink" href="#2b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields in the Feature table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1294,53 +1331,6 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 38%" />
-<col style="width: 17%" />
-<col style="width: 46%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Attribute</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-</tbody>
-</table>
 <hr class="docutils" />
 </section>
 </section>
@@ -1348,8 +1338,9 @@ creating a new entity. This behavior makes it easy to rerun pipelines where Data
 <h2>3. Label<a class="headerlink" href="#3.-Label" title="Permalink to this headline"></a></h2>
 <p>Determines the column(s) that will be used as a target during supervised analysis. Do no create a Label if you intend to conduct unsupervised/ self-supervised analysis.</p>
 <hr class="docutils" />
-<section id="3a.-Create">
-<h3>3a. Create<a class="headerlink" href="#3a.-Create" title="Permalink to this headline"></a></h3>
+<section id="3a.-Methods">
+<h3>3a. Methods<a class="headerlink" href="#3a.-Methods" title="Permalink to this headline"></a></h3>
+<hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Label.from_dataset()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Label</span><span class="o">.</span><span class="n">from_dataset</span><span class="p">(</span>
     <span class="n">dataset_id</span>
@@ -1386,9 +1377,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
-<section id="3b.-Fetch">
-<h3>3b. Fetch<a class="headerlink" href="#3b.-Fetch" title="Permalink to this headline"></a></h3>
+<p><strong>Fetch</strong></p>
 <p>Theses methods wrap Dataset’s <a class="reference external" href="#1b.-Fetch">fetch</a> methods:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1419,8 +1408,8 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </table>
 <hr class="docutils" />
 </section>
-<section id="3c.-Attributes">
-<h3>3c. Attributes<a class="headerlink" href="#3c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="3b.-Attributes">
+<h3>3b. Attributes<a class="headerlink" href="#3b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields in the Feature table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1508,8 +1497,8 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <h3>4a. <code class="docutils literal notranslate"><span class="pre">LabelInterpolater</span></code><a class="headerlink" href="#4a.-LabelInterpolater" title="Permalink to this headline"></a></h3>
 <p>Label is intended for a single column, so only 1 Interpolater will be used during <code class="docutils literal notranslate"><span class="pre">Label.preprocess()</span></code></p>
 <hr class="docutils" />
-<section id="4ai.-Create">
-<h4>4ai. Create<a class="headerlink" href="#4ai.-Create" title="Permalink to this headline"></a></h4>
+<section id="4ai.-Methods">
+<h4>4ai. Methods<a class="headerlink" href="#4ai.-Methods" title="Permalink to this headline"></a></h4>
 <p>└── <code class="docutils literal notranslate"><span class="pre">LabelInterpolater.from_label()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelInterpolater</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
     <span class="n">label_id</span>
@@ -1593,8 +1582,8 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <h3>4b. <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater</span></code><a class="headerlink" href="#4b.-FeatureInterpolater" title="Permalink to this headline"></a></h3>
 <p>For <em>multivariate</em> datasets, columns/dtypes may need to be handled differently. So we use column/dtype filters to apply separate transformations. If the first transformation’s filter includes a certain column/dtype, then subsequent filters may not include that column/dtype.</p>
 <hr class="docutils" />
-<section id="4bi.-Create">
-<h4>4bi. Create<a class="headerlink" href="#4bi.-Create" title="Permalink to this headline"></a></h4>
+<section id="4bi.-Methods">
+<h4>4bi. Methods<a class="headerlink" href="#4bi.-Methods" title="Permalink to this headline"></a></h4>
 <p>└── <code class="docutils literal notranslate"><span class="pre">FeatureInterpolater.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureInterpolater</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
@@ -1727,9 +1716,9 @@ inputs will zero-out. 2. <code class="docutils literal notranslate"><span class=
 <div><p>Unfortunately, the name “LabelEncoder” is occupied by <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing.LabelEncoder</span></code></p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="5ai.-Create">
-<h4>5ai. Create<a class="headerlink" href="#5ai.-Create" title="Permalink to this headline"></a></h4>
-<p>└── `LabelCoder.from_label()</p>
+<section id="5ai.-Methods">
+<h4>5ai. Methods<a class="headerlink" href="#5ai.-Methods" title="Permalink to this headline"></a></h4>
+<p>└── <code class="docutils literal notranslate"><span class="pre">LabelCoder.from_label()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LabelCoder</span><span class="o">.</span><span class="n">from_label</span><span class="p">(</span>
     <span class="n">label_id</span>
     <span class="p">,</span> <span class="n">sklearn_preprocess</span>
@@ -1816,8 +1805,8 @@ cause. For example, preventing sparse SciPy matrix output (errors during tensor 
 <h3>5b. <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code><a class="headerlink" href="#5b.-FeatureCoder" title="Permalink to this headline"></a></h3>
 <p>For <em>multivariate</em> datasets, columns/dtypes may need to be handled differently. So we use column/dtype filters to apply separate transformations. If the first transformation’s filter includes a certain column/dtype, then subsequent filters may not include that column/dtype.</p>
 <hr class="docutils" />
-<section id="5bi.-Create">
-<h4>5bi. Create<a class="headerlink" href="#5bi.-Create" title="Permalink to this headline"></a></h4>
+<section id="5bi.-Methods">
+<h4>5bi. Methods<a class="headerlink" href="#5bi.-Methods" title="Permalink to this headline"></a></h4>
 <p>└── <code class="docutils literal notranslate"><span class="pre">FeatureCoder.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureCoder</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
@@ -1962,8 +1951,6 @@ cause. For example, preventing sparse SciPy matrix output (errors during tensor 
 to do the reshaping once up front.</p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="6a.-Strategies">
-<h3>6a. Strategies<a class="headerlink" href="#6a.-Strategies" title="Permalink to this headline"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">reshape_indices</span></code> argument is ultimately fed to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html">np.reshape(newshape)</a>. We use <em>index n</em> to point to the value at <code class="docutils literal notranslate"><span class="pre">ndarray.shape[n]</span></code>.</p>
 <p><strong>Reshaping by Index</strong></p>
 <p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our problems is that the images are B&amp;W, so we don’t want a color channel because it would add unecessary dimensionality to our model. Thus, we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
@@ -1987,9 +1974,8 @@ to do the reshaping once up front.</p>
 <div><p>&lt;!&gt; if your model is unsupervised (aka generative or self-supervised), then it must output data in <em>“column (aka width) last”</em> shape. Otherwise, automated column decoding will be applied along the wrong dimension.</p>
 </div></blockquote>
 <hr class="docutils" />
-</section>
-<section id="6b.-Create">
-<h3>6b. Create<a class="headerlink" href="#6b.-Create" title="Permalink to this headline"></a></h3>
+<section id="6a.-Methods">
+<h3>6a. Methods<a class="headerlink" href="#6a.-Methods" title="Permalink to this headline"></a></h3>
 <p>└── <code class="docutils literal notranslate"><span class="pre">FeatureShaper.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FeatureShaper</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
@@ -2026,8 +2012,8 @@ to do the reshaping once up front.</p>
 </table>
 <hr class="docutils" />
 </section>
-<section id="6c.-Attributes">
-<h3>6c. Attributes<a class="headerlink" href="#6c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="6b.-Attributes">
+<h3>6b. Attributes<a class="headerlink" href="#6b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the FeatureShaper table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -2056,53 +2042,6 @@ to do the reshaping once up front.</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 38%" />
-<col style="width: 17%" />
-<col style="width: 46%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Attribute</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>item</strong></p></td>
-<td><p>type</p></td>
-<td><p>text</p></td>
-</tr>
-</tbody>
-</table>
 <hr class="docutils" />
 </section>
 </section>
@@ -2114,8 +2053,7 @@ to do the reshaping once up front.</p>
 <div><p>For example, if we want to be able to <em>predict the next 7 days</em> worth of weather <em>using the past 21 days</em> of weather, then our <code class="docutils literal notranslate"><span class="pre">size_window=21</span></code> and our <code class="docutils literal notranslate"><span class="pre">size_shift=7</span></code>.</p>
 </div></blockquote>
 <hr class="docutils" />
-<section id="7a.-Challenges">
-<h3>7a. Challenges<a class="headerlink" href="#7a.-Challenges" title="Permalink to this headline"></a></h3>
+<p><strong>Challenges</strong></p>
 <p>Dealing with stratified windowed data demands a systematic approach.</p>
 <img alt="window_dimensions" src="../_images/window_dimensions.png" />
 <p><strong>Windowing always increases dimensionality</strong></p>
@@ -2136,9 +2074,8 @@ to do the reshaping once up front.</p>
 </ul>
 <p>However, when conducting inference, we are trying to predict the shifted windows not learn from them. So we don’t need to record any shifted windows.</p>
 <hr class="docutils" />
-</section>
-<section id="7b.-Create">
-<h3>7b. Create<a class="headerlink" href="#7b.-Create" title="Permalink to this headline"></a></h3>
+<section id="7a.-Methods">
+<h3>7a. Methods<a class="headerlink" href="#7a.-Methods" title="Permalink to this headline"></a></h3>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Window.from_feature()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Window</span><span class="o">.</span><span class="n">from_feature</span><span class="p">(</span>
     <span class="n">feature_id</span>
@@ -2187,8 +2124,8 @@ to do the reshaping once up front.</p>
 </table>
 <hr class="docutils" />
 </section>
-<section id="7c.-Attributes">
-<h3>7c. Attributes<a class="headerlink" href="#7c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="7b.-Attributes">
+<h3>7b. Attributes<a class="headerlink" href="#7b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Window table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -2260,9 +2197,23 @@ to do the reshaping once up front.</p>
 <blockquote>
 <div><p>Because Splitset groups together all of the data wrangling entities (Features, Label, Folds) it essentially represents a <em>Pipeline</em>, which is why it bears the name Pipeline in the High-Level API.</p>
 </div></blockquote>
+<p><strong>Cross-Validation</strong></p>
+<p>Cross-validation is triggered by <code class="docutils literal notranslate"><span class="pre">fold_count:int</span></code> during Splitset creation. Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about cross-validation.</p>
+<img alt="cross fold objects" src="../_images/cross_fold_objects.png" />
+<p>Each row in the diagram above is a <code class="docutils literal notranslate"><span class="pre">Fold</span></code> object.</p>
+<p>Each green/blue box represents a bin of stratified samples. During preprocessing and training, we rotate which blue bin serves as the validation samples (<code class="docutils literal notranslate"><span class="pre">fold_validation</span></code>). The remaining green bins in the row serve as the training samples (<code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code>).</p>
+<p>Let’s say we defined <code class="docutils literal notranslate"><span class="pre">fold_count=5</span></code>. What are the implications? - Creates 5 <code class="docutils literal notranslate"><span class="pre">Folds</span></code> related to a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>. - 5x more models will be trained for each experiment. - 5x more preprocessing and caching; the backend must preprocess each Fold separately to prevent data leakage by excluding <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> from the <code class="docutils literal notranslate"><span class="pre">fit</span></code>. Fits are saved to the Fold object as opposed to the Feature/Label objects. - 5x more evaluation.</p>
+<p><em>Disclaimer</em></p>
+<blockquote>
+<div><p>DO NOT use cross-validation unless your <em>(total sample count / fold_count)</em> still gives you an accurate representation of your entire sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that <em>(total sample count / fold_count)</em> is evenly divisible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics. Both of these tips help avoid poorly stratified/
+undersized folds that seem to perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on an otherwise good model).</p>
+<p>Candidly, if you’ve ever performed cross-validation manually, let alone systematically, you’ll know that, barring stratification of continuous labels, it’s easy enough to construct the folds, but then it’s a pain to generate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try
+to do something undersized like “150 samples in their dataset and a <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> &gt; 3 with <code class="docutils literal notranslate"><span class="pre">unique_classes</span></code> &gt; 4,” then you may run into edge cases.</p>
+<p>Cross validation is only included in AIQC to allow best practices to be upheld and to show off the power of systematic preprocessing.</p>
+</div></blockquote>
 <hr class="docutils" />
-<section id="8a.-Create">
-<h3>8a. Create<a class="headerlink" href="#8a.-Create" title="Permalink to this headline"></a></h3>
+<section id="8a.-Methods">
+<h3>8a. Methods<a class="headerlink" href="#8a.-Methods" title="Permalink to this headline"></a></h3>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.make()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">feature_ids</span>
@@ -2352,25 +2303,8 @@ attributes.</p></td>
 </div></blockquote>
 <hr class="docutils" />
 </section>
-<section id="8b.-Cross-Validation">
-<h3>8b. Cross-Validation<a class="headerlink" href="#8b.-Cross-Validation" title="Permalink to this headline"></a></h3>
-<p>Cross-validation is triggered by <code class="docutils literal notranslate"><span class="pre">fold_count:int</span></code> during Splitset creation. Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about cross-validation.</p>
-<img alt="cross fold objects" src="../_images/cross_fold_objects.png" />
-<p>Each row in the diagram above is a <code class="docutils literal notranslate"><span class="pre">Fold</span></code> object.</p>
-<p>Each green/blue box represents a bin of stratified samples. During preprocessing and training, we rotate which blue bin serves as the validation samples (<code class="docutils literal notranslate"><span class="pre">fold_validation</span></code>). The remaining green bins in the row serve as the training samples (<code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code>).</p>
-<p>Let’s say we defined <code class="docutils literal notranslate"><span class="pre">fold_count=5</span></code>. What are the implications? - Creates 5 <code class="docutils literal notranslate"><span class="pre">Folds</span></code> related to a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>. - 5x more models will be trained for each experiment. - 5x more preprocessing and caching; the backend must preprocess each Fold separately to prevent data leakage by excluding <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> from the <code class="docutils literal notranslate"><span class="pre">fit</span></code>. Fits are saved to the Fold object as opposed to the Splitset object. - 5x more evaluation.</p>
-<p><em>Disclaimer</em></p>
-<blockquote>
-<div><p>DO NOT use cross-validation unless your <em>(total sample count / fold_count)</em> still gives you an accurate representation of your entire sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that <em>(total sample count / fold_count)</em> is evenly divisible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics. Both of these tips help avoid poorly stratified/
-undersized folds that seem to perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on an otherwise good model).</p>
-<p>Candidly, if you’ve ever performed cross-validation manually, let alone systematically, you’ll know that, barring stratification of continuous labels, it’s easy enough to construct the folds, but then it’s a pain to generate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try
-to do something undersized like “150 samples in their dataset and a <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> &gt; 3 with <code class="docutils literal notranslate"><span class="pre">unique_classes</span></code> &gt; 4,” then you may run into edge cases.</p>
-<p>Cross validation is only included in AIQC to allow best practices to be upheld and to show off the power of systematic preprocessing.</p>
-</div></blockquote>
-<hr class="docutils" />
-</section>
-<section id="8c.-Attributes">
-<h3>8c. Attributes<a class="headerlink" href="#8c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="8b.-Attributes">
+<h3>8b. Attributes<a class="headerlink" href="#8b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Splitset table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -2450,6 +2384,43 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 </tr>
 </tbody>
 </table>
+<p>These are the fields of the Fold table</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>fold_index</strong></p></td>
+<td><p>IntegerField</p></td>
+<td><p>Zero-based auto-incrementer that counts the Folds</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>samples</strong></p></td>
+<td><p>JSONField</p></td>
+<td><p>Contains the sample indices of the training folds and leftout validation fold, as well as any validation and test splits defined in the regular Splitset.samples
+<code class="docutils literal notranslate"><span class="pre">dict().keys()==['folds_train_combined',</span> <span class="pre">'fold_validation',</span> <span class="pre">'validation',</span> <span class="pre">'test']</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>fitted_labelcoder</strong></p></td>
+<td><p>PickleField</p></td>
+<td><p>When <code class="docutils literal notranslate"><span class="pre">LabelCoders</span></code>’s <code class="docutils literal notranslate"><span class="pre">fit</span></code> an sklearn preprocessor, the fit objects are saved here for downstream <code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code>’ing</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>fitted_featurecoders</strong></p></td>
+<td><p>PickleField</p></td>
+<td><p>When <code class="docutils literal notranslate"><span class="pre">FeatureCoder</span></code>’s <code class="docutils literal notranslate"><span class="pre">fit</span></code> an sklearn preprocessor, the fit objects are saved here for downstream <code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code>’ing</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>splitset</strong></p></td>
+<td><p>ForeignKeyField</p></td>
+<td><p>The Splitset that this Fold belongs to</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 </section>
 </section>
@@ -2459,8 +2430,122 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 <p>The Algorithm contains all of the components needed to construct, train, and use our model.</p>
 <p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> for examples of how Algorithms are defined.</p>
 <hr class="docutils" />
-<section id="9a.-Create">
-<h3>9a. Create<a class="headerlink" href="#9a.-Create" title="Permalink to this headline"></a></h3>
+<p><strong>PyTorch ``fit``</strong></p>
+<p>Provides an abstraction that eliminates the boilerplate code normally required to train and evaluate a PyTorch model.</p>
+<ul class="simple">
+<li><p>Before training - it shuffles samples, batches samples, and then shuffles batches.</p></li>
+<li><p>During training - it calculates batch loss, epoch loss, and epoch history metrics.</p></li>
+<li><p>After training - it calculates metrics for each split.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pytorch</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="c1"># These arguments come directly from `fn_train`</span>
+    <span class="n">model</span>
+    <span class="p">,</span> <span class="n">loser</span>
+    <span class="p">,</span> <span class="n">optimizer</span>
+
+    <span class="p">,</span> <span class="n">train_features</span>
+    <span class="p">,</span> <span class="n">train_label</span>
+    <span class="p">,</span> <span class="n">eval_features</span>
+    <span class="p">,</span> <span class="n">eval_label</span>
+
+    <span class="c1"># These arguments are user-defined</span>
+    <span class="p">,</span> <span class="n">epochs</span>
+    <span class="p">,</span> <span class="n">batch_size</span>
+    <span class="p">,</span> <span class="n">enforce_sameSize</span>
+    <span class="p">,</span> <span class="n">allow_singleSample</span>
+    <span class="p">,</span> <span class="n">metrics</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>User-Defined Arguments</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>epochs</strong></p></td>
+<td><p>int</p></td>
+<td><p>30</p></td>
+<td><p>The number of times to loop over the features</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>batch_size</strong></p></td>
+<td><p>int</p></td>
+<td><p>5</p></td>
+<td><p>Divides features and lables into chunks to be trained upon</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>enforce_sameSize</strong></p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, drops <code class="docutils literal notranslate"><span class="pre">len(batch!=batch_size)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>allow_singleSample</strong></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, drops <code class="docutils literal notranslate"><span class="pre">len(batch!=1)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>metrics</strong></p></td>
+<td><p>list(torchmetrics.metric())</p></td>
+<td><p>None</p></td>
+<td><p>List of instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes e.g. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><strong>``history`` Metrics</strong></p>
+<p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="visualization.html">visualization</a> section.</p>
+<ul class="simple">
+<li><p><em>Keras</em>: any <code class="docutils literal notranslate"><span class="pre">metrics=[]</span></code> specified are automatically added to the <code class="docutils literal notranslate"><span class="pre">History</span></code> callback object.</p></li>
+<li><p><em>PyTorch</em>: if you use <code class="docutils literal notranslate"><span class="pre">fit</span></code> seen above, then you don’t need to worry about this. Users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="gallery/pytorch/multi_class.html">examples</a>.</p></li>
+</ul>
+<blockquote>
+<div><p>The schema of the <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(*:ndarray,</span> <span class="pre">val_*=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">loss</span>           <span class="o">=</span> <span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">val_loss</span>     <span class="o">=</span> <span class="n">ndarray</span>
+
+    <span class="p">,</span> <span class="n">accuracy</span>     <span class="o">=</span> <span class="n">ndarray</span>
+    <span class="p">,</span> <span class="n">val_accuracy</span> <span class="o">=</span> <span class="n">ndarray</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><strong>TensorFlow Early Stopping</strong></p>
+<p><em>Early stopping</em> isn’t just about efficiency in reducing the number of <code class="docutils literal notranslate"><span class="pre">epochs</span></code>. If you’ve specified 300 epochs, there’s a chance your model catches on to the underlying patterns early, say around 75-125 epochs. At this point, there’s also good chance what it learns in the remaining epochs will cause it to overfit on patterns that are specific to the training data, and thereby and lose it’s simplicity/ generalizability.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">metric=val_*</span></code> prefix refers to the evaluation samples.</p>
+<p>Remember, regression does not have accuracy metrics.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TrainingCallback.MetricCutoff</span></code> is a custom class we wrote to make <em>early stopping</em> easier, so you won’t find information about it in the official Keras documentation.</p>
+</div></blockquote>
+<p>Placed within <code class="docutils literal notranslate"><span class="pre">fn_train</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
+
+<span class="c1">#Define one or more metrics to monitor.</span>
+<span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_loss&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
+
+<span class="c1"># Pass it into keras callbacks</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="c1"># other fit args</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">cutoffs</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<section id="9a.-Methods">
+<h3>9a. Methods<a class="headerlink" href="#9a.-Methods" title="Permalink to this headline"></a></h3>
 <p>Assemble an architecture consisting of components defined in functions.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">**hp</span></code> kwargs are common to every Algorithm function except <code class="docutils literal notranslate"><span class="pre">fn_predict</span></code>. They are used to systematically pass a dictionary of <em>hyperparameters</em> into these functions. See Hyperparameters.</p>
 <hr class="docutils" />
@@ -2599,129 +2684,9 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 </div>
 <hr class="docutils" />
 </section>
-<section id="9b.-PyTorch-fit">
-<h3>9b. PyTorch <code class="docutils literal notranslate"><span class="pre">fit</span></code><a class="headerlink" href="#9b.-PyTorch-fit" title="Permalink to this headline"></a></h3>
-<p>Provides an abstraction that eliminates the boilerplate code normally required to train and evaluate a PyTorch model.</p>
-<ul class="simple">
-<li><p>Before training - it shuffles samples, batches samples, and then shuffles batches.</p></li>
-<li><p>During training - it calculates batch loss, epoch loss, and epoch history metrics.</p></li>
-<li><p>After training - it calculates metrics for each split.</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pytorch</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="c1"># These arguments come directly from `fn_train`</span>
-    <span class="n">model</span>
-    <span class="p">,</span> <span class="n">loser</span>
-    <span class="p">,</span> <span class="n">optimizer</span>
-
-    <span class="p">,</span> <span class="n">train_features</span>
-    <span class="p">,</span> <span class="n">train_label</span>
-    <span class="p">,</span> <span class="n">eval_features</span>
-    <span class="p">,</span> <span class="n">eval_label</span>
-
-    <span class="c1"># These arguments are user-defined</span>
-    <span class="p">,</span> <span class="n">epochs</span>
-    <span class="p">,</span> <span class="n">batch_size</span>
-    <span class="p">,</span> <span class="n">enforce_sameSize</span>
-    <span class="p">,</span> <span class="n">allow_singleSample</span>
-    <span class="p">,</span> <span class="n">metrics</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>User-Defined Arguments</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>epochs</strong></p></td>
-<td><p>int</p></td>
-<td><p>30</p></td>
-<td><p>The number of times to loop over the features</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>batch_size</strong></p></td>
-<td><p>int</p></td>
-<td><p>5</p></td>
-<td><p>Divides features and lables into chunks to be trained upon</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>enforce_sameSize</strong></p></td>
-<td><p>bool</p></td>
-<td><p>True</p></td>
-<td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, drops <code class="docutils literal notranslate"><span class="pre">len(batch!=batch_size)</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>allow_singleSample</strong></p></td>
-<td><p>bool</p></td>
-<td><p>False</p></td>
-<td><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, drops <code class="docutils literal notranslate"><span class="pre">len(batch!=1)</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><strong>metrics</strong></p></td>
-<td><p>list(torchmetrics.metric())</p></td>
-<td><p>None</p></td>
-<td><p>List of instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes e.g. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></p></td>
-</tr>
-</tbody>
-</table>
-<hr class="docutils" />
-</section>
-<section id="9b.-History-Metrics">
-<h3>9b. History Metrics<a class="headerlink" href="#9b.-History-Metrics" title="Permalink to this headline"></a></h3>
-<p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="visualization.html">visualization</a> section.</p>
-<ul class="simple">
-<li><p><em>Keras</em>: any <code class="docutils literal notranslate"><span class="pre">metrics=[]</span></code> specified are automatically added to the <code class="docutils literal notranslate"><span class="pre">History</span></code> callback object.</p></li>
-<li><p><em>PyTorch</em>: if you use <code class="docutils literal notranslate"><span class="pre">fit</span></code> seen above, then you don’t need to worry about this. Users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="gallery/pytorch/multi_class.html">examples</a>.</p></li>
-</ul>
-<blockquote>
-<div><p>The schema of the <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(*:ndarray,</span> <span class="pre">val_*=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
-</div></blockquote>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">loss</span>           <span class="o">=</span> <span class="n">ndarray</span>
-    <span class="p">,</span> <span class="n">val_loss</span>     <span class="o">=</span> <span class="n">ndarray</span>
-
-    <span class="p">,</span> <span class="n">accuracy</span>     <span class="o">=</span> <span class="n">ndarray</span>
-    <span class="p">,</span> <span class="n">val_accuracy</span> <span class="o">=</span> <span class="n">ndarray</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="9c.-TensorFlow-Early-Stopping">
-<h3>9c. TensorFlow Early Stopping<a class="headerlink" href="#9c.-TensorFlow-Early-Stopping" title="Permalink to this headline"></a></h3>
-<p><em>Early stopping</em> isn’t just about efficiency in reducing the number of <code class="docutils literal notranslate"><span class="pre">epochs</span></code>. If you’ve specified 300 epochs, there’s a chance your model catches on to the underlying patterns early, say around 75-125 epochs. At this point, there’s also good chance what it learns in the remaining epochs will cause it to overfit on patterns that are specific to the training data, and thereby and lose it’s simplicity/ generalizability.</p>
-<blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">metric=val_*</span></code> prefix refers to the evaluation samples.</p>
-<p>Remember, regression does not have accuracy metrics.</p>
-<p><code class="docutils literal notranslate"><span class="pre">TrainingCallback.MetricCutoff</span></code> is a custom class we wrote to make <em>early stopping</em> easier, so you won’t find information about it in the official Keras documentation.</p>
-</div></blockquote>
-<p>Placed within <code class="docutils literal notranslate"><span class="pre">fn_train</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
-
-<span class="c1">#Define one or more metrics to monitor.</span>
-<span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
-    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_loss&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">)</span>
-<span class="p">]</span>
-<span class="n">cutoffs</span> <span class="o">=</span> <span class="n">TrainingCallback</span><span class="o">.</span><span class="n">MetricCutoff</span><span class="p">(</span><span class="n">metrics_cuttoffs</span><span class="p">)</span>
-
-<span class="c1"># Pass it into keras callbacks</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="c1"># other fit args</span>
-    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">cutoffs</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<hr class="docutils" />
-</section>
-<section id="9d.-Attributes">
-<h3>9d. Attributes<a class="headerlink" href="#9d.-Attributes" title="Permalink to this headline"></a></h3>
-<p>These are the fields of the Splitset table</p>
+<section id="9b.-Attributes">
+<h3>9b. Attributes<a class="headerlink" href="#9b.-Attributes" title="Permalink to this headline"></a></h3>
+<p>These are the fields of the Algorithm table</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 65%" />
@@ -2791,28 +2756,8 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 </div>
 <p>We access the current value in our model functions like so: <code class="docutils literal notranslate"><span class="pre">hp['neuron_count']</span></code>.</p>
 <hr class="docutils" />
-<section id="10a.-Philosophy">
-<h3>10a. Philosophy<a class="headerlink" href="#10a.-Philosophy" title="Permalink to this headline"></a></h3>
-<p>Hyperparameter tuning is like planning a wedding. First you sort out the big ticket items like the venue, caterer, and band. You go tour and taste a few options. Only after this strategy is in place do you worry about the tactical details like what suit you are going to wear and the songs that will be played.</p>
-<p>When tuning a neural network:</p>
-<ol class="arabic simple">
-<li><p>First you figure out the high-level architecture: the topologies (types of layers, # of layers, # neurons per layer) and batch size (amount of information).</p></li>
-<li><p>Once you find an architecture or two that perform reasonably well, then you can hone in on their nuances like weight initialization, activation methods, and learning rate.</p></li>
-</ol>
-<p>Here’s why I don’t recommend fancy hyperparameter search stragtegies:</p>
-<ul class="simple">
-<li><p>Don’t combine steps 1 and 2. It’s a waste of time to search through the nuances of architectures that were never going to perform well.</p></li>
-<li><p>The parameters influence each other. If, all of a sudden, I decide that I am going to run with 3 convolutional layers instead of 2, then that completely changes the parameters I want to test next. I might even have parameters that are exclusive to the third layer 3.</p></li>
-<li><p>If you limit your experiments to tweaking just 1-2 parameters at a time, then it’s easy to isolate their effect. The parameters aren’t mutually exclusive. If you change the batch size, then it doesn’t matter how previous learning rates performed.</p></li>
-<li><p>It prevents you from learning about how neural networks operate through your own observation. Given enough practice with an architecture, you’ll intuitively get a feel for the right balance between “model complexity and data complexity” as well as what parameters to tweak in certain situations. You have to become like a coach that assigns specific practice drills to get your team to perform for the task at hand.</p></li>
-<li><p>Practitioners really only test high/medium/low values for a handful of parameters for a given architecture. If you tell a chef to prepare a special meal for a certain occassion, then he doesn’t need a search optimization algorithm to figure out what process and ingredients to use.</p></li>
-</ul>
-<p>Now if there was a reinforcement learning (RL) model that looked at the variance in features and produced an architecture-parameter pairing to test - then I would be interested.</p>
-<p>Never forget, the goal of training is to neurally encode representative information using the simplest topology possible to ensure generalizability. It’s a condensed logically representation of a broader reality.</p>
-<hr class="docutils" />
-</section>
-<section id="10b.-Create">
-<h3>10b. Create<a class="headerlink" href="#10b.-Create" title="Permalink to this headline"></a></h3>
+<section id="10a.-Methods">
+<h3>10a. Methods<a class="headerlink" href="#10a.-Methods" title="Permalink to this headline"></a></h3>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Hyperparamset.from_algorithm()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparamset</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
     <span class="n">algorithm_id</span>
@@ -2866,8 +2811,8 @@ is used.</p></td>
 </div></blockquote>
 <hr class="docutils" />
 </section>
-<section id="10c.-Attributes">
-<h3>10c. Attributes<a class="headerlink" href="#10c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="10b.-Attributes">
+<h3>10b. Attributes<a class="headerlink" href="#10b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Hyperparamset table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -3092,27 +3037,70 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>selected_metrics</strong></p></td>
-<td><p>list(str)</p></td>
-<td><p>None</p></td>
-<td><p>If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>sort_by</strong></p></td>
-<td><p>str</p></td>
-<td><p>None</p></td>
-<td><p>You can sort the dataframe by any column name.</p></td>
-</tr>
 <tr class="row-even"><td><p><strong>ascending</strong></p></td>
 <td><p>typ</p></td>
 <td><p>False</p></td>
 <td><p>Descending if False.</p></td>
 </tr>
+<tr class="row-odd"><td><p><strong>selected_metrics</strong></p></td>
+<td><p>list(str)</p></td>
+<td><p>None</p></td>
+<td><p>If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>sort_by</strong></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>You can sort the dataframe by any column name.</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.metrics_aggregate()</span></code></p>
+<p>For every metric of every model trained by the Queue – displays the average, median, standard deviation, minimum, and maximum across all splits/folds.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">metrics_aggregate</span><span class="p">(</span>
+    <span class="n">ascending</span>          <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">,</span> <span class="n">selected_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">selected_stats</span>   <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">,</span> <span class="n">sort_by</span>          <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>ascending</strong></p></td>
+<td><p>typ</p></td>
+<td><p>False</p></td>
+<td><p>Descending if False.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>selected_metrics</strong></p></td>
+<td><p>list(str)</p></td>
+<td><p>None</p></td>
+<td><p>If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>sort_by</strong></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>You can sort the dataframe by any column name.</p></td>
+</tr>
 </tbody>
 </table>
 <hr class="docutils" />
 </section>
-<section id="11c.-Attributes">
-<h3>11c. Attributes<a class="headerlink" href="#11c.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="11b.-Attributes">
+<h3>11b. Attributes<a class="headerlink" href="#11b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Queue table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -3165,8 +3153,13 @@ Algorithm can have many Hyperparamsets.</p></td>
 <p>The Queue spawns <code class="docutils literal notranslate"><span class="pre">Job</span></code>’s. A Job is like a spec/ manifest for training a model. It may be repeated.</p>
 <p><code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">jobs</span> <span class="pre">=</span> <span class="pre">Hyperamset.hyperamcombo.count()</span> <span class="pre">*</span> <span class="pre">Queue.repeat_count</span> <span class="pre">*</span> <span class="pre">splitset.folds.count()</span></code></p>
 <hr class="docutils" />
-<section id="12a.-Attributes">
-<h3>12a. Attributes<a class="headerlink" href="#12a.-Attributes" title="Permalink to this headline"></a></h3>
+<section id="12a.-Methods">
+<h3>12a. Methods<a class="headerlink" href="#12a.-Methods" title="Permalink to this headline"></a></h3>
+<p>There are no noteworthy, user-facing methods for the Job class</p>
+<hr class="docutils" />
+</section>
+<section id="12b.-Attributes">
+<h3>12b. Attributes<a class="headerlink" href="#12b.-Attributes" title="Permalink to this headline"></a></h3>
 <p>These are the fields of the Job table</p>
 <table class="docutils align-default">
 <colgroup>
@@ -3210,6 +3203,9 @@ Algorithm can have many Hyperparamsets.</p></td>
 <h3>13a. Methods<a class="headerlink" href="#13a.-Methods" title="Permalink to this headline"></a></h3>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></p>
 <p>Handles fetching and initializing the model (and PyTorch optimizer) from <code class="docutils literal notranslate"><span class="pre">Predictor.model_file</span></code> and <code class="docutils literal notranslate"><span class="pre">Predictor.input_shapes</span></code></p>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.flip_star()</span></code></p>
+<p>A way to toggle (favorite/ unfavorite) the <code class="docutils literal notranslate"><span class="pre">Predictor.is_starred</span></code> attribute in order to keep track of the best models.</p>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters()</span></code></p>
 <p>This is a shortcut to fetch the hyperparameters used to train this specific model. <code class="docutils literal notranslate"><span class="pre">as_pandas</span></code> toggles between <code class="docutils literal notranslate"><span class="pre">dict()</span></code> and <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
@@ -3539,7 +3535,7 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 <td><p>Statistics for each split/fold that vary based on the analysis_type.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>metrics_aggregate</strong></p></td>
-<td><p>Average for each statistic across all splits/folds.</p></td>
+<td><p>Contains the average, median, standard deviation, minimum, and maximum for each statistic across all splits/folds.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>plot_data</strong></p></td>
 <td><p>Metrics reformatted for plot functions.</p></td>

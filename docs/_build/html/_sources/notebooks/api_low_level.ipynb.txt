@@ -52,6 +52,104 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "## 0. BaseModel"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The `BaseModel` class applies to all tables in the ORM."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Localized timestamps are handled by [utils.config.timezone_now()](https://github.com/aiqc/AIQC/blob/4743f8a36ca84dcebbf1b757c1969720bc15450b/aiqc/utils/config.py). They are made human-readable via `strftime('%Y%b%d_%H:%M:%S')`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "toc-hr-collapsed": true
+   },
+   "source": [
+    "### 0a. Methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "└── `created_at()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Returns the creation timestamp in human-readable format."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "└── `updated_at()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Returns timestamp of the most recent update in human-readable format."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "toc-hr-collapsed": true
+   },
+   "source": [
+    "### 0b. Attributes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Attribute | Type | Description\n",
+    "--- | --- | ---\n",
+    "**time_created** | DateTimeField | Records a timestamp when the record is created\n",
+    "**time_updated** | DateTimeField | Records a timestamp when the record is created. Overwritten every time the record is updated."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "## 1. Dataset"
    ]
   },
@@ -103,9 +201,20 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {},
+   "metadata": {
+    "toc-hr-collapsed": true
+   },
    "source": [
-    "### 1a. Register"
+    "### 1a. Methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "toc-hr-collapsed": true
+   },
+   "source": [
+    "#### 1ai. Registration"
    ]
   },
   {
@@ -175,7 +284,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1ai. `Dataset.Tabular`"
+    "##### 1ai1. `Dataset.Tabular`"
    ]
   },
   {
@@ -306,7 +415,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1aii. `Dataset.Sequence`"
+    "##### 1ai2. `Dataset.Sequence`"
    ]
   },
   {
@@ -388,7 +497,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1aiii. `Dataset.Image`"
+    "##### 1ai3. `Dataset.Image`"
    ]
   },
   {
@@ -569,7 +678,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1b. Fetch"
+    "##### 1aii. Fetch"
    ]
   },
   {
@@ -732,7 +841,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 1c. Attributes"
+    "### 1b. Attributes"
    ]
   },
   {
@@ -798,7 +907,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2a. Create"
+    "### 2a. Methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
    ]
   },
   {
@@ -857,7 +973,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2b. Fetch"
+    "**Fetch**"
    ]
   },
   {
@@ -889,7 +1005,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2c. Attributes"
+    "### 2b. Attributes"
    ]
   },
   {
@@ -909,22 +1025,6 @@
     "**columns_excluded** | JSONField | The columns, if any, in the dataset that were not included\n",
     "**fitted_featurecoders** | PickleField | When `FeatureCoder`'s `fit` an sklearn preprocessor to these columns, the fit objects are saved here for downstream `inverse_transform`'ing\n",
     "**dataset** | ForeignKeyField | Where these columns came from"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Attribute | Type | Description\n",
-    "--- | --- | ---\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n"
    ]
   },
   {
@@ -959,7 +1059,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 3a. Create"
+    "### 3a. Methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
    ]
   },
   {
@@ -1002,7 +1109,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 3b. Fetch"
+    "**Fetch**"
    ]
   },
   {
@@ -1034,7 +1141,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 3c. Attributes"
+    "### 3b. Attributes"
    ]
   },
   {
@@ -1170,7 +1277,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 4ai. Create"
+    "#### 4ai. Methods"
    ]
   },
   {
@@ -1269,7 +1376,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 4bi. Create"
+    "#### 4bi. Methods"
    ]
   },
   {
@@ -1413,14 +1520,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 5ai. Create\n"
+    "#### 5ai. Methods"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "└── `LabelCoder.from_label()"
+    "└── `LabelCoder.from_label()`"
    ]
   },
   {
@@ -1512,7 +1619,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### 5bi. Create"
+    "#### 5bi. Methods"
    ]
   },
   {
@@ -1640,13 +1747,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 6a. Strategies"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
     "The `reshape_indices` argument is ultimately fed to [np.reshape(newshape)](https://numpy.org/doc/stable/reference/generated/numpy.reshape.html). We use *index n* to point to the value at `ndarray.shape[n]`."
    ]
   },
@@ -1751,7 +1851,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 6b. Create"
+    "### 6a. Methods"
    ]
   },
   {
@@ -1798,7 +1898,7 @@
     "tags": []
    },
    "source": [
-    "### 6c. Attributes"
+    "### 6b. Attributes"
    ]
   },
   {
@@ -1819,22 +1919,6 @@
     "**reshape_indices** | PickleField | See [#Reshaping-by-Index](#6b.-Create).Pickle because tuple has no JSON equivalent. \n",
     "**column_position** | IntegerField | The shape index used for columns aka width.\n",
     "**feature** | ForeignKeyField | The Feature that reshaping is applied to."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Attribute | Type | Description\n",
-    "--- | --- | ---\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text\n",
-    "**item** | type | text"
    ]
   },
   {
@@ -1878,7 +1962,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 7a. Challenges"
+    "***Challenges***"
    ]
   },
   {
@@ -1995,7 +2079,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 7b. Create"
+    "### 7a. Methods"
    ]
   },
   {
@@ -2046,7 +2130,7 @@
     "tags": []
    },
    "source": [
-    "### 7c. Attributes"
+    "### 7b. Attributes"
    ]
   },
   {
@@ -2115,6 +2199,65 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "**Cross-Validation**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Cross-validation is triggered by `fold_count:int` during Splitset creation. Reference the [scikit-learn documentation](https://scikit-learn.org/stable/modules/cross_validation.html) to learn more about cross-validation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![cross fold objects](../_static/images/api/cross_fold_objects.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Each row in the diagram above is a `Fold` object.\n",
+    "\n",
+    "Each green/blue box represents a bin of stratified samples. During preprocessing and training, we rotate which blue bin serves as the validation samples (`fold_validation`). The remaining green bins in the row serve as the training samples (`folds_train_combined`)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Let's say we defined `fold_count=5`. What are the implications?\n",
+    "- Creates 5 `Folds` related to a `Splitset`.\n",
+    "- 5x more models will be trained for each experiment.\n",
+    "- 5x more preprocessing and caching; the backend must preprocess each Fold separately to prevent data leakage by excluding `fold_validation` from the `fit`. Fits are saved to the Fold object as opposed to the Feature/Label objects.\n",
+    "- 5x more evaluation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "*Disclaimer*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> DO NOT use cross-validation unless your *(total sample count / fold_count)* still gives you an accurate representation of your entire sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that *(total sample count / fold_count)* is evenly divisible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics. Both of these tips help avoid poorly stratified/ undersized folds that seem to perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on an otherwise good model).\n",
+    "> \n",
+    "> Candidly, if you've ever performed cross-validation manually, let alone systematically, you'll know that, barring stratification of continuous labels, it's easy enough to construct the folds, but then it's a pain to generate performance metrics (e.g. `zero_division`, absent OHE classes) due to the absence of outlying classes and bins.  Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try to do something undersized like \"150 samples in their dataset and a `fold_count` > 3 with `unique_classes` > 4,\" then you may run into edge cases.\n",
+    ">\n",
+    "> Cross validation is only included in AIQC to allow best practices to be upheld and to show off the power of systematic preprocessing."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
     "---"
    ]
   },
@@ -2122,7 +2265,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 8a. Create"
+    "### 8a. Methods"
    ]
   },
   {
@@ -2194,73 +2337,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 8b. Cross-Validation"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Cross-validation is triggered by `fold_count:int` during Splitset creation. Reference the [scikit-learn documentation](https://scikit-learn.org/stable/modules/cross_validation.html) to learn more about cross-validation."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "![cross fold objects](../_static/images/api/cross_fold_objects.png)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Each row in the diagram above is a `Fold` object.\n",
-    "\n",
-    "Each green/blue box represents a bin of stratified samples. During preprocessing and training, we rotate which blue bin serves as the validation samples (`fold_validation`). The remaining green bins in the row serve as the training samples (`folds_train_combined`)."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Let's say we defined `fold_count=5`. What are the implications?\n",
-    "- Creates 5 `Folds` related to a `Splitset`.\n",
-    "- 5x more models will be trained for each experiment.\n",
-    "- 5x more preprocessing and caching; the backend must preprocess each Fold separately to prevent data leakage by excluding `fold_validation` from the `fit`. Fits are saved to the Fold object as opposed to the Splitset object.\n",
-    "- 5x more evaluation."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "*Disclaimer*"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "> DO NOT use cross-validation unless your *(total sample count / fold_count)* still gives you an accurate representation of your entire sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that *(total sample count / fold_count)* is evenly divisible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics. Both of these tips help avoid poorly stratified/ undersized folds that seem to perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on an otherwise good model).\n",
-    "> \n",
-    "> Candidly, if you've ever performed cross-validation manually, let alone systematically, you'll know that, barring stratification of continuous labels, it's easy enough to construct the folds, but then it's a pain to generate performance metrics (e.g. `zero_division`, absent OHE classes) due to the absence of outlying classes and bins.  Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try to do something undersized like \"150 samples in their dataset and a `fold_count` > 3 with `unique_classes` > 4,\" then you may run into edge cases.\n",
-    ">\n",
-    "> Cross validation is only included in AIQC to allow best practices to be upheld and to show off the power of systematic preprocessing."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 8c. Attributes"
+    "### 8b. Attributes"
    ]
   },
   {
@@ -2291,6 +2368,26 @@
     "**version** | IntegerField | [TBD]\n",
     "**label** | ForeignKeyField | The Label, if any, that supervises this splitset\n",
     "**predictor** | DeferredForeignKey | During inference, a new Splitset of samples to be predicted may attach to a Predictor. Samples dict will bear the key of the `Predictor.Splitset.count()` e.g. `'infer_0'`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "These are the fields of the Fold table"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Attribute | Type | Description\n",
+    "--- | --- | ---\n",
+    "**fold_index** | IntegerField | Zero-based auto-incrementer that counts the Folds\n",
+    "**samples** | JSONField | Contains the sample indices of the training folds and leftout validation fold, as well as any validation and test splits defined in the regular Splitset.samples `dict().keys()==['folds_train_combined', 'fold_validation', 'validation', 'test']` \n",
+    "**fitted_labelcoder** | PickleField | When `LabelCoders`'s `fit` an sklearn preprocessor, the fit objects are saved here for downstream `inverse_transform`'ing\n",
+    "**fitted_featurecoders** | PickleField | When `FeatureCoder`'s `fit` an sklearn preprocessor, the fit objects are saved here for downstream `inverse_transform`'ing\n",
+    "**splitset** | ForeignKeyField | The Splitset that this Fold belongs to"
    ]
   },
   {
@@ -2337,11 +2434,183 @@
   },
   {
    "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**PyTorch `fit`**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Provides an abstraction that eliminates the boilerplate code normally required to train and evaluate a PyTorch model."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- Before training - it shuffles samples, batches samples, and then shuffles batches.\n",
+    "- During training - it calculates batch loss, epoch loss, and epoch history metrics.\n",
+    "- After training - it calculates metrics for each split."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```python\n",
+    "model, history = utils.pytorch.fit(\n",
+    "    # These arguments come directly from `fn_train`\n",
+    "    model\n",
+    "    , loser\n",
+    "    , optimizer\n",
+    "    \n",
+    "    , train_features\n",
+    "    , train_label\n",
+    "    , eval_features\n",
+    "    , eval_label\n",
+    "    \n",
+    "    # These arguments are user-defined\n",
+    "    , epochs\n",
+    "    , batch_size\n",
+    "    , enforce_sameSize\n",
+    "    , allow_singleSample\n",
+    "    , metrics\n",
+    ")\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "User-Defined Arguments | Type | Default | Description\n",
+    "--- | --- | --- | ---\n",
+    "**epochs** | int | 30 | The number of times to loop over the features\n",
+    "**batch_size** | int | 5 | Divides features and lables into chunks to be trained upon\n",
+    "**enforce_sameSize** | bool | True | If `True`, drops `len(batch!=batch_size)`\n",
+    "**allow_singleSample** | bool | False | If `False`, drops `len(batch!=1)`\n",
+    "**metrics** | list(torchmetrics.metric()) | None | List of instantiated `torchmetrics` classes e.g. `Accuracy`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**`history` Metrics**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The goal of the `Predictor.history` object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the [visualization](visualization.html) section."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- *Keras*: any `metrics=[]` specified are automatically added to the `History` callback object.\n",
+    "\n",
+    "- *PyTorch*: if you use `fit` seen above, then you don't need to worry about this. Users are responsible for calculating their own metrics (we recommend the `torchmetrics` package) and placing them into a `history` dictionary that mirrors the schema of the Keras history object. Reference the torch [examples](gallery/pytorch/multi_class.html). "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> The schema of the `history` dictionary is as follows: `dict(*:ndarray, val_*=ndarray)`. For example, if you wanted to record the history of the 'loss' and 'accuracy' metrics manually for PyTorch, you would construct it like so:\n",
+    "\n",
+    "```python\n",
+    "history = dict(\n",
+    "    loss           = ndarray\n",
+    "    , val_loss     = ndarray\n",
+    "    \n",
+    "    , accuracy     = ndarray\n",
+    "    , val_accuracy = ndarray\n",
+    ")\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**TensorFlow Early Stopping**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "*Early stopping* isn't just about efficiency in reducing the number of `epochs`. If you've specified 300 epochs, there's a chance your model catches on to the underlying patterns early, say around 75-125 epochs. At this point, there's also good chance what it learns in the remaining epochs will cause it to overfit on patterns that are specific to the training data, and thereby and lose it's simplicity/ generalizability.\n",
+    "\n",
+    "> The `metric=val_*` prefix refers to the evaluation samples.\n",
+    ">\n",
+    "> Remember, regression does not have accuracy metrics.\n",
+    ">\n",
+    "> `TrainingCallback.MetricCutoff` is a custom class we wrote to make *early stopping* easier, so you won't find information about it in the official Keras documentation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Placed within `fn_train`:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```python\n",
+    "    from aiqc.utils.tensorflow import TrainingCallback\n",
+    "    \n",
+    "    #Define one or more metrics to monitor.\n",
+    "    metrics_cuttoffs = [\n",
+    "        dict(metric='val_accuracy', cutoff=0.96, above_or_below='above'),\n",
+    "        dict(metric='val_loss', cutoff=0.1, above_or_below='below')\n",
+    "    ]\n",
+    "    cutoffs = TrainingCallback.MetricCutoff(metrics_cuttoffs)\n",
+    "\n",
+    "    # Pass it into keras callbacks\n",
+    "    model.fit(\n",
+    "        # other fit args\n",
+    "        callbacks = [cutoffs]\n",
+    "    )\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "metadata": {
     "tags": []
    },
    "source": [
-    "### 9a. Create"
+    "### 9a. Methods"
    ]
   },
   {
@@ -2556,186 +2825,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 9b. PyTorch `fit`"
+    "### 9b. Attributes"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Provides an abstraction that eliminates the boilerplate code normally required to train and evaluate a PyTorch model."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "- Before training - it shuffles samples, batches samples, and then shuffles batches.\n",
-    "- During training - it calculates batch loss, epoch loss, and epoch history metrics.\n",
-    "- After training - it calculates metrics for each split."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "```python\n",
-    "model, history = utils.pytorch.fit(\n",
-    "    # These arguments come directly from `fn_train`\n",
-    "    model\n",
-    "    , loser\n",
-    "    , optimizer\n",
-    "    \n",
-    "    , train_features\n",
-    "    , train_label\n",
-    "    , eval_features\n",
-    "    , eval_label\n",
-    "    \n",
-    "    # These arguments are user-defined\n",
-    "    , epochs\n",
-    "    , batch_size\n",
-    "    , enforce_sameSize\n",
-    "    , allow_singleSample\n",
-    "    , metrics\n",
-    ")\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "User-Defined Arguments | Type | Default | Description\n",
-    "--- | --- | --- | ---\n",
-    "**epochs** | int | 30 | The number of times to loop over the features\n",
-    "**batch_size** | int | 5 | Divides features and lables into chunks to be trained upon\n",
-    "**enforce_sameSize** | bool | True | If `True`, drops `len(batch!=batch_size)`\n",
-    "**allow_singleSample** | bool | False | If `False`, drops `len(batch!=1)`\n",
-    "**metrics** | list(torchmetrics.metric()) | None | List of instantiated `torchmetrics` classes e.g. `Accuracy`"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 9b. History Metrics"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "The goal of the `Predictor.history` object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the [visualization](visualization.html) section."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "- *Keras*: any `metrics=[]` specified are automatically added to the `History` callback object.\n",
-    "\n",
-    "- *PyTorch*: if you use `fit` seen above, then you don't need to worry about this. Users are responsible for calculating their own metrics (we recommend the `torchmetrics` package) and placing them into a `history` dictionary that mirrors the schema of the Keras history object. Reference the torch [examples](gallery/pytorch/multi_class.html). "
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "> The schema of the `history` dictionary is as follows: `dict(*:ndarray, val_*=ndarray)`. For example, if you wanted to record the history of the 'loss' and 'accuracy' metrics manually for PyTorch, you would construct it like so:\n",
-    "\n",
-    "```python\n",
-    "history = dict(\n",
-    "    loss           = ndarray\n",
-    "    , val_loss     = ndarray\n",
-    "    \n",
-    "    , accuracy     = ndarray\n",
-    "    , val_accuracy = ndarray\n",
-    ")\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 9c. TensorFlow Early Stopping"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "*Early stopping* isn't just about efficiency in reducing the number of `epochs`. If you've specified 300 epochs, there's a chance your model catches on to the underlying patterns early, say around 75-125 epochs. At this point, there's also good chance what it learns in the remaining epochs will cause it to overfit on patterns that are specific to the training data, and thereby and lose it's simplicity/ generalizability.\n",
-    "\n",
-    "> The `metric=val_*` prefix refers to the evaluation samples.\n",
-    ">\n",
-    "> Remember, regression does not have accuracy metrics.\n",
-    ">\n",
-    "> `TrainingCallback.MetricCutoff` is a custom class we wrote to make *early stopping* easier, so you won't find information about it in the official Keras documentation."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Placed within `fn_train`:"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "```python\n",
-    "    from aiqc.utils.tensorflow import TrainingCallback\n",
-    "    \n",
-    "    #Define one or more metrics to monitor.\n",
-    "    metrics_cuttoffs = [\n",
-    "        dict(metric='val_accuracy', cutoff=0.96, above_or_below='above'),\n",
-    "        dict(metric='val_loss', cutoff=0.1, above_or_below='below')\n",
-    "    ]\n",
-    "    cutoffs = TrainingCallback.MetricCutoff(metrics_cuttoffs)\n",
-    "\n",
-    "    # Pass it into keras callbacks\n",
-    "    model.fit(\n",
-    "        # other fit args\n",
-    "        callbacks = [cutoffs]\n",
-    "    )\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 9d. Attributes"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "These are the fields of the Splitset table"
+    "These are the fields of the Algorithm table"
    ]
   },
   {
@@ -2847,50 +2944,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 10a. Philosophy"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "Hyperparameter tuning is like planning a wedding. First you sort out the big ticket items like the venue, caterer, and band. You go tour and taste a few options. Only after this strategy is in place do you worry about the tactical details like what suit you are going to wear and the songs that will be played.\n",
-    "\n",
-    "\n",
-    "When tuning a neural network:\n",
-    "\n",
-    "1. First you figure out the high-level architecture: the topologies (types of layers, # of layers, # neurons per layer) and batch size (amount of information).\n",
-    "2. Once you find an architecture or two that perform reasonably well, then you can hone in on their nuances like weight initialization, activation methods, and learning rate.\n",
-    "\n",
-    "Here's why I don't recommend fancy hyperparameter search stragtegies:\n",
-    "\n",
-    "- Don't combine steps 1 and 2. It's a waste of time to search through the nuances of architectures that were never going to perform well.\n",
-    "\n",
-    "- The parameters influence each other. If, all of a sudden, I decide that I am going to run with 3 convolutional layers instead of 2, then that completely changes the parameters I want to test next. I might even have parameters that are exclusive to the third layer 3. \n",
-    "\n",
-    "- If you limit your experiments to tweaking just 1-2 parameters at a time, then it's easy to isolate their effect. The parameters aren't mutually exclusive. If you change the batch size, then it doesn't matter how previous learning rates performed.\n",
-    "\n",
-    "- It prevents you from learning about how neural networks operate through your own observation. Given enough practice with an architecture, you'll intuitively get a feel for the right balance between \"model complexity and data complexity\" as well as what parameters to tweak in certain situations. You have to become like a coach that assigns specific practice drills to get your team to perform for the task at hand.\n",
-    "\n",
-    "- Practitioners really only test high/medium/low values for a handful of parameters for a given architecture. If you tell a chef to prepare a special meal for a certain occassion, then he doesn't need a search optimization algorithm to figure out what process and ingredients to use. \n",
-    "\n",
-    "Now if there was a reinforcement learning (RL) model that looked at the variance in features and produced an architecture-parameter pairing to test - then I would be interested.\n",
-    "\n",
-    "Never forget, the goal of training is to neurally encode representative information using the simplest topology possible to ensure generalizability. It's a condensed logically representation of a broader reality."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "---"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "### 10b. Create"
+    "### 10a. Methods"
    ]
   },
   {
@@ -2944,7 +2998,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 10c. Attributes"
+    "### 10b. Attributes"
    ]
   },
   {
@@ -3183,9 +3237,9 @@
    "source": [
     "Argument | Type | Default | Description\n",
     "--- | --- | --- | ---\n",
+    "**ascending** | typ | False | Descending if False.\n",
     "**selected_metrics** | list(str) | None | If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.\n",
-    "**sort_by** | str | None | You can sort the dataframe by any column name.\n",
-    "**ascending** | typ | False | Descending if False.\n"
+    "**sort_by** | str | None | You can sort the dataframe by any column name."
    ]
   },
   {
@@ -3199,7 +3253,53 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 11c. Attributes"
+    "└── `Queue.metrics_aggregate()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For every metric of every model trained by the Queue -- displays the average, median, standard deviation, minimum, and maximum across all splits/folds."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```python\n",
+    "Queue.metrics_aggregate(\n",
+    "    ascending          = False\n",
+    "    , selected_metrics = None\n",
+    "    , selected_stats   = None\n",
+    "    , sort_by          = None\n",
+    ")\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Argument | Type | Default | Description\n",
+    "--- | --- | --- | ---\n",
+    "**ascending** | typ | False | Descending if False.\n",
+    "**selected_metrics** | list(str) | None | If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.\n",
+    "**sort_by** | str | None | You can sort the dataframe by any column name."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 11b. Attributes"
    ]
   },
   {
@@ -3258,7 +3358,28 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 12a. Attributes"
+    "### 12a. Methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "There are no noteworthy, user-facing methods for the Job class"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 12b. Attributes"
    ]
   },
   {
@@ -3331,6 +3452,33 @@
    },
    "source": [
     "Handles fetching and initializing the model (and PyTorch optimizer) from `Predictor.model_file` and `Predictor.input_shapes`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "└── `Predictor.flip_star()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "A way to toggle (favorite/ unfavorite) the `Predictor.is_starred` attribute in order to keep track of the best models."
    ]
   },
   {
@@ -3718,7 +3866,7 @@
     "| **feature_importance** | Importance of each column. Only calculated for training split/fold |\n",
     "| **probabilities** | Prediction probabilities per split/ fold. `None` for regression. |\n",
     "| **metrics** | Statistics for each split/fold that vary based on the analysis_type.  |\n",
-    "| **metrics_aggregate** | Average for each statistic across all splits/folds. |\n",
+    "| **metrics_aggregate** | Contains the average, median, standard deviation, minimum, and maximum for each statistic across all splits/folds. |\n",
     "| **plot_data** | Metrics reformatted for plot functions. |"
    ]
   },

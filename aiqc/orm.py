@@ -2344,6 +2344,7 @@ class Splitset(BaseModel):
 
             if (splitset.has_validation==True):
                 fold_samples["validation"] = splitset.samples["validation"]
+            ### check if it has test first
             fold_samples["test"] = splitset.samples["test"]
 
             Fold.create(
@@ -3432,9 +3433,9 @@ class Queue(BaseModel):
 
     def metrics_df(
         id:int
+        , ascending:bool=False
         , selected_metrics:list=None
         , sort_by:list=None
-        , ascending:bool=False
     ):
         queue = Queue.get_by_id(id)
         selected_metrics = listify(selected_metrics)
@@ -3505,7 +3506,7 @@ class Queue(BaseModel):
         return df
 
 
-    def metrics_aggregate_to_pandas(
+    def metrics_aggregate(
         id:int
         , ascending:bool=False
         , selected_metrics:list=None
