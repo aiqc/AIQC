@@ -18,7 +18,7 @@ Links
   * - `GitHub <https://github.com/aiqc/aiqc/>`__
     - Source code.
 
-  * - `ReadTheDocs <https://aiqc.readthedocs.io/>`__
+  * - `ReadTheDocs <https://docs.aiqc.io/>`__
     - Documentation. *You are here.*
 
   * - `PyPI <https://pypi.org/project/aiqc/>`__
