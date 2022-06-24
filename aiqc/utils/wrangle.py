@@ -9,11 +9,11 @@ import pandas as pd
 
 
 default_interpolateKwargs = dict(
-    method = 'linear'
+    method            = 'linear'
     , limit_direction = 'both'
-    , limit_area = None
-    , axis = 0
-    , order = 1
+    , limit_area      = None
+    , axis            = 0
+    , order           = 1
 )
 
 
@@ -25,9 +25,11 @@ def listify(supposed_lst:object=None):
         # If it was already a list, check it for emptiness and `None`.
         elif (isinstance(supposed_lst, list)):
             if (not supposed_lst):
-                raise Exception("Yikes - The list you provided is empty.")
+                msg = "\nYikes - The list you provided is empty.\n"
+                raise Exception(msg)
             if (None in supposed_lst):
-                raise Exception(f"\nYikes - The list you provided contained `None` as an element.\n{supposed_lst}\n")
+                msg = f"\nYikes - The list you provided contained `None` as an element.\n{supposed_lst}\n"
+                raise Exception(msg)
     # Allow entire list `is None` to pass through because we need it to trigger null conditions.
     return supposed_lst
 
@@ -45,7 +47,8 @@ def size_shift_defined(size_window:int=None, size_shift:int=None):
         or 
         ((size_window is not None) and (size_shift is None))
     ):
-        raise Exception("\nYikes - `size_window` and `size_shift` must be used together or not at all.\n")
+        msg = "\nYikes - `size_window` and `size_shift` must be used together or not at all.\n"
+        raise Exception(msg)
 
 
 def values_to_bins(array_to_bin:object, bin_count:int):
@@ -57,7 +60,7 @@ def values_to_bins(array_to_bin:object, bin_count:int):
     array_to_bin = array_to_bin.flatten()
     # For really unbalanced labels, I ran into errors where bin boundaries would be duplicates all the way down to 2 bins.
     # Setting `duplicates='drop'` to address this.
-    bin_numbers = pd.qcut(x=array_to_bin, q=bin_count, labels=False, duplicates='drop')
+    bin_numbers  = pd.qcut(x=array_to_bin, q=bin_count, labels=False, duplicates='drop')
     # When the entire `array_to_bin` is the same, qcut returns all nans!
     if (np.isnan(bin_numbers).any()):
         bin_numbers = None
@@ -67,7 +70,11 @@ def values_to_bins(array_to_bin:object, bin_count:int):
     return bin_numbers
 
 
-def stratifier_by_dtype_binCount(stratify_dtype:object, stratify_arr:object, bin_count:int=None):
+def stratifier_by_dtype_binCount(
+    stratify_dtype:object
+    , stratify_arr:object
+    , bin_count:int = None
+):
     """Based on the dtype and bin_count determine how to stratify."""
     # Automatically bin floats.
     if np.issubdtype(stratify_dtype, np.floating):
@@ -102,15 +109,18 @@ def floats_only(label:object):
     label_dtypes = set(label.get_dtypes().values())
     for typ in label_dtypes:
         if (not np.issubdtype(typ, np.floating)):
-            raise Exception(f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n")
+            msg = f"\nYikes - Interpolate can only be ran on float dtypes. Your dtype: <{typ}>\n"
+            raise Exception(msg)
 
 
 def verify_interpolateKwargs(interpolate_kwargs:dict):
     if (interpolate_kwargs['method'] == 'polynomial'):
-        raise Exception("\nYikes - `method=polynomial` is prevented due to bug: stackoverflow.com/questions/6722260.\n")
+        msg = "\nYikes - `method=polynomial` is prevented due to bug: stackoverflow.com/questions/6722260.\n"
+        raise Exception(msg)
     if ((interpolate_kwargs['axis'] != 0) and (interpolate_kwargs['axis'] != 'index')):
         # This makes it so that you can run on sparse indices.
-        raise Exception("\nYikes - `axis` must be either 0 or 'index'.\n")
+        msg = "\nYikes - `axis` must be either 0 or 'index'.\n"
+        raise Exception(msg)
 
 
 def run_interpolate(dataframe:object, interpolate_kwargs:dict):
@@ -128,15 +138,15 @@ def conditional_torch(arr:object, library:str=None):
 def stage_data(splitset:object, fold:object):
     path_splitset = splitset.cache_path
     if (fold is not None):
-        samples = fold.samples
-        idx = fold.fold_index
-        fold_idx = f"fold_{idx}"
-        path_fold = path.join(path_splitset, fold_idx)
+        samples       = fold.samples
+        idx           = fold.fold_index
+        fold_idx      = f"fold_{idx}"
+        path_fold     = path.join(path_splitset, fold_idx)
         create_folder(path_fold)
         fold_progress = f"📦 Caching Splits - Fold #{idx+1} 📦"
     else:
-        samples = splitset.samples
-        path_fold = path.join(path_splitset, "no_fold")
+        samples       = splitset.samples
+        path_fold     = path.join(path_splitset, "no_fold")
         create_folder(path_fold)
         fold_progress = "📦 Caching Splits 📦"
     key_train = splitset.key_train#fold-aware.
@@ -149,10 +159,10 @@ def stage_data(splitset:object, fold:object):
     work the same in both numpy and torch.
     """
     if (splitset.supervision == "supervised"):
-        label = splitset.label
+        label      = splitset.label
         arr_labels = label.preprocess(
-            samples = samples
-            , fold = fold
+            samples     = samples
+            , fold      = fold
             , key_train = key_train
         )
 
@@ -163,16 +173,16 @@ def stage_data(splitset:object, fold:object):
         if (splitset.supervision == 'supervised'):
             arr_features = feature.preprocess(
                 supervision = 'supervised'
-                , fold = fold
-                , samples = samples
+                , fold      = fold
+                , samples   = samples
                 , key_train = key_train
             )
         elif (splitset.supervision == 'unsupervised'):
             # Remember, the unsupervised arr_labels may be different/shifted for forecasting.
             arr_features, arr_labels = feature.preprocess(
                 supervision = 'unsupervised'
-                , fold = fold
-                , samples = samples
+                , fold      = fold
+                , samples   = samples
                 , key_train = key_train
             )
         features.append(arr_features)
@@ -220,18 +230,21 @@ def stage_data(splitset:object, fold:object):
 
 
 def fetchFeatures_ifAbsent(
-    splitset:object, split:str, 
-    train_features:object, eval_features:object,
-    fold_id:int=None, library:object=None
+    splitset:object
+    , split:str 
+    , train_features:object
+    , eval_features:object
+    , fold_id:int    = None
+    , library:object = None
 ):
     """Check if this split is already in-memory. If not, fetch it."""
-    key_trn = splitset.key_train
+    key_trn  = splitset.key_train
     key_eval = splitset.key_evaluation
     
     fetch = True
     if (split==key_trn):
         if (train_features is not None):
-            data = train_features
+            data  = train_features
             fetch = False
     elif (
         (split==key_eval) and (key_eval is not None)
@@ -239,29 +252,35 @@ def fetchFeatures_ifAbsent(
         ('infer' in split)
     ):
         if (eval_features is not None):
-            data = eval_features
+            data  = eval_features
             fetch = False
     
     if (fetch==True):
         data, _ = splitset.fetch_cache(
-            fold_id=fold_id, split=split, label_features='features', library=library
+            fold_id          = fold_id
+            , split          = split
+            , label_features = 'features'
+            , library        = library
         )
     return data
 
 
 def fetchLabel_ifAbsent(
-    splitset:object, split:str, 
-    train_label:object, eval_label:object,
-    fold_id:int=None, library:object=None
+    splitset:object
+    , split:str 
+    , train_label:object
+    , eval_label:object
+    , fold_id:int    = None
+    , library:object = None
 ):
     """Check if data is already in-memory. If not, fetch it."""
-    key_trn = splitset.key_train
+    key_trn  = splitset.key_train
     key_eval = splitset.key_evaluation
     
     fetch = True
     if (split==key_trn):
         if (train_label is not None):
-            data = train_label
+            data  = train_label
             fetch = False
     elif (
         (split==key_eval) and (key_eval is not None)
@@ -269,12 +288,15 @@ def fetchLabel_ifAbsent(
         ('infer' in split)
     ):
         if (eval_label is not None):
-            data = eval_label
+            data  = eval_label
             fetch = False
     
     if (fetch==True):
         data, _ = splitset.fetch_cache(
-            fold_id=fold_id, split=split, label_features='label', library=library
+            fold_id          = fold_id
+            , split          = split
+            , label_features = 'label'
+            , library        = library
         )
     return data
 
@@ -298,7 +320,8 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
     features_old = splitset_old.features
 
     if (len(features_new) != len(features_old)):
-        raise Exception("\nYikes - Your new and old Splitsets do not contain the same number of Features.\n")
+        msg = "\nYikes - Your new and old Splitsets do not contain the same number of Features.\n"
+        raise Exception(msg)
 
     for i, f_new in enumerate(features_new):
         f_old = features_old[i]
@@ -332,7 +355,8 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
             or
             ((f_new.windows.count()>0) and (f_old.windows.count()==0))
         ):
-            raise Exception("\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n")
+            msg = "\nYikes - Either both or neither of Splitsets can have Windows attached to their Features.\n"
+            raise Exception(msg)
 
         if ((f_old.windows.count()>0) and (f_new.windows.count()>0)):
             window_old = f_old.windows[-1]
@@ -342,7 +366,8 @@ def schemaNew_matches_schemaOld(splitset_new:object, splitset_old:object):
                 or
                 (window_old.size_shift != window_new.size_shift)
             ):
-                raise Exception("\nYikes - New Window and old Window schemas do not match.\n")
+                msg = "\nYikes - New Window and old Window schemas do not match.\n"
+                raise Exception(msg)
 
     """
     - Only verify Labels if the inference new Splitset provides Labels.

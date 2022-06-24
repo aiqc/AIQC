@@ -219,14 +219,7 @@ class BaseModel(Model):
         elif (self.is_starred==True):
             self.is_starred = False
         self.save()
-    
-    def set_info(self, name:str=None, description:str=None):
-        if (name is not None):
-            self.name = name
-        if (description is not None):
-            self.description = description
-        if ((name is not None) or (description is not None)):
-            self.save()
+
 
 @pre_save(sender=BaseModel)
 def add_timestamps(model_class, instance, created):
@@ -323,7 +316,8 @@ class Dataset(BaseModel):
         if (dataset.typ == 'image'):
             image = Dataset.Image.to_pillow(id=id, samples=samples)
         elif (dataset.typ != 'image'):
-            raise Exception("\nYikes - Only `Dataset.Image` supports `to_pillow()`\n")
+            msg = "\nYikes - Only `Dataset.Image` supports `to_pillow()`\n"
+            raise Exception(msg)
         return image
     
 
@@ -359,7 +353,8 @@ class Dataset(BaseModel):
         ):
             """The internal args `_*` exist because `from_path` & `from_ndarray` call this function."""
             if (type(dataframe).__name__ != 'DataFrame'):
-                raise Exception("\nYikes - The `dataframe` you provided is not `type(dataframe).__name__=='DataFrame'`\n")
+                msg = "\nYikes - The `dataframe` you provided is not `type(dataframe).__name__=='DataFrame'`\n"
+                raise Exception(msg)
             latest_match, version_num = dataset_matchVersion(name=name, typ='tabular')
             rename_columns = listify(rename_columns)
 
@@ -1050,7 +1045,8 @@ class Label(BaseModel):
             # Check that the user-provided columns exist.
             all_cols_found = all(c in d_cols for c in columns)
             if (not all_cols_found):
-                raise Exception("\nYikes - You specified `columns` that do not exist in the Dataset.\n")
+                msg = "\nYikes - You specified `columns` that do not exist in the Dataset.\n"
+                raise Exception(msg)
 
         """
         - When multiple columns are provided, they must be OHE.
@@ -1266,7 +1262,8 @@ class Feature(BaseModel):
             # Check columns exist
             all_cols_found = all(col in d_cols for col in include_columns)
             if (not all_cols_found):
-                raise Exception("\nYikes - You specified `include_columns` that do not exist in the Dataset.\n")
+                msg = "\nYikes - You specified `include_columns` that do not exist in the Dataset.\n"
+                raise Exception(msg)
             # Inclusion
             columns = include_columns
             # Exclusion
@@ -1411,7 +1408,8 @@ class Feature(BaseModel):
                     df = fp.interpolate(dataframe=df, samples=samples)#handles `samples=None`
                     # Overwrite the original column with the interpolated column.
                     if (dataframe.index.size != df.index.size):
-                        raise Exception("Yikes - Internal error. Index sizes inequal.")
+                        msg = "\nYikes - Internal error. Index sizes inequal.\n"
+                        raise Exception(msg)
                     for c in fp.matching_columns:
                         dataframe[c] = df[c]
             array = dataframe.to_numpy()
@@ -1427,7 +1425,8 @@ class Feature(BaseModel):
                     df_cols = fp.interpolate(dataframe=df_cols, samples=None)
                     # Overwrite columns.
                     if (seqframe.index.size != df_cols.index.size):
-                        raise Exception("Yikes - Internal error. Index sizes inequal.")
+                        msg = "\nYikes - Internal error. Index sizes inequal.\n"
+                        raise Exception(msg)
                     for c in fp.matching_columns:
                         seqframe[c] = df_cols[c]
                 # Update the list. Might as well array it while accessing it.
@@ -1447,7 +1446,8 @@ class Feature(BaseModel):
                         df_cols = fp.interpolate(dataframe=df_cols, samples=None)
                         # Overwrite columns.
                         if (seqframe.index.size != df_cols.index.size):
-                            raise Exception("Yikes - Internal error. Index sizes inequal.")
+                            msg = "\nYikes - Internal error. Index sizes inequal.\n"
+                            raise Exception(msg)
                         for c in fp.matching_columns:
                             seqframe[c] = df_cols[c]
                     # Update the list. Might as well array it while accessing it.
@@ -1649,7 +1649,8 @@ class Feature(BaseModel):
             # Get the leftover columns from the last one.
             initial_columns = existing_preprocs[-1].leftover_columns
             if (len(initial_columns) == 0):
-                raise Exception(f"\nYikes - All features already have {class_name}s associated with them. Cannot add more preprocesses to this set.\n")
+                msg = f"\nYikes - All features already have {class_name}s associated with them. Cannot add more preprocesses to this set.\n"
+                raise Exception(msg)
         initial_dtypes = {}
         for key,value in feature_dtypes.items():
             for col in initial_columns:
@@ -1734,7 +1735,8 @@ class Feature(BaseModel):
                 inex_str = "inclusion"
             elif (include == False):
                 inex_str = "exclusion"
-            raise Exception(f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n")
+            msg = f"\nYikes - There are no columns left to use after applying the dtype and column {inex_str} filters.\n"
+            raise Exception(msg)
 
         # 3b. Record the  output.
         leftover_columns =  list(set(initial_columns) - set(matching_columns))
@@ -1818,9 +1820,11 @@ class Window(BaseModel):
         sample_count = feature.dataset.shape['samples']
         if (record_shifted==True):
             if ((size_window < 1) or (size_window > (sample_count - size_shift))):
-                raise Exception("\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n")
+                msg = "\nYikes - Failed: `(size_window < 1) or (size_window > (sample_count - size_shift)`.\n"
+                raise Exception(msg)
             if ((size_shift < 1) or (size_shift > (sample_count - size_window))):
-                raise Exception("\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n")
+                msg = "\nYikes - Failed: `(size_shift < 1) or (size_shift > (sample_count - size_window)`.\n"
+                raise Exception(msg)
 
             window_count         = math.floor((sample_count - size_window) / size_shift)
             prune_shifted_lead   = sample_count - ((window_count - 1)*size_shift + size_window)
@@ -1912,17 +1916,21 @@ class Splitset(BaseModel):
         # --- Verify splits ---
         if (size_test is not None):
             if ((size_test <= 0.0) or (size_test >= 1.0)):
-                raise Exception("\nYikes - `size_test` must be between 0.0 and 1.0\n")
+                msg = "\nYikes - `size_test` must be between 0.0 and 1.0\n"
+                raise Exception(msg)
         
         if ((size_validation is not None) and (size_test is None)):
-            raise Exception("\nYikes - you specified a `size_validation` without setting a `size_test`.\n")
+            msg = "\nYikes - you specified a `size_validation` without setting a `size_test`.\n"
+            raise Exception(msg)
 
         if (size_validation is not None):
             if ((size_validation <= 0.0) or (size_validation >= 1.0)):
-                raise Exception("\nYikes - `size_test` must be between 0.0 and 1.0\n")
+                msg = "\nYikes - `size_test` must be between 0.0 and 1.0\n"
+                raise Exception(msg)
             sum_test_val = size_validation + size_test
             if sum_test_val >= 1.0:
-                raise Exception("\nYikes - Sum of `size_test` + `size_test` must be between 0.0 and 1.0 to leave room for training set.\n")
+                msg = "\nYikes - Sum of `size_test` + `size_test` must be between 0.0 and 1.0 to leave room for training set.\n"
+                raise Exception(msg)
             """
             Have to run train_test_split twice do the math to figure out the size of 2nd split.
             Let's say I want {train:0.67, validation:0.13, test:0.20}
@@ -2634,7 +2642,8 @@ class LabelInterpolater(BaseModel):
                     df_labels = pd.concat([df_labels, df])
             # df doesn't need to be sorted if it is going back to numpy.
         else:
-            raise Exception("\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n")
+            msg = "\nYikes - Internal error. Could not perform Label interpolation given the arguments provided.\n"
+            raise Exception(msg)
         arr_labels = df_labels.to_numpy()
         return arr_labels
 
@@ -2750,11 +2759,13 @@ class FeatureInterpolater(BaseModel):
                         df_interp = pd.concat([df_interp, df])
                 df_interp = df_interp.sort_index()
             else:
-                raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n")
+                msg = "\nYikes - Internal error. Unable to process FeatureInterpolater with arguments provided.\n"
+                raise Exception(msg)
         elif ((typ=='sequence') or (typ=='image')):
             df_interp = run_interpolate(dataframe, interpolate_kwargs)
         else:
-            raise Exception("\nYikes - Internal error. Unable to process FeatureInterpolater with typ provided.\n")
+            msg = "\nYikes - Internal error. Unable to process FeatureInterpolater with typ provided.\n"
+            raise Exception(msg)
         # Back within the loop these will (a) overwrite the matching columns, and (b) ultimately get converted back to numpy.
         return df_interp
 
@@ -3035,12 +3046,14 @@ class Algorithm(BaseModel):
     ):
         library = library.lower()
         if ((library != 'keras') and (library != 'pytorch')):
-            raise Exception("\nYikes - Right now, the only libraries we support are 'keras' and 'pytorch'\nMore to come soon!\n")
+            msg = "\nYikes - Right now, the only libraries we support are 'keras' and 'pytorch'\nMore to come soon!\n"
+            raise Exception(msg)
 
         analysis_type = analysis_type.lower()
         supported_analyses = ['classification_multi', 'classification_binary', 'regression']
         if (analysis_type not in supported_analyses):
-            raise Exception(f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n")
+            msg = f"\nYikes - Right now, the only analytics we support are:\n{supported_analyses}\n"
+            raise Exception(msg)
 
         if (fn_predict is None):
             fn_predict = utils.modeling.select_fn_predict(
@@ -3057,7 +3070,8 @@ class Algorithm(BaseModel):
         for i, f in enumerate(funcs):
             is_func = callable(f)
             if (not is_func):
-                raise Exception(f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n")
+                msg = f"\nYikes - The following variable is not a function, it failed `callable(variable)==True`:\n\n{f}\n"
+                raise Exception(msg)
 
         fn_build    = utils.dill.serialize(fn_build)
         fn_optimize = utils.dill.serialize(fn_optimize)
@@ -3117,7 +3131,8 @@ class Hyperparamset(BaseModel):
         , search_percent:float = None
     ):
         if ((search_count is not None) and (search_percent is not None)):
-            raise Exception("Yikes - Either `search_count` or `search_percent` can be provided, but not both.")
+            msg = "\nYikes - Either `search_count` or `search_percent` can be provided, but not both.\n"
+            raise Exception(msg)
 
         algorithm = Algorithm.get_by_id(algorithm_id)
 
@@ -3250,7 +3265,7 @@ class Queue(BaseModel):
 
                 if ('classification' in analysis_type): 
                     if (np.issubdtype(label_dtype, np.floating)):
-                        msg = "Yikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`."
+                        msg = "\nYikes - Cannot have `Algorithm.analysis_type!='regression`, when Label dtype falls under `np.floating`.\n"
                         raise Exception(msg)
 
                     if (labelcoder is not None):
@@ -3324,7 +3339,7 @@ class Queue(BaseModel):
                         and
                         (not np.issubdtype(label_dtype, np.signedinteger))
                     ):
-                        msg = "Yikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`."
+                        msg = "\nYikes - `Algorithm.analysis_type == 'regression'`, but label dtype was neither `np.floating`, `np.unsignedinteger`, nor `np.signedinteger`.\n"
                         raise Exception(msg)
                     
                     if (splitset.bin_count is None):
@@ -3333,10 +3348,12 @@ class Queue(BaseModel):
             # We already know these are OHE based on Label creation, so skip dtype, bin, and encoder checks.
             elif (label_col_count > 1):
                 if (analysis_type != 'classification_multi'):
-                    raise Exception("Yikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.")
+                    msg = "\nYikes - `Label.column_count > 1` but `Algorithm.analysis_type != 'classification_multi'`.\n"
+                    raise Exception(msg)
 
         elif ((splitset.supervision=='unsupervised') and (algorithm.analysis_type!='regression')):
-            raise Exception("\nYikes - AIQC only supports unsupervised analysis with `analysis_type=='regression'`.\n")
+            msg = "\nYikes - AIQC only supports unsupervised analysis with `analysis_type=='regression'`.\n"
+            raise Exception(msg)
 
 
         if (splitset.fold_count > 0):
@@ -3470,7 +3487,8 @@ class Queue(BaseModel):
         queue_predictions = list(queue_predictions)
 
         if (not queue_predictions):
-            raise Exception("\nSorry - None of the Jobs in this Queue have completed yet.\n")
+            msg = "\nSorry - None of the Jobs in this Queue have completed yet.\n"
+            raise Exception(msg)
 
         split_metrics = list(queue_predictions[0].metrics.values())
         metric_names  = list(split_metrics[0].keys())
@@ -3518,7 +3536,8 @@ class Queue(BaseModel):
         if (sort_by is not None):
             for name in sort_by:
                 if (name not in column_names):
-                    raise Exception(f"\nYikes - Column '{name}' not found in metrics dataframe.\n")
+                    msg = f"\nYikes - Column '{name}' not found in metrics dataframe.\n"
+                    raise Exception(msg)
             df = pd.DataFrame.from_records(split_metrics).sort_values(
                 by=sort_by, ascending=ascending
             )
@@ -3566,7 +3585,8 @@ class Queue(BaseModel):
         if (selected_stats is not None):
             for s in selected_stats:
                 if (s not in stat_names):
-                    raise Exception(f"\nYikes - The statistic '{s}' does not exist in `Predictor.metrics_aggregate`.\n")
+                    msg = f"\nYikes - The statistic '{s}' does not exist in `Predictor.metrics_aggregate`.\n"
+                    raise Exception(msg)
         elif (selected_stats is None):
             selected_stats = stat_names
 
@@ -3601,7 +3621,8 @@ class Queue(BaseModel):
         if (sort_by is not None):
             for name in sort_by:
                 if (name not in column_names):
-                    raise Exception(f"\nYikes - Column '{name}' not found in aggregate metrics dataframe.\n")
+                    msg = f"\nYikes - Column '{name}' not found in aggregate metrics dataframe.\n"
+                    raise Exception(msg)
             df = pd.DataFrame.from_records(predictions_stats).sort_values(
                 by=sort_by, ascending=ascending
             )
@@ -3630,13 +3651,15 @@ class Queue(BaseModel):
                 score_type = "accuracy"
             else:
                 if (score_type not in utils.meter.metrics_classify_cols):
-                    raise Exception(f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.meter.metrics_classify}\n")
+                    msg = f"\nYikes - `score_type={score_type}` not found in classification metrics:\n{utils.meter.metrics_classify}\n"
+                    raise Exception(msg)
         elif (analysis_type == 'regression'):
             if (score_type is None):
                 score_type = "r2"
             else:
                 if (score_type not in utils.meter.metrics_regress_cols):
-                    raise Exception(f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.meter.metrics_regress}\n")
+                    msg = f"\nYikes - `score_type={score_type}` not found in regression metrics:\n{utils.meter.metrics_regress}\n"
+                    raise Exception(msg)
         score_display = utils.meter.metrics_all[score_type]
 
         if (min_score is None):
@@ -3646,7 +3669,8 @@ class Queue(BaseModel):
         if (max_loss is None):
             max_loss = float('inf')
         elif (max_loss < 0):
-            raise Exception("\nYikes - `max_loss` must be >= 0\n")
+            msg = "\nYikes - `max_loss` must be >= 0\n"
+            raise Exception(msg)
 
         df                 = queue.metrics_df()#handles empty
         qry_str            = "(loss >= {}) | ({} <= {})".format(max_loss, score_type, min_score)
@@ -3753,7 +3777,8 @@ class Job(BaseModel):
             label_shape = len(splitset.label.unique_classes)
         model = fn_build(features_shapes, label_shape, **hp)
         if (model is None):
-            raise Exception("\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n")
+            msg = "\nYikes - `fn_build` returned `None`.\nDid you include `return model` at the end of the function?\n"
+            raise Exception(msg)
 
         # The model and optimizer get combined during training.
         fn_lose     = utils.dill.deserialize(algorithm.fn_lose)
@@ -3762,14 +3787,16 @@ class Job(BaseModel):
 
         loser = fn_lose(**hp)
         if (loser is None):
-            raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+            msg = "\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n"
+            raise Exception(msg)
 
         if (library == 'keras'):
             optimizer = fn_optimize(**hp)
         elif (library == 'pytorch'):
             optimizer = fn_optimize(model, **hp)
         if (optimizer is None):
-            raise Exception("\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n")
+            msg = "\nYikes - `fn_optimize` returned `None`.\nDid you include `return optimizer` at the end of the function?\n"
+            raise Exception(msg)
 
         if (library == "keras"):
             model = fn_train(
@@ -3779,7 +3806,8 @@ class Job(BaseModel):
                 **hp
             )
             if (model is None):
-                raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+                msg = "\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n"
+                raise Exception(msg)
 
             # Save the artifacts of the trained model.
             # If blank this value is `{}` not None.
@@ -3810,9 +3838,11 @@ class Job(BaseModel):
                 **hp
             )
             if (model is None):
-                raise Exception("\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n")
+                msg = "\nYikes - `fn_train` returned `model==None`.\nDid you include `return model` at the end of the function?\n"
+                raise Exception(msg)
             if (history is None):
-                raise Exception("\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n")
+                msg = "\nYikes - `fn_train` returned `history==None`.\nDid you include `return model, history` the end of the function?\n"
+                raise Exception(msg)
             # Save the artifacts of the trained model.
             # https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
             model_blob = BytesIO()
@@ -4003,7 +4033,8 @@ class Predictor(BaseModel):
             fn_lose = utils.dill.deserialize(algorithm.fn_lose)
             loser = fn_lose(**hp)
             if (loser is None):
-                raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+                msg = "\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n"
+                raise Exception(msg)
 
             metrics = {}
             plot_data = {}
@@ -4315,7 +4346,9 @@ class Predictor(BaseModel):
     def plot_learning_curve(id:int, skip_head:bool=False, call_display:bool=True):
         predictor = Predictor.get_by_id(id)
         history   = predictor.history
-        if (history=={}): raise Exception("\nYikes - Predictor.history is empty.\n")
+        if (history=={}):
+            msg = "\nYikes - Predictor.history is empty.\n"
+            raise Exception(msg)
         dataframe = pd.DataFrame.from_dict(history, orient='index').transpose()
         
         # Get the`{train_*:validation_*}` matching pairs for plotting.
@@ -4334,11 +4367,14 @@ class Predictor(BaseModel):
                     trainz.append(k)
                 dataframe = dataframe.rename(columns={original_k:k})
             else:
-                raise Exception("\nYikes - Predictor.history keys must be strings.\n")
+                msg = "\nYikes - Predictor.history keys must be strings.\n"
+                raise Exception(msg)
         if (len(valz)!=len(trainz)):
-            raise Exception("\nYikes - Number of history keys starting with 'val_' must match number of keys that don't start with 'val_'.\n")
+            msg = "\nYikes - Number of history keys starting with 'val_' must match number of keys that don't start with 'val_'.\n"
+            raise Exception(msg)
         if (len(keys)!=len(valz)+len(trainz)):
-            raise Exception("\nYikes - User defined history contains keys that are not string type.\n")
+            msg = "\nYikes - User defined history contains keys that are not string type.\n"
+            raise Exception(msg)
         history_pairs = {}
         for t in trainz:
             for v in valz:
@@ -4406,7 +4442,8 @@ class Prediction(BaseModel):
         labels               = predictor.get_label_names()
         
         if (analysis_type == "regression"):
-            raise Exception("\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n")
+            msg = "\nYikes - <Algorithm.analysis_type> of 'regression' does not support this chart.\n"
+            raise Exception(msg)
         cm_by_split = {}
 
         for split, data in prediction_plot_data.items():
@@ -4423,7 +4460,8 @@ class Prediction(BaseModel):
         predictor_plot_data = prediction.plot_data
         analysis_type       = prediction.predictor.job.queue.algorithm.analysis_type
         if (analysis_type == "regression"):
-            raise Exception("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+            msg = "\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n"
+            raise Exception(msg)
 
         pr_by_split = {}
         for split, data in predictor_plot_data.items():
@@ -4447,7 +4485,8 @@ class Prediction(BaseModel):
         predictor_plot_data = prediction.plot_data
         analysis_type       = prediction.predictor.job.queue.algorithm.analysis_type
         if (analysis_type == "regression"):
-            raise Exception("\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n")
+            msg = "\nYikes - <Algorith.analysis_type> of 'regression' does not support this chart.\n"
+            raise Exception(msg)
 
         roc_by_split = {}
         for split, data in predictor_plot_data.items():
@@ -4475,7 +4514,8 @@ class Prediction(BaseModel):
         prediction         = Prediction.get_by_id(id)
         feature_importance = prediction.feature_importance
         if (feature_importance is None):
-            raise Exception("\nYikes - Feature importance was not originally calculated for this analysis.\n")
+            msg = "\nYikes - Feature importance was not originally calculated for this analysis.\n"
+            raise Exception(msg)
         else:
             permute_count = prediction.predictor.job.queue.permute_count
             # Remember the featureset may contain multiple Features.
@@ -4491,7 +4531,8 @@ class Prediction(BaseModel):
                 
                 if (top_n is not None):
                     if (top_n <= 0):
-                        raise Exception("\nYikes - `top_n` must be greater than or equal to 0.\n")
+                        msg = "\nYikes - `top_n` must be greater than or equal to 0.\n"
+                        raise Exception(msg)
                     # Silently returns all rows if `top_n` > rows.
                     feature_cols, loss_impacts = feature_cols[:top_n], loss_impacts[:top_n]
                 if (height is None):
@@ -4552,7 +4593,8 @@ class Prediction(BaseModel):
         fn_lose = utils.dill.deserialize(algorithm.fn_lose)
         loser   = fn_lose(**hp)
         if (loser is None):
-            raise Exception("\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n")
+            msg = "\nYikes - `fn_lose` returned `None`.\nDid you include `return loser` at the end of the function?\n"
+            raise Exception(msg)
 
         # --- Fetch the data ---
         # Only 'train' because permutation is expensive and it contains the learned patterns.

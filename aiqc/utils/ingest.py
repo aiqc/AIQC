@@ -12,16 +12,19 @@ import pandas as pd
 
 def sorted_file_list(dir_path:str):
     if (not path.exists(dir_path)):
-        raise Exception(f"\nYikes - The path you provided does not exist according to `path.exists(dir_path)`:\n{dir_path}\n")
+        msg = f"\nYikes - The path you provided does not exist according to `path.exists(dir_path)`:\n{dir_path}\n"
+        raise Exception(msg)
     file_path = path.abspath(dir_path)
     if (path.isdir(file_path) == False):
-        raise Exception(f"\nYikes - The path that you provided is not a directory:{file_path}\n")
+        msg = f"\nYikes - The path that you provided is not a directory:{file_path}\n"
+        raise Exception(msg)
     file_paths = listdir(file_path)
     # prune hidden files and directories.
     file_paths = [f for f in file_paths if not f.startswith('.')]
     file_paths = [f for f in file_paths if not path.isdir(f)]
     if not file_paths:
-        raise Exception(f"\nYikes - The directory that you provided has no files in it:{file_path}\n")
+        msg = f"\nYikes - The directory that you provided has no files in it:{file_path}\n"
+        raise Exception(msg)
     # folder path is already absolute
     file_paths = [path.join(file_path, f) for f in file_paths]
     file_paths = natsorted(file_paths)

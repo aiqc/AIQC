@@ -134,11 +134,11 @@ class Pipeline:
         inputs = listify(inputs)
 
         if (target is not None):
-            l_id = target.id
+            l_id      = target.id
             l_dset_id = target.dataset.id
         elif (target is None):
             # Need to know if label exists so it can be excluded.
-            l_id = None
+            l_id      = None
             l_dset_id = None
         
         features = []
@@ -207,7 +207,7 @@ class Pipeline:
             , fold_count 	  = stratifier.fold_count
             , name 			  = name
             , description 	  = description
-            , _predictor_id    = _predictor
+            , _predictor_id   = _predictor
         )
         return splitset
 
@@ -243,10 +243,10 @@ class Trainer:
     def __init__(
         self
         , pipeline:object
-        , repeat_count:int 	= 1
-        , permute_count:int = 3
-        , search_count 		= None
-        , search_percent 	= None
+        , repeat_count:int 	   = 1
+        , permute_count:int    = 3
+        , search_count:int 	   = None
+        , search_percent:float = None
     ):
         """Intentionally switch to splitset here so it can be used in **kwargs"""
         self.splitset_id 	= pipeline.id
