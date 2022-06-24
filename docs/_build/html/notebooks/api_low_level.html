@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="779f1475fe4843cc95e48cb215efdbab Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="d0f915ea645a41a48a0664bbc2d13dae Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -137,6 +137,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#1.-Dataset">1. Dataset</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#1a.-Methods">1a. Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#1ai.-Registration">1ai. Registration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1aii.-Fetch">1aii. Fetch</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#1b.-Attributes">1b. Attributes</a></li>
@@ -332,7 +333,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="779f1475fe4843cc95e48cb215efdbab" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="d0f915ea645a41a48a0664bbc2d13dae" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -341,6 +342,20 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
+<p><strong>Automatic ``id`` method argument</strong></p>
+<p>Any method that interacts with an object that has already been created requires <code class="docutils literal notranslate"><span class="pre">id</span></code> as its first argument. However, if that object is instantiated/ read into memory, then <code class="docutils literal notranslate"><span class="pre">id</span></code> is automatically passed into the method as the first argument.</p>
+<p>For example, to run a method from scratch you’d have to pass in the <code class="docutils literal notranslate"><span class="pre">id</span></code> yourself.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, when interacting with an instantiated object, you do not need to do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+<span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Although I didn’t design this pattern, if you think about it, it makes sense. ORMs allow you to fluidly traverse relational objects. If you had to check the <code class="docutils literal notranslate"><span class="pre">object.id</span></code> of everything you returned before interacting with it, then that would ruin the user-friendly experience.</p>
+</div></blockquote>
 <hr class="docutils" />
 </section>
 <section id="0.-BaseModel">
@@ -409,23 +424,27 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>time_created</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>AutoField</p></td>
+<td><p>Auto-incrementing integer (1-based, not zero-based) PrimaryKey</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>time_created</strong></p></td>
 <td><p>DateTimeField</p></td>
 <td><p>Records a timestamp when the record is created</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>time_updated</strong></p></td>
+<tr class="row-even"><td><p><strong>time_updated</strong></p></td>
 <td><p>DateTimeField</p></td>
 <td><p>Records a timestamp when the record is created. Overwritten every time the record is updated.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>item</strong></p></td>
+<tr class="row-odd"><td><p><strong>is_starred</strong></p></td>
 <td><p>BooleanField</p></td>
 <td><p>Used to indicated that the entry is a favorite</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>name</strong></p></td>
+<tr class="row-even"><td><p><strong>name</strong></p></td>
 <td><p>CharField</p></td>
 <td><p>Short name to remember this entry by</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>description</strong></p></td>
+<tr class="row-odd"><td><p><strong>description</strong></p></td>
 <td><p>CharField</p></td>
 <td><p>What is unique about this entry?</p></td>
 </tr>
@@ -981,17 +1000,18 @@ for anything.</p></td>
 </table>
 <hr class="docutils" />
 </section>
+</section>
 <section id="1aii.-Fetch">
-<h5>1aii. Fetch<a class="headerlink" href="#1aii.-Fetch" title="Permalink to this headline"></a></h5>
+<h4>1aii. Fetch<a class="headerlink" href="#1aii.-Fetch" title="Permalink to this headline"></a></h4>
 <p>The following methods are exposed to end-users in case they want to inspect the data that they have ingested.</p>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_arr()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 18%" />
-<col style="width: 15%" />
-<col style="width: 11%" />
-<col style="width: 56%" />
+<col style="width: 16%" />
+<col style="width: 13%" />
+<col style="width: 10%" />
+<col style="width: 60%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -1004,7 +1024,7 @@ for anything.</p></td>
 <tr class="row-even"><td><p><strong>id</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
-<td><p>The id of the Dataset</p></td>
+<td><p>The identifier of the Dataset of interest</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>columns</strong></p></td>
 <td><p>list(str)</p></td>
@@ -1044,10 +1064,10 @@ for anything.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_df()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 18%" />
-<col style="width: 15%" />
-<col style="width: 11%" />
-<col style="width: 56%" />
+<col style="width: 16%" />
+<col style="width: 13%" />
+<col style="width: 10%" />
+<col style="width: 60%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -1060,7 +1080,7 @@ for anything.</p></td>
 <tr class="row-even"><td><p><strong>id</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
-<td><p>The id of the Dataset</p></td>
+<td><p>The identifier of the Dataset of interest</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>columns</strong></p></td>
 <td><p>list(str)</p></td>
@@ -1100,10 +1120,10 @@ for anything.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.to_pillow()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 18%" />
-<col style="width: 15%" />
-<col style="width: 11%" />
-<col style="width: 56%" />
+<col style="width: 16%" />
+<col style="width: 13%" />
+<col style="width: 10%" />
+<col style="width: 60%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -1116,7 +1136,7 @@ for anything.</p></td>
 <tr class="row-even"><td><p><strong>id</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
-<td><p>The id of the Dataset</p></td>
+<td><p>The identifier of the Dataset of interest</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>samples</strong></p></td>
 <td><p>list(int)</p></td>
@@ -1145,10 +1165,10 @@ for anything.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Dataset.get_dtypes()</span></code></p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 18%" />
-<col style="width: 15%" />
-<col style="width: 11%" />
-<col style="width: 56%" />
+<col style="width: 16%" />
+<col style="width: 13%" />
+<col style="width: 10%" />
+<col style="width: 60%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Argument</p></th>
@@ -1161,7 +1181,7 @@ for anything.</p></td>
 <tr class="row-even"><td><p><strong>id</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
-<td><p>The id of the Dataset</p></td>
+<td><p>The identifier of the Dataset of interest</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>columns</strong></p></td>
 <td><p>list(str)</p></td>
@@ -1172,7 +1192,6 @@ for anything.</p></td>
 </table>
 <p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns then dtype of each column within a <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
 <hr class="docutils" />
-</section>
 </section>
 </section>
 <section id="1b.-Attributes">
@@ -1322,15 +1341,15 @@ for anything.</p></td>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>to_arr()</strong></p></td>
-<td><p>columns:list(str)=Feature.columns, samples:list(int)=None</p></td>
+<td><p>id:int, columns:list(str)=Feature.columns, samples:list(int)=None</p></td>
 <td><p>ndarray 2D / 3D / 4D</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>to_df()</strong></p></td>
-<td><p>columns:list(str)=Feature.columns, samples:list(int)=None</p></td>
+<td><p>id:int, columns:list(str)=Feature.columns, samples:list(int)=None</p></td>
 <td><p>df / list(df) / list(list(df))</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>get_dtypes()</strong></p></td>
-<td><p>columns:list(str)=Feature.columns</p></td>
+<td><p>id:int, columns:list(str)=Feature.columns</p></td>
 <td><p>dict(column=str(np.type))</p></td>
 </tr>
 </tbody>
@@ -1433,15 +1452,15 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>to_arr()</strong></p></td>
-<td><p>columns:list(str)=Label.columns, samples:list(int)=None</p></td>
+<td><p>id:int, columns:list(str)=Label.columns, samples:list(int)=None</p></td>
 <td><p>ndarray 2D / 3D / 4D</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>to_df()</strong></p></td>
-<td><p>columns:list(str)=Label.columns, samples:list(int)=None</p></td>
+<td><p>id:int, columns:list(str)=Label.columns, samples:list(int)=None</p></td>
 <td><p>df / list(df) / list(list(df))</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>get_dtypes()</strong></p></td>
-<td><p>columns:list(str)=Label.columns</p></td>
+<td><p>id:int, columns:list(str)=Label.columns</p></td>
 <td><p>dict(column=str(np.type))</p></td>
 </tr>
 </tbody>
@@ -2237,6 +2256,7 @@ to do the reshaping once up front.</p>
 <blockquote>
 <div><p>Because Splitset groups together all of the data wrangling entities (Features, Label, Folds) it essentially represents a <em>Pipeline</em>, which is why it bears the name Pipeline in the High-Level API.</p>
 </div></blockquote>
+<hr class="docutils" />
 <p><strong>Cross-Validation</strong></p>
 <p>Cross-validation is triggered by <code class="docutils literal notranslate"><span class="pre">fold_count:int</span></code> during Splitset creation. Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about cross-validation.</p>
 <img alt="cross fold objects" src="../_images/cross_fold_objects.png" />
@@ -2252,8 +2272,33 @@ to do something undersized like “150 samples in their dataset and a <code clas
 <p>Cross validation is only included in AIQC to allow best practices to be upheld and to show off the power of systematic preprocessing.</p>
 </div></blockquote>
 <hr class="docutils" />
+<p><strong>Samples Cache</strong></p>
+<p>Each Splitset has as <code class="docutils literal notranslate"><span class="pre">cache_path</span></code> attribute, which represents a local directory where preprocessed data is stored during training &amp; evaluation.</p>
+<p>The output of <code class="docutils literal notranslate"><span class="pre">feature.preprocess()</span></code> and <code class="docutils literal notranslate"><span class="pre">label.preprocess()</span></code> are written to this folder prior to training so that:</p>
+<ol class="arabic simple">
+<li><p>Each Job does not have to preprocess data from scratch.</p></li>
+<li><p>The original data does not need to be held in memory between Jobs.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>└── aiqc/cache/samples/splitset_uid
+    └── &lt;fold_index&gt; <span class="p">|</span> <span class="s2">&quot;no_fold&quot;</span>
+        └── &lt;split&gt;
+            └── label.npy
+            └── feature_&lt;i&gt;.npy
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;fold_index&gt;</span></code> is a folder for each Fold, since they have different samples.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;no_fold&quot;</span></code> is a single folder for a regular splitset where there are no folds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;split&gt;</span></code> means train, validation, test, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">feature_&lt;n&gt;</span></code> accounts for Splitsets with more than 1 Feature.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">Splitset.cache_hot:bool</span></code> argument indicates whether or not the cache for that splitset is populated or not.</p>
+<p>Samples are automatically cached during <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code>.</p>
+<p>When finished with a project, it’s a good idea to run <code class="docutils literal notranslate"><span class="pre">splitset.clear_cache()</span></code> so that cached samples don’t take up space uneccessarilly. There is also <code class="docutils literal notranslate"><span class="pre">clear_cache_all()</span></code> to remove the entire cache directory for all Splitsets.</p>
+<hr class="docutils" />
 <section id="8a.-Methods">
 <h3>8a. Methods<a class="headerlink" href="#8a.-Methods" title="Permalink to this headline"></a></h3>
+<hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.make()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
     <span class="n">feature_ids</span>
@@ -2341,6 +2386,135 @@ attributes.</p></td>
 <blockquote>
 <div><p><em>How does continuous binning work?</em> Reference the handy <code class="docutils literal notranslate"><span class="pre">Pandas.qcut()</span></code> and the source code <code class="docutils literal notranslate"><span class="pre">pd.qcut(x=array_to_bin,</span> <span class="pre">q=bin_count,</span> <span class="pre">labels=False,</span> <span class="pre">duplicates='drop')</span></code> for more detail.</p>
 </div></blockquote>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.cache_samples()</span></code></p>
+<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">cache_samples</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 6%" />
+<col style="width: 13%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Splitset of interest</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.clear_cache()</span></code></p>
+<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 6%" />
+<col style="width: 13%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Splitset of interest</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.fetch_cache()</span></code></p>
+<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description. This fetches a specific file from the cache.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">fetch_cache</span><span class="p">(</span>
+    <span class="nb">id</span>
+    <span class="p">,</span> <span class="n">split</span>
+    <span class="p">,</span> <span class="n">label_features</span>
+    <span class="p">,</span> <span class="n">fold_id</span>
+    <span class="p">,</span> <span class="n">library</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Splitset of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>split</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">samples[&lt;split&gt;]</span></code> of interest.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>label_features</strong></p></td>
+<td><p>str</p></td>
+<td><p>Required</p></td>
+<td><p>Either <code class="docutils literal notranslate"><span class="pre">'label'</span></code> or <code class="docutils literal notranslate"><span class="pre">'features'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>fold_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Fold of interest, if any</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>library</strong></p></td>
+<td><p>str</p></td>
+<td><p>None</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">'pytorch'</span></code>, it will convert each returned array to <code class="docutils literal notranslate"><span class="pre">FloatTensor()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">label_features</span></code> Value</p></th>
+<th class="head"><p>Returns</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'label'</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ndarray</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'features'</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ndarray</span></code> or <code class="docutils literal notranslate"><span class="pre">list(ndarray)</span></code></p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 </section>
 <section id="8b.-Attributes">
@@ -2926,6 +3100,7 @@ is used.</p></td>
 <hr class="docutils" />
 <section id="11a.-Methods">
 <h3>11a. Methods<a class="headerlink" href="#11a.-Methods" title="Permalink to this headline"></a></h3>
+<hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Queue.from_algorithm()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">from_algorithm</span><span class="p">(</span>
     <span class="n">algorithm_id</span>
@@ -2993,6 +3168,31 @@ Algorithm can have many Hyperparamsets.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></p>
 <p>Jobs are simply ran on a loop on the main process.</p>
 <p>Stop the queue with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter. It is listening for interupts so it will usually stop gracefully. Even if it errors upon during interrupt, it’s not a problem. You can rerun the queue and it will resume on the same job it was running previously.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 7%" />
+<col style="width: 14%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Queue of interest</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Queue.plot_performance()</span></code></p>
 <p>Plots every model trained by the queue for comparison.</p>
@@ -3001,7 +3201,8 @@ Algorithm can have many Hyperparamsets.</p></td>
 <li><p>Y axis = score</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">plot_performance</span><span class="p">(</span>
-    <span class="n">call_display</span>
+    <span class="nb">id</span>
+    <span class="p">,</span> <span class="n">call_display</span>
     <span class="p">,</span> <span class="n">max_loss</span>
     <span class="p">,</span> <span class="n">min_score</span>
     <span class="p">,</span> <span class="n">score_type</span>
@@ -3024,28 +3225,33 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Queue of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, calls <code class="docutils literal notranslate"><span class="pre">display()</span></code> on plot. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns Plotly <code class="docutils literal notranslate"><span class="pre">figure</span></code> object(s).</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>max_loss</strong></p></td>
+<tr class="row-even"><td><p><strong>max_loss</strong></p></td>
 <td><p>float</p></td>
 <td><p>None</p></td>
 <td><p>Models with any split with higher loss than this threshold will not be plotted.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>min_score</strong></p></td>
+<tr class="row-odd"><td><p><strong>min_score</strong></p></td>
 <td><p>typ</p></td>
 <td><p>None</p></td>
 <td><p>Models with any split with a lower score than this threshold will not be plotted.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>score_type</strong></p></td>
+<tr class="row-even"><td><p><strong>score_type</strong></p></td>
 <td><p>typ</p></td>
 <td><p>None</p></td>
 <td><p>Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;accuracy&quot;</span></code> for classification analysis, and <code class="docutils literal notranslate"><span class="pre">&quot;r2&quot;</span></code> for regression analysis. See
 <a class="reference external" href="https://github.com/aiqc/AIQC/blob/main/aiqc/utils/meter.py">aiqc.utils.meter</a> for available metrics.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>height</strong></p></td>
+<tr class="row-odd"><td><p><strong>height</strong></p></td>
 <td><p>typ</p></td>
 <td><p>None</p></td>
 <td><p>Default height is <code class="docutils literal notranslate"><span class="pre">560</span></code> but you can force it to be taller</p></td>
@@ -3056,7 +3262,8 @@ Algorithm can have many Hyperparamsets.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Queue.metrics_df()</span></code></p>
 <p>Displays metrics for every split/fold of every model.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">metrics_df</span><span class="p">(</span>
-    <span class="n">selected_metrics</span>
+    <span class="nb">id</span>
+    <span class="p">,</span> <span class="n">selected_metrics</span>
     <span class="p">,</span> <span class="n">sort_by</span>
     <span class="p">,</span> <span class="n">ascending</span>
 <span class="p">)</span>
@@ -3077,17 +3284,22 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>ascending</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Queue of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ascending</strong></p></td>
 <td><p>typ</p></td>
 <td><p>False</p></td>
 <td><p>Descending if False.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>selected_metrics</strong></p></td>
+<tr class="row-even"><td><p><strong>selected_metrics</strong></p></td>
 <td><p>list(str)</p></td>
 <td><p>None</p></td>
 <td><p>If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>sort_by</strong></p></td>
+<tr class="row-odd"><td><p><strong>sort_by</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
 <td><p>You can sort the dataframe by any column name.</p></td>
@@ -3098,7 +3310,8 @@ Algorithm can have many Hyperparamsets.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Queue.metrics_aggregate()</span></code></p>
 <p>For every metric of every model trained by the Queue – displays the average, median, standard deviation, minimum, and maximum across all splits/folds.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">metrics_aggregate</span><span class="p">(</span>
-    <span class="n">ascending</span>          <span class="o">=</span> <span class="kc">False</span>
+    <span class="nb">id</span>
+    <span class="p">,</span> <span class="n">ascending</span>        <span class="o">=</span> <span class="kc">False</span>
     <span class="p">,</span> <span class="n">selected_metrics</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">selected_stats</span>   <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">sort_by</span>          <span class="o">=</span> <span class="kc">None</span>
@@ -3120,17 +3333,22 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>ascending</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>Required</p></td>
+<td><p>The identifier of the Queue of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ascending</strong></p></td>
 <td><p>typ</p></td>
 <td><p>False</p></td>
 <td><p>Descending if False.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>selected_metrics</strong></p></td>
+<tr class="row-even"><td><p><strong>selected_metrics</strong></p></td>
 <td><p>list(str)</p></td>
 <td><p>None</p></td>
 <td><p>If you get overwhelmed by the variety of metrics returned, then you can include the ones you want selectively by name.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>sort_by</strong></p></td>
+<tr class="row-odd"><td><p><strong>sort_by</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
 <td><p>You can sort the dataframe by any column name.</p></td>
@@ -3242,11 +3460,36 @@ Algorithm can have many Hyperparamsets.</p></td>
 <section id="13a.-Methods">
 <h3>13a. Methods<a class="headerlink" href="#13a.-Methods" title="Permalink to this headline"></a></h3>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_model()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">predictor</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Handles fetching and initializing the model (and PyTorch optimizer) from <code class="docutils literal notranslate"><span class="pre">Predictor.model_file</span></code> and <code class="docutils literal notranslate"><span class="pre">Predictor.input_shapes</span></code></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 6%" />
+<col style="width: 11%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Predictor of interest</p></td>
+</tr>
+</tbody>
+</table>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.get_hyperparameters()</span></code></p>
 <p>This is a shortcut to fetch the hyperparameters used to train this specific model. <code class="docutils literal notranslate"><span class="pre">as_pandas</span></code> toggles between <code class="docutils literal notranslate"><span class="pre">dict()</span></code> and <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="n">as_pandas</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_hyperparameters</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">as_pandas</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -3264,7 +3507,12 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>as_pandas</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Predictor of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>as_pandas</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
@@ -3275,7 +3523,8 @@ Algorithm can have many Hyperparamsets.</p></td>
 <p>└── <code class="docutils literal notranslate"><span class="pre">Predictor.plot_learning_curve()</span></code></p>
 <p>A learning curve will be generated for each train-evaluation pair of metrics in the Predictor.history dictionary</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Predictor</span><span class="o">.</span><span class="n">plot_learning_curve</span><span class="p">(</span>
-    <span class="n">skip_head</span>
+    <span class="nb">id</span>
+    <span class="p">,</span> <span class="n">skip_head</span>
     <span class="p">,</span> <span class="n">call_display</span>
 <span class="p">)</span>
 </pre></div>
@@ -3295,14 +3544,19 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>skip_head</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Predictor of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>skip_head</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>Skips displaying the first 15% of epochs. Loss values in the first few epochs can often be extremely high before they
 plummet and become more gradual. This really stretches out the graph and makes it hard to see if the evaluation set is
 diverging or not.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
+<tr class="row-even"><td><p><strong>call_display</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
@@ -3384,7 +3638,7 @@ diverging or not.</p></td>
 <li><p>Permutation is computationally expensive, especially for many-columned datasets.</p></li>
 <li><p>We don’t care about the feature importance of poorly performing models, which constitute the vast majority of training.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">calc_featureImportance</span><span class="p">(</span><span class="n">permute_count</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">calc_featureImportance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">permute_count</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -3402,7 +3656,12 @@ diverging or not.</p></td>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>permute_count</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Prediction of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>permute_count</strong></p></td>
 <td><p>int</p></td>
 <td><p>Required</p></td>
 <td><p>Triggers a shuffled permutation of each training data column to determine which columns have the most impact on loss in
@@ -3416,7 +3675,8 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 <p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_feature_importance()</span></code></p>
 <p>Plots <code class="docutils literal notranslate"><span class="pre">prediction.feature_importance</span></code> if <code class="docutils literal notranslate"><span class="pre">Queue.permute_count&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">Prediction.calc_featureImportance()</span></code> was ran after the fact.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span>
-    <span class="n">call_display</span>
+    <span class="nb">id</span>
+    <span class="p">,</span> <span class="n">call_display</span>
     <span class="p">,</span> <span class="n">top_n</span>
     <span class="p">,</span> <span class="n">height</span>
     <span class="p">,</span> <span class="n">margin_left</span>
@@ -3438,22 +3698,27 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Prediction of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>top_n</strong></p></td>
+<tr class="row-even"><td><p><strong>top_n</strong></p></td>
 <td><p>int</p></td>
 <td><p>10</p></td>
 <td><p>The number of features to display. If greater than the actual number of features, it just returns all features.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>height</strong></p></td>
+<tr class="row-odd"><td><p><strong>height</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, dynamically makes the plot taller to fit all of the columns</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>margin_left</strong></p></td>
+<tr class="row-even"><td><p><strong>margin_left</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, dynamically makes the y axis margin wider the longest column name</p></td>
@@ -3463,7 +3728,7 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_roc_curve()</span></code></p>
 <p>Receiver operating curve (ROC) for classification metrics.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">(</span><span class="n">call_display</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_roc_curve</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">call_display</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -3481,7 +3746,12 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Prediction of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
@@ -3491,7 +3761,7 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_precision_recall()</span></code></p>
 <p>Precision/recall curve for classification metrics.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">(</span><span class="n">call_display</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_precision_recall</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">call_display</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -3509,7 +3779,12 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Prediction of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>
@@ -3519,7 +3794,7 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_confusion_matrix()</span></code></p>
 <p>Confusion matrices for classification metrics.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">call_display</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">call_display</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-default">
@@ -3537,7 +3812,12 @@ times the shuffled permutation is ran before taking the median loss. Permutation
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>call_display</strong></p></td>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Prediction of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>call_display</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a DataFrame. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns a <code class="docutils literal notranslate"><span class="pre">list(dict(param_name=[values]))</span></code></p></td>

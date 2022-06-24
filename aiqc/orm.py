@@ -174,18 +174,15 @@ def setup():
     create_db()
 
 
-def clear_cache_all(confirm=False):
-    if (confirm==False):
-        print("\nInfo - Skipped clearing cache because `confirm==False`\nThis will delete all cached models and samples.\n")
-    elif (confirm==True):
-        cache_dir = app_folders['cache']
-        if path.exists(cache_dir):
-            rmtree(cache_dir)
-            query = (Splitset.update({Splitset.cache_hot:False}).where(Splitset.cache_hot==True))
-            query.execute()
-            makedirs(cache_dir)
-        else:
-            print("\nInfo - skipped because cache does not exist.\n")
+def clear_cache_all():
+    cache_dir = app_folders['cache']
+    if path.exists(cache_dir):
+        rmtree(cache_dir)
+        query = (Splitset.update({Splitset.cache_hot:False}).where(Splitset.cache_hot==True))
+        query.execute()
+        makedirs(cache_dir)
+    else:
+        print("\nInfo - skipped because cache does not exist yet.\n")
 
 
 #==================================================
