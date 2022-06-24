@@ -748,20 +748,20 @@ class Dataset(BaseModel):
                     msg = "\nYikes - Failed to `np.load(file={short}, allow_pickle=True)` with your `{short}`:\n{arr}\n"
                     raise Exception(msg)				
                 source_format = "npy"
+                # By default, don't ingest npy
                 if (ingest is None):
                     ingest = False
-                
+
             elif (arr_klass == klass):
-                # from_folder and from_urls both pass through here
+                # By default, arrays
                 if (ingest is None):
                     ingest = True
-                
                 # Only calls coming from folder/urls can be (ingest==False)
                 elif (
                     (_source_path is None) and (_source_format is None) 
                     and (_urls is None) and (ingest==False)
                 ):
-                    msg = "\nYikes - In-memory ndarrays must be ingested.\n"
+                    msg = "\nYikes - `ingest==False` but ndarray is not coming from a path/url.\n"
                     raise Exception(msg)
                 
                 if (_source_path is None):

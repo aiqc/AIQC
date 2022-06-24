@@ -164,7 +164,7 @@ class Plot(object):
                 , colorscale      = px.colors.sequential.BuGn
                 , showscale       = False
                 , colorbar        = dict(title='Count')
-
+            )
             # add custom xaxis title
             fig.add_annotation(dict(
                 font        = dict(color="white", size=15)
