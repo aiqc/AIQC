@@ -4423,6 +4423,7 @@ class Prediction(BaseModel):
       in the future. This forces us to  validate dtypes and columns after the fact.
     """
     predictions        = PickleField()
+    permute_count      = IntegerField(null=True)
     feature_importance = JSONField(null=True)#['feature_id']['feature_column']{'median':float,'loss_impacts':list}
     probabilities      = PickleField(null=True) # Not used for regression.
     metrics            = PickleField(null=True) #Not used for inference
@@ -4511,11 +4512,11 @@ class Prediction(BaseModel):
         # `top_n` Silently returns all features if `top_n` > features.
         prediction         = Prediction.get_by_id(id)
         feature_importance = prediction.feature_importance
+        permute_count = prediction.permute_count
         if (feature_importance is None):
             msg = "\nYikes - Feature importance was not originally calculated for this analysis.\n"
             raise Exception(msg)
         else:
-            permute_count = prediction.predictor.job.queue.permute_count
             # Remember the featureset may contain multiple Features.
             figs = []
             for feature_id, feature_cols in feature_importance.items():
@@ -4559,6 +4560,7 @@ class Prediction(BaseModel):
         """
         - Decoupled from predict() because permutation is computationally expensive/ challenging.
         - A practitioner may run several experiments and then decide which model to permute.
+        - UI only checks `prediction.feature_importance` so we don't need to store `permute_count` anywhere.
         - Warning: tf can't be imported on multiple Python processes, making parallel optimization challenging.
         """
         # --- Fetch required objects ---
@@ -4702,4 +4704,5 @@ class Prediction(BaseModel):
                 feature_importance[feature_id][col]['median']       = med_loss
                 feature_importance[feature_id][col]['loss_impacts'] = loss_impacts
         prediction.feature_importance = feature_importance
+        prediction.permute_count = permute_count
         prediction.save()
