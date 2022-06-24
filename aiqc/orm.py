@@ -2373,8 +2373,8 @@ class Splitset(BaseModel):
 
             if (splitset.has_validation==True):
                 fold_samples["validation"] = splitset.samples["validation"]
-            ### check if it has test first
-            fold_samples["test"] = splitset.samples["test"]
+            if ('test' in splitset.samples.keys()):
+                fold_samples["test"] = splitset.samples["test"]
 
             Fold.create(
                 fold_index = i
@@ -3241,6 +3241,18 @@ class Queue(BaseModel):
         algorithm = Algorithm.get_by_id(algorithm_id)
         library   = algorithm.library
         splitset  = Splitset.get_by_id(splitset_id)
+        
+        # Handles when default is overrode to be None
+        if (permute_count is None):
+            permute_count = 0
+        # Do not `elif`        
+        if (permute_count>0):
+            features          = splitset.features
+            nonImage_features = [f for f in features if (f.dataset.typ!='image')]
+            if (len(nonImage_features)==0):
+                permute_count = 0
+                msg           = "\nInfo - Featureset only contains image features. System overriding to `permute_count=0`.\n"
+                print(msg)
 
         """Validate Label structure for the analysis type"""
         if (splitset.supervision == 'supervised'):
@@ -3369,10 +3381,6 @@ class Queue(BaseModel):
 
         # The null conditions set above (e.g. `[None]`) ensure multiplication by 1.
         total_runs = len(combos) * len(folds) * repeat_count
-
-        # Handles when overrides default to be None
-        if (permute_count is None):
-            permute_count = 0
 
         queue = Queue.create(
             total_runs       = total_runs
@@ -4312,20 +4320,13 @@ class Predictor(BaseModel):
             , predictor          = predictor
         )
         # --- Feature importance ---
-        if (inference_splitsetID is None):
-            try:
-                permute_count     = queue.permute_count### is this validated? that it can even permute?
-                key_train         = splitset.key_train
-                features          = splitset.features
-                nonImage_features = [f for f in features if (f.dataset.typ!='image')]
-                if (### ^ see question above.
-                    (permute_count>0) and (has_target==True) and 
-                    (key_train is not None) and (len(nonImage_features)>0)
-                ):
-                    prediction.calc_featureImportance(permute_count=permute_count)
-            except:
-                prediction.delete_instance()
-                raise
+        try:
+            permute_count = queue.permute_count 
+            if ((inference_splitsetID is None) and (permute_count>0)):
+                prediction.calc_featureImportance(permute_count=permute_count)
+        except:
+            prediction.delete_instance()
+            raise
         return prediction
 
 
