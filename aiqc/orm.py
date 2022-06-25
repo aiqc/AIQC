@@ -2377,7 +2377,7 @@ class Splitset(BaseModel):
                 fold_samples["test"] = splitset.samples["test"]
 
             Fold.create(
-                fold_index = i
+                idx        = i
                 , samples  = fold_samples 
                 , splitset = splitset
             )
@@ -2433,7 +2433,7 @@ class Splitset(BaseModel):
         
         if (fold_id is not None):
             fold = Fold.get_by_id(fold_id)
-            idx = f"fold_{fold.fold_index}"
+            idx = f"fold_{fold.idx}"
         else:
             idx = "no_fold"
 
@@ -2551,7 +2551,7 @@ class Fold(BaseModel):
     - The `samples` attribute contains the indices of `folds_train_combined` and `fold_validation`, 
       where `fold_validation` is the rotating fold that gets left out.
     """
-    fold_index           = IntegerField()
+    idx                  = IntegerField()
     samples              = JSONField()
     fitted_labelcoder    = PickleField(null=True)
     fitted_featurecoders = PickleField(null=True)
@@ -2648,7 +2648,7 @@ class LabelInterpolater(BaseModel):
 
 
 class FeatureInterpolater(BaseModel):
-    index              = IntegerField()
+    idx              = IntegerField()
     process_separately = BooleanField()# use False if you have few evaluate samples.
     interpolate_kwargs = JSONField()
     matching_columns   = JSONField()
@@ -2705,7 +2705,7 @@ class FeatureInterpolater(BaseModel):
 
         # Check that it actually works.
         fp = FeatureInterpolater.create(
-            index                = idx
+            idx                = idx
             , process_separately = process_separately
             , interpolate_kwargs = interpolate_kwargs
             , matching_columns   = matching_columns
@@ -2847,7 +2847,7 @@ class FeatureCoder(BaseModel):
       are not available to `index=1`.
     - Lots of validation here because real-life encoding errors are cryptic and deep for beginners.
     """
-    index                = IntegerField()
+    idx                  = IntegerField()
     sklearn_preprocess   = PickleField()
     matching_columns     = JSONField()
     encoded_column_names = JSONField()
@@ -2955,7 +2955,7 @@ class FeatureCoder(BaseModel):
             encoded_column_names = matching_columns 
 
         featurecoder = FeatureCoder.create(
-            index                  = idx
+            idx                  = idx
             , only_fit_train       = only_fit_train
             , is_categorical       = is_categorical
             , sklearn_preprocess   = sklearn_preprocess
@@ -3024,7 +3024,6 @@ class Algorithm(BaseModel):
     """
     library       = CharField()
     analysis_type = CharField()#classification_multi, classification_binary, regression
-    
     fn_build      = BlobField()#dill, not pickle
     fn_lose       = BlobField()
     fn_optimize   = BlobField()
@@ -3113,10 +3112,9 @@ class Hyperparamset(BaseModel):
 
     - On setting kwargs with `**` and a dict: stackoverflow.com/a/29028601/5739514
     """
-    hyperparamcombo_count = IntegerField()
-    hyperparameters       = JSONField()
-    search_count          = IntegerField(null=True)
-    search_percent        = FloatField(null=True)
+    hyperparameters = JSONField()
+    search_count    = IntegerField(null=True)
+    search_percent  = FloatField(null=True)
 
     algorithm = ForeignKeyField(Algorithm, backref='hyperparamsets')
 
@@ -3143,7 +3141,7 @@ class Hyperparamset(BaseModel):
 
         # From multiple lists, come up with every unique combination.
         params_combos         = list(product(*params_lists))
-        hyperparamcombo_count = len(params_combos)
+        combo_count = len(params_combos)
 
         params_combos_dicts = []
         # Dictionary comprehension for making a dict from two lists.
@@ -3156,28 +3154,25 @@ class Hyperparamset(BaseModel):
             if (search_count < 1):
                 msg = f"\nYikes - search_count:<{search_count}> cannot be less than 1.\n"
                 raise Exception(msg)
-            elif (search_count > hyperparamcombo_count):
-                msg = f"\nInfo - search_count:<{search_count}> greater than the number of hyperparameter combinations:<{hyperparamcombo_count}>.\nProceeding with all combinations.\n"
+            elif (search_count > combo_count):
+                msg = f"\nInfo - search_count:<{search_count}> greater than the number of hyperparameter combinations:<{combo_count}>.\nProceeding with all combinations.\n"
                 print(msg)
             else:
                 # `sample` handles replacement.
                 params_combos_dicts   = sample(params_combos_dicts, search_count)
-                hyperparamcombo_count = len(params_combos_dicts)
         elif (search_percent is not None):
             if ((search_percent > 1.0) or (search_percent <= 0.0)):
                 msg = f"\nYikes - search_percent:<{search_percent}> must be between 0.0 and 1.0.\n"
                 raise Exception(msg)
             else:
                 # `ceil` ensures it will always be 1 or higher.
-                select_count          = math.ceil(hyperparamcombo_count * search_percent)
+                select_count          = math.ceil(combo_count * search_percent)
                 params_combos_dicts   = sample(params_combos_dicts, select_count)
-                hyperparamcombo_count = len(params_combos_dicts)
 
         # Now that we have the metadata about combinations
         hyperparamset = Hyperparamset.create(
             algorithm               = algorithm
             , hyperparameters       = hyperparameters
-            , hyperparamcombo_count = hyperparamcombo_count
             , search_count          = search_count
             , search_percent        = search_percent
         )
@@ -3185,7 +3180,7 @@ class Hyperparamset(BaseModel):
         try:
             for i, c in enumerate(params_combos_dicts):
                 Hyperparamcombo.create(
-                    combination_index = i
+                    idx               = i
                     , favorite        = False
                     , hyperparameters = c
                     , hyperparamset   = hyperparamset
@@ -3197,8 +3192,8 @@ class Hyperparamset(BaseModel):
 
 
 class Hyperparamcombo(BaseModel):
-    combination_index = IntegerField()
-    hyperparameters   = JSONField()
+    idx             = IntegerField()
+    hyperparameters = JSONField()
 
     hyperparamset = ForeignKeyField(Hyperparamset, backref='hyperparamcombos')
 
@@ -3449,7 +3444,7 @@ class Queue(BaseModel):
         
         elif (fold_count > 0):
             for fold in splitset.folds:
-                idx = fold.fold_index
+                idx = fold.idx
                 repeated_jobs = [] #tuple for each fold:(repeat_index, job)
                 jobs = [j for j in queue.jobs if j.fold==fold]
                 
@@ -3522,7 +3517,7 @@ class Queue(BaseModel):
                         split_metric['hyperparamcombo_id'] = None
 
                     if (fold_count > 0):
-                        split_metric['fold_index'] = predictor.job.fold.fold_index
+                        split_metric['fold_index'] = predictor.job.fold.idx
                     split_metric['job_id'] = predictor.job.id
                     if (predictor.job.repeat_count > 1):
                         split_metric['repeat_index'] = predictor.repeat_index
@@ -3606,7 +3601,7 @@ class Queue(BaseModel):
                     if (predictor.job.repeat_count > 1):
                         stats['repeat_index'] = predictor.repeat_index
                     if (predictor.job.fold is not None):
-                        stats['fold_index'] = predictor.job.fold.fold_index
+                        stats['fold_index'] = predictor.job.fold.idx
                     else:
                         stats['job_id'] = predictor.job.id
                     stats['hyperparamcombo_id'] = predictor.job.hyperparamcombo.id

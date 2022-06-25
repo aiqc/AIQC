@@ -685,7 +685,7 @@
     "Argument | Type | Default | Description\n",
     "--- | --- | --- | ---\n",
     "**arr4D_or_npyPath** | object / str | Required | 4D array in the form of either an [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html) or [npy](https://numpy.org/doc/stable/reference/generated/numpy.save.html) file path\n",
-    "**ingest** | bool | None | See [Registration](#1a.-Registration). If left blank, ndarrays will be ingested and npy will not. Errors if ndarray and False.\n",
+    "**ingest** | bool | None | See [Registration](#1a.-Registration). If left blank, ndarrays will be ingested and npy will not. Errors if input is ndarray and `ingest==False`.\n",
     "**rename_columns** | list[str]  | None | See [Registration](#1a.-Registration) \n",
     "**retype** | np.type / dict(column:np.type) | None | See [Registration](#1a.-Registration) \n",
     "**description** | str | None | See [Registration](#1a.-Registration) \n",
@@ -1556,7 +1556,7 @@
    "source": [
     "Attribute | Type | Description\n",
     "--- | --- | ---\n",
-    "**index** | IntegerField | Zero-based auto-incrementer that counts the number of FeatureInterpolaters attached to a Feature.\n",
+    "**idx** | IntegerField | Zero-based auto-incrementer that counts the number of FeatureInterpolaters attached to a Feature.\n",
     "**process_separately** | BooleanField | Whether or not the training data was interpolated by fitting to the entire dataset or not. Indicator of data leakage.\n",
     "**interpolate_kwargs** | JSONField | Gets passed to `df.interpolate()`. See [Interpolate](#4.-Interpolate) section for defaults.\n",
     "**matching_columns** | JSONField | The columns that matched the filter\n",
@@ -1799,7 +1799,7 @@
    "source": [
     "Attribute | Type | Description\n",
     "--- | --- | ---\n",
-    "**index** | IntegerField | Zero-based auto-incrementer that counts the number of FeatureCoders attached to a Feature.\n",
+    "**idx** | IntegerField | Zero-based auto-incrementer that counts the number of FeatureCoders attached to a Feature.\n",
     "**sklearn_preprocess** | PickleField | The instantiated sklearn.preprocessing class that was fit\n",
     "**encoded_column_names** | JSONField | After the columns are encoded, what are their names? OHE appends `_<category>` to the original column names as it expands\n",
     "**matching_columns** | JSONField | The columns that matched the filter\n",
@@ -2720,7 +2720,7 @@
    "source": [
     "Attribute | Type | Description\n",
     "--- | --- | ---\n",
-    "**fold_index** | IntegerField | Zero-based auto-incrementer that counts the Folds\n",
+    "**idx** | IntegerField | Zero-based auto-incrementer that counts the Folds\n",
     "**samples** | JSONField | Contains the sample indices of the training folds and leftout validation fold, as well as any validation and test splits defined in the regular Splitset.samples `dict().keys()==['folds_train_combined', 'fold_validation', 'validation', 'test']` \n",
     "**fitted_labelcoder** | PickleField | When `LabelCoders`'s `fit` an sklearn preprocessor, the fit objects are saved here for downstream `inverse_transform`'ing\n",
     "**fitted_featurecoders** | PickleField | When `FeatureCoder`'s `fit` an sklearn preprocessor, the fit objects are saved here for downstream `inverse_transform`'ing\n",
@@ -3351,7 +3351,6 @@
    "source": [
     "Attribute | Type | Description\n",
     "--- | --- | ---\n",
-    "**hyperparamcombo_count** | IntegerField | text\n",
     "**hyperparameters** | JSONField | The original `dict(param=list)` of all possible values\n",
     "**search_count** | IntegerField | The number of randomly selected combinations of hyperparameters\n",
     "**search_percent** | FloatField | The percent of randomly selected combinations of hyperparameters\n",
@@ -3371,7 +3370,7 @@
    "source": [
     "Attribute | Type | Description\n",
     "--- | --- | ---\n",
-    "**combination_index** | IntegerField | Zero-based counts the number of the number of hyperparamcombos\n",
+    "**idx** | IntegerField | Zero-based counts the number of the number of hyperparamcombos\n",
     "**hyperparameters** | JSONField | The specific combination of hyperparameters that will be fed to the Algorithm functions\n",
     "**hyperparamset** | ForeignKeyField | The Hyperparamset that this combination of hyperparameters was derived from"
    ]
@@ -3456,7 +3455,7 @@
     "**algorithm_id** | int | Required | The `Algorithm.id` whose functions will be used during training and evaluation\n",
     "**splitset_id** | int | Required | The `Splitset.id` whose samples will be used during training and evaluation\n",
     "**repeat_count** | int | 1 | Each job will be repeat n times. Designed for use with random weight initialization (aka non-deterministic). This is why 1 `Job` has many `Predictors`\n",
-    "**permute_count** | int | 3 | Triggers a shuffled permutation of each training data column to determine which columns have the most impact on loss in comparison baseline training loss: `[training loss - (median loss of <n> permutations)]`. The count determines how many times the shuffled permutation is ran before taking the median loss. Permutation does *not* get run on `Feature.dataset.typ=='image'`. Set this to 0 if you do not care about feature importance.\n",
+    "**permute_count** | int | 3 | Triggers a shuffled permutation of each training data column to determine which columns have the most impact on loss in comparison baseline training loss: `[training loss - (median loss of <n> permutations)]`. The count determines how many times the shuffled permutation is ran before taking the median loss. Permutation does *not* get run on `Feature.dataset.typ=='image'`. Set this to 0 if you do not care about feature importance. Retroactive feature importance is possible via `Prediction.calcFeatureImportance()`.\n",
     "**hyperparamset_id** | int | None | The `Hyperparamset.id` whose samples will be used during training and evaluation. This needs to be specified because an Algorithm can have many Hyperparamsets.\n",
     "**description** | str | None | What is unique about this experiment?"
    ]
@@ -4027,7 +4026,9 @@
     "This method is provided for conducting feature importance after training. It was decoupled from training for the following reasons:\n",
     "\n",
     "- Permutation is computationally expensive, especially for many-columned datasets.\n",
-    "- We don't care about the feature importance of poorly performing models, which constitute the vast majority of training."
+    "- We don't care about the feature importance of poorly performing models, which constitute the vast majority of training.\n",
+    "\n",
+    "Upon completion it will update the `Prediction.feature_importance` and `Prediction.permute_count` attributes."
    ]
   },
   {
@@ -4046,7 +4047,7 @@
     "Argument | Type | Default | Description\n",
     "--- | --- | --- | ---\n",
     "**id** | int | None | The identifier of the Prediction of interest\n",
-    "**permute_count** | int | Required | Triggers a shuffled permutation of each training data column to determine which columns have the most impact on loss in comparison baseline training loss: `[training loss - (median loss of <n> permutations)]`. The count determines how many times the shuffled permutation is ran before taking the median loss. Permutation does *not* get run on `Feature.dataset.typ=='image'`."
+    "**permute_count** | int | Required | The count determines how many times the shuffled permutation is ran before taking the median loss. `[training loss - (median loss of <n> permutations)]` Permutation *skips* `Feature.dataset.typ=='image'`."
    ]
   },
   {
@@ -4236,14 +4237,15 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "| Attribute | Description |\n",
-    "| --- | --- | \n",
-    "| **predictions** | Decoded predictions ndarray for per split/ fold/ inference |\n",
-    "| **feature_importance** | Importance of each column. Only calculated for training split/fold |\n",
-    "| **probabilities** | Prediction probabilities per split/ fold. `None` for regression. |\n",
-    "| **metrics** | Statistics for each split/fold that vary based on the analysis_type.  |\n",
-    "| **metrics_aggregate** | Contains the average, median, standard deviation, minimum, and maximum for each statistic across all splits/folds. |\n",
-    "| **plot_data** | Metrics reformatted for plot functions. |"
+    "Attribute | Type | Description\n",
+    "--- | --- | ---\n",
+    "**predictions** | PickleField | Decoded predictions ndarray for per split/ fold/ inference\n",
+    "**permute_count** | IntegerField | The number of times this feature importance permuted each column\n",
+    "**feature_importance** | JSONField | Importance of each column. Only calculated for training split/fold\n",
+    "**probabilities** | PickleField | Prediction probabilities per split/ fold. `None` for regression.\n",
+    "**metrics** | PickleField | Statistics for each split/fold that vary based on the analysis_type.\n",
+    "**metrics_aggregate** | PickleField | Contains the average, median, standard deviation, minimum, and maximum for each statistic across all splits/folds.\n",
+    "**plot_data** | PickleField | Metrics reformatted for plot functions."
    ]
   },
   {

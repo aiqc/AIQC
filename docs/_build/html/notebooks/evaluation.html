@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/evaluation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="5f8270cf1a8f4feea4067a4f8d85d514 Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. The Algorithm.analysis_type determines which metrics and plots..." />
+  <meta property="og:description" content="3c1fcab783874b23879b876923a7f3b3 Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. All Analyses Loss is every neural network’s measure of overall..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -579,18 +579,60 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Evaluation">
 <h1>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h1>
-<p><img alt="5f8270cf1a8f4feea4067a4f8d85d514" class="banner-photo" src="../_images/plots.png" /></p>
+<p><img alt="3c1fcab783874b23879b876923a7f3b3" class="banner-photo" src="../_images/plots.png" /></p>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
 <p>Every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">Algorithm.analysis_type</span></code> determines which metrics and plots are prepared:</p>
-<ul class="simple">
-<li><p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, although they go about producing these artifacts differently: e.g. ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'regression'</span></code>, unlike the classification analyses, does not have an ‘accuracy’ metric, so we substitute ‘r2’, R^2 (coefficient of determination, for it. There are no regression-specific plots in AIQC yet. Note that unsupervised/ self-supervised models are also considered a regression.</p></li>
-</ul>
+<p><strong>All Analyses</strong></p>
+<p>Loss is every neural network’s measure of overall prediction error. The lower the loss, the better. However, it’s not really intuitive for humans, which is why analysis specific metrics like accuracy and R² are necessary.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 82%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Metrics</strong></p></td>
+<td><p>loss</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Plots</strong></p></td>
+<td><p>boomerang plot, learning curve, feature importance</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Classification</strong></p>
+<p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, they go about producing these artifacts differently: e.g. ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Metrics</strong></p></td>
+<td><p>accuracy, f1, roc_auc, precision, recall</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Plots</strong></p></td>
+<td><p>ROC-AUC, precision-recall, confusion matrix</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regression</strong></p>
+<p>Does not have an <code class="docutils literal notranslate"><span class="pre">'accuracy'</span></code> metric, so we default to <code class="docutils literal notranslate"><span class="pre">'r2'</span></code>, R² (coefficient of determination, as a guage of effectiveness. There are no regression-specific plots in AIQC yet. Note that, as a quantitative measure of similarity, unsupervised/ self-supervised models are also considered a regression.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Metrics</strong></p></td>
+<td><p>r2, mse, explained_variance</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><strong>Dashboard Arguments</strong></p>
 <p>In order to accomodate the <a class="reference external" href="dashboard.html">dashboards</a>, the following arguments were added:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> when <code class="docutils literal notranslate"><span class="pre">True</span></code>, performs <code class="docutils literal notranslate"><span class="pre">fig.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw <code class="docutils literal notranslate"><span class="pre">fig</span></code> object. The learning curve, feature importance, and confusion matrix functions return a list of figs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call_display:bool=True</span></code> when <code class="docutils literal notranslate"><span class="pre">True</span></code>, performs <code class="docutils literal notranslate"><span class="pre">figure.display()</span></code>. Whereas when <code class="docutils literal notranslate"><span class="pre">False</span></code>, it returns the raw Plotly <code class="docutils literal notranslate"><span class="pre">figure</span></code> object. The learning curve, feature importance, and confusion matrix functions return <code class="docutils literal notranslate"><span class="pre">list(figs)</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">height:int=None</span></code> pixel-based adjustment for boomerang chart and feature importance.</p></li>
 </ul>
 <blockquote>
@@ -630,7 +672,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <section id="Queue-Visualization">
 <h3>Queue Visualization<a class="headerlink" href="#Queue-Visualization" title="Permalink to this headline"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">plot_performance</span></code> aka the “boomerang chart” is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds.</p>
+<p><code class="docutils literal notranslate"><span class="pre">plot_performance</span></code> aka the <a class="reference external" href="https://medium.com/towards-data-science/boomerang-plot-9ae4aed419d4">boomerang chart</a> is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds.</p>
 <p>When evaluating a classification-based <code class="docutils literal notranslate"><span class="pre">Queue.analysis_type</span></code>, the following <code class="docutils literal notranslate"><span class="pre">score_type:str</span></code> are available: accuracy, f1, roc_auc, precision, and recall.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:

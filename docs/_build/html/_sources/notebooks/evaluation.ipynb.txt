@@ -25,14 +25,87 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "Every training `Job` automatically generates metrics when evaluated against each split/ fold."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**All Analyses**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Loss is every neural network's measure of overall prediction error. The lower the loss, the better. However, it's not really intuitive for humans, which is why analysis specific metrics like accuracy and R² are necessary."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "|||\n",
+    "--- | ---\n",
+    "**Metrics** | loss \n",
+    "**Plots** | boomerang plot, learning curve, feature importance"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Classification**\n",
     "\n",
-    "Every training `Job` automatically generates metrics when evaluated against each split/ fold. \n",
-    "\n",
-    "The `Algorithm.analysis_type` determines which metrics and plots are prepared:\n",
-    "\n",
-    "* Although `'classification_multi'` and `'classification_binary'` share the same metrics and plots, although they go about producing these artifacts differently: e.g. ROC curves `roc_multi_class=None` vs `roc_multi_class='ovr'`.\n",
-    "\n",
-    "* `'regression'`, unlike the classification analyses, does not have an 'accuracy' metric, so we substitute 'r2', R^2 (coefficient of determination, for it. There are no regression-specific plots in AIQC yet. Note that unsupervised/ self-supervised models are also considered a regression."
+    "Although `'classification_multi'` and `'classification_binary'` share the same metrics and plots, they go about producing these artifacts differently: e.g. ROC curves `roc_multi_class=None` vs `roc_multi_class='ovr'`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "|||\n",
+    "--- | ---\n",
+    "**Metrics** | accuracy, f1, roc_auc, precision, recall \n",
+    "**Plots** | ROC-AUC, precision-recall, confusion matrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Regression**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Does not have an `'accuracy'` metric, so we default to `'r2'`, R² (coefficient of determination, as a guage of effectiveness. There are no regression-specific plots in AIQC yet. Note that, as a quantitative measure of similarity, unsupervised/ self-supervised models are also considered a regression."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "|||\n",
+    "--- | ---\n",
+    "**Metrics** |  r2, mse, explained_variance"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Dashboard Arguments**"
    ]
   },
   {
@@ -41,7 +114,7 @@
    "source": [
     "In order to accomodate the [dashboards](dashboard.html), the following arguments were added:\n",
     "\n",
-    "- `call_display:bool=True` when `True`, performs `fig.display()`. Whereas when `False`, it returns the raw `fig` object. The learning curve, feature importance, and confusion matrix functions return a list of figs.\n",
+    "- `call_display:bool=True` when `True`, performs `figure.display()`. Whereas when `False`, it returns the raw Plotly `figure` object. The learning curve, feature importance, and confusion matrix functions return `list(figs)`.\n",
     "\n",
     "- `height:int=None` pixel-based adjustment for boomerang chart and feature importance."
    ]
@@ -138,7 +211,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "`plot_performance` aka the \"boomerang chart\" is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds."
+    "`plot_performance` aka the [boomerang chart](https://medium.com/towards-data-science/boomerang-plot-9ae4aed419d4) is unique to AIQC, and it really brings the benefits of the library to light. Each model from the Queue is evaluated against all splits/ folds."
    ]
   },
   {

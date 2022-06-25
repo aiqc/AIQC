@@ -326,7 +326,7 @@ def fit_features(
     arr_features:object, samples_train:list,
     feature:object,
 ):
-    featurecoders = list(feature.featurecoders)
+    featurecoders   = list(feature.featurecoders)
     fitted_encoders = []
     if (len(featurecoders) > 0):
         f_cols = feature.columns
@@ -350,20 +350,21 @@ def fit_features(
             dim   = features_to_fit.ndim
             
             if (dim==3):
-                rows = shape[0] * shape[1]
+                rows            = shape[0] * shape[1]
                 features_to_fit = features_to_fit.reshape(rows, shape[2])
             elif (dim==4):
-                rows = shape[0] * shape[1] * shape[2]
+                rows            = shape[0] * shape[1] * shape[2]
                 features_to_fit = features_to_fit.reshape(rows, shape[3])
             elif (dim==5):
-                rows = shape[0] * shape[1] * shape[2] * shape[3]
+                rows            = shape[0] * shape[1] * shape[2] * shape[3]
                 features_to_fit = features_to_fit.reshape(rows, shape[4])
 
             # Only fit these columns.
             matching_columns = featurecoder.matching_columns
             # Get the indices of the desired columns.
             col_indices = colIndices_from_colNames(
-                column_names=f_cols, desired_cols=matching_columns
+                column_names   = f_cols
+                , desired_cols = matching_columns
             )
 
             # Data is coerced to 2D above
@@ -372,7 +373,7 @@ def fit_features(
             # Fit the encoder on the subset.
             fitted_coders, encoding_dimension = fit_dynamicDimensions(
                 sklearn_preprocess = preproc
-                , samples_to_fit = features_to_fit
+                , samples_to_fit   = features_to_fit
             )
             fitted_encoders.append(fitted_coders)
     return fitted_encoders, encoding_dimension
@@ -397,18 +398,19 @@ def transform_features(
             rows_2D = og_shape[0] * og_shape[1] * og_shape[2]
             arr_features = arr_features.reshape(rows_2D, og_shape[3])
 
-        f_cols = feature.columns
+        f_cols               = feature.columns
         transformed_features = None #Used as a placeholder for `np.concatenate`.
         for featurecoder in featurecoders:
-            idx = featurecoder.index
-            fitted_coders = fitted_encoders[idx]# returns list
+            idx                = featurecoder.idx
+            fitted_coders      = fitted_encoders[idx]# returns list
             encoding_dimension = featurecoder.encoding_dimension
             
             # Only transform these columns.
             matching_columns = featurecoder.matching_columns
             # Get the indices of the desired columns.
             col_indices = colIndices_from_colNames(
-                column_names=f_cols, desired_cols=matching_columns
+                column_names   = f_cols
+                , desired_cols = matching_columns
             )
             # Filter the array using those indices.
             features_to_transform = arr_features[:,col_indices]
@@ -416,14 +418,14 @@ def transform_features(
             if (idx == 0):
                 # It's the first encoder. Nothing to concat with, so just overwite the None value.
                 transformed_features = transform_dynamicDimensions(
-                    fitted_encoders = fitted_coders
-                    , encoding_dimension = encoding_dimension
+                    fitted_encoders        = fitted_coders
+                    , encoding_dimension   = encoding_dimension
                     , samples_to_transform = features_to_transform
                 )
             elif (idx > 0):
                 encoded_features = transform_dynamicDimensions(
-                    fitted_encoders = fitted_coders
-                    , encoding_dimension = encoding_dimension
+                    fitted_encoders        = fitted_coders
+                    , encoding_dimension   = encoding_dimension
                     , samples_to_transform = features_to_transform
                 )
                 # Then concatenate w previously encoded features.
@@ -437,7 +439,8 @@ def transform_features(
         if (len(leftover_columns) > 0):
             # Get the indices of the desired columns.
             col_indices = colIndices_from_colNames(
-                column_names=f_cols, desired_cols=leftover_columns
+                column_names   = f_cols
+                , desired_cols = leftover_columns
             )
             # Filter the array using those indices.
             leftover_features = arr_features[:,col_indices]

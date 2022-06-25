@@ -139,7 +139,7 @@ def stage_data(splitset:object, fold:object):
     path_splitset = splitset.cache_path
     if (fold is not None):
         samples       = fold.samples
-        idx           = fold.fold_index
+        idx           = fold.idx
         fold_idx      = f"fold_{idx}"
         path_fold     = path.join(path_splitset, fold_idx)
         create_folder(path_fold)
