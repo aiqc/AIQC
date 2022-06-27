@@ -46,36 +46,39 @@ body {
     display:                    flex;
 }
 
-.navig .logo {
+.logo {
     position:                   relative;
     margin-left:                8px;
     margin-top:                 4px;
 }
 
-.navig .all-linx {
+.all-linx {
     display:                    flex;
     position:                   relative;
     top:                        11px;
 }
 
-.navig .all-linx .linx-box {
+.linx-box {
     margin-left:                20%;
 }
 
-.navig .all-linx .linx-box .linx {
+.linx {
     font-family:                Abel;
     color:                      #43eac5;
     font-size:                  16px;
     text-decoration:            none;
 }
 
-.navig .all-linx .linx-box .linx:hover {
-    text-decoration:            underline;
+.linx:hover {
+    color:                      #ffda67;
 }
 
-.navig .all-linx .linx-box .linx:active {
-    text-decoration:            underline;
+.linx:active {
     color:                      #ffda67;
+}
+
+.linx-live {
+    text-decoration:            underline;
 }
 
 

@@ -1,10 +1,11 @@
-from dash import Dash, page_registry, page_container, html, dcc
+from dash import Dash, page_registry, page_container, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 """
-- Kill the app with `ctrl+c` not `ctrl+z` as z does not release port.
-- Mandatory to use absolute aiqc imports, not relative: `aiqc.orm` not `..orm`.
 - Stopped using jupyter_dash when they removed `_terminate_server_for_port`
   It wasn't reliable: hung ports with leaks, silent failures.
+- Kill the dash server with `ctrl+c` not `ctrl+z` as z does not release port.
+- Mandatory to use absolute aiqc imports, not relative: `aiqc.orm` not `..orm`.
+- Homepage '/': see experiments.py `register_page.path` and `def fetch_links` below
 
 - "External css/js files are loaded before the `/assets`."
 - "CSS/JS files in `/assets` are auto served." Don't need to be added as externals.
@@ -14,8 +15,8 @@ sheets    = [dbc.themes.BOOTSTRAP]
 app       = Dash(
     __name__
     , external_stylesheets         = sheets
-    , update_title                 = "♻️"
-    , title                        = "AIQC"
+    , update_title                 = '♻️'
+    , title                        = 'AIQC'
     , suppress_callback_exceptions = True
     , use_pages                    = True
 )
@@ -30,39 +31,65 @@ refresh_seconds = 10*1000
 
 app.layout = html.Div(
     [
+        # URL
+        dcc.Location(id='url'),
         # Navbar
         html.Div(
             [
                 # Logo
                 html.Div(
                     html.A(
-                        html.Img(src="assets/logo_wide_small.svg", height="35px"),
-                        href="https://aiqc.io",
+                        html.Img(src='assets/logo_wide_small.svg', height='35px'),
+                        href='https://aiqc.io',
                     ),
                     className='logo'
                 ),
                 # Links
                 html.Div(
-                    [
-                        html.Div(
-                            dcc.Link(
-                                f"{page['name']}",
-                                href=page["relative_path"], 
-                                className="linx"
-                            ),
-                            className="linx-box"
-                        )
-                        for page in page_registry.values()
-                    ],
-                    className="all-linx"
+                    className='all-linx',
+                    id='all-linx'
                 ),         
             ],
             className='navig'
         ),
-        # This holds the multi-page content
+        # Multi-page content
         page_container
     ]
 )
+
+"""
+- Populates the links
+- Keeps an underline beneath the active link
+"""
+@app.callback(
+    Output(component_id='all-linx', component_property='children'),
+    Input(component_id='url', component_property='pathname')
+)
+def fetch_links(pathname:str):
+    linx = []
+    for page in page_registry.values():
+        # Workaround for Experiments as home page
+        if (pathname=='/'): pathname = '/experiments'
+
+        page_name = page['name']
+        match = pathname.endswith(page_name.lower())
+        if not match:
+            className = "linx"
+        else:
+            className = "linx linx-live"
+
+        linx_box = html.Div(
+            dcc.Link(
+                page_name,
+                href=page['relative_path'], 
+                className=className
+            ),
+            className='linx-box'
+        )
+        linx.append(linx_box)
+    return linx
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port='9992')

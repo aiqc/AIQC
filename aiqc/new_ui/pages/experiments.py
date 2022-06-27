@@ -9,7 +9,7 @@ from dash.dependencies import Output, Input, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
-register_page(__name__)
+register_page(__name__, path='/')
 
 refresh_seconds = 10*1000
 
