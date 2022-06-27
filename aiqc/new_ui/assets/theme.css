@@ -1,0 +1,331 @@
+/* 
+    - The name of the file does not matter. I just didn't want to use 'custom' 
+      because that's used by the docs or 'style' in case that is hardcoded anywhere.
+    - `!important` is used a lot to override bootstrap styles.
+*/
+@font-face {
+    font-family: "Abel";
+    src: url("Abel-Regular.ttf");
+}
+/* ======== PAGE ======== */
+html {
+    height:                     100%;
+}
+
+body {
+    /* rgb coloring does not work here */
+    background-color:           #182d41;
+}
+
+#_pages_content {
+    color: white;
+}
+
+.ctr {
+    margin-left:                auto;
+    margin-right:               auto;
+}
+
+.hrz {
+    color:                      #40566b;
+    width:                      85%;
+    height:                     3px;
+    margin-top:                 45px;
+    margin-bottom:              45px;
+}
+
+
+/* ======== NAV BAR ======== */
+.navig {
+    background-image:           linear-gradient(#1b344a, #010A11);
+    height:                     48px;
+    /* These 3 stick it to top. */
+    position:                   sticky;
+    top:                        0;
+    z-index:                    999;
+    display:                    flex;
+}
+
+.navig .logo {
+    position:                   relative;
+    margin-left:                8px;
+    margin-top:                 4px;
+}
+
+.navig .all-linx {
+    display:                    flex;
+    position:                   relative;
+    top:                        11px;
+}
+
+.navig .all-linx .linx-box {
+    margin-left:                20%;
+}
+
+.navig .all-linx .linx-box .linx {
+    font-family:                Abel;
+    color:                      #43eac5;
+    font-size:                  16px;
+    text-decoration:            none;
+}
+
+.navig .all-linx .linx-box .linx:hover {
+    text-decoration:            underline;
+}
+
+.navig .all-linx .linx-box .linx:active {
+    text-decoration:            underline;
+    color:                      #ffda67;
+}
+
+
+/* ======== MID BAR ======== */
+.middle_bar {
+    background-image:           linear-gradient(#010A11, #010A1170);
+    padding-top:                18px;
+    padding-bottom:             18px;
+    padding-left:               3%;
+    padding-right:              3%;
+    /* These 3 stick it to top & mirror nav */
+    position:                   sticky;
+    top:                        48px;
+    z-index:                    999;
+}
+
+.prog_bar {
+    /* matches bootstrap secondary color */
+    border:                     1px solid #6c757d;
+    width:                      45%;
+    margin-bottom:              30px;
+    border-radius:              12px;
+    background:                 none;
+    height:                     15px;
+    font-size:                  12px;
+    color:                      #010A11;
+}
+
+.up_arrow {
+    color:                      #5E768C;
+    text-decoration:            none;
+    font-size:                  19px;
+}
+
+
+/* ======== BUTTONS ======== */
+button {
+    border-radius:              8px !important;
+    letter-spacing:             0.03em !important;
+}
+
+button:hover {
+    border-color:              #ffda67 !important;
+    color:                     #ffda67 !important;
+}
+
+button:active {
+    border-color:              #ffffff !important;
+    color:                     #ffffff !important;
+}
+
+.exp_ctrl_row {
+    margin-left:                3%;
+    margin-top:                 18px;
+}
+
+.ctrl_chart {
+    width:                      75%;
+    font-family:                Abel;
+}
+
+.ctrl_chart select {
+    color:                      #5c5c5c !important;
+}
+
+.ctrl_big {
+    min-width:                  222px;
+}
+
+.ctrl_sm {
+    min-width:                  160px;
+}
+
+.chart_button {
+    padding-top:                7px;
+    padding-bottom:             7px;
+    padding-left:               12px;
+    padding-right:              12px;
+    border-radius:              6px;
+    color:                      #43eac5;
+    border-color:               #43eac5;
+    font-weight:                lighter;
+}
+
+.ctrl_col_big {
+    min-width:                  230px;
+}
+
+.ctrl_col_sm {
+    min-width:                  190px;
+}
+
+/* alternating dropdown row colors */
+option:nth-child(even) {
+    background-color:           #E0F1F4 !important;
+}
+
+/* === EXP BUTTONS === */
+.input-group-text {
+    border-top-left-radius:     8px !important;
+    border-bottom-left-radius:  8px !important;
+    font-size:                  16px !important;
+}
+
+.form-select {
+    border-top-right-radius:    8px !important;
+    border-bottom-right-radius: 8px !important;
+    text-align:                 center;
+    padding-left:               6% !important;
+    font-size:                  16px !important;
+}
+
+.form-control {
+    border-top-right-radius:    8px !important;
+    border-bottom-right-radius: 8px !important;
+    text-align:                 center;
+    font-size:                  16px !important;
+}
+
+/* === MULTITRON === */
+.multitron {
+    font-family:                Abel;
+    font-size:                  16px !important;
+    width:                      90%;
+}
+
+.Select-control {
+    /* this will also apply when dropdown is clicked */
+    border-radius:              20px;
+    padding-left:               20px;
+}
+
+.Select-placeholder {
+    padding-left:               20px;
+    text-align:                 center;
+    padding-right:              11%;
+}
+
+.Select-value {
+    border-radius:              15px !important;
+    padding-left:               2px;
+    padding-right:              5px;
+}
+
+.Select-value-label {
+    padding-left:               8px;
+}
+
+/* somewhat centers models. margin-l/r auto !important doesn't work. */
+.Select-multi-value-wrapper {
+    padding-left:               3%;
+}
+
+/* ======== TABLES ======== */
+.hp_contain {
+    overflow-y:                 scroll;
+    max-height:                 100%;
+    margin-top:                 20px;
+    padding-right:              5%;
+}
+
+.tbl {
+    /* it injects its own margin w/o this */
+    margin-bottom:              5px;
+    text-align:                 center; 
+    font-size:                  16px !important;
+    font-family:                Abel;
+}
+
+.tbig {
+    width:                      70%;
+}
+
+.tsmall {
+    width:                      40%; 
+}
+
+thead {
+    color:                      white;
+}
+
+tbody {
+    border-top-color:           #484848 !important;
+}
+
+td {
+    color:                      #e4e4e4 !important;
+}
+
+/* Rounded table corners */
+th:first-child {
+    border-top-left-radius:     12px;
+}
+th:last-child {
+    border-top-right-radius:    12px;
+}
+tr:last-child td:first-child {
+    border-bottom-left-radius:  12px;
+}
+tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+}
+tr:last-child td {
+    border-bottom-width:        0px !important;
+}
+
+/* ======== PLOTS ======== */
+.exp_row {
+    margin-left:                3%;
+    height:                     500px;
+    margin-bottom:              15px;
+}
+
+.exp_plot_contain {
+    width:                      100%;
+    height:                     500px;
+    margin-left:                3%;
+}
+
+.plots {
+    width:                      90%;
+}
+/* community.plotly.com/t/is-it-possible-to-hide-the-floating-toolbar/4911 */ 
+.modebar{
+    display: none !important;
+}
+
+/* ======== MISC ======== */
+.header {
+    color:                      #ffda67;
+    font-size:                  19px;
+    font-weight:                200;
+    font-stretch:               108%;
+    text-align:                 center;
+    font-family:                Abel;
+}
+
+.alert {
+    width:                      80%;
+    margin:                     auto;
+    text-align:                 center;
+    background:                 #ffffff20;
+    color:                      #FFFFFF;
+    font-weight:                lighter;
+    border-radius:              12px;
+    border-color:               #ffffff00;
+    border-width:               4px;
+    padding:                    25px;
+}
+
+.spinner {
+    margin-left:                48%;
+}
