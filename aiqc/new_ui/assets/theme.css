@@ -37,12 +37,14 @@ body {
 
 /* ======== NAV BAR ======== */
 .navig {
-    background-image:           linear-gradient(#1b344a, #010A11);
-    height:                     48px;
     /* These 3 stick it to top. */
     position:                   sticky;
     top:                        0;
     z-index:                    999;
+
+    width: 100%;
+    height:                     48px;
+    background-image:           linear-gradient(#1b344a, #010A11);
     display:                    flex;
 }
 
@@ -80,19 +82,13 @@ body {
 .linx-live {
     text-decoration:            underline;
 }
-
-
-/* ======== MID BAR ======== */
-.middle_bar {
-    background-image:           linear-gradient(#010A11, #010A1170);
-    padding-top:                18px;
-    padding-bottom:             18px;
-    padding-left:               3%;
-    padding-right:              3%;
-    /* These 3 stick it to top & mirror nav */
-    position:                   sticky;
-    top:                        48px;
-    z-index:                    999;
+/* ======== PROGRESS BAR ====== */
+.prog_footer {
+    position:fixed;
+    bottom:0px;
+    width:100%;
+    background-image: linear-gradient(#010A11, #1b344a);
+    height: 36px;
 }
 
 .prog_bar {
@@ -105,6 +101,18 @@ body {
     height:                     15px;
     font-size:                  12px;
     color:                      #010A11;
+}
+
+/* ======== MID BAR ======== */
+.middle_bar {
+    width: 100%;
+    background-image:           linear-gradient(#010A11, #010A1170);
+    padding-top:                18px;
+    padding-bottom:             18px;
+    /* These 3 stick it to top & mirror nav */
+    position:                   sticky;
+    top:                        48px;
+    z-index:                    999;
 }
 
 .up_arrow {
@@ -131,7 +139,8 @@ button:active {
 }
 
 .exp_ctrl_row {
-    margin-left:                3%;
+    width:                      100%;
+    padding-left:               4%;
     margin-top:                 18px;
 }
 
@@ -287,7 +296,8 @@ tr:last-child td {
 
 /* ======== PLOTS ======== */
 .exp_row {
-    margin-left:                3%;
+    width:                      100%;
+    padding-left:               4%;
     height:                     500px;
     margin-bottom:              15px;
 }
