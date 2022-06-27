@@ -105,6 +105,7 @@ body {
 
 /* ======== MID BAR ======== */
 .middle_bar {
+    --bs-gutter-x: 0 !important;
     width: 100%;
     background-image:           linear-gradient(#010A11, #010A1170);
     padding-top:                18px;
@@ -239,6 +240,10 @@ option:nth-child(even) {
 /* somewhat centers models. margin-l/r auto !important doesn't work. */
 .Select-multi-value-wrapper {
     padding-left:               3%;
+}
+
+.model_container {
+    width: 100%;
 }
 
 /* ======== TABLES ======== */

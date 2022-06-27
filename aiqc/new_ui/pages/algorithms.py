@@ -20,7 +20,7 @@ layout = html.Div(
             max_intervals=-1, 
             interval=refresh_seconds
         ),
-        html.Div(dbc.Row(
+        dbc.Row(
             [
                 dbc.Col(width="4"),
                 dbc.Col(
@@ -29,14 +29,14 @@ layout = html.Div(
                 ),
                 dbc.Col(width="3"),
                 dbc.Col(
-                    html.Div(html.A("⇪",href="#",className='up_arrow')),
+                    html.Div(html.A("⇪",href="#", className='up_arrow')),
                     width="1", align="center",
                 )
             ],
             className='middle_bar'
-        )),
+        ),
         html.Br(),html.Br(),html.Br(),
-        dbc.Row(id="model_container"),
+        dbc.Row(id="model_container", className='model_container'),
         html.Br(),
     ]
 )
