@@ -279,6 +279,8 @@ class Dataset(BaseModel):
     sha256_hexdigest = CharField()
     memory_MB        = IntegerField()
     contains_nan     = BooleanField()
+    stats_numeric    = JSONField(null=True)
+    stats_categoric  = JSONField(null=True)
     header           = PickleField(null=True) #Image does not have.
     source_path      = CharField(null=True) # when `from_numpy` or `from_pandas` and `from_urls`
     urls             = JSONField(null=True)
@@ -360,12 +362,30 @@ class Dataset(BaseModel):
             - We gather metadata regardless of whether ingested or not. 
             - Variables are intentionally renamed.
             """
-            dataframe, columns, shape, dtype = df_setMetadata(
+            df, columns, shape, dtype = df_setMetadata(
                 dataframe        = dataframe
                 , rename_columns = rename_columns
                 , retype         = retype
             )
-            contains_nan = dataframe.isnull().values.any()
+            contains_nan = df.isnull().values.any()
+
+            stats_numeric   = dict()
+            stats_categoric = dict()
+            for col, typ in dtype.items():
+                is_numeric = np.issubdtype(typ, np.number)
+                is_date = np.issubdtype(typ, np.datetime64)
+                if (is_numeric or is_date):
+                    stats = dict(df[col].describe(datetime_is_numeric=True))
+                    stats_numeric[col] = stats
+                else:
+                    stats = dict(
+                        df[col].value_counts(normalize=True, dropna=False)
+                    )
+                    stats_categoric[col] = stats
+                
+            # Set empty dicts to None
+            if (not stats_numeric): stats_numeric=None
+            if (not stats_categoric): stats_categoric=None
             """
             - Switched to `fastparquet` because `pyarrow` doesn't preserve timedelta dtype
             https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
@@ -386,8 +406,8 @@ class Dataset(BaseModel):
             """
             fs = filesystem("memory")
             temp_path = "memory://temp.parq"
-            memory_MB = getsizeof(dataframe)/1048576
-            dataframe.to_parquet(temp_path, engine="fastparquet", compression="zstd", index=False)
+            memory_MB = getsizeof(df)/1048576
+            df.to_parquet(temp_path, engine="fastparquet", compression="zstd", index=False)
             blob = fs.cat(temp_path)
             fs.delete(temp_path)
             sha256_hexdigest = sha256(blob).hexdigest()
@@ -404,6 +424,8 @@ class Dataset(BaseModel):
                     , sha256_hexdigest = sha256_hexdigest
                     , memory_MB        = memory_MB
                     , contains_nan     = contains_nan
+                    , stats_numeric    = stats_numeric
+                    , stats_categoric  = stats_categoric
                     , version          = version_num
                     , blob             = blob
                     , name             = name

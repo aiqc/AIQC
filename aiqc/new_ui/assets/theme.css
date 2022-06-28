@@ -4,8 +4,8 @@
     - `!important` is used a lot to override bootstrap styles.
 */
 @font-face {
-    font-family: "Abel";
-    src: url("Abel-Regular.ttf");
+    font-family:                "Abel";
+    src:                        url("Abel-Regular.ttf");
 }
 /* ======== PAGE ======== */
 html {
@@ -14,11 +14,11 @@ html {
 
 body {
     /* rgb coloring does not work here */
-    background-color:           #182d41;
+    background-color:         #182d41;
 }
 
 #_pages_content {
-    color: white;
+    color:                    white;
 }
 
 .ctr {
@@ -27,7 +27,7 @@ body {
 }
 
 .hrz {
-    color:                      #40566b;
+    color:                    #40566b;
     width:                      85%;
     height:                     3px;
     margin-top:                 45px;
@@ -66,17 +66,17 @@ body {
 
 .linx {
     font-family:                Abel;
-    color:                      #43eac5;
+    color:                    #43eac5;
     font-size:                  16px;
     text-decoration:            none;
 }
 
 .linx:hover {
-    color:                      #ffda67;
+    color:                    #ffda67;
 }
 
 .linx:active {
-    color:                      #ffda67;
+    color:                    #ffda67;
 }
 
 .linx-live {
@@ -84,29 +84,29 @@ body {
 }
 /* ======== PROGRESS BAR ====== */
 .prog_footer {
-    position:fixed;
-    bottom:0px;
-    width:100%;
-    background-image: linear-gradient(#010A11, #1b344a);
-    height: 36px;
+    position:                   fixed;
+    bottom:                     0px;
+    width:                      100%;
+    background-image:           linear-gradient(#010A11, #1b344a);
+    height:                     48px;
 }
 
 .prog_bar {
     /* matches bootstrap secondary color */
     border:                     1px solid #6c757d;
     width:                      45%;
-    margin-bottom:              30px;
+    margin-top:                 17px;
     border-radius:              12px;
     background:                 none;
     height:                     15px;
     font-size:                  12px;
-    color:                      #010A11;
+    color:                    #010A11;
 }
 
 /* ======== MID BAR ======== */
 .middle_bar {
-    --bs-gutter-x: 0 !important;
-    width: 100%;
+    --bs-gutter-x:              0px !important;
+    width:                      100%;
     background-image:           linear-gradient(#010A11, #010A1170);
     padding-top:                18px;
     padding-bottom:             18px;
@@ -117,7 +117,7 @@ body {
 }
 
 .up_arrow {
-    color:                      #5E768C;
+    color:                    #5E768C;
     text-decoration:            none;
     font-size:                  19px;
 }
@@ -130,13 +130,13 @@ button {
 }
 
 button:hover {
-    border-color:              #ffda67 !important;
-    color:                     #ffda67 !important;
+    border-color:             #ffda67 !important;
+    color:                    #ffda67 !important;
 }
 
 button:active {
-    border-color:              #ffffff !important;
-    color:                     #ffffff !important;
+    border-color:             #ffffff !important;
+    color:                    #ffffff !important;
 }
 
 .exp_ctrl_row {
@@ -151,7 +151,7 @@ button:active {
 }
 
 .ctrl_chart select {
-    color:                      #5c5c5c !important;
+    color:                    #5c5c5c !important;
 }
 
 .ctrl_big {
@@ -168,8 +168,8 @@ button:active {
     padding-left:               12px;
     padding-right:              12px;
     border-radius:              6px;
-    color:                      #43eac5;
-    border-color:               #43eac5;
+    color:                    #43eac5;
+    border-color:             #43eac5;
     font-weight:                lighter;
 }
 
@@ -183,7 +183,7 @@ button:active {
 
 /* alternating dropdown row colors */
 option:nth-child(even) {
-    background-color:           #E0F1F4 !important;
+    background-color:         #E0F1F4 !important;
 }
 
 /* === EXP BUTTONS === */
@@ -271,15 +271,15 @@ option:nth-child(even) {
 }
 
 thead {
-    color:                      white;
+    color:                    white;
 }
 
 tbody {
-    border-top-color:           #484848 !important;
+    border-top-color:         #484848 !important;
 }
 
 td {
-    color:                      #e4e4e4 !important;
+    color:                    #e4e4e4 !important;
 }
 
 /* Rounded table corners */
@@ -318,12 +318,51 @@ tr:last-child td {
 }
 /* community.plotly.com/t/is-it-possible-to-hide-the-floating-toolbar/4911 */ 
 .modebar{
-    display: none !important;
+    display:                    none !important;
 }
+
+/* ======== SIMULATIONS ======== */
+
+.sim-pane {
+    width:                      100%;
+    --bs-gutter-x:              0px !important;
+    font-family:                Abel;
+}
+
+.sim-inputs {
+    padding-top:                20px;
+}
+
+.sim-outputs {
+    padding-top:                20px;
+}
+
+#sim-features {
+    margin:                     25px;
+}
+
+.sim-subtitle {
+    font-size:                  17px;
+    margin-top:                 15px;
+    text-align:                 center;
+    margin-bottom:              2px;
+}
+
+.sim-slider-header {
+    font-size:                  15px;
+    color:                    lightblue;
+    margin-bottom:              5px;
+}
+
+.sim-slider {
+    margin-bottom:              10px;
+}
+
+
 
 /* ======== MISC ======== */
 .header {
-    color:                      #ffda67;
+    color:                    #ffda67;
     font-size:                  19px;
     font-weight:                200;
     font-stretch:               108%;
@@ -335,11 +374,11 @@ tr:last-child td {
     width:                      80%;
     margin:                     auto;
     text-align:                 center;
-    background:                 #ffffff20;
-    color:                      #FFFFFF;
+    background:               #ffffff20;
+    color:                    #FFFFFF;
     font-weight:                lighter;
     border-radius:              12px;
-    border-color:               #ffffff00;
+    border-color:             #ffffff00;
     border-width:               4px;
     padding:                    25px;
 }

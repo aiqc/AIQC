@@ -1,6 +1,5 @@
 # Local modules
 from aiqc import orm
-from aiqc.utils.meter import metrics_classify, metrics_regress
 # UI modules
 from dash import register_page, html, dcc, callback
 from dash.dependencies import Output, Input, State
