@@ -276,11 +276,16 @@ def prediction_from_features(
     analysis_typ = queue.algorithm.analysis_type
     if ('classification' in analysis_typ):
         # Access the array, then the first prediction
-        probs = list(prediction.probabilities.values())[0]
-        if len(probs)==1:
-            probs = probs[0]
+        probs = list(prediction.probabilities.values())[0][0]
         confidence = html.Span("Confidence: ", className='card-subhead')
-        confidence = html.P([confidence, f"{probs}"], className="card-text")
+        # Regular floats not rounding well
+        if (probs.ndim==1):
+            probs = [round(p,3) for p in probs]
+            confidence = html.P([confidence, f"{probs}"], className="card-text")
+        else:
+            probs = round(probs,3)
+            confidence = html.P([confidence, f"{probs:.3f}"], className="card-text")
+
         confidence = dbc.ListGroupItem(confidence) 
         card_list.insert(1, confidence)
 
