@@ -4,6 +4,7 @@ from aiqc import mlops
 # UI modules
 from dash import register_page, html, dcc, callback, ALL
 from dash.dependencies import Output, Input, State
+from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
@@ -37,7 +38,7 @@ layout = html.Div(
                             ],
                             size="sm", className='ctrl_chart ctrl_big ctr'
                         ),
-                        html.Hr(className='sim-breaker'),
+                        html.Br(),html.Br(),
                         html.Div(id='sim-features'),
                         # Can't get margin/padding bottom working
                         html.Br(),html.Br(),
@@ -97,13 +98,25 @@ def refresh_predictors(n_intervals:int, model_id:int):
 def populate_features(model_id:int):
     if (model_id is None):
         msg   = "Select Model above"
-        alert = dbc.Alert(msg, className='alert')
+        alert = [dbc.Alert(msg, className='alert')]
         return alert
     
     model = Predictor.get_by_id(model_id)
     features = model.job.queue.splitset.features
     
-    kids = []
+    kids = [
+        dbc.InputGroup(
+            [
+                dbc.Button(
+                    "Simulate", outline=True, 
+                    n_clicks=0, id="sim_button",
+                    className='chart_button ctr',
+                ),
+            ],
+            size="md", className='ctrl_chart ctr'
+        ),
+        html.Br(),
+    ]
     for f in features:
         typ = f.dataset.typ
         # Need to check the type, so don't capitalize yet.
@@ -186,20 +199,22 @@ id is created before value, and value is dynamic.
 """
 @callback(
     Output('sim-preds', 'children'),
-    Input({'role': 'feature', 'column': ALL}, 'value'),
+    Input('sim_button', 'n_clicks'),
     [
+        State({'role': 'feature', 'column': ALL}, 'value'),
         State({'role': 'feature', 'column': ALL}, 'id'),
         State('pred_dropdown', 'value'),
         State('sim-preds', 'children')
     ]
 )
 def prediction_from_features(
-    field_values:list
+    n_clicks:int
+    , field_values:list
     , field_ids:list
     , model_id:int
     , preds:list
 ):
-    ### Need to make this on submit nclicks
+    if (n_clicks==0): raise PreventUpdate
     ### State needs the feature.id for accessing dataset
 
     # Construct records from feature fields
