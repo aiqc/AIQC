@@ -353,7 +353,7 @@ tr:last-child td {
     font-size:                  17px;
     margin-top:                 15px;
     text-align:                 center;
-    margin-bottom:              0px;
+    margin-bottom:              5px;
     color:                    #dde7f3;
 }
 
@@ -390,32 +390,55 @@ tr:last-child td {
 
 .sim-card {
     color:                    #393939;
-    margin:                     25px;
+    margin:                     30px;
     border:                     0px;
     border-radius:              10px;
+    box-shadow:                 4px 4px 4px #242424;
 }
 
 .sim-val {
-    background: #1c2f68;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 5px;
+    background:               #273357;
+    color:                    white;
+    padding:                    2px 7px;
+    border-radius:              5px;
+    margin:                     6px;
+    font-size:                  15px;
 }
 
 .card-bod {
-    padding:                    20px;
+    padding:                    0px !important;
 }
 
 .card-fut {
     padding:                    20px;
+    overflow-x:                 scroll;
 }
 
-.card-title {
+.card-head {
     font-size:                  18px;
     font-weight:                bold;
+    margin-bottom:              0px;
+    margin-left:                9px;
+}
+
+.card-list {
+    border-radius:              10px 10px 0px 0px;
+}
+
+.list-group-item:last-child {
+    border-bottom: 0px;
 }
 
 .card-subhead {
+    font-size:                  15px;
+    font-weight:                bold;  
+    min-width:                  86px;
+    display:                    inline-block;
+    text-align:                 right;
+    margin-right:               10px; 
+}
+
+.card-feat-subhead {
     font-size:                  15px;
     font-weight:                bold;   
 }

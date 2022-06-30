@@ -137,7 +137,7 @@ def populate_features(model_id:int):
                     for name,val in stats.items():
                         tip = html.Tr([
                             html.Td(name),
-                            html.Td(val)
+                            html.Td(f"{val:.3f}")
                         ])
                         body.append(tip)
                     body = [html.Tbody(body)]
@@ -147,8 +147,8 @@ def populate_features(model_id:int):
                     uid  = str(uuid1())
                     field = html.Div(
                         [
-                            html.Div(col, id=uid, className='sim-slider-col'),
-                            dbc.Tooltip(tips, target=uid, className='sim-tooltip'),
+                            html.Div(col, id=uid, className='sim-slider-name'),
+                            dbc.Tooltip(tips, target=uid, placement='right', className='sim-tooltip'),
                             dbc.Input(
                                 id          = {'role':'feature', 'column':col},
                                 type        = 'number',
@@ -228,40 +228,48 @@ def prediction_from_features(
     )
     
     # Information for the card body
-    pred_id   = f"Prediction ID: {prediction.id}"
-    
     queue = prediction.predictor.job.queue
     label = queue.splitset.label
     if (label is not None):
         label = label.columns
         if (len(label)==1): label=label[0]
-        label += " = "
+        label
     else:
-        label = "Predicted Value = "
+        label = ""
 
     # Access the array, then the first prediction
     sim_val = list(prediction.predictions.values())[0][0]
-    sim_val = html.Span(sim_val, className='sim-val')
-    pred    = html.P([label, sim_val], className="card-text")
+    sim_txt = f"{label} = {sim_val}"
+    sim_val = html.Span(sim_txt, className='sim-val')
+    pred    = html.P(["Prediction: ", sim_val], className="card-head")
+    pred    = dbc.ListGroupItem(pred)
     
-    model_id = f"Model ID: {model_id}"
-    model_id = html.P(model_id, className="card-text")
+    pred_id = html.Span("Prediction ID: ", className='card-subhead')
+    pred_id = html.P([pred_id, f"{prediction.id}"], className="card-text")
+    pred_id = dbc.ListGroupItem(pred_id) 
 
-    card_body = [
-        html.H4(pred_id, className="card-title"),
-        model_id,
-        pred
+    mod_id = html.Span("Model ID: ", className='card-subhead')
+    mod_id = html.P([mod_id, f"{model_id}"], className="card-text")
+    mod_id = dbc.ListGroupItem(mod_id) 
+
+    card_list = [
+        pred,
+        pred_id,
+        mod_id,
     ]
 
     analysis_typ = queue.algorithm.analysis_type
     if ('classification' in analysis_typ):
         # Access the array, then the first prediction
-        probs = list(prediction.probabilities.values())[0][0]
+        probs = list(prediction.probabilities.values())[0]
         if len(probs)==1:
             probs = probs[0]
-        confidence = f"Confidence = {probs}"
-        confidence = html.P(confidence, className="card-text")
-        card_body.append(confidence)
+        confidence = html.Span("Confidence: ", className='card-subhead')
+        confidence = html.P([confidence, f"{probs}"], className="card-text")
+        confidence = dbc.ListGroupItem(confidence) 
+        card_list.insert(1, confidence)
+
+    card_list = dbc.ListGroup(card_list, className='card-list')
 
     # Table of raw features for card footer
     cols = [html.Th(col, className='sim-thead-th') for col in list(record.keys())]
@@ -270,15 +278,11 @@ def prediction_from_features(
     body = [html.Tbody(html.Tr(vals))]
     f_tbl = html.Table(head+body)
 
-    card_fut = [
-        html.P("Features", className="card-subhead"), f_tbl
-    ]
-
     card = dbc.Card(
         [
             # dbc.CardHeader(pred_id),
-            dbc.CardBody(card_body, className="card-bod"),
-            dbc.CardFooter(card_fut, className="card-fut"),
+            dbc.CardBody(card_list, className="card-bod"),  
+            dbc.CardFooter(f_tbl, className="card-fut"),
         ],
         className="sim-card"
     )
