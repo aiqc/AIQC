@@ -105,7 +105,8 @@ def df_setMetadata(dataframe:object, rename_columns:list=None, retype:object=Non
         # Accepts dict{'column_name':'dtype_str'}, string e.g. 'int64', or class `np.int64`.
         try:
             dataframe = dataframe.astype(retype)
-        except:
+        except BaseException as err:
+            print(err)
             print("\nYikes - Failed to apply the dtypes you specified to the data you provided.\n")
             raise
         """

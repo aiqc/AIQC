@@ -105,7 +105,7 @@ def list_datums(format:str=None):
             , location      = 'remote'
         ),
         dict(
-            name            = 'galaxy_morphology.tsv'
+            name            = 'galaxies.tsv'
             , dataset_type  = 'image'
             , analysis_type = 'classification_binary'
             , label         = 'morphology'

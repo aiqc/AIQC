@@ -376,16 +376,17 @@ class Dataset(BaseModel):
                 is_date = np.issubdtype(typ, np.datetime64)
                 if (is_numeric or is_date):
                     stats = dict(df[col].describe(datetime_is_numeric=True))
+                    del stats['count']
+                    # NaN causes JSON errors
+                    for stat,val in stats.items():
+                        if math.isnan(val):
+                            stats[stat] = None
                     stats_numeric[col] = stats
                 else:
                     stats = dict(
                         df[col].value_counts(normalize=True, dropna=False)
                     )
                     stats_categoric[col] = stats
-                
-            # Set empty dicts to None
-            if (not stats_numeric): stats_numeric=None
-            if (not stats_categoric): stats_categoric=None
             """
             - Switched to `fastparquet` because `pyarrow` doesn't preserve timedelta dtype
             https://towardsdatascience.com/stop-persisting-pandas-data-frames-in-csvs-f369a6440af5
