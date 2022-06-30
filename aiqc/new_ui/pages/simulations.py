@@ -136,8 +136,8 @@ def populate_features(model_id:int):
                     body = []
                     for name,val in stats.items():
                         tip = html.Tr([
-                            html.Td(f"{name}"),
-                            html.Td(f"{val:.3f}")
+                            html.Td(name),
+                            html.Td(val)
                         ])
                         body.append(tip)
                     body = [html.Tbody(body)]
@@ -163,7 +163,7 @@ def populate_features(model_id:int):
 
                 else:
                     uniques = stats_categoric[col]
-                    options = [dict(label=f"{name}:{val:.3f}", value=name) for name,val in uniques.items()]
+                    options = [dict(label=f"{name}:{val}", value=name) for name,val in uniques.items()]
                     value   = uniques[0]['label']
 
                     field = dbc.InputGroup(
@@ -226,34 +226,59 @@ def prediction_from_features(
         predictor      = model,
         input_datasets = [new_dset]
     )
+    
+    # Information for the card body
     pred_id   = f"Prediction ID: {prediction.id}"
-    # Access the array, then the first prediction
-    sim_val  = list(prediction.predictions.values())[0][0]
-    sim_val  = html.Span(f"{sim_val:.3f}", className='sim-val')
-    raw_pred = html.P(["Predicted Value = ", sim_val], className="card-text")
+    
+    queue = prediction.predictor.job.queue
+    label = queue.splitset.label
+    if (label is not None):
+        label = label.columns
+        if (len(label)==1): label=label[0]
+        label += " = "
+    else:
+        label = "Predicted Value = "
 
-    # Table of raw features
-    cols = [html.Th(col) for col in list(record.keys())]
-    vals = [html.Td(f"{val:.3f}") for val in list(record.values())]
-    head = [html.Thead(html.Tr(cols))]
+    # Access the array, then the first prediction
+    sim_val = list(prediction.predictions.values())[0][0]
+    sim_val = html.Span(sim_val, className='sim-val')
+    pred    = html.P([label, sim_val], className="card-text")
+    
+    model_id = f"Model ID: {model_id}"
+    model_id = html.P(model_id, className="card-text")
+
+    card_body = [
+        html.H4(pred_id, className="card-title"),
+        model_id,
+        pred
+    ]
+
+    analysis_typ = queue.algorithm.analysis_type
+    if ('classification' in analysis_typ):
+        # Access the array, then the first prediction
+        probs = list(prediction.probabilities.values())[0][0]
+        if len(probs)==1:
+            probs = probs[0]
+        confidence = f"Confidence = {probs}"
+        confidence = html.P(confidence, className="card-text")
+        card_body.append(confidence)
+
+    # Table of raw features for card footer
+    cols = [html.Th(col, className='sim-thead-th') for col in list(record.keys())]
+    vals = [html.Td(val, className='sim-td') for val in list(record.values())]
+    head = [html.Thead(html.Tr(cols, className='sim-thead-tr'), className='sim-thead')]
     body = [html.Tbody(html.Tr(vals))]
     f_tbl = html.Table(head+body)
+
+    card_fut = [
+        html.P("Features", className="card-subhead"), f_tbl
+    ]
 
     card = dbc.Card(
         [
             # dbc.CardHeader(pred_id),
-            dbc.CardBody(
-                [
-                    html.H4(pred_id, className="card-title"),
-                    raw_pred
-                ]
-            ),
-            dbc.CardFooter(
-                [
-                    html.P("Features", className="card-subhead"),
-                    f_tbl
-                ]
-            ),
+            dbc.CardBody(card_body, className="card-bod"),
+            dbc.CardFooter(card_fut, className="card-fut"),
         ],
         className="sim-card"
     )

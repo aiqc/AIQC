@@ -402,6 +402,14 @@ tr:last-child td {
     border-radius: 5px;
 }
 
+.card-bod {
+    padding:                    20px;
+}
+
+.card-fut {
+    padding:                    20px;
+}
+
 .card-title {
     font-size:                  18px;
     font-weight:                bold;
@@ -412,6 +420,27 @@ tr:last-child td {
     font-weight:                bold;   
 }
 
+.sim-thead {
+    color:                    #010911 !important;
+    font-size:                  14px !important;
+    font-weight:                bold !important;
+    text-align:                 center !important;
+}
+
+.sim-thead-tr {
+    border-bottom:                     1px solid #d5d5d5 !important
+}
+
+.sim-thead-th {
+    padding:                    5px 10px !important;
+}
+
+.sim-td {
+    color:                    #010911 !important;
+    font-size:                  13px !important;
+    text-align:                 center !important;
+    padding:                    5px 10px !important;
+}
 
 /* ======== MISC ======== */
 .header {
