@@ -42,16 +42,14 @@ app.layout = html.Div(
                     className='logo'
                 ),
                 # Links
-                html.Div(
-                    className='all-linx',
-                    id='all-linx'
-                ),         
+                html.Div(className='all-linx', id='all-linx'),
             ],
             className='navig'
         ),
         # Multi-page content
         page_container
-    ]
+    ],
+    className='app-layout'
 )
 
 """

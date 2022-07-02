@@ -18,47 +18,39 @@ refresh_seconds = 10*1000
 
 
 # Dash naturally wraps in `id=_pages_content`
-layout = html.Div(
+layout = dbc.Row(
     [
         dcc.Interval(
-            id="initial_load",
-            n_intervals=0,
-            max_intervals=-1, 
-            interval=refresh_seconds
+            id            = "initial_load",
+            n_intervals   = 0,
+            max_intervals = -1, 
+            interval      = refresh_seconds
         ),
-        dbc.Row(
+        dbc.Col(
             [
-                dbc.Col(
+                html.H4('Scenario', className='sim-title'),
+                dbc.InputGroup(
                     [
-                        html.H4('Scenario', className='sim-title'),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText("Model ID"),
-                                # Not a callback because it is the first inputable object.
-                                dbc.Select(id='pred_dropdown'),
-                            ],
-                            size="sm", className='ctrl_chart ctrl_big ctr'
-                        ),
-                        html.Br(),html.Br(),
-                        html.Div(id='sim-features'),
-                        # Can't get margin/padding bottom working
-                        html.Br(),html.Br(),
+                        dbc.InputGroupText("Model ID"),
+                        # Not a callback because it is the first inputable object.
+                        dbc.Select(id='pred_dropdown'),
                     ],
-                    width='3', align='center', className='sim-inputs'
+                    size="sm", className='ctrl_chart ctrl_big ctr'
                 ),
-                dbc.Col(
-                    [
-                        html.H4('Predictions', className='sim-title'),
-                        html.Div(id='sim-preds'),
-                        # Can't get margin/padding bottom working
-                        html.Br(),html.Br(),
-                    ],
-                    width='9', align='center', className='sim-outputs'
-                ),
+                html.Br(),
+                html.Div(id='scenario-btm'),
             ],
-            className='sim-pane'
-        )
-    ]
+            width='3', align='center', className='sim-inputs'
+        ),
+        dbc.Col(
+            [
+                html.H4('Predictions', className='sim-title'),
+                html.Div(id='sim-preds'),
+            ],
+            width='9', align='center', className='sim-outputs'
+        ),
+    ],
+    className='sim-pane'
 )
 
 
@@ -93,37 +85,25 @@ def refresh_predictors(n_intervals:int, model_id:int):
 
 
 @callback(
-    Output(component_id='sim-features', component_property='children'),
+    Output(component_id='scenario-btm', component_property='children'),
     Input(component_id='pred_dropdown', component_property='value')
 )
 def populate_features(model_id:int):
     if (model_id is None):
         msg   = "Select Model above"
-        alert = [dbc.Alert(msg, className='alert')]
+        alert = [html.Br(), dbc.Alert(msg, className='alert')]
         return alert
     
     model = Predictor.get_by_id(model_id)
     features = model.job.queue.splitset.features
-    
-    kids = [
-        dbc.InputGroup(
-            [
-                dbc.Button(
-                    "Simulate", outline=True, 
-                    n_clicks=0, id="sim_button",
-                    className='chart_button ctr',
-                ),
-            ],
-            size="md", className='ctrl_chart ctr'
-        ),
-        html.Br(),
-    ]
+
+    f_kids = []
     for f in features:
         typ = f.dataset.typ
         # Need to check the type, so don't capitalize yet.
         subtitle = f"Features: {typ.capitalize()}"
         subtitle = html.P(subtitle, className='sim-subtitle')
-        kids.append(subtitle)
+        f_kids.append(subtitle)
 
         if (typ=='tabular'):
             stats_numeric   = f.dataset.stats_numeric
@@ -191,7 +171,25 @@ def populate_features(model_id:int):
                         ],
                         size="sm", className='ctrl_chart ctrl_big ctr'
                     )
-                kids.append(field)
+                f_kids.append(field)
+    
+    kids = [
+        # Tried to put submit button below fields, but div heights tricky
+        html.Div(
+            dbc.InputGroup(
+                [
+                    dbc.Button(
+                        "Simulate", outline=True, 
+                        n_clicks=0, id="sim_button",
+                        className='chart_button ctr',
+                    ),
+                ],
+                size="md", className='ctrl_chart ctr'
+            ), 
+            className='sim-btn-block'
+        ),
+        html.Div(f_kids, className='sim-features')
+    ]
     return kids
 
 """
