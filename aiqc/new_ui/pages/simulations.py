@@ -9,6 +9,7 @@ import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 from uuid import uuid1
+from scipy.special import logit
 
 
 register_page(__name__)
@@ -283,6 +284,10 @@ def prediction_from_features(
             probs = [round(p,3) for p in probs]
             confidence = html.P([confidence, f"{probs}"], className="card-text")
         else:
+            # Plot sigmoid curve
+            y = probs
+            x = logit(probs)
+            ### Starts as an array?
             probs = round(probs,3)
             confidence = html.P([confidence, f"{probs:.3f}"], className="card-text")
 
@@ -297,6 +302,7 @@ def prediction_from_features(
     head = [html.Thead(html.Tr(cols, className='sim-thead-tr'), className='sim-thead')]
     body = [html.Tbody(html.Tr(vals))]
     f_tbl = html.Table(head+body)
+    f_tbl = html.Div(f_tbl, className='card-tbl-scroll')
 
     card = dbc.Card(
         [

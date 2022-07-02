@@ -336,17 +336,18 @@ tr:last-child td {
     font-family:                Abel;
 }
 
+/* overflow:auto hides scroll when content fits */
 .sim-inputs {
     height:                     100%;
     padding:                    30px;
-    overflow:                   scroll;
+    overflow-y:                   auto;
 }
 
 .sim-outputs {
     height:                     100%;
     padding:                    30px;
     background:               #ffffff15;
-    overflow:                   scroll;
+    overflow-y:                   auto;
 }
 
 .sim-subtitle {
@@ -409,9 +410,13 @@ tr:last-child td {
     padding:                    0px !important;
 }
 
+
 .card-fut {
     padding:                    20px;
-    overflow-x:                 scroll;
+}
+
+.card-tbl-scroll {
+    overflow-x:                 auto;
 }
 
 .card-head {
@@ -443,6 +448,8 @@ tr:last-child td {
     font-weight:                bold;   
 }
 
+
+
 .sim-thead {
     color:                    #010911 !important;
     font-size:                  14px !important;
@@ -451,7 +458,7 @@ tr:last-child td {
 }
 
 .sim-thead-tr {
-    border-bottom:                     1px solid #d5d5d5 !important
+    border-bottom:              1px solid #d5d5d5 !important
 }
 
 .sim-thead-th {
