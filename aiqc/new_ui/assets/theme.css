@@ -338,6 +338,7 @@ tr:last-child td {
 
 .sim-inputs {
     height:                     100%;
+    min-width:                  274px;
     padding:                    30px 30px 0px 30px;
 }
 
@@ -346,10 +347,6 @@ tr:last-child td {
     padding:                    30px;
     background:               #ffffff15;
     overflow-y:                 auto;
-}
-
-.scenario-top {
-    height:                     16%;
 }
 
 #scenario-btm {
@@ -400,10 +397,6 @@ tr:last-child td {
     color:                    #ffffff;
 }
 
-.sim-breaker {
-    margin:                     30px;
-}
-
 .sim-card {
     color:                    #393939;
     margin:                     30px;
@@ -425,13 +418,16 @@ tr:last-child td {
     padding:                    0px !important;
 }
 
-
 .card-fut {
     padding:                    20px;
 }
 
 .card-tbl-scroll {
     overflow-x:                 auto;
+}
+
+.card-chart {
+    height:                     150px;
 }
 
 .card-head {
@@ -441,26 +437,16 @@ tr:last-child td {
     margin-left:                9px;
 }
 
-.card-list {
-    border-radius:              10px 10px 0px 0px;
-}
-
-.list-group-item:last-child {
-    border-bottom: 0px;
+.card-row {
+    padding:                    20px;
 }
 
 .card-subhead {
     font-size:                  15px;
     font-weight:                bold;  
-    min-width:                  86px;
     display:                    inline-block;
     text-align:                 right;
     margin-right:               10px; 
-}
-
-.card-feat-subhead {
-    font-size:                  15px;
-    font-weight:                bold;   
 }
 
 .sim-thead {

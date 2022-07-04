@@ -352,23 +352,26 @@ These plots don't use the template because they are formatted for a light UI
 def confidence_binary(
     sigmoid_curve:object
     , point:object
+    , height:int
     , call_display:bool = True
 ):
     fig = px.line(
         sigmoid_curve
-        # , title      = f"Hypothesis Probability: {point['Probability'][0]*100:.1f}%"
+        , title      = f"<b>Probability</b>: {point['Probability'][0]*100:.1f}%"
         , x          = 'x'
         , range_x    = [-6, 6]
         , y          = 'y'
         , range_y    = [0, 1]
         , line_shape = 'spline'
     ).update_layout(
-        title_x      = 0.5
-        , title_y    = 0.82
+        title_x      = 0.04
+        , title_y    = 0.90
+        , margin     = dict(l=0, r=0, t=0, b=0)
+        , height     = height
         , xaxis      = dict(title=None, showticklabels=False)
         , yaxis      = dict(title=None, showticklabels=False)
         , hoverlabel = dict(font=dict(size=15))
-        , title      = dict(font=dict(family='Avenir'))
+        , title      = dict(font=dict(family='Avenir',size=16))
     ).update_traces(
         mode            = 'lines'
         , line          = dict(width=2, color='#004473')

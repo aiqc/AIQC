@@ -4576,7 +4576,13 @@ class Prediction(BaseModel):
             if (call_display==False): return figs
     
 
-    def plot_confidence(id:int, prediction_index:int=0, call_display:bool=True, split_name:str=None):###
+    def plot_confidence(
+        id:int
+        , prediction_index:int = 0
+        , height:int           = 150
+        , call_display:bool    = True
+        , split_name:str       = None
+    ):
         prediction    = Prediction.get_by_id(id)
         analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
 
@@ -4608,6 +4614,7 @@ class Prediction(BaseModel):
                 sigmoid_curve  = sigmoid_curve
                 , point        = point
                 , call_display = call_display
+                , height       = height
             )
         
         if (call_display==False): return fig

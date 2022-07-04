@@ -252,51 +252,37 @@ def prediction_from_features(
         label = ""
 
     # Access the array, then the first prediction
-    sim_val = list(prediction.predictions.values())[0][0]
-    sim_txt = f"{label} = {sim_val}"
-    sim_val = html.Span(sim_txt, className='sim-val')
-    pred    = html.P(["Prediction: ", sim_val], className="card-head")
-    pred    = dbc.ListGroupItem(pred)
-    
-    pred_id = html.Span("Prediction ID: ", className='card-subhead')
-    pred_id = html.P([pred_id, f"{prediction.id}"], className="card-text")
-    pred_id = dbc.ListGroupItem(pred_id) 
+    sim_val   = list(prediction.predictions.values())[0][0]
+    sim_txt   = f"{label} = {sim_val}"
+    sim_val   = html.Span(sim_txt, className='sim-val')
+    pred      = html.P([f"Prediction #{prediction.id}: ", sim_val], className="card-head")
+    pred      = dbc.Col(pred, width=9)
 
-    mod_id  = html.Span("Model ID: ", className='card-subhead')
-    mod_id  = html.P([mod_id, f"{model_id}"], className="card-text")
-    mod_id  = dbc.ListGroupItem(mod_id) 
+    mod_id    = html.Span("Model ID: ", className='card-subhead')
+    mod_id    = html.P([mod_id, f"{model_id}"], className="card-text")
+    mod_id    = dbc.Col(mod_id, width=3) 
 
-    card_list = [
-        pred,
-        pred_id,
-        mod_id,
-    ]
-    card_list = dbc.ListGroup(card_list, className='card-list')
-    card_list = dbc.Col(card_list)
-    card_row = [card_list]
+    card_row  = dbc.Row([pred,mod_id], className='card-row')
+    card_body = [card_row]
 
     analysis_typ = queue.algorithm.analysis_type
     if ('classification' in analysis_typ):
         fig = prediction.plot_confidence(call_display=False)
-        fig = dcc.Graph(figure=fig)
-        fig = dbc.Col(fig)
-        card_row.append(fig)
-    card_row = dbc.Row(card_row)
-
-    ### col widths
+        fig = dcc.Graph(figure=fig, className='card-chart')
+        card_body.append(fig)
 
     # Table of raw features for card footer
-    cols = [html.Th(col, className='sim-thead-th') for col in list(record.keys())]
-    vals = [html.Td(val, className='sim-td') for val in list(record.values())]
-    head = [html.Thead(html.Tr(cols, className='sim-thead-tr'), className='sim-thead')]
-    body = [html.Tbody(html.Tr(vals))]
+    cols  = [html.Th(col, className='sim-thead-th') for col in list(record.keys())]
+    vals  = [html.Td(val, className='sim-td') for val in list(record.values())]
+    head  = [html.Thead(html.Tr(cols, className='sim-thead-tr'), className='sim-thead')]
+    body  = [html.Tbody(html.Tr(vals))]
     f_tbl = html.Table(head+body)
     f_tbl = html.Div(f_tbl, className='card-tbl-scroll')
 
     card = dbc.Card(
         [
             # dbc.CardHeader(pred_id),
-            dbc.CardBody(card_row, className="card-bod"),  
+            dbc.CardBody(card_body, className="card-bod"),  
             dbc.CardFooter(f_tbl, className="card-fut"),
         ],
         className="sim-card"
