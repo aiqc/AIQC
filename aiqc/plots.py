@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
 from re import sub
+from scipy.special import expit, logit
 
 
 def set_dash_font(fig:object):
@@ -274,10 +275,10 @@ class Plot(object):
             , title = 'Receiver Operating Characteristic (ROC) Curves'
         )
         fig.update_layout(
-            legend_title = None
-            , template   = self.plot_template
-            , height     = 500
-            , xaxis      = dict(
+            template       = self.plot_template
+            , legend_title = None
+            , height       = 500
+            , xaxis        = dict(
                 title   = "False Positive Rate (FPR)"
                 , tick0 = 0.00
                 , range = [-0.025,1]
@@ -344,3 +345,61 @@ class Plot(object):
         else:
             fig = set_dash_font(fig)
             return fig
+
+"""
+These plots don't use the template because they are formatted for a light UI
+"""
+def confidence_binary(
+    sigmoid_curve:object
+    , point:object
+    , call_display:bool = True
+):
+    fig = px.line(
+        sigmoid_curve
+        # , title      = f"Hypothesis Probability: {point['Probability'][0]*100:.1f}%"
+        , x          = 'x'
+        , range_x    = [-6, 6]
+        , y          = 'y'
+        , range_y    = [0, 1]
+        , line_shape = 'spline'
+    ).update_layout(
+        title_x      = 0.5
+        , title_y    = 0.82
+        , xaxis      = dict(title=None, showticklabels=False)
+        , yaxis      = dict(title=None, showticklabels=False)
+        , hoverlabel = dict(font=dict(size=15))
+        , title      = dict(font=dict(family='Avenir'))
+    ).update_traces(
+        mode            = 'lines'
+        , line          = dict(width=2, color='#004473')
+        , hovertemplate = None
+        , hoverinfo     = 'skip'
+        
+    # Shade & divide the quadrants
+    ).add_hrect(
+        y0=0.5, y1=1.0, line_width=0, fillcolor="yellow", opacity=0.1 
+    ).add_shape(
+        type="rect", x0=0, x1=-6, y0=0.5, y1=1.0, 
+        fillcolor='white', line_color='white', opacity=0.7
+    ).add_shape(
+        type="rect", x0=0, x1=6, y0=0.5, y1=0, 
+        fillcolor='white', line_color='white', opacity=0.6
+    ).add_hline(
+        y=0.5, line_dash="dash", fillcolor='gray', opacity=0.7
+
+    # Plot the confidence point
+    ).add_traces(
+        list(
+            px.line(
+                point, x='Logit(Probability)', y='Probability',
+            ).update_traces(
+                mode     = 'markers'
+                , marker = dict(size=12,color='#004473',)
+            ).select_traces()
+        )
+    )
+    if (call_display==True):
+        fig.show()
+    else:
+        fig = set_dash_font(fig)
+        return fig

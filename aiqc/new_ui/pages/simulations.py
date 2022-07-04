@@ -262,37 +262,28 @@ def prediction_from_features(
     pred_id = html.P([pred_id, f"{prediction.id}"], className="card-text")
     pred_id = dbc.ListGroupItem(pred_id) 
 
-    mod_id = html.Span("Model ID: ", className='card-subhead')
-    mod_id = html.P([mod_id, f"{model_id}"], className="card-text")
-    mod_id = dbc.ListGroupItem(mod_id) 
+    mod_id  = html.Span("Model ID: ", className='card-subhead')
+    mod_id  = html.P([mod_id, f"{model_id}"], className="card-text")
+    mod_id  = dbc.ListGroupItem(mod_id) 
 
     card_list = [
         pred,
         pred_id,
         mod_id,
     ]
+    card_list = dbc.ListGroup(card_list, className='card-list')
+    card_list = dbc.Col(card_list)
+    card_row = [card_list]
 
     analysis_typ = queue.algorithm.analysis_type
     if ('classification' in analysis_typ):
-        # Access the array, then the first prediction
-        probs = list(prediction.probabilities.values())[0][0]
-        confidence = html.Span("Confidence: ", className='card-subhead')
-        # Regular floats not rounding well
-        if (probs.ndim==1):
-            probs = [round(p,3) for p in probs]
-            confidence = html.P([confidence, f"{probs}"], className="card-text")
-        else:
-            # Plot sigmoid curve
-            y = probs
-            x = logit(probs)
-            ### Starts as an array?
-            probs = round(probs,3)
-            confidence = html.P([confidence, f"{probs:.3f}"], className="card-text")
+        fig = prediction.plot_confidence(call_display=False)
+        fig = dcc.Graph(figure=fig)
+        fig = dbc.Col(fig)
+        card_row.append(fig)
+    card_row = dbc.Row(card_row)
 
-        confidence = dbc.ListGroupItem(confidence) 
-        card_list.insert(1, confidence)
-
-    card_list = dbc.ListGroup(card_list, className='card-list')
+    ### col widths
 
     # Table of raw features for card footer
     cols = [html.Th(col, className='sim-thead-th') for col in list(record.keys())]
@@ -305,7 +296,7 @@ def prediction_from_features(
     card = dbc.Card(
         [
             # dbc.CardHeader(pred_id),
-            dbc.CardBody(card_list, className="card-bod"),  
+            dbc.CardBody(card_row, className="card-bod"),  
             dbc.CardFooter(f_tbl, className="card-fut"),
         ],
         className="sim-card"

@@ -21,6 +21,7 @@ from .utils.wrangle import *
 from .utils.ingest import *
 from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
+from .plots import confidence_binary
 from . import utils
 # --- Python modules ---
 from os import path, remove, makedirs
@@ -34,6 +35,7 @@ from uuid import uuid1
 from itertools import product
 from pprint import pformat
 from scipy.stats import mode
+from scipy.special import expit, logit
 from h5py import File as h5_File
 from importlib import reload as imp_reload
 from textwrap import dedent
@@ -4573,6 +4575,44 @@ class Prediction(BaseModel):
                 if (call_display==False): figs.append(fig)
             if (call_display==False): return figs
     
+
+    def plot_confidence(id:int, prediction_index:int=0, call_display:bool=True, split_name:str=None):###
+        prediction    = Prediction.get_by_id(id)
+        analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
+
+        if ('classification' not in analysis_type):
+            msg = '\nYikes - Confidence is only available for classification analyses.\n'
+            raise Exception(msg)
+
+        probabilities = prediction.probabilities
+        if (split_name is None):
+            # Each inference makes its own Prediction and only has 1 key
+            split_name = list(probabilities.keys())[0]
+        # For a single sample
+        probability = probabilities[split_name][prediction_index]
+        
+        if ('classification_binary'):
+            # Sigmoid curve
+            x             = np.linspace(-6,6,13)
+            y             = expit(x)
+            xy            = np.array([x,y]).T
+            sigmoid_curve = pd.DataFrame(xy, columns=['x','y'])
+            # Single probability value
+            logt          = logit(probability)
+            probability   = round(probability,3)
+            logt          = round(logt,3)
+            point         = np.array([logt,probability]).reshape(1,2)
+            point         = pd.DataFrame(point, columns=['Logit(Probability)','Probability'])
+            # Plot the point on the curve
+            fig = confidence_binary(
+                sigmoid_curve  = sigmoid_curve
+                , point        = point
+                , call_display = call_display
+            )
+        
+        if (call_display==False): return fig
+
+
 
     def calc_featureImportance(id:int, permute_count:int):
         """
