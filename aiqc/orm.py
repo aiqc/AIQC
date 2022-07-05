@@ -21,7 +21,7 @@ from .utils.wrangle import *
 from .utils.ingest import *
 from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
-from .plots import confidence_binary
+from .plots import confidence_binary, confidence_multilabel
 from . import utils
 # --- Python modules ---
 from os import path, remove, makedirs
@@ -4584,7 +4584,9 @@ class Prediction(BaseModel):
         , split_name:str       = None
     ):
         prediction    = Prediction.get_by_id(id)
-        analysis_type = prediction.predictor.job.queue.algorithm.analysis_type
+        predictor     = prediction.predictor
+        analysis_type = predictor.job.queue.algorithm.analysis_type
+        labels        = predictor.get_label_names()
 
         if ('classification' not in analysis_type):
             msg = '\nYikes - Confidence is only available for classification analyses.\n'
@@ -4597,7 +4599,7 @@ class Prediction(BaseModel):
         # For a single sample
         probability = probabilities[split_name][prediction_index]
         
-        if ('classification_binary'):
+        if ('classification_binary' in analysis_type):
             # Sigmoid curve
             x             = np.linspace(-6,6,13)
             y             = expit(x)
@@ -4615,10 +4617,18 @@ class Prediction(BaseModel):
                 , point        = point
                 , call_display = call_display
                 , height       = height
+                , labels       = labels
             )
-        
+        elif ('classification_multi' in analysis_type):
+            probability         = list(probability)
+            label_probabilities = np.array([labels,probability]).T
+            label_probabilities = pd.DataFrame(label_probabilities, columns=['Labels','Probability'])
+            fig = confidence_multilabel(
+                label_probabilities = label_probabilities
+                , height            = height
+                , call_display      = call_display
+            )
         if (call_display==False): return fig
-
 
 
     def calc_featureImportance(id:int, permute_count:int):

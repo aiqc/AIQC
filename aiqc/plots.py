@@ -7,7 +7,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
 from re import sub
-from scipy.special import expit, logit
 
 
 def set_dash_font(fig:object):
@@ -353,11 +352,12 @@ def confidence_binary(
     sigmoid_curve:object
     , point:object
     , height:int
+    , labels:list
     , call_display:bool = True
 ):
     fig = px.line(
         sigmoid_curve
-        , title      = f"<b>Probability</b>: {point['Probability'][0]*100:.1f}%"
+        , title      = f"<b>Probability of {labels[1]}</b>: {point['Probability'][0]*100:.1f}%"
         , x          = 'x'
         , range_x    = [-6, 6]
         , y          = 'y'
@@ -371,7 +371,7 @@ def confidence_binary(
         , xaxis      = dict(title=None, showticklabels=False)
         , yaxis      = dict(title=None, showticklabels=False)
         , hoverlabel = dict(font=dict(size=15))
-        , title      = dict(font=dict(family='Avenir',size=16))
+        , title      = dict(font=dict(family='Avenir',size=15))
     ).update_traces(
         mode            = 'lines'
         , line          = dict(width=2, color='#004473')
@@ -380,25 +380,98 @@ def confidence_binary(
         
     # Shade & divide the quadrants
     ).add_hrect(
-        y0=0.5, y1=1.0, line_width=0, fillcolor="yellow", opacity=0.1 
+        y0=0.5
+        , y1=1.0
+        , line_width=0
+        , fillcolor="yellow"
+        , opacity=0.1 
     ).add_shape(
-        type="rect", x0=0, x1=-6, y0=0.5, y1=1.0, 
-        fillcolor='white', line_color='white', opacity=0.7
+        type         = "rect"
+        , x0         = 0
+        , x1         = -6
+        , y0         = 0.5
+        , y1         = 1.0
+        , fillcolor  = 'white'
+        , line_color = 'white'
+        , opacity    = 0.7
     ).add_shape(
-        type="rect", x0=0, x1=6, y0=0.5, y1=0, 
-        fillcolor='white', line_color='white', opacity=0.6
+        type         = "rect"
+        , x0         = 0
+        , x1         = 6
+        , y0         = 0.5
+        , y1         = 0
+        , fillcolor  = 'white'
+        , line_color = 'white'
+        , opacity    = 0.6
     ).add_hline(
-        y=0.5, line_dash="dash", fillcolor='gray', opacity=0.7
+        y           = 0.5
+        , line_dash = "dash"
+        , fillcolor = 'gray'
+        , opacity   = 0.7
 
     # Plot the confidence point
     ).add_traces(
         list(
             px.line(
-                point, x='Logit(Probability)', y='Probability',
+                point
+                , x = 'Logit(Probability)'
+                , y = 'Probability',
             ).update_traces(
                 mode     = 'markers'
-                , marker = dict(size=12,color='#004473',)
+                , marker = dict(size=12, color='#004473')
             ).select_traces()
+        )
+    
+    # Label the quadrants
+    ).add_annotation(
+        text        = f"{labels[0]}"
+        , xref      = "paper"
+        , yref      = "paper"
+        , x         = 0.2
+        , y         = 0.23
+        , showarrow = False
+        , font      = dict(size=18, color='#09243d')
+    ).add_annotation(
+        text        = f"{labels[1]}"
+        , xref      = "paper"
+        , yref      = "paper"
+        , x         = 0.7
+        , y         = 0.77
+        , showarrow = False
+        , font      = dict(size=18, color='#05300c')
+    )
+    if (call_display==True):
+        fig.show()
+    else:
+        fig = set_dash_font(fig)
+        return fig
+
+
+def confidence_multilabel(
+    label_probabilities:object
+    , height:int
+    , call_display:bool = True
+):
+    fig = px.pie(
+        label_probabilities
+        , values                  = 'Probability'
+        , names                   = 'Labels'
+        , hole                    = .7
+        , title                   = f"Label Probabilities"
+        , color_discrete_sequence = px.colors.qualitative.Pastel
+    ).update_traces(
+        textposition = 'outside'
+    ).update_layout(
+        legend_title_text = "Labels:"
+        , height          = height
+        , margin          = dict(l=0, r=0, t=0, b=0)
+        , title           = dict(font=dict(size=15))
+        , legend          = dict(
+            yanchor   = "top"
+            , y       = 1
+            , xanchor = "right"
+            , x       = 1
+            , title   = dict(font = dict(size=15))
         )
     )
     if (call_display==True):

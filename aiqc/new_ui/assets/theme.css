@@ -399,7 +399,7 @@ tr:last-child td {
 
 .sim-card {
     color:                    #393939;
-    margin:                     30px;
+    margin:                     30px 30px 45px 30px;
     border:                     0px;
     border-radius:              10px;
     box-shadow:                 4px 4px 4px #242424;
@@ -424,6 +424,12 @@ tr:last-child td {
 
 .card-tbl-scroll {
     overflow-x:                 auto;
+}
+
+.card-tbl {
+    width:                      fit-content;
+    margin-left:                auto;
+    margin-right:               auto;   
 }
 
 .card-chart {

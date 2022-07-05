@@ -277,7 +277,12 @@ def prediction_from_features(
     head  = [html.Thead(html.Tr(cols, className='sim-thead-tr'), className='sim-thead')]
     body  = [html.Tbody(html.Tr(vals))]
     f_tbl = html.Table(head+body)
-    f_tbl = html.Div(f_tbl, className='card-tbl-scroll')
+    f_tbl = html.Div(
+        html.Div(
+            f_tbl, className='card-tbl'
+        ),
+        className='card-tbl-scroll'
+    )
 
     card = dbc.Card(
         [
