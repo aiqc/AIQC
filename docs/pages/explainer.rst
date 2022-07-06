@@ -763,7 +763,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-    Have a look at the other <a href='../notebooks/visualization.html' target="_blank">visualizations & metrics</a>
+    Have a look at the other <a href='../notebooks/evaluation.html' target="_blank">visualizations & metrics</a>
      provided by AIQC.
   </p>
 

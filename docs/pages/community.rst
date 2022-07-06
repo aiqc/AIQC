@@ -19,7 +19,7 @@ Open Source
 Purpose
 *******
 
-The AIQC framework brings rapid & reproducible deep learning to open science. We strive to empower researchers with a free tool that is easy to integrate into their experiments. You can `learn more about our mission here <https://aiqc.readthedocs.io/en/latest/pages/mission.html>`__.
+The AIQC framework brings rapid & reproducible deep learning to open science. We strive to empower researchers with a free tool that is easy to integrate into their experiments. You can `learn more about our mission here <https://docs.aiqc.io/pages/mission.html>`__.
 
 Our initial goal is to build a guided framework for each major type of data (tabular, image, sequence, text, graph) and analysis (classify, quantify, generate). 
 
@@ -37,7 +37,7 @@ How can I get involved?
 
   + If you want to join the community calls, then be sure to include your timezone and email in your introduction.
 
-- Jump into the conversation in the `Slack group <https://aiqc.readthedocs.io/en/latest/pages/links.html>`__.
+- Jump into the conversation in the `Slack group <https://docs.aiqc.io/pages/links.html>`__.
 
 ----
 
@@ -63,7 +63,7 @@ How can I contribute?
 Setting up dev environment
 **************************
 
-Have a read through the `Installation section of the documentation <https://aiqc.readthedocs.io/en/latest/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
+Have a read through the `Installation section of the documentation <https://docs.aiqc.io/notebooks/installation.html>`__ for information about OS, Python versions, and optional Jupyter extensions.
 
 Here is how you can clone the source code, install dependencies, and environment:
 

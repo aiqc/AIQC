@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="e742939f234745509e7530b96411da91 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="5abba3c07e844c75859dd927937f3965 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -333,7 +333,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="e742939f234745509e7530b96411da91" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="5abba3c07e844c75859dd927937f3965" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -1761,7 +1761,7 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 </section>
 <section id="5.-Encode">
 <h2>5. Encode<a class="headerlink" href="#5.-Encode" title="Permalink to this headline"></a></h2>
-<p>Transform data into numerical format that is close to zero. Reference <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/explainer.html">Encoding</a> for more information.</p>
+<p>Transform data into numerical format that is close to zero. Reference <a class="reference external" href="https://docs.aiqc.io/pages/explainer.html">Encoding</a> for more information.</p>
 <p>There are two phases of encoding: 1. <code class="docutils literal notranslate"><span class="pre">fit</span></code> on train - where the encoder learns about the values of the samples made available to it. Ideally, you only want to <code class="docutils literal notranslate"><span class="pre">fit</span></code> aka learn from your training split so that you are not <a class="reference external" href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4">leaking</a> information from your validation and test spits into your model! However, categorical encoders are always fit on the entire dataset because they are not prone to leakage and any weights tied to empty OHE
 inputs will zero-out. 2. <code class="docutils literal notranslate"><span class="pre">transform</span></code> each split/fold</p>
 <blockquote>
@@ -2230,7 +2230,7 @@ to do the reshaping once up front.</p>
 </section>
 <section id="8.-Splitset">
 <h2>8. Splitset<a class="headerlink" href="#8.-Splitset" title="Permalink to this headline"></a></h2>
-<p>Used for sample stratification. Reference <a class="reference external" href="https://aiqc.readthedocs.io/en/latest/pages/explainer.html">Stratification</a> section.</p>
+<p>Used for sample stratification. Reference <a class="reference external" href="https://docs.aiqc.io/pages/explainer.html">Stratification</a> section.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 50%" />
