@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="5abba3c07e844c75859dd927937f3965 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="db0c4a8dac7c4ff0b5d0dcd5e4b5cda3 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -333,7 +333,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="5abba3c07e844c75859dd927937f3965" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="db0c4a8dac7c4ff0b5d0dcd5e4b5cda3" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -808,7 +808,7 @@ False.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Users can ingest 4D data using either: - <a class="reference external" href="pillow.readthedocs.io/en/stable/handbook/image-file-formats.html">The Pillow library, which supports various formats</a> - Or NumPy arrays as a simple alternative</p>
+<p>Users can ingest 4D data using either: - <a class="reference external" href="https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html">The Pillow library, which supports various formats</a> - Or NumPy arrays as a simple alternative</p>
 <blockquote>
 <div><p>Image datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
 </div></blockquote>
@@ -2715,7 +2715,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 </table>
 <hr class="docutils" />
 <p><strong>``history`` Metrics</strong></p>
-<p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="visualization.html">visualization</a> section.</p>
+<p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="evaluation.html">evaluation</a> section.</p>
 <ul class="simple">
 <li><p><em>Keras</em>: any <code class="docutils literal notranslate"><span class="pre">metrics=[]</span></code> specified are automatically added to the <code class="docutils literal notranslate"><span class="pre">History</span></code> callback object.</p></li>
 <li><p><em>PyTorch</em>: if you use <code class="docutils literal notranslate"><span class="pre">fit</span></code> seen above, then you don’t need to worry about this. Users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="gallery/pytorch/multi_class.html">examples</a>.</p></li>
