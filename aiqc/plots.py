@@ -457,14 +457,16 @@ def confidence_multilabel(
         , values                  = 'Probability'
         , names                   = 'Labels'
         , hole                    = .7
-        , title                   = f"Label Probabilities"
+        , title                   = f"<b>Probabilities:</b>"
         , color_discrete_sequence = px.colors.qualitative.Pastel
     ).update_traces(
         textposition = 'outside'
     ).update_layout(
         legend_title_text = "Labels:"
         , height          = height
-        , margin          = dict(l=0, r=0, t=0, b=0)
+        , title_x         = 0.2
+        , title_y         = 0.7
+        , margin          = dict(l=0, r=0, t=15, b=15)
         , title           = dict(font=dict(size=15))
         , legend          = dict(
             yanchor   = "top"

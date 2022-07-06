@@ -251,9 +251,14 @@ def prediction_from_features(
     else:
         label = ""
 
+    analysis_typ = queue.algorithm.analysis_type
     # Access the array, then the first prediction
     sim_val   = list(prediction.predictions.values())[0][0]
-    sim_txt   = f"{label} = {sim_val}"
+    if ('regression' in analysis_typ):    
+        sim_txt = f"{label} = {sim_val:.3f}"
+    else:
+        sim_txt = f"{label} = {sim_val:}"
+
     sim_val   = html.Span(sim_txt, className='sim-val')
     pred      = html.P([f"Prediction #{prediction.id}: ", sim_val], className="card-head")
     pred      = dbc.Col(pred, width=9)
@@ -265,15 +270,17 @@ def prediction_from_features(
     card_row  = dbc.Row([pred,mod_id], className='card-row')
     card_body = [card_row]
 
-    analysis_typ = queue.algorithm.analysis_type
     if ('classification' in analysis_typ):
         fig = prediction.plot_confidence(call_display=False)
         fig = dcc.Graph(figure=fig, className='card-chart')
         card_body.append(fig)
 
     # Table of raw features for card footer
-    cols  = [html.Th(col, className='sim-thead-th') for col in list(record.keys())]
-    vals  = [html.Td(val, className='sim-td') for val in list(record.values())]
+    cols  = list(record.keys())
+    cols  = [html.Th(col, className='sim-thead-th') for col in cols]
+    vals  = list(record.values())
+    vals  = [round(val,3) if isinstance(val,float) else val for val in vals]
+    vals  = [html.Td(val, className='sim-td') for val in vals]
     head  = [html.Thead(html.Tr(cols, className='sim-thead-tr'), className='sim-thead')]
     body  = [html.Tbody(html.Tr(vals))]
     f_tbl = html.Table(head+body)
