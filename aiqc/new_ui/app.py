@@ -84,7 +84,5 @@ def fetch_styledlinks(pathname:str):
         linx.append(linx_box)
     return linx
 
-
-
-if __name__ == '__main__':
+if (__name__ == '__main__'):
     app.run_server(debug=True, port='9992')

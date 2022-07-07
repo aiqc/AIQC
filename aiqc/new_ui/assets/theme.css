@@ -477,6 +477,34 @@ tr:last-child td {
     padding:                    5px 10px !important;
 }
 
+.pred_star {
+    color:                      #010911;
+    text-decoration:            none;
+    font-size:                  22px;
+    font-weight:                lighter;
+    background:                 none !important;
+    border:                     0px !important;
+    padding:                    0px 5px 7px 0px !important;
+}
+
+.pred_star:focus {
+    color:                      #010911 !important;
+    box-shadow:                 none !important;
+}
+
+.pred_star:active {
+    color:                      #010911 !important;
+}
+
+.pred_star:hover {
+    color:                    #d0a318 !important;
+    border:                     0px !important;
+}
+
+.pred_star:visited {
+    color:                    #d0a318 !important;
+}
+
 /* ======== MISC ======== */
 .header {
     color:                    #ffda67;

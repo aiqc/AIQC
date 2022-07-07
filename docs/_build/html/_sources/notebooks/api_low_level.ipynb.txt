@@ -4241,7 +4241,7 @@
     "--- | --- | ---\n",
     "**predictions** | PickleField | Decoded predictions ndarray for per split/ fold/ inference\n",
     "**permute_count** | IntegerField | The number of times this feature importance permuted each column\n",
-    "**feature_importance** | JSONField | Importance of each column. Only calculated for training split/fold\n",
+    "**feature_importance** | JSONField | Importance of each column. Only calculated for training split/fold. Schema: `dict(str(feature.id)=dict(median=float,loss_impacts=list(float)))`\n",
     "**probabilities** | PickleField | Prediction probabilities per split/ fold. `None` for regression.\n",
     "**metrics** | PickleField | Statistics for each split/fold that vary based on the analysis_type.\n",
     "**metrics_aggregate** | PickleField | Contains the average, median, standard deviation, minimum, and maximum for each statistic across all splits/folds.\n",

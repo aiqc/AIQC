@@ -1,8 +1,8 @@
 # Local modules
-from aiqc.orm import Dataset, Predictor
+from aiqc.orm import Dataset, Predictor, Prediction
 from aiqc import mlops
 # UI modules
-from dash import register_page, html, dcc, callback, ALL
+from dash import register_page, html, dcc, callback, ALL, MATCH
 from dash.dependencies import Output, Input, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
@@ -38,14 +38,26 @@ layout = dbc.Row(
                     size="sm", className='ctrl_chart ctrl_big ctr'
                 ),
                 html.Br(),
-                html.Div(id='scenario-btm'),
+                html.Div(
+                    [html.Br(), dbc.Alert("Select model above", className='alert')],
+                    id='scenario-btm'
+                ),
             ],
             width='3', align='center', className='sim-inputs'
         ),
         dbc.Col(
             [
                 html.H4('Predictions', className='sim-title'),
-                html.Div(id='sim-preds'),
+                html.Div(
+                    [
+                        html.Br(),
+                        dbc.Alert(
+                            "No predictions have been made yet. To begin, select a model on the left.",
+                            className='alert'
+                        ),
+                    ],
+                    id='sim-preds'
+                ),
             ],
             width='9', align='center', className='sim-outputs'
         ),
@@ -89,11 +101,7 @@ def refresh_predictors(n_intervals:int, model_id:int):
     Input(component_id='pred_dropdown', component_property='value')
 )
 def populate_features(model_id:int):
-    if (model_id is None):
-        msg   = "Select Model above"
-        alert = [html.Br(), dbc.Alert(msg, className='alert')]
-        return alert
-    
+    if (model_id is None): raise PreventUpdate
     model = Predictor.get_by_id(model_id)
     features = model.job.queue.splitset.features
 
@@ -109,11 +117,21 @@ def populate_features(model_id:int):
             stats_numeric   = f.dataset.stats_numeric
             stats_categoric = f.dataset.stats_categoric
 
-            f_typs = f.get_dtypes()
-            for col, typ in f_typs.items():
+            # Ideally we want to show features in rank order of importance
+            importance = model.predictions[0].feature_importance
+            f_typs     = f.get_dtypes()
+            if (importance is not None):
+                imp_df       = model.predictions[0].importance_df(feature_id=f.id)
+                ranked_feats = list(imp_df['Feature'])
+            else:
+                ranked_feats = list(f_typs.keys())
+            
+            for col in ranked_feats:
+                typ        = f_typs[col]
                 is_numeric = np.issubdtype(typ, np.number)
                 is_date    = np.issubdtype(typ, np.datetime64)
                 
+                # Assemble the feature metadata tooltip
                 if (is_numeric or is_date):
                     head = [
                         html.Thead(
@@ -125,18 +143,26 @@ def populate_features(model_id:int):
                             )
                         ),
                     ]
-                    
+                    tbod = []
+                    # Feature importance metadata
+                    if (importance is not None):
+                        imp = float(imp_df[imp_df['Feature']==col]['Median'])
+                        tip = html.Tr([
+                            html.Td('importance'),
+                            html.Td(f"{imp:.3f}")
+                        ])
+                        tbod.append(tip)
+                    # Feature distribution metadata
                     stats = stats_numeric[col]
-                    body = []
                     for name,val in stats.items():
                         tip = html.Tr([
                             html.Td(name),
                             html.Td(f"{val:.3f}")
                         ])
-                        body.append(tip)
-                    body = [html.Tbody(body)]
+                        tbod.append(tip)
+                    tbod = [html.Tbody(tbod)]
                     # Don't use comma separated list
-                    tips = dbc.Table(head + body)
+                    tips = dbc.Table(head + tbod)
                     
                     uid  = str(uuid1())
                     field = html.Div(
@@ -195,6 +221,7 @@ def populate_features(model_id:int):
 """
 Need both the value and id column name to construct df. 
 id is created before value, and value is dynamic.
+dash.plotly.com/pattern-matching-callbacks
 """
 @callback(
     Output('sim-preds', 'children'),
@@ -214,8 +241,6 @@ def prediction_from_features(
     , preds:list
 ):
     if (n_clicks==0): raise PreventUpdate
-    ### State needs the feature.id for accessing dataset
-
     # Construct records from feature fields
     record = {}
     for e, val in enumerate(field_values):
@@ -259,8 +284,16 @@ def prediction_from_features(
     else:
         sim_txt = f"{label} = {sim_val:}"
 
+    pred_id = prediction.id
+    starred = prediction.is_starred
+    if (starred==False):
+        star = '☆'
+    else:
+        star = '★'
+    star = dbc.Button(star,id={'role':'pred_star','pred_id':pred_id}, className='pred_star', color='link')###
+
     sim_val   = html.Span(sim_txt, className='sim-val')
-    pred      = html.P([f"Prediction #{prediction.id}: ", sim_val], className="card-head")
+    pred      = html.P([star, f"Prediction #{prediction.id}: ", sim_val], className="card-head")
     pred      = dbc.Col(pred, width=9)
 
     mod_id    = html.Span("Model ID: ", className='card-subhead')
@@ -293,12 +326,31 @@ def prediction_from_features(
 
     card = dbc.Card(
         [
-            # dbc.CardHeader(pred_id),
             dbc.CardBody(card_body, className="card-bod"),  
             dbc.CardFooter(f_tbl, className="card-fut"),
         ],
         className="sim-card"
     )
-    if (preds is None): preds=[]
+    # Overwrite null condition
+    if (n_clicks==1): preds=[]
     preds.insert(0,card)
     return preds
+
+
+@callback(
+    Output({'role':'pred_star', 'pred_id': MATCH}, 'children'),
+    Input({'role':'pred_star', 'pred_id': MATCH}, 'n_clicks'),
+    [
+        State({'role':'pred_star', 'pred_id': MATCH}, 'children'),
+        State({'role':'pred_star', 'pred_id': MATCH}, 'id'),
+    ]
+)
+def flip_pred_star(n_clicks, star, id):
+    if (n_clicks is None):
+        raise PreventUpdate
+    if (star=='☆'):
+        star = '★'
+    else:
+        star = '☆'
+    Prediction.get_by_id(id['pred_id']).flip_star()
+    return star

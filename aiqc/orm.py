@@ -4531,8 +4531,8 @@ class Prediction(BaseModel):
         # Forcing `top_n` so that it doesn't load a billion features in the UI. 
         # `top_n` Silently returns all features if `top_n` > features.
         prediction         = Prediction.get_by_id(id)
+        permute_count      = prediction.permute_count
         feature_importance = prediction.feature_importance
-        permute_count = prediction.permute_count
         if (feature_importance is None):
             msg = "\nYikes - Feature importance was not originally calculated for this analysis.\n"
             raise Exception(msg)
@@ -4540,12 +4540,13 @@ class Prediction(BaseModel):
             # Remember the featureset may contain multiple Features.
             figs = []
             for feature_id, feature_cols in feature_importance.items():
+                # We want `dict(feautureName=[list of loss_impacts])` sorted by median for box plot
                 medians = [v['median'] for k,v in feature_cols.items()]
                 loss_impacts = [v['loss_impacts'] for k,v in feature_cols.items()]
                 # Sort lists together using 1st list as index = stackoverflow.com/a/9764364/5739514
                 medians, feature_cols, loss_impacts = (list(t) for t in zip(*sorted(
                     zip(medians, feature_cols, loss_impacts),
-                    reverse=True				
+                    reverse=True
                 )))
                 
                 if (top_n is not None):
@@ -4781,3 +4782,26 @@ class Prediction(BaseModel):
         prediction.feature_importance = feature_importance
         prediction.permute_count = permute_count
         prediction.save()
+    
+
+    def importance_df(id:int, top_n:int=None, feature_id:int=None):
+        importance = Prediction.get_by_id(id).feature_importance
+        if (importance is None):
+            msg = "\nYikes - Feature importance was not originally calculated for this analysis.\n"
+            raise Exception(msg)
+        else:
+            records = []
+            for f_id, feature_cols in importance.items():
+                for k,v in feature_cols.items():
+                    record = dict(FeatureID=f_id, Feature=k,Median=v['median']) 
+                    records.append(record)
+            df = pd.DataFrame.from_records(records).sort_values('Median', ascending=False)
+            if (feature_id is not None):
+                mask = df["FeatureID"]==str(feature_id)
+                df   = df[mask]
+            if (df.empty):
+                msg = "\nYikes - The dataframe that you returned is empty.\n"
+                raise Exception(msg)
+            if (top_n is not None):
+                df = df.head(top_n)
+            return df
