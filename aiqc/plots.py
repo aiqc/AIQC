@@ -464,7 +464,7 @@ def confidence_multi(
     ).update_layout(
         legend_title_text = "Labels:"
         , height          = height
-        , title_x         = 0.2
+        , title_x         = 0.1
         , title_y         = 0.7
         , margin          = dict(l=0, r=0, t=15, b=15)
         , title           = dict(font=dict(size=15))

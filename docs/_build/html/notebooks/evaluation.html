@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/evaluation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="193ef55212e3465682fc287362ab1b4f Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. All Analyses Loss is every neural network’s measure of overall..." />
+  <meta property="og:description" content="ae1db22a3b514e89b7e43c43f6bc5791 Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. All Analyses Loss is every neural network’s measure of overall..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -242,6 +242,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#Queue-Metrics">Queue Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Job-Visualization">Job Visualization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Job-Metrics">Job Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Prediction-Visualization">Prediction Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Prediction-Metrics">Prediction Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Regression">Regression</a><ul>
@@ -578,7 +580,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Evaluation">
 <h1>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h1>
-<p><img alt="193ef55212e3465682fc287362ab1b4f" class="banner-photo" src="../_images/plots.png" /></p>
+<p><img alt="ae1db22a3b514e89b7e43c43f6bc5791" class="banner-photo" src="../_images/plots.png" /></p>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
 <p>Every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
@@ -602,15 +604,15 @@ div.rendered_html tbody tr:hover {
 <p>Although <code class="docutils literal notranslate"><span class="pre">'classification_multi'</span></code> and <code class="docutils literal notranslate"><span class="pre">'classification_binary'</span></code> share the same metrics and plots, they go about producing these artifacts differently: e.g. ROC curves <code class="docutils literal notranslate"><span class="pre">roc_multi_class=None</span></code> vs <code class="docutils literal notranslate"><span class="pre">roc_multi_class='ovr'</span></code>.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Metrics</strong></p></td>
-<td><p>accuracy, f1, roc_auc, precision, recall</p></td>
+<td><p>accuracy, f1, roc_auc, precision, recall, probabilities</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Plots</strong></p></td>
-<td><p>ROC-AUC, precision-recall, confusion matrix</p></td>
+<td><p>ROC-AUC, precision-recall, confusion matrix, sigmoid/ pie probabilities</p></td>
 </tr>
 </tbody>
 </table>
@@ -1044,6 +1046,44 @@ dict_keys([&#39;confusion_matrix&#39;, &#39;roc_curve&#39;, &#39;precision_recal
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 dict_keys([&#39;loss&#39;, &#39;accuracy&#39;, &#39;val_loss&#39;, &#39;val_accuracy&#39;])
+</pre></div></div>
+</div>
+</section>
+<section id="Prediction-Visualization">
+<h3>Prediction Visualization<a class="headerlink" href="#Prediction-Visualization" title="Permalink to this headline"></a></h3>
+<p><strong>Multi-Label Classification Probabilities</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_confidence</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<img alt="pie" src="../_images/probability_multi.png" />
+<p><strong>Binary Classification Probabilities</strong></p>
+<p>Also served by <code class="docutils literal notranslate"><span class="pre">plot_confidence()</span></code> for binary models.</p>
+<img alt="sigmoid" src="../_images/probability_sigmoid.png" />
+</section>
+<section id="Prediction-Metrics">
+<h3>Prediction Metrics<a class="headerlink" href="#Prediction-Metrics" title="Permalink to this headline"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">probabilities</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.98889786, 0.0101095 , 0.00099256], dtype=float32)
 </pre></div></div>
 </div>
 <hr class="docutils" />
