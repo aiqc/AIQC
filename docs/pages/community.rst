@@ -5,8 +5,6 @@ Open Source
 ..
   Without this comment, `make html` throws warning about page beginning w horizontal line below.
 
-----
-
 .. image:: ../_static/images/pages/celebrate_circle.png
   :width: 100%
   :align: center

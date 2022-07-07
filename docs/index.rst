@@ -15,8 +15,8 @@
 
   notebooks/api_high_level
   notebooks/api_low_level
-  notebooks/evaluation
   notebooks/datasets
+  notebooks/evaluation
 
 
 .. toctree::
@@ -159,7 +159,7 @@
 
   </br></br></br></br></br></br></br>
   <center>
-    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with structured <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a></div>
+    <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with structured <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">pipelines</a></div>
   </center>
   </br></br>
 
@@ -300,9 +300,10 @@ AIQC
   <div style="background-image: linear-gradient(#ffffff, #122536);">
     </br></br></br></br></br></br></br></br>
     <center>
-      <img src="_static/images/web/setup.gif" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
+      <img src="_static/images/dashboard/sensitivity.gif" alt="sensitivity" width="91%" style="display:block;">
       </br></br>
-      <div class="headerz-dark" style="line-height:170%;"><span class="goldz-dark">Zero setup</span> metastore, dataset registry, & experiment tracker</div>
+      
+      <div class="headerz-dark" style="line-height:170%;">Conduct <span class="goldz-dark">what-if</span> analysis to simulate virtual outcomes</div>
       <br/>
     </center>
     </br>

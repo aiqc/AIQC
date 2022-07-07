@@ -87,7 +87,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/dashboard.html">Dashboards</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/dashboard.html">UI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/dashboard.html#What-If-Analysis">What-If Analysis</a></li>
@@ -98,7 +98,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/api_high_level.html">High-Level API</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/api_high_level.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_high_level.html#Declarative">Declarative</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_high_level.html#1.-Pipeline">1. <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_high_level.html#1a.-Input">1a. <code class="docutils literal notranslate"><span class="pre">Input</span></code></a><ul>
@@ -123,8 +123,8 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_high_level.html#3.-Inference">3. <code class="docutils literal notranslate"><span class="pre">Inference</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/api_low_level.html">Low-Level API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/api_low_level.html">ORM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#Object-Relational-Model">Object-Relational Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#0.-BaseModel">0. BaseModel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#0a.-Methods">0a. Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="notebooks/api_low_level.html#0b.-Attributes">0b. Attributes</a></li>
@@ -223,6 +223,14 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/api_low_level.html#Evaluation">Evaluation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Alternative-Sources">Alternative Sources</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/evaluation.html">Evaluation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/evaluation.html#Overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/evaluation.html#Prerequisites">Prerequisites</a></li>
@@ -240,14 +248,6 @@
 <li class="toctree-l3"><a class="reference internal" href="notebooks/evaluation.html#id4">Job Metrics</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/datasets.html">Datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Remote-Data">Remote Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/datasets.html#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 </ul>
@@ -446,7 +446,7 @@
 
 </br></br></br></br></br></br></br>
 <center>
-  <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with structured <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">workflows</a></div>
+  <div class="headerz-light">Write <span class="goldz-light">90% less glue-code</span> with structured <a class="linx-light" href='pages/gallery.html' style="text-decoration: underline;">pipelines</a></div>
 </center>
 </br></br>
 
@@ -577,9 +577,10 @@
 <div style="background-image: linear-gradient(#ffffff, #122536);">
   </br></br></br></br></br></br></br></br>
   <center>
-    <img src="_static/images/web/setup.gif" alt="setup" width="65%" style="display:block; border: lightgray solid 1px;">
+    <img src="_static/images/dashboard/sensitivity.gif" alt="sensitivity" width="91%" style="display:block;">
     </br></br>
-    <div class="headerz-dark" style="line-height:170%;"><span class="goldz-dark">Zero setup</span> metastore, dataset registry, & experiment tracker</div>
+
+    <div class="headerz-dark" style="line-height:170%;">Conduct <span class="goldz-dark">what-if</span> analysis to simulate virtual outcomes</div>
     <br/>
   </center>
   </br>

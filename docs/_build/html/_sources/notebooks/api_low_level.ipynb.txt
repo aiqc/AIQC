@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Low-Level API"
+    "# ORM"
    ]
   },
   {
@@ -18,7 +18,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Object-Relational Model (ORM)"
+    "## Object-Relational Model"
    ]
   },
   {
@@ -2694,7 +2694,7 @@
     "**cache_hot** | BooleanField | If the samples are currently stored in the cache\n",
     "**samples** | JSONField | The bins that splits have been stratified into `dict(split=[sample_indices])`\n",
     "**sizes** | JSONField | Human-readable sizes of the splits `dict(split=dict(percent=float,count=int))`\n",
-    "**supervision** | CharField | Logical flag indicating if this Splitset has a Label.\n",
+    "**supervision** | CharField | Either \"supervised\" or \"unsupervised\" if the Splitset has a Label.\n",
     "**has_validation** | BooleanField | Logical flag indicating if this Splitset has a validation split.\n",
     "**fold_count** | IntegerField | The number of cross-validation `Folds` that belong to this Splitset\n",
     "**bin_count** | IntegerField | The number of bins used to stratify a continuous column label or unsupervised_stratify column\n",

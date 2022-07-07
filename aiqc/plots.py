@@ -368,8 +368,8 @@ def confidence_binary(
         , title_y    = 0.90
         , margin     = dict(l=0, r=0, t=0, b=0)
         , height     = height
-        , xaxis      = dict(title=None, showticklabels=False)
-        , yaxis      = dict(title=None, showticklabels=False)
+        , xaxis      = dict(title=None, showticklabels=False, fixedrange=True)
+        , yaxis      = dict(title=None, showticklabels=False, fixedrange=True)
         , hoverlabel = dict(font=dict(size=15))
         , title      = dict(font=dict(family='Avenir',size=15))
     ).update_traces(

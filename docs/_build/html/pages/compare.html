@@ -88,7 +88,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/dashboard.html">Dashboards</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/dashboard.html">UI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/dashboard.html#What-If-Analysis">What-If Analysis</a></li>
@@ -99,7 +99,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/api_high_level.html">High-Level API</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/api_high_level.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#Declarative">Declarative</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#1.-Pipeline">1. <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../notebooks/api_high_level.html#1a.-Input">1a. <code class="docutils literal notranslate"><span class="pre">Input</span></code></a><ul>
@@ -124,8 +124,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/api_high_level.html#3.-Inference">3. <code class="docutils literal notranslate"><span class="pre">Inference</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/api_low_level.html">Low-Level API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#Object-Relational-Model-(ORM)">Object-Relational Model (ORM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/api_low_level.html">ORM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#Object-Relational-Model">Object-Relational Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#0.-BaseModel">0. BaseModel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#0a.-Methods">0a. Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../notebooks/api_low_level.html#0b.-Attributes">0b. Attributes</a></li>
@@ -224,6 +224,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/api_low_level.html#Evaluation">Evaluation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Remote-Data">Remote Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Alternative-Sources">Alternative Sources</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/evaluation.html">Evaluation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/evaluation.html#Overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/evaluation.html#Prerequisites">Prerequisites</a></li>
@@ -241,14 +249,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../notebooks/evaluation.html#id4">Job Metrics</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/datasets.html">Datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Prepackaged-Local-Data">Prepackaged Local Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Remote-Data">Remote Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/datasets.html#Alternative-Sources">Alternative Sources</a></li>
 </ul>
 </li>
 </ul>
@@ -370,7 +370,9 @@
 <tr>
   <td id="empty-cell"></td>
   <td class="tbl-head  top-left">AIQC</td>
-  <td class="tbl-head">MLflow</td>
+  <td class="tbl-head">
+    <a href="https://mlflow.org/docs/latest/pipelines.html#pipeline-templates" class="tbl-header-link">MLflow</a>
+  </td>
   <td class="tbl-head">WandB</td>
   <td class="tbl-head  top-right">Lightning</br><small>(Complementary)</small></td>
 </tr>
@@ -549,6 +551,7 @@
 
   <p class="intro" style="width:90%; margin-top:35px;">
     MLflow has a nice user interface, but all it shows you is the fruits of your data wrangling. For example, even if you were conducting transfering learning using pretrained models, you'd still have to do all of the preprocessing and post-processing by hand.
+    <a href="https://mlflow.org/docs/latest/pipelines.html#pipeline-templates">In June of 2022, they released</a> a regression pipeline that shows that they are starting to take the same type of approach as AIQC's low-level-API, which is hugely validating. However, they have 2+ years worth of work ahead of them when it comes to pre/post-processing, multi-dimensional data types, and unsupervised analysis.
   </p>
 
   <br/>

@@ -846,3 +846,8 @@ p.explain {
     right: 2%;
 }
 /* --- End: Slideshow --- */
+
+.tbl-header-link {
+    color:white;
+    text-decoration: underline;
+}

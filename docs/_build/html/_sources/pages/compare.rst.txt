@@ -45,7 +45,9 @@ Competition
   <tr>
     <td id="empty-cell"></td>
     <td class="tbl-head  top-left">AIQC</td>
-    <td class="tbl-head">MLflow</td>
+    <td class="tbl-head">
+      <a href="https://mlflow.org/docs/latest/pipelines.html#pipeline-templates" class="tbl-header-link">MLflow</a>
+    </td>
     <td class="tbl-head">WandB</td>
     <td class="tbl-head  top-right">Lightning</br><small>(Complementary)</small></td>
   </tr>
@@ -223,7 +225,8 @@ Competition
     </p>
 
     <p class="intro" style="width:90%; margin-top:35px;">
-      MLflow has a nice user interface, but all it shows you is the fruits of your data wrangling. For example, even if you were conducting transfering learning using pretrained models, you'd still have to do all of the preprocessing and post-processing by hand.
+      MLflow has a nice user interface, but all it shows you is the fruits of your data wrangling. For example, even if you were conducting transfering learning using pretrained models, you'd still have to do all of the preprocessing and post-processing by hand. 
+      <a href="https://mlflow.org/docs/latest/pipelines.html#pipeline-templates">In June of 2022, they released</a> a regression pipeline that shows that they are starting to take the same type of approach as AIQC's low-level-API, which is hugely validating. However, they have 2+ years worth of work ahead of them when it comes to pre/post-processing, multi-dimensional data types, and unsupervised analysis.
     </p>
 
     <br/>

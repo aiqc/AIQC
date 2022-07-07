@@ -4,6 +4,8 @@
 pip
 wheel
 twine
+# Troubleshooting
+freeport
 # Documentation:
 ipython==7.19.0
 sphinx==4.0.2
