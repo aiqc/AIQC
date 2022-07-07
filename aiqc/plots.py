@@ -447,7 +447,7 @@ def confidence_binary(
         return fig
 
 
-def confidence_multilabel(
+def confidence_multi(
     label_probabilities:object
     , height:int
     , call_display:bool = True
@@ -472,7 +472,7 @@ def confidence_multilabel(
             yanchor   = "top"
             , y       = 1
             , xanchor = "right"
-            , x       = 1
+            , x       = 1.3
             , title   = dict(font = dict(size=15))
         )
     )

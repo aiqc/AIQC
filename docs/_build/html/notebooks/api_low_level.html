@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="5b2e1c6bfc35448f95e84c77feb1b19f Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
+  <meta property="og:description" content="ef279caec34945d7b0d43145357cc6f7 Object-Relational Model (ORM): The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -93,10 +93,9 @@
 <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Dashboards</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Experiment-Tracker">Experiment Tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dashboard.html#Compare-Models-Head-to-Head">Compare Models Head-to-Head</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Configuration">Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Run">Run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#What-If-Analysis">What-If Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#Run-the-App">Run the App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html#What-about-JupyterDash?">What about JupyterDash?</a></li>
 </ul>
 </li>
 </ul>
@@ -333,7 +332,7 @@
 </style>
 <section id="Low-Level-API">
 <h1>Low-Level API<a class="headerlink" href="#Low-Level-API" title="Permalink to this headline"></a></h1>
-<p><img alt="5b2e1c6bfc35448f95e84c77feb1b19f" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="ef279caec34945d7b0d43145357cc6f7" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model-(ORM)">
 <h2>Object-Relational Model (ORM)<a class="headerlink" href="#Object-Relational-Model-(ORM)" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -3668,6 +3667,44 @@ diverging or not.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
+<p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.importance_df()</span></code></p>
+<p>Returns a dataframe of feature columns ranked by their median importance</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">importance_df</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">top_n</span><span class="p">,</span> <span class="n">feature_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 5%" />
+<col style="width: 9%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The identifier of the Prediction of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>top_n</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>The number of columns to return</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>feature_id</strong></p></td>
+<td><p>int</p></td>
+<td><p>None</p></td>
+<td><p>Limit returned columns to a specific feature identifier</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Prediction.plot_feature_importance()</span></code></p>
 <p>Plots <code class="docutils literal notranslate"><span class="pre">prediction.feature_importance</span></code> if <code class="docutils literal notranslate"><span class="pre">Queue.permute_count&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">Prediction.calc_featureImportance()</span></code> was ran after the fact.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span>
@@ -3847,11 +3884,11 @@ diverging or not.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>feature_importance</strong></p></td>
 <td><p>JSONField</p></td>
-<td><p>Importance of each column. Only calculated for training split/fold. Schema <code class="docutils literal notranslate"><span class="pre">dict(str(feature.id)=dict(median=float,loss_impacts=list(float)))</span></code></p></td>
+<td><p>Importance of each column. Only calculated for training split/fold. Schema: <code class="docutils literal notranslate"><span class="pre">dict(str(feature.id)=dict(median=float,loss_impacts=list(float)))</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>probabilities</strong></p></td>
 <td><p>PickleField</p></td>
-<td><p>Prediction probabilities per split/ fold. <code class="docutils literal notranslate"><span class="pre">None</span></code> for regression.</p></td>
+<td><p>Prediction probabilities per split/ fold. <code class="docutils literal notranslate"><span class="pre">None</span></code> for regression. Schema: <code class="docutils literal notranslate"><span class="pre">dict(split=ndarray)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>metrics</strong></p></td>
 <td><p>PickleField</p></td>

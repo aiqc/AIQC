@@ -21,7 +21,7 @@ from .utils.wrangle import *
 from .utils.ingest import *
 from .utils.config import app_folders, timezone_now, create_folder, create_config
 from .plots import Plot
-from .plots import confidence_binary, confidence_multilabel
+from .plots import confidence_binary, confidence_multi
 from . import utils
 # --- Python modules ---
 from os import path, remove, makedirs
@@ -4624,7 +4624,7 @@ class Prediction(BaseModel):
             probability         = list(probability)
             label_probabilities = np.array([labels,probability]).T
             label_probabilities = pd.DataFrame(label_probabilities, columns=['Labels','Probability'])
-            fig = confidence_multilabel(
+            fig = confidence_multi(
                 label_probabilities = label_probabilities
                 , height            = height
                 , call_display      = call_display
