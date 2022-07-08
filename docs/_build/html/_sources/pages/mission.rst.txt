@@ -18,8 +18,6 @@ In the face of such challenging & important problems, I was shocked that big pha
 
 Deep learning has the power to accelerate the rate of scientific discovery by acting as a torch that reveals the laws of nature through data-driven pattern recognition. When it comes to global crises like combatting pandemics and reversing climate catastrophe, the human race is at a point where it needs to make major scientific advances over a short period of time in order to survive. So let's empower our smartest people with the best analytical tools we have.
 
-However, the machine learning lifecycle is so bogged down by data wrangling and glue code that the barrier of entry is extremely high. Enter, AIQC.
-
 |
 
 1. Accelerate science by making deep learning accessible.

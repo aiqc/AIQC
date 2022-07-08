@@ -2,6 +2,7 @@
 from aiqc import orm
 from aiqc.utils.meter import metrics_classify, metrics_regress
 # UI modules
+from dash_iconify import DashIconify
 from dash import register_page, html, dcc, callback
 from dash.dependencies import Output, Input, State
 from dash.exceptions import PreventUpdate
@@ -75,14 +76,17 @@ layout = html.Div(
                     dbc.InputGroup(
                         [
                             dbc.Button(
-                                "Filter", outline=True, 
-                                n_clicks=0, id="exp_button",
-                                className='chart_button ctr',
+                                [
+                                    DashIconify(icon="ant-design:filter-twotone",width=18,height=18, className='ico-flask')
+                                    , " Filter"
+                                ],
+                                outline=True, n_clicks=0, 
+                                id="exp_button", className='chart_button ctr',
                             ),
                         ],
                         size="sm", className='ctrl_chart ctr'
                     ),
-                    width=1, align="center",
+                    width=2, align="center",
                 ),
             ],
             className='exp_ctrl_row'

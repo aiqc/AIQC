@@ -300,7 +300,7 @@ AIQC
   <div style="background-image: linear-gradient(#ffffff, #122536);">
     </br></br></br></br></br></br></br></br>
     <center>
-      <img src="_static/images/dashboard/sensitivity.gif" alt="sensitivity" width="91%" style="display:block;">
+      <img src="_static/images/dashboard/whatif.gif" alt="sensitivity" width="91%" style="display:block;">
       </br></br>
       
       <div class="headerz-dark" style="line-height:170%;">Conduct <span class="goldz-dark">what-if</span> analysis to simulate virtual outcomes</div>

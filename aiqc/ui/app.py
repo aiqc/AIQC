@@ -103,6 +103,4 @@ def fetch_styledlinks(pathname:str):
 
 
 if (__name__ == '__main__'):
-    f = StringIO()
-    with redirect_stdout(f):
-        app.run_server(debug=args.debug, port=args.port)
+    app.run_server(debug=args.debug, port=args.port)

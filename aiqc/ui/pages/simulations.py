@@ -2,6 +2,7 @@
 from aiqc.orm import Dataset, Predictor, Prediction
 from aiqc import mlops
 # UI modules
+from dash_iconify import DashIconify
 from dash import register_page, html, dcc, callback, ALL, MATCH
 from dash.dependencies import Output, Input, State
 from dash.exceptions import PreventUpdate
@@ -49,8 +50,9 @@ layout = dbc.Row(
                             className='alert'
                         ),
                     ],
-                    id='sim-preds'
+                    id='sim-null'
                 ),
+                html.Div(id='sim-preds')
             ],
             width='9', align='center', className='sim-outputs'
         ),
@@ -208,9 +210,12 @@ def populate_features(model_id:int):
             dbc.InputGroup(
                 [
                     dbc.Button(
-                        "Simulate", outline=True, 
-                        n_clicks=0, id="sim_button",
-                        className='chart_button ctr',
+                        [
+                            DashIconify(icon="icon-park-twotone:experiment",width=18,height=18, className='ico-flask')
+                            , " Simulate"
+                        ],
+                        outline=True, n_clicks=0, 
+                        id="sim_button", className='chart_button ctr',
                     ),
                 ],
                 size="md", className='ctrl_chart ctr'
@@ -227,7 +232,10 @@ id is created before value, and value is dynamic.
 dash.plotly.com/pattern-matching-callbacks
 """
 @callback(
-    Output('sim-preds', 'children'),
+    [
+        Output('sim-preds', 'children'),
+        Output('sim-null', 'children'),
+    ],
     Input('sim_button', 'n_clicks'),
     [
         State({'role': 'feature', 'column': ALL}, 'value'),
@@ -246,8 +254,11 @@ def prediction_from_features(
     # Remember, n_clicks resets when changing model dropdown
     if (n_clicks==0): 
         raise PreventUpdate
-    elif (n_clicks==1): 
-        preds = []
+    else:
+        sim_null = None
+        if (preds is None):
+            preds = []
+
     # Construct records from feature fields
     record = {}
     for e, val in enumerate(field_values):
@@ -292,12 +303,13 @@ def prediction_from_features(
         sim_txt = f"{label} = {sim_val:}"
 
     pred_id = prediction.id
-    starred = prediction.is_starred
-    if (starred==False):
-        star = '☆'
-    else:
-        star = '★'
-    star = dbc.Button(star,id={'role':'pred_star','pred_id':pred_id}, className='pred_star', color='link')###
+    # These preds are newly created. Impossible for them to be starred.
+    star = dbc.Button(
+        DashIconify(icon="clarity:star-line",width=20,height=20)
+        , id        = {'role':'pred_star','pred_id':pred_id}
+        , className = 'pred_star'
+        , color     = 'link'
+    )
 
     sim_val   = html.Span(sim_txt, className='sim-val')
     pred      = html.P([star, f"Prediction #{prediction.id}: ", sim_val], className="card-head")
@@ -339,23 +351,23 @@ def prediction_from_features(
         className="sim-card"
     )
     preds.insert(0,card)
-    return preds
+    return preds, sim_null
 
 
 @callback(
-    Output({'role':'pred_star', 'pred_id': MATCH}, 'children'),
-    Input({'role':'pred_star', 'pred_id': MATCH}, 'n_clicks'),
-    [
-        State({'role':'pred_star', 'pred_id': MATCH}, 'children'),
-        State({'role':'pred_star', 'pred_id': MATCH}, 'id'),
-    ]
+    Output({'role':'pred_star','pred_id': MATCH}, 'children'),
+    Input({'role':'pred_star','pred_id': MATCH}, 'n_clicks'),
+    State({'role':'pred_star','pred_id': MATCH}, 'id'),
 )
-def flip_pred_star(n_clicks, star, id):
+def flip_pred_star(n_clicks, id):
     if (n_clicks is None):
         raise PreventUpdate
-    if (star=='☆'):
-        star = '★'
-    else:
-        star = '☆'
+    
     Prediction.get_by_id(id['pred_id']).flip_star()
+    # Don't use stale, pre-update, in-memory data
+    starred = Prediction.get_by_id(id['pred_id']).is_starred
+    if (starred==True):
+        star = DashIconify(icon="clarity:star-solid",width=20,height=20)
+    else:
+        star = DashIconify(icon="clarity:star-line",width=20,height=20)
     return star

@@ -26,6 +26,5 @@ dill==0.3.3
 fsspec==0.9.0
 dash==2.5.1
 dash-bootstrap-components==1.1.0
-# Does not require jupyter
-jupyter-dash==0.4.1
+dash-iconify==0.1.2
 # Do not end file with blank line.
