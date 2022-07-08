@@ -74,22 +74,30 @@
 <a href="https://docs.aiqc.io">
 	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/_static/images/dashboard/compare_models.gif" width="95%" alt="compare_models"/>
 </a>
+</br></br></br>
+
+<h2>What if?</h2>
+<a href="https://docs.aiqc.io">
+	<img src="https://raw.githubusercontent.com/aiqc/AIQC/main/docs/_static/images/dashboard/what_if.gif" width="95%" alt="compare_models"/>
+</a>
+
 </br></br></br></br>
 
 
 <h2>Usage</h2>
 
 ```python
-# Designed on Python 3.7.12 to mirror Google Colab
-pip install --upgrade pip
-pip install --upgrade wheel
-pip install --upgrade aiqc
+# Built on Python 3.7.12 to mirror Google Colab
+$ pip install --upgrade pip
+$ pip install --upgrade wheel
+$ pip install --upgrade aiqc
 
-from aiqc import ui, mlops
+# Monitor and evaluate models (from CLI)
+$ python -m aiqc.ui.app
+```
 
-# Monitor and evaluate models
-ui.Tracker().start()
-
+```python
+from aiqc import mlops
 # Declare preprocessing steps
 mlops.Pipeline()
 
