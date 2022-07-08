@@ -355,7 +355,10 @@ def prediction_from_features(
 
 
 @callback(
-    Output({'role':'pred_star','pred_id': MATCH}, 'children'),
+    [
+        Output({'role':'pred_star','pred_id': MATCH}, 'children'),
+        Output({'role':'pred_star','pred_id': MATCH}, 'n_clicks'),
+    ],
     Input({'role':'pred_star','pred_id': MATCH}, 'n_clicks'),
     State({'role':'pred_star','pred_id': MATCH}, 'id'),
 )
@@ -370,4 +373,7 @@ def flip_pred_star(n_clicks, id):
         star = DashIconify(icon="clarity:star-solid",width=20,height=20)
     else:
         star = DashIconify(icon="clarity:star-line",width=20,height=20)
-    return star
+    
+    # The callback kept firing preds were updated
+    n_clicks = None
+    return star, n_clicks
