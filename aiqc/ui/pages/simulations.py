@@ -203,6 +203,11 @@ def populate_features(model_id:int):
                         size="sm", className='ctrl_chart ctrl_big ctr'
                     )
                 f_kids.append(field)
+        else:
+            return [
+                html.Br(), dbc.Alert("Simulation UI only supports Tabular Features right now.", className='alert')
+            ]
+
     
     kids = [
         # Tried to put submit button below fields, but div heights tricky

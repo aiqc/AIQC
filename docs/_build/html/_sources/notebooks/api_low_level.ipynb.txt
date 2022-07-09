@@ -413,11 +413,11 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "||||\n",
-    "|---|---|---|\n",
-    "Multiple subjects (1 row per sample) | * | Multi-variate 1D (1 col per attribute)\n",
-    "Single subject (1 row per timestamp) | * | Multi-variate 1D (1 col per attribute)\n",
-    "Multiple subjects (1 row per timestamp) | * | Uni-variate 0D (1 col per sample)"
+    "||\n",
+    "|---|\n",
+    "Multiple subjects (1 row per sample) * Multi-variate 1D (1 col per attribute)\n",
+    "Single subject (1 row per timestamp) * Multi-variate 1D (1 col per attribute)\n",
+    "Multiple subjects (1 row per timestamp) * Uni-variate 0D (1 col per sample)"
    ]
   },
   {
@@ -544,10 +544,10 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "||||\n",
-    "|---|---|---|\n",
-    "Single subject (1 patient) | * | Multiple 2D sequences\n",
-    "Multiple subjects | * | Single 2D sequence"
+    "||\n",
+    "|---|\n",
+    "Single subject (1 patient) * Multiple 2D sequences\n",
+    "Multiple subjects * Single 2D sequence"
    ]
   },
   {
@@ -626,10 +626,10 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "||||\n",
-    "|---|---|---|\n",
-    "Single subject (1 patient) | * | Multiple 3D images\n",
-    "Multiple subjects | * | Single 3D image\n"
+    "||\n",
+    "|---|\n",
+    "Single subject (1 patient) * Multiple 3D images\n",
+    "Multiple subjects * Single 3D image\n"
    ]
   },
   {
@@ -4304,7 +4304,7 @@
     "--- | --- | --- | ---\n",
     "**id** | int | None | The identifier of the Prediction of interest\n",
     "**prediction_index** | int | 0 | The index of the sample of interest\n",
-    "**height** | int | 150 | Force the height of the chart.\n",
+    "**height** | int | 175 | Force the height of the chart.\n",
     "**call_display** | bool | True | If `True`, returns a DataFrame. If `False`, returns a `list(dict(param_name=[values]))`\n",
     "**split_name** | int | None | The identifier of the Prediction of interest"
    ]

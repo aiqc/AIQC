@@ -117,7 +117,7 @@ body {
     padding-bottom:             18px;
     /* These 3 stick it to top & mirror nav */
     position:                   sticky;
-    top:                        48px;
+    top:                        0px;
     z-index:                    999;
 }
 
@@ -248,7 +248,12 @@ option:nth-child(even) {
 }
 
 .model_container {
-    width: 100%;
+    width:                      100%;
+    overflow-y:                 auto;
+    height:                     100%;
+    padding-top:                60px;
+    padding-bottom:             60px;
+    --bs-gutter-x:              0px !important;
 }
 
 /* ======== TABLES ======== */
@@ -535,27 +540,4 @@ tr:last-child td {
 
 .spinner {
     margin-left:                48%;
-}
-
-
-.btn-upload {
-    position: relative;
-    border-color: #62748e;
-    border-radius: 10px;
-    border-style: dashed;
-    border-width: 2px;
-    color: #899ab1;
-    height: 60px;
-    line-height: 60px;
-    margin: 20px auto;
-    text-align: center;
-    width: 82%;
-}
-
-.linx-upload {
-    color: #899ab1;
-}
-
-.linx-upload:hover {
-    color: #ffda67;
 }

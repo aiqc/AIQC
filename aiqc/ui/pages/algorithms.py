@@ -8,34 +8,30 @@ import dash_bootstrap_components as dbc
 register_page(__name__)
 
 # Dash naturally wraps in `id=_pages_content`
-layout = html.Div(
-    [
-        dcc.Interval(
-            id              = "initial_load"
-            , n_intervals   = 0
-            , max_intervals = -1
-            , interval      = 10*1000
-        ),
-        dbc.Row(
-            [
-                dbc.Col(width="4"),
-                dbc.Col(
-                    dcc.Dropdown(id="multitron", multi=True, className='multitron ctr'),
-                    width="4", align="center",
-                ),
-                dbc.Col(width="3"),
-                dbc.Col(
-                    html.Div(html.A("⇪",href="#", className='up_arrow')),
-                    width="1", align="center",
-                )
-            ],
-            className='middle_bar'
-        ),
-        html.Br(),html.Br(),html.Br(),
-        dbc.Row(id="model_container", className='model_container'),
-        html.Br(),
-    ]
-)
+layout = [
+    dcc.Interval(
+        id              = "initial_load"
+        , n_intervals   = 0
+        , max_intervals = -1
+        , interval      = 10*1000
+    ),
+    dbc.Row(
+        [
+            dbc.Col(width="4"),
+            dbc.Col(
+                dcc.Dropdown(id="multitron", multi=True, className='multitron ctr'),
+                width="4", align="center",
+            ),
+            dbc.Col(width="3"),
+            dbc.Col(
+                html.Div(html.A("⇪",href="#", className='up_arrow')),
+                width="1", align="center",
+            )
+        ],
+        className='middle_bar'
+    ),
+    dbc.Row(id="model_container", className='model_container'),
+]
 
 
 # Helper functions for callbacks.
@@ -98,7 +94,7 @@ def model_plots(predictor_ids:list):
     # Initially it's None, but empty list when it's cleared.
     if ((predictor_ids is None) or (not predictor_ids)):
         msg = "Select up to two models from the dropdown above."
-        return dbc.Alert(msg, className='alert', style={"width":"50%"})
+        return dbc.Alert(msg, className='alert', style={"width":"50%","margin-bottom":"80%"})
     pred_count = len(predictor_ids)
     if (pred_count==1):
         col_width = 12
@@ -227,3 +223,4 @@ def model_plots(predictor_ids:list):
         big_column = dbc.Col(big_column, width=col_width)
         multi_cols.append(big_column)
     return multi_cols
+    

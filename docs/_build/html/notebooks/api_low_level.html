@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="a2dfbb17515f499d9edd00bfa4a41f4e Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="637c55702963424cbe463daad1191950 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -334,7 +334,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="a2dfbb17515f499d9edd00bfa4a41f4e" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="637c55702963424cbe463daad1191950" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -557,27 +557,9 @@ max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal
 <section id="1ai1.-Dataset.Tabular">
 <h5>1ai1. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai1.-Dataset.Tabular" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways practitioners can use this 2D structure:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Multiple subjects (1 row per sample)</p></td>
-<td><p>*</p></td>
-<td><p>Multi-variate 1D (1 col per attribute)</p></td>
-</tr>
-<tr class="row-even"><td><p>Single subject (1 row per timestamp)</p></td>
-<td><p>*</p></td>
-<td><p>Multi-variate 1D (1 col per attribute)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Multiple subjects (1 row per timestamp)</p></td>
-<td><p>*</p></td>
-<td><p>Uni-variate 0D (1 col per sample)</p></td>
-</tr>
-</tbody>
-</table>
+<section id="++">
+<h6>++<a class="headerlink" href="#++" title="Permalink to this headline"></a></h6>
+<p>Multiple subjects (1 row per sample) * Multi-variate 1D (1 col per attribute) Single subject (1 row per timestamp) * Multi-variate 1D (1 col per attribute) Multiple subjects (1 row per timestamp) * Uni-variate 0D (1 col per sample)</p>
 <blockquote>
 <div><p>Tabular datasets may contain both features and labels</p>
 </div></blockquote>
@@ -703,26 +685,13 @@ for dtypes, and compression works great in Parquet.</p></td>
 </table>
 <hr class="docutils" />
 </section>
+</section>
 <section id="1ai2.-Dataset.Sequence">
 <h5>1ai2. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1ai2.-Dataset.Sequence" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways practitioners can use this 3D structure:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 53%" />
-<col style="width: 4%" />
-<col style="width: 43%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Single subject (1 patient)</p></td>
-<td><p>*</p></td>
-<td><p>Multiple 2D sequences</p></td>
-</tr>
-<tr class="row-even"><td><p>Multiple subjects</p></td>
-<td><p>*</p></td>
-<td><p>Single 2D sequence</p></td>
-</tr>
-</tbody>
-</table>
+<section id="id3">
+<h6>++<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h6>
+<p>Single subject (1 patient) * Multiple 2D sequences Multiple subjects * Single 2D sequence</p>
 <blockquote>
 <div><p>Sequence datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
 </div></blockquote>
@@ -789,26 +758,13 @@ False.</p></td>
 </table>
 <hr class="docutils" />
 </section>
+</section>
 <section id="1ai3.-Dataset.Image">
 <h5>1ai3. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1ai3.-Dataset.Image" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways you can practitioners this 4D structure:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 57%" />
-<col style="width: 4%" />
-<col style="width: 39%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Single subject (1 patient)</p></td>
-<td><p>*</p></td>
-<td><p>Multiple 3D images</p></td>
-</tr>
-<tr class="row-even"><td><p>Multiple subjects</p></td>
-<td><p>*</p></td>
-<td><p>Single 3D image</p></td>
-</tr>
-</tbody>
-</table>
+<section id="id4">
+<h6>++<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h6>
+<p>Single subject (1 patient) * Multiple 3D images Multiple subjects * Single 3D image</p>
 <p>Users can ingest 4D data using either: - <a class="reference external" href="https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html">The Pillow library, which supports various formats</a> - Or NumPy arrays as a simple alternative</p>
 <blockquote>
 <div><p>Image datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
@@ -1000,6 +956,7 @@ for anything.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
+</section>
 </section>
 </section>
 <section id="1aii.-Fetch">
@@ -3898,7 +3855,7 @@ diverging or not.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>height</strong></p></td>
 <td><p>int</p></td>
-<td><p>150</p></td>
+<td><p>175</p></td>
 <td><p>Force the height of the chart.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>call_display</strong></p></td>

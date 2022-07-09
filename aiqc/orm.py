@@ -4580,7 +4580,7 @@ class Prediction(BaseModel):
     def plot_confidence(
         id:int
         , prediction_index:int = 0
-        , height:int           = 150
+        , height:int           = 175
         , call_display:bool    = True
         , split_name:str       = None
     ):
