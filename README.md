@@ -97,7 +97,9 @@ $ python -m aiqc.ui.app
 ```
 
 ```python
+# High-level API
 from aiqc import mlops
+
 # Declare preprocessing steps
 mlops.Pipeline()
 
