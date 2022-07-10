@@ -163,7 +163,7 @@ class Pipeline:
                     for c in l_cols:
                         if (c in include_columns):
                             include_columns.remove(c)
-            
+
             f = Feature.from_dataset(dataset_id=d_id, exclude_columns=exclude_columns, include_columns=include_columns)
             f_id = f.id
             features.append(f)

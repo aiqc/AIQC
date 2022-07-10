@@ -2933,7 +2933,7 @@ class FeatureCoder(BaseModel):
 
         # --- Test fitting the encoder to matching columns ---
         # When fetching data, we want to interpolate/impute first.
-        samples_to_encode = feature.preprocess(is_encoded=False)
+        samples_to_encode  = feature.preprocess(is_encoded=False)
 
         # Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
         f_shape = samples_to_encode.shape
@@ -2944,11 +2944,20 @@ class FeatureCoder(BaseModel):
             rows_2D = f_shape[0] * f_shape[1] * f_shape[2]
             samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[3])
 
+        """
+        Still need to slice out the matching columns from 2D
+        `is_encoded=False` above ensures that the column dimension won't change 
+        e.g. any upstream encoders expanding columns via OHE 
+        """
+        desired_colIndices = colIndices_from_colNames(
+            column_names=feature.columns, desired_cols=matching_columns
+        )
+        samples_to_encode  = samples_to_encode[:,desired_colIndices]
+
         fitted_encoders, encoding_dimension = utils.encoding.fit_dynamicDimensions(
             sklearn_preprocess = sklearn_preprocess
             , samples_to_fit   = samples_to_encode
         )
-
         # Test transforming the whole dataset using fitted encoder on matching columns.
         try:
             utils.encoding.transform_dynamicDimensions(
