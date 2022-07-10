@@ -1213,10 +1213,10 @@ class Label(BaseModel):
         if ((is_encoded==True) and (labelcoders.count()>0)):
             if (fold is not None):
                 fitted_encoders = fold.fitted_labelcoder
-                item = fold
+                item            = fold
             else:
                 fitted_encoders = label.fitted_labelcoder
-                item = label
+                item            = label
             
             labelcoder = labelcoders[-1]
             # Hasn't been fit yet.
@@ -1543,11 +1543,11 @@ class Feature(BaseModel):
         featurecoders = feature.featurecoders
         if ((is_encoded==True) and (featurecoders.count()>0)):
             if (fold is not None):
+                item            = fold
                 fitted_encoders = fold.fitted_featurecoders
-                item = fold
             else:
+                item            = feature
                 fitted_encoders = feature.fitted_featurecoders
-                item = feature
             
             # Hasn't been fit yet.
             if (fitted_encoders is None):

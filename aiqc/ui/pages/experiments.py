@@ -1,9 +1,9 @@
 # Local modules
-from aiqc import orm
+from aiqc.orm import Queue, Predictor
 from aiqc.utils.meter import metrics_classify, metrics_regress
 # UI modules
 from dash_iconify import DashIconify
-from dash import register_page, html, dcc, callback
+from dash import register_page, html, dcc, callback, MATCH
 from dash.dependencies import Output, Input, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
@@ -173,7 +173,7 @@ def fetch_params(predictor:object, size:str):
     ]
 )
 def refresh_experiments(n_intervals:int, queue_id:int):
-    queues = list(orm.Queue)
+    queues = list(Queue)
     if (not queues):
         return [], "None yet", None
     
@@ -193,7 +193,7 @@ def refresh_experiments(n_intervals:int, queue_id:int):
 def update_progress(queue_id:int):
     if (queue_id is None):
         return None
-    queue = orm.Queue.get_by_id(queue_id)
+    queue = Queue.get_by_id(queue_id)
     progress = round(queue.runs_completed/queue.total_runs*100)
     
     if (progress<100):
@@ -220,7 +220,7 @@ def type_dropdown(queue_id:object, exp_type:str):
     if (queue_id is None):
         raise PreventUpdate
     
-    queue = orm.Queue.get_by_id(queue_id)
+    queue = Queue.get_by_id(queue_id)
     analysis_type = queue.algorithm.analysis_type
     if ('classification' in analysis_type):
         score_types = metrics_classify
@@ -250,7 +250,7 @@ def plot_experiment(
     score_type:str, min_score:float, max_loss:float,
 ):   
     if (queue_id is None):
-        queues = list(orm.Queue)
+        queues = list(Queue)
         if (not queues):
             msg = "Sorry - Cannot display plot because no Queues exist yet. Data will refresh automatically."
             return dbc.Alert(msg, className='alert')
@@ -258,7 +258,7 @@ def plot_experiment(
             # Plot the most recent by default
             queue = queues[-1]
     else:
-        queue = orm.Queue.get_by_id(queue_id)
+        queue = Queue.get_by_id(queue_id)
     
     try:
         fig = queue.plot_performance(
@@ -296,9 +296,48 @@ def interactive_params(new_click:dict):
     if (new_click is None):
         raise PreventUpdate
     # The docs say to use `json.dumps`, but clickData is just a dict.
-    predictor   = new_click['points'][0]['customdata'][0]    
-    predictor   = orm.Predictor.get_by_id(predictor)
-    title       = f"Model ID: {predictor}"
-    model_title = html.P(title, className='header')
+    pred_id   = new_click['points'][0]['customdata'][0]    
+    predictor = Predictor.get_by_id(pred_id)
+
+    if (predictor.is_starred==False):
+        icon = "clarity:star-line"
+    else:
+        icon = "clarity:star-solid"
+    star = dbc.Button(
+        DashIconify(icon=icon,width=20,height=20)
+        , id        = {'role':'model_star','model_id':pred_id}
+        , color     = 'link'
+        , className = 'star'
+    )
+
+    title       = f"Model: {pred_id}"
+    model_title = html.P([star, title], className='header')
     hp_table    = fetch_params(predictor, "tbig")
     return [model_title, hp_table]
+
+
+@callback(
+    [
+        Output({'role':'model_star','model_id': MATCH}, 'children'),
+        Output({'role':'model_star','model_id': MATCH}, 'n_clicks'),
+    ],
+    Input({'role':'model_star','model_id': MATCH}, 'n_clicks'),
+    State({'role':'model_star','model_id': MATCH}, 'id'),
+)
+def flip_model_star(n_clicks, id):
+    if (n_clicks is None):
+        raise PreventUpdate
+    
+    predictor_id = id['model_id']
+    Predictor.get_by_id(predictor_id).flip_star()
+    # Don't use stale, pre-update, in-memory data
+    starred = Predictor.get_by_id(predictor_id).is_starred
+    if (starred==False):
+        icon = "clarity:star-line"
+    else:
+        icon = "clarity:star-solid"
+    star = DashIconify(icon=icon, width=20, height=20)
+    
+    # The callback kept firing preds were updated
+    n_clicks = None
+    return star, n_clicks

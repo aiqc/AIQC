@@ -82,10 +82,11 @@ def refresh_predictors(n_intervals:int):
     models.reverse()
     model_options = []
     for m in models:
-        label = f"Model:{m.id}"
+        m_id  = m.id
+        label = f"{m_id}"
         if (m.is_starred):
             label += " ★"
-        opt = dict(label=label, value=m.id)
+        opt = dict(label=label, value=m_id)
         model_options.append(opt)
     return model_options, "Select model"
 
@@ -142,7 +143,6 @@ def populate_features(model_id:int):
                 
                 # Assemble the feature metadata tooltip
                 if (is_numeric or is_date):
-
                     tbod = []
                     # Feature importance metadata
                     if (importance is not None):
@@ -330,8 +330,8 @@ def prediction_from_features(
     star = dbc.Button(
         DashIconify(icon="clarity:star-line",width=20,height=20)
         , id        = {'role':'pred_star','pred_id':pred_id}
-        , className = 'pred_star'
         , color     = 'link'
+        , className = 'star'
     )
 
     sim_val   = html.Span(sim_txt, className='sim-val')
@@ -389,13 +389,15 @@ def flip_pred_star(n_clicks, id):
     if (n_clicks is None):
         raise PreventUpdate
     
-    Prediction.get_by_id(id['pred_id']).flip_star()
+    prediction_id = id['pred_id']
+    Prediction.get_by_id(prediction_id).flip_star()
     # Don't use stale, pre-update, in-memory data
-    starred = Prediction.get_by_id(id['pred_id']).is_starred
-    if (starred==True):
-        star = DashIconify(icon="clarity:star-solid",width=20,height=20)
+    starred = Prediction.get_by_id(prediction_id).is_starred
+    if (starred==False):
+        icon = "clarity:star-line"
     else:
-        star = DashIconify(icon="clarity:star-line",width=20,height=20)
+        icon = "clarity:star-solid"
+    star = DashIconify(icon=icon, width=20, height=20)
     
     # The callback kept firing preds were updated
     n_clicks = None
