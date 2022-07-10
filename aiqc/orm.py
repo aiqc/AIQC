@@ -2937,12 +2937,16 @@ class FeatureCoder(BaseModel):
 
         # Handles `Dataset.Sequence` by stacking the 2D arrays into a single tall 2D array.
         f_shape = samples_to_encode.shape
+
         if (len(f_shape)==3):
             rows_2D = f_shape[0] * f_shape[1]
             samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[2])
         elif (len(f_shape)==4):
             rows_2D = f_shape[0] * f_shape[1] * f_shape[2]
             samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[3])
+        elif (len(f_shape)==5):
+            rows_2D = f_shape[0] * f_shape[1] * f_shape[2] * f_shape[3]
+            samples_to_encode = samples_to_encode.reshape(rows_2D, f_shape[4])
 
         """
         Still need to slice out the matching columns from 2D

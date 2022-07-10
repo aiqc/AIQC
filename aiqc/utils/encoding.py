@@ -449,8 +449,7 @@ def transform_features(
                 (transformed_features, leftover_features)
                 , axis = 1
             )
-        # Handle Sequence (part 2): reshape tall 2D back to 3D.
-        # This checks `==3` intentionaly!!!
+        # Handle Sequence (part 2): reshape tall 2D back to original shape.
         if (len(og_shape)==3):
             transformed_features = arr_features.reshape(
                 og_shape[0],
@@ -463,6 +462,14 @@ def transform_features(
                 og_shape[1],
                 og_shape[2],
                 og_shape[3]
+            )
+        elif(len(og_shape)==5):
+            transformed_features = arr_features.reshape(
+                og_shape[0],
+                og_shape[1],
+                og_shape[2],
+                og_shape[3],
+                og_shape[4],
             )
             
     elif (len(featurecoders) == 0):
