@@ -131,6 +131,10 @@ def populate_features(model_id:int):
             else:
                 ranked_feats = list(f_typs.keys())
             
+            head = [html.Thead(html.Tr([
+                html.Th("Stat"), html.Th("Value")
+            ])),]
+
             for col in ranked_feats:
                 typ        = f_typs[col]
                 is_numeric = np.issubdtype(typ, np.number)
@@ -138,16 +142,7 @@ def populate_features(model_id:int):
                 
                 # Assemble the feature metadata tooltip
                 if (is_numeric or is_date):
-                    head = [
-                        html.Thead(
-                            html.Tr(
-                                [
-                                    html.Th("Stat"),
-                                    html.Th("Value")
-                                ]
-                            )
-                        ),
-                    ]
+
                     tbod = []
                     # Feature importance metadata
                     if (importance is not None):
@@ -173,7 +168,9 @@ def populate_features(model_id:int):
                     field = html.Div(
                         [
                             html.Div(col, id=uid, className='sim-slider-name'),
-                            dbc.Tooltip(tips, target=uid, placement='right', className='sim-tooltip'),
+                            dbc.Tooltip(
+                                tips, target=uid, placement='right', className='sim-tooltip'
+                            ),
                             dbc.Input(
                                 id          = {'role':'feature', 'column':col},
                                 type        = 'number',
@@ -193,9 +190,25 @@ def populate_features(model_id:int):
                     value   = list(uniques.keys())[0]
                     uid  = str(uuid1())
 
+                    tbod = []
+                    # Feature importance metadata
+                    if (importance is not None):
+                        imp = float(imp_df[imp_df['Feature']==col]['Median'])
+                        tip = html.Tr([
+                            html.Td('importance'),
+                            html.Td(f"{imp:.3f}")
+                        ])
+                        tbod.append(tip)
+                    tbod = [html.Tbody(tbod)]
+                    # Don't use comma separated list
+                    tips = dbc.Table(head + tbod)
+
                     field = html.Div(
                         [
                             html.Div(col, id=uid, className='sim-slider-name'),
+                            dbc.Tooltip(
+                                tips, target=uid, placement='right', className='sim-tooltip'
+                            ),
                             dbc.InputGroup(
                                 dbc.Select(
                                     id={'role':'feature', 'column':col},
