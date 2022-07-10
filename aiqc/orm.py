@@ -2730,7 +2730,7 @@ class FeatureInterpolater(BaseModel):
 
         # Check that it actually works.
         fp = FeatureInterpolater.create(
-            idx                = idx
+            idx                  = idx
             , process_separately = process_separately
             , interpolate_kwargs = interpolate_kwargs
             , matching_columns   = matching_columns

@@ -188,19 +188,24 @@ def populate_features(model_id:int):
 
                 else:
                     uniques = stats_categoric[col]
-                    options = [dict(label=f"{name}:{val}", value=name) for name,val in uniques.items()]
-                    value   = uniques[0]['label']
+                    options = [dict(label=f"{name}: {val*100:.1f}%", value=name) for name,val in uniques.items()]
+                    # Uniques seem to be ordered by count.
+                    value   = list(uniques.keys())[0]
+                    uid  = str(uuid1())
 
-                    field = dbc.InputGroup(
+                    field = html.Div(
                         [
-                            dbc.InputGroupText(col),
-                            # Not a callback because it is the first inputable object.
-                            dbc.Select(
-                                options = options,
-                                value   = value
-                            ),
+                            html.Div(col, id=uid, className='sim-slider-name'),
+                            dbc.InputGroup(
+                                dbc.Select(
+                                    id={'role':'feature', 'column':col},
+                                    options=options, value=value, style={"borderRadius":"10px"}
+                                ),
+                                size="sm", className='ctrl_chart ctr',
+                                style={"width":"40%", "marginLeft":"50px"}
+                            )
                         ],
-                        size="sm", className='ctrl_chart ctrl_big ctr'
+                        className="sim-slider"
                     )
                 f_kids.append(field)
         else:
