@@ -27,7 +27,7 @@ class Plot(object):
         self.plot_template = dict(
             layout=go.Layout(
                 font            = dict(family="Avenir", color='#FAFAFA', size=13)
-                , title         = dict(x=0.05, y=0.95)
+                , title         = dict(x=0.05, y=1.0)
                 , titlefont     = dict(family="Avenir")
                 , title_pad     = dict(b=50, t=20)
                 , plot_bgcolor  = '#182d41'
