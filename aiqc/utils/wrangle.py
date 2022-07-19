@@ -207,7 +207,7 @@ def stage_data(splitset:object, fold:object):
     create_folder(path_splitset)
 
     for split, indices  in tqdm(
-        samples.items(), desc=fold_progress, ncols=100
+        samples.items(), desc=fold_progress, ncols=85
     ):	
         path_split = path.join(path_fold, split)
         create_folder(path_split)

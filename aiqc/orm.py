@@ -2993,7 +2993,7 @@ class FeatureCoder(BaseModel):
             encoded_column_names = matching_columns 
 
         featurecoder = FeatureCoder.create(
-            idx                  = idx
+            idx                    = idx
             , only_fit_train       = only_fit_train
             , is_categorical       = is_categorical
             , sklearn_preprocess   = sklearn_preprocess
@@ -3005,6 +3005,20 @@ class FeatureCoder(BaseModel):
             , feature              = feature
             , encoding_dimension   = encoding_dimension
         )
+        num_match = len(matching_columns)
+        if (num_match<=30):
+            msg_match = f"\n└── Success - Fit {stringified_encoder} on the following columns:\n{matching_columns}\n"
+        else:
+            msg_match = f"\n└── Success - Fit {stringified_encoder} on {num_match} columns.\n"
+        print(msg_match)
+        num_leftover = len(leftover_columns)
+        if (num_leftover==0):
+            msg_leftover = "\nSuccess - All columns now have encoders associated with them.\n"
+        elif (num_leftover<=30):
+            msg_leftover = f"\n└── Info - The following columns have not yet been encoded:\n{leftover_columns}\n"
+        else:
+            msg_leftover = f"\n└── Info - There are still {num_leftover} columns that do not have an encoder specified yet.\nSee `FeatureCoder.leftover_columns`\n"
+        print(msg_leftover)
         return featurecoder
 
 
@@ -3287,6 +3301,20 @@ class Queue(BaseModel):
                 msg           = "\nInfo - Featureset only contains image features. System overriding to `permute_count=0`.\n"
                 print(msg)
 
+            # Don't permute a single column featureset            
+            f = features[0]
+            if (len(features)==1) and (f.dataset.typ!='image'):
+                if (len(f.columns)==1):
+                    # Check if OHE becuase it expands into multiple columns
+                    fc = f.featurecoders
+                    if (len(fc)>0):
+                        stringified_encoder = str(fc[0].sklearn_preprocess)
+                        if ('OneHotEncoder' not in stringified_encoder):
+                            permute_count = 0
+                            msg           = "\nInfo - Featureset only contains 1 non-OHE column. System overriding to `permute_count=0`.\n"
+                            print(msg)
+
+
         """Validate Label structure for the analysis type"""
         if (splitset.supervision == 'supervised'):
             # Validate combinations of alg.analysis_type, lbl.col_count, lbl.dtype, split/fold.bin_count
@@ -3465,7 +3493,7 @@ class Queue(BaseModel):
                 for rj in tqdm(
                     repeated_jobs
                     , desc  = "🔮 Training Models 🔮"
-                    , ncols = 100
+                    , ncols = 85
                 ):
                     # See if this job has already completed. Keeps the tqdm intact.
                     matching_predictor = Predictor.select().join(Job).where(
@@ -3493,7 +3521,7 @@ class Queue(BaseModel):
                     for rj in tqdm(
                         repeated_jobs
                         , desc  = f"🔮 Training Models - Fold #{idx+1} 🔮"
-                        , ncols = 100
+                        , ncols = 85
                     ):
                         # See if this job has already completed. Keeps the tqdm intact.
                         matching_predictor = Predictor.select().join(Job).where(
@@ -4032,7 +4060,7 @@ class Predictor(BaseModel):
         """
         Logic for handling inference, fold, and evaluation.
         - `has_target` is not about supervision. During inference it is optional to provide labels.
-        - in fact, we need the `supervision` value for decoding no matter what.
+        - However, we still need the `supervision` value for decoding no matter what.
         """
         splitset = queue.splitset
         supervision = splitset.supervision

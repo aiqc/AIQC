@@ -45,22 +45,22 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**Automatic `id` method argument**\n",
+    "**Automatic 'id' method argument**\n",
     "\n",
-    "Any method that interacts with an object that has already been created requires `id` as its first argument. However, if that object is instantiated/ read into memory, then `id` is automatically passed into the method as the first argument.\n",
+    "If an ORM-based classes is instantiated, then any method called by the resulting object will automatically pass in the object's `self.id` in as its first positional argument:\n",
     "\n",
-    "For example, to run a method from scratch you'd have to pass in the `id` yourself.\n",
-    "```python\n",
-    "Queue.run_jobs(id)\n",
-    "```\n",
-    "\n",
-    "However, when interacting with an instantiated object, you do not need to do this:\n",
     "```python\n",
     "queue = Queue.get_by_id(id)\n",
     "queue.run_jobs()\n",
     "```\n",
     "\n",
-    "> Although I didn't design this pattern, if you think about it, it makes sense. ORMs allow you to fluidly traverse relational objects. If you had to check the `object.id` of everything you returned before interacting with it, then that would ruin the user-friendly experience."
+    "However, if the class has not been instantiated, then the `id` is required: \n",
+    "```python\n",
+    "Queue.run_jobs(id)\n",
+    "```\n",
+    "\n",
+    "\n",
+    "> Although I did not design this pattern, if you think about it, it makes sense. ORMs allow you to fluidly traverse relational objects. If you had to check the `object.id` of everything you returned before interacting with it, then that would ruin the user-friendly experience."
    ]
   },
   {

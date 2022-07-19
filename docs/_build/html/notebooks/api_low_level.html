@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="78cd1ecf16794aceae35370c79fcc5c5 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="399e8e63c0984badb928bdb3bc7ce966 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -334,7 +334,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="78cd1ecf16794aceae35370c79fcc5c5" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="399e8e63c0984badb928bdb3bc7ce966" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -343,19 +343,18 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
-<p><strong>Automatic ``id`` method argument</strong></p>
-<p>Any method that interacts with an object that has already been created requires <code class="docutils literal notranslate"><span class="pre">id</span></code> as its first argument. However, if that object is instantiated/ read into memory, then <code class="docutils literal notranslate"><span class="pre">id</span></code> is automatically passed into the method as the first argument.</p>
-<p>For example, to run a method from scratch you’d have to pass in the <code class="docutils literal notranslate"><span class="pre">id</span></code> yourself.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>However, when interacting with an instantiated object, you do not need to do this:</p>
+<p><strong>Automatic ‘id’ method argument</strong></p>
+<p>If an ORM-based classes is instantiated, then any method called by the resulting object will automatically pass in the object’s <code class="docutils literal notranslate"><span class="pre">self.id</span></code> in as its first positional argument:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 <span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>However, if the class has not been instantiated, then the <code class="docutils literal notranslate"><span class="pre">id</span></code> is required:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
 <blockquote>
-<div><p>Although I didn’t design this pattern, if you think about it, it makes sense. ORMs allow you to fluidly traverse relational objects. If you had to check the <code class="docutils literal notranslate"><span class="pre">object.id</span></code> of everything you returned before interacting with it, then that would ruin the user-friendly experience.</p>
+<div><p>Although I did not design this pattern, if you think about it, it makes sense. ORMs allow you to fluidly traverse relational objects. If you had to check the <code class="docutils literal notranslate"><span class="pre">object.id</span></code> of everything you returned before interacting with it, then that would ruin the user-friendly experience.</p>
 </div></blockquote>
 <hr class="docutils" />
 </section>

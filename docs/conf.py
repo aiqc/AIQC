@@ -22,7 +22,6 @@ extensions = [
     , 'sphinx_copybutton'
     , 'sphinx_rtd_theme'
     , 'sphinxext.opengraph'
-    , 'sphinxcontrib.youtube'
 ]
 suppress_warnings  = ['nbsphinx']
 highlight_language = 'python3'
