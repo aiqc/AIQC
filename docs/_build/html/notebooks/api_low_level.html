@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="078ade6fe7cf4ef0a00fc48d8759b255 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="ba8274ed60f346dfbfa16a743bad70dd Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -334,7 +334,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="078ade6fe7cf4ef0a00fc48d8759b255" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="ba8274ed60f346dfbfa16a743bad70dd" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -556,9 +556,19 @@ max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal
 <section id="1ai1.-Dataset.Tabular">
 <h5>1ai1. <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code><a class="headerlink" href="#1ai1.-Dataset.Tabular" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways practitioners can use this 2D structure:</p>
-<section id="++">
-<h6>++<a class="headerlink" href="#++" title="Permalink to this headline"></a></h6>
-<p>Multiple subjects (1 row per sample) * Multi-variate 1D (1 col per attribute) Single subject (1 row per timestamp) * Multi-variate 1D (1 col per attribute) Multiple subjects (1 row per timestamp) * Uni-variate 0D (1 col per sample)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Multiple subjects (1 row per sample) * Multi-variate 1D (1 col per attribute)</p></td>
+</tr>
+<tr class="row-even"><td><p>Single subject (1 row per timestamp) * Multi-variate 1D (1 col per attribute)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Multiple subjects (1 row per timestamp) * Uni-variate 0D (1 col per sample)</p></td>
+</tr>
+</tbody>
+</table>
 <blockquote>
 <div><p>Tabular datasets may contain both features and labels</p>
 </div></blockquote>
@@ -684,13 +694,20 @@ for dtypes, and compression works great in Parquet.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-</section>
 <section id="1ai2.-Dataset.Sequence">
 <h5>1ai2. <code class="docutils literal notranslate"><span class="pre">Dataset.Sequence</span></code><a class="headerlink" href="#1ai2.-Dataset.Sequence" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways practitioners can use this 3D structure:</p>
-<section id="id3">
-<h6>++<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h6>
-<p>Single subject (1 patient) * Multiple 2D sequences Multiple subjects * Single 2D sequence</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Single subject (1 patient) * Multiple 2D sequences</p></td>
+</tr>
+<tr class="row-even"><td><p>Multiple subjects * Single 2D sequence</p></td>
+</tr>
+</tbody>
+</table>
 <blockquote>
 <div><p>Sequence datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
 </div></blockquote>
@@ -757,13 +774,20 @@ False.</p></td>
 </table>
 <hr class="docutils" />
 </section>
-</section>
 <section id="1ai3.-Dataset.Image">
 <h5>1ai3. <code class="docutils literal notranslate"><span class="pre">Dataset.Image</span></code><a class="headerlink" href="#1ai3.-Dataset.Image" title="Permalink to this headline"></a></h5>
 <p>Here are some of the ways you can practitioners this 4D structure:</p>
-<section id="id4">
-<h6>++<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h6>
-<p>Single subject (1 patient) * Multiple 3D images Multiple subjects * Single 3D image</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Single subject (1 patient) * Multiple 3D images</p></td>
+</tr>
+<tr class="row-even"><td><p>Multiple subjects * Single 3D image</p></td>
+</tr>
+</tbody>
+</table>
 <p>Users can ingest 4D data using either: - <a class="reference external" href="https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html">The Pillow library, which supports various formats</a> - Or NumPy arrays as a simple alternative</p>
 <blockquote>
 <div><p>Image datasets are somewhat multi-modal in that, in order to perform supervised learning on them, they must eventually be paired with a <code class="docutils literal notranslate"><span class="pre">Dataset.Tabular</span></code> that acts as its <code class="docutils literal notranslate"><span class="pre">Label</span></code>.</p>
@@ -955,7 +979,6 @@ for anything.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-</section>
 </section>
 </section>
 <section id="1aii.-Fetch">
@@ -1969,7 +1992,7 @@ to do the reshaping once up front.</p>
 <hr class="docutils" />
 <p>The <code class="docutils literal notranslate"><span class="pre">reshape_indices</span></code> argument is ultimately fed to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html">np.reshape(newshape)</a>. We use <em>index n</em> to point to the value at <code class="docutils literal notranslate"><span class="pre">ndarray.shape[n]</span></code>.</p>
 <p><strong>Reshaping by Index</strong></p>
-<p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our problems is that the images are B&amp;W, so we don’t want a color channel because it would add unecessary dimensionality to our model. Thus, we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>Let’s say we have a 4D feature consisting of 3D images <code class="docutils literal notranslate"><span class="pre">(samples</span> <span class="pre">*</span> <span class="pre">channels</span> <span class="pre">*</span> <span class="pre">rows</span> <span class="pre">*</span> <span class="pre">columns)</span></code>. Our problems is that the images are B&amp;W, so we don’t want a color channel because it would add unecessary dimensionality to our model. So we want to drop the dimension at the shape index <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reshape_indices</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2071,10 +2094,10 @@ to do the reshaping once up front.</p>
 <hr class="docutils" />
 <p><strong>Challenges</strong></p>
 <p>Dealing with stratified windowed data demands a systematic approach.</p>
-<img alt="window_dimensions" src="../_images/window_dimensions.png" />
+<img alt="windowDimensions" src="../_images/window_dimensions.png" />
 <p><strong>Windowing always increases dimensionality</strong></p>
 <p>After data is windowed, its dimensionality increases by 1. Why? Well, originally we had a <em>single time series</em>. However, if we window that data, then we have <em>many time series subsets</em>.</p>
-<img alt="interpolate_windows" src="../_images/interpolate_windows.png" />
+<img alt="interpolateWindows" src="../_images/interpolate_windows.png" />
 <p><strong>As the highest dimension, it becomes the “sample”</strong></p>
 <p>No matter what dimensionality the original data has, it will be windowed along the first dimension.</p>
 <p>This means that the windows now serve as the samples, which is important for stratification. If we have a year’s worth of windows, we don’t want all of our training windows to come from the same season. Therefore, Window must be created prior to Splitset.</p>

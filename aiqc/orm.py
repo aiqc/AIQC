@@ -3013,7 +3013,7 @@ class FeatureCoder(BaseModel):
         print(msg_match)
         num_leftover = len(leftover_columns)
         if (num_leftover==0):
-            msg_leftover = "\nSuccess - All columns now have encoders associated with them.\n"
+            msg_leftover = "\n└── Success - All columns now have encoders associated with them.\n"
         elif (num_leftover<=30):
             msg_leftover = f"\n└── Info - The following columns have not yet been encoded:\n{leftover_columns}\n"
         else:
