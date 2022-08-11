@@ -17,14 +17,21 @@ parser = argparse.ArgumentParser(
     , prog      = 'aiqc.ui.app'
 )
 parser.add_argument(
-    '--port', nargs='?', const=9991, type=int, default=9991,
+    '--port', type=int, default=9991, metavar='',
     help='localhost:<port> to run on. Default=9991'
 )
+# stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
 parser.add_argument(
-    '--debug', nargs='?', const=False, type=bool, default=False,
-    help='Raises errors and inspects callbacks. Default=False'
+    '--debug', action='store_true',
+    help='Raises errors and inspects callbacks.'
 )
+parser.add_argument(
+    '--no-debug', dest='debug', action='store_false',
+    help='By default, neither raises errors nor inspects callbacks.'
+)
+parser.set_defaults(debug=False)
 args = parser.parse_args()
+
 
 sheets    = [dbc.themes.BOOTSTRAP]
 app       = Dash(
