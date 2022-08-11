@@ -58,25 +58,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../pages/gallery.html">Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#TLDR">TLDR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#Environment">Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Python-Package">AIQC Python Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#Environment-Setup">Environment Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Python-Version">Python Version</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="installation.html#Pickle-Disclaimer">Pickle Disclaimer</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#Plotting">Plotting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="installation.html#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#Location-Based-on-OS">Location Based on OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Database">Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#Config">Config</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
@@ -375,19 +371,20 @@ Dash is running on http://127.0.0.1:9991/
  * Running on http://127.0.0.1:9991 (Press CTRL+C to quit)
 </pre></div>
 </div>
-<p>If you attempt to terminate the server with <code class="docutils literal notranslate"><span class="pre">CTRL+Z</span></code> by accident, then the port will not be released. The <a class="reference external" href="https://pypi.org/project/freeport/">freeport</a> is useful here.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">--port</span></code> and <code class="docutils literal notranslate"><span class="pre">--debug</span></code> mode are configurable.</p>
+<p>If you attempt to terminate the server with <code class="docutils literal notranslate"><span class="pre">CTRL+Z</span></code> by accident, then the port will get hung. The <a class="reference external" href="https://pypi.org/project/freeport/">freeport</a> package makes it easy to release the port in this case.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">--debug</span></code> mode are configurable.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ python -m aiqc.ui.app --help
 
-    usage: aiqc.ui.app [-h] [--port [PORT]] [--debug [DEBUG]]
+    usage: aiqc.ui.app [-h] [--port] [--debug] [--no-debug]
 
     Launch AIQC&#39;s Dash-Plotly UI for experiment tracking
     https://dash.plotly.com/devtools
 
     optional arguments:
-      -h, --help       show this help message and exit
-      --port [PORT]    Localhost:&lt;port&gt; to run on. Default=9991
-      --debug [DEBUG]  Raises errors and inspects callbacks. Default=False
+      -h, --help  show this help message and exit
+      --port      localhost:&lt;port&gt; to run on. Default=9991
+      --debug     Raises errors and inspects callbacks.
+      --no-debug  By default, neither raises errors nor inspects callbacks.
 </pre></div>
 </div>
 <p>The page refreshes every 10 seconds.</p>

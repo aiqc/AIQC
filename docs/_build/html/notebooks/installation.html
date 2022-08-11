@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/installation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="d0eb24af90e347b5a9f317fa27f86a0e TLDR:[ ]: pip install --upgrade pip pip install --upgrade wheel pip install --upgrade aiqc If that doesn’t work, read the rest of this notebook (e.g. supported Pyth..." />
+  <meta property="og:description" content="9923d18224474b9b815fab5d34d35400 AIQC Python Package:[ ]: pip install --upgrade pip pip install --upgrade wheel pip install --upgrade aiqc If during troubleshooting you find yourself reinstalling u..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -58,25 +58,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../pages/gallery.html">Gallery</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#TLDR">TLDR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Environment">Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#AIQC-Python-Package">AIQC Python Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Environment-Setup">Environment Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Python-Version">Python Version</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#Pickle-Disclaimer">Pickle Disclaimer</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#Operating-System">Operating System</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---JupyterLab-IDE">Optional - JupyterLab IDE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Plotting">Plotting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Optional---Plotly-in-JupyterLab">Optional - Plotly in JupyterLab</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#Optional---Swap-Space-for-Failover-Memory">Optional - Swap Space for Failover Memory</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#AIQC-Package">AIQC Package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Config-File">Config File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Location-of-AIQC-Files">Location of AIQC Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Location-Based-on-OS">Location Based on OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Database">Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Config">Config</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Optional---Deleting-the-Database">Optional - Deleting the Database</a><ul>
@@ -580,9 +576,9 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Install">
 <h1>Install<a class="headerlink" href="#Install" title="Permalink to this headline"></a></h1>
-<p><img alt="d0eb24af90e347b5a9f317fa27f86a0e" class="banner-photo" src="../_images/install.png" /></p>
-<section id="TLDR">
-<h2>TLDR<a class="headerlink" href="#TLDR" title="Permalink to this headline"></a></h2>
+<p><img alt="9923d18224474b9b815fab5d34d35400" class="banner-photo" src="../_images/env.png" /></p>
+<section id="AIQC-Python-Package">
+<h2>AIQC Python Package<a class="headerlink" href="#AIQC-Python-Package" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -594,15 +590,19 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions). As always, restart kernel if you are using a computational notebook. Be sure to read the plotting section below.</p>
+<p>If during troubleshooting you find yourself reinstalling unwanted packages from the cache, then use:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install --upgrade --no-cache-dir aiqc
+</pre></div>
+</div>
+<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions).</p>
 <hr class="docutils" />
 </section>
-<section id="Environment">
-<h2>Environment<a class="headerlink" href="#Environment" title="Permalink to this headline"></a></h2>
+<section id="Environment-Setup">
+<h2>Environment Setup<a class="headerlink" href="#Environment-Setup" title="Permalink to this headline"></a></h2>
 <section id="Python-Version">
 <h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline"></a></h3>
 <p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was developed on Python 3.7.12 in order to ensure compatibility with Google Colab.</p>
-<p>We highly recommend <code class="docutils literal notranslate"><span class="pre">pyenv</span></code> for managing Python installations and virtualenvs.</p>
+<p>We highly recommend <a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a> for managing Python installations and virtualenvs. There is even a pyenv <a class="reference external" href="https://github.com/pyenv-win/pyenv-win">port for Windows</a>.</p>
 <p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is in the root of the github.com/aiqc/aiqc repository.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -638,7 +638,7 @@ div.rendered_html tbody tr:hover {
 <li><p>Windows 10 (and WSL).</p></li>
 </ul>
 <blockquote>
-<div><p>If you run into trouble with the installation process on your OS, please submit a GitHub issue so that we can attempt to resolve, document, and release a fix as quickly as possible.</p>
+<div><p>If you run into trouble with the installation process on your OS, please create a GitHub discussion so that we can attempt to resolve, document, and release a fix as quickly as possible.</p>
 </div></blockquote>
 </section>
 <section id="Optional---JupyterLab-IDE">
@@ -672,154 +672,12 @@ v14.7.0
 </pre></div></div>
 </div>
 </section>
-<section id="Plotting">
-<h3>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline"></a></h3>
-<p>AIQC uses Plotly for interactive charts.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">plotly</span>
-</pre></div>
-</div>
-</div>
-<section id="Optional---Plotly-in-JupyterLab">
-<h4>Optional - Plotly in JupyterLab<a class="headerlink" href="#Optional---Plotly-in-JupyterLab" title="Permalink to this headline"></a></h4>
-<p>This requires the following dependencies:</p>
-<ul class="simple">
-<li><p>Python packages: [<code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code>, <code class="docutils literal notranslate"><span class="pre">plotly</span></code>]</p></li>
-<li><p>JupyterLab Extension: [<code class="docutils literal notranslate"><span class="pre">jupyterlab-plotly</span></code>].</p></li>
-</ul>
-<blockquote>
-<div><p><a class="reference external" href="https://github.com/plotly/plotly.py#jupyterlab-support">https://github.com/plotly/plotly.py#jupyterlab-support</a></p>
-</div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipywidgets</span>
-</pre></div>
-</div>
-</div>
-<section id="New:-simplified,-pre-built-extension-for-plotly&gt;=5.0.0">
-<h5>New: simplified, pre-built extension for plotly&gt;=5.0.0<a class="headerlink" href="#New:-simplified,-pre-built-extension-for-plotly>=5.0.0" title="Permalink to this headline"></a></h5>
-<p>The plotly JupyterLab Extension is now pre-built and included in the Plotly Python package. If you install plotly while you have a JupyterLab server running, then do a hard restart (not kernel reset) of the server for it to take effect.</p>
-</section>
-<section id="Deprecated:-manually-building-extension-process-for-plotly&lt;=5.0.0">
-<h5><em>Deprecated:</em> manually building extension process for plotly&lt;=5.0.0<a class="headerlink" href="#Deprecated:-manually-building-extension-process-for-plotly<=5.0.0" title="Permalink to this headline"></a></h5>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># Deprecated</span>
-<span class="c1">#!jupyter labextension install jupyterlab-plotly</span>
-<span class="c1">#!jupyter labextension check jupyterlab-plotly</span>
-<span class="c1">#!jupyter lab build</span>
-
-<span class="c1">#After the build completes (typically takes a few minutes) restart your Jupyter server by interrupting the command line process (not restarting kernel).</span>
-</pre></div>
-</div>
-</div>
-</section>
-</section>
-</section>
 <section id="Optional---Swap-Space-for-Failover-Memory">
 <h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline"></a></h3>
 <p>On local machines, it is good practice to configure “swap space.” This way, if your processes run out of memory/ RAM, then the excess information will simply spill over onto the (potentially dynamically sized) swap partition of your hard drive, as opposed to causing an out-of-memory crash. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for usage with swap, but you could get by with NVMe/ SSD.</p>
 <hr class="docutils" />
-</section>
-</section>
-<section id="AIQC-Package">
-<h2>AIQC Package<a class="headerlink" href="#AIQC-Package" title="Permalink to this headline"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">wheel</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
-</pre></div>
-</div>
-</div>
-<p><strong>Troubleshooting</strong>:</p>
-<ul class="simple">
-<li><p>Be sure to include <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> when running the command above.</p>
-<ul>
-<li><p>This was a 2020 bug with PyPI itself.</p></li>
-</ul>
-</li>
-<li><p>Upgrade <code class="docutils literal notranslate"><span class="pre">pip</span></code> itself: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pip</span></code></p></li>
-<li><p>Install<code class="docutils literal notranslate"><span class="pre">wheel</span></code> is recommended: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">wheel</span></code></p></li>
-<li><p>If you find yourself reinstalling unwanted packages from the cache, then use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">--no-cache-dir</span> <span class="pre">aiqc</span></code></p></li>
-</ul>
 <hr class="docutils" />
 </section>
-<section id="Config-File">
-<h2>Config File<a class="headerlink" href="#Config-File" title="Permalink to this headline"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">setup</span>
-<span class="n">setup</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<p><strong>UPDATE:</strong> <code class="docutils literal notranslate"><span class="pre">setup()</span></code> is now automatically ran when importing <code class="docutils literal notranslate"><span class="pre">orm</span></code>.</p>
-<p>This command only needs to be ran once. If you run it again, it skip the creation of any configuration folders and files that already exist.</p>
-<blockquote>
-<div><p>Although the backend files created by <code class="docutils literal notranslate"><span class="pre">setup()</span></code> could be created automatically upon import the package, the AIQC developers make a concious choice of not running system commands without explicit user consent.</p>
-</div></blockquote>
-<p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
-<blockquote>
-<div><p>So you <strong>do not</strong> have to worry about anything like installing a database server, database client, database users, configuring ports, configuring passwords/ secrets/ environment variables, or starting and restopping the database. Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>. Glad we found this fantastic and simple alternative to SQLAlchemy.</p>
-</div></blockquote>
-<p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.utils</span> <span class="kn">import</span> <span class="n">config</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">config</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;created_at&#39;: &#39;2022-03-02 10:57:12.603550&#39;,
- &#39;config_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/config.json&#39;,
- &#39;db_path&#39;: &#39;/Users/layne/Library/Application Support/aiqc/aiqc.sqlite3&#39;,
- &#39;sys.version&#39;: &#39;3.7.12 (default, Dec 10 2021, 10:49:04) \n[Clang 13.0.0 (clang-1300.0.29.3)]&#39;,
- &#39;platform.python_implementation()&#39;: &#39;CPython&#39;,
- &#39;sys.prefix&#39;: &#39;/Users/layne/.pyenv/versions/3.7.12/envs/aiqc_dev&#39;,
- &#39;os.name&#39;: &#39;posix&#39;,
- &#39;platform.version()&#39;: &#39;Darwin Kernel Version 20.6.0: Tue Oct 12 18:33:42 PDT 2021; root:xnu-7195.141.8~1/RELEASE_X86_64&#39;,
- &#39;platform.java_ver()&#39;: [&#39;&#39;, &#39;&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], [&#39;&#39;, &#39;&#39;, &#39;&#39;]],
- &#39;platform.win32_ver()&#39;: [&#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;],
- &#39;platform.libc_ver()&#39;: [&#39;&#39;, &#39;&#39;],
- &#39;platform.mac_ver()&#39;: [&#39;11.6.1&#39;, [&#39;&#39;, &#39;&#39;, &#39;&#39;], &#39;x86_64&#39;],
- &#39;aws_api_key&#39;: None}
-</pre></div></div>
-</div>
-<hr class="docutils" />
 </section>
 <section id="Location-of-AIQC-Files">
 <h2>Location of AIQC Files<a class="headerlink" href="#Location-of-AIQC-Files" title="Permalink to this headline"></a></h2>
@@ -838,6 +696,17 @@ v14.7.0
 <li><p>Linux - Alpine and Ubuntu: <code class="docutils literal notranslate"><span class="pre">/root/.local/share/aiqc</span></code></p></li>
 <li><p>Windows: <code class="docutils literal notranslate"><span class="pre">C:\Users\Username\AppData\Local\aiqc</span></code></p></li>
 </ul>
+</section>
+<section id="Database">
+<h3>Database<a class="headerlink" href="#Database" title="Permalink to this headline"></a></h3>
+<p>The database is simply a SQLite <strong>file</strong>, and AIQC serves as an ORM/ API for that SQL database.</p>
+<blockquote>
+<div><p>So you <strong>do not</strong> have to worry about anything like installing a database server, database client, database users, configuring ports, configuring passwords/ secrets/ environment variables, or starting and restopping the database. Shoutout to the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/index.html">ORM, peewee</a>. Glad we found this fantastic and simple alternative to SQLAlchemy.</p>
+</div></blockquote>
+</section>
+<section id="Config">
+<h3>Config<a class="headerlink" href="#Config" title="Permalink to this headline"></a></h3>
+<p>The configuration file contains low level information about: * Where AIQC should persist data. * Runtime (Python, OS) environment for reproducibility and troubleshooting.</p>
 <hr class="docutils" />
 </section>
 </section>
