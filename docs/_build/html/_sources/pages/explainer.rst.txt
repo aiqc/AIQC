@@ -533,17 +533,17 @@ Deep Learning 101
 
 
 .. list-table::
-  :widths: 20, 40
+  :widths: 13, 50
   :align: center
   
   * - **Input**
-    - Receives the data. Mirrors the shape of incoming data.
+    - Receives the data. Mirrors the shape of incoming features.
 
   * - **Hidden**
-    - Learns from patterns in data. # of layers & neurons with feature complexity.
+    - Learns from patterns in the features. The number of layers & neurons based on feature complexity.
 
   * - **Output**
-    - Compares predictions to real label. Mirrors shape of labels (# of categories).
+    - Compares predictions to the real label. Mirrors shape of labels (# of categories).
   
   * - **Regulatory**
     - [Not pictured here] *Dropout, BatchNorm, MaxPool* keep the network balanced and help prevent overfitting.

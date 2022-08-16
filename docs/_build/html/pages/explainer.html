@@ -768,18 +768,18 @@
   Within a neural network, there are different types of <i>layers</i>:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 67%" />
+<col style="width: 21%" />
+<col style="width: 79%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Input</strong></p></td>
-<td><p>Receives the data. Mirrors the shape of incoming data.</p></td>
+<td><p>Receives the data. Mirrors the shape of incoming features.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Hidden</strong></p></td>
-<td><p>Learns from patterns in data. # of layers &amp; neurons with feature complexity.</p></td>
+<td><p>Learns from patterns in the features. The number of layers &amp; neurons based on feature complexity.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Output</strong></p></td>
-<td><p>Compares predictions to real label. Mirrors shape of labels (# of categories).</p></td>
+<td><p>Compares predictions to the real label. Mirrors shape of labels (# of categories).</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Regulatory</strong></p></td>
 <td><p>[Not pictured here] <em>Dropout, BatchNorm, MaxPool</em> keep the network balanced and help prevent overfitting.</p></td>
