@@ -375,21 +375,24 @@
 
 </br>
 <p class="explain">
-  In this tutorial, we will focus on <i>discriminative</i> analysis as it is highly practical and easier to understand. This subtype of analysis helps us answer two important kinds of questions:
+  In this tutorial, we will focus on <i>discriminative</i> analysis as it is highly practical and easier to understand. Discrimination helps us answer two important kinds of questions:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 15%" />
+<col style="width: 10%" />
 <col style="width: 12%" />
-<col style="width: 72%" />
+<col style="width: 62%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Categorize</strong></p></td>
 <td><p>What is it?</p></td>
-<td><p>e.g. benign vs malignant? which species? landmine vs rock?</p></td>
+<td><p>aka classify</p></td>
+<td><p>e.g. benign vs malignant? which species?</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Quantify</strong></p></td>
 <td><p>How much?</p></td>
-<td><p>e.g. price? distance? weight? age? radioactivity?</p></td>
+<td><p>aka regress</p></td>
+<td><p>e.g. price? distance? age? radioactivity?</p></td>
 </tr>
 </tbody>
 </table>
@@ -402,7 +405,7 @@
 </div>
 </br>
 <p class="explain">
-  Digging one layer deeper, there are two types of categorization:
+  Digging one level deeper, there are two types of categorization:
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 23%" />
@@ -518,7 +521,7 @@
 
 </br>
 <p class="explain">
-  Before an algorithm can interact with the data, it needs to be <a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" target="_blank">encoded</a> into numeric format.
+  Data needs the be numerically <a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" target="_blank">encoded</a> before it can be fed into a neural network.
 </p>
 </br><table class="colwidths-given docutils align-center">
 <colgroup>
@@ -545,8 +548,8 @@
 </tr>
 </tbody>
 </table>
-<p class="figCaption" style="text-align: left;">
-  Normalization also <a href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4" target="_blank">helps features start on equal footing and prevent gradient explosion</a>.
+<p class="explain">
+  This normalization also <a href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4" target="_blank">helps features start on equal footing and prevent gradient explosion</a>.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -555,7 +558,7 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  After the algorithm makes its prediction, that information needs to be decoded back into its orginal format
+  After the algorithm makes its prediction, that information needs to be <i>decoded</i> back into its orginal format
   so that it can be understood by practitioners.
 </p><div class="line-block">
 <div class="line"><br /></div>
@@ -742,10 +745,12 @@
 <p class="explain">
   If things still aren't making sense, try thinking of a neural network as a galtonboard (aka "bean machine"). The goal is to shape the <i>topology</i>
   of the network so that it can successfully tease apart the patterns in the data to make the right predictions.
-</p><div class="line-block">
-<div class="line"><br /></div>
-</div>
-<div class="line-block">
+</p>
+
+<br/>
+
+<iframe style="margin:auto;display:block;" width="66%" height="350" src="https://www.youtube.com/embed/S5WAswaJRjw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe><div class="line-block">
 <div class="line"><br /></div>
 <div class="line"><br /></div>
 </div>
@@ -777,7 +782,7 @@
 <td><p>Compares predictions to real label. Mirrors shape of labels (# of categories).</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Regulatory</strong></p></td>
-<td><p>[Not pictured here] <em>Dropout, BatchNorm, MaxPool</em> keep the network balanced.</p></td>
+<td><p>[Not pictured here] <em>Dropout, BatchNorm, MaxPool</em> keep the network balanced and help prevent overfitting.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1011,13 +1016,13 @@
 </div>
 </br>
 <center>
-  <h3>🍻 Let's Get Started</h3>
+  <h3>🚀 Let's Get Started</h3>
 </center>
 
 </br>
 <p class="explain">
-  It's really that simple. The rest is just figuring out how to feed your data into and out of the algorithms,
-  which is where <a href='../index.html' target="_blank">AIQC</a> comes into play.
+  Now you're ready to start your own experiments with the help of the tutorials. The rest is just figuring out how to feed your data into and out of the algorithms,
+  which is where the <a href='../index.html' target="_blank">AIQC</a> framework comes into play.
 </p>
 </br><img alt="oz" class="no-scaled-link align-center" src="https://imgs.xkcd.com/comics/machine_learning.png" style="width: 40%;" />
 </br>

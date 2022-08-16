@@ -58,21 +58,23 @@ Deep Learning 101
 
   </br>
   <p class="explain">
-    In this tutorial, we will focus on <i>discriminative</i> analysis as it is highly practical and easier to understand. This subtype of analysis helps us answer two important kinds of questions:
+    In this tutorial, we will focus on <i>discriminative</i> analysis as it is highly practical and easier to understand. Discrimination helps us answer two important kinds of questions:
   </p>
 
 
 .. list-table::
-  :widths: 15, 12, 70
+  :widths: 15, 10, 12, 60
   :align: center
   
   * - **Categorize**
     - What is it?
-    - e.g. benign vs malignant? which species? landmine vs rock? 
+    - aka classify
+    - e.g. benign vs malignant? which species?
 
   * - **Quantify**
     - How much?
-    - e.g. price? distance? weight? age? radioactivity?
+    - aka regress
+    - e.g. price? distance? age? radioactivity?
 
 |
 
@@ -88,7 +90,7 @@ Deep Learning 101
   
   </br>
   <p class="explain">
-    Digging one layer deeper, there are two types of categorization:
+    Digging one level deeper, there are two types of categorization:
   </p>
 
 
@@ -224,7 +226,7 @@ Deep Learning 101
 
   </br>
   <p class="explain">
-    Before an algorithm can interact with the data, it needs to be <a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" target="_blank">encoded</a> into numeric format. 
+    Data needs the be numerically <a href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing" target="_blank">encoded</a> before it can be fed into a neural network. 
   </p>
   </br>
 
@@ -251,8 +253,8 @@ Deep Learning 101
 
 .. raw:: html
 
-  <p class="figCaption" style="text-align: left;">
-    Normalization also <a href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4" target="_blank">helps features start on equal footing and prevent gradient explosion</a>.
+  <p class="explain">
+    This normalization also <a href="https://towardsdatascience.com/data-leakage-5dfc2e0127d4" target="_blank">helps features start on equal footing and prevent gradient explosion</a>.
   </p>
 
 |
@@ -268,7 +270,7 @@ Deep Learning 101
 .. raw:: html
  
   <p class="explain">
-    After the algorithm makes its prediction, that information needs to be decoded back into its orginal format
+    After the algorithm makes its prediction, that information needs to be <i>decoded</i> back into its orginal format
     so that it can be understood by practitioners.
   </p>
 
@@ -505,11 +507,10 @@ Deep Learning 101
     of the network so that it can successfully tease apart the patterns in the data to make the right predictions.
   </p>
 
-|
+  <br/>
 
-.. youtube:: S5WAswaJRjw
-  :width: 66%
-  :align: center
+  <iframe style="margin:auto;display:block;" width="66%" height="350" src="https://www.youtube.com/embed/S5WAswaJRjw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+  </iframe>
 
 |
 |
@@ -545,7 +546,7 @@ Deep Learning 101
     - Compares predictions to real label. Mirrors shape of labels (# of categories).
   
   * - **Regulatory**
-    - [Not pictured here] *Dropout, BatchNorm, MaxPool* keep the network balanced.
+    - [Not pictured here] *Dropout, BatchNorm, MaxPool* keep the network balanced and help prevent overfitting.
 
 |
 
@@ -831,13 +832,13 @@ Deep Learning 101
 
   </br>
   <center>
-    <h3>🍻 Let's Get Started</h3>
+    <h3>🚀 Let's Get Started</h3>
   </center>
 
   </br>
   <p class="explain">
-    It's really that simple. The rest is just figuring out how to feed your data into and out of the algorithms, 
-    which is where <a href='../index.html' target="_blank">AIQC</a> comes into play.
+    Now you're ready to start your own experiments with the help of the tutorials. The rest is just figuring out how to feed your data into and out of the algorithms, 
+    which is where the <a href='../index.html' target="_blank">AIQC</a> framework comes into play.
   </p>
   </br>
 
