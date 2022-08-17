@@ -13,7 +13,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="7.1.1",
+    version="7.1.2",
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
     description="End-to-end machine learning on your desktop or server.",
