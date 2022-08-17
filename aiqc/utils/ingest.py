@@ -51,7 +51,7 @@ def colIndices_from_colNames(column_names:list, desired_cols:list):
 
 def df_stringifyCols(df:object, rename_columns:list=None):
     """
-    - `rename_columns` is user-defined.
+    - `rename_columns` would have been defined by the user during ingestion.
     - Pandas will assign a range of int-based columns if there are no column names.
       So I want to coerce them to strings because I don't want both string and int-based 
       column names for when calling columns programmatically, 

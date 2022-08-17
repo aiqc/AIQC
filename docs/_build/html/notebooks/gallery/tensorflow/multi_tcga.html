@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/gallery/tensorflow/multi_tcga.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes. 1f91b64fe96345cbab5b1e16e3aa10de Context: This dataset is comprised of: Features- the expression of 20,532 genes fro..." />
+  <meta property="og:description" content="Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes. 7842caf0779845dcad3b60409709795b Context: This dataset is comprised of: Features- the expression of 20,532 genes fro..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -575,7 +575,7 @@ div.rendered_html tbody tr:hover {
 <section id="Feature-Importance-for-Genetic-Target-Validation">
 <h1>Feature Importance for Genetic Target Validation<a class="headerlink" href="#Feature-Importance-for-Genetic-Target-Validation" title="Permalink to this headline"></a></h1>
 <p><em>Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes.</em></p>
-<p><img alt="1f91b64fe96345cbab5b1e16e3aa10de" class="banner-photo" src="../../../_images/genes.png" /></p>
+<p><img alt="7842caf0779845dcad3b60409709795b" class="banner-photo" src="../../../_images/genes.png" /></p>
 <section id="Context">
 <h2>Context<a class="headerlink" href="#Context" title="Permalink to this headline"></a></h2>
 <p>This dataset is comprised of:</p>
@@ -690,7 +690,7 @@ div.rendered_html tbody tr:hover {
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;drop_rate&#39;</span><span class="p">]))</span>
 
     <span class="c1"># Output layer</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">))</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">label_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">m</span>
 </pre></div>
 </div>

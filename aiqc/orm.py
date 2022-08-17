@@ -497,7 +497,6 @@ class Dataset(BaseModel):
             return dataset
 
 
-
         def to_df(id:int, columns:list=None, samples:list=None):
             columns = listify(columns)
             samples = listify(samples)
@@ -506,23 +505,25 @@ class Dataset(BaseModel):
             d_dtypes = dataset.dtypes
 
             # Default is to use all columns
+            dset_cols = dataset.columns
             if (columns is None):
-                columns = dataset.columns
+                columns = dset_cols
 
             # --- Fetch ---
             if (dataset.is_ingested==False):
+                """
+                - The file's columns are still raw aka haven't been renamed or filtered yet, 
+                  so we can't filter them using a subset of named columns yet.
+                - `columns` arg is used as filter a few dozens lines down right now. 
+                  So don't reassign it using the 2nd returned variable from _ stringify
+                """
                 df = path_to_df(
                     file_path     = dataset.source_path
                     , file_format = dataset.source_format
                     , header      = dataset.header
                 )
-                """
-                - df.columns are still raw/ haven't been renamed yet, so can't filter
-                  using the dataset-related metadata yet.
-                - `columns` arg is used as filter a few dozens rows down right now. 
-                  So don't reassign it using the 2nd returned variable from _ stringify
-                """
-                df, _ = df_stringifyCols(df=df, rename_columns=columns)
+
+                df, _ = df_stringifyCols(df=df, rename_columns=dset_cols)
 
             elif (dataset.is_ingested==True):
                 # Columns were saved as renamed & retyped
@@ -534,6 +535,7 @@ class Dataset(BaseModel):
 
             # --- Filter ---
             # <!> Dual role in rearranged cols to match the order of func's columns arg
+            # FYI this will fail if there are somehow duplicate columns in the df
             if (df.columns.to_list() != columns):
                 df = df.filter(columns)
             # Specific rows.
@@ -555,9 +557,8 @@ class Dataset(BaseModel):
 
         def to_arr(id:int, columns:list=None, samples:list=None):
             dataset = Dataset.get_by_id(id)
-            df = dataset.to_df(columns=columns, samples=samples)
-            ndarray = df.to_numpy()
-            return ndarray
+            arr = dataset.to_df(columns=columns, samples=samples).to_numpy()
+            return arr
 
     
     class Sequence():
