@@ -21,7 +21,7 @@ layout = dbc.Row(
             id              = "initial_load"
             , n_intervals   = 0
             , max_intervals = -1
-            , interval      = 10*1000
+            , interval      = 15*1000
         ),
         dbc.Col(
             [

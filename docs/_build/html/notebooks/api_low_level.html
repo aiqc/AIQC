@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="d3fd524a79bb4ed28db2d73e81bc2716 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="0f38e6c6393944f9b2e3bb52deddf178 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -330,7 +330,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="d3fd524a79bb4ed28db2d73e81bc2716" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="0f38e6c6393944f9b2e3bb52deddf178" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -3280,9 +3280,9 @@ Algorithm can have many Hyperparamsets.</p></td>
 </tbody>
 </table>
 <hr class="docutils" />
-<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.metrics_aggregate()</span></code></p>
-<p>For every metric of every model trained by the Queue – displays the average, median, standard deviation, minimum, and maximum across all splits/folds.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">metrics_aggregate</span><span class="p">(</span>
+<p>└── <code class="docutils literal notranslate"><span class="pre">Queue.metricsAggregate_df()</span></code></p>
+<p>Aggregate statistics about every metric of every model trained in the Queue – displays the average, median, standard deviation, minimum, and maximum across all splits/folds.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">metricsAggregate_df</span><span class="p">(</span>
     <span class="nb">id</span>
     <span class="p">,</span> <span class="n">ascending</span>        <span class="o">=</span> <span class="kc">False</span>
     <span class="p">,</span> <span class="n">selected_metrics</span> <span class="o">=</span> <span class="kc">None</span>

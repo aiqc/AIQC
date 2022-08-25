@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/evaluation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="d24c8b0e94c9432bae4ee41140391ca8 Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. All Analyses Loss is every neural network’s measure of overall..." />
+  <meta property="og:description" content="9c66c3f7291f4545b135310114bd9061 Overview: Every training Job automatically generates metrics when evaluated against each split/ fold. All Analyses Loss is every neural network’s measure of overall..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -576,7 +576,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Evaluation">
 <h1>Evaluation<a class="headerlink" href="#Evaluation" title="Permalink to this headline"></a></h1>
-<p><img alt="d24c8b0e94c9432bae4ee41140391ca8" class="banner-photo" src="../_images/plots.png" /></p>
+<p><img alt="9c66c3f7291f4545b135310114bd9061" class="banner-photo" src="../_images/plots.png" /></p>
 <section id="Overview">
 <h2>Overview<a class="headerlink" href="#Overview" title="Permalink to this headline"></a></h2>
 <p>Every training <code class="docutils literal notranslate"><span class="pre">Job</span></code> automatically generates metrics when evaluated against each split/ fold.</p>
@@ -784,7 +784,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">(</span>
+<span></span><span class="n">queue_multiclass</span><span class="o">.</span><span class="n">metricsAggregate_df</span><span class="p">(</span>
     <span class="n">selected_metrics</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">selected_stats</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">,</span> <span class="n">sort_by</span>        <span class="o">=</span> <span class="s1">&#39;predictor_id&#39;</span>
@@ -1132,7 +1132,7 @@ array([0.98889786, 0.0101095 , 0.00099256], dtype=float32)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metrics_aggregate_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span></span><span class="n">queue_regression</span><span class="o">.</span><span class="n">metricsAggregate_df</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

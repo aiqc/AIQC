@@ -2834,7 +2834,7 @@ class LabelCoder(BaseModel):
                 , samples_to_fit = samples_to_encode
             )
         except:
-            print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}``.\n")
+            print(f"\nYikes - During a test encoding, failed to `fit()` instantiated `{sklearn_preprocess}`.\n")
             raise
 
         # 3. Test Transform/ Encode.
@@ -3615,7 +3615,7 @@ class Queue(BaseModel):
         return df
 
 
-    def metrics_aggregate(
+    def metricsAggregate_df(
         id:int
         , ascending:bool        = False
         , selected_metrics:list = None
@@ -3623,9 +3623,10 @@ class Queue(BaseModel):
         , sort_by:list          = None
     ):
         selected_metrics = listify(selected_metrics)
-        selected_stats = listify(selected_stats)
-        sort_by = listify(sort_by)
+        selected_stats   = listify(selected_stats)
+        sort_by          = listify(sort_by)
 
+        # Use Predictions because not all of the Predictors may be trained yet
         queue_predictions = Prediction.select().join(
             Predictor).join(Job).where(Job.queue==id
         ).order_by(Prediction.id)
@@ -3635,9 +3636,10 @@ class Queue(BaseModel):
             print("\n~:: Patience, young Padawan ::~\n\nThe Jobs have not completed yet, so there are no Predictors to be had.\n")
             return None
 
+        # Figure out how the data is structured
         metrics_aggregate = queue_predictions[0].metrics_aggregate
-        metric_names = list(metrics_aggregate.keys())
-        stat_names = list(list(metrics_aggregate.values())[0].keys())
+        metric_names      = list(metrics_aggregate.keys())
+        stat_names        = list(list(metrics_aggregate.values())[0].keys())
 
         if (selected_metrics is not None):
             for m in selected_metrics:
@@ -3664,7 +3666,7 @@ class Queue(BaseModel):
                 # Check whitelist.
                 if (metric in selected_metrics):
                     stats['metric'] = metric
-                    stats['predictor_id'] = prediction.id
+                    stats['predictor_id'] = predictor.id
                     if (predictor.job.repeat_count > 1):
                         stats['repeat_index'] = predictor.repeat_index
                     if (predictor.job.fold is not None):
@@ -3935,6 +3937,14 @@ class Job(BaseModel):
             raise Exception(f"""
                 Yikes - Duplicate run detected for Job<{job.id}> repeat_index<{repeat_index}>.
                 Cancelling this instance of `run_jobs()` as there is another `run_jobs()` ongoing.
+            """)
+
+        # `history` containing `nan` will fail to save as a JSON attribute
+        # datascience.stackexchange.com/a/72520/80221
+        if np.NaN in history['loss']:
+            raise Exception("""
+                Yikes - Job failed because your `history['loss']` contained an `np.NaN` value.
+                Learn more: datascience.stackexchange.com/a/72520/80221
             """)
 
         predictor = Predictor.create(

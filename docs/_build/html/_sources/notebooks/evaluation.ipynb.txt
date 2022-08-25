@@ -504,7 +504,7 @@
     }
    ],
    "source": [
-    "queue_multiclass.metrics_aggregate_to_pandas(\n",
+    "queue_multiclass.metricsAggregate_df(\n",
     "    selected_metrics = None\n",
     "    , selected_stats = None\n",
     "    , sort_by        = 'predictor_id'\n",
@@ -919,7 +919,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "queue_regression.metrics_aggregate_to_pandas().tail(12)"
+    "queue_regression.metricsAggregate_df().tail(12)"
    ]
   },
   {
