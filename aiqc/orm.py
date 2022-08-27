@@ -3008,13 +3008,13 @@ class FeatureCoder(BaseModel):
         )
         num_match = len(matching_columns)
         if (num_match<=30):
-            msg_match = f"\n└── Success - Fit {stringified_encoder} on the following columns:\n{matching_columns}\n"
+            msg_match = f"\n└── 🧑‍🍳 Success - Fit {stringified_encoder} on the following columns:\n{matching_columns}\n"
         else:
-            msg_match = f"\n└── Success - Fit {stringified_encoder} on {num_match} columns.\n"
+            msg_match = f"\n└── 🧑‍🍳 Success - Fit {stringified_encoder} on {num_match} columns.\n"
         print(msg_match)
         num_leftover = len(leftover_columns)
         if (num_leftover==0):
-            msg_leftover = "\n└── Success - All columns now have encoders associated with them.\n"
+            msg_leftover = "\n└── ✅ Success - All columns now have encoders associated with them.\n"
         elif (num_leftover<=30):
             msg_leftover = f"\n└── Info - The following columns have not yet been encoded:\n{leftover_columns}\n"
         else:
@@ -3469,6 +3469,7 @@ class Queue(BaseModel):
                 j.delete_instance()
             queue.delete_instance()
             raise
+        print(f"\n└── 🔂 Success - created Queue consisting of {total_runs} runs.\n")
         return queue
 
 
