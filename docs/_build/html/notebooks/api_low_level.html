@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="0f38e6c6393944f9b2e3bb52deddf178 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="6e67347e4bea469eb6168df222e4165c Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -330,7 +330,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="0f38e6c6393944f9b2e3bb52deddf178" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="6e67347e4bea469eb6168df222e4165c" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -2235,17 +2235,22 @@ to do the reshaping once up front.</p>
 <hr class="docutils" />
 <p><strong>Cross-Validation</strong></p>
 <p>Cross-validation is triggered by <code class="docutils literal notranslate"><span class="pre">fold_count:int</span></code> during Splitset creation. Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about cross-validation.</p>
-<img alt="cross fold objects" src="../_images/cross_fold_objects.png" />
+<img alt="CrossFoldBins" src="../_images/cross_fold_bins.png" />
 <p>Each row in the diagram above is a <code class="docutils literal notranslate"><span class="pre">Fold</span></code> object.</p>
 <p>Each green/blue box represents a bin of stratified samples. During preprocessing and training, we rotate which blue bin serves as the validation samples (<code class="docutils literal notranslate"><span class="pre">fold_validation</span></code>). The remaining green bins in the row serve as the training samples (<code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code>).</p>
-<p>Let’s say we defined <code class="docutils literal notranslate"><span class="pre">fold_count=5</span></code>. What are the implications? - Creates 5 <code class="docutils literal notranslate"><span class="pre">Folds</span></code> related to a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>. - 5x more models will be trained for each experiment. - 5x more preprocessing and caching; the backend must preprocess each Fold separately to prevent data leakage by excluding <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> from the <code class="docutils literal notranslate"><span class="pre">fit</span></code>. Fits are saved to the Fold object as opposed to the Feature/Label objects. - 5x more evaluation.</p>
-<p><em>Disclaimer</em></p>
+<p>Let’s say we defined <code class="docutils literal notranslate"><span class="pre">fold_count=5</span></code>. What are the implications?</p>
+<ul class="simple">
+<li><p>Creates 5 <code class="docutils literal notranslate"><span class="pre">Folds</span></code> related to a <code class="docutils literal notranslate"><span class="pre">Splitset</span></code>.</p></li>
+<li><p>5x more preprocessing and caching; each <code class="docutils literal notranslate"><span class="pre">fold_validation</span></code> is excluded from the <code class="docutils literal notranslate"><span class="pre">fit</span></code> on <code class="docutils literal notranslate"><span class="pre">folds_train_combinared</span></code>. Fits are saved to the <code class="docutils literal notranslate"><span class="pre">orm.Fold</span></code> object as opposed to the <code class="docutils literal notranslate"><span class="pre">orm.Feature/Label</span></code> objects.</p></li>
+<li><p>5x more models will be trained for each experiment.</p></li>
+<li><p>5x more evaluation.</p></li>
+</ul>
+<p><em>Disclaimer about inherent limitations &amp; challenges</em></p>
 <blockquote>
-<div><p>DO NOT use cross-validation unless your <em>(total sample count / fold_count)</em> still gives you an accurate representation of your entire sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that <em>(total sample count / fold_count)</em> is evenly divisible. Folds naturally have fewer samples, so a handful of incorrect predictions have the potential to offset your aggregate metrics. Both of these tips help avoid poorly stratified/
-undersized folds that seem to perform either too well (only most common label class present) or poorly (handful of samples and a few inaccurate prediction on an otherwise good model).</p>
-<p>Candidly, if you’ve ever performed cross-validation manually, let alone systematically, you’ll know that, barring stratification of continuous labels, it’s easy enough to construct the folds, but then it’s a pain to generate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try
-to do something undersized like “150 samples in their dataset and a <code class="docutils literal notranslate"><span class="pre">fold_count</span></code> &gt; 3 with <code class="docutils literal notranslate"><span class="pre">unique_classes</span></code> &gt; 4,” then you may run into edge cases.</p>
-<p>Cross validation is only included in AIQC to allow best practices to be upheld and to show off the power of systematic preprocessing.</p>
+<div><p>Do not use cross-validation unless the distribution of each resulting fold (<em>total sample count divided by fold_count</em>) is representatitve of your broader sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that the <em>total sample count is evenly divisble by fold_count</em>. Both of these tips help avoid poorly stratified/ undersized folds that seem to perform either unjustifiably well (100% accuracy when only the most common label
+class is present) or poorly (1 incorrect prediction in a small fold negatively skews an otherwise good model).</p>
+<p>If you’ve ever performed cross-validation manually with too few samples, then you’ll know that it’s easy enough to construct the folds, but then it’s a pain to calculate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try to do something undersized like multi-label
+classification using 150 samples then you may run into errors during evaluation.</p>
 </div></blockquote>
 <hr class="docutils" />
 <p><strong>Samples Cache</strong></p>

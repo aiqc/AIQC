@@ -3493,7 +3493,7 @@ class Queue(BaseModel):
             try:
                 for rj in tqdm(
                     repeated_jobs
-                    , desc  = "🔮 Training Models 🔮"
+                    , desc  = f"🔮 Queue #{id} 🔮"
                     , ncols = 85
                 ):
                     # See if this job has already completed. Keeps the tqdm intact.
@@ -3521,7 +3521,7 @@ class Queue(BaseModel):
                 try:
                     for rj in tqdm(
                         repeated_jobs
-                        , desc  = f"🔮 Training Models - Fold #{idx+1} 🔮"
+                        , desc  = f"🔮 Queue {id} // Fold #{idx+1} 🔮"
                         , ncols = 85
                     ):
                         # See if this job has already completed. Keeps the tqdm intact.
