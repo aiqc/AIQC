@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="6e67347e4bea469eb6168df222e4165c Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="97eca59e7675443a8ca2649e0f63c9b7 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -330,7 +330,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="6e67347e4bea469eb6168df222e4165c" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="97eca59e7675443a8ca2649e0f63c9b7" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -2726,6 +2726,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 
 <span class="c1">#Define one or more metrics to monitor.</span>
 <span class="n">metrics_cuttoffs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
+    <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">)</span>
     <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_accuracy&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.96</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">),</span>
     <span class="nb">dict</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;val_loss&#39;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">above_or_below</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">)</span>
 <span class="p">]</span>
@@ -2738,6 +2740,9 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 <span class="p">)</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>Tip: try using a <code class="docutils literal notranslate"><span class="pre">val_accuracy</span></code> threshold by itself for best results</p>
+</div></blockquote>
 <hr class="docutils" />
 <section id="9a.-Methods">
 <h3>9a. Methods<a class="headerlink" href="#9a.-Methods" title="Permalink to this headline"></a></h3>

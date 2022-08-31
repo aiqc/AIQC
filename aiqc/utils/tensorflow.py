@@ -104,8 +104,7 @@ class TrainingCallback():
             elif (statement == True):
                 # However, if the for loop actually finishes, then all metrics are satisfied.
                 print(
-                    f":: Epoch #{epoch} ::\n" \
-                    f"Congratulations - satisfied early stopping thresholds defined in `MetricCutoff` callback:\n"\
+                    f"└── 📈 Success - satisfied early stopping thresholds in epoch #{epoch+1}:\n"\
                     f"{pformat(self.thresholds)}\n"
                 )
                 self.model.stop_training = True

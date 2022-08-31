@@ -1497,15 +1497,14 @@ class Feature(BaseModel):
     ):
         """
         - During inference, we want to encode new features using the original feature's relationships
-        - Except for `window` because that has to do with sample indices.
+        - Except for `window` because that has to do with *sample* indices.
         - This function exists because, as more optional preprocessers were added, we were calling 
           a lot of conditional code everywhere features were fetched.
         """
         feature = Feature.get_by_id(id)
         if (inference_featureID is None):
             inference_feature = None
-            feature_array     = feature.to_arr()
-            
+            feature_array     = feature.to_arr()            
             # Used for `fit` to avoid data leakage
             if (key_train is not None):
                 samples_train = samples[key_train]
@@ -1635,6 +1634,7 @@ class Feature(BaseModel):
                 except:
                     msg = f"\nYikes - Failed to rearrange the label shape {old_shape} into based on {new_shape} the `reshape_indices` {reshape_indices} provided .\n"
                     raise Exception(msg)
+        
         if (supervision=='supervised'):
             return feature_array
         elif (supervision=='unsupervised'):
@@ -2490,14 +2490,16 @@ class Splitset(BaseModel):
 
     def infer(id:int):
         """
+        Prepares features and label for `Predictor.predict()`
         - Splitset is used because Labels and Features can come from different types of Datasets.
         - Verifies both Features and Labels match original schema.
         - Labels are included because inference could be reassessing model performance/rot.
         """
         splitset_new = Splitset.get_by_id(id)
+        # Cannot use `id` by itself because it is a model instance
         new_id       = splitset_new.id
-
-        predictor = splitset_new.predictor
+        predictor    = splitset_new.predictor
+        
         # Name the samples/metrics split based on relationship count
         for e, splitset in enumerate(predictor.splitsets):
             if (splitset.id == new_id):
@@ -2508,12 +2510,11 @@ class Splitset(BaseModel):
         splitset_old    = predictor.job.queue.splitset
         old_supervision = splitset_old.supervision
         
+        # Use the old feature to process the new feature
         featureset_new = splitset_new.features
         featureset_old = splitset_old.features
-
         # Expecting different shapes so it has to be list, not array.
         features = []
-        # Use the old feature to process the new feature
         # Right now only 1 Feature can be windowed.
         for i, feature_old in enumerate(featureset_old):
             feature_new = featureset_new[i]
@@ -2521,13 +2522,14 @@ class Splitset(BaseModel):
                 arr_features = feature_old.preprocess(
                     inference_featureID=feature_new.id, supervision=old_supervision, fold=fold
                 )
-                # This is not known/ absolute at this point, it can be overwritten below.
+                # Label is still not known at this point, it can be overwritten below.
                 arr_labels = None
             elif (old_supervision=='unsupervised'):
                 arr_features, arr_labels = feature_old.preprocess(
                     inference_featureID=feature_new.id, supervision=old_supervision, fold=fold
                 )
             features.append(arr_features)
+
         features = [conditional_torch(f, library) for f in features]
         if (len(features)==1):
             features = features[0]
@@ -3008,17 +3010,17 @@ class FeatureCoder(BaseModel):
         )
         num_match = len(matching_columns)
         if (num_match<=30):
-            msg_match = f"\n└── 🧑‍🍳 Success - Fit {stringified_encoder} on the following columns:\n{matching_columns}\n"
+            msg_match = f"\n└── 👟 Success - Fit {stringified_encoder} on the following columns:\n{matching_columns}\n"
         else:
-            msg_match = f"\n└── 🧑‍🍳 Success - Fit {stringified_encoder} on {num_match} columns.\n"
+            msg_match = f"\n└── 👟 Success - Fit {stringified_encoder} on {num_match} columns.\n"
         print(msg_match)
         num_leftover = len(leftover_columns)
         if (num_leftover==0):
             msg_leftover = "\n└── ✅ Success - All columns now have encoders associated with them.\n"
         elif (num_leftover<=30):
-            msg_leftover = f"\n└── Info - The following columns have not yet been encoded:\n{leftover_columns}\n"
+            msg_leftover = f"\n└── ⬇️ Info - The following columns have not yet been encoded:\n{leftover_columns}\n"
         else:
-            msg_leftover = f"\n└── Info - There are still {num_leftover} columns that do not have an encoder specified yet.\nSee `FeatureCoder.leftover_columns`\n"
+            msg_leftover = f"\n└── ⬇️ Info - There are still {num_leftover} columns that do not have an encoder specified yet.\nSee `FeatureCoder.leftover_columns`\n"
         print(msg_leftover)
         return featurecoder
 
@@ -3494,7 +3496,7 @@ class Queue(BaseModel):
             try:
                 for rj in tqdm(
                     repeated_jobs
-                    , desc  = f"🔮 Queue #{id} 🔮"
+                    , desc  = f"└── 🔮 Queue #{id}:"
                     , ncols = 85
                 ):
                     # See if this job has already completed. Keeps the tqdm intact.
@@ -3505,7 +3507,7 @@ class Queue(BaseModel):
                         Job.run(id=rj[1].id, repeat_index=rj[0])
             except (KeyboardInterrupt):
                 # Attempts to prevent irrelevant errors, but sometimes they still slip through.
-                print("\nQueue was gracefully interrupted.\n")
+                print("\n└── 🕊️ Queue was gracefully interrupted.\n")
             except:
                 # Other training related errors.
                 raise
@@ -3522,7 +3524,7 @@ class Queue(BaseModel):
                 try:
                     for rj in tqdm(
                         repeated_jobs
-                        , desc  = f"🔮 Queue {id} // Fold #{idx+1} 🔮"
+                        , desc  = f"└── 🔮 Queue {id} // Fold #{idx+1}:"
                         , ncols = 85
                     ):
                         # See if this job has already completed. Keeps the tqdm intact.
@@ -4070,7 +4072,7 @@ class Predictor(BaseModel):
         analysis_type   = algorithm.analysis_type
         
         """
-        Logic for handling inference, fold, and evaluation.
+        Logic for handling situations of inference, fold, and evaluation.
         - `has_target` is not about supervision. During inference it is optional to provide labels.
         - However, we still need the `supervision` value for decoding no matter what.
         """
@@ -4134,7 +4136,7 @@ class Predictor(BaseModel):
                 probabilities[split] = probs
                 # Outputs numpy.
 
-                if (has_target == True):
+                if (has_target == True):  
                     label = fetchLabel_ifAbsent(
                         splitset      = splitset
                         , split       = split

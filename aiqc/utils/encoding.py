@@ -47,10 +47,11 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
             if (sklearn_preprocess.sparse == True):
                 try:
                     sklearn_preprocess.sparse = False
-                    print(dedent("""
-                        └── Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
-                            This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
-                    """))
+                    # This was just too verbose
+                    # print(dedent("""
+                    #     └── Info - System overriding user input to set `sklearn_preprocess.sparse=False`.
+                    #         This would have generated 'scipy.sparse.csr.csr_matrix', causing Keras training to fail.
+                    # """))
                 except:
                     raise Exception(dedent(f"""
                         Yikes - Detected `sparse==True` attribute of {sklearn_preprocess}.
@@ -78,10 +79,11 @@ def check_sklearn_attributes(sklearn_preprocess:object, is_label:bool):
             if (sklearn_preprocess.copy == True):
                 try:
                     sklearn_preprocess.copy = False
-                    print(dedent("""
-                        └── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
-                        This saves memory when concatenating the output of many encoders.
-                    """))
+                    # This was just too verbose
+                    # print(dedent("""
+                    #     └── Info - System overriding user input to set `sklearn_preprocess.copy=False`.
+                    #     This saves memory when concatenating the output of many encoders.
+                    # """))
                 except:
                     raise Exception(dedent(f"""
                         Yikes - Detected `copy==True` attribute of {sklearn_preprocess}.

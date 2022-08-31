@@ -143,12 +143,12 @@ def stage_data(splitset:object, fold:object):
         fold_idx      = f"fold_{idx}"
         path_fold     = path.join(path_splitset, fold_idx)
         create_folder(path_fold)
-        fold_progress = f"📦 Caching Splits - Fold #{idx+1} 📦"
+        fold_progress = f"└── 📦 Caching - Fold #{idx+1}:"
     else:
         samples       = splitset.samples
         path_fold     = path.join(path_splitset, "no_fold")
         create_folder(path_fold)
-        fold_progress = "📦 Caching Splits 📦"
+        fold_progress = "└── 📦 Caching Splits:"
     key_train = splitset.key_train#fold-aware.
     """
     - Remember, you `.fit()` on either training data or the entire dataset (categoricals).

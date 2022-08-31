@@ -144,12 +144,12 @@ class Pipeline:
         features = []
         feature_ids = []
         for i in inputs:
-            d_id = i.dataset.id
+            f_dset_id = i.dataset.id
            
             exclude_columns = i.exclude_columns
             include_columns = i.include_columns
             # For shared datasets, remove any label columns from featureset
-            if (d_id==l_dset_id):
+            if (f_dset_id==l_dset_id):
                 l_cols = target.column
                 
                 if ((exclude_columns==None) and (include_columns==None)):
@@ -164,7 +164,7 @@ class Pipeline:
                         if (c in include_columns):
                             include_columns.remove(c)
 
-            f = Feature.from_dataset(dataset_id=d_id, exclude_columns=exclude_columns, include_columns=include_columns)
+            f = Feature.from_dataset(dataset_id=f_dset_id, exclude_columns=exclude_columns, include_columns=include_columns)
             f_id = f.id
             features.append(f)
             feature_ids.append(f.id)
@@ -196,6 +196,7 @@ class Pipeline:
             stratifier = Stratifier()
         
         if (_predictor is not None):
+            # Has to be `_predictor` because that's the argument the class accepts
             _predictor = _predictor.id
 
         splitset = Splitset.make(
@@ -301,13 +302,12 @@ class Inference:
         """Reference `utils.wrangle.schemaNew_matches_schemaOld()` for validation"""
         input_datasets = listify(input_datasets)
         old_splitset = predictor.job.queue.splitset
-        
+
         if (target_dataset is not None):
-            label = old_splitset.label 
-            if (label is not None):
-                cols           = label.columns
-                target_dataset = label.dataset
-                target         = Target(dataset=target_dataset,column=cols)
+            old_label = old_splitset.label
+            if (old_label is not None):
+                col    = old_label.columns
+                target = Target(dataset=target_dataset,column=col)
         else:
             target = None
 
