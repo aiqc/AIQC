@@ -460,8 +460,10 @@ class Dataset(BaseModel):
                 source_format = 'csv'
             elif file_path.endswith('.parquet'):
                 source_format = 'parquet'
+            elif file_path.endswith('.pq'):
+                source_format = 'parquet'
             else:
-                msg = f"\nYikes - `file_path.lower()` ended with neither: '.tsv', '.csv', '.parquet':\n{file_path}\n"
+                msg = f"\nYikes - `file_path.lower()` ended with neither: '.tsv', '.csv', '.parquet', '.pq':\n{file_path}\n"
                 raise Exception(msg)
 
             if (not path.exists(file_path)):
@@ -1150,7 +1152,7 @@ class Label(BaseModel):
                         )
                 if (class_count == 1):
                     print(
-                        f"Tip - Only detected 1 unique label class. Should have 2 or more unique classes." \
+                        f"Warning - Only detected 1 unique label class. Should have 2 or more unique classes. " \
                         f"Your Label's only class was: <{unique_classes[0]}>."
                     )
 
@@ -3496,7 +3498,7 @@ class Queue(BaseModel):
             try:
                 for rj in tqdm(
                     repeated_jobs
-                    , desc  = f"└── 🔮 Queue #{id}:"
+                    , desc  = f"└── 🔮 Queue #{id}"
                     , ncols = 85
                 ):
                     # See if this job has already completed. Keeps the tqdm intact.
@@ -3524,7 +3526,7 @@ class Queue(BaseModel):
                 try:
                     for rj in tqdm(
                         repeated_jobs
-                        , desc  = f"└── 🔮 Queue {id} // Fold #{idx+1}:"
+                        , desc  = f"└── 🔮 Queue {id} // Fold #{idx+1}"
                         , ncols = 85
                     ):
                         # See if this job has already completed. Keeps the tqdm intact.
