@@ -317,16 +317,21 @@ class Plot(object):
         self, feature_impacts:object, feature_id:int,
         permute_count:int, top_n:int,
         height:int, margin_left:int,
-        call_display:bool
+        boxpoints:object, call_display:bool
     ):
         if (top_n is not None):
             title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count}, top_n:{top_n})</sub><br><br>"
         elif (top_n is None):
             title = f"Feature Importance <sub>(feature.id:{feature_id}, permute_count:{permute_count})</sub><br><br>"
-        
+
         fig = go.Figure()
         for feature, impacts in feature_impacts.items():
-            fig.add_trace(go.Box(x=impacts, name=feature))
+            fig.add_trace(go.Box(
+                x           = impacts
+                , name      = feature
+                , boxpoints = boxpoints
+                , marker    = dict(opacity=0.45)
+            ))
         fig.update_layout(
             template     = self.plot_template
             , height     = height
@@ -335,7 +340,7 @@ class Plot(object):
             , margin     = dict(l=margin_left)
         )
         fig.update_xaxes(
-            title = f"Importance<br><sup>[permuted column loss - training loss]</sup>",
+            title = f"Importance<br><sup>[permuted loss - loss]</sup>",
             # ticks not really showing.
             tickangle=45, nticks=15, gridcolor='#2c3c4a'
         )

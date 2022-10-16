@@ -143,7 +143,7 @@ def stage_data(splitset:object, fold:object):
         fold_idx      = f"fold_{idx}"
         path_fold     = path.join(path_splitset, fold_idx)
         create_folder(path_fold)
-        fold_progress = f"└── 📦 Caching - Fold #{idx+1}"
+        fold_progress = f"└── 📦 Caching | Fold #{idx+1}"
     else:
         samples       = splitset.samples
         path_fold     = path.join(path_splitset, "no_fold")
@@ -192,6 +192,7 @@ def stage_data(splitset:object, fold:object):
     arrays that are coming out of the preprocess() functions above
     - Keras multi-input models accept input as a list. Not using nested dict for multiple
     features because it would be hard to figure out feature.id-based keys on the fly.
+    - Tried label & feature folders, but it was too complex to fetch.
 
     aiqc/cache/samples/splitset_uid
     └── fold_index | no_fold
@@ -200,18 +201,14 @@ def stage_data(splitset:object, fold:object):
             └── feature_0.npy
             └── feature_1.npy
             └── feature_2.npy
-
-    - 'no_fold' just keeps the folder depth uniform for regular splitsets
-    - Tried label & feature folders, but it was too complex to fetch.
     """
     create_folder(path_splitset)
 
-    for split, indices  in tqdm(
+    for split, indices in tqdm(
         samples.items(), desc=fold_progress, ncols=85
     ):	
         path_split = path.join(path_fold, split)
         create_folder(path_split)
-
         """
         `Object arrays cannot be saved when allow_pickle=True`
         "An object array is just a normal numpy array where the dtype is object"

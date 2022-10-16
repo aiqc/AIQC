@@ -2451,7 +2451,7 @@ class Splitset(BaseModel):
         , fold_id:int = None
         , library:str = None
     ):
-        """
+        """        
         - Wanted to do this w/o queries, but getting features requires splitset,
           and I was if'ing for fold_index in multiple places.
         - Shape is only for a single sample. Including all samples is useless, 
@@ -3526,7 +3526,7 @@ class Queue(BaseModel):
                 try:
                     for rj in tqdm(
                         repeated_jobs
-                        , desc  = f"└── 🔮 Queue {id} // Fold #{idx+1}"
+                        , desc  = f"└── 🔮 Queue {id} | Fold #{idx+1}"
                         , ncols = 85
                     ):
                         # See if this job has already completed. Keeps the tqdm intact.
@@ -4583,7 +4583,9 @@ class Prediction(BaseModel):
     
 
     def plot_feature_importance(
-        id:int, call_display:bool=True, top_n:int=10, height:int=None, margin_left:int=None
+        id:int, call_display:bool=True, 
+        top_n:int=10, boxpoints:object=False, 
+        height:int=None, margin_left:int=None
     ):
         # Forcing `top_n` so that it doesn't load a billion features in the UI. 
         # `top_n` Silently returns all features if `top_n` > features.
@@ -4628,6 +4630,7 @@ class Prediction(BaseModel):
                     , height        = height
                     , margin_left   = margin_left
                     , top_n         = top_n
+                    , boxpoints     = boxpoints
                     , call_display  = call_display
                 )
                 if (call_display==False): figs.append(fig)
@@ -4697,26 +4700,25 @@ class Prediction(BaseModel):
         - Warning: tf can't be imported on multiple Python processes, making parallel optimization challenging.
         """
         # --- Fetch required objects ---
-        prediction    = Prediction.get_by_id(id)
-        metrics       = prediction.metrics
-        predictor     = prediction.predictor
-        job           = predictor.job
-        fold          = job.fold
-        hp            = job.hyperparamcombo.hyperparameters
-        queue         = job.queue
-        algorithm     = queue.algorithm
-        library       = algorithm.library
-        analysis_type = algorithm.analysis_type
-        splitset      = queue.splitset
-        features      = splitset.features
-        key_train     = splitset.key_train
+        prediction     = Prediction.get_by_id(id)
+        metrics        = prediction.metrics
+        predictor      = prediction.predictor
+        job            = predictor.job
+        fold           = job.fold
+        hp             = job.hyperparamcombo.hyperparameters
+        queue          = job.queue
+        algorithm      = queue.algorithm
+        library        = algorithm.library
+        analysis_type  = algorithm.analysis_type
+        splitset       = queue.splitset
+        features       = splitset.features
 
         if (fold is not None):
             f_id = fold.id
         else:
             f_id = None
 
-        # --- Reconstruct mdoel ---
+        # --- Reconstruct model ---
         model = predictor.get_model()
         if (library == 'pytorch'):
             # Returns tuple(model,optimizer)
@@ -4730,40 +4732,89 @@ class Prediction(BaseModel):
             raise Exception(msg)
 
         # --- Fetch the data ---
-        # Only 'train' because permutation is expensive and it contains the learned patterns.
-        train_label, _ = splitset.fetch_cache(
-            fold_id          = f_id
-            , split          = key_train
-            , label_features = 'label'
-            , library        = library
-        )
-        train_features, _ = splitset.fetch_cache(
-            fold_id          = f_id
-            , split          = key_train
-            , label_features = 'features'
-            , library        = library
-        )
+        # It's easier to fetch the split names from the metrics than splitset/fold
+        # Remember, a splitset can have more than one feature
+        splits       = metrics.keys()
+        all_labels   = []
+        all_features = []
+        for split in splits:
+            split_label, _ = splitset.fetch_cache(
+                fold_id          = f_id
+                , split          = split
+                , label_features = 'label'
+                , library        = library
+            )
+            split_features, _ = splitset.fetch_cache(
+                fold_id          = f_id
+                , split          = split
+                , label_features = 'features'
+                , library        = library
+            )
 
-        loss_baseline = metrics[key_train]['loss']
-        feature_importance = {}#['feature_id']['feature_column']
-        if (library == 'pytorch'):
-            if (analysis_type=='classification_multi'):
-                flat_labels = train_label.flatten().to(long)
+            all_labels.append(split_label)
+            all_features.append(split_features)
+
+        # Stack labels and features
+        if (len(splits)==1):
+            main_label    = all_labels[0]
+            main_features = all_features[0]
+        elif ((len(splits)>1)):
+            main_label    = np.concatenate(all_labels)
+
+            main_features = []
+            for ef, f in enumerate(features):
+                f_arrs = []
+                for es, split in enumerate(splits):
+                    if len(features)==1:
+                        arr = all_features[es]
+                    else:
+                        arr = all_features[es][ef]
+                    f_arrs.append(arr)
+                f_arr = np.concatenate(f_arrs)
+                main_features.append(f_arr)
+
+        if (len(features)==1):
+            main_features = main_features[0]
+        if ((library == 'pytorch') and (analysis_type=='classification_multi')):
+            flat_labels = main_label.flatten().to(long)
+        
+        # --- Baseline loss ---
+        if (library == 'keras'):
+            if ("classification" in analysis_type):
+                preds, probs = fn_predict(model, main_features)
+                loss = loser(main_label, probs)
+            elif (analysis_type == "regression"):
+                preds = fn_predict(model, main_features)
+                loss  = loser(main_label, preds)
+        elif (library == 'pytorch'):
+            if ("classification" in analysis_type):
+                preds, probs = fn_predict(model, main_features)						
+                probs = FloatTensor(probs)
+                if (analysis_type == 'classification_binary'):
+                    loss = loser(probs, main_label)
+                elif (analysis_type == 'classification_multi'):
+                    loss = loser(probs, flat_labels)#defined above
+            elif (analysis_type == 'regression'):
+                preds = fn_predict(model, main_features)
+                preds = FloatTensor(preds)
+                loss  = loser(preds, main_label)
+        main_loss = float(loss)
 
         # --- Identify the feature and column to be permuted ---
+        feature_importance = {}#['feature_id']['feature_column']
         for fi, feature in enumerate(features):
             if (feature.dataset.typ=='image'):
                 continue #preserves the index for accessing by feature_index
             feature_id = str(feature.id)
             feature_importance[feature_id] = {}
             if (len(features)==1):
-                feature_data = train_features
+                feature_data = main_features
             else:
-                feature_data = train_features[fi]
+                feature_data = main_features[fi]
             if (library == 'pytorch'):
                 feature_data = feature_data.detach().numpy()
             
-            # Figure out which dimension contains the feature column.
+            # Figure out which dimension contains the column of interest.
             ndim = feature_data.ndim
             feature_shapers = feature.featureshapers
             if (feature_shapers.count()>0):
@@ -4794,30 +4845,30 @@ class Prediction(BaseModel):
                     if (library == 'pytorch'): 
                         subset_shuffled = FloatTensor(subset_shuffled)
                     if (len(features)==1):
-                        train_features[col_index] = subset_shuffled
+                        main_features[col_index] = subset_shuffled
                     else:
-                        train_features[fi][col_index] = subset_shuffled
+                        main_features[fi][col_index] = subset_shuffled
 
                     if (library == 'keras'):
                         if ("classification" in analysis_type):
-                            preds_shuffled, probs_shuffled = fn_predict(model, train_features)
-                            loss = loser(train_label, probs_shuffled)
+                            preds_shuffled, probs_shuffled = fn_predict(model, main_features)
+                            loss = loser(main_label, probs_shuffled)
                         elif (analysis_type == "regression"):
-                            preds_shuffled = fn_predict(model, train_features)
-                            loss           = loser(train_label, preds_shuffled)
+                            preds_shuffled = fn_predict(model, main_features)
+                            loss           = loser(main_label, preds_shuffled)
                     elif (library == 'pytorch'):
                         feature_data = FloatTensor(feature_data)
                         if ("classification" in analysis_type):
-                            preds_shuffled, probs_shuffled = fn_predict(model, train_features)						
+                            preds_shuffled, probs_shuffled = fn_predict(model, main_features)						
                             probs_shuffled = FloatTensor(probs_shuffled)
                             if (analysis_type == 'classification_binary'):
-                                loss = loser(probs_shuffled, train_label)
+                                loss = loser(probs_shuffled, main_label)
                             elif (analysis_type == 'classification_multi'):
                                 loss = loser(probs_shuffled, flat_labels)#defined above
                         elif (analysis_type == 'regression'):
-                            preds_shuffled = fn_predict(model, train_features)
+                            preds_shuffled = fn_predict(model, main_features)
                             preds_shuffled = FloatTensor(preds_shuffled)
-                            loss           = loser(preds_shuffled, train_label)
+                            loss           = loser(preds_shuffled, main_label)
                         # Convert tensors back to numpy for permuting again.
                         feature_data = feature_data.detach().numpy()
                     loss = float(loss)
@@ -4826,12 +4877,12 @@ class Prediction(BaseModel):
                     feature_subset = FloatTensor(feature_subset)
                 # Restore the unshuffled feature column back to source.				
                 if (len(features)==1):
-                    train_features[col_index] = feature_subset
+                    main_features[col_index] = feature_subset
                 else:
-                    train_features[fi][col_index]= feature_subset
+                    main_features[fi][col_index] = feature_subset
                 med_loss     = statistics.median(permutations_feature)
-                med_loss     = med_loss - loss_baseline
-                loss_impacts = [loss - loss_baseline for loss in permutations_feature]
+                med_loss     = med_loss - main_loss
+                loss_impacts = [loss - main_loss for loss in permutations_feature]
                 
                 feature_importance[feature_id][col]                 = {}
                 feature_importance[feature_id][col]['median']       = med_loss
