@@ -79,21 +79,24 @@
           <img class="flex-image" src='_static/images/web/psf_logo.png'">
         </a>
       </div>
-      <div class="flex-bottom">
+      <div class="flex-bottom" style="color:gray">
+        ↳ <span class="textz">Sponsored by</span>
+        <!--
         <a href="https://wiki.python.org/psf/ScientificWG/Charter_v3" target="_blank">
           ↳ <span class="textz">Sponsored by</span>
         </a>
+        -->
       </div>
     </div>
     <div class="flex-item shadowBox">
        <div class="flex-top">
-        <a href="https://aiqc.medium.com/" target="_blank">
-          <img class="flex-image" src='_static/images/web/tds_logo_bw.png' />
+        <a href="https://www.youtube.com/watch?v=suV5i-Y9tws" target="_blank">
+          <img class="flex-image" src='_static/images/web/iscb_logo.png' style="width:65%; border-radius: 9px !important;"/>
         </a>
       </div>
       <div class="flex-bottom">
-        <a href="https://aiqc.medium.com/" target="_blank">
-          ↳ <span class="textz">Blogged by</span>
+        <a href="https://www.youtube.com/watch?v=suV5i-Y9tws" target="_blank">
+          ↳ <span class="textz">Presented at</span>
         </a>
       </div>
     </div>
@@ -103,10 +106,13 @@
          <img class="flex-image" src='_static/images/web/pydata_logo.png' />
         </a>
       </div>
-      <div class="flex-bottom">
+      <div class="flex-bottom" style="color:gray">
+        ↳ <span class="textz">Presented at</span>
+        <!--
         <a href="https://pydata.org/global2021/schedule/presentation/33/aiqc-deep-learning-experiment-tracking-with-multi-dimensional-prepost-processing/" target="_blank">
           ↳ <span class="textz">Presented at</span>
         </a>
+        -->
       </div>
     </div>
   </div>
@@ -114,6 +120,7 @@
   </br></br></br></br>
   
   <!-- 3 BRs or a 60% margin makes the shapes below get misaligned -->
+  <!--
   <center style="margin-bottom:50px;">
     <img src="_static/images/dashboard/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
     </br>
@@ -129,8 +136,9 @@
       (play video with Chrome or enable FireFox embedded content)
     </p>
   </center>
-  
   </br></br>
+  -->
+
   <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
       <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>

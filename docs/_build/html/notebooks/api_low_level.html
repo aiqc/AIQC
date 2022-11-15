@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="97eca59e7675443a8ca2649e0f63c9b7 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="e56ad2aa755546c7bb667ab36b65d0cb Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -330,7 +330,7 @@
 </style>
 <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="97eca59e7675443a8ca2649e0f63c9b7" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="e56ad2aa755546c7bb667ab36b65d0cb" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -2206,7 +2206,7 @@ to do the reshaping once up front.</p>
 </section>
 <section id="8.-Splitset">
 <h2>8. Splitset<a class="headerlink" href="#8.-Splitset" title="Permalink to this headline"></a></h2>
-<p>Used for sample stratification. Reference <a class="reference external" href="https://docs.aiqc.io/pages/explainer.html">Stratification</a> section.</p>
+<p>Used for sample stratification. Reference <a class="reference external" href="https://docs.aiqc.io/pages/explainer.html">Stratification</a> section of the Explainer.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 50%" />
@@ -2268,14 +2268,13 @@ classification using 150 samples then you may run into errors during evaluation.
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">&lt;fold_index&gt;</span></code> is a folder for each Fold, since they have different samples.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&quot;no_fold&quot;</span></code> is a single folder for a regular splitset where there are no folds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&lt;split&gt;</span></code> means train, validation, test, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;fold_index&gt;</span></code> is a folder for each Fold, since they have different samples. Whereas “no_fold” is a single folder for a regular splitset where there are no folds. ‘no_fold’ just keeps the folder depth uniform for regular splitsets</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;split&gt;</span></code>: The <code class="docutils literal notranslate"><span class="pre">samples[&lt;split&gt;]</span></code> of interest: ‘train’, ‘validation’, ‘folds_train_combined’, ‘fold_validation’, ‘test’.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">feature_&lt;n&gt;</span></code> accounts for Splitsets with more than 1 Feature.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">Splitset.cache_hot:bool</span></code> argument indicates whether or not the cache for that splitset is populated or not.</p>
 <p>Samples are automatically cached during <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code>.</p>
-<p>When finished with a project, it’s a good idea to run <code class="docutils literal notranslate"><span class="pre">splitset.clear_cache()</span></code> so that cached samples don’t take up space uneccessarilly. There is also <code class="docutils literal notranslate"><span class="pre">clear_cache_all()</span></code> to remove the entire cache directory for all Splitsets.</p>
+<p>See also: <code class="docutils literal notranslate"><span class="pre">orm.splitset.clear_cache()</span></code> and <code class="docutils literal notranslate"><span class="pre">utils.config.clear_cache_all()</span></code></p>
 <hr class="docutils" />
 <section id="8a.-Methods">
 <h3>8a. Methods<a class="headerlink" href="#8a.-Methods" title="Permalink to this headline"></a></h3>
@@ -2397,7 +2396,7 @@ attributes.</p></td>
 </table>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.clear_cache()</span></code></p>
-<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description</p>
+<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description. Deletes the entire directory located at <code class="docutils literal notranslate"><span class="pre">Splitset.cache_path</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2458,7 +2457,7 @@ attributes.</p></td>
 <tr class="row-odd"><td><p><strong>split</strong></p></td>
 <td><p>int</p></td>
 <td><p>Required</p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">samples[&lt;split&gt;]</span></code> of interest.</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">samples[&lt;split&gt;]</span></code> of interest: ‘train’, ‘validation’, ‘folds_train_combined’, ‘fold_validation’, ‘test’.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>label_features</strong></p></td>
 <td><p>str</p></td>
@@ -2625,7 +2624,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 <p>The Algorithm contains all of the components needed to construct, train, and use our model.</p>
 <p>Reference the <a class="reference external" href="../pages/gallery.html">tutorials</a> for examples of how Algorithms are defined.</p>
 <hr class="docutils" />
-<p><strong>PyTorch ``fit``</strong></p>
+<p><strong>PyTorch Fit</strong></p>
 <p>Provides an abstraction that eliminates the boilerplate code normally required to train and evaluate a PyTorch model.</p>
 <ul class="simple">
 <li><p>Before training - it shuffles samples, batches samples, and then shuffles batches.</p></li>
@@ -2695,14 +2694,14 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 </tbody>
 </table>
 <hr class="docutils" />
-<p><strong>``history`` Metrics</strong></p>
+<p><strong>History Metrics</strong></p>
 <p>The goal of the <code class="docutils literal notranslate"><span class="pre">Predictor.history</span></code> object is to record the training and evaluation metrics at the end of each epic so that they can be interpretted in the learning curve plots. Reference the <a class="reference external" href="evaluation.html">evaluation</a> section.</p>
 <ul class="simple">
 <li><p><em>Keras</em>: any <code class="docutils literal notranslate"><span class="pre">metrics=[]</span></code> specified are automatically added to the <code class="docutils literal notranslate"><span class="pre">History</span></code> callback object.</p></li>
 <li><p><em>PyTorch</em>: if you use <code class="docutils literal notranslate"><span class="pre">fit</span></code> seen above, then you don’t need to worry about this. Users are responsible for calculating their own metrics (we recommend the <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> package) and placing them into a <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary that mirrors the schema of the Keras history object. Reference the torch <a class="reference external" href="gallery/pytorch/multi_class.html">examples</a>.</p></li>
 </ul>
 <blockquote>
-<div><p>The schema of the <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(*:ndarray,</span> <span class="pre">val_*=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
+<div><p>The schema of the <code class="docutils literal notranslate"><span class="pre">history</span></code> dictionary is as follows: <code class="docutils literal notranslate"><span class="pre">dict(&lt;metric&gt;:ndarray,</span> <span class="pre">val_&lt;metric&gt;=ndarray)</span></code>. For example, if you wanted to record the history of the ‘loss’ and ‘accuracy’ metrics manually for PyTorch, you would construct it like so:</p>
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">history</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">loss</span>           <span class="o">=</span> <span class="n">ndarray</span>
@@ -2872,13 +2871,13 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 </div>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Algorithm.get_code()</span></code></p>
-<p>Reveals the strings of the Algorithm functions:</p>
+<p>Returns the strings of the Algorithm functions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
-    <span class="n">fn_build</span>      <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_build</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">fn_lose</span>     <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_lose</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_optimize</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">fn_train</span>    <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)</span>
-    <span class="p">,</span> <span class="n">fn_predict</span>  <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_predict</span><span class="p">)</span>
+    <span class="n">fn_build</span>      <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_build</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_lose</span>     <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_lose</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_optimize</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_optimize</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_train</span>    <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_train</span><span class="p">)</span>
+    <span class="p">,</span> <span class="n">fn_predict</span>  <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">dill</span><span class="o">.</span><span class="n">reveal_code</span><span class="p">(</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">fn_predict</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -3733,12 +3732,18 @@ diverging or not.</p></td>
 <td><p>10</p></td>
 <td><p>The number of features to display. If greater than the actual number of features, it just returns all features.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>height</strong></p></td>
+<tr class="row-odd"><td><p><strong>boxpoints</strong></p></td>
+<td><p>object</p></td>
+<td><p>False</p></td>
+<td><p>Determines how whiskers, outliers, and points are shown. Options are: <code class="docutils literal notranslate"><span class="pre">False</span></code>, <code class="docutils literal notranslate"><span class="pre">'all'</span></code>, <code class="docutils literal notranslate"><span class="pre">'suspectedoutliers'</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">'outliers'</span></code>. Reference <a class="reference external" href="https://plotly.com/python/box-plots/">Plotly Box Plots</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>height</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, dynamically makes the plot taller to fit all of the columns</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>margin_left</strong></p></td>
+<tr class="row-odd"><td><p><strong>margin_left</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
 <td><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, dynamically makes the y axis margin wider the longest column name</p></td>
