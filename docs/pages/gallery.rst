@@ -83,7 +83,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/genes.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">🧬 Hunt Cancer Genes</div>
+        <div class="flex-title">🧬 Diagnose Cancers</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/notebooks/gallery/tensorflow/multi_tcga.html">
@@ -104,7 +104,7 @@ Gallery
         <img class="gallery-img" src='../_static/images/gallery/waves.png'">
       </div>
       <div class="flex-right">
-        <div class="flex-title">⚡ Detect Seizure</div>
+        <div class="flex-title">⚡ Detect Seizures</div>
         <div class="flex-tags">
           <div class="flex-tag tag-tool">
             <a href="/notebooks/gallery/tensorflow/seq_class.html">
