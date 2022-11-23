@@ -63,7 +63,7 @@
   </br></br>
 
 
-.. image:: _static/images/web/framework_nov23.png
+.. image:: _static/images/web/framework_nov24.png
   :width: 93%
   :align: center
   :alt: framework
