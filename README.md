@@ -15,7 +15,7 @@
 </br></br>
 
 <a href="https://docs.aiqc.io">
-	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/framework_simple.png" width="95%" alt="framework"/>
+	<img src="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/framework_nov24.png" width="95%" alt="framework"/>
 </a>
 </br></br></br>
 
