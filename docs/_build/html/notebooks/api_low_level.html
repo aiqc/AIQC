@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="9a9ea2c0a2694bc7bcb8e4888dc90ded Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="43d03e565b0748daab6daeda1c6547b1 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -304,37 +304,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="ORM">
+  <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="9a9ea2c0a2694bc7bcb8e4888dc90ded" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="43d03e565b0748daab6daeda1c6547b1" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
-<p>The real power lies in the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>), which enable us to construct rule-base protocols for various types of data and analysis.</p>
+<p>The real power lies in the relationships between these objects (e.g. <code class="docutils literal notranslate"><span class="pre">Label</span></code>→<code class="docutils literal notranslate"><span class="pre">Splitset</span></code>←<code class="docutils literal notranslate"><span class="pre">Feature</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code>→<code class="docutils literal notranslate"><span class="pre">Job</span></code>→<code class="docutils literal notranslate"><span class="pre">Predictor</span></code>→<code class="docutils literal notranslate"><span class="pre">Prediction</span></code>), which enable us to construct rule-base protocols for various types of data and analysis.</p>
 <p>Goobye, <em>X_train, y_test</em>. Hello, object-oriented machine learning.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
@@ -451,7 +427,7 @@
 </section>
 <section id="1.-Dataset">
 <h2>1. Dataset<a class="headerlink" href="#1.-Dataset" title="Permalink to this headline"></a></h2>
-<img alt="Datasets" src="../_images/dimensions.png" />
+<p><img alt="Datasets" src="../_images/dimensions.png" /></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> class provides the following subclasses for working with different types of data:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -514,7 +490,7 @@ may remain remote. Regardless of whether or not the raw data is ingested, metada
 </tr>
 <tr class="row-odd"><td><p><strong>rename_columns</strong></p></td>
 <td><p>Useful for assigning column names to arrays or delimited files that would otherwise be unnamed. <code class="docutils literal notranslate"><span class="pre">len(rename_columns)</span></code> must match the number of columns in the raw data. Normally, an int-based range is assigned to unnamed columns. In this case,
-AIQC converts each column name to a string e.g. ‘1’ during the registration process.</p></td>
+AIQC converts each column name to a string e.g. ‘1’ during the registration process.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>retype</strong></p></td>
 <td><p>Change the dtype of data using <a class="reference external" href="https://numpy.org/doc/stable/user/basics.types.html">np.types</a>. All Dataset subclasses support mass typing via <code class="docutils literal notranslate"><span class="pre">np.type</span></code>/ <code class="docutils literal notranslate"><span class="pre">str(np.type)</span></code>. Only the Tabular subclass supports inidividual column retyping via
@@ -538,15 +514,15 @@ duplicate, it will warn you and <code class="docutils literal notranslate"><span
 </ul>
 <p><em>Why would I avoid ingestion?</em></p>
 <ul class="simple">
-<li><p>Happy with where the original data lives: e.g. S3 bucket.</p></li>
+<li><p>Happy with where the original data lives: e.g. S3 bucket.</p></li>
 <li><p>Don’t want to duplicate the data.</p></li>
 </ul>
 <blockquote>
 <div><p><em>sha256?</em> – It’s the one-way hash algorithm that GitHub aspires to upgrade to. AIQC runs it on compressed data because it’s easier and probably less-error prone than intercepting the bytes of the <em>fastparquet</em> intermediary tables before appending the Parquet magic bytes.</p>
 </div></blockquote>
 <blockquote>
-<div><p><em>Is SQLite a legitimate datastore?</em> – In many cases, SQLite queries are faster than accessing data via a filesystem. It’s a stable, 22 year-old technology that serves as the default database for iOS e.g. Apple Photos. AIQC uses it store raw data in byte format as a BlobField. I’ve stored tens-of-thousands of files in it over several years and never experienced corruption. Keep in mind that AWS S3 is blob store, and the Microsoft equivalent service is literally called Azure <em>Blob</em> Storage. The
-max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal of machine learning isn’t to record the entire population within the weights of a neural network, it’s to find subsets that are representative of the broader population.</p>
+<div><p><em>Is SQLite a legitimate datastore?</em> – In many cases, SQLite queries are faster than accessing data via a filesystem. It’s a stable, 22 year-old technology that serves as the default database for iOS e.g. Apple Photos. AIQC uses it store raw data in byte format as a BlobField. I’ve stored tens-of-thousands of files in it over several years and never experienced corruption. Keep in mind that AWS S3 is blob store, and the Microsoft equivalent service is literally called Azure <em>Blob</em> Storage.
+The max size of a BlobField is 2GB, so ~20GB after compression. Either way, the goal of machine learning isn’t to record the entire population within the weights of a neural network, it’s to find subsets that are representative of the broader population.</p>
 </div></blockquote>
 <hr class="docutils" />
 <section id="1ai1.-Dataset.Tabular">
@@ -603,22 +579,22 @@ single index. DataFrames are always ingested.</p></td>
 <tr class="row-odd"><td><p><strong>rename_columns</strong></p></td>
 <td><p>list[str]</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>retype</strong></p></td>
 <td><p>np.type / dict(column:np.type)</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 </tbody>
 </table>
@@ -658,33 +634,33 @@ single index. DataFrames are always ingested.</p></td>
 <tr class="row-odd"><td><p><strong>ingest</strong></p></td>
 <td><p>bool</p></td>
 <td><p>True</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a>. Defaults to True because I don’t want to rely on CSV files as a source of truth
+<td><p>See Registration. Defaults to True because I don’t want to rely on CSV files as a source of truth
 for dtypes, and compression works great in Parquet.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>rename_columns</strong></p></td>
 <td><p>list[str]</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>retype</strong></p></td>
 <td><p>np.type / dict(column:np.type)</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>header</strong></p></td>
 <td><p>object</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 </tbody>
 </table>
@@ -743,28 +719,28 @@ for dtypes, and compression works great in Parquet.</p></td>
 <tr class="row-odd"><td><p><strong>ingest</strong></p></td>
 <td><p>bool</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a>. If left blank, ndarrays will be ingested and npy will not. Errors if ndarray and
+<td><p>See Registration. If left blank, ndarrays will be ingested and npy will not. Errors if ndarray and
 False.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>rename_columns</strong></p></td>
 <td><p>list[str]</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>retype</strong></p></td>
 <td><p>np.type / dict(column:np.type)</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 </tbody>
 </table>
@@ -824,28 +800,28 @@ False.</p></td>
 <tr class="row-odd"><td><p><strong>ingest</strong></p></td>
 <td><p>bool</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a>. If left blank, ndarrays will be ingested and npy will not. Errors if input is
+<td><p>See Registration. If left blank, ndarrays will be ingested and npy will not. Errors if input is
 ndarray and <code class="docutils literal notranslate"><span class="pre">ingest==False</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>rename_columns</strong></p></td>
 <td><p>list[str]</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>retype</strong></p></td>
 <td><p>np.type / dict(column:np.type)</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 </tbody>
 </table>
@@ -884,27 +860,27 @@ ndarray and <code class="docutils literal notranslate"><span class="pre">ingest=
 <tr class="row-odd"><td><p><strong>ingest</strong></p></td>
 <td><p>bool</p></td>
 <td><p>False</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>rename_columns</strong></p></td>
 <td><p>list[str]</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>retype</strong></p></td>
 <td><p>np.type / dict(column:np.type)</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 </tbody>
 </table>
@@ -950,27 +926,27 @@ for anything.</p></td>
 <tr class="row-even"><td><p><strong>ingest</strong></p></td>
 <td><p>bool</p></td>
 <td><p>False</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>rename_columns</strong></p></td>
 <td><p>list[str]</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>retype</strong></p></td>
 <td><p>np.type / dict(column:np.type)</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>description</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
 <td><p>None</p></td>
-<td><p>See <a class="reference external" href="#1a.-Registration">Registration</a></p></td>
+<td><p>See Registration</p></td>
 </tr>
 </tbody>
 </table>
@@ -1166,7 +1142,7 @@ for anything.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns then dtype of each column within a <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
+<p>Regardless of how the initial <code class="docutils literal notranslate"><span class="pre">Dataset.dtype</span></code> was formatted [e.g. single np.type / str(np.type) / dict(column=np.type)], this function intentionally returns then dtype of each column within a <code class="docutils literal notranslate"><span class="pre">dict(column=str(np.type)</span></code> format.</p>
 <hr class="docutils" />
 </section>
 </section>
@@ -1212,7 +1188,7 @@ for anything.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>shape</strong></p></td>
 <td><p>JSONField</p></td>
-<td><p>Human-readable dictionary about the dimensions of the data e.g. <code class="docutils literal notranslate"><span class="pre">samples:10,</span> <span class="pre">columns:5</span></code></p></td>
+<td><p>Human-readable dictionary about the dimensions of the data e.g. <code class="docutils literal notranslate"><span class="pre">samples:10,</span> <span class="pre">columns:5</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>sha256_hexdigest</strong></p></td>
 <td><p>CharField</p></td>
@@ -1302,7 +1278,7 @@ for anything.</p></td>
 </div></blockquote>
 <hr class="docutils" />
 <p><strong>Fetch</strong></p>
-<p>Theses methods wrap Dataset’s <a class="reference external" href="#1b.-Fetch">fetch</a> methods:</p>
+<p>Theses methods wrap Dataset’s fetch methods:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -1413,7 +1389,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </table>
 <hr class="docutils" />
 <p><strong>Fetch</strong></p>
-<p>Theses methods wrap Dataset’s <a class="reference external" href="#1b.-Fetch">fetch</a> methods:</p>
+<p>Theses methods wrap Dataset’s fetch methods:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -1570,7 +1546,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 <tr class="row-even"><td><p><strong>interpolate_kwargs</strong></p></td>
 <td><p>dict</p></td>
 <td><p>None</p></td>
-<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference external" href="#4.-Interpolate">Interpolate</a> section for defaults.</p></td>
+<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference internal" href="#4.-Interpolate"><span class="std std-ref">Interpolate</span></a> section for defaults.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1598,7 +1574,7 @@ provided, then the data in those columns must be in One-Hot Encoded (OHE) format
 </tr>
 <tr class="row-odd"><td><p><strong>interpolate_kwargs</strong></p></td>
 <td><p>JSONField</p></td>
-<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference external" href="#4.-Interpolate">Interpolate</a> section for defaults.</p></td>
+<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference internal" href="#4.-Interpolate"><span class="std std-ref">Interpolate</span></a> section for defaults.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>matching_columns</strong></p></td>
 <td><p>JSONField</p></td>
@@ -1707,7 +1683,7 @@ your pattern is linear - then try <code class="docutils literal notranslate"><sp
 </tr>
 <tr class="row-even"><td><p><strong>interpolate_kwargs</strong></p></td>
 <td><p>JSONField</p></td>
-<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference external" href="#4.-Interpolate">Interpolate</a> section for defaults.</p></td>
+<td><p>Gets passed to <code class="docutils literal notranslate"><span class="pre">df.interpolate()</span></code>. See <a class="reference internal" href="#4.-Interpolate"><span class="std std-ref">Interpolate</span></a> section for defaults.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>matching_columns</strong></p></td>
 <td><p>JSONField</p></td>
@@ -1783,7 +1759,7 @@ inputs will zero-out. 2. <code class="docutils literal notranslate"><span class=
 <tr class="row-odd"><td><p><strong>sklearn_preprocess</strong></p></td>
 <td><p>object</p></td>
 <td><p>Required</p></td>
-<td><p>An instantiated <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> class-based encoder - e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> neither <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> nor
+<td><p>An instantiated <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> class-based encoder - e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> neither <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> nor
 <code class="docutils literal notranslate"><span class="pre">scale()</span></code>. AIQC will automatically correct the attributes of your encoder to smooth out any common errors they would
 cause. For example, preventing sparse SciPy matrix output (errors during tensor conversion) and data <code class="docutils literal notranslate"><span class="pre">copy()</span></code>.</p></td>
 </tr>
@@ -1876,7 +1852,7 @@ cause. For example, preventing sparse SciPy matrix output (errors during tensor 
 <tr class="row-odd"><td><p><strong>sklearn_preprocess</strong></p></td>
 <td><p>object</p></td>
 <td><p>Required</p></td>
-<td><p>An instantiated <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> class-based encoder - e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> neither <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> nor
+<td><p>An instantiated <code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing</span></code> class-based encoder - e.g. <code class="docutils literal notranslate"><span class="pre">StandardScaler()</span></code> neither <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> nor
 <code class="docutils literal notranslate"><span class="pre">scale()</span></code>. AIQC will automatically correct the attributes of your encoder to smooth out any common errors they would
 cause. For example, preventing sparse SciPy matrix output (errors during tensor conversion) and data <code class="docutils literal notranslate"><span class="pre">copy()</span></code>.</p></td>
 </tr>
@@ -2041,7 +2017,7 @@ to do the reshaping once up front.</p>
 <tr class="row-odd"><td><p><strong>reshape_indices</strong></p></td>
 <td><p>tuple(int/str/tuple)</p></td>
 <td><p>Required</p></td>
-<td><p>See <a class="reference external" href="#6a.-Strategies">Strategies</a>.</p></td>
+<td><p>See Strategies.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2065,7 +2041,7 @@ to do the reshaping once up front.</p>
 <tbody>
 <tr class="row-even"><td><p><strong>reshape_indices</strong></p></td>
 <td><p>PickleField</p></td>
-<td><p>See <a class="reference external" href="#6b.-Create">#Reshaping-by-Index</a>.Pickle because tuple has no JSON equivalent.</p></td>
+<td><p>See #Reshaping-by-Index.Pickle because tuple has no JSON equivalent.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>column_position</strong></p></td>
 <td><p>IntegerField</p></td>
@@ -2090,17 +2066,17 @@ to do the reshaping once up front.</p>
 <hr class="docutils" />
 <p><strong>Challenges</strong></p>
 <p>Dealing with stratified windowed data demands a systematic approach.</p>
-<img alt="windowDimensions" src="../_images/window_dimensions.png" />
+<p><img alt="windowDimensions" src="../_images/window_dimensions.png" /></p>
 <p><strong>Windowing always increases dimensionality</strong></p>
 <p>After data is windowed, its dimensionality increases by 1. Why? Well, originally we had a <em>single time series</em>. However, if we window that data, then we have <em>many time series subsets</em>.</p>
-<img alt="interpolateWindows" src="../_images/interpolate_windows.png" />
+<p><img alt="interpolateWindows" src="../_images/interpolate_windows.png" /></p>
 <p><strong>As the highest dimension, it becomes the “sample”</strong></p>
 <p>No matter what dimensionality the original data has, it will be windowed along the first dimension.</p>
 <p>This means that the windows now serve as the samples, which is important for stratification. If we have a year’s worth of windows, we don’t want all of our training windows to come from the same season. Therefore, Window must be created prior to Splitset.</p>
 <p><strong>Windowing may causes overlap in splits</strong></p>
 <p>In addition to increasing the dimensionality of our data, it makes it harder to nail down the boundaries of our splits in order to prevent data leakage.</p>
 <p>As seen in the diagram above, the timesteps of the train and test splits may <em>overlap</em>. So if we are fitting an interpolater to our training split, the first 3 NaNs would be included, but the last 2 would not.</p>
-<img alt="Windows" src="../_images/sliding_windows.png" />
+<p><img alt="Windows" src="../_images/sliding_windows.png" /></p>
 <p><strong>Shifted and unshifted windows</strong></p>
 <p>In a walk-forward analysis, we learn about the future by looking at the past. So we need 2 sets of windows:</p>
 <ul class="simple">
@@ -2235,7 +2211,7 @@ to do the reshaping once up front.</p>
 <hr class="docutils" />
 <p><strong>Cross-Validation</strong></p>
 <p>Cross-validation is triggered by <code class="docutils literal notranslate"><span class="pre">fold_count:int</span></code> during Splitset creation. Reference the <a class="reference external" href="https://scikit-learn.org/stable/modules/cross_validation.html">scikit-learn documentation</a> to learn more about cross-validation.</p>
-<img alt="CrossFoldBins" src="../_images/cross_fold_bins.png" />
+<p><img alt="CrossFoldBins" src="../_images/cross_fold_bins.png" /></p>
 <p>Each row in the diagram above is a <code class="docutils literal notranslate"><span class="pre">Fold</span></code> object.</p>
 <p>Each green/blue box represents a bin of stratified samples. During preprocessing and training, we rotate which blue bin serves as the validation samples (<code class="docutils literal notranslate"><span class="pre">fold_validation</span></code>). The remaining green bins in the row serve as the training samples (<code class="docutils literal notranslate"><span class="pre">folds_train_combined</span></code>).</p>
 <p>Let’s say we defined <code class="docutils literal notranslate"><span class="pre">fold_count=5</span></code>. What are the implications?</p>
@@ -2249,7 +2225,7 @@ to do the reshaping once up front.</p>
 <blockquote>
 <div><p>Do not use cross-validation unless the distribution of each resulting fold (<em>total sample count divided by fold_count</em>) is representatitve of your broader sample population. If you are ignoring that advice and stretching to perform cross-validation, then at least ensure that the <em>total sample count is evenly divisble by fold_count</em>. Both of these tips help avoid poorly stratified/ undersized folds that seem to perform either unjustifiably well (100% accuracy when only the most common label
 class is present) or poorly (1 incorrect prediction in a small fold negatively skews an otherwise good model).</p>
-<p>If you’ve ever performed cross-validation manually with too few samples, then you’ll know that it’s easy enough to construct the folds, but then it’s a pain to calculate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try to do something undersized like multi-label
+<p>If you’ve ever performed cross-validation manually with too few samples, then you’ll know that it’s easy enough to construct the folds, but then it’s a pain to calculate performance metrics (e.g. <code class="docutils literal notranslate"><span class="pre">zero_division</span></code>, absent OHE classes) due to the absence of outlying classes and bins. Time has been invested to handle these scenarios elegantly so that folds can be treated as first-class-citizens alongside splits. That being said, if you try to do something undersized like multi-label
 classification using 150 samples then you may run into errors during evaluation.</p>
 </div></blockquote>
 <hr class="docutils" />
@@ -2260,11 +2236,11 @@ classification using 150 samples then you may run into errors during evaluation.
 <li><p>Each Job does not have to preprocess data from scratch.</p></li>
 <li><p>The original data does not need to be held in memory between Jobs.</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>└── aiqc/cache/samples/splitset_uid
-    └── &lt;fold_index&gt; <span class="p">|</span> <span class="s2">&quot;no_fold&quot;</span>
-        └── &lt;split&gt;
-            └── label.npy
-            └── feature_&lt;i&gt;.npy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>└──<span class="w"> </span>aiqc/cache/samples/splitset_uid
+<span class="w">    </span>└──<span class="w"> </span>&lt;fold_index&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="s2">&quot;no_fold&quot;</span>
+<span class="w">        </span>└──<span class="w"> </span>&lt;split&gt;
+<span class="w">            </span>└──<span class="w"> </span>label.npy
+<span class="w">            </span>└──<span class="w"> </span>feature_&lt;i&gt;.npy
 </pre></div>
 </div>
 <ul class="simple">
@@ -2312,8 +2288,8 @@ classification using 150 samples then you may run into errors during evaluation.
 <tr class="row-even"><td><p><strong>feature_ids</strong></p></td>
 <td><p>list(int)</p></td>
 <td><p>Required</p></td>
-<td><p>Multiple <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>’s may be included to enable multi-modal (aka mixed data-type) analysis. All of these Features
-must have the same number of samples.</p></td>
+<td><p>Multiple <code class="docutils literal notranslate"><span class="pre">Feature.id</span></code>’s may be included to enable multi-modal (aka mixed data-type) analysis. All of these Features must
+have the same number of samples.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>label_id</strong></p></td>
 <td><p>int</p></td>
@@ -2339,7 +2315,7 @@ in combination with <code class="docutils literal notranslate"><span class="pre"
 <tr class="row-odd"><td><p><strong>fold_count</strong></p></td>
 <td><p>int</p></td>
 <td><p>None</p></td>
-<td><p>The number or cross-validation folds to generate. See <a class="reference external" href="#5b.-Cross-Validation">Cross-Validation</a>.</p></td>
+<td><p>The number or cross-validation folds to generate. See Cross-Validation.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>unsupervised_stratify_col</strong></p></td>
 <td><p>str</p></td>
@@ -2368,7 +2344,7 @@ attributes.</p></td>
 </div></blockquote>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.cache_samples()</span></code></p>
-<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description</p>
+<p>See <a class="reference internal" href="#8.-Splitset"><span class="std std-ref">Samples Cache</span></a> section for a description</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">cache_samples</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2396,7 +2372,7 @@ attributes.</p></td>
 </table>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.clear_cache()</span></code></p>
-<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description. Deletes the entire directory located at <code class="docutils literal notranslate"><span class="pre">Splitset.cache_path</span></code>.</p>
+<p>See <a class="reference internal" href="#8.-Splitset"><span class="std std-ref">Samples Cache</span></a> section for a description. Deletes the entire directory located at <code class="docutils literal notranslate"><span class="pre">Splitset.cache_path</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2424,7 +2400,7 @@ attributes.</p></td>
 </table>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Splitset.fetch_cache()</span></code></p>
-<p>See <a class="reference external" href="#8.-Splitset">Samples Cache</a> section for a description. This fetches a specific file from the cache.</p>
+<p>See <a class="reference internal" href="#8.-Splitset"><span class="std std-ref">Samples Cache</span></a> section for a description. This fetches a specific file from the cache.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Splitset</span><span class="o">.</span><span class="n">fetch_cache</span><span class="p">(</span>
     <span class="nb">id</span>
     <span class="p">,</span> <span class="n">split</span>
@@ -2573,8 +2549,8 @@ for an inference splitset.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>predictor</strong></p></td>
 <td><p>DeferredForeignKey</p></td>
-<td><p>During inference, a new Splitset of samples to be predicted may attach to a Predictor. Samples dict will bear the key of the <code class="docutils literal notranslate"><span class="pre">Predictor.Splitset.count()</span></code>
-e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</span></code>.</p></td>
+<td><p>During inference, a new Splitset of samples to be predicted may attach to a Predictor. Samples dict will bear the key of the <code class="docutils literal notranslate"><span class="pre">Predictor.Splitset.count()</span></code> e.g.
+<code class="docutils literal notranslate"><span class="pre">'infer_0'</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2689,7 +2665,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 <tr class="row-even"><td><p><strong>metrics</strong></p></td>
 <td><p>list(torchmetrics.metric())</p></td>
 <td><p>None</p></td>
-<td><p>List of instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes e.g. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></p></td>
+<td><p>List of instantiated <code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code> classes e.g. <code class="docutils literal notranslate"><span class="pre">Accuracy</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2784,8 +2760,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'infer_0'</sp
 <td><p>str</p></td>
 <td><p>Required</p></td>
 <td><p>‘classification_binary’, ‘classification_multi’, or ‘regression’. Unsupervised/ self-supervised falls under regression.
-Used to determine which performance metrics are run. Errors if it is incompatible with the Label provided:
-e.g. classification_binary is incompatible with an np.floating Label.column.</p></td>
+Used to determine which performance metrics are run. Errors if it is incompatible with the Label provided: e.g.
+classification_binary is incompatible with an np.floating Label.column.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>fn_build</strong></p></td>
 <td><p>func</p></td>
@@ -2921,14 +2897,14 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 </tbody>
 </table>
 <blockquote>
-<div><p>See <a class="reference external" href="#9a.-Create">#9.-Algorithm</a> for descriptions</p>
+<div><p>See #9.-Algorithm for descriptions</p>
 </div></blockquote>
 <hr class="docutils" />
 </section>
 </section>
 <section id="10.-Hyperparameters">
 <h2>10. Hyperparameters<a class="headerlink" href="#10.-Hyperparameters" title="Permalink to this headline"></a></h2>
-<p>As mentioned in <a class="reference external" href="#7a.-Create">Algorithm</a>, the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument is used to systematically pass hyperparameters into the Algorithm functions.</p>
+<p>As mentioned in Algorithm, the <code class="docutils literal notranslate"><span class="pre">**hp</span></code> argument is used to systematically pass hyperparameters into the Algorithm functions.</p>
 <p>For example, given the follow set of hyperparamets:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">epoch_count</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">]</span>
@@ -2989,7 +2965,7 @@ e.g. classification_binary is incompatible with an np.floating Label.column.</p
 <tr class="row-odd"><td><p><strong>hyperparameters</strong></p></td>
 <td><p>dict(str:list)</p></td>
 <td><p>Required</p></td>
-<td><p>See example in <a class="reference external" href="#8.-Hyperparameters">Hyperparameters</a>. Must be JSON compatible.</p></td>
+<td><p>See example in Hyperparameters. Must be JSON compatible.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>search_count</strong></p></td>
 <td><p>int</p></td>
@@ -3149,7 +3125,7 @@ Algorithm can have many Hyperparamsets.</p></td>
 <hr class="docutils" />
 <p>└── <code class="docutils literal notranslate"><span class="pre">Queue.run_jobs()</span></code></p>
 <p>Jobs are simply ran on a loop on the main process.</p>
-<p>Stop the queue with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter. It is listening for interupts so it will usually stop gracefully. Even if it errors upon during interrupt, it’s not a problem. You can rerun the queue and it will resume on the same job it was running previously.</p>
+<p>Stop the queue with a keyboard interrupt e.g. <code class="docutils literal notranslate"><span class="pre">ctrl+Z/D/C</span></code> in Python shell or <code class="docutils literal notranslate"><span class="pre">i,i</span></code> in Jupyter. It is listening for interupts so it will usually stop gracefully. Even if it errors upon during interrupt, it’s not a problem. You can rerun the queue and it will resume on the same job it was running previously.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 </pre></div>
 </div>

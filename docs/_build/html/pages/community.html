@@ -302,31 +302,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="open-source">
+  <section id="open-source">
 <h1>Open Source<a class="headerlink" href="#open-source" title="Permalink to this headline"></a></h1>
 <img alt="community banner" class="no-scaled-link align-center" src="../_images/celebrate_circle.png" style="width: 100%;" />
 <div class="line-block">
@@ -374,18 +350,18 @@
 <h2>Setting up dev environment<a class="headerlink" href="#setting-up-dev-environment" title="Permalink to this headline"></a></h2>
 <p>Have a read through the <a class="reference external" href="https://docs.aiqc.io/notebooks/installation.html">Installation section of the documentation</a> for information about OS, Python versions, and optional Jupyter extensions.</p>
 <p>Here is how you can clone the source code, install dependencies, and environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:aiqc/AIQC.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:aiqc/AIQC.git
 
-<span class="nb">cd</span> AIQC
+<span class="nb">cd</span><span class="w"> </span>AIQC
 
-pip install --upgrade -r requirements_dev.txt
-pip install --upgrade -r requirements.txt
-pip uninstall aiqc -y
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>-r<span class="w"> </span>requirements_dev.txt
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+pip<span class="w"> </span>uninstall<span class="w"> </span>aiqc<span class="w"> </span>-y
 
-git checkout -b my_feature
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>my_feature
 
 python
-&gt;&gt;&gt; import aiqc
+&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>aiqc
 </pre></div>
 </div>
 <p>Before you begin developing, make sure that you do NOT have the <cite>aiqc</cite> package installed. This may be counterintuitive at first, but remember, you are building the package yourself. So if you imported the pip package, then you are running scripts against the pip package, not your source code.</p>

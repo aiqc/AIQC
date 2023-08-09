@@ -16,6 +16,7 @@
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/nbsphinx-code-cells.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   <!--[if lt IE 9]>
@@ -302,280 +303,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS for nbsphinx extension */
-
-/* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-}
-
-/* avoid gaps between output lines */
-div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-}
-
-/* input/output containers */
-div.nbinput.container,
-div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
-    width: 100%;
-}
-@media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-}
-
-/* input container */
-div.nbinput.container {
-    padding-top: 5px;
-}
-
-/* last container */
-div.nblast.container {
-    padding-bottom: 5px;
-}
-
-/* input prompt */
-div.nbinput.container div.prompt pre {
-    color: #307FC1;
-}
-
-/* output prompt */
-div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-}
-
-/* all prompts */
-div.nbinput.container div.prompt,
-div.nboutput.container div.prompt {
-    width: 4.5ex;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-}
-
-div.nbinput.container div.prompt > div,
-div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-}
-
-@media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-}
-
-/* disable scrollbars on prompts */
-div.nbinput.container div.prompt pre,
-div.nboutput.container div.prompt pre {
-    overflow: hidden;
-}
-
-/* input/output area */
-div.nbinput.container div.input_area,
-div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-}
-@media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-}
-
-/* input area */
-div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    /*background: #f5f5f5;*/
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.imgmath center alignment in output cells */
-div.nboutput.container div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-default-inverse-fg { color: #FFFFFF; }
-.ansi-default-inverse-bg { background-color: #000000; }
-
-.ansi-bold { font-weight: bold; }
-.ansi-underline { text-decoration: underline; }
-
-
-div.nbinput.container div.input_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight].math,
-div.nboutput.container div.output_area.rendered_html,
-div.nboutput.container div.output_area > div.output_javascript,
-div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-}
-
-/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-div.nbinput.container div.input_area > div[class^='highlight'],
-div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-}
-
-/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
-    display: none;
-}
-
-/* Some additional styling taken form the Jupyter notebook CSS */
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-div.rendered_html th {
-  font-weight: bold;
-}
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="Feature-Importance-for-Drug-Discovery">
+  <section id="Feature-Importance-for-Drug-Discovery">
 <h1>Feature Importance for Drug Discovery<a class="headerlink" href="#Feature-Importance-for-Drug-Discovery" title="Permalink to this headline"></a></h1>
 <p><em>In silico interpretation of compound selection using permuted feature importance of neural networks to rank High-Throughput Screening (HTS) criteria, and identify 2 compounds (out of 57,546) with 95% confidence of target activation.</em></p>
-<p><img alt="de4e2a816a9b4608a1eb85f34a099ba7" class="banner-photo" src="../../../_images/drugs.png" /></p>
+<p><img alt="d2670cd917c14e93a9e2044b44cc44b5" class="banner-photo" src="../../../_images/drugs.png" /></p>
 <section id="💾-Data">
 <h2>💾 Data<a class="headerlink" href="#💾-Data" title="Permalink to this headline"></a></h2>
 <p>Reference <a class="reference external" href="../../datasets.html">Example Datasets</a> for more information.</p>
@@ -592,8 +323,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[158]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;MAPK_bioassay.parquet&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -602,8 +332,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[158]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="n">shared_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">Tabular</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -618,8 +347,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[165]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;Outcome&#39;</span><span class="p">)</span>
 
 <span class="n">features_binary</span> <span class="o">=</span> <span class="p">[]</span>
@@ -654,8 +382,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">Stratifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelBinarizer</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">,</span> <span class="n">StandardScaler</span>
 </pre></div>
 </div>
@@ -664,8 +391,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
     <span class="n">Input</span><span class="p">(</span>
         <span class="n">dataset</span> <span class="o">=</span> <span class="n">shared_dataset</span><span class="p">,</span>
         <span class="n">encoders</span> <span class="o">=</span> <span class="p">[</span>
@@ -675,9 +401,9 @@ Non-binary Features = 31
     <span class="p">),</span>
 
     <span class="n">Target</span><span class="p">(</span>
-        <span class="n">dataset</span>   <span class="o">=</span> <span class="n">shared_dataset</span>
-        <span class="p">,</span> <span class="n">column</span>  <span class="o">=</span> <span class="s1">&#39;Outcome&#39;</span>
-        <span class="p">,</span> <span class="n">encoder</span> <span class="o">=</span> <span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">LabelBinarizer</span><span class="p">())</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">shared_dataset</span><span class="p">,</span>
+        <span class="n">column</span>  <span class="o">=</span> <span class="s1">&#39;Outcome&#39;</span><span class="p">,</span>
+        <span class="n">encoder</span> <span class="o">=</span> <span class="n">Target</span><span class="o">.</span><span class="n">Encoder</span><span class="p">(</span><span class="n">LabelBinarizer</span><span class="p">())</span>
     <span class="p">),</span>
 
     <span class="n">Stratifier</span><span class="p">(</span><span class="n">size_test</span><span class="o">=</span><span class="mf">0.26</span><span class="p">)</span>
@@ -694,8 +420,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.mlops</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">Architecture</span><span class="p">,</span> <span class="n">Trainer</span>
 <span class="kn">from</span> <span class="nn">aiqc.utils.tensorflow</span> <span class="kn">import</span> <span class="n">TrainingCallback</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span> <span class="k">as</span> <span class="n">l</span>
@@ -706,8 +431,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_build</span><span class="p">(</span><span class="n">features_shape</span><span class="p">,</span> <span class="n">label_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
     <span class="n">m</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">features_shape</span><span class="p">))</span>
 
@@ -744,17 +468,16 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_train</span><span class="p">(</span>
     <span class="n">model</span><span class="p">,</span> <span class="n">loser</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span>
     <span class="n">train_features</span><span class="p">,</span> <span class="n">train_label</span><span class="p">,</span>
     <span class="n">eval_features</span><span class="p">,</span> <span class="n">eval_label</span><span class="p">,</span>
     <span class="o">**</span><span class="n">hp</span>
 <span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="n">loss</span>        <span class="o">=</span> <span class="n">loser</span>
-        <span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
-        <span class="p">,</span> <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">()]</span>
+        <span class="n">loss</span>      <span class="o">=</span> <span class="n">loser</span><span class="p">,</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span><span class="p">,</span>
+        <span class="n">metrics</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">()]</span>
     <span class="p">)</span>
 
     <span class="c1"># Early stopping.</span>
@@ -779,8 +502,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_lose</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_lose</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;loss_imbalanced&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">loser</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">BinaryFocalCrossentropy</span><span class="p">(</span><span class="n">gamma</span><span class="o">=</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;gamma&#39;</span><span class="p">],</span> <span class="n">from_logits</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -793,8 +515,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fn_optimize</span><span class="p">(</span><span class="o">**</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adamax</span><span class="p">(</span><span class="n">hp</span><span class="p">[</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">optimizer</span>
 </pre></div>
@@ -804,8 +525,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">first_neurons</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">after_neurons</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">]</span>
     <span class="p">,</span> <span class="n">second_layer</span>    <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
@@ -825,8 +545,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[84]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">queue</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
     <span class="n">Architecture</span><span class="p">(</span>
         <span class="n">library</span>           <span class="o">=</span> <span class="s2">&quot;keras&quot;</span>
         <span class="p">,</span> <span class="n">analysis_type</span>   <span class="o">=</span> <span class="s2">&quot;classification_binary&quot;</span>
@@ -850,8 +569,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[85]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">queue</span><span class="o">.</span><span class="n">run_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -872,8 +590,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[136]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="nb">id</span> <span class="o">=</span> <span class="mi">666</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">id</span> <span class="o">=</span> <span class="mi">666</span>
 <span class="n">predictor</span> <span class="o">=</span> <span class="n">aiqc</span><span class="o">.</span><span class="n">Predictor</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 <span class="n">prediction</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
@@ -884,24 +601,22 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<img alt="matrixTrain" src="../../../_images/docking_matrix_train.png" />
-<img alt="matrixTest" src="../../../_images/docking_matrix_test.png" />
+<p><img alt="matrixTrain" src="../../../_images/docking_matrix_train.png" /></p>
+<p><img alt="matrixTest" src="../../../_images/docking_matrix_test.png" /></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Experiment.permute_count</span></code> parameter determines how many times each feature is permuted and run back through the model. The median difference in loss is then compared to the baseline loss of the model.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">.</span><span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<img alt="dockingFeatures" src="../../../_images/docking_features.png" />
+<p><img alt="dockingFeatures" src="../../../_images/docking_features.png" /></p>
 <p>In comparison to traditional statistics, the heuristics of deep learning help us quantify the impact of subtle variation within the dataset.</p>
 <ul class="simple">
 <li><p><em>Box plots</em> appeared nearly identical.</p></li>
@@ -912,8 +627,7 @@ Non-binary Features = 31
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_ind</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ttest_ind</span>
 
 <span class="n">active</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Active&#39;</span><span class="p">]</span>
 <span class="n">inactive</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Outcome&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;Inactive&#39;</span><span class="p">]</span>
@@ -925,15 +639,14 @@ Non-binary Features = 31
 </pre></div>
 </div>
 </div>
-<img alt="boxFalse" src="../../../_images/box_plot_false.png" />
-<img alt="boxTrue" src="../../../_images/box_plot_true.png" />
+<p><img alt="boxFalse" src="../../../_images/box_plot_false.png" /></p>
+<p><img alt="boxTrue" src="../../../_images/box_plot_true.png" /></p>
 <p>Finally, our model enables us to determine which compounds most strongly fit these patterns based on the probability of their prediction.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[325]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span><span class="s1">&#39;test&#39;</span><span class="p">]:</span>
     <span class="n">sample_ids</span> <span class="o">=</span> <span class="n">splitset</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">split</span><span class="p">]</span>
     <span class="n">sample_probabilities</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">probabilities</span><span class="p">[</span><span class="n">split</span><span class="p">]</span>

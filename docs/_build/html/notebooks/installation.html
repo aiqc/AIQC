@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/installation.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="9617fb9b7b854a9399c42a0920e5ee2b AIQC Python Package:[ ]: pip install --upgrade pip pip install --upgrade wheel pip install --upgrade aiqc If during troubleshooting you find yourself reinstalling u..." />
+  <meta property="og:description" content="2ddd1bf1b9df44108fff8f49a83df505 AIQC Python Package:[ ]: pip install --upgrade pip or on Conda conda install pip[ ]: pip install --upgrade wheel pip install --upgrade aiqc If during troubleshootin..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -16,6 +16,7 @@
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
   <!--[if lt IE 9]>
@@ -304,288 +305,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS for nbsphinx extension */
-
-/* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-}
-
-/* avoid gaps between output lines */
-div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-}
-
-/* input/output containers */
-div.nbinput.container,
-div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
-    width: 100%;
-}
-@media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-}
-
-/* input container */
-div.nbinput.container {
-    padding-top: 5px;
-}
-
-/* last container */
-div.nblast.container {
-    padding-bottom: 5px;
-}
-
-/* input prompt */
-div.nbinput.container div.prompt pre {
-    color: #307FC1;
-}
-
-/* output prompt */
-div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-}
-
-/* all prompts */
-div.nbinput.container div.prompt,
-div.nboutput.container div.prompt {
-    width: 4.5ex;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-}
-
-div.nbinput.container div.prompt > div,
-div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-}
-
-@media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-}
-
-/* disable scrollbars on prompts */
-div.nbinput.container div.prompt pre,
-div.nboutput.container div.prompt pre {
-    overflow: hidden;
-}
-
-/* input/output area */
-div.nbinput.container div.input_area,
-div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-}
-@media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-}
-
-/* input area */
-div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    /*background: #f5f5f5;*/
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.imgmath center alignment in output cells */
-div.nboutput.container div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-default-inverse-fg { color: #FFFFFF; }
-.ansi-default-inverse-bg { background-color: #000000; }
-
-.ansi-bold { font-weight: bold; }
-.ansi-underline { text-decoration: underline; }
-
-
-div.nbinput.container div.input_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight].math,
-div.nboutput.container div.output_area.rendered_html,
-div.nboutput.container div.output_area > div.output_javascript,
-div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-}
-
-/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-div.nbinput.container div.input_area > div[class^='highlight'],
-div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-}
-
-/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
-    display: none;
-}
-
-/* Some additional styling taken form the Jupyter notebook CSS */
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-div.rendered_html th {
-  font-weight: bold;
-}
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="Install">
+  <section id="Install">
 <h1>Install<a class="headerlink" href="#Install" title="Permalink to this headline"></a></h1>
-<p><img alt="9617fb9b7b854a9399c42a0920e5ee2b" class="banner-photo" src="../_images/env.png" /></p>
+<p><img alt="2ddd1bf1b9df44108fff8f49a83df505" class="banner-photo" src="../_images/env.png" /></p>
 <section id="AIQC-Python-Package">
 <h2>AIQC Python Package<a class="headerlink" href="#AIQC-Python-Package" title="Permalink to this headline"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">wheel</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
+</pre></div>
+</div>
+</div>
+<p>or on Conda</p>
+<p>conda install pip</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">wheel</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">aiqc</span>
 </pre></div>
 </div>
@@ -594,22 +333,22 @@ div.rendered_html tbody tr:hover {
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install --upgrade --no-cache-dir aiqc
 </pre></div>
 </div>
-<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions).</p>
+<p>If that doesn’t work, read the rest of this notebook (e.g. supported Python versions).</p>
 <hr class="docutils" />
 </section>
 <section id="Environment-Setup">
 <h2>Environment Setup<a class="headerlink" href="#Environment-Setup" title="Permalink to this headline"></a></h2>
+<p>AIQC has many dependencies with specific versions, so we recommend creating a new virtual environment that is solely dedicated to AIQC using either PyEnv or Conda.</p>
 <section id="Python-Version">
 <h3>Python Version<a class="headerlink" href="#Python-Version" title="Permalink to this headline"></a></h3>
 <p>Requires Python 3+ (check your deep learning library’s Python requirements). AIQC was developed on Python 3.7.12 in order to ensure compatibility with Google Colab.</p>
-<p>We highly recommend <a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a> for managing Python installations and virtualenvs. There is even a pyenv <a class="reference external" href="https://github.com/pyenv-win/pyenv-win">port for Windows</a>.</p>
+<p>Conda does not provide 3.7.12, but AIQC has been tested on 3.7.16 as well so you can use that version.</p>
 <p>Additionally, check the Python version required by the machine learning libraries that you intend to use. For example, at the time this was written, Tensorflow/ Keras required Python 3.5–3.8. If you need more information about dependencies, the PyPI <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is in the root of the github.com/aiqc/aiqc repository.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">version</span>
 </pre></div>
 </div>
@@ -648,8 +387,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">jupyterlab</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">jupyterlab</span>
 </pre></div>
 </div>
 </div>
@@ -658,8 +396,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="o">!</span>node -v
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>node<span class="w"> </span>-v
 </pre></div>
 </div>
 </div>
@@ -676,7 +413,6 @@ v14.7.0
 <h3>Optional - Swap Space for Failover Memory<a class="headerlink" href="#Optional---Swap-Space-for-Failover-Memory" title="Permalink to this headline"></a></h3>
 <p>On local machines, it is good practice to configure “swap space.” This way, if your processes run out of memory/ RAM, then the excess information will simply spill over onto the (potentially dynamically sized) swap partition of your hard drive, as opposed to causing an out-of-memory crash. For GB sized datasets, spinning media HDDs (5,400/ 7,200 RPM) may be too slow for usage with swap, but you could get by with NVMe/ SSD.</p>
 <hr class="docutils" />
-<hr class="docutils" />
 </section>
 </section>
 <section id="Location-of-AIQC-Files">
@@ -690,7 +426,10 @@ v14.7.0
 </div></blockquote>
 <section id="Location-Based-on-OS">
 <h3>Location Based on OS<a class="headerlink" href="#Location-Based-on-OS" title="Permalink to this headline"></a></h3>
-<p>Test it for yourself: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">appdirs;</span> <span class="pre">appdirs.user_data_dir('aiqc');</span></code></p>
+<p>Test it for yourself:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>appdirs<span class="p">;</span><span class="w"> </span>appdirs.user_data_dir<span class="o">(</span><span class="s1">&#39;aiqc&#39;</span><span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
 <ul class="simple">
 <li><p>Mac: <code class="docutils literal notranslate"><span class="pre">/Users/Username/Library/Application</span> <span class="pre">Support/aiqc</span></code></p></li>
 <li><p>Linux - Alpine and Ubuntu: <code class="docutils literal notranslate"><span class="pre">/root/.local/share/aiqc</span></code></p></li>
@@ -723,8 +462,7 @@ v14.7.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">create_db</span><span class="p">,</span> <span class="n">destroy_db</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aiqc.orm</span> <span class="kn">import</span> <span class="n">create_db</span><span class="p">,</span> <span class="n">destroy_db</span>
 </pre></div>
 </div>
 </div>
@@ -732,8 +470,7 @@ v14.7.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -762,8 +499,7 @@ v14.7.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">destroy_db</span><span class="p">(</span><span class="n">confirm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -782,8 +518,7 @@ v14.7.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">create_db</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">create_db</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

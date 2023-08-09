@@ -2,8 +2,16 @@
 
 ### Dependencies for build process.
 
+Install pip
 ```bash
 pip install --upgrade pip
+```
+or
+```bash
+conda install pip
+```
+
+```bash
 pip install --upgrade wheel
 pip install --upgrade aiqc
 ```

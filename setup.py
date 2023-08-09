@@ -13,10 +13,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aiqc",
-    version="7.1.4",
+    version="7.1.5",
     author="Layne Sadler",
     author_email="layne.sadler@gmail.com",
-    description="End-to-end machine learning on your desktop or server.",
+    description="End-to-end deep learning on your desktop or server.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://aiqc.readthedocs.io/",

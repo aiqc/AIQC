@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_high_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="e1cc5a0240574090b687f99f948565ce Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
+  <meta property="og:description" content="264e744318974af3b7ecdc71d376e723 Declarative: The High-Level API is declarative. What does that mean? All you have to do is specify the state that you want the data in, and then the backend execute..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -304,33 +304,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="API">
+  <section id="API">
 <h1>API<a class="headerlink" href="#API" title="Permalink to this headline"></a></h1>
-<p><img alt="e1cc5a0240574090b687f99f948565ce" class="banner-photo" src="../_images/high-level_api.png" /></p>
+<p><img alt="264e744318974af3b7ecdc71d376e723" class="banner-photo" src="../_images/high-level_api.png" /></p>
 <section id="Declarative">
 <h2>Declarative<a class="headerlink" href="#Declarative" title="Permalink to this headline"></a></h2>
 <p>The <em>High-Level API</em> is <em>declarative</em>. What does that mean? All you have to do is specify the <em>state</em> that you want the data in, and then the backend executes all of the tedious data wrangling needed to achieve that state. It’s like Terraform for machine learning.</p>
@@ -355,7 +331,7 @@
 <ul class="simple">
 <li><p>Preprocessing of training and evaluation data.</p></li>
 <li><p>Caching of preprocessed training and evaluation data.</p></li>
-<li><p>Post-processing (e.g. decoding) during model evaluation.</p></li>
+<li><p>Post-processing (e.g. decoding) during model evaluation.</p></li>
 <li><p>Inference: encoding and decoding new data.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Pipeline</span><span class="p">(</span>
@@ -385,17 +361,17 @@
 <tr class="row-even"><td><p><strong>inputs</strong></p></td>
 <td><p>list(Input)</p></td>
 <td><p>Required</p></td>
-<td><p><a class="reference external" href="#1a.-Input">Input</a> - One or more featuresets</p></td>
+<td><p><a class="reference internal" href="#1a.-Input"><span class="std std-ref">Input</span></a> - One or more featuresets</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>target</strong></p></td>
 <td><p>Target</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1b.-Target">Target</a> - Leave blank during unsupervised/ self-supervised analysis.</p></td>
+<td><p><a class="reference internal" href="#1b.-Target"><span class="std std-ref">Target</span></a> - Leave blank during unsupervised/ self-supervised analysis.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>stratifier</strong></p></td>
 <td><p>Stratifier</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1c.-Stratifier">Stratifier</a> - Leave blank during inference.</p></td>
+<td><p><a class="reference internal" href="#1c.-Stratifier"><span class="std std-ref">Stratifier</span></a> - Leave blank during inference.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>name</strong></p></td>
 <td><p>str</p></td>
@@ -419,7 +395,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Returns</strong></p></td>
-<td><p><a class="reference external" href="api_low_level.html#8.-Splitset">Splitset</a> instance as seen in the Low-Level API. We will use this later as the <a class="reference external" href="#2b.-Trainer">Trainer.pipeline</a> argument.</p></td>
+<td><p><a class="reference external" href="api_low_level.html#8.-Splitset">Splitset</a> instance as seen in the Low-Level API. We will use this later as the <a class="reference internal" href="#2b.-Trainer"><span class="std std-ref">Trainer.pipeline</span></a> argument.</p></td>
 </tr>
 </tbody>
 </table>
@@ -472,17 +448,17 @@
 <tr class="row-odd"><td><p><strong>interpolaters</strong></p></td>
 <td><p>list(Input.Interpolater)</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1ai.-Input.Interpolater">Input.Interpolater</a></p></td>
+<td><p><a class="reference internal" href="#1ai.-Input.Interpolater"><span class="std std-ref">Input.Interpolater</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>window</strong></p></td>
 <td><p>Input.Window</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1aii.-Input.Window">Input.Window</a></p></td>
+<td><p><a class="reference internal" href="#1aii.-Input.Window"><span class="std std-ref">Input.Window</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>encoders</strong></p></td>
 <td><p>list(Input.Encoder)</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1aiii.-Input.Encoder">Input.Encoder</a></p></td>
+<td><p><a class="reference internal" href="#1aiii.-Input.Encoder"><span class="std std-ref">Input.Encoder</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>reshape_indices</strong></p></td>
 <td><p>tuple(int/str/tuple)</p></td>
@@ -579,12 +555,12 @@
 <tr class="row-even"><td><p><strong>interpolater</strong></p></td>
 <td><p>Target.Interpolater</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1bi.-Target.Interpolater">Target.Interpolater</a></p></td>
+<td><p><a class="reference internal" href="#1bi.-Target.Interpolater"><span class="std std-ref">Target.Interpolater</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>encoder</strong></p></td>
 <td><p>Target.Encoder</p></td>
 <td><p>None</p></td>
-<td><p><a class="reference external" href="#1bii.-Target.Encoder">Target.Encoder</a></p></td>
+<td><p><a class="reference internal" href="#1bii.-Target.Encoder"><span class="std std-ref">Target.Encoder</span></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -655,12 +631,12 @@
 <tr class="row-even"><td><p><strong>architecture</strong></p></td>
 <td><p>Architecture</p></td>
 <td><p>Required</p></td>
-<td><p><a class="reference external" href="#2a.-Architecture">Architecture</a></p></td>
+<td><p><a class="reference internal" href="#2a.-Architecture"><span class="std std-ref">Architecture</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>trainer</strong></p></td>
 <td><p>Trainer</p></td>
 <td><p>Required</p></td>
-<td><p><a class="reference external" href="#2b.-Trainer">Trainer</a></p></td>
+<td><p><a class="reference internal" href="#2b.-Trainer"><span class="std std-ref">Trainer</span></a></p></td>
 </tr>
 </tbody>
 </table>
