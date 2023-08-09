@@ -453,17 +453,17 @@ class Dataset(BaseModel):
             rename_columns = listify(rename_columns)
 
             # --- Parsing & validation ---
-            file_path = file_path.lower()
-            if file_path.endswith('.tsv'):
+            file_ext = file_path.split('.')[-1].lower()
+            if file_ext.endswith('tsv'):
                 source_format = 'tsv'
-            elif file_path.endswith('.csv'):
+            elif file_ext.endswith('csv'):
                 source_format = 'csv'
-            elif file_path.endswith('.parquet'):
-                source_format = 'parquet'
-            elif file_path.endswith('.pq'):
+            elif file_path.endswith('parquet'):
+                file_ext = 'parquet'
+            elif file_ext.endswith('pq'):
                 source_format = 'parquet'
             else:
-                msg = f"\nYikes - `file_path.lower()` ended with neither: '.tsv', '.csv', '.parquet', '.pq':\n{file_path}\n"
+                msg = f"\nYikes - Your file extension ended with neither: '.tsv', '.csv', '.parquet', '.pq':\n{file_path}\n"
                 raise Exception(msg)
 
             if (not path.exists(file_path)):
@@ -486,15 +486,15 @@ class Dataset(BaseModel):
             )
 
             dataset = Dataset.Tabular.from_df(
-                dataframe          = df
-                , name             = name
-                , description      = description
-                , rename_columns   = rename_columns
-                , retype           = retype
-                , _ingest          = ingest
-                , _source_path     = source_path
-                , _source_format   = source_format
-                , _header          = header
+                dataframe        = df
+                , name           = name
+                , description    = description
+                , rename_columns = rename_columns
+                , retype         = retype
+                , _ingest        = ingest
+                , _source_path   = source_path
+                , _source_format = source_format
+                , _header        = header
             )
             return dataset
 
@@ -805,7 +805,7 @@ class Dataset(BaseModel):
             arr_validate(arr)
             if (arr.ndim != 4):
                 raise Exception(dedent(f"""
-                Yikes - Sequence Datasets can only be constructed from 4D arrays.
+                Yikes - Image Datasets can only be constructed from 4D arrays.
                 Your array dimensions had <{arr.ndim}> dimensions.
                 Tip: the shape of each internal array must be the same.
                 """))
@@ -4772,10 +4772,14 @@ class Prediction(BaseModel):
                     f_arrs.append(arr)
                 f_arr = np.concatenate(f_arrs)
                 main_features.append(f_arr)
+        
+        if (library=='pytorch'):
+            main_features = FloatTensor(main_features)
+            main_label = FloatTensor(main_label)
 
         if (len(features)==1):
             main_features = main_features[0]
-        if ((library == 'pytorch') and (analysis_type=='classification_multi')):
+        if ((library == 'pytorch') and (analysis_type == 'classification_multi')):
             flat_labels = main_label.flatten().to(long)
         
         # --- Baseline loss ---
