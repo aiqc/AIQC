@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/api_low_level.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="43d03e565b0748daab6daeda1c6547b1 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
+  <meta property="og:description" content="9ac6d93435ce4c15b251a23e69d467b1 Object-Relational Model: The Low-Level API is an object-relational model for machine learning. Each class in the ORM maps to a table in a SQLite database that serve..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -306,7 +306,7 @@
              
   <section id="ORM">
 <h1>ORM<a class="headerlink" href="#ORM" title="Permalink to this headline"></a></h1>
-<p><img alt="43d03e565b0748daab6daeda1c6547b1" class="banner-photo" src="../_images/sql.png" /></p>
+<p><img alt="9ac6d93435ce4c15b251a23e69d467b1" class="banner-photo" src="../_images/sql.png" /></p>
 <section id="Object-Relational-Model">
 <h2>Object-Relational Model<a class="headerlink" href="#Object-Relational-Model" title="Permalink to this headline"></a></h2>
 <p>The Low-Level API is an <em>object-relational model</em> for machine learning. Each class in the <a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/models.html">ORM</a> maps to a table in a SQLite database that serves as a machine learning <em>metastore</em>.</p>
@@ -3594,8 +3594,10 @@ diverging or not.</p></td>
 <p>This method is provided for conducting feature importance after training. It was decoupled from training for the following reasons:</p>
 <ul class="simple">
 <li><p>Permutation is computationally expensive, especially for many-columned datasets.</p></li>
-<li><p>We don’t care about the feature importance of poorly performing models, which constitute the vast majority of training.</p></li>
+<li><p>We don’t care about the feature importance of our best models.</p></li>
 </ul>
+<p>What data is used when calculating feature importance? All splits/folds are concatenated back into a single dataset. This assumes that all splits/folds are relatively equally balanced with respect to their label values. For example, if you have unbalanced multi-labels (55:35:10 distribution of classes) then a given feature’s importance may be biased based on how well it predicts the larger class. For binary classification scenarios, this should not matter as much since predicting one class helps
+in predicting what is not the counterpart class.</p>
 <p>Upon completion it will update the <code class="docutils literal notranslate"><span class="pre">Prediction.feature_importance</span></code> and <code class="docutils literal notranslate"><span class="pre">Prediction.permute_count</span></code> attributes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Prediction</span><span class="o">.</span><span class="n">calc_featureImportance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">permute_count</span><span class="p">)</span>
 </pre></div>
