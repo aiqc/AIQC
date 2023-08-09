@@ -4035,7 +4035,7 @@
     "- Permutation is computationally expensive, especially for many-columned datasets.\n",
     "- We don't care about the feature importance of our best models.\n",
     "\n",
-    "What data is used when calculating feature importance? All splits/folds are concatenated back into a single dataset. This assumes that all splits/folds are relatively equally balanced with respect to their label values. For example, if you have unbalanced multi-labels (55:35:10 distribution of classes) then a given feature's importance may be biased based on how well it predicts the larger class. For binary classification scenarios, this should not matter as much since predicting one class helps in predicting what is not the counterpart class.\n",
+    "What data is used when calculating feature importance? All splits/folds are concatenated back into a single dataset. This assumes that all splits/folds are relatively equally balanced with respect to their label values. For example, if you have unbalanced multi-labels (55:35:10 distribution of classes) then a given feature's importance may be biased based on how well it predicts the larger class. For binary classification scenarios, this should not matter as much since predicting one class also helps in predicting the opposite class.\n",
     "\n",
     "Upon completion it will update the `Prediction.feature_importance` and `Prediction.permute_count` attributes."
    ]
