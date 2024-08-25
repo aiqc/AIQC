@@ -39,21 +39,23 @@
   <div style="background-image: linear-gradient(#24435f, #122536); height:80px; border-top-left-radius:25px; border-top-right-radius:25px; height: 95%;">
     </br></br>
     <center>
-      <div class="headerz titlez headerz-dark" style="font-family:Abel !important; font-size:32px !important">
-        <span class="goldz-dark">Declarative, Multi-Modal AI</span>
+      <div class="headerz titlez headerz-dark" style="font-family:Abel !important; font-size:32px !important; padding-bottom:10px;">
+        <div class="goldz-dark">Declarative, Multi-Modal AI</div>
+        <div style="margin-top:20px; font-size:21px; font-style:italic;">End-to-end API & UI for the deep learning lifecycle</div>
       </div>
     </center>
   </div>
-  <div style="height: 60px; overflow: hidden;">
+  <div style="height:60px; overflow:hidden;">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
       <path d="M0.00,92.27 C216.83,192.92 304.30,8.39 500.00,109.03 L500.00,0.00 L0.00,0.00 Z" style="stroke: none; fill:#122536;"></path>
     </svg>
   </div>
-  </br></br>
   <center>
+    <!--
     <div class="headerz-light" style="color:#828282; font-family:Abel !important; font-size:22px !important; line-height:180% !important; margin:auto;">
       End-to-end API & UI<br>for the deep learning lifecycle
     </div> 
+    -->
     <br/><br/>
     <a class="github-button" href="https://github.com/aiqc/aiqc" data-color-scheme="no-preference: light; light: light; dark: light;" data-size="large" data-show-count="false" aria-label="Star aiqc/aiqc on GitHub">
       Star on GitHub
@@ -118,26 +120,7 @@
   </div>
   
   </br></br></br></br>
-  
-  <!-- 3 BRs or a 60% margin makes the shapes below get misaligned -->
-  <!--
-  <center style="margin-bottom:50px;">
-    <img src="_static/images/dashboard/experiment_tracker.gif" alt="experiment_tracker" width="93%" style="display:block;">
-    </br>
-    <a class="linx" href="pages/compare.html" target="_blank">
-      <span class="textz" style="color:#626262; font-size:18px;">↳ How does AIQC <span style="text-decoration:underline;">compare</span> to other experiment trackers?</span></span>
-    </a>
 
-    </br></br></br></br></br>
-
-    <iframe width="93%" height="350" src="https://www.youtube.com/embed/suV5i-Y9tws" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-    </iframe>
-    <p style="color:#afafaf; font-size:85%; margin-top:5px; font-family:'Abel';">
-      (play video with Chrome or enable FireFox embedded content)
-    </p>
-  </center>
-  </br></br>
-  -->
 
   <div style="height: 100px; overflow: hidden; transform:rotate(180deg);">
     <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;">
