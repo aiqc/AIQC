@@ -239,7 +239,7 @@
     AIQC's structured protocols automate the tedious <i>data wrangling</i> processes that are unique to each type of data and analysis.
   </p>
   <p class="intro bigP textz" style="font-size:15.5px; line-height:140%; margin-left:13%;margin-right:13%;">
-    The <i>DIY</i> approach of patching together <i>custom</i> code and tools for each project is not maintainable. AIQC enables research teams to stay focused on data science, not writing software to manage the AI lifecycle.
+    The <i>DIY</i> approach of patching together <i>custom</i> scripts and tools for each new project is unmaintainable and prone to bugs. AIQC enables research teams to stay focused on data science, as opposed to writing software that manages the machine learning lifecycle and all of its edge cases.
   </p>
   </br></br></br></br>
 
