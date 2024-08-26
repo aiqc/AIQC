@@ -10,7 +10,7 @@ Competition
     <h2>Expect More from your Experiment Tracker</h2>
     <hr style="width:35%; margin-top:35px;margin-bottom:35px;">
     <p class="intro" style="width:90%;">
-      The AIQC framework provides teams a standardized methodology that trains better algorithms in less time. The secret sauce of the AIQC backend is that it is not only <b style="color:#122536;">data-aware</b> (e.g. folds, encoders, dtypes) but also <b style="color:#122536;">analysis-aware</b> (e.g. supervision, candinality).
+      The AIQC framework provides teams a standardized methodology that trains better algorithms in less time. The secret sauce of the AIQC backend is that it is not only <b style="color:#122536;">data-aware</b> (e.g. folds, encoders, dtypes) but also <b style="color:#122536;">analysis-aware</b> (e.g. supervision, cardinality).
     </p>
   </center>
 
