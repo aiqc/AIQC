@@ -5,6 +5,9 @@
 """
 #html_sidebars = { '**': ['globaltoc.html'] }
 
+import os
+
+
 project   = 'AIQC'
 copyright = '2020, Team AIQC'
 author    = 'Team AIQC'
@@ -25,6 +28,16 @@ extensions = [
 ]
 suppress_warnings  = ['nbsphinx']
 highlight_language = 'python3'
+
+
+"""
+    Handles custom URL
+"""
+# Set canonical URL from the Read the Docs Domain
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+# Tell Jinja2 templates the build is running on Read the Docs
+if os.environ.get("READTHEDOCS", "") == "True":
+    html_context["READTHEDOCS"] = True
 
 """
     ====== ASSETS ======
