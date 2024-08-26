@@ -225,10 +225,6 @@
     </br></br></br></br></br></br></br>
   </div>
 
-  <center>
-    <hr style="width:35%;">
-  </center>
-
   </br></br></br></br></br>
   <center>
     <div class="headerz-light" style="line-height:190%;">Automated <span class="goldz-light">visualizations</span> for each split & fold of every model</div>
