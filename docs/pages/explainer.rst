@@ -153,7 +153,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-    We learn about the <i>features</i> in order to predict the <i>label</i>.
+    We learn about the <i>features</i> in order to predict the <i>label (aka target)</i>.
   </p>
 
 |
@@ -241,11 +241,11 @@ Deep Learning 101
   
   * - **OneHotEncode(OHE)**
     - Categorical
-    - Expand 1 multi-category col into many binary cols.
+    - Expand 1 multi-category column into many binary columns.
 
   * - **Ordinal**
     - Categorical
-    - [Bad form] Each category assigned an integer [0,1,2].
+    - Each category assigned an integer [0,1,2]. Rarely the right approach.
 
   * - **Scale**
     - Continuous
@@ -347,10 +347,11 @@ Deep Learning 101
   <p class="figCaption" style="text-align: left;">
     The figure above demonstrates what happens during a training <i>batch</i>: 
     (1) the algorithm looks at a few rows, 
-    (2) makes predictions about those rows using its existing weights, 
+    (2) makes predictions about those rows using its existing weight, 
     (3) checks how accurate those predictions are, 
-    (4) adjusts its weights in an attempt to minimize future errors. 
+    (4) adjusts its weight in an attempt to minimize future errors. 
     It's like finding the bottom of a valley by rolling a ball down it.
+    Although this process may be easy for a single weight, imagine optimizing an algorithm that contains thousands or millions of different weight parameters.
   </p>
   </br>
 
@@ -367,7 +368,7 @@ Deep Learning 101
 .. raw:: html
 
   <p class="explain">
-    With repetition, the model molds to the features like a memory foam mattress.
+    With repetition, the model molds to the features like a memory foam mattress. For example, you could use the imprint above as a binary classifier for a hand versus other body parts.
   </p>
   
 |
@@ -392,7 +393,7 @@ Deep Learning 101
 
 
 .. list-table::
-  :widths: 25, 25, 50
+  :widths: 24, 38, 38
   :align: center
   
   * - **Linear**
@@ -400,11 +401,11 @@ Deep Learning 101
     - e.g. spreadsheets & tables.
 
   * - **Convolutional**
-    - 📸 Positional
+    - 📸 Spatial/ Positional
     - e.g. images, videos, & networks.
 
   * - **Recurrent**
-    - ⏱️ Ordered
+    - ⏱️ Ordered/ Positional
     - e.g. time, text, & DNA.
 
 
@@ -537,16 +538,16 @@ Deep Learning 101
   :align: center
   
   * - **Input**
-    - Receives the data. Mirrors the shape of incoming features.
+    - Receives the data. Mirrors the shape of incoming features (e.g. 30 features means 30 input neurons).
 
   * - **Hidden**
-    - Learns from patterns in the features. The number of layers & neurons based on feature complexity.
+    - Learns from patterns in the features. The number of layers and the amount of neurons that they contain corresponds to the complexity of features.
 
   * - **Output**
-    - Compares predictions to the real label. Mirrors shape of labels (# of categories).
+    - Compares predictions to the real label. Mirrors shape of labels (e.g. 5 categories means 5 output neurons, except for binary classification and regression which both use a single output neuron).
   
   * - **Regulatory**
-    - [Not pictured here] *Dropout, BatchNorm, MaxPool* keep the network balanced and help prevent overfitting.
+    - [Not pictured here] *Dropout, BatchNorm, MaxPool* help keep the network balanced and help prevent overfitting.
 
 |
 
@@ -570,7 +571,7 @@ Deep Learning 101
    problem we are trying to solve 🦏 Classifying rhinos vs mosquitoes based on their weight is such a simple task that it would 
    not require any hidden layers at all 🐆 However, delineating the subtle differences between types of big cats 
    (lynx, ocelot, tiger, cougar, panther) may require several layers in order to tease apart their differences.
-   For example, the first hidden layer might check for spotted vs striped fur, while the second hidden layer determines the color of that marking.
+   For example, upon examining the activation values of a trained network, we may find that the first hidden layer checks for the pattern of the fur (e.g. spotted vs striped), while the second hidden layer determines the color of these markings.
   </p>
 
 |
@@ -649,8 +650,8 @@ Deep Learning 101
   </p>
 
   <p class="explain">
-   Similar to how a biological neuron aggregates an <i>action potential</i> based on input from preceding neurons - 
-   an artificial neuron aggregates a <i>weighted sum</i> by adding up all of the values of its incoming weights.
+   Similar to how a biological neuron accumulates an <i>action potential</i> based on input from preceding neurons - 
+   an artificial neuron accumulates a <i>weighted sum</i> by adding up all of the activation values of its incoming edges.
   </p>
 
 |
@@ -730,7 +731,7 @@ Deep Learning 101
   <p class="explain">
    Although neural networks are great at minimizing loss, this metric is hard for humans to understand.
    The following two <b><a href="https://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics">metrics</a></b>
-   are easy to understand because they both max out at 1.0 aka 100%:
+   are more intuitive because they have a maximum of 100% and a minimum of 0% (aka normalized unit interval).
   </p>
 
 
@@ -792,17 +793,17 @@ Deep Learning 101
   :widths: 18, 80
   :align: center
 
+  * - **Topology**
+    - If the food doesn't fit in the pot, switch to a pot with deeper/ taller *layers*.
+
   * - **Duration**
     - Food isn't fully cooked? Train for more *epochs* or decrease the size of each *batch*.
   
   * - **Parameters**
-    - Burning? Turn down *learning rate*. Tastes bad? Try *initialization*/ *activation* spices.
-
-  * - **Topology**
-    - If the food doesn't fit in the pan, switch to a larger pan with deeper/ taller *layers*.
+    - Burning? Turn down *learning rate*. Flavor is slightly off? Try *initialization*/ *activation* spices.
 
   * - **Regulation**
-    - Overfitting on the same old recipes? Add more *Dropout* to mix things up.
+    - Overfitting on the same old recipes? Add *Dropout* to mix things up.
 
 |
 
@@ -818,7 +819,7 @@ Deep Learning 101
   
   </br>
   <p class="explain">
-    At first, the number of <i>tuning</i> options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='gallery.html'>recipes</a> in order to get by.
+    At first, the number of options to <i>tune</i> seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='gallery.html'>recipes</a> in order to get by.
   </p>
 
 |

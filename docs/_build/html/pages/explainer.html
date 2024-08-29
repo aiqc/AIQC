@@ -438,7 +438,7 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  We learn about the <i>features</i> in order to predict the <i>label</i>.
+  We learn about the <i>features</i> in order to predict the <i>label (aka target)</i>.
 </p><div class="line-block">
 <div class="line"><br /></div>
 <div class="line"><br /></div>
@@ -512,11 +512,11 @@
 </tr>
 <tr class="row-even"><td><p><strong>OneHotEncode(OHE)</strong></p></td>
 <td><p>Categorical</p></td>
-<td><p>Expand 1 multi-category col into many binary cols.</p></td>
+<td><p>Expand 1 multi-category column into many binary columns.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Ordinal</strong></p></td>
 <td><p>Categorical</p></td>
-<td><p>[Bad form] Each category assigned an integer [0,1,2].</p></td>
+<td><p>Each category assigned an integer [0,1,2]. Rarely the right approach.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Scale</strong></p></td>
 <td><p>Continuous</p></td>
@@ -589,10 +589,11 @@
 <p class="figCaption" style="text-align: left;">
   The figure above demonstrates what happens during a training <i>batch</i>:
   (1) the algorithm looks at a few rows,
-  (2) makes predictions about those rows using its existing weights,
+  (2) makes predictions about those rows using its existing weight,
   (3) checks how accurate those predictions are,
-  (4) adjusts its weights in an attempt to minimize future errors.
+  (4) adjusts its weight in an attempt to minimize future errors.
   It's like finding the bottom of a valley by rolling a ball down it.
+  Although this process may be easy for a single weight, imagine optimizing an algorithm that contains thousands or millions of different weight parameters.
 </p>
 </br><div class="line-block">
 <div class="line"><br /></div>
@@ -602,7 +603,7 @@
 <div class="line"><br /></div>
 </div>
 <p class="explain">
-  With repetition, the model molds to the features like a memory foam mattress.
+  With repetition, the model molds to the features like a memory foam mattress. For example, you could use the imprint above as a binary classifier for a hand versus other body parts.
 </p><div class="line-block">
 <div class="line"><br /></div>
 <div class="line"><br /></div>
@@ -622,9 +623,9 @@
 </p>
 <br/><table class="colwidths-given docutils align-center">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 50%" />
+<col style="width: 24%" />
+<col style="width: 38%" />
+<col style="width: 38%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Linear</strong></p></td>
@@ -632,11 +633,11 @@
 <td><p>e.g. spreadsheets &amp; tables.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Convolutional</strong></p></td>
-<td><p>📸 Positional</p></td>
+<td><p>📸 Spatial/ Positional</p></td>
 <td><p>e.g. images, videos, &amp; networks.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Recurrent</strong></p></td>
-<td><p>⏱️ Ordered</p></td>
+<td><p>⏱️ Ordered/ Positional</p></td>
 <td><p>e.g. time, text, &amp; DNA.</p></td>
 </tr>
 </tbody>
@@ -749,16 +750,16 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>Input</strong></p></td>
-<td><p>Receives the data. Mirrors the shape of incoming features.</p></td>
+<td><p>Receives the data. Mirrors the shape of incoming features (e.g. 30 features means 30 input neurons).</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Hidden</strong></p></td>
-<td><p>Learns from patterns in the features. The number of layers &amp; neurons based on feature complexity.</p></td>
+<td><p>Learns from patterns in the features. The number of layers and the amount of neurons that they contain corresponds to the complexity of features.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Output</strong></p></td>
-<td><p>Compares predictions to the real label. Mirrors shape of labels (# of categories).</p></td>
+<td><p>Compares predictions to the real label. Mirrors shape of labels (e.g. 5 categories means 5 output neurons, except for binary classification and regression which both use a single output neuron).</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Regulatory</strong></p></td>
-<td><p>[Not pictured here] <em>Dropout, BatchNorm, MaxPool</em> keep the network balanced and help prevent overfitting.</p></td>
+<td><p>[Not pictured here] <em>Dropout, BatchNorm, MaxPool</em> help keep the network balanced and help prevent overfitting.</p></td>
 </tr>
 </tbody>
 </table>
@@ -779,7 +780,7 @@
  problem we are trying to solve 🦏 Classifying rhinos vs mosquitoes based on their weight is such a simple task that it would
  not require any hidden layers at all 🐆 However, delineating the subtle differences between types of big cats
  (lynx, ocelot, tiger, cougar, panther) may require several layers in order to tease apart their differences.
- For example, the first hidden layer might check for spotted vs striped fur, while the second hidden layer determines the color of that marking.
+ For example, upon examining the activation values of a trained network, we may find that the first hidden layer checks for the pattern of the fur (e.g. spotted vs striped), while the second hidden layer determines the color of these markings.
 </p><div class="line-block">
 <div class="line"><br /></div>
 <div class="line"><br /></div>
@@ -835,8 +836,8 @@
 </p>
 
 <p class="explain">
- Similar to how a biological neuron aggregates an <i>action potential</i> based on input from preceding neurons -
- an artificial neuron aggregates a <i>weighted sum</i> by adding up all of the values of its incoming weights.
+ Similar to how a biological neuron accumulates an <i>action potential</i> based on input from preceding neurons -
+ an artificial neuron accumulates a <i>weighted sum</i> by adding up all of the activation values of its incoming edges.
 </p><div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -909,7 +910,7 @@
 <p class="explain">
  Although neural networks are great at minimizing loss, this metric is hard for humans to understand.
  The following two <b><a href="https://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics">metrics</a></b>
- are easy to understand because they both max out at 1.0 aka 100%:
+ are more intuitive because they have a maximum of 100% and a minimum of 0% (aka normalized unit interval).
 </p><table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 44%" />
@@ -958,17 +959,17 @@
 <col style="width: 82%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>Duration</strong></p></td>
+<tr class="row-odd"><td><p><strong>Topology</strong></p></td>
+<td><p>If the food doesn’t fit in the pot, switch to a pot with deeper/ taller <em>layers</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Duration</strong></p></td>
 <td><p>Food isn’t fully cooked? Train for more <em>epochs</em> or decrease the size of each <em>batch</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Parameters</strong></p></td>
-<td><p>Burning? Turn down <em>learning rate</em>. Tastes bad? Try <em>initialization</em>/ <em>activation</em> spices.</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Topology</strong></p></td>
-<td><p>If the food doesn’t fit in the pan, switch to a larger pan with deeper/ taller <em>layers</em>.</p></td>
+<tr class="row-odd"><td><p><strong>Parameters</strong></p></td>
+<td><p>Burning? Turn down <em>learning rate</em>. Flavor is slightly off? Try <em>initialization</em>/ <em>activation</em> spices.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Regulation</strong></p></td>
-<td><p>Overfitting on the same old recipes? Add more <em>Dropout</em> to mix things up.</p></td>
+<td><p>Overfitting on the same old recipes? Add <em>Dropout</em> to mix things up.</p></td>
 </tr>
 </tbody>
 </table>
@@ -981,7 +982,7 @@
 </div>
 </br>
 <p class="explain">
-  At first, the number of <i>tuning</i> options seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='gallery.html'>recipes</a> in order to get by.
+  At first, the number of options to <i>tune</i> seems overwhelming, but you quickly realize that you only need to learn a handful of common dinner <a href='gallery.html'>recipes</a> in order to get by.
 </p><div class="line-block">
 <div class="line"><br /></div>
 <div class="line"><br /></div>
