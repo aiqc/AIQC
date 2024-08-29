@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.aiqc.io/notebooks/gallery/tensorflow/multi_tcga.html" />
   <meta property="og:site_name" content="AIQC" />
-  <meta property="og:description" content="Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes. c6d351bc973c41faae57a9392cfe5ae8 Context: This dataset is comprised of: Features- the expression of 20,532 genes fro..." />
+  <meta property="og:description" content="Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes. 9a081fa73293483fb18a04267c3f9e66 Context: This dataset is comprised of: Features- the expression of 20,532 genes fro..." />
   <meta property="og:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
   <meta property="og:image:alt" content="Artificial Intelligence Quality Control" />
   <meta property="twitter:image" content="https://raw.githubusercontent.com/aiqc/aiqc/main/docs/_static/images/web/meta_image_tall_rect.png" />
@@ -306,7 +306,7 @@
   <section id="Feature-Importance-for-Genetic-Target-Validation">
 <h1>Feature Importance for Genetic Target Validation<a class="headerlink" href="#Feature-Importance-for-Genetic-Target-Validation" title="Permalink to this headline"></a></h1>
 <p><em>Classifying 5 tumor types based on their mRNA expression levels in 20,532 genes.</em></p>
-<p><img alt="c6d351bc973c41faae57a9392cfe5ae8" class="banner-photo" src="../../../_images/genes.png" /></p>
+<p><img alt="9a081fa73293483fb18a04267c3f9e66" class="banner-photo" src="../../../_images/genes.png" /></p>
 <section id="Context">
 <h2>Context<a class="headerlink" href="#Context" title="Permalink to this headline"></a></h2>
 <p>This dataset is comprised of:</p>
@@ -316,9 +316,8 @@
 </ul>
 <blockquote>
 <div><p><em>Source:</em> The Cancer Genome Atlas (TCGA) <a class="reference external" href="https://archive.ics.uci.edu/ml/datasets/gene+expression+cancer+RNA-Seq">https://archive.ics.uci.edu/ml/datasets/gene+expression+cancer+RNA-Seq</a></p>
-<p>Unfortunately, the gene names were not published with the dataset. I contacted the submitting organization, but they were not able to provide an index.</p>
+<p>Unfortunately, the gene names were not published with this particular dataset. However, TCGA makes its RNA-seq data available publicly if you want to explore this further.</p>
 </div></blockquote>
-<p>Although the oncogene relationships already known (the tumors are named after gene complexes), the purpose of this experiment is to validate that neural networks can be used to rapidly reveal these patterns in the presence of highly dimensional data. This methodology could also be repurposed for delineating biomarkers of different stages/ subtypes within a single disease.</p>
 <p>Prior to ingestion:</p>
 <ul class="simple">
 <li><p>Balanced the dataset based on the ‘Class’ column, which essentially meant deleting 150 BRCA samples.</p></li>
